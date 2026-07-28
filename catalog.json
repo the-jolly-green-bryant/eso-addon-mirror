@@ -2031,6 +2031,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8c18ca98-8921-4bf3-b455-1d63b2f761e3",
       "title": "VCAP2"
+    },
+    "8c834a42-03cd-4110-8b81-7847f13944b6": {
+      "content_id": "8c834a42-03cd-4110-8b81-7847f13944b6",
+      "fingerprint": "480e5a2d5a043af7b3f3a8d114cd55b16f63fb4e49bd830f839c8efd1ce13dce",
+      "path": "addons/TorigaCam__8c834a42-03cd-4110-8b81-7847f13944b6",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8c834a42-03cd-4110-8b81-7847f13944b6",
+      "title": "TorigaCam"
     }
   },
   "schema": 1
