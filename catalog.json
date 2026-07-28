@@ -2047,6 +2047,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8cd10e06-846e-4b81-9858-f1a6943f0b32",
       "title": "Testing"
+    },
+    "8dc100fb-6c43-4ea7-ba01-1a23d306e216": {
+      "content_id": "8dc100fb-6c43-4ea7-ba01-1a23d306e216",
+      "fingerprint": "59744034c1ec274128a831cf5588615d7b70cfc0e0e0f6dd4c039e80d13e77d2",
+      "path": "addons/Rare-Fish-Tracker__8dc100fb-6c43-4ea7-ba01-1a23d306e216",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8dc100fb-6c43-4ea7-ba01-1a23d306e216",
+      "title": "Rare Fish Tracker"
     }
   },
   "schema": 1
