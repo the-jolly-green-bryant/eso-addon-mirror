@@ -2479,6 +2479,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a6c22156-8b52-467d-ab02-287e5731a1fb",
       "title": "Synergy Cooldown"
+    },
+    "a77b6722-e51b-4b17-9543-632248774cf3": {
+      "content_id": "a77b6722-e51b-4b17-9543-632248774cf3",
+      "fingerprint": "f34402e0baed96dc234ea1ffdb64c377905f09354eda2694ce9bfd2b4e901672",
+      "path": "addons/Style-New-Cleaner__a77b6722-e51b-4b17-9543-632248774cf3",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a77b6722-e51b-4b17-9543-632248774cf3",
+      "title": "Style New Cleaner"
     }
   },
   "schema": 1
