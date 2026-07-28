@@ -1127,6 +1127,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/49a3eac1-a81d-43dc-8b84-097b6d7ee558",
       "title": "LibCInteraction"
+    },
+    "49b41fa8-a5b3-4249-ae8d-44d7381651f4": {
+      "content_id": "49b41fa8-a5b3-4249-ae8d-44d7381651f4",
+      "fingerprint": "e0d86e5b50aa45ec1c9166301df6803595e7d1f606e98c47fd811ad66e42e5a2",
+      "path": "addons/Trials-Arenas-Tracker__49b41fa8-a5b3-4249-ae8d-44d7381651f4",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/49b41fa8-a5b3-4249-ae8d-44d7381651f4",
+      "title": "Trials & Arenas Tracker"
     }
   },
   "schema": 1
