@@ -251,6 +251,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/126f9ed8-95dd-46e4-b365-18e7f56bb804",
       "title": "AutoConsume"
+    },
+    "1314f50c-ef2d-47b1-a8e8-18bf28416980": {
+      "content_id": "1314f50c-ef2d-47b1-a8e8-18bf28416980",
+      "fingerprint": "805b10b19c0b33c42413124fccbb61fa8f0c454deaabaf43711eeee352bcb376",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1314f50c-ef2d-47b1-a8e8-18bf28416980",
+      "title": "Aldrens World Events"
     }
   },
   "schema": 1
