@@ -3415,6 +3415,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/dfed21f9-988b-44b9-a054-89bfcce20639",
       "title": "NextQuest"
+    },
+    "e0335eb7-8445-4bde-9db4-1a4ace8ee8b1": {
+      "content_id": "e0335eb7-8445-4bde-9db4-1a4ace8ee8b1",
+      "fingerprint": "ba4203e61f867f7616bb533e5dea838d8d382cbf6e92d95429f9631b8a98e308",
+      "path": "addons/Skyshards__e0335eb7-8445-4bde-9db4-1a4ace8ee8b1",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e0335eb7-8445-4bde-9db4-1a4ace8ee8b1",
+      "title": "Skyshards"
     }
   },
   "schema": 1
