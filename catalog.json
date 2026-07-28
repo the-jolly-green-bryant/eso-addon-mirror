@@ -1335,6 +1335,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/588eb388-ead2-4649-82cc-13838f638b1f",
       "title": "The Synaptic Registry(The Clockwork Arsenal) _in_development_"
+    },
+    "59768602-717c-425b-a4ce-7ffc14887bc0": {
+      "content_id": "59768602-717c-425b-a4ce-7ffc14887bc0",
+      "fingerprint": "cb63fea82f82245d6bf5b772b4a65d3f692d9d785cac76db211dd88512059850",
+      "path": "addons/Many-Markers__59768602-717c-425b-a4ce-7ffc14887bc0",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/59768602-717c-425b-a4ce-7ffc14887bc0",
+      "title": "Many Markers"
     }
   },
   "schema": 1
