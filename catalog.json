@@ -2903,6 +2903,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c26064b6-d685-492c-b750-3bc59f315109",
       "title": "Antiquities Tracker"
+    },
+    "c2664980-589b-4f81-a99e-02204268cab3": {
+      "content_id": "c2664980-589b-4f81-a99e-02204268cab3",
+      "fingerprint": "ad9b233c87258606a1ca9bd1fd9756e475fbdac083c7c99d080709178259e944",
+      "path": "addons/WestonUi__c2664980-589b-4f81-a99e-02204268cab3",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c2664980-589b-4f81-a99e-02204268cab3",
+      "title": "WestonUi"
     }
   },
   "schema": 1
