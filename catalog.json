@@ -405,6 +405,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1e7d3c7d-1680-4f93-b82c-8c4601d3b449",
       "title": "Console Metrics"
+    },
+    "1f552d57-81fb-407f-b9f2-f45228e2a171": {
+      "content_id": "1f552d57-81fb-407f-b9f2-f45228e2a171",
+      "fingerprint": "7c2ca683fe3c3ddc04ec9299a5e14d64e079c4299674f936e73b645c1465f238",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1f552d57-81fb-407f-b9f2-f45228e2a171",
+      "title": "AntiDK"
     }
   },
   "schema": 1
