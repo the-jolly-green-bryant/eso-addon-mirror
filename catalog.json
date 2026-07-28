@@ -935,6 +935,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3c805ef7-47fe-43a7-b480-52342549e9f4",
       "title": "CustomCompassPins"
+    },
+    "3cd8f841-6502-49d4-866c-a49b12a16460": {
+      "content_id": "3cd8f841-6502-49d4-866c-a49b12a16460",
+      "fingerprint": "ec5e0b3957e202e96cb146e770afdb1fb9e21f0d0558905b40ae9b37f45c3c64",
+      "path": "addons/Advancing-Yokeda-Tracker__3cd8f841-6502-49d4-866c-a49b12a16460",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3cd8f841-6502-49d4-866c-a49b12a16460",
+      "title": "Advancing Yokeda Tracker"
     }
   },
   "schema": 1
