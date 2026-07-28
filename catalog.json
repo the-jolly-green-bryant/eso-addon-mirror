@@ -1799,6 +1799,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/782c659c-1b9a-4e03-aaef-6526095363ad",
       "title": "Buffy: Live Buff Tracking"
+    },
+    "798e2650-33dc-48bb-80c5-8c09cabc36b5": {
+      "content_id": "798e2650-33dc-48bb-80c5-8c09cabc36b5",
+      "fingerprint": "d016c50e87b86e45af0426e3720da35939b58e52fdcbfd4abd2aefc694a0126e",
+      "path": "addons/ArcTechv2__798e2650-33dc-48bb-80c5-8c09cabc36b5",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/798e2650-33dc-48bb-80c5-8c09cabc36b5",
+      "title": "ArcTechv2"
     }
   },
   "schema": 1
