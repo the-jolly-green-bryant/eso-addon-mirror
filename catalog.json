@@ -1743,6 +1743,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/754151c2-90b5-4c5f-ba25-ab2b38c18284",
       "title": "Gamepad Mini Chat Tabs"
+    },
+    "756d3118-70ee-4ed7-a49e-5217da36e5fe": {
+      "content_id": "756d3118-70ee-4ed7-a49e-5217da36e5fe",
+      "fingerprint": "f7e6b0118f934aee615137c80310d97552331ef0b93d6e80f63a411a37d7a085",
+      "path": "addons/LibCombatAlerts__756d3118-70ee-4ed7-a49e-5217da36e5fe",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/756d3118-70ee-4ed7-a49e-5217da36e5fe",
+      "title": "LibCombatAlerts"
     }
   },
   "schema": 1
