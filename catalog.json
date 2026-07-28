@@ -1303,6 +1303,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/555cab61-7b0a-41ba-8fe9-4c8df0f82ed3",
       "title": "MaliBuu Lantern Keeper"
+    },
+    "556512a1-fb7c-4558-9572-f7cf6fd8b171": {
+      "content_id": "556512a1-fb7c-4558-9572-f7cf6fd8b171",
+      "fingerprint": "bc036e155e196c2e81a4b34cf1b53fa3131e52a2a5c1a67274af23bd69cb252e",
+      "path": "addons/Anti-All-Caps__556512a1-fb7c-4558-9572-f7cf6fd8b171",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/556512a1-fb7c-4558-9572-f7cf6fd8b171",
+      "title": "Anti All Caps"
     }
   },
   "schema": 1
