@@ -1087,6 +1087,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/47568dd9-5328-4e2a-9862-c59932473a4b",
       "title": "Duel Results"
+    },
+    "475ce77b-6d09-4c75-8c28-95fff8f907c9": {
+      "content_id": "475ce77b-6d09-4c75-8c28-95fff8f907c9",
+      "fingerprint": "7f99d36952440c03445080de0fb5f02a6fb0ace10bff77aa6980cb03ba9f3fe2",
+      "path": "addons/NQOL-dev__475ce77b-6d09-4c75-8c28-95fff8f907c9",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/475ce77b-6d09-4c75-8c28-95fff8f907c9",
+      "title": "NQOL-dev"
     }
   },
   "schema": 1
