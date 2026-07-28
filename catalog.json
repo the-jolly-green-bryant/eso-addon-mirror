@@ -2343,6 +2343,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9cb042d4-e427-4f0c-9c9c-48e1a355c970",
       "title": "CollectablesTesting"
+    },
+    "9d131435-84c4-4c6d-9d73-5e2ec6fa61b7": {
+      "content_id": "9d131435-84c4-4c6d-9d73-5e2ec6fa61b7",
+      "fingerprint": "30d93bfe4e8907562e8257b2c7024b8d6c4b79d6cf3eb6babe51eeed757582ca",
+      "path": "addons/CrowdednESO__9d131435-84c4-4c6d-9d73-5e2ec6fa61b7",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9d131435-84c4-4c6d-9d73-5e2ec6fa61b7",
+      "title": "CrowdednESO"
     }
   },
   "schema": 1
