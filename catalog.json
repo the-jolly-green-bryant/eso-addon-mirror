@@ -3775,6 +3775,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f252b54c-ca06-45e6-8a13-3211eb5d96ba",
       "title": "Murf's Skyshards"
+    },
+    "f2ed8662-096e-46fa-bed1-9a73691c8f8f": {
+      "content_id": "f2ed8662-096e-46fa-bed1-9a73691c8f8f",
+      "fingerprint": "f032662a27ebe994d65b388675b529c98da2f7cd5945023599f36d94a1db7e80",
+      "path": "addons/AutoBankMats__f2ed8662-096e-46fa-bed1-9a73691c8f8f",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f2ed8662-096e-46fa-bed1-9a73691c8f8f",
+      "title": "AutoBankMats+"
     }
   },
   "schema": 1
