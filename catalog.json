@@ -3031,6 +3031,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cb26e578-84c4-4196-9aee-7e0e53f3d6a1",
       "title": "Under Pressure"
+    },
+    "cbc2e748-501a-4137-8faa-cabf349da2d7": {
+      "content_id": "cbc2e748-501a-4137-8faa-cabf349da2d7",
+      "fingerprint": "05d0b6485f2e81bf194d6d22d01404be46d400451d6b760cb7b3a611baaab3bd",
+      "path": "addons/ESOTR_TEST_MODUL__cbc2e748-501a-4137-8faa-cabf349da2d7",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cbc2e748-501a-4137-8faa-cabf349da2d7",
+      "title": "ESOTR_TEST_MODUL"
     }
   },
   "schema": 1
