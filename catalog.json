@@ -13,6 +13,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/03172246-c90c-4b8b-9821-06a74a01ce96",
       "title": "Zone Mount and Pet Switcher"
+    },
+    "031ddfc1-c44d-4452-ab48-42b7c429bc81": {
+      "content_id": "031ddfc1-c44d-4452-ab48-42b7c429bc81",
+      "fingerprint": "a4a01c5c98241a18cc9febf807bc5c6c3a80b06f35f6de381640d07541d2b879",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/031ddfc1-c44d-4452-ab48-42b7c429bc81",
+      "title": "LibDebugLogger"
     }
   },
   "schema": 1
