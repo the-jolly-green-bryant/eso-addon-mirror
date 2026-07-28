@@ -887,6 +887,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/38f0df90-e793-4c9c-af2b-44a958ed38cf",
       "title": "One More Rockgrove Helper"
+    },
+    "39644437-95e9-414a-adf6-578b31771ea0": {
+      "content_id": "39644437-95e9-414a-adf6-578b31771ea0",
+      "fingerprint": "899171a45f1d76904cabe7366202a39380730a9292caf63f040daa49ef6a5f2a",
+      "path": "addons/LibGroupBroadcast__39644437-95e9-414a-adf6-578b31771ea0",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/39644437-95e9-414a-adf6-578b31771ea0",
+      "title": "LibGroupBroadcast"
     }
   },
   "schema": 1
