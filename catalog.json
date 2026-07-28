@@ -2519,6 +2519,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a8df6914-51e2-4059-8c77-a773a30bee81",
       "title": "Missing Food/Drink Buff CSA"
+    },
+    "aa271fb4-3ce5-4584-ac5c-338617e92f62": {
+      "content_id": "aa271fb4-3ce5-4584-ac5c-338617e92f62",
+      "fingerprint": "0bfbd0397143bc3cb9be0f6a099b6961548ba3f59cf2fa214f899bc9fe934a82",
+      "path": "addons/Sul-Xan-s-Soul-Catcher__aa271fb4-3ce5-4584-ac5c-338617e92f62",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/aa271fb4-3ce5-4584-ac5c-338617e92f62",
+      "title": "Sul-Xan's Soul Catcher"
     }
   },
   "schema": 1
