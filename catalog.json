@@ -2423,6 +2423,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a2157cd5-8974-464f-b688-df9b184b6350",
       "title": "Simple Off Balance Tracker"
+    },
+    "a25448d4-0fb6-421f-bdb2-d9cf32a397d5": {
+      "content_id": "a25448d4-0fb6-421f-bdb2-d9cf32a397d5",
+      "fingerprint": "f107348c50f1ef1f86bd2d87c237565258c80442ff73a8e87cd493f8d4857d76",
+      "path": "addons/Aldrens-Movable-UI__a25448d4-0fb6-421f-bdb2-d9cf32a397d5",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a25448d4-0fb6-421f-bdb2-d9cf32a397d5",
+      "title": "Aldrens Movable UI"
     }
   },
   "schema": 1
