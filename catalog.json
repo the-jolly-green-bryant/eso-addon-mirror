@@ -1983,6 +1983,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/869cd684-8dba-4750-bdf3-9b3be03ecdc6",
       "title": "IFG"
+    },
+    "86e3ebb8-3678-4256-b065-83832daa4159": {
+      "content_id": "86e3ebb8-3678-4256-b065-83832daa4159",
+      "fingerprint": "0c5f204bc1060d67a208a83675d517d0e4841941d50211b54e53d53077480fbc",
+      "path": "addons/Cinematic-Dialogue---Immersive-Interactions__86e3ebb8-3678-4256-b065-83832daa4159",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/86e3ebb8-3678-4256-b065-83832daa4159",
+      "title": "Cinematic Dialogue - Immersive Interactions"
     }
   },
   "schema": 1
