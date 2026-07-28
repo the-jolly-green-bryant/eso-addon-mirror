@@ -3631,6 +3631,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/eae4a86c-cd3b-44d0-81f9-5ca0caf0eb10",
       "title": "MyDebuffLog"
+    },
+    "eb221fca-fa24-44ac-9fab-6ee0f8cba1e0": {
+      "content_id": "eb221fca-fa24-44ac-9fab-6ee0f8cba1e0",
+      "fingerprint": "2d0024903dde3d274e50c123f5c7140c0b3d29a537bf6956e55e676743600a70",
+      "path": "addons/LibPromises__eb221fca-fa24-44ac-9fab-6ee0f8cba1e0",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/eb221fca-fa24-44ac-9fab-6ee0f8cba1e0",
+      "title": "LibPromises"
     }
   },
   "schema": 1
