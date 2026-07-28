@@ -3759,6 +3759,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f141edd7-7b4f-4b3e-b32e-9e6df1ec228b",
       "title": "FCO Lockpicker"
+    },
+    "f2495833-84b0-4142-8a25-f2063d0f0a23": {
+      "content_id": "f2495833-84b0-4142-8a25-f2063d0f0a23",
+      "fingerprint": "f298c895f30cc2cf69976b0c3504da1083e2d10a6b3f869efded9642893b9ec8",
+      "path": "addons/Guild-Trader-Tracker__f2495833-84b0-4142-8a25-f2063d0f0a23",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f2495833-84b0-4142-8a25-f2063d0f0a23",
+      "title": "Guild Trader Tracker"
     }
   },
   "schema": 1
