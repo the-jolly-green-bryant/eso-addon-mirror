@@ -2495,6 +2495,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a84f8a0c-210f-481a-b8a7-6dc95bff7664",
       "title": "Daily Quest Tracker"
+    },
+    "a8908085-8223-4986-ac34-5932bc2c5172": {
+      "content_id": "a8908085-8223-4986-ac34-5932bc2c5172",
+      "fingerprint": "97289bc1027be2c50038a149902e78458fe653c5efd95d356d3a392499498e96",
+      "path": "addons/TargetInfo__a8908085-8223-4986-ac34-5932bc2c5172",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a8908085-8223-4986-ac34-5932bc2c5172",
+      "title": "TargetInfo"
     }
   },
   "schema": 1
