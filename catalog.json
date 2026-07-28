@@ -1911,6 +1911,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/834ff723-3c30-4778-855c-4431d3a2f040",
       "title": "Potion Alert"
+    },
+    "838c4ba0-f7d2-4d29-ab28-7bd838a4973b": {
+      "content_id": "838c4ba0-f7d2-4d29-ab28-7bd838a4973b",
+      "fingerprint": "c5ae0611779c916df7d325015dba7efaa42f5daf6ff2e611e6c58127798d23fc",
+      "path": "addons/DoesThisThingGoAnyFaster__838c4ba0-f7d2-4d29-ab28-7bd838a4973b",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/838c4ba0-f7d2-4d29-ab28-7bd838a4973b",
+      "title": "DoesThisThingGoAnyFaster"
     }
   },
   "schema": 1
