@@ -132,6 +132,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/09fedb91-c1d9-4f3b-8882-b8c9e36bda36",
       "title": "Antiquarian's Codex"
+    },
+    "0a54c8f7-e3e1-46e5-ab7f-3c7ee2bb5e7d": {
+      "content_id": "0a54c8f7-e3e1-46e5-ab7f-3c7ee2bb5e7d",
+      "fingerprint": "d18a28252e58daf49ece9ea1ce558f1bd34626af934b6a925a465bf7d2372502",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0a54c8f7-e3e1-46e5-ab7f-3c7ee2bb5e7d",
+      "title": "LibPrice"
     }
   },
   "schema": 1
