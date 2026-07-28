@@ -1135,6 +1135,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/49b41fa8-a5b3-4249-ae8d-44d7381651f4",
       "title": "Trials & Arenas Tracker"
+    },
+    "4b4ddced-3d97-431c-8c43-a9c732ea2cae": {
+      "content_id": "4b4ddced-3d97-431c-8c43-a9c732ea2cae",
+      "fingerprint": "6cb1dff9cfef036a2331294ca3d14afe591e691819f0f8c0e5b22a98d9e57739",
+      "path": "addons/Vixen-s-Testing-grounds__4b4ddced-3d97-431c-8c43-a9c732ea2cae",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4b4ddced-3d97-431c-8c43-a9c732ea2cae",
+      "title": "Vixen's Testing grounds"
     }
   },
   "schema": 1
