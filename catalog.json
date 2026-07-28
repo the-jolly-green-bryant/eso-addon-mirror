@@ -2071,6 +2071,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8e142999-8113-4317-9868-a6be8e0a34cc",
       "title": "Group Finder Alerts"
+    },
+    "8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f": {
+      "content_id": "8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f",
+      "fingerprint": "bdee4ae5d87452cecbc0fb73693461447422bdbcf310725fb5e458d4cb927e31",
+      "path": "addons/ShogrinUI__8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f",
+      "title": "ShogrinUI"
     }
   },
   "schema": 1
