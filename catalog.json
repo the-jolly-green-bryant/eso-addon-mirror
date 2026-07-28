@@ -687,6 +687,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2d6ff530-edbc-4425-be68-daadbc3c0afa",
       "title": "Abah's Appraiser - Auto Sell Junk"
+    },
+    "2d86078c-b982-4ffc-a7f0-7905e41c2354": {
+      "content_id": "2d86078c-b982-4ffc-a7f0-7905e41c2354",
+      "fingerprint": "bc440b6bece38a0f5a6cc8d0e3aea5a622e3082066203650fa9f7b73804cf231",
+      "path": "addons/Pvp-Ready-Emotes__2d86078c-b982-4ffc-a7f0-7905e41c2354",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2d86078c-b982-4ffc-a7f0-7905e41c2354",
+      "title": "Pvp Ready Emotes"
     }
   },
   "schema": 1
