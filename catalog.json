@@ -293,6 +293,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/167ff6ab-0d5c-4582-83cc-0ec8ced35cc1",
       "title": "Tamriel Races"
+    },
+    "17071a4b-f373-41fa-8874-778672bae73c": {
+      "content_id": "17071a4b-f373-41fa-8874-778672bae73c",
+      "fingerprint": "1e94f7a9af0ccd0a46936ed0b33018a6261437dd343f001853660b750ec235eb",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/17071a4b-f373-41fa-8874-778672bae73c",
+      "title": "LibRecipe"
     }
   },
   "schema": 1
