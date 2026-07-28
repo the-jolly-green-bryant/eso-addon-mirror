@@ -1295,6 +1295,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/54cf96b5-2fa3-481c-8c8f-80854b944e56",
       "title": "Research Tracker"
+    },
+    "555cab61-7b0a-41ba-8fe9-4c8df0f82ed3": {
+      "content_id": "555cab61-7b0a-41ba-8fe9-4c8df0f82ed3",
+      "fingerprint": "2d9ca708aa900837413149a9097fad0c5e8422ae25415f6450c92628e82db0ff",
+      "path": "addons/MaliBuu-Lantern-Keeper__555cab61-7b0a-41ba-8fe9-4c8df0f82ed3",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/555cab61-7b0a-41ba-8fe9-4c8df0f82ed3",
+      "title": "MaliBuu Lantern Keeper"
     }
   },
   "schema": 1
