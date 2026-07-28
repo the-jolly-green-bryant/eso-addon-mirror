@@ -1343,6 +1343,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/59768602-717c-425b-a4ce-7ffc14887bc0",
       "title": "Many Markers"
+    },
+    "5aa01879-0f7a-42e6-a52d-979261f97cf1": {
+      "content_id": "5aa01879-0f7a-42e6-a52d-979261f97cf1",
+      "fingerprint": "bba00d49e8bd10ee945767f9d628127abb23a5c1a72c58acaeb70bd3092ac563",
+      "path": "addons/Whispers-Beyond__5aa01879-0f7a-42e6-a52d-979261f97cf1",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5aa01879-0f7a-42e6-a52d-979261f97cf1",
+      "title": "Whispers Beyond"
     }
   },
   "schema": 1
