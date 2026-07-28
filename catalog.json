@@ -3671,6 +3671,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ec09cf15-d910-4d7e-b9cc-17c759d03aa0",
       "title": "ArmoryRoleSwitcher"
+    },
+    "ec23fab6-f620-4366-90ab-82e8702a62bb": {
+      "content_id": "ec23fab6-f620-4366-90ab-82e8702a62bb",
+      "fingerprint": "7124d68c96c8c439662ba134a87d5fb5a052789a3aed254a59f315869e279cc5",
+      "path": "addons/LibCharacterKnowledge__ec23fab6-f620-4366-90ab-82e8702a62bb",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ec23fab6-f620-4366-90ab-82e8702a62bb",
+      "title": "LibCharacterKnowledge"
     }
   },
   "schema": 1
