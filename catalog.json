@@ -3359,6 +3359,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ddf1a1e2-b627-4cb5-a40a-a3ece40c609c",
       "title": "AutoInteract"
+    },
+    "de3c943a-61a9-4a1a-b9b3-abee0ae8835c": {
+      "content_id": "de3c943a-61a9-4a1a-b9b3-abee0ae8835c",
+      "fingerprint": "be12ca179bdb7caae12df992a06709a04a623dbac029c1d378b16f3ad4ac0cce",
+      "path": "addons/Random-Pet__de3c943a-61a9-4a1a-b9b3-abee0ae8835c",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/de3c943a-61a9-4a1a-b9b3-abee0ae8835c",
+      "title": "Random Pet"
     }
   },
   "schema": 1
