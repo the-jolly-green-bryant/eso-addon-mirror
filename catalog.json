@@ -1111,6 +1111,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/48762aef-8240-473f-aef5-17d1b5d5b9b6",
       "title": "LibAlchemy"
+    },
+    "48b63611-befb-44e1-b87a-1bac567ee234": {
+      "content_id": "48b63611-befb-44e1-b87a-1bac567ee234",
+      "fingerprint": "29a61ccd19e68cc9f4786c07ecde0e5d740297788edae41557cfeb3bff065a11",
+      "path": "addons/Auto-Claim-or-Hide-Golden-Pursuits__48b63611-befb-44e1-b87a-1bac567ee234",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/48b63611-befb-44e1-b87a-1bac567ee234",
+      "title": "Auto-Claim or Hide Golden Pursuits"
     }
   },
   "schema": 1
