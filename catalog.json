@@ -3903,6 +3903,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fa5da270-ccfe-454b-ba19-4599992e272a",
       "title": "GearTracker"
+    },
+    "fb88de81-c67e-4170-b8d8-39ac322f0664": {
+      "content_id": "fb88de81-c67e-4170-b8d8-39ac322f0664",
+      "fingerprint": "de17d6972636930717304665ac206e51075e1141308a5261ec4ee22f7fe56465",
+      "path": "addons/Move-Buff-Debuff-Bar__fb88de81-c67e-4170-b8d8-39ac322f0664",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fb88de81-c67e-4170-b8d8-39ac322f0664",
+      "title": "Move Buff & Debuff Bar"
     }
   },
   "schema": 1
