@@ -1751,6 +1751,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/756d3118-70ee-4ed7-a49e-5217da36e5fe",
       "title": "LibCombatAlerts"
+    },
+    "75746296-2f24-4d95-8fb5-1954d00fc1d6": {
+      "content_id": "75746296-2f24-4d95-8fb5-1954d00fc1d6",
+      "fingerprint": "ac267d85c9d648a7f46386a1b83432355ead28bd98a10a2841c03da9b740ef4f",
+      "path": "addons/Dungeon-Tracker__75746296-2f24-4d95-8fb5-1954d00fc1d6",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/75746296-2f24-4d95-8fb5-1954d00fc1d6",
+      "title": "Dungeon Tracker"
     }
   },
   "schema": 1
