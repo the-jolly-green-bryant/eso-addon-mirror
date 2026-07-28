@@ -1727,6 +1727,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/75167780-fb8c-479c-86be-c0a208443b97",
       "title": "Collect Them All"
+    },
+    "752b2e95-d14a-48f3-894f-3831aea7ce25": {
+      "content_id": "752b2e95-d14a-48f3-894f-3831aea7ce25",
+      "fingerprint": "356f3a6a3445dd4124079a3a8e3d790e34d8cd5e39c0b1d6496fd3e6f3bfffa9",
+      "path": "addons/Quest-Test__752b2e95-d14a-48f3-894f-3831aea7ce25",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/752b2e95-d14a-48f3-894f-3831aea7ce25",
+      "title": "Quest Test"
     }
   },
   "schema": 1
