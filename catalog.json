@@ -3135,6 +3135,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d081d271-bda5-4b78-a18c-251878246156",
       "title": "Map Pins Texture Fix"
+    },
+    "d13d8dac-6694-4ebe-8685-ce038ec06a1e": {
+      "content_id": "d13d8dac-6694-4ebe-8685-ce038ec06a1e",
+      "fingerprint": "e679ac66e75610429b82e8fa4f6ecfe953cf539d004712ae25a073872ee9a0ac",
+      "path": "addons/FavOptions__d13d8dac-6694-4ebe-8685-ce038ec06a1e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d13d8dac-6694-4ebe-8685-ce038ec06a1e",
+      "title": "FavOptions"
     }
   },
   "schema": 1
