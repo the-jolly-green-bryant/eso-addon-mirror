@@ -51,6 +51,11 @@ state. Published entries also contain the unpacked add-on files. Unpublished
 entries remain visible as metadata-only records, preserving their place in the
 catalog without implying that downloadable code exists.
 
+When an entry disappears from Bethesda's complete listing, the mirror retains
+its files and marks its catalog record with `deleted: true` and `deleted_at`.
+This tombstone distinguishes an upstream deletion from an ordinary unpublished
+draft while keeping the final observed release inspectable and recoverable.
+
 Each changed add-on receives its own commit. That makes the history meaningful:
 a commit corresponds to one catalog entry changing, rather than an opaque daily
 bulk snapshot. Work is pushed incrementally so one malformed or unavailable
