@@ -3535,6 +3535,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e42700aa-3021-495e-9ff4-9e83377c9f99",
       "title": "Adventures toolkit (Dev)"
+    },
+    "e432e963-6c1d-4e4c-b9b9-491f51ff8d07": {
+      "content_id": "e432e963-6c1d-4e4c-b9b9-491f51ff8d07",
+      "fingerprint": "d19ab02d8fb3b3cd526253cba9bc63790594d061733f87070926587295796e29",
+      "path": "addons/True-Options-Pannel-Mover__e432e963-6c1d-4e4c-b9b9-491f51ff8d07",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e432e963-6c1d-4e4c-b9b9-491f51ff8d07",
+      "title": "True Options Pannel Mover"
     }
   },
   "schema": 1
