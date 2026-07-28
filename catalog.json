@@ -342,6 +342,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/19ce6fa1-98c2-458e-b92b-c47fc6f55b55",
       "title": "SmartCombatAlertv1"
+    },
+    "1a29fcf8-992f-4334-bf0a-088cc4ac73a7": {
+      "content_id": "1a29fcf8-992f-4334-bf0a-088cc4ac73a7",
+      "fingerprint": "960cd86347ba27704af860b047407992958edaa7d03e021167ef68eb18207411",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1a29fcf8-992f-4334-bf0a-088cc4ac73a7",
+      "title": "Gamepad Inventory Tweaks"
     }
   },
   "schema": 1
