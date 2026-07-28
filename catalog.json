@@ -3911,6 +3911,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fb88de81-c67e-4170-b8d8-39ac322f0664",
       "title": "Move Buff & Debuff Bar"
+    },
+    "fba4016e-4c55-48b5-9f38-f169d2190581": {
+      "content_id": "fba4016e-4c55-48b5-9f38-f169d2190581",
+      "fingerprint": "03482ead69d7eae38cf117fac236ec420cc750515f8a87db547a5fed0de92484",
+      "path": "addons/Rolodex__fba4016e-4c55-48b5-9f38-f169d2190581",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fba4016e-4c55-48b5-9f38-f169d2190581",
+      "title": "Rolodex"
     }
   },
   "schema": 1
