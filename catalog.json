@@ -27,6 +27,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/033f7a4a-8918-4753-be5b-2874afa50230",
       "title": "Votan's Fisherman"
+    },
+    "03b27b8e-253d-4288-ba88-4340d56faeac": {
+      "content_id": "03b27b8e-253d-4288-ba88-4340d56faeac",
+      "fingerprint": "cba7cef465228176df27af8231bbb9ea1eeae7eef2d814b82560ad6407b6a0d3",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/03b27b8e-253d-4288-ba88-4340d56faeac",
+      "title": "LibItemLinkDecoder"
     }
   },
   "schema": 1
