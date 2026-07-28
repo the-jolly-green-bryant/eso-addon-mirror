@@ -3639,6 +3639,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/eb221fca-fa24-44ac-9fab-6ee0f8cba1e0",
       "title": "LibPromises"
+    },
+    "eb5d6e39-de4d-4163-9c41-521a3eb2a1aa": {
+      "content_id": "eb5d6e39-de4d-4163-9c41-521a3eb2a1aa",
+      "fingerprint": "593f7fd11f91f32000336f15fffaa8fc629ca11fd5d9b2c018109c092e37b90a",
+      "path": "addons/Keep-ONE-for-Research__eb5d6e39-de4d-4163-9c41-521a3eb2a1aa",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/eb5d6e39-de4d-4163-9c41-521a3eb2a1aa",
+      "title": "Keep ONE for Research"
     }
   },
   "schema": 1
