@@ -2719,6 +2719,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b630804a-0ccd-4828-8c9e-945790ec3774",
       "title": "[Beta]Gear_Manage"
+    },
+    "b680d5f3-b8ab-4158-a513-d3f2a14921db": {
+      "content_id": "b680d5f3-b8ab-4158-a513-d3f2a14921db",
+      "fingerprint": "9970bdbe81f113fd1ad9988c0a5df23a395de5b1e206daf40d5ee45cd21691ee",
+      "path": "addons/Dolmen-runner-1.2__b680d5f3-b8ab-4158-a513-d3f2a14921db",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b680d5f3-b8ab-4158-a513-d3f2a14921db",
+      "title": "Dolmen runner 1.2"
     }
   },
   "schema": 1
