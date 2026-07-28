@@ -356,6 +356,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1a4c7280-2bf3-4373-b9b5-6f872886f724",
       "title": "House ID"
+    },
+    "1ac2188b-1200-476b-a90c-6561a7d3b52a": {
+      "content_id": "1ac2188b-1200-476b-a90c-6561a7d3b52a",
+      "fingerprint": "fba07c9a8eba104bd951ff60dd13df9dc8bf145f0e4f76b388f4961f4baa7b09",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1ac2188b-1200-476b-a90c-6561a7d3b52a",
+      "title": "Side Quests"
     }
   },
   "schema": 1
