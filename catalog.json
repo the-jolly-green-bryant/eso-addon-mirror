@@ -146,6 +146,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0ac5fe21-6f1a-4c14-8b9f-be1a308a9619",
       "title": "Crown And Crux"
+    },
+    "0ad00225-1c8b-4f4a-8e95-ca8986209a7f": {
+      "content_id": "0ad00225-1c8b-4f4a-8e95-ca8986209a7f",
+      "fingerprint": "7487d6cc67cf82b7288fa4e1ca2fdba559a41e25fed2529821ebb9ea31fcee0d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0ad00225-1c8b-4f4a-8e95-ca8986209a7f",
+      "title": "Bulk buy"
     }
   },
   "schema": 1
