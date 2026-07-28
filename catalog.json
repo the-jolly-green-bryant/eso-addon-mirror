@@ -2103,6 +2103,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8edcdae2-d71b-4fb8-b99c-7d1fca55bfb2",
       "title": "Speak Like Khajiit"
+    },
+    "8f125308-c2a5-40e6-b249-d29e85f81020": {
+      "content_id": "8f125308-c2a5-40e6-b249-d29e85f81020",
+      "fingerprint": "e42dbaa4e906b326c490f078ce388360eb5382b5d9c4bb4c3ce7466a1ed339a4",
+      "path": "addons/Alchemy-Opener__8f125308-c2a5-40e6-b249-d29e85f81020",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8f125308-c2a5-40e6-b249-d29e85f81020",
+      "title": "Alchemy Opener"
     }
   },
   "schema": 1
