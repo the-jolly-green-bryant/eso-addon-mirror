@@ -1719,6 +1719,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/747e5279-71c7-4d0b-8db8-5c7552b2ed65",
       "title": "Dryzler's LoreBooks"
+    },
+    "75167780-fb8c-479c-86be-c0a208443b97": {
+      "content_id": "75167780-fb8c-479c-86be-c0a208443b97",
+      "fingerprint": "a990869b43f5f5d9f129ff93235137437e491e669ebd57998712d945d5ed782c",
+      "path": "addons/Collect-Them-All__75167780-fb8c-479c-86be-c0a208443b97",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/75167780-fb8c-479c-86be-c0a208443b97",
+      "title": "Collect Them All"
     }
   },
   "schema": 1
