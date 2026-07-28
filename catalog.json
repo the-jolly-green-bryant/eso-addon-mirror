@@ -3575,6 +3575,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e54271d9-a6d8-4004-8e2a-6f8ddb3a4045",
       "title": "LibGPS"
+    },
+    "e5945fc9-cef6-468d-9335-b4657a89f1f1": {
+      "content_id": "e5945fc9-cef6-468d-9335-b4657a89f1f1",
+      "fingerprint": "e06bcfab6a12eb9553a8a4631ded939395eb972c3cd85488d1819f7fb923eb5a",
+      "path": "addons/Profanity__e5945fc9-cef6-468d-9335-b4657a89f1f1",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e5945fc9-cef6-468d-9335-b4657a89f1f1",
+      "title": "Profanity+"
     }
   },
   "schema": 1
