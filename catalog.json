@@ -1919,6 +1919,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/838c4ba0-f7d2-4d29-ab28-7bd838a4973b",
       "title": "DoesThisThingGoAnyFaster"
+    },
+    "8394c641-1cb2-45f3-8b73-b6f424d6c630": {
+      "content_id": "8394c641-1cb2-45f3-8b73-b6f424d6c630",
+      "fingerprint": "c0a4cf16181ecdb500345dcddeb59a00201b212c1aec878626e112a667b1fe04",
+      "path": "addons/Tea-and-Toast__8394c641-1cb2-45f3-8b73-b6f424d6c630",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8394c641-1cb2-45f3-8b73-b6f424d6c630",
+      "title": "Tea and Toast"
     }
   },
   "schema": 1
