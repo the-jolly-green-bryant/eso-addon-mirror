@@ -1951,6 +1951,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/845e13c0-5c9e-4d9b-94e1-a47d532e4b0c",
       "title": "Timer in Revive Counter"
+    },
+    "853b60aa-f47b-4f79-bd43-88c1f37e8a9a": {
+      "content_id": "853b60aa-f47b-4f79-bd43-88c1f37e8a9a",
+      "fingerprint": "2e5a913f3199a2d00fd501f3f46b1436508631fe77f1eb512f3684e10e036323",
+      "path": "addons/TurningTide__853b60aa-f47b-4f79-bd43-88c1f37e8a9a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/853b60aa-f47b-4f79-bd43-88c1f37e8a9a",
+      "title": "TurningTide"
     }
   },
   "schema": 1
