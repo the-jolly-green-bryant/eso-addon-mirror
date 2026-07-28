@@ -3175,6 +3175,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d2c9bb50-7161-423e-ab74-38b8353ace04",
       "title": "BeamMeUp"
+    },
+    "d2f38194-bd78-47b6-817f-71932b3a5c42": {
+      "content_id": "d2f38194-bd78-47b6-817f-71932b3a5c42",
+      "fingerprint": "eaa70f65c2eb60a5de6baf9c1215914b5667c0a4d00ff2634639dc840007e6f3",
+      "path": "addons/DM2-Parse-Fight-Stats__d2f38194-bd78-47b6-817f-71932b3a5c42",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d2f38194-bd78-47b6-817f-71932b3a5c42",
+      "title": "DM2 Parse & Fight Stats"
     }
   },
   "schema": 1
