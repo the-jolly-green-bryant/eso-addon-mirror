@@ -1439,6 +1439,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/608b7ab5-db64-423a-af5c-2438027f0eed",
       "title": "Banner Status"
+    },
+    "60c046e9-d8e1-4cb9-8df9-fafeebb3c000": {
+      "content_id": "60c046e9-d8e1-4cb9-8df9-fafeebb3c000",
+      "fingerprint": "cc30001f3d8beaf896cc6a40ccbcc7558bb31a63af756da66cb5d811873c1a2a",
+      "path": "addons/LibLazyCrafting__60c046e9-d8e1-4cb9-8df9-fafeebb3c000",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/60c046e9-d8e1-4cb9-8df9-fafeebb3c000",
+      "title": "LibLazyCrafting"
     }
   },
   "schema": 1
