@@ -999,6 +999,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/42a55498-b21a-4657-86ba-bdb954f7a09d",
       "title": "Insatiable Hunger Blocker"
+    },
+    "434ce5ca-211a-4a6b-8682-21f39dcb2d25": {
+      "content_id": "434ce5ca-211a-4a6b-8682-21f39dcb2d25",
+      "fingerprint": "b3e2116b857f1f4a5bc9b206e45080fb346a0927388e877c494fb8f7e127dedc",
+      "path": "addons/CanThisBeCraftedAtHome__434ce5ca-211a-4a6b-8682-21f39dcb2d25",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/434ce5ca-211a-4a6b-8682-21f39dcb2d25",
+      "title": "CanThisBeCraftedAtHome"
     }
   },
   "schema": 1
