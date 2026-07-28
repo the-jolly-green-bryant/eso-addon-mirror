@@ -1807,6 +1807,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/798e2650-33dc-48bb-80c5-8c09cabc36b5",
       "title": "ArcTechv2"
+    },
+    "79b6b597-9e33-4cd7-b076-44e9a153a44c": {
+      "content_id": "79b6b597-9e33-4cd7-b076-44e9a153a44c",
+      "fingerprint": "c95cb19647c9967b668ecf1e98c9a8ddb51418ecae07a79a5b3bcc967a387753",
+      "path": "addons/Auto-Opener__79b6b597-9e33-4cd7-b076-44e9a153a44c",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/79b6b597-9e33-4cd7-b076-44e9a153a44c",
+      "title": "Auto Opener"
     }
   },
   "schema": 1
