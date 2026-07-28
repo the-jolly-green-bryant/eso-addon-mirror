@@ -3055,6 +3055,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cd045612-ec90-4885-be99-f35f328691f8",
       "title": "TG's Group Trackers"
+    },
+    "cd3496fc-6d51-45dc-96c6-675ecff3a4e0": {
+      "content_id": "cd3496fc-6d51-45dc-96c6-675ecff3a4e0",
+      "fingerprint": "7659672a9bdcefe9ea2e44ff561f2c58b7c40c6f57ea72b2f2be93d26e380dc9",
+      "path": "addons/Bweh-pt-2__cd3496fc-6d51-45dc-96c6-675ecff3a4e0",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cd3496fc-6d51-45dc-96c6-675ecff3a4e0",
+      "title": "Bweh pt 2"
     }
   },
   "schema": 1
