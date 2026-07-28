@@ -2727,6 +2727,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b680d5f3-b8ab-4158-a513-d3f2a14921db",
       "title": "Dolmen runner 1.2"
+    },
+    "b72f36c7-bbd2-4b35-9deb-4d0bd2a7f277": {
+      "content_id": "b72f36c7-bbd2-4b35-9deb-4d0bd2a7f277",
+      "fingerprint": "90d60ea6663540caf43a704ee5a88a4e5039485f3ffab8f20a0ea2355a07c4b4",
+      "path": "addons/Saved-Chat-Messages__b72f36c7-bbd2-4b35-9deb-4d0bd2a7f277",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b72f36c7-bbd2-4b35-9deb-4d0bd2a7f277",
+      "title": "Saved Chat Messages"
     }
   },
   "schema": 1
