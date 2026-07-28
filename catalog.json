@@ -1527,6 +1527,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/669db721-3682-4957-9a09-a06172f0b3e0",
       "title": "CombatStatus-Console"
+    },
+    "670babe5-297e-4cb3-88d6-cda790275d1a": {
+      "content_id": "670babe5-297e-4cb3-88d6-cda790275d1a",
+      "fingerprint": "a9539cb051cece8b00cbb8357876e84908bef30affce9d6b62afdf966e35aa9c",
+      "path": "addons/UnknownFilter__670babe5-297e-4cb3-88d6-cda790275d1a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/670babe5-297e-4cb3-88d6-cda790275d1a",
+      "title": "UnknownFilter"
     }
   },
   "schema": 1
