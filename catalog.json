@@ -1271,6 +1271,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/541ab871-9386-4990-a3c7-32563ded9243",
       "title": "Proc Reminder"
+    },
+    "543e2fe8-def0-4dc1-a833-07518e6432eb": {
+      "content_id": "543e2fe8-def0-4dc1-a833-07518e6432eb",
+      "fingerprint": "ce31f6558575ab9d447b986513a085be4f50bfca4e031770bb2096dbad122133",
+      "path": "addons/SimpleWarhornTimer__543e2fe8-def0-4dc1-a833-07518e6432eb",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/543e2fe8-def0-4dc1-a833-07518e6432eb",
+      "title": "SimpleWarhornTimer"
     }
   },
   "schema": 1
