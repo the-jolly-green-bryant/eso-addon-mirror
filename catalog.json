@@ -1671,6 +1671,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/71f99aa0-341b-44fb-8b98-0dbda2a5b136",
       "title": "GamePadHelper"
+    },
+    "72761e54-4d9a-471b-bd58-5dcec8942b9d": {
+      "content_id": "72761e54-4d9a-471b-bd58-5dcec8942b9d",
+      "fingerprint": "b85e4ade93fe2cba9c75ad912dda4ea25ff543a7931ece1f84a2f616430322aa",
+      "path": "addons/Destinations__72761e54-4d9a-471b-bd58-5dcec8942b9d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/72761e54-4d9a-471b-bd58-5dcec8942b9d",
+      "title": "Destinations"
     }
   },
   "schema": 1
