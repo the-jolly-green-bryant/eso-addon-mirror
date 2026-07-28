@@ -1071,6 +1071,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/45d919f9-f85b-4930-9348-94fe2e245f98",
       "title": "Where Is It?"
+    },
+    "4700c5de-fb02-411e-b563-1f326352b4ed": {
+      "content_id": "4700c5de-fb02-411e-b563-1f326352b4ed",
+      "fingerprint": "d86f0f4dff2a96de77432f9dfe059d8c3b994967571708b0f7b2ef0bbfb20f83",
+      "path": "addons/Cooldown-Tracker__4700c5de-fb02-411e-b563-1f326352b4ed",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4700c5de-fb02-411e-b563-1f326352b4ed",
+      "title": "Cooldown Tracker"
     }
   },
   "schema": 1
