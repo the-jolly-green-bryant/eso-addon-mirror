@@ -1383,6 +1383,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5dce8bc1-61a1-4273-a23e-f74372f36b40",
       "title": "Gilded UI"
+    },
+    "5e051775-8c73-4e96-bb6b-dcaa188dc064": {
+      "content_id": "5e051775-8c73-4e96-bb6b-dcaa188dc064",
+      "fingerprint": "073466f875affa0e6e30c28379f551b5b7644874fe53efaa2ad79afaed97ae2d",
+      "path": "addons/Title-Loop__5e051775-8c73-4e96-bb6b-dcaa188dc064",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5e051775-8c73-4e96-bb6b-dcaa188dc064",
+      "title": "Title Loop"
     }
   },
   "schema": 1
