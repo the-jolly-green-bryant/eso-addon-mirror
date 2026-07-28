@@ -1183,6 +1183,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4be7617d-7e6d-42bf-bcbb-921e37ace7bc",
       "title": "Flexible Bars"
+    },
+    "4c1cca0d-7e48-40ed-bd8f-1c87ac158341": {
+      "content_id": "4c1cca0d-7e48-40ed-bd8f-1c87ac158341",
+      "fingerprint": "a170843c585d820ced744b32fcf8f11d8fd5535f2ac25dc0e636935a18646fad",
+      "path": "addons/True-Flag-Capture-Mover__4c1cca0d-7e48-40ed-bd8f-1c87ac158341",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4c1cca0d-7e48-40ed-bd8f-1c87ac158341",
+      "title": "True Flag Capture Mover"
     }
   },
   "schema": 1
