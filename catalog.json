@@ -1823,6 +1823,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/79d39b6d-3f2c-48e3-a08f-b6c2c69751fd",
       "title": "SurvivalMode"
+    },
+    "7a48fb7e-4903-4ff4-8d74-c6050c85363a": {
+      "content_id": "7a48fb7e-4903-4ff4-8d74-c6050c85363a",
+      "fingerprint": "168cd30a37dc5f837de2a3a422263f393d316057aa21a1bb81b582389db957d5",
+      "path": "addons/Vixen-s-Effect-Viewer__7a48fb7e-4903-4ff4-8d74-c6050c85363a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/7a48fb7e-4903-4ff4-8d74-c6050c85363a",
+      "title": "Vixen's Effect Viewer"
     }
   },
   "schema": 1
