@@ -1463,6 +1463,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/61ffae27-7976-4d4b-a9fa-0fafb387434a",
       "title": "What's My Build Again"
+    },
+    "6214b947-f6ff-4d1b-b443-987daf528ecb": {
+      "content_id": "6214b947-f6ff-4d1b-b443-987daf528ecb",
+      "fingerprint": "7c86d069286a5bce80723fe7e06bdcc2320e2e41381cfc5aa29a716b0c4312f9",
+      "path": "addons/TraitCraft__6214b947-f6ff-4d1b-b443-987daf528ecb",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6214b947-f6ff-4d1b-b443-987daf528ecb",
+      "title": "TraitCraft"
     }
   },
   "schema": 1
