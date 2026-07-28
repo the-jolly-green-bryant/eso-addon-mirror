@@ -2679,6 +2679,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b344faa0-0b93-431e-ae22-befcaaa36333",
       "title": "Improved Night Market HUD"
+    },
+    "b3a44425-48ff-494d-bbfe-64c8be868720": {
+      "content_id": "b3a44425-48ff-494d-bbfe-64c8be868720",
+      "fingerprint": "0761d79c7a62d0ba5449a34e204baa6e6e3b2f0569477bbb1c2e50a2b6f6f79c",
+      "path": "addons/PvPCooldownTracker__b3a44425-48ff-494d-bbfe-64c8be868720",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b3a44425-48ff-494d-bbfe-64c8be868720",
+      "title": "PvPCooldownTracker"
     }
   },
   "schema": 1
