@@ -1959,6 +1959,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/853b60aa-f47b-4f79-bd43-88c1f37e8a9a",
       "title": "TurningTide"
+    },
+    "85e2f419-414a-48a9-ad3b-4b713c098ca2": {
+      "content_id": "85e2f419-414a-48a9-ad3b-4b713c098ca2",
+      "fingerprint": "dce47d58599c0c86bbdd9937421652211e88f1e52d868fd5ebc7d85efc8b07ca",
+      "path": "addons/Chat-Be-Gone__85e2f419-414a-48a9-ad3b-4b713c098ca2",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/85e2f419-414a-48a9-ad3b-4b713c098ca2",
+      "title": "Chat Be Gone"
     }
   },
   "schema": 1
