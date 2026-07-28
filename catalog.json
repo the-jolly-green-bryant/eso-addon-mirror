@@ -1639,6 +1639,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6f38e877-6d9e-464c-a1c8-83de0f7f3d88",
       "title": "DeadMarker2"
+    },
+    "709a6cab-1710-4ae0-803a-1b4957a0a59a": {
+      "content_id": "709a6cab-1710-4ae0-803a-1b4957a0a59a",
+      "fingerprint": "5fe9cf30f41c093afd5d031c75f6ed84be3e98499b7278f6cdf1baff3593a619",
+      "path": "addons/My-Damage-Tracker__709a6cab-1710-4ae0-803a-1b4957a0a59a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/709a6cab-1710-4ae0-803a-1b4957a0a59a",
+      "title": "My Damage Tracker"
     }
   },
   "schema": 1
