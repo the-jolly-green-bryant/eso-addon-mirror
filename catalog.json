@@ -655,6 +655,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2abdc7a0-d15d-42ae-aad7-bccf995da180",
       "title": "Olorime"
+    },
+    "2b323144-77d2-41bc-9e3e-d016c4dd0f30": {
+      "content_id": "2b323144-77d2-41bc-9e3e-d016c4dd0f30",
+      "fingerprint": "8b2fc40a43547823e64be7d036316241823c78124ac67651a07012c733fad1a9",
+      "path": "addons/experiment__2b323144-77d2-41bc-9e3e-d016c4dd0f30",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2b323144-77d2-41bc-9e3e-d016c4dd0f30",
+      "title": "experiment"
     }
   },
   "schema": 1
