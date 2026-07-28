@@ -1223,6 +1223,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4f86b7c8-8fb6-432c-a1b9-2004263244ab",
       "title": "Ned's Group Manager"
+    },
+    "4ff3bda0-2c6e-4838-b13e-8062d7d81ddc": {
+      "content_id": "4ff3bda0-2c6e-4838-b13e-8062d7d81ddc",
+      "fingerprint": "40576d670b8c6bd2e6d642138239d755eea977974ef1676361fafde820f1f69d",
+      "path": "addons/Sales-History__4ff3bda0-2c6e-4838-b13e-8062d7d81ddc",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4ff3bda0-2c6e-4838-b13e-8062d7d81ddc",
+      "title": "Sales History"
     }
   },
   "schema": 1
