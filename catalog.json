@@ -3095,6 +3095,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ce9458a5-0897-4765-9ec1-5cf8e8345462",
       "title": "MTS WRITS HUD \u2013 Daily Crafting Tracker (PS5)."
+    },
+    "cebf06be-ff4d-4f54-96e4-7eec85c1be52": {
+      "content_id": "cebf06be-ff4d-4f54-96e4-7eec85c1be52",
+      "fingerprint": "78325d25dfbdc97f2e64e550a103db24e89bc83b853d83b8e314d121943c1c72",
+      "path": "addons/Fishing-Map---Experimental__cebf06be-ff4d-4f54-96e4-7eec85c1be52",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cebf06be-ff4d-4f54-96e4-7eec85c1be52",
+      "title": "Fishing Map - Experimental"
     }
   },
   "schema": 1
