@@ -230,6 +230,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1156c297-4c51-44e7-8267-9f934307f36e",
       "title": "Lykeion's AutoLoot+"
+    },
+    "11615176-cc74-452d-a5b3-cd3fe5272a2a": {
+      "content_id": "11615176-cc74-452d-a5b3-cd3fe5272a2a",
+      "fingerprint": "ca92f113a45b40dcbf26aee1986d8789d536f91a910bc52be7249650c405039e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/11615176-cc74-452d-a5b3-cd3fe5272a2a",
+      "title": "AreYouSlow?"
     }
   },
   "schema": 1
