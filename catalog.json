@@ -48,6 +48,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0495e6ed-49a8-4a03-b529-048fbc4b758a",
       "title": "AddonAnalyzer (ANDY) - Checks for malicious, stolen, or other flagged content in addons!"
+    },
+    "053412e8-989a-4dce-9551-7011dc3096ac": {
+      "content_id": "053412e8-989a-4dce-9551-7011dc3096ac",
+      "fingerprint": "21cd2e368bb9913a56298f17891dcd8b73344d03fa73e3eca1bbc0582ad87e58",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/053412e8-989a-4dce-9551-7011dc3096ac",
+      "title": "LibQRC"
     }
   },
   "schema": 1
