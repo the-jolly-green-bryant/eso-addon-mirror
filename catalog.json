@@ -2463,6 +2463,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a3bda6e6-a854-4387-825a-dccb05d706d8",
       "title": "Persona"
+    },
+    "a453b6d3-5eb9-42cb-812d-605c297e8e87": {
+      "content_id": "a453b6d3-5eb9-42cb-812d-605c297e8e87",
+      "fingerprint": "f359b0b0ce7c5ed73b6ff8d447327e570a4d5cdb47e54d378f55a21f74f35c7a",
+      "path": "addons/PvP-UA__a453b6d3-5eb9-42cb-812d-605c297e8e87",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a453b6d3-5eb9-42cb-812d-605c297e8e87",
+      "title": "PvP UA!"
     }
   },
   "schema": 1
