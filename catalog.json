@@ -791,6 +791,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/34dd2c26-eade-48fc-a1d0-4838faaeae0e",
       "title": "Dark Mode ESO"
+    },
+    "35674482-a2ce-4dfb-86f8-519b941a350a": {
+      "content_id": "35674482-a2ce-4dfb-86f8-519b941a350a",
+      "fingerprint": "54de4ea9b8dda0ffdf7f5eaef6a79072ac6696f966409faa972a75c1c512d4e9",
+      "path": "addons/LibLoreLibraryCesarska__35674482-a2ce-4dfb-86f8-519b941a350a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/35674482-a2ce-4dfb-86f8-519b941a350a",
+      "title": "LibLoreLibraryCesarska"
     }
   },
   "schema": 1
