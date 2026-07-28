@@ -1239,6 +1239,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4ff8232a-3b96-4a66-8401-dad48e8b5301",
       "title": "Goron Dev"
+    },
+    "50a4c919-aff0-4475-8614-eb2576d6b6d9": {
+      "content_id": "50a4c919-aff0-4475-8614-eb2576d6b6d9",
+      "fingerprint": "d3878e796db6fcf3d10656659a7e227379b2c854f5e92f8d1d8ed433be98aaf7",
+      "path": "addons/Update-47-Tweaker__50a4c919-aff0-4475-8614-eb2576d6b6d9",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/50a4c919-aff0-4475-8614-eb2576d6b6d9",
+      "title": "Update 47 Tweaker"
     }
   },
   "schema": 1
