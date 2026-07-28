@@ -41,6 +41,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/04141a46-3d9c-4b14-aa0e-d841090d128c",
       "title": "LibAddonMenu"
+    },
+    "0495e6ed-49a8-4a03-b529-048fbc4b758a": {
+      "content_id": "0495e6ed-49a8-4a03-b529-048fbc4b758a",
+      "fingerprint": "4bf43f8ff7d0e2662213ef06e63744410fa1c572e1e9e307c057381ffe3b14bd",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0495e6ed-49a8-4a03-b529-048fbc4b758a",
+      "title": "AddonAnalyzer (ANDY) - Checks for malicious, stolen, or other flagged content in addons!"
     }
   },
   "schema": 1
