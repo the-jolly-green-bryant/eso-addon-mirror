@@ -2527,6 +2527,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/aa271fb4-3ce5-4584-ac5c-338617e92f62",
       "title": "Sul-Xan's Soul Catcher"
+    },
+    "ac31de38-34d3-4d5d-b0a4-282e26e25fa1": {
+      "content_id": "ac31de38-34d3-4d5d-b0a4-282e26e25fa1",
+      "fingerprint": "87954414f258ae10b3d4e848939094ed79bb95a8ec1b46147f2301b0e12caca8",
+      "path": "addons/Companion-Helper__ac31de38-34d3-4d5d-b0a4-282e26e25fa1",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ac31de38-34d3-4d5d-b0a4-282e26e25fa1",
+      "title": "Companion Helper"
     }
   },
   "schema": 1
