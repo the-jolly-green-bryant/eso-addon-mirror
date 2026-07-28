@@ -2599,6 +2599,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b057d22b-1ffd-455c-834a-af582e3e270a",
       "title": "bugfixxxxx"
+    },
+    "b0c7d3d5-b3e6-4a61-b509-5d05a12c2130": {
+      "content_id": "b0c7d3d5-b3e6-4a61-b509-5d05a12c2130",
+      "fingerprint": "ddb28efa765910e68293bacb3542a64859e1238d9197b4bc7ab556974d6974d9",
+      "path": "addons/Medic---UI-Fixes__b0c7d3d5-b3e6-4a61-b509-5d05a12c2130",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b0c7d3d5-b3e6-4a61-b509-5d05a12c2130",
+      "title": "Medic - UI Fixes"
     }
   },
   "schema": 1
