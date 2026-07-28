@@ -188,6 +188,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0fa32336-8528-4747-9b01-ccba9408f654",
       "title": "LibMediaProvider"
+    },
+    "0faeb5c6-5fc7-48bc-91c6-61d863d7bf6e": {
+      "content_id": "0faeb5c6-5fc7-48bc-91c6-61d863d7bf6e",
+      "fingerprint": "c07cfb2e48c8e694e87e6a7774e1ed2adb41ecd3d61e74d62f7e1e5745c609af",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0faeb5c6-5fc7-48bc-91c6-61d863d7bf6e",
+      "title": "LibId64"
     }
   },
   "schema": 1
