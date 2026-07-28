@@ -2807,6 +2807,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/bb95b657-e191-43cd-84b3-63ed659b9248",
       "title": "Provisioning Watcher"
+    },
+    "bbb120a7-5903-4bd2-94a5-17a368b63dd9": {
+      "content_id": "bbb120a7-5903-4bd2-94a5-17a368b63dd9",
+      "fingerprint": "a0b83be3ec37b6312e0c5120546eabeaf0691b58a250a18f94972d9c38aa3024",
+      "path": "addons/MyWarningAttack__bbb120a7-5903-4bd2-94a5-17a368b63dd9",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/bbb120a7-5903-4bd2-94a5-17a368b63dd9",
+      "title": "MyWarningAttack"
     }
   },
   "schema": 1
