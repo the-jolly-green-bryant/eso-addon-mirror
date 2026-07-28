@@ -3087,6 +3087,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ce31d856-17b4-4951-9802-820df96527e2",
       "title": "Simple FPS & Ping"
+    },
+    "ce9458a5-0897-4765-9ec1-5cf8e8345462": {
+      "content_id": "ce9458a5-0897-4765-9ec1-5cf8e8345462",
+      "fingerprint": "f93ea768474ceaef11e56c0cde2cdf4b52d3240c7c2c3c04634e0c49b5831188",
+      "path": "addons/MTS-WRITS-HUD-Daily-Crafting-Tracker-PS5__ce9458a5-0897-4765-9ec1-5cf8e8345462",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ce9458a5-0897-4765-9ec1-5cf8e8345462",
+      "title": "MTS WRITS HUD \u2013 Daily Crafting Tracker (PS5)."
     }
   },
   "schema": 1
