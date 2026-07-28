@@ -2223,6 +2223,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9341ca4f-303b-4e36-b2c8-b559e428c6d2",
       "title": "Aldrens Timers"
+    },
+    "93511248-c8d1-4b19-9167-08bbeb5d10ac": {
+      "content_id": "93511248-c8d1-4b19-9167-08bbeb5d10ac",
+      "fingerprint": "bfde67ac453ee9c47dbffd74e773b898ba249a454aa26296cd2c9bf0bf08d9ef",
+      "path": "addons/cChat__93511248-c8d1-4b19-9167-08bbeb5d10ac",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/93511248-c8d1-4b19-9167-08bbeb5d10ac",
+      "title": "cChat"
     }
   },
   "schema": 1
