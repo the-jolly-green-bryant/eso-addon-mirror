@@ -328,6 +328,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1987390f-3dbd-407c-996d-aa3ef3ad9773",
       "title": "YeOlde-Infos"
+    },
+    "198814e6-46ba-4bb3-b368-ba1a2af67c52": {
+      "content_id": "198814e6-46ba-4bb3-b368-ba1a2af67c52",
+      "fingerprint": "0471f5665c57dced9c457849f028bdbacc3c82f09a9d3a283852f09696b07c00",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/198814e6-46ba-4bb3-b368-ba1a2af67c52",
+      "title": "LuiExtended"
     }
   },
   "schema": 1
