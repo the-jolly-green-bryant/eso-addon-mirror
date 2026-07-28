@@ -3655,6 +3655,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ebdcb1e1-d96b-4d8c-a931-d6035865e34d",
       "title": "ProximityAlert"
+    },
+    "ebe3290d-93b5-49b9-8113-71ecf6bf6c52": {
+      "content_id": "ebe3290d-93b5-49b9-8113-71ecf6bf6c52",
+      "fingerprint": "7554ffb277c392556d79d66d605c0f7a812d519e53302001fa43d876bc050a65",
+      "path": "addons/MemoryUsage__ebe3290d-93b5-49b9-8113-71ecf6bf6c52",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ebe3290d-93b5-49b9-8113-71ecf6bf6c52",
+      "title": "MemoryUsage"
     }
   },
   "schema": 1
