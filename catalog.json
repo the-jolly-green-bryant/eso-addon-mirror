@@ -2575,6 +2575,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ae6c1833-5a02-4baf-8bf6-d18c7c8d33d8",
       "title": "BackBarTimer"
+    },
+    "aef7e9f0-ed11-4b67-99f7-c500cdc0b343": {
+      "content_id": "aef7e9f0-ed11-4b67-99f7-c500cdc0b343",
+      "fingerprint": "2a7a70423c406b40547bab9144e472234ba7dd75fc2f9637163659143c27834c",
+      "path": "addons/CruxTracker-2.0__aef7e9f0-ed11-4b67-99f7-c500cdc0b343",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/aef7e9f0-ed11-4b67-99f7-c500cdc0b343",
+      "title": "CruxTracker-2.0"
     }
   },
   "schema": 1
