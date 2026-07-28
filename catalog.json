@@ -104,6 +104,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/08954d6b-1604-4daf-9cf3-99b327dd7afd",
       "title": "FunKillFeed"
+    },
+    "09511722-e9f3-4e32-b5f9-d04c0cbee9c4": {
+      "content_id": "09511722-e9f3-4e32-b5f9-d04c0cbee9c4",
+      "fingerprint": "6de33ddb85ed7010bcc9e5451f5e252e4c6575b3e8c47547501d436ec568033a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/09511722-e9f3-4e32-b5f9-d04c0cbee9c4",
+      "title": "Smart Looter"
     }
   },
   "schema": 1
