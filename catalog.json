@@ -2039,6 +2039,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8c834a42-03cd-4110-8b81-7847f13944b6",
       "title": "TorigaCam"
+    },
+    "8cd10e06-846e-4b81-9858-f1a6943f0b32": {
+      "content_id": "8cd10e06-846e-4b81-9858-f1a6943f0b32",
+      "fingerprint": "e0af6e35a5f401234e29578c8db44abba4bfb287a7a6c21896c1948cfe720260",
+      "path": "addons/Testing__8cd10e06-846e-4b81-9858-f1a6943f0b32",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8cd10e06-846e-4b81-9858-f1a6943f0b32",
+      "title": "Testing"
     }
   },
   "schema": 1
