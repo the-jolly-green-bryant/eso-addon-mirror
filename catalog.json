@@ -2559,6 +2559,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/acf1ef04-4ec0-400b-86c6-98b7dd9d2f72",
       "title": "Movable Addon Memory"
+    },
+    "adeb7cae-c7d2-4f05-9f6b-398235624c33": {
+      "content_id": "adeb7cae-c7d2-4f05-9f6b-398235624c33",
+      "fingerprint": "00312c6bb6e10c5d80418dc56b5299227f0063d513ab3979efb42a8d2d5ff0b0",
+      "path": "addons/Bloom-HPS__adeb7cae-c7d2-4f05-9f6b-398235624c33",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/adeb7cae-c7d2-4f05-9f6b-398235624c33",
+      "title": "Bloom HPS"
     }
   },
   "schema": 1
