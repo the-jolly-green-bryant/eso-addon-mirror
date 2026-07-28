@@ -663,6 +663,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2b323144-77d2-41bc-9e3e-d016c4dd0f30",
       "title": "experiment"
+    },
+    "2b95c809-f14b-4c3c-9c0c-945a3e8547c4": {
+      "content_id": "2b95c809-f14b-4c3c-9c0c-945a3e8547c4",
+      "fingerprint": "73f1e79906f7d660f02d48947da945d2c28ba0bc1175e543747234be3b3e9a61",
+      "path": "addons/Auto-Guild-Welcome-Revised__2b95c809-f14b-4c3c-9c0c-945a3e8547c4",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2b95c809-f14b-4c3c-9c0c-945a3e8547c4",
+      "title": "Auto Guild Welcome Revised"
     }
   },
   "schema": 1
