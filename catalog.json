@@ -1999,6 +1999,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/89ecfc27-e76b-48ae-8d40-e76bbf0c5c13",
       "title": "Tamriel Master Ledger - DEV"
+    },
+    "89f44de6-a710-4680-8553-b1fc04735bbd": {
+      "content_id": "89f44de6-a710-4680-8553-b1fc04735bbd",
+      "fingerprint": "2a2fe440b1abf18c0b7d8d29c22d08b8acff710744b465ee3da6591e7530c1ad",
+      "path": "addons/Console-Hide-UI__89f44de6-a710-4680-8553-b1fc04735bbd",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/89f44de6-a710-4680-8553-b1fc04735bbd",
+      "title": "Console Hide UI"
     }
   },
   "schema": 1
