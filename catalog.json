@@ -3727,6 +3727,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f0561a3c-bea9-49e8-926e-53825934fb7e",
       "title": "DVD ScreenSaver"
+    },
+    "f0873593-4222-438e-8d90-019fa403178b": {
+      "content_id": "f0873593-4222-438e-8d90-019fa403178b",
+      "fingerprint": "a2cda67d9828bc6ceeba36f48dc7d5bc99dfca823bdaaab971fb1195d624c2a4",
+      "path": "addons/Guild-Activity-Tracker__f0873593-4222-438e-8d90-019fa403178b",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f0873593-4222-438e-8d90-019fa403178b",
+      "title": "Guild Activity Tracker"
     }
   },
   "schema": 1
