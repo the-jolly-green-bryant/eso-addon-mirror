@@ -2503,6 +2503,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a8908085-8223-4986-ac34-5932bc2c5172",
       "title": "TargetInfo"
+    },
+    "a89e4472-1774-4182-bc32-05d04d19ca06": {
+      "content_id": "a89e4472-1774-4182-bc32-05d04d19ca06",
+      "fingerprint": "90cae53bffc1530e1ec5b9272370207007962feb4bce33f723a81cf5a47d9c20",
+      "path": "addons/Addon-Load-Time-Monitor__a89e4472-1774-4182-bc32-05d04d19ca06",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a89e4472-1774-4182-bc32-05d04d19ca06",
+      "title": "Addon Load Time Monitor"
     }
   },
   "schema": 1
