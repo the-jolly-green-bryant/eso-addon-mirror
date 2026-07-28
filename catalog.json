@@ -2351,6 +2351,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9d131435-84c4-4c6d-9d73-5e2ec6fa61b7",
       "title": "CrowdednESO"
+    },
+    "9d474e3f-7d1b-46fc-9b81-3949ad0f70e5": {
+      "content_id": "9d474e3f-7d1b-46fc-9b81-3949ad0f70e5",
+      "fingerprint": "4c08e489dde8cedfe48d754449f27fe1598ea1113bebe1a520ca92667fe36dc7",
+      "path": "addons/SPFLib__9d474e3f-7d1b-46fc-9b81-3949ad0f70e5",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9d474e3f-7d1b-46fc-9b81-3949ad0f70e5",
+      "title": "SPFLib"
     }
   },
   "schema": 1
