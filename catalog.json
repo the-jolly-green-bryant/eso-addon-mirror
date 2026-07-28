@@ -2815,6 +2815,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/bbb120a7-5903-4bd2-94a5-17a368b63dd9",
       "title": "MyWarningAttack"
+    },
+    "bc6b3b76-f701-4533-9492-c50acb1783bc": {
+      "content_id": "bc6b3b76-f701-4533-9492-c50acb1783bc",
+      "fingerprint": "c469e0e44628986301d1f023500e936990be7fcab0e2fa18bed9e7245db99ab9",
+      "path": "addons/dev-sandbox-2__bc6b3b76-f701-4533-9492-c50acb1783bc",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/bc6b3b76-f701-4533-9492-c50acb1783bc",
+      "title": "dev sandbox 2"
     }
   },
   "schema": 1
