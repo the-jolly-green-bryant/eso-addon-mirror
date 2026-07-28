@@ -181,6 +181,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0f87c2f6-55c7-4450-b93b-d6395ac2004d",
       "title": "KDStatTracker"
+    },
+    "0fa32336-8528-4747-9b01-ccba9408f654": {
+      "content_id": "0fa32336-8528-4747-9b01-ccba9408f654",
+      "fingerprint": "e5de7c17cd2805059de79e1f3202fb414bf55b40a236f3e38f35ad914fab6d73",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0fa32336-8528-4747-9b01-ccba9408f654",
+      "title": "LibMediaProvider"
     }
   },
   "schema": 1
