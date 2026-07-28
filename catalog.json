@@ -3607,6 +3607,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e748a1af-bca6-470d-be77-d5e7ab432006",
       "title": "ZoomInFurther"
+    },
+    "e816c8fb-9db6-4e60-a241-6bee24b8f1b0": {
+      "content_id": "e816c8fb-9db6-4e60-a241-6bee24b8f1b0",
+      "fingerprint": "5615e0ee9ae91dddcf1051da49ebc96325d269cc5afa05d56326274a3a0eedaa",
+      "path": "addons/Motif-Tracker__e816c8fb-9db6-4e60-a241-6bee24b8f1b0",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e816c8fb-9db6-4e60-a241-6bee24b8f1b0",
+      "title": "Motif Tracker"
     }
   },
   "schema": 1
