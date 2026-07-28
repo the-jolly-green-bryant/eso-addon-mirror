@@ -1447,6 +1447,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/60c046e9-d8e1-4cb9-8df9-fafeebb3c000",
       "title": "LibLazyCrafting"
+    },
+    "61069d72-f6b1-401b-b5a7-e7c3f1b32c5e": {
+      "content_id": "61069d72-f6b1-401b-b5a7-e7c3f1b32c5e",
+      "fingerprint": "2ba7ede1503a364dcb1a1393f6c8fd6e6a14097899e0461d6b4155a99f320ca1",
+      "path": "addons/Where-s-My-Sul-Xans-Buff__61069d72-f6b1-401b-b5a7-e7c3f1b32c5e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/61069d72-f6b1-401b-b5a7-e7c3f1b32c5e",
+      "title": "Where's My Sul'Xans Buff?"
     }
   },
   "schema": 1
