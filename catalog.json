@@ -2887,6 +2887,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c12b4c6f-c657-4d0b-ac4e-77374335877c",
       "title": "More Camera Sensitivity"
+    },
+    "c1b4f7e7-7899-4d68-ab6a-6ce46c563cc5": {
+      "content_id": "c1b4f7e7-7899-4d68-ab6a-6ce46c563cc5",
+      "fingerprint": "49dfc4713fc24b8f3af00b82c44c927eee40045a96fe7baebf89899825330ff3",
+      "path": "addons/Weaving-Metronome__c1b4f7e7-7899-4d68-ab6a-6ce46c563cc5",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c1b4f7e7-7899-4d68-ab6a-6ce46c563cc5",
+      "title": "Weaving Metronome"
     }
   },
   "schema": 1
