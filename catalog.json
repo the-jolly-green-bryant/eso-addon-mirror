@@ -735,6 +735,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/30102403-93a7-4fd2-a08a-4b249f03e4d4",
       "title": "Oh No My Menu"
+    },
+    "301799ca-d139-4097-8799-022ef07985ad": {
+      "content_id": "301799ca-d139-4097-8799-022ef07985ad",
+      "fingerprint": "aac0aeeea0ff37f41df10c49ad0698a12d3d2a7157dcb963e037980fde536619",
+      "path": "addons/Additional-Reminders__301799ca-d139-4097-8799-022ef07985ad",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/301799ca-d139-4097-8799-022ef07985ad",
+      "title": "Additional Reminders"
     }
   },
   "schema": 1
