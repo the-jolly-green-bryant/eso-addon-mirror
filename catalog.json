@@ -195,6 +195,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0faeb5c6-5fc7-48bc-91c6-61d863d7bf6e",
       "title": "LibId64"
+    },
+    "1006e4e4-396e-4dec-9923-d80c541614d5": {
+      "content_id": "1006e4e4-396e-4dec-9923-d80c541614d5",
+      "fingerprint": "7b411eb9fdbf4cdf0b2e4fa0c99dcb36a44c93c73ac509cce8e31d59f936651f",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1006e4e4-396e-4dec-9923-d80c541614d5",
+      "title": "Transmute Saver"
     }
   },
   "schema": 1
