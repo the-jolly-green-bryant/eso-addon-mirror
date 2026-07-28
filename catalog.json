@@ -3319,6 +3319,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/db3e5212-7543-479f-a881-7cda2bd1a1c9",
       "title": "Undaunted Daily"
+    },
+    "dc420d92-00cf-428d-8c89-a7cb5ceecd44": {
+      "content_id": "dc420d92-00cf-428d-8c89-a7cb5ceecd44",
+      "fingerprint": "8369d312e2c29776b79fe8e0408af0e4a54d0bc4ef6b6fba955efa83abb18ee5",
+      "path": "addons/Test-suite__dc420d92-00cf-428d-8c89-a7cb5ceecd44",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/dc420d92-00cf-428d-8c89-a7cb5ceecd44",
+      "title": "Test suite"
     }
   },
   "schema": 1
