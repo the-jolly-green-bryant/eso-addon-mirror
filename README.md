@@ -3,7 +3,11 @@
 A low-cost, serverless mirror of the latest published Elder Scrolls Online
 console add-ons from Bethesda.net. A daily GitHub Actions job discovers add-ons,
 downloads only entries whose stable metadata changed, safely unpacks them, and
-commits the resulting files.
+creates one commit per changed add-on. Progress is pushed every ten commits and
+again on exit, so a later bad entry does not discard completed work.
+
+Every discovered entry gets an `addon.json`. Published entries also contain the
+unpacked add-on code; unpublished entries intentionally contain metadata only.
 
 ## Cost model
 

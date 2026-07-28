@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import hashlib
+import html
 import json
 import os
 import re
@@ -19,6 +20,7 @@ ADDONS = ROOT / "addons"
 CATALOG = ROOT / "catalog.json"
 CLI = os.environ.get("ESO_CLI", "ESOAddOnUploaderCli")
 PAGE_SIZE = 50
+PUSH_EVERY = int(os.environ.get("PUSH_EVERY", "10"))
 MAX_UNPACKED_BYTES = int(os.environ.get("MAX_UNPACKED_BYTES", str(512 * 1024 * 1024)))
 UUID_RE = re.compile(
     r"^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
@@ -84,7 +86,7 @@ def title(item: dict[str, Any], fallback: str) -> str:
     for key in ("title", "name"):
         value = item.get(key)
         if isinstance(value, str) and value.strip():
-            return value.strip()
+            return html.unescape(value.strip())
     return fallback
 
 
@@ -148,6 +150,51 @@ def selected_ids() -> set[str] | None:
     return ids
 
 
+def addon_record(
+    identifier: str, item: dict[str, Any], fingerprint: str, published: bool
+) -> dict[str, Any]:
+    return {
+        "content_id": identifier,
+        "title": title(item, identifier),
+        "published": published,
+        "fingerprint": fingerprint,
+        "source": (
+            "https://mods.bethesda.net/en/elderscrollsonline/details/"
+            f"{identifier}"
+        ),
+    }
+
+
+def write_addon_metadata(target: Path, record: dict[str, Any]) -> None:
+    target.mkdir(parents=True, exist_ok=True)
+    (target / "addon.json").write_text(
+        json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
+
+def write_catalog(addons: dict[str, Any]) -> None:
+    CATALOG.write_text(
+        json.dumps({"schema": 1, "addons": addons}, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def commit_addon(identifier: str, name: str) -> bool:
+    run("git", "add", "-A", "--", f"addons/{identifier}", "catalog.json")
+    changed = subprocess.run(
+        ("git", "diff", "--cached", "--quiet"), cwd=ROOT, check=False
+    ).returncode
+    if changed == 0:
+        return False
+    safe_name = " ".join(name.split())[:120]
+    run("git", "commit", "-m", f"mirror: {safe_name} ({identifier})")
+    return True
+
+
+def push() -> None:
+    run("git", "push")
+
+
 def main() -> None:
     if not os.environ.get("BNET_USERNAME") or not os.environ.get("BNET_PASSWORD"):
         raise RuntimeError("BNET_USERNAME and BNET_PASSWORD are required")
@@ -155,8 +202,10 @@ def main() -> None:
     ADDONS.mkdir(exist_ok=True)
     (ROOT / ".session.json").write_text("{}\n", encoding="utf-8")
     previous = read_catalog()["addons"]
+    next_catalog = dict(previous)
     wanted = selected_ids()
     discovered: dict[str, dict[str, Any]] = {}
+    unpushed = 0
 
     try:
         with tempfile.TemporaryDirectory(prefix="eso-mirror-") as temp:
@@ -172,7 +221,6 @@ def main() -> None:
                     break
                 page += 1
 
-            next_catalog: dict[str, Any] = {}
             for identifier, item in sorted(discovered.items()):
                 fingerprint = stable_fingerprint(item)
                 old = previous.get(identifier, {})
@@ -193,33 +241,41 @@ def main() -> None:
                         "--session",
                         str(ROOT / ".session.json"),
                     )
-                    safe_extract(archive, staged)
                     shutil.rmtree(target, ignore_errors=True)
-                    shutil.copytree(staged, target)
-                    print(f"Updated {identifier}: {title(item, identifier)}")
-                next_catalog[identifier] = {
-                    "title": title(item, identifier),
-                    "fingerprint": fingerprint,
-                    "source": (
-                        "https://mods.bethesda.net/en/elderscrollsonline/details/"
-                        f"{identifier}"
-                    ),
-                }
+                    published = archive.is_file()
+                    if published:
+                        safe_extract(archive, staged)
+                        shutil.copytree(staged, target)
+                    record = addon_record(identifier, item, fingerprint, published)
+                    write_addon_metadata(target, record)
+                    next_catalog[identifier] = record
+                    write_catalog(next_catalog)
+                    if commit_addon(identifier, record["title"]):
+                        unpushed += 1
+                        state = "published" if published else "unpublished metadata"
+                        print(f"Committed {identifier}: {record['title']} ({state})")
+                    if unpushed >= PUSH_EVERY:
+                        push()
+                        unpushed = 0
+                elif identifier not in next_catalog:
+                    next_catalog[identifier] = old
 
-            # Only remove entries when doing a complete mirror. An allowlist may be
-            # edited intentionally, but deleting content should remain explicit.
+            # Entries absent from a complete listing are removed one commit at a
+            # time. Allowlist removals remain explicit operator actions.
             if wanted is None:
-                for identifier in previous.keys() - next_catalog.keys():
+                for identifier in previous.keys() - discovered.keys():
                     shutil.rmtree(ADDONS / identifier, ignore_errors=True)
-                    print(f"Removed unpublished add-on {identifier}")
-
-            CATALOG.write_text(
-                json.dumps({"schema": 1, "addons": next_catalog}, indent=2, sort_keys=True)
-                + "\n",
-                encoding="utf-8",
-            )
+                    removed = next_catalog.pop(identifier, previous[identifier])
+                    write_catalog(next_catalog)
+                    if commit_addon(identifier, removed.get("title", identifier)):
+                        unpushed += 1
+                    if unpushed >= PUSH_EVERY:
+                        push()
+                        unpushed = 0
     finally:
         (ROOT / ".session.json").unlink(missing_ok=True)
+        if unpushed:
+            push()
 
 
 if __name__ == "__main__":

@@ -42,6 +42,19 @@ class MirrorTests(unittest.TestCase):
             mirror.safe_extract(archive, destination)
             self.assertEqual((destination / "Example/Example.lua").read_text(), "ok")
 
+    def test_addon_record_marks_unpublished_content(self):
+        record = mirror.addon_record(
+            "00000000-0000-4000-8000-000000000000",
+            {"title": "No Release"},
+            "fingerprint",
+            False,
+        )
+        self.assertFalse(record["published"])
+        self.assertEqual(record["title"], "No Release")
+
+    def test_title_decodes_html_entities(self):
+        self.assertEqual(mirror.title({"title": "Votan&#39;s Addon"}, "x"), "Votan's Addon")
+
 
 if __name__ == "__main__":
     unittest.main()

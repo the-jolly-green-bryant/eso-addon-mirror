@@ -40,18 +40,9 @@ jobs:
           echo "$RUNNER_TEMP/esocli" >> "$GITHUB_PATH"
 
       - name: Download and unpack changed add-ons
-        run: python3 scripts/mirror.py
-
-      - name: Commit changes
         shell: bash
         run: |
           set -euo pipefail
-          git add addons catalog.json
-          if git diff --cached --quiet; then
-            echo "No published add-on changes."
-            exit 0
-          fi
           git config user.name "eso-addon-mirror[bot]"
           git config user.email "eso-addon-mirror[bot]@users.noreply.github.com"
-          git commit -m "mirror: Bethesda ESO add-on updates $(date -u +%F)"
-          git push
+          python3 scripts/mirror.py
