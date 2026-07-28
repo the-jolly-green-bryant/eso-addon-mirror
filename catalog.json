@@ -3599,6 +3599,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e6627cb6-5e78-4443-86bc-4340210a5684",
       "title": "Patron's Ledger"
+    },
+    "e748a1af-bca6-470d-be77-d5e7ab432006": {
+      "content_id": "e748a1af-bca6-470d-be77-d5e7ab432006",
+      "fingerprint": "7861dfc5a5899959c02905a7fc8b7c7779fa1efef7720af563b9f8a0107abc8f",
+      "path": "addons/ZoomInFurther__e748a1af-bca6-470d-be77-d5e7ab432006",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e748a1af-bca6-470d-be77-d5e7ab432006",
+      "title": "ZoomInFurther"
     }
   },
   "schema": 1
