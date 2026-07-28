@@ -2591,6 +2591,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/afe5bbbc-a2e0-48de-965a-29eff222393f",
       "title": "Votan's Minimap"
+    },
+    "b057d22b-1ffd-455c-834a-af582e3e270a": {
+      "content_id": "b057d22b-1ffd-455c-834a-af582e3e270a",
+      "fingerprint": "d392d7656fbdc5297612ad0d3889182b5b2e76585f17358a8f58608a13e3fecf",
+      "path": "addons/bugfixxxxx__b057d22b-1ffd-455c-834a-af582e3e270a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b057d22b-1ffd-455c-834a-af582e3e270a",
+      "title": "bugfixxxxx"
     }
   },
   "schema": 1
