@@ -1871,6 +1871,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/7d3a20ff-160a-4988-b8d0-991681394db8",
       "title": "Show Equips"
+    },
+    "7dd87315-5f9a-4644-887f-a38632d7f70e": {
+      "content_id": "7dd87315-5f9a-4644-887f-a38632d7f70e",
+      "fingerprint": "a7b5c607ccf3e4eba8cd2c33420033fd3745e49673d8fbb670f9829ef39447e9",
+      "path": "addons/NumbersOnDummyOnly__7dd87315-5f9a-4644-887f-a38632d7f70e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/7dd87315-5f9a-4644-887f-a38632d7f70e",
+      "title": "NumbersOnDummyOnly"
     }
   },
   "schema": 1
