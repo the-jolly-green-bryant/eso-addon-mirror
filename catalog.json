@@ -2199,6 +2199,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/923318b4-3671-40d4-93f3-49d2f9203093",
       "title": "Smart Node Radar"
+    },
+    "9237369e-344f-4e5c-8966-b0f04b0be2c9": {
+      "content_id": "9237369e-344f-4e5c-8966-b0f04b0be2c9",
+      "fingerprint": "e296d490055fc1bb13fc337781eacb527931649f4eaf6f68d712fc4d4231a980",
+      "path": "addons/Usable-Containers__9237369e-344f-4e5c-8966-b0f04b0be2c9",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9237369e-344f-4e5c-8966-b0f04b0be2c9",
+      "title": "Usable Containers"
     }
   },
   "schema": 1
