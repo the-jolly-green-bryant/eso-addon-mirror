@@ -2927,6 +2927,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c49eb98c-6821-47de-9cb2-10b972d1a55f",
       "title": "Furnishing Tracker"
+    },
+    "c68c0503-c262-44d6-97a9-d2e8ee77ee72": {
+      "content_id": "c68c0503-c262-44d6-97a9-d2e8ee77ee72",
+      "fingerprint": "936788b7d57cded675f616b932b590681bbb96ab0d2802b9362730635982dcea",
+      "path": "addons/Healing-Buff-Uptime__c68c0503-c262-44d6-97a9-d2e8ee77ee72",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c68c0503-c262-44d6-97a9-d2e8ee77ee72",
+      "title": "Healing Buff Uptime"
     }
   },
   "schema": 1
