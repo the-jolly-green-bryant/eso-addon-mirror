@@ -3591,6 +3591,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e60b762b-efc6-4d5b-bfc6-d9b02453c067",
       "title": "esoTestAddon"
+    },
+    "e6627cb6-5e78-4443-86bc-4340210a5684": {
+      "content_id": "e6627cb6-5e78-4443-86bc-4340210a5684",
+      "fingerprint": "e73761486b0710a6756bc95f669600acf4325195bf5be268e1696fc9dce8b5dd",
+      "path": "addons/Patron-s-Ledger__e6627cb6-5e78-4443-86bc-4340210a5684",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e6627cb6-5e78-4443-86bc-4340210a5684",
+      "title": "Patron's Ledger"
     }
   },
   "schema": 1
