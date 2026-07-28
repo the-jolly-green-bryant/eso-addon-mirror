@@ -2143,6 +2143,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/90c97baa-6170-421f-bd23-7fd88500168d",
       "title": "LibMessagePlugin"
+    },
+    "910446ca-4e83-47c8-8c9b-a5d99bcec73e": {
+      "content_id": "910446ca-4e83-47c8-8c9b-a5d99bcec73e",
+      "fingerprint": "8b3fecfbec6b0925f4f2bf20fd494b68eaaf2d39cb6857025b54be17a78af115",
+      "path": "addons/Auto-Claim-or-Hide-Tome-Challenges__910446ca-4e83-47c8-8c9b-a5d99bcec73e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/910446ca-4e83-47c8-8c9b-a5d99bcec73e",
+      "title": "Auto-Claim or Hide Tome Challenges"
     }
   },
   "schema": 1
