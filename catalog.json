@@ -3495,6 +3495,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e1ed5f61-10b6-43bf-baaf-3da81a8c26a3",
       "title": "Auto Complete"
+    },
+    "e1fa49c2-830c-41dc-9927-0d013ba1f21d": {
+      "content_id": "e1fa49c2-830c-41dc-9927-0d013ba1f21d",
+      "fingerprint": "fb1f3026d26cd01b692dca33c3328cbfcc62a1a16d5382af9d292cbf951f097f",
+      "path": "addons/Test-suite-2__e1fa49c2-830c-41dc-9927-0d013ba1f21d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e1fa49c2-830c-41dc-9927-0d013ba1f21d",
+      "title": "Test suite 2"
     }
   },
   "schema": 1
