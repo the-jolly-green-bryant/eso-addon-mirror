@@ -3879,6 +3879,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f7fc3e7c-b17d-47bd-915b-40c09291efb0",
       "title": "LibHistoire"
+    },
+    "f8e59501-116b-422a-90e9-f57cf2dc7b9d": {
+      "content_id": "f8e59501-116b-422a-90e9-f57cf2dc7b9d",
+      "fingerprint": "a6a8357597a615971624c5ddfff259114177d84e9e7a5628c5a930d76f079acd",
+      "path": "addons/RoaringOpportunist__f8e59501-116b-422a-90e9-f57cf2dc7b9d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f8e59501-116b-422a-90e9-f57cf2dc7b9d",
+      "title": "RoaringOpportunist"
     }
   },
   "schema": 1
