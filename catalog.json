@@ -1519,6 +1519,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6694e6d4-7ae0-4eb8-9a61-e1c53ac5c187",
       "title": "Auto Research"
+    },
+    "669db721-3682-4957-9a09-a06172f0b3e0": {
+      "content_id": "669db721-3682-4957-9a09-a06172f0b3e0",
+      "fingerprint": "201ac52f7bedb0698a4f7b4d76ebd290239b9958831dd570a1f60217aa7075d6",
+      "path": "addons/CombatStatus-Console__669db721-3682-4957-9a09-a06172f0b3e0",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/669db721-3682-4957-9a09-a06172f0b3e0",
+      "title": "CombatStatus-Console"
     }
   },
   "schema": 1
