@@ -2055,6 +2055,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8dc100fb-6c43-4ea7-ba01-1a23d306e216",
       "title": "Rare Fish Tracker"
+    },
+    "8e0a0bf5-7c84-4155-ba23-48c34887ff9f": {
+      "content_id": "8e0a0bf5-7c84-4155-ba23-48c34887ff9f",
+      "fingerprint": "4d04ad9a3f5b1034eb9469f4420977a2ea25c7158d08f0f120f298b189ae62f0",
+      "path": "addons/Natey-s-Armory__8e0a0bf5-7c84-4155-ba23-48c34887ff9f",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8e0a0bf5-7c84-4155-ba23-48c34887ff9f",
+      "title": "Natey's Armory"
     }
   },
   "schema": 1
