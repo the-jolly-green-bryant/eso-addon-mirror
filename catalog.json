@@ -1943,6 +1943,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/844b3c4f-aa76-42d6-8ef7-dcf6dec3b447",
       "title": "Forpl-KDA-Bar"
+    },
+    "845e13c0-5c9e-4d9b-94e1-a47d532e4b0c": {
+      "content_id": "845e13c0-5c9e-4d9b-94e1-a47d532e4b0c",
+      "fingerprint": "27f6e6b611eaf8c728b3885db70400aa98878ea5f13fda6b751c00ec181c80c4",
+      "path": "addons/Timer-in-Revive-Counter__845e13c0-5c9e-4d9b-94e1-a47d532e4b0c",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/845e13c0-5c9e-4d9b-94e1-a47d532e4b0c",
+      "title": "Timer in Revive Counter"
     }
   },
   "schema": 1
