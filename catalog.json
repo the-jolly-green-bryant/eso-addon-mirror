@@ -209,6 +209,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/10077c6b-b1fb-4c9d-9cfe-26b16bd23b8d",
       "title": "Side Quest Tracker"
+    },
+    "10a87c9d-556d-4389-8952-629b42b5a3bc": {
+      "content_id": "10a87c9d-556d-4389-8952-629b42b5a3bc",
+      "fingerprint": "c3f5019b89dc12af7b4630d0e8ec6cd154bb829ab5e587483515522073c38852",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/10a87c9d-556d-4389-8952-629b42b5a3bc",
+      "title": "EsoPL - Spolszczenie"
     }
   },
   "schema": 1
