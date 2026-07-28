@@ -2647,6 +2647,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b22ade94-a817-47da-bc4f-cfa7e1dd25ff",
       "title": "Eyes of the Undaunted"
+    },
+    "b2507553-0888-4fae-9f69-5b1f89f1b266": {
+      "content_id": "b2507553-0888-4fae-9f69-5b1f89f1b266",
+      "fingerprint": "2bea3ba817c782b7a0acaff8eb7c186e120030d9d902a9ba9c193c11271e12f3",
+      "path": "addons/More-Target-Information__b2507553-0888-4fae-9f69-5b1f89f1b266",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b2507553-0888-4fae-9f69-5b1f89f1b266",
+      "title": "More Target Information"
     }
   },
   "schema": 1
