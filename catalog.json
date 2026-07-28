@@ -1191,6 +1191,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4c1cca0d-7e48-40ed-bd8f-1c87ac158341",
       "title": "True Flag Capture Mover"
+    },
+    "4c4e9010-a3ef-435d-b540-4d292e289eca": {
+      "content_id": "4c4e9010-a3ef-435d-b540-4d292e289eca",
+      "fingerprint": "0c399f9173ba4760f529dac86d181afa4bfa684267fa69a7551c63ea68631bcf",
+      "path": "addons/Murf-s-Treasures__4c4e9010-a3ef-435d-b540-4d292e289eca",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4c4e9010-a3ef-435d-b540-4d292e289eca",
+      "title": "Murf's Treasures"
     }
   },
   "schema": 1
