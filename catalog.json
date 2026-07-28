@@ -2191,6 +2191,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/922792c1-1d90-4415-ada5-c356757e857f",
       "title": "Fancy Action Bar+"
+    },
+    "923318b4-3671-40d4-93f3-49d2f9203093": {
+      "content_id": "923318b4-3671-40d4-93f3-49d2f9203093",
+      "fingerprint": "3934e421f910950fe8992a9572797b65cc46f54c43dc612be9c09dd684ae0e6a",
+      "path": "addons/Smart-Node-Radar__923318b4-3671-40d4-93f3-49d2f9203093",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/923318b4-3671-40d4-93f3-49d2f9203093",
+      "title": "Smart Node Radar"
     }
   },
   "schema": 1
