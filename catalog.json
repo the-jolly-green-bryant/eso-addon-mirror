@@ -69,6 +69,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/06c46d53-3301-44b3-92fe-8d19165f5d93",
       "title": "Vixen's Combat Text"
+    },
+    "070110ba-7a49-4a58-8a9a-a164977f2835": {
+      "content_id": "070110ba-7a49-4a58-8a9a-a164977f2835",
+      "fingerprint": "076253abf061dac189272f3b4e9680108cb2802fb87d86de1b706398d66f9723",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/070110ba-7a49-4a58-8a9a-a164977f2835",
+      "title": "CCSentinel"
     }
   },
   "schema": 1
