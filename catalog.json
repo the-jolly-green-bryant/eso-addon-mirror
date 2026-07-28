@@ -879,6 +879,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/38c45fe7-8274-43a2-9eaa-570253d23fdb",
       "title": "Stay Mounted"
+    },
+    "38f0df90-e793-4c9c-af2b-44a958ed38cf": {
+      "content_id": "38f0df90-e793-4c9c-af2b-44a958ed38cf",
+      "fingerprint": "b17b6d7e49789741b57c4dc975976ac34e2b48b99c098d45096bec7c1474fa64",
+      "path": "addons/One-More-Rockgrove-Helper__38f0df90-e793-4c9c-af2b-44a958ed38cf",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/38f0df90-e793-4c9c-af2b-44a958ed38cf",
+      "title": "One More Rockgrove Helper"
     }
   },
   "schema": 1
