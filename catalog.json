@@ -3295,6 +3295,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d9ba289c-0a0a-4233-80ab-25f3be9c35eb",
       "title": "Survey Sentinel"
+    },
+    "da882875-d281-47d4-b525-aa19f4f40875": {
+      "content_id": "da882875-d281-47d4-b525-aa19f4f40875",
+      "fingerprint": "d6f97b73be3676e0349b2ddcd190da9037ce936d1df9611bcabfd70a2dc61170",
+      "path": "addons/Group-Buff-Panels__da882875-d281-47d4-b525-aa19f4f40875",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/da882875-d281-47d4-b525-aa19f4f40875",
+      "title": "Group Buff Panels"
     }
   },
   "schema": 1
