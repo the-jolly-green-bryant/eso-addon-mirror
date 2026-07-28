@@ -2551,6 +2551,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ac8a5471-5c72-448f-86f0-1d33a74c88ae",
       "title": "Vixy's Testing Grounds"
+    },
+    "acf1ef04-4ec0-400b-86c6-98b7dd9d2f72": {
+      "content_id": "acf1ef04-4ec0-400b-86c6-98b7dd9d2f72",
+      "fingerprint": "d721790262edc23b97d3a524c6ac6dab060b43398e68c5199bd5f3560d96f377",
+      "path": "addons/Movable-Addon-Memory__acf1ef04-4ec0-400b-86c6-98b7dd9d2f72",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/acf1ef04-4ec0-400b-86c6-98b7dd9d2f72",
+      "title": "Movable Addon Memory"
     }
   },
   "schema": 1
