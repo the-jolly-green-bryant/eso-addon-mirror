@@ -2919,6 +2919,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c41f5a50-974f-45e6-a218-e99590da3841",
       "title": "More Markers"
+    },
+    "c49eb98c-6821-47de-9cb2-10b972d1a55f": {
+      "content_id": "c49eb98c-6821-47de-9cb2-10b972d1a55f",
+      "fingerprint": "36868187f578ee8e6e6c1d9428d0dac6e55551f16dcddda5f95afcf434244dbd",
+      "path": "addons/Furnishing-Tracker__c49eb98c-6821-47de-9cb2-10b972d1a55f",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c49eb98c-6821-47de-9cb2-10b972d1a55f",
+      "title": "Furnishing Tracker"
     }
   },
   "schema": 1
