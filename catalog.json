@@ -2783,6 +2783,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b9e43d9e-2e7b-4530-941b-01e90bd15f5a",
       "title": "StoneTalker"
+    },
+    "bb565e61-5481-49e2-9550-7c8aa18aa17a": {
+      "content_id": "bb565e61-5481-49e2-9550-7c8aa18aa17a",
+      "fingerprint": "0f22be47bba9e58e17c32e45ea9deaaed83473bff58b5e24857ebe4577229998",
+      "path": "addons/Better-Scoreboard__bb565e61-5481-49e2-9550-7c8aa18aa17a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/bb565e61-5481-49e2-9550-7c8aa18aa17a",
+      "title": "Better Scoreboard"
     }
   },
   "schema": 1
