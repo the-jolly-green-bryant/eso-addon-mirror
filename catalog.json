@@ -647,6 +647,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2aa223e9-ba88-45f7-90d3-0a47002c720c",
       "title": "Permanent Memento"
+    },
+    "2abdc7a0-d15d-42ae-aad7-bccf995da180": {
+      "content_id": "2abdc7a0-d15d-42ae-aad7-bccf995da180",
+      "fingerprint": "1ac0d96ea6130340be128e1a0f6c4a163373253f96e58526124dd8470eb3b6f5",
+      "path": "addons/Olorime__2abdc7a0-d15d-42ae-aad7-bccf995da180",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2abdc7a0-d15d-42ae-aad7-bccf995da180",
+      "title": "Olorime"
     }
   },
   "schema": 1
