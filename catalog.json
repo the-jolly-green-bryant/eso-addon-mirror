@@ -55,6 +55,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/053412e8-989a-4dce-9551-7011dc3096ac",
       "title": "LibQRC"
+    },
+    "0604268b-f390-4fac-aebe-67b9148c94f4": {
+      "content_id": "0604268b-f390-4fac-aebe-67b9148c94f4",
+      "fingerprint": "e67cc6b709c6e643a0740b0c8048619ac5f4f66282d1a63ed7e61d0cba49b1a0",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0604268b-f390-4fac-aebe-67b9148c94f4",
+      "title": "Buff Tracker"
     }
   },
   "schema": 1
