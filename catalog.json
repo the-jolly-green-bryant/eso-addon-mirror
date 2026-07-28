@@ -3863,6 +3863,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f74afae1-50fc-4e7f-8883-573992187a63",
       "title": "Rainbow AOE"
+    },
+    "f7a014ce-5df1-49ee-80fd-7ef4f53bec84": {
+      "content_id": "f7a014ce-5df1-49ee-80fd-7ef4f53bec84",
+      "fingerprint": "565a7fe8d364efd40f090bf8abfba79e463ac955ef8b70ec1d3509ec99c78509",
+      "path": "addons/Test-Addon__f7a014ce-5df1-49ee-80fd-7ef4f53bec84",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f7a014ce-5df1-49ee-80fd-7ef4f53bec84",
+      "title": "Test Addon"
     }
   },
   "schema": 1
