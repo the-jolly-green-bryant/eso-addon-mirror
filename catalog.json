@@ -2639,6 +2639,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b1a7539b-4888-4ad6-b04c-28000d99976d",
       "title": "RandoMote (Dev)"
+    },
+    "b22ade94-a817-47da-bc4f-cfa7e1dd25ff": {
+      "content_id": "b22ade94-a817-47da-bc4f-cfa7e1dd25ff",
+      "fingerprint": "82673b3173da796c7d9661784281a4adb2cd2e75624ab36a842d30ef76a8a387",
+      "path": "addons/Eyes-of-the-Undaunted__b22ade94-a817-47da-bc4f-cfa7e1dd25ff",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b22ade94-a817-47da-bc4f-cfa7e1dd25ff",
+      "title": "Eyes of the Undaunted"
     }
   },
   "schema": 1
