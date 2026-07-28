@@ -3071,6 +3071,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cd627f74-6399-4b3d-9218-b2e0866b936d",
       "title": "Yokeda"
+    },
+    "cda29292-5e10-4045-9219-10ff1a9444fe": {
+      "content_id": "cda29292-5e10-4045-9219-10ff1a9444fe",
+      "fingerprint": "7b97f76e0c8ff2a5ab8f3ab55a906e178e3b662bb19fe07397ffbe50b8a78782",
+      "path": "addons/Talk-Toggle__cda29292-5e10-4045-9219-10ff1a9444fe",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cda29292-5e10-4045-9219-10ff1a9444fe",
+      "title": "Talk Toggle"
     }
   },
   "schema": 1
