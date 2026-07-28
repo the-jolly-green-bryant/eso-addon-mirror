@@ -55,6 +55,13 @@ class MirrorTests(unittest.TestCase):
     def test_title_decodes_html_entities(self):
         self.assertEqual(mirror.title({"title": "Votan&#39;s Addon"}, "x"), "Votan's Addon")
 
+    def test_directory_name_is_readable_and_safe(self):
+        identifier = "00000000-0000-4000-8000-000000000000"
+        self.assertEqual(
+            mirror.directory_name("Votan's Fisherman / Console", identifier),
+            f"Votan-s-Fisherman-Console__{identifier}",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

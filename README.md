@@ -1,69 +1,71 @@
 # ESO Add-on Mirror
 
-A low-cost, serverless mirror of the latest published Elder Scrolls Online
-console add-ons from Bethesda.net. A daily GitHub Actions job discovers add-ons,
-downloads only entries whose stable metadata changed, safely unpacks them, and
-creates one commit per changed add-on. Progress is pushed every ten commits and
-again on exit, so a later bad entry does not discard completed work.
+ESO add-ons are small pieces of community history. They represent years of
+experimentation, accessibility work, interface design, and shared knowledge,
+yet their continued availability depends on a single distribution platform and
+the ongoing attention of individual authors.
 
-Every discovered entry gets an `addon.json`. Published entries also contain the
-unpacked add-on code; unpublished entries intentionally contain metadata only.
+This repository exists to give the public ESO console add-on catalog a second,
+plainly inspectable home.
 
-## Cost model
+## Why mirror the catalog?
 
-The intended deployment is a **public GitHub repository**. GitHub-hosted Actions
-usage is free for standard runners in public repositories, so there is no
-always-on service or cloud bill. The practical costs are repository storage,
-bandwidth, and Git history growth. GitHub recommends repositories remain small;
-if the mirror grows substantially, split it by add-on or move binary snapshots
-to object storage.
+### Preservation
 
-## Deploy
+An add-on can disappear when an author moves on, an account changes, or a
+platform removes an entry. A Git history preserves the evolution of the
+catalog instead of exposing only whatever happens to be available today.
 
-1. Create a public GitHub repository named `eso-addon-mirror` and push these
-   files to its default branch.
-2. In **Settings → Secrets and variables → Actions**, add:
-   - `BNET_USERNAME`
-   - `BNET_PASSWORD`
-3. Keep the workflow's `MIRROR_SCOPE: all` to discover every published add-on,
-   or change it to `allowlist` and put approved Bethesda content UUIDs in
-   `allowlist.txt`.
-4. Run **Mirror Bethesda ESO add-ons** once from the Actions tab. It will then
-   run daily at approximately 04:23 UTC.
+### Transparency
 
-The workflow needs only `contents: write`. Credentials and the short-lived
-session file are never committed. Concurrent runs are serialized.
+Console players normally receive add-ons through an in-game interface. Keeping
+the source in a public repository makes changes visible, searchable, and easy
+for the community to review.
 
-## Local use
+### Research and accountability
 
-Install version 1.4.0 of
-[ESOAddOnUploaderCLI](https://github.com/sirinsidiator/ESOAddOnUploaderCLI/releases/tag/1.4.0),
-then run:
+A chronological, file-level record helps maintainers investigate regressions,
+compare releases, recognize copied work, and study how the ESO add-on ecosystem
+changes over time.
 
-```sh
-export BNET_USERNAME="your Bethesda username"
-export BNET_PASSWORD="your Bethesda password"
-export MIRROR_SCOPE=allowlist
-python3 scripts/mirror.py
+### Independence
+
+The mirror is deliberately simple: ordinary directories, ordinary files, and
+ordinary Git commits. It does not require a custom database or a permanently
+running service, making the archive inexpensive to maintain and straightforward
+to reproduce elsewhere.
+
+## What the repository represents
+
+Each Bethesda catalog entry lives at:
+
+```text
+addons/NAME__CONTENT_ID/
 ```
 
-Run the dependency-free test suite with:
+The readable name makes browsing and searching pleasant; the immutable Bethesda
+content ID prevents ambiguity when names collide or change.
 
-```sh
-python3 -m unittest discover -s tests -v
-```
+Every entry contains an `addon.json` describing its source and publication
+state. Published entries also contain the unpacked add-on files. Unpublished
+entries remain visible as metadata-only records, preserving their place in the
+catalog without implying that downloadable code exists.
 
-## Security and redistribution
+Each changed add-on receives its own commit. That makes the history meaningful:
+a commit corresponds to one catalog entry changing, rather than an opaque daily
+bulk snapshot. Work is pushed incrementally so one malformed or unavailable
+entry cannot erase progress made earlier in the run.
 
-The downloader rejects absolute paths, parent-directory traversal, symlinks,
-and archives expanding beyond 512 MiB by default. Mirrored code is untrusted;
-do not execute it in the workflow.
+## Stewardship
 
-The MIT license in this repository applies only to the mirror utility. Add-ons
-remain copyrighted by their respective authors and may have different
-licenses. Before operating a public mirror, confirm that redistribution of
-every included add-on is permitted. `MIRROR_SCOPE=allowlist` is the safer
-default for an authorization-based mirror.
+This is an unofficial preservation project and is not endorsed by Bethesda
+Softworks or ZeniMax Online Studios. Add-ons remain the work of their respective
+authors. The repository's MIT license applies to the mirroring utility itself,
+not automatically to mirrored add-on content.
 
-This project is unofficial and is not endorsed by Bethesda Softworks or
-ZeniMax Online Studios.
+Public preservation carries responsibility. Takedown and attribution concerns
+should be handled promptly, and the archive should never be treated as evidence
+that every add-on shares the same redistribution license.
+
+The mirror refreshes daily using a standard public GitHub Actions runner. There
+is no always-on server and no paid infrastructure by design.

@@ -11,6 +11,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import unicodedata
 import zipfile
 from pathlib import Path, PurePosixPath
 from typing import Any
@@ -90,6 +91,36 @@ def title(item: dict[str, Any], fallback: str) -> str:
     return fallback
 
 
+def directory_name(name: str, identifier: str) -> str:
+    """Return a readable, cross-platform-safe NAME__ID directory name."""
+    normalized = unicodedata.normalize("NFKC", html.unescape(name))
+    pieces: list[str] = []
+    previous_dash = False
+    for character in normalized:
+        allowed = character.isalnum() or character in "._-"
+        if allowed:
+            pieces.append(character)
+            previous_dash = False
+        elif not previous_dash:
+            pieces.append("-")
+            previous_dash = True
+    readable = "".join(pieces).strip(" .-_")[:100].rstrip(" .-_") or "Addon"
+    return f"{readable}__{identifier}"
+
+
+def existing_addon_path(identifier: str, old: dict[str, Any]) -> Path | None:
+    recorded = old.get("path")
+    if isinstance(recorded, str):
+        candidate = ROOT / recorded
+        if candidate.is_dir():
+            return candidate
+    legacy = ADDONS / identifier
+    if legacy.is_dir():
+        return legacy
+    matches = list(ADDONS.glob(f"*__{identifier}"))
+    return matches[0] if matches else None
+
+
 def stable_fingerprint(item: dict[str, Any]) -> str:
     """Hash release metadata while ignoring counters and other noisy fields."""
     volatile = {
@@ -153,11 +184,13 @@ def selected_ids() -> set[str] | None:
 def addon_record(
     identifier: str, item: dict[str, Any], fingerprint: str, published: bool
 ) -> dict[str, Any]:
+    name = title(item, identifier)
     return {
         "content_id": identifier,
-        "title": title(item, identifier),
+        "title": name,
         "published": published,
         "fingerprint": fingerprint,
+        "path": f"addons/{directory_name(name, identifier)}",
         "source": (
             "https://mods.bethesda.net/en/elderscrollsonline/details/"
             f"{identifier}"
@@ -180,7 +213,9 @@ def write_catalog(addons: dict[str, Any]) -> None:
 
 
 def commit_addon(identifier: str, name: str) -> bool:
-    run("git", "add", "-A", "--", f"addons/{identifier}", "catalog.json")
+    # Stage the full add-ons tree so Git records directory renames cleanly.
+    # Only one add-on is mutated between commits.
+    run("git", "add", "-A", "--", "addons", "catalog.json")
     changed = subprocess.run(
         ("git", "diff", "--cached", "--quiet"), cwd=ROOT, check=False
     ).returncode
@@ -224,8 +259,19 @@ def main() -> None:
             for identifier, item in sorted(discovered.items()):
                 fingerprint = stable_fingerprint(item)
                 old = previous.get(identifier, {})
-                target = ADDONS / identifier
-                if old.get("fingerprint") != fingerprint or not target.is_dir():
+                name = title(item, identifier)
+                target = ADDONS / directory_name(name, identifier)
+                existing = existing_addon_path(identifier, old)
+                refresh_content = old.get("fingerprint") != fingerprint or existing is None
+                path_changed = existing is not None and existing != target
+
+                if path_changed:
+                    if target.exists():
+                        raise RuntimeError(f"Cannot rename {existing} over existing {target}")
+                    existing.rename(target)
+                    existing = target
+
+                if refresh_content:
                     archive = work / f"{identifier}.zip"
                     staged = work / f"unpacked-{identifier}"
                     staged.mkdir()
@@ -246,7 +292,11 @@ def main() -> None:
                     if published:
                         safe_extract(archive, staged)
                         shutil.copytree(staged, target)
-                    record = addon_record(identifier, item, fingerprint, published)
+                else:
+                    published = bool(old.get("published", True))
+
+                record = addon_record(identifier, item, fingerprint, published)
+                if refresh_content or path_changed or old.get("path") != record["path"]:
                     write_addon_metadata(target, record)
                     next_catalog[identifier] = record
                     write_catalog(next_catalog)
@@ -264,7 +314,9 @@ def main() -> None:
             # time. Allowlist removals remain explicit operator actions.
             if wanted is None:
                 for identifier in previous.keys() - discovered.keys():
-                    shutil.rmtree(ADDONS / identifier, ignore_errors=True)
+                    old_path = existing_addon_path(identifier, previous[identifier])
+                    if old_path is not None:
+                        shutil.rmtree(old_path, ignore_errors=True)
                     removed = next_catalog.pop(identifier, previous[identifier])
                     write_catalog(next_catalog)
                     if commit_addon(identifier, removed.get("title", identifier)):
