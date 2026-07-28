@@ -2359,6 +2359,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9d474e3f-7d1b-46fc-9b81-3949ad0f70e5",
       "title": "SPFLib"
+    },
+    "9d977c03-cdc6-45ef-99da-5dcd825ccfa1": {
+      "content_id": "9d977c03-cdc6-45ef-99da-5dcd825ccfa1",
+      "fingerprint": "dd4b73d8edd4800d9bfa7fb659cf98bb5f19eb48d3b6023f9f2a0532d8c483e5",
+      "path": "addons/RezAlert__9d977c03-cdc6-45ef-99da-5dcd825ccfa1",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9d977c03-cdc6-45ef-99da-5dcd825ccfa1",
+      "title": "RezAlert"
     }
   },
   "schema": 1
