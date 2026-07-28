@@ -2063,6 +2063,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8e0a0bf5-7c84-4155-ba23-48c34887ff9f",
       "title": "Natey's Armory"
+    },
+    "8e142999-8113-4317-9868-a6be8e0a34cc": {
+      "content_id": "8e142999-8113-4317-9868-a6be8e0a34cc",
+      "fingerprint": "d618e4d7defe8e2fb1735522a8ffa88b13c3767247591655a22c41ef10e514ba",
+      "path": "addons/Group-Finder-Alerts__8e142999-8113-4317-9868-a6be8e0a34cc",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8e142999-8113-4317-9868-a6be8e0a34cc",
+      "title": "Group Finder Alerts"
     }
   },
   "schema": 1
