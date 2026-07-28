@@ -3207,6 +3207,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d36d2963-900c-4bb1-9f66-05f4d480a763",
       "title": "VDSABow"
+    },
+    "d38d1fe9-e738-4036-9d0d-baeaa4ebbe2e": {
+      "content_id": "d38d1fe9-e738-4036-9d0d-baeaa4ebbe2e",
+      "fingerprint": "f17da8a5fe2c731f7d5e8436813370161f7631da70c7a0f2563fa4a142106793",
+      "path": "addons/Murf-s-Knickknacks__d38d1fe9-e738-4036-9d0d-baeaa4ebbe2e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d38d1fe9-e738-4036-9d0d-baeaa4ebbe2e",
+      "title": "Murf's Knickknacks"
     }
   },
   "schema": 1
