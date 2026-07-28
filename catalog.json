@@ -2375,6 +2375,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9e55edc2-32f8-4c75-b87c-e921fd53e9cf",
       "title": "AlternateDeathRecap"
+    },
+    "a00e3e80-0ad4-406b-bc48-322f6244f725": {
+      "content_id": "a00e3e80-0ad4-406b-bc48-322f6244f725",
+      "fingerprint": "e5b3b7278e29ca8cafa0e07d6377368e94e08dbdb5a233e15a6bd7e0bbbdcee1",
+      "path": "addons/Unofficial-U49-Camera-Settings__a00e3e80-0ad4-406b-bc48-322f6244f725",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a00e3e80-0ad4-406b-bc48-322f6244f725",
+      "title": "Unofficial U49 Camera Settings"
     }
   },
   "schema": 1
