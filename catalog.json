@@ -2159,6 +2159,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/91330ebe-27c8-46b9-ad71-42991b96789d",
       "title": "RezBot"
+    },
+    "918caf2a-e100-4088-ae58-92d9240520a5": {
+      "content_id": "918caf2a-e100-4088-ae58-92d9240520a5",
+      "fingerprint": "f78640cc2584c063edb6b6e3564f1b02cba01aecd444d5c23e6174dcbb62db92",
+      "path": "addons/Map-of-Many-Riches__918caf2a-e100-4088-ae58-92d9240520a5",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/918caf2a-e100-4088-ae58-92d9240520a5",
+      "title": "Map of Many Riches"
     }
   },
   "schema": 1
