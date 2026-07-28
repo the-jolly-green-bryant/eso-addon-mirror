@@ -167,6 +167,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0b7868ba-bd96-4cff-a633-8ad4ff7c5829",
       "title": "Universal Effect Tracker"
+    },
+    "0c5ee200-59f0-443c-b3a8-4eb164532120": {
+      "content_id": "0c5ee200-59f0-443c-b3a8-4eb164532120",
+      "fingerprint": "f0b2026884e2212858b9ba1f056ed0ac549c9af56e410ee66b36b14a557807d0",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0c5ee200-59f0-443c-b3a8-4eb164532120",
+      "title": "Boss Bar Suppressor"
     }
   },
   "schema": 1
