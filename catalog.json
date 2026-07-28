@@ -412,6 +412,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1f552d57-81fb-407f-b9f2-f45228e2a171",
       "title": "AntiDK"
+    },
+    "1ff1b2cd-ba65-4264-a11d-2c55b57eb158": {
+      "content_id": "1ff1b2cd-ba65-4264-a11d-2c55b57eb158",
+      "fingerprint": "6eb449cfde950c5d3fa3ec14040f22626e705f63e43a01652f14f3bb4ae7f0e5",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1ff1b2cd-ba65-4264-a11d-2c55b57eb158",
+      "title": "Addon Loadouts"
     }
   },
   "schema": 1
