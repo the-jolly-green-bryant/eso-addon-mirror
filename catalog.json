@@ -719,6 +719,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2fd5ce0c-10fd-49de-9d22-2de4052785b3",
       "title": "Global Cooldown Monitor Revised"
+    },
+    "2fe8e45f-ebf9-4507-b981-91023b441f3e": {
+      "content_id": "2fe8e45f-ebf9-4507-b981-91023b441f3e",
+      "fingerprint": "7c8d45146a3c30e5945c864ddf9bb4cb4791759b2a4eeac604e8a493d0603f1b",
+      "path": "addons/CPSlotsConsole__2fe8e45f-ebf9-4507-b981-91023b441f3e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2fe8e45f-ebf9-4507-b981-91023b441f3e",
+      "title": "CPSlotsConsole"
     }
   },
   "schema": 1
