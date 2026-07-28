@@ -1199,6 +1199,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4c4e9010-a3ef-435d-b540-4d292e289eca",
       "title": "Murf's Treasures"
+    },
+    "4c644add-5991-49a0-ad77-6b91a5ffee42": {
+      "content_id": "4c644add-5991-49a0-ad77-6b91a5ffee42",
+      "fingerprint": "2203955f84444bd027c1813857144a8abed990ba62a9b66a2d0534e94f85e6a1",
+      "path": "addons/EyeOnKeep__4c644add-5991-49a0-ad77-6b91a5ffee42",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4c644add-5991-49a0-ad77-6b91a5ffee42",
+      "title": "EyeOnKeep"
     }
   },
   "schema": 1
