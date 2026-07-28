@@ -1791,6 +1791,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/7752de6b-f23a-4a95-971b-dbf1e996df87",
       "title": "DeadMarker2 Metrics"
+    },
+    "782c659c-1b9a-4e03-aaef-6526095363ad": {
+      "content_id": "782c659c-1b9a-4e03-aaef-6526095363ad",
+      "fingerprint": "9287d435ad233b53fa56026abc8c3da5d67f8768a31abdeccc69680bfecca78c",
+      "path": "addons/Buffy-Live-Buff-Tracking__782c659c-1b9a-4e03-aaef-6526095363ad",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/782c659c-1b9a-4e03-aaef-6526095363ad",
+      "title": "Buffy: Live Buff Tracking"
     }
   },
   "schema": 1
