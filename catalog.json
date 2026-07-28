@@ -1215,6 +1215,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4dda84ba-7458-4a69-890d-1c7dd830474f",
       "title": "LibGetText"
+    },
+    "4f86b7c8-8fb6-432c-a1b9-2004263244ab": {
+      "content_id": "4f86b7c8-8fb6-432c-a1b9-2004263244ab",
+      "fingerprint": "b73bc12135e6a0c24ffa646d0b2762699dbd5dc1d056afb4abad824887da01b1",
+      "path": "addons/Ned-s-Group-Manager__4f86b7c8-8fb6-432c-a1b9-2004263244ab",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4f86b7c8-8fb6-432c-a1b9-2004263244ab",
+      "title": "Ned's Group Manager"
     }
   },
   "schema": 1
