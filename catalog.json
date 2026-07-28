@@ -1391,6 +1391,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5e051775-8c73-4e96-bb6b-dcaa188dc064",
       "title": "Title Loop"
+    },
+    "5e1a067b-7af6-4752-bbb0-3de588e8587e": {
+      "content_id": "5e1a067b-7af6-4752-bbb0-3de588e8587e",
+      "fingerprint": "d9da671c853d5ca7d5d0fdf1eef9042da85f4957181cbe06c9ccbf70ff0b6cf0",
+      "path": "addons/Chat-Skipper__5e1a067b-7af6-4752-bbb0-3de588e8587e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5e1a067b-7af6-4752-bbb0-3de588e8587e",
+      "title": "Chat Skipper"
     }
   },
   "schema": 1
