@@ -759,6 +759,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/30b30033-06cc-48b7-a0c6-7be8d27487cf",
       "title": "Reticle Rainbow"
+    },
+    "32111121-29be-4447-ba40-3c064d28680e": {
+      "content_id": "32111121-29be-4447-ba40-3c064d28680e",
+      "fingerprint": "c63bcd4e98ee6cd3f09a23ac93e5e38d33cf8a470801d1cf370853bf331e3e9c",
+      "path": "addons/Power-Lash-Tracker__32111121-29be-4447-ba40-3c064d28680e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/32111121-29be-4447-ba40-3c064d28680e",
+      "title": "Power Lash Tracker"
     }
   },
   "schema": 1
