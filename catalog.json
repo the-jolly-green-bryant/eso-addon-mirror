@@ -3463,6 +3463,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e1710013-83a1-4e50-941a-5464d85d587c",
       "title": "Am I Blocking+"
+    },
+    "e17d8325-5ee4-4349-bae0-f777d0d9633b": {
+      "content_id": "e17d8325-5ee4-4349-bae0-f777d0d9633b",
+      "fingerprint": "2f84031efc3e4b441231d64949e9bf34987ebd7e302ecb0cc50e33e193890c1a",
+      "path": "addons/Lazy-Learner__e17d8325-5ee4-4349-bae0-f777d0d9633b",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e17d8325-5ee4-4349-bae0-f777d0d9633b",
+      "title": "Lazy Learner"
     }
   },
   "schema": 1
