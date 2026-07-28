@@ -160,6 +160,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0b695623-5ffb-4700-835c-fa628fdcb1ba",
       "title": "LuiMedia"
+    },
+    "0b7868ba-bd96-4cff-a633-8ad4ff7c5829": {
+      "content_id": "0b7868ba-bd96-4cff-a633-8ad4ff7c5829",
+      "fingerprint": "77d28ab21119c0665d09af8f1de718c7da11272a08dc6e1414ed2ff19eb80b0f",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0b7868ba-bd96-4cff-a633-8ad4ff7c5829",
+      "title": "Universal Effect Tracker"
     }
   },
   "schema": 1
