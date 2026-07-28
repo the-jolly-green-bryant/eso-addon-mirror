@@ -1583,6 +1583,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6a2d5726-84d1-4db6-adba-e378e2005067",
       "title": "Reset Markers (Survey & Treasure Map)"
+    },
+    "6aa72f53-f802-446b-9be4-55671bec2726": {
+      "content_id": "6aa72f53-f802-446b-9be4-55671bec2726",
+      "fingerprint": "c9fb8cea7a020a5c2d414dcaa14c02a72e02aa0f0ae0a3e16398d11a300fbd14",
+      "path": "addons/EsoAR__6aa72f53-f802-446b-9be4-55671bec2726",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6aa72f53-f802-446b-9be4-55671bec2726",
+      "title": "EsoAR"
     }
   },
   "schema": 1
