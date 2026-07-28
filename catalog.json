@@ -202,6 +202,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1006e4e4-396e-4dec-9923-d80c541614d5",
       "title": "Transmute Saver"
+    },
+    "10077c6b-b1fb-4c9d-9cfe-26b16bd23b8d": {
+      "content_id": "10077c6b-b1fb-4c9d-9cfe-26b16bd23b8d",
+      "fingerprint": "c103b975c28a745be80c3c80f14f2009560f12eb42a1d91d3b5f703885967f0a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/10077c6b-b1fb-4c9d-9cfe-26b16bd23b8d",
+      "title": "Side Quest Tracker"
     }
   },
   "schema": 1
