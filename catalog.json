@@ -2151,6 +2151,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/910446ca-4e83-47c8-8c9b-a5d99bcec73e",
       "title": "Auto-Claim or Hide Tome Challenges"
+    },
+    "91330ebe-27c8-46b9-ad71-42991b96789d": {
+      "content_id": "91330ebe-27c8-46b9-ad71-42991b96789d",
+      "fingerprint": "64f4b7fb81dbde516112bf3341ffd5c501ad08af1861e2278c4b2903112c025f",
+      "path": "addons/RezBot__91330ebe-27c8-46b9-ad71-42991b96789d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/91330ebe-27c8-46b9-ad71-42991b96789d",
+      "title": "RezBot"
     }
   },
   "schema": 1
