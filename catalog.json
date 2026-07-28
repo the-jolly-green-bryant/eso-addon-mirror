@@ -2799,6 +2799,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/bb9537f2-740f-4ba4-a1d8-d5f90aa1f606",
       "title": "Yokeda"
+    },
+    "bb95b657-e191-43cd-84b3-63ed659b9248": {
+      "content_id": "bb95b657-e191-43cd-84b3-63ed659b9248",
+      "fingerprint": "4aebcf88183e0a7136b6ebbd3a2573c6f8cc38c4f0bb25532788c667fe1c7f96",
+      "path": "addons/Provisioning-Watcher__bb95b657-e191-43cd-84b3-63ed659b9248",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/bb95b657-e191-43cd-84b3-63ed659b9248",
+      "title": "Provisioning Watcher"
     }
   },
   "schema": 1
