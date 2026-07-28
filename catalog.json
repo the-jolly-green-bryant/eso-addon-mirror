@@ -799,6 +799,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/35674482-a2ce-4dfb-86f8-519b941a350a",
       "title": "LibLoreLibraryCesarska"
+    },
+    "35d616b7-f96d-4181-8d13-c75bf9c5617d": {
+      "content_id": "35d616b7-f96d-4181-8d13-c75bf9c5617d",
+      "fingerprint": "bae3052666f032f36a049c6267ac7edb1f155362443222c8c06235ef1443811b",
+      "path": "addons/BetterCharacterOverview__35d616b7-f96d-4181-8d13-c75bf9c5617d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/35d616b7-f96d-4181-8d13-c75bf9c5617d",
+      "title": "BetterCharacterOverview"
     }
   },
   "schema": 1
