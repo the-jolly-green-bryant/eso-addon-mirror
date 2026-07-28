@@ -1079,6 +1079,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4700c5de-fb02-411e-b563-1f326352b4ed",
       "title": "Cooldown Tracker"
+    },
+    "47568dd9-5328-4e2a-9862-c59932473a4b": {
+      "content_id": "47568dd9-5328-4e2a-9862-c59932473a4b",
+      "fingerprint": "29d9ef2fe46cc60a831b67f3c9d5e0a533d89e8376afd15e8285cd5dc9c555a0",
+      "path": "addons/Duel-Results__47568dd9-5328-4e2a-9862-c59932473a4b",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/47568dd9-5328-4e2a-9862-c59932473a4b",
+      "title": "Duel Results"
     }
   },
   "schema": 1
