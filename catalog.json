@@ -2391,6 +2391,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a095f0da-9f45-4dde-a150-2c9b09ba7317",
       "title": "True Exploration"
+    },
+    "a10a8862-6862-4916-a685-c75f5a098637": {
+      "content_id": "a10a8862-6862-4916-a685-c75f5a098637",
+      "fingerprint": "d607fa6a0e33aade8d476d15514650a82c32a5fe0e59ab6d2f13f27156c21d51",
+      "path": "addons/LeadReminder__a10a8862-6862-4916-a685-c75f5a098637",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a10a8862-6862-4916-a685-c75f5a098637",
+      "title": "LeadReminder"
     }
   },
   "schema": 1
