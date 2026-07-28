@@ -3407,6 +3407,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/df7e78bb-63a0-4221-a1f6-36c7ac0c29e8",
       "title": "TSC Data Hub"
+    },
+    "dfed21f9-988b-44b9-a054-89bfcce20639": {
+      "content_id": "dfed21f9-988b-44b9-a054-89bfcce20639",
+      "fingerprint": "5c3f20910f4bdb6ee94bc460645d498381c31c4f8564c005730488bab00e4a6d",
+      "path": "addons/NextQuest__dfed21f9-988b-44b9-a054-89bfcce20639",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/dfed21f9-988b-44b9-a054-89bfcce20639",
+      "title": "NextQuest"
     }
   },
   "schema": 1
