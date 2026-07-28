@@ -863,6 +863,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/384135b6-4bca-4589-8b05-ebf91afd43ee",
       "title": "Semi's experimental addon"
+    },
+    "389fdfeb-6af9-48ad-8121-39ce405b4267": {
+      "content_id": "389fdfeb-6af9-48ad-8121-39ce405b4267",
+      "fingerprint": "24edc61b29504b8f3e2578b13bb37091b2060c0b722088cfd7ca2550a936214c",
+      "path": "addons/S.T.A.R.S__389fdfeb-6af9-48ad-8121-39ce405b4267",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/389fdfeb-6af9-48ad-8121-39ce405b4267",
+      "title": "S.T.A.R.S"
     }
   },
   "schema": 1
