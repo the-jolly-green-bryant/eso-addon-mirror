@@ -2135,6 +2135,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/902fc32f-1993-4f03-8d5c-0b17986d5681",
       "title": "GCD Weave Timer"
+    },
+    "90c97baa-6170-421f-bd23-7fd88500168d": {
+      "content_id": "90c97baa-6170-421f-bd23-7fd88500168d",
+      "fingerprint": "a00ca3577bbaa64a112056dfdf30e8145086e7511688fef9feab606c1516296d",
+      "path": "addons/LibMessagePlugin__90c97baa-6170-421f-bd23-7fd88500168d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/90c97baa-6170-421f-bd23-7fd88500168d",
+      "title": "LibMessagePlugin"
     }
   },
   "schema": 1
