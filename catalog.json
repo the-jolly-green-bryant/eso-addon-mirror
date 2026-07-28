@@ -895,6 +895,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/39644437-95e9-414a-adf6-578b31771ea0",
       "title": "LibGroupBroadcast"
+    },
+    "39fc7c26-2635-417b-b2e4-1a071c50d41d": {
+      "content_id": "39fc7c26-2635-417b-b2e4-1a071c50d41d",
+      "fingerprint": "dbc7a3725487a23bb18687dabf22e737caf18ede8312bc9cd53793c2b9402c3f",
+      "path": "addons/LoreTooltips__39fc7c26-2635-417b-b2e4-1a071c50d41d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/39fc7c26-2635-417b-b2e4-1a071c50d41d",
+      "title": "LoreTooltips"
     }
   },
   "schema": 1
