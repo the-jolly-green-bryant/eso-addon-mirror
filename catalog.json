@@ -496,6 +496,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/25add1be-e5d5-4983-be9d-98b3739bd22c",
       "title": "LiveAchiever"
+    },
+    "25cfa10b-66f5-4e8c-9d1a-1c452491665f": {
+      "content_id": "25cfa10b-66f5-4e8c-9d1a-1c452491665f",
+      "fingerprint": "26df60377d98ac7c2be64c24b8ea409226fd44083b689f8c6ea9d1f376de79e1",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/25cfa10b-66f5-4e8c-9d1a-1c452491665f",
+      "title": "LibGroupCombatStats"
     }
   },
   "schema": 1
