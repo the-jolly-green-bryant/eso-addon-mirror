@@ -13,6 +13,7 @@ import subprocess
 import tempfile
 import unicodedata
 import zipfile
+from datetime import UTC, datetime
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -189,6 +190,7 @@ def addon_record(
         "content_id": identifier,
         "title": name,
         "published": published,
+        "deleted": False,
         "fingerprint": fingerprint,
         "path": f"addons/{directory_name(name, identifier)}",
         "source": (
@@ -296,7 +298,12 @@ def main() -> None:
                     published = bool(old.get("published", True))
 
                 record = addon_record(identifier, item, fingerprint, published)
-                if refresh_content or path_changed or old.get("path") != record["path"]:
+                if (
+                    refresh_content
+                    or path_changed
+                    or old.get("path") != record["path"]
+                    or old.get("deleted") is True
+                ):
                     write_addon_metadata(target, record)
                     next_catalog[identifier] = record
                     write_catalog(next_catalog)
@@ -310,14 +317,20 @@ def main() -> None:
                 elif identifier not in next_catalog:
                     next_catalog[identifier] = old
 
-            # Entries absent from a complete listing are removed one commit at a
-            # time. Allowlist removals remain explicit operator actions.
+            # Preserve entries absent from a complete listing as tombstones.
+            # Their last mirrored files remain downloadable and inspectable.
+            # Allowlist removals remain explicit operator actions.
             if wanted is None:
                 for identifier in previous.keys() - discovered.keys():
                     old_path = existing_addon_path(identifier, previous[identifier])
+                    removed = dict(next_catalog.get(identifier, previous[identifier]))
+                    if removed.get("deleted") is True:
+                        continue
+                    removed["deleted"] = True
+                    removed["deleted_at"] = datetime.now(UTC).isoformat()
+                    next_catalog[identifier] = removed
                     if old_path is not None:
-                        shutil.rmtree(old_path, ignore_errors=True)
-                    removed = next_catalog.pop(identifier, previous[identifier])
+                        write_addon_metadata(old_path, removed)
                     write_catalog(next_catalog)
                     if commit_addon(identifier, removed.get("title", identifier)):
                         unpushed += 1
