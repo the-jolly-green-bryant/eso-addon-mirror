@@ -3303,6 +3303,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/da882875-d281-47d4-b525-aa19f4f40875",
       "title": "Group Buff Panels"
+    },
+    "da93c9ce-04e0-4acf-a62a-16e23c1e8d06": {
+      "content_id": "da93c9ce-04e0-4acf-a62a-16e23c1e8d06",
+      "fingerprint": "ce408d791d3be1869a09cd9ce418560bc30941e37f9dfad521947851a13d18af",
+      "path": "addons/LibQRCode__da93c9ce-04e0-4acf-a62a-16e23c1e8d06",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/da93c9ce-04e0-4acf-a62a-16e23c1e8d06",
+      "title": "LibQRCode"
     }
   },
   "schema": 1
