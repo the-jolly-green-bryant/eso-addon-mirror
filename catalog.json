@@ -3679,6 +3679,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ec23fab6-f620-4366-90ab-82e8702a62bb",
       "title": "LibCharacterKnowledge"
+    },
+    "ec4c8920-d10e-46dd-9a4c-fddf44cbb43e": {
+      "content_id": "ec4c8920-d10e-46dd-9a4c-fddf44cbb43e",
+      "fingerprint": "959c6d6eb80803ef2c01035fdd89842af90bda2097d5dc0bf8deecdb3c1468f0",
+      "path": "addons/Do-Not-Learn__ec4c8920-d10e-46dd-9a4c-fddf44cbb43e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ec4c8920-d10e-46dd-9a4c-fddf44cbb43e",
+      "title": "Do Not Learn"
     }
   },
   "schema": 1
