@@ -3119,6 +3119,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cec7b602-5dc0-4af0-a949-cd5483dc7329",
       "title": "LibTextFormat"
+    },
+    "cf379dee-3395-4310-ab3f-433677ac7201": {
+      "content_id": "cf379dee-3395-4310-ab3f-433677ac7201",
+      "fingerprint": "6d11d874bf8d6223beb7a517fd3763fb979e0073945364ba0578302f5d5731ae",
+      "path": "addons/ShowApiVersion__cf379dee-3395-4310-ab3f-433677ac7201",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cf379dee-3395-4310-ab3f-433677ac7201",
+      "title": "ShowApiVersion"
     }
   },
   "schema": 1
