@@ -871,6 +871,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/389fdfeb-6af9-48ad-8121-39ce405b4267",
       "title": "S.T.A.R.S"
+    },
+    "38c45fe7-8274-43a2-9eaa-570253d23fdb": {
+      "content_id": "38c45fe7-8274-43a2-9eaa-570253d23fdb",
+      "fingerprint": "3f041850e0a48305608fecf68f70703daf6288508996dd54cecf559139f1a7ac",
+      "path": "addons/Stay-Mounted__38c45fe7-8274-43a2-9eaa-570253d23fdb",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/38c45fe7-8274-43a2-9eaa-570253d23fdb",
+      "title": "Stay Mounted"
     }
   },
   "schema": 1
