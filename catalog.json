@@ -2127,6 +2127,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8fbbe7ae-8178-4e35-9755-3cafefd42095",
       "title": "Lazy Confirm (and delete)"
+    },
+    "902fc32f-1993-4f03-8d5c-0b17986d5681": {
+      "content_id": "902fc32f-1993-4f03-8d5c-0b17986d5681",
+      "fingerprint": "afbccc1ac49c2a4a4773c58816789f42dc03f0c7f140d21677dc6a5110445e74",
+      "path": "addons/GCD-Weave-Timer__902fc32f-1993-4f03-8d5c-0b17986d5681",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/902fc32f-1993-4f03-8d5c-0b17986d5681",
+      "title": "GCD Weave Timer"
     }
   },
   "schema": 1
