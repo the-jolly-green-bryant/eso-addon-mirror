@@ -1455,6 +1455,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/61069d72-f6b1-401b-b5a7-e7c3f1b32c5e",
       "title": "Where's My Sul'Xans Buff?"
+    },
+    "61ffae27-7976-4d4b-a9fa-0fafb387434a": {
+      "content_id": "61ffae27-7976-4d4b-a9fa-0fafb387434a",
+      "fingerprint": "39feceb9d7942bf88e192695f4ec125aedca6363c3f5d22380b884b645a56056",
+      "path": "addons/What-s-My-Build-Again__61ffae27-7976-4d4b-a9fa-0fafb387434a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/61ffae27-7976-4d4b-a9fa-0fafb387434a",
+      "title": "What's My Build Again"
     }
   },
   "schema": 1
