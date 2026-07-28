@@ -279,6 +279,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/153e64a6-b621-4c91-b84a-c2ae48778142",
       "title": "Tauntless"
+    },
+    "154706f1-4dcc-478b-a08e-42bd6f7caeff": {
+      "content_id": "154706f1-4dcc-478b-a08e-42bd6f7caeff",
+      "fingerprint": "f4fa34126c9793d09a61e311e960c7cbe29ff5c344673e1dd81dbf7e607c2431",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/154706f1-4dcc-478b-a08e-42bd6f7caeff",
+      "title": "CCTracker"
     }
   },
   "schema": 1
