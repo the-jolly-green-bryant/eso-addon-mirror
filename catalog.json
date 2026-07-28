@@ -1975,6 +1975,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/863227c7-d9fe-4803-b842-d9fb1aa79f16",
       "title": "ChampionXPBar"
+    },
+    "869cd684-8dba-4750-bdf3-9b3be03ecdc6": {
+      "content_id": "869cd684-8dba-4750-bdf3-9b3be03ecdc6",
+      "fingerprint": "c2e32d23257c36a88bfeaa0b5adfafe10e0b6af78baf9b34604bff35cf327660",
+      "path": "addons/IFG__869cd684-8dba-4750-bdf3-9b3be03ecdc6",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/869cd684-8dba-4750-bdf3-9b3be03ecdc6",
+      "title": "IFG"
     }
   },
   "schema": 1
