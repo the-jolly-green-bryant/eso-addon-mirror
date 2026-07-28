@@ -3199,6 +3199,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d3514a63-e01b-4267-ab25-f1b8e79aa586",
       "title": "HelloWorld"
+    },
+    "d36d2963-900c-4bb1-9f66-05f4d480a763": {
+      "content_id": "d36d2963-900c-4bb1-9f66-05f4d480a763",
+      "fingerprint": "fd17f81973cd2a317cd9472aa0fa2fc03626843d794c7009bcd62910f57e5b49",
+      "path": "addons/VDSABow__d36d2963-900c-4bb1-9f66-05f4d480a763",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d36d2963-900c-4bb1-9f66-05f4d480a763",
+      "title": "VDSABow"
     }
   },
   "schema": 1
