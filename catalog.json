@@ -2175,6 +2175,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/91a5e014-74ee-4d3b-a612-b2b05dd223d8",
       "title": "Fashion Mount"
+    },
+    "91c0799a-d1f2-46e3-9ef6-2c470d6869f6": {
+      "content_id": "91c0799a-d1f2-46e3-9ef6-2c470d6869f6",
+      "fingerprint": "b044f71225d784ae6f6beb22c8ca53b45ebc562fc763a63c1ae99c3b01950698",
+      "path": "addons/No-More-Errors__91c0799a-d1f2-46e3-9ef6-2c470d6869f6",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/91c0799a-d1f2-46e3-9ef6-2c470d6869f6",
+      "title": "No More Errors"
     }
   },
   "schema": 1
