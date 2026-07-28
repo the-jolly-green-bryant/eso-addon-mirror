@@ -2871,6 +2871,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c0bb6f24-c2ad-470f-885d-34928944caba",
       "title": "PerfectWeavePort"
+    },
+    "c0c82f16-9b5b-4707-bf96-be0f3c78a77a": {
+      "content_id": "c0c82f16-9b5b-4707-bf96-be0f3c78a77a",
+      "fingerprint": "e158726775170c2a72d5185660b3e6d8d2f5b264629e475b4345c7221a993e5f",
+      "path": "addons/AllAP__c0c82f16-9b5b-4707-bf96-be0f3c78a77a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c0c82f16-9b5b-4707-bf96-be0f3c78a77a",
+      "title": "AllAP"
     }
   },
   "schema": 1
