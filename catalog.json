@@ -2511,6 +2511,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a89e4472-1774-4182-bc32-05d04d19ca06",
       "title": "Addon Load Time Monitor"
+    },
+    "a8df6914-51e2-4059-8c77-a773a30bee81": {
+      "content_id": "a8df6914-51e2-4059-8c77-a773a30bee81",
+      "fingerprint": "4a89320106f233a825326dd8a5eafa48dd9fb9651dfc71c3e105ddc6a37f0405",
+      "path": "addons/Missing-Food-Drink-Buff-CSA__a8df6914-51e2-4059-8c77-a773a30bee81",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a8df6914-51e2-4059-8c77-a773a30bee81",
+      "title": "Missing Food/Drink Buff CSA"
     }
   },
   "schema": 1
