@@ -815,6 +815,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/36532469-e4dc-4cc3-b312-16b8a4bebc5b",
       "title": "METERSKULL Port"
+    },
+    "36ae3d1e-dbb6-45d2-b0a4-30934a0634f8": {
+      "content_id": "36ae3d1e-dbb6-45d2-b0a4-30934a0634f8",
+      "fingerprint": "6cabc9a76e21e6ae2369c65acd20187c7fabbdade17b5ab765a26f2e5dad8605",
+      "path": "addons/MyGridHelper__36ae3d1e-dbb6-45d2-b0a4-30934a0634f8",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/36ae3d1e-dbb6-45d2-b0a4-30934a0634f8",
+      "title": "MyGridHelper"
     }
   },
   "schema": 1
