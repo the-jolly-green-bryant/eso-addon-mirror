@@ -2183,6 +2183,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/91c0799a-d1f2-46e3-9ef6-2c470d6869f6",
       "title": "No More Errors"
+    },
+    "922792c1-1d90-4415-ada5-c356757e857f": {
+      "content_id": "922792c1-1d90-4415-ada5-c356757e857f",
+      "fingerprint": "cda4c5917702984999f6e55204151f5a7c85ee5e3c0d603de94effa8e864795c",
+      "path": "addons/Fancy-Action-Bar__922792c1-1d90-4415-ada5-c356757e857f",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/922792c1-1d90-4415-ada5-c356757e857f",
+      "title": "Fancy Action Bar+"
     }
   },
   "schema": 1
