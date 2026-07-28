@@ -3423,6 +3423,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e0335eb7-8445-4bde-9db4-1a4ace8ee8b1",
       "title": "Skyshards"
+    },
+    "e06117c8-dc48-479b-aa35-08555712f2ef": {
+      "content_id": "e06117c8-dc48-479b-aa35-08555712f2ef",
+      "fingerprint": "19b68719496c0de84b2b109271551e4c0c8559e2a0e72606622417e4760a4015",
+      "path": "addons/LibGroupUIReload__e06117c8-dc48-479b-aa35-08555712f2ef",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e06117c8-dc48-479b-aa35-08555712f2ef",
+      "title": "LibGroupUIReload"
     }
   },
   "schema": 1
