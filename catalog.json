@@ -2279,6 +2279,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/979371c6-2e58-4b2f-84af-cc9276c86b94",
       "title": "Satchel Exchange"
+    },
+    "9926b8d4-d4ca-4215-8790-013c0b1630c0": {
+      "content_id": "9926b8d4-d4ca-4215-8790-013c0b1630c0",
+      "fingerprint": "ebf8a497b05decb4ace41a2334bf44ca20e2714b776373ad727a54a75c89fd26",
+      "path": "addons/AUTO-LUA-MEMORY-CLEANER__9926b8d4-d4ca-4215-8790-013c0b1630c0",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9926b8d4-d4ca-4215-8790-013c0b1630c0",
+      "title": "AUTO LUA MEMORY CLEANER"
     }
   },
   "schema": 1
