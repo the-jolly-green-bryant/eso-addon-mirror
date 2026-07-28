@@ -1399,6 +1399,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5e1a067b-7af6-4752-bbb0-3de588e8587e",
       "title": "Chat Skipper"
+    },
+    "5ea04c1b-93b5-42c8-9870-118a7b08e4ae": {
+      "content_id": "5ea04c1b-93b5-42c8-9870-118a7b08e4ae",
+      "fingerprint": "12065c601445bc534839abc7bcdf19defa3f76fe90ff8745bd29e8a2384d6c67",
+      "path": "addons/MuteyPacrooti__5ea04c1b-93b5-42c8-9870-118a7b08e4ae",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5ea04c1b-93b5-42c8-9870-118a7b08e4ae",
+      "title": "MuteyPacrooti"
     }
   },
   "schema": 1
