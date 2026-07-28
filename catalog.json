@@ -1759,6 +1759,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/75746296-2f24-4d95-8fb5-1954d00fc1d6",
       "title": "Dungeon Tracker"
+    },
+    "764a614a-74ad-46e6-b587-0bea7cd6174c": {
+      "content_id": "764a614a-74ad-46e6-b587-0bea7cd6174c",
+      "fingerprint": "125b7ed2be46aeaae6d4e6e9fb2ae247f186b10bd9413795ba766db4fa0929c6",
+      "path": "addons/Aldrens-Grandmaster-Workshop__764a614a-74ad-46e6-b587-0bea7cd6174c",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/764a614a-74ad-46e6-b587-0bea7cd6174c",
+      "title": "Aldrens Grandmaster Workshop"
     }
   },
   "schema": 1
