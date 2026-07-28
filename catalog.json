@@ -3695,6 +3695,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ec9ce729-a472-4150-8f3c-1df05a369ad0",
       "title": "Battle Scrolls - Combat Stats & DPS Tracking"
+    },
+    "ee8ca2af-a359-45b8-98c7-8cb4edcd19d2": {
+      "content_id": "ee8ca2af-a359-45b8-98c7-8cb4edcd19d2",
+      "fingerprint": "8491a3e8b0168bd38fd0d116479b1dffbce5991defd55e49df5e7c7b75ed489b",
+      "path": "addons/DLJ-s-EXP-Scroll-Reminder__ee8ca2af-a359-45b8-98c7-8cb4edcd19d2",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ee8ca2af-a359-45b8-98c7-8cb4edcd19d2",
+      "title": "DLJ's EXP Scroll Reminder"
     }
   },
   "schema": 1
