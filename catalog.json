@@ -1927,6 +1927,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8394c641-1cb2-45f3-8b73-b6f424d6c630",
       "title": "Tea and Toast"
+    },
+    "8421afb6-ec3a-4d66-a247-e161c5656103": {
+      "content_id": "8421afb6-ec3a-4d66-a247-e161c5656103",
+      "fingerprint": "08395493e001fab02c5cf9a6cc0f27f96434fa14ef8bc1d56125188406d4fee9",
+      "path": "addons/Trust-but-Verify__8421afb6-ec3a-4d66-a247-e161c5656103",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8421afb6-ec3a-4d66-a247-e161c5656103",
+      "title": "Trust, but Verify"
     }
   },
   "schema": 1
