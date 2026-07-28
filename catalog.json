@@ -475,6 +475,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/23ee5193-1c27-4b42-b005-05c3f28ad835",
       "title": "Calamath's Test Site"
+    },
+    "247c8a28-fdfb-4ffc-9bb8-21c4fd1a01da": {
+      "content_id": "247c8a28-fdfb-4ffc-9bb8-21c4fd1a01da",
+      "fingerprint": "b4b007521b773b5c43d9fd2eb597b8e743926742268ba098980f74c41e513a5a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/247c8a28-fdfb-4ffc-9bb8-21c4fd1a01da",
+      "title": "Grumpy's Larcenist Tracker"
     }
   },
   "schema": 1
