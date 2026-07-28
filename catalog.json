@@ -3783,6 +3783,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f2ed8662-096e-46fa-bed1-9a73691c8f8f",
       "title": "AutoBankMats+"
+    },
+    "f386385b-2805-4720-8481-1d87d1cd1d0c": {
+      "content_id": "f386385b-2805-4720-8481-1d87d1cd1d0c",
+      "fingerprint": "81e52288f26eb8b97521f23b509a7c5a9105a6d54163525aa5d7b565cb43c546",
+      "path": "addons/PinAutoResizer__f386385b-2805-4720-8481-1d87d1cd1d0c",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f386385b-2805-4720-8481-1d87d1cd1d0c",
+      "title": "PinAutoResizer"
     }
   },
   "schema": 1
