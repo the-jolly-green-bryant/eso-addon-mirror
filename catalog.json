@@ -2671,6 +2671,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b2d38492-3b20-43e0-9262-af382d04fb04",
       "title": "Pocket Money"
+    },
+    "b344faa0-0b93-431e-ae22-befcaaa36333": {
+      "content_id": "b344faa0-0b93-431e-ae22-befcaaa36333",
+      "fingerprint": "81812a66c4b5e080de7cef0fcbfe16e4f2d11f52c6a529b5ddef9a825535223c",
+      "path": "addons/Improved-Night-Market-HUD__b344faa0-0b93-431e-ae22-befcaaa36333",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b344faa0-0b93-431e-ae22-befcaaa36333",
+      "title": "Improved Night Market HUD"
     }
   },
   "schema": 1
