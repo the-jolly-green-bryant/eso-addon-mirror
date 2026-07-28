@@ -3431,6 +3431,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e06117c8-dc48-479b-aa35-08555712f2ef",
       "title": "LibGroupUIReload"
+    },
+    "e0a62e77-93d4-43e7-9639-fb2737b3e00a": {
+      "content_id": "e0a62e77-93d4-43e7-9639-fb2737b3e00a",
+      "fingerprint": "2de729c1b239072a35af97ab575c3c2384b311bfe48a031ebaacf7c0df98f2aa",
+      "path": "addons/Map-Filter-Test-Case__e0a62e77-93d4-43e7-9639-fb2737b3e00a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e0a62e77-93d4-43e7-9639-fb2737b3e00a",
+      "title": "Map Filter Test Case"
     }
   },
   "schema": 1
