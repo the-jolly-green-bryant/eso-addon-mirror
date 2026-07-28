@@ -2567,6 +2567,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/adeb7cae-c7d2-4f05-9f6b-398235624c33",
       "title": "Bloom HPS"
+    },
+    "ae6c1833-5a02-4baf-8bf6-d18c7c8d33d8": {
+      "content_id": "ae6c1833-5a02-4baf-8bf6-d18c7c8d33d8",
+      "fingerprint": "82169b9a8a5de347511343c1d7f3d415842b17835c01242c2eadd8bd05ca9b68",
+      "path": "addons/BackBarTimer__ae6c1833-5a02-4baf-8bf6-d18c7c8d33d8",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ae6c1833-5a02-4baf-8bf6-d18c7c8d33d8",
+      "title": "BackBarTimer"
     }
   },
   "schema": 1
