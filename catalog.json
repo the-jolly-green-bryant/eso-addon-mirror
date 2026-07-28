@@ -959,6 +959,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3d1bd08c-876b-4248-b347-1a5fd451912d",
       "title": "Group Resources"
+    },
+    "3ea08b32-8d76-48a9-8c15-7f6867883984": {
+      "content_id": "3ea08b32-8d76-48a9-8c15-7f6867883984",
+      "fingerprint": "123605472e33678baaf1011880b356b31277be281bac8d0bd134d1586001b187",
+      "path": "addons/ESO_BuildForge__3ea08b32-8d76-48a9-8c15-7f6867883984",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3ea08b32-8d76-48a9-8c15-7f6867883984",
+      "title": "ESO_BuildForge"
     }
   },
   "schema": 1
