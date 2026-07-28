@@ -34,6 +34,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/03b27b8e-253d-4288-ba88-4340d56faeac",
       "title": "LibItemLinkDecoder"
+    },
+    "04141a46-3d9c-4b14-aa0e-d841090d128c": {
+      "content_id": "04141a46-3d9c-4b14-aa0e-d841090d128c",
+      "fingerprint": "3f92793c4938c323c5618f37398bc77a224bf91df7f70238f8026e3648f40db4",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/04141a46-3d9c-4b14-aa0e-d841090d128c",
+      "title": "LibAddonMenu"
     }
   },
   "schema": 1
