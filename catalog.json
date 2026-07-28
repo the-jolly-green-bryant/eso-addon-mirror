@@ -3735,6 +3735,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f0873593-4222-438e-8d90-019fa403178b",
       "title": "Guild Activity Tracker"
+    },
+    "f0dd3b3a-f4d7-48a0-9e5a-2db79cbe695d": {
+      "content_id": "f0dd3b3a-f4d7-48a0-9e5a-2db79cbe695d",
+      "fingerprint": "f62869caea975ee95b3df475004eeeb0e534d9cc720fa29243bf20a013646a0c",
+      "path": "addons/MyROCooldownBar__f0dd3b3a-f4d7-48a0-9e5a-2db79cbe695d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f0dd3b3a-f4d7-48a0-9e5a-2db79cbe695d",
+      "title": "MyROCooldownBar"
     }
   },
   "schema": 1
