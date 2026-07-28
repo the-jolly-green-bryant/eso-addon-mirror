@@ -1431,6 +1431,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6062f2e4-8b5a-48e5-9327-cf8de18eb5e5",
       "title": "Trade Skills"
+    },
+    "608b7ab5-db64-423a-af5c-2438027f0eed": {
+      "content_id": "608b7ab5-db64-423a-af5c-2438027f0eed",
+      "fingerprint": "776cea8bf2f54329a28374ebd6d17c4eb10135af4c1ea06f6d00353b4d3ff2e3",
+      "path": "addons/Banner-Status__608b7ab5-db64-423a-af5c-2438027f0eed",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/608b7ab5-db64-423a-af5c-2438027f0eed",
+      "title": "Banner Status"
     }
   },
   "schema": 1
