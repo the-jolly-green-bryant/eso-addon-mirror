@@ -2231,6 +2231,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/93511248-c8d1-4b19-9167-08bbeb5d10ac",
       "title": "cChat"
+    },
+    "96103ec3-3c4e-4865-be32-cc3b57df04d0": {
+      "content_id": "96103ec3-3c4e-4865-be32-cc3b57df04d0",
+      "fingerprint": "d5277f30af555ab9674a69ad138889555ac0963fa1496d62dfdf6e064a15d8d1",
+      "path": "addons/LibCombat2__96103ec3-3c4e-4865-be32-cc3b57df04d0",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/96103ec3-3c4e-4865-be32-cc3b57df04d0",
+      "title": "LibCombat2"
     }
   },
   "schema": 1
