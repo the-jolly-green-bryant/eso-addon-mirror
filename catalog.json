@@ -3447,6 +3447,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e0ba98a7-7f17-4c46-8ef2-b2dfc1a2f1e1",
       "title": "Votan's Addon List"
+    },
+    "e0f48487-697e-4d3f-8768-ce763362046a": {
+      "content_id": "e0f48487-697e-4d3f-8768-ce763362046a",
+      "fingerprint": "a7aa11a436c540c9b50718aee1c3f327eff73d92bd7c3d40d700e40295a25065",
+      "path": "addons/AKsAttributeBars__e0f48487-697e-4d3f-8768-ce763362046a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e0f48487-697e-4d3f-8768-ce763362046a",
+      "title": "AKsAttributeBars"
     }
   },
   "schema": 1
