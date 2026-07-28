@@ -783,6 +783,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/339e95fd-5cd9-46ec-b4b1-3512364698e0",
       "title": "Lykeion's Home Sweet Home - Dedicated Slash Command & Keybinding jumping to Sugar Bowl Suite"
+    },
+    "34dd2c26-eade-48fc-a1d0-4838faaeae0e": {
+      "content_id": "34dd2c26-eade-48fc-a1d0-4838faaeae0e",
+      "fingerprint": "bfe1bd8d47c1d2a81508f1995098e6b3a6257b81ecf154d8a0f69e4b3effe602",
+      "path": "addons/Dark-Mode-ESO__34dd2c26-eade-48fc-a1d0-4838faaeae0e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/34dd2c26-eade-48fc-a1d0-4838faaeae0e",
+      "title": "Dark Mode ESO"
     }
   },
   "schema": 1
