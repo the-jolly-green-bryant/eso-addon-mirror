@@ -447,6 +447,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/227876bb-e9b1-439f-81fe-8f458ae351a8",
       "title": "Metu's SpareIdler"
+    },
+    "22b9d3d3-0152-4001-b696-0864ab31636d": {
+      "content_id": "22b9d3d3-0152-4001-b696-0864ab31636d",
+      "fingerprint": "5c7ac5114236e9ba6cfa338caeae675d449c8a5b72d31942c2de9e40eb70c47e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/22b9d3d3-0152-4001-b696-0864ab31636d",
+      "title": "PsijicBreachHelper"
     }
   },
   "schema": 1
