@@ -943,6 +943,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3cd8f841-6502-49d4-866c-a49b12a16460",
       "title": "Advancing Yokeda Tracker"
+    },
+    "3ce79776-65cd-4ba4-aff5-0703076be756": {
+      "content_id": "3ce79776-65cd-4ba4-aff5-0703076be756",
+      "fingerprint": "36c539c78b854cb4567650628021c1342f7f900ac550f2b8497f7a74bff3cd6f",
+      "path": "addons/Research-Panel__3ce79776-65cd-4ba4-aff5-0703076be756",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3ce79776-65cd-4ba4-aff5-0703076be756",
+      "title": "Research Panel"
     }
   },
   "schema": 1
