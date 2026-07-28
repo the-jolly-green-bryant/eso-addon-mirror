@@ -3335,6 +3335,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/dc653131-c684-4f94-b875-35a29506436b",
       "title": "Artaeum Group Tool"
+    },
+    "dd337340-e6c9-4835-8e50-ba68c7e949e4": {
+      "content_id": "dd337340-e6c9-4835-8e50-ba68c7e949e4",
+      "fingerprint": "4dd6a3c1531224d776fa18160ce859300235953ab379be05d938a4f6c951836d",
+      "path": "addons/Lazy-Horse-Trainer__dd337340-e6c9-4835-8e50-ba68c7e949e4",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/dd337340-e6c9-4835-8e50-ba68c7e949e4",
+      "title": "Lazy Horse Trainer"
     }
   },
   "schema": 1
