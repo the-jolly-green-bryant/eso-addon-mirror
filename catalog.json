@@ -90,6 +90,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/080f12f0-6b90-43c7-b89f-352feee686e2",
       "title": "AutoBind Uncollected Set Items"
+    },
+    "081b2e52-b426-454f-9be3-3a9a4aa5678f": {
+      "content_id": "081b2e52-b426-454f-9be3-3a9a4aa5678f",
+      "fingerprint": "7ddc103e8901201111d236523ba9794b2a6c7dd0ea02ee554da534d6cd9224ea",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/081b2e52-b426-454f-9be3-3a9a4aa5678f",
+      "title": "test"
     }
   },
   "schema": 1
