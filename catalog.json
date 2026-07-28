@@ -983,6 +983,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/40ce0c52-4479-40d1-b9d0-3f8fc4d53c4f",
       "title": "LibSTARSConnect"
+    },
+    "41e5cebd-c4b8-4ccd-acc9-e928698ecf16": {
+      "content_id": "41e5cebd-c4b8-4ccd-acc9-e928698ecf16",
+      "fingerprint": "93769cecad5512de30cd286c2216839d972eea74fb551d91858fb7b5ec5e62f1",
+      "path": "addons/DM2-Menu-UI-Sandbox__41e5cebd-c4b8-4ccd-acc9-e928698ecf16",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/41e5cebd-c4b8-4ccd-acc9-e928698ecf16",
+      "title": "DM2 Menu UI Sandbox"
     }
   },
   "schema": 1
