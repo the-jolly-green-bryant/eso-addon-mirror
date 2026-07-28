@@ -1175,6 +1175,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4b9ce0b1-712c-4e43-9b41-d913d2772634",
       "title": "Group UI Mover"
+    },
+    "4be7617d-7e6d-42bf-bcbb-921e37ace7bc": {
+      "content_id": "4be7617d-7e6d-42bf-bcbb-921e37ace7bc",
+      "fingerprint": "1389d598eefd884bf0e0a891c60fcc81a6be92730776fc15261e9e39992cb79c",
+      "path": "addons/Flexible-Bars__4be7617d-7e6d-42bf-bcbb-921e37ace7bc",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4be7617d-7e6d-42bf-bcbb-921e37ace7bc",
+      "title": "Flexible Bars"
     }
   },
   "schema": 1
