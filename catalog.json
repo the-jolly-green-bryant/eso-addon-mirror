@@ -1511,6 +1511,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6681b779-77ba-4212-ba6d-2d20e6e08ee7",
       "title": "Bound Armaments Help"
+    },
+    "6694e6d4-7ae0-4eb8-9a61-e1c53ac5c187": {
+      "content_id": "6694e6d4-7ae0-4eb8-9a61-e1c53ac5c187",
+      "fingerprint": "44a091d16da09ad9f8aac5589da2724edb2d3a8ea7242a80fe34dac1cedd6efb",
+      "path": "addons/Auto-Research__6694e6d4-7ae0-4eb8-9a61-e1c53ac5c187",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6694e6d4-7ae0-4eb8-9a61-e1c53ac5c187",
+      "title": "Auto Research"
     }
   },
   "schema": 1
