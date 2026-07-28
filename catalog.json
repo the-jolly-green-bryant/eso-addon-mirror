@@ -3063,6 +3063,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cd3496fc-6d51-45dc-96c6-675ecff3a4e0",
       "title": "Bweh pt 2"
+    },
+    "cd627f74-6399-4b3d-9218-b2e0866b936d": {
+      "content_id": "cd627f74-6399-4b3d-9218-b2e0866b936d",
+      "fingerprint": "f1e4177d1c616ef6c6724d65350495a6d6dbae7a5e84b491e7dad282cf7b493b",
+      "path": "addons/Yokeda__cd627f74-6399-4b3d-9218-b2e0866b936d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cd627f74-6399-4b3d-9218-b2e0866b936d",
+      "title": "Yokeda"
     }
   },
   "schema": 1
