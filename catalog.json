@@ -1263,6 +1263,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/53c19565-2bb9-4872-a40f-90825e736a2f",
       "title": "Gold Ledger"
+    },
+    "541ab871-9386-4990-a3c7-32563ded9243": {
+      "content_id": "541ab871-9386-4990-a3c7-32563ded9243",
+      "fingerprint": "b840144ae4cfee118cba20cfb1b73d7f9ca72507e17d0fb54efbff917b71a798",
+      "path": "addons/Proc-Reminder__541ab871-9386-4990-a3c7-32563ded9243",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/541ab871-9386-4990-a3c7-32563ded9243",
+      "title": "Proc Reminder"
     }
   },
   "schema": 1
