@@ -1679,6 +1679,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/72761e54-4d9a-471b-bd58-5dcec8942b9d",
       "title": "Destinations"
+    },
+    "72c475de-1f9e-433f-8047-57f7fb4ff786": {
+      "content_id": "72c475de-1f9e-433f-8047-57f7fb4ff786",
+      "fingerprint": "e34abd49e019c9f3e87ddd50c046ea5c17f63219b980e478f7356a9b43e481ff",
+      "path": "addons/LibAsync__72c475de-1f9e-433f-8047-57f7fb4ff786",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/72c475de-1f9e-433f-8047-57f7fb4ff786",
+      "title": "LibAsync"
     }
   },
   "schema": 1
