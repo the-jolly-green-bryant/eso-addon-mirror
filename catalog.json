@@ -671,6 +671,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2b95c809-f14b-4c3c-9c0c-945a3e8547c4",
       "title": "Auto Guild Welcome Revised"
+    },
+    "2c07f374-57bc-4f20-814f-d40e4d93285b": {
+      "content_id": "2c07f374-57bc-4f20-814f-d40e4d93285b",
+      "fingerprint": "d6c655ac72e68447ffe70ef78f24cc30f72b0253a64fb18fcd226759a702ecf8",
+      "path": "addons/MyMapPos__2c07f374-57bc-4f20-814f-d40e4d93285b",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2c07f374-57bc-4f20-814f-d40e4d93285b",
+      "title": "MyMapPos"
     }
   },
   "schema": 1
