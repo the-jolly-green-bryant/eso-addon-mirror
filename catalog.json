@@ -3711,6 +3711,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/eeff2a8e-c911-4984-a07f-784c7155ddad",
       "title": "Dolgubon's Lazy Writ Crafter"
+    },
+    "ef8601c8-c03d-43a8-9d73-d291ea37c868": {
+      "content_id": "ef8601c8-c03d-43a8-9d73-d291ea37c868",
+      "fingerprint": "ca0d22e1ae38853ada15941f234cdd90ac6d745fe638821232f8bed6bc819777",
+      "path": "addons/Bonk-Simulator__ef8601c8-c03d-43a8-9d73-d291ea37c868",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ef8601c8-c03d-43a8-9d73-d291ea37c868",
+      "title": "Bonk Simulator"
     }
   },
   "schema": 1
