@@ -2079,6 +2079,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f",
       "title": "ShogrinUI"
+    },
+    "8e7b0d7b-4c3c-4dfc-896e-6c413074928b": {
+      "content_id": "8e7b0d7b-4c3c-4dfc-896e-6c413074928b",
+      "fingerprint": "e141d097f10778c579f82afe871106fb7ee86c6975c08fafab41c0be35aba079",
+      "path": "addons/HideGroupNecro__8e7b0d7b-4c3c-4dfc-896e-6c413074928b",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8e7b0d7b-4c3c-4dfc-896e-6c413074928b",
+      "title": "HideGroupNecro"
     }
   },
   "schema": 1
