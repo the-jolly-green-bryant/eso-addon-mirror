@@ -2631,6 +2631,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b15376ba-5e02-4e7a-b5f8-249f644ad1ac",
       "title": "EsoKR"
+    },
+    "b1a7539b-4888-4ad6-b04c-28000d99976d": {
+      "content_id": "b1a7539b-4888-4ad6-b04c-28000d99976d",
+      "fingerprint": "5e232d98e7fe8454516be27e88f3da08bfb08f988c077224592b5a579eb63cbe",
+      "path": "addons/RandoMote-Dev__b1a7539b-4888-4ad6-b04c-28000d99976d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b1a7539b-4888-4ad6-b04c-28000d99976d",
+      "title": "RandoMote (Dev)"
     }
   },
   "schema": 1
