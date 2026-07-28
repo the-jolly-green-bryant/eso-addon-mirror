@@ -1,0 +1,1 @@
+# One Bethesda content UUID per line. Used when MIRROR_SCOPE=allowlist.

@@ -1,0 +1,57 @@
+name: Mirror Bethesda ESO add-ons
+
+on:
+  schedule:
+    # Once daily. GitHub may delay scheduled jobs during busy periods.
+    - cron: "23 4 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: eso-addon-mirror
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      BNET_USERNAME: ${{ secrets.BNET_USERNAME }}
+      BNET_PASSWORD: ${{ secrets.BNET_PASSWORD }}
+      NO_COLOR: "1"
+      MIRROR_SCOPE: all
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install pinned Bethesda ESO CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://github.com/sirinsidiator/ESOAddOnUploaderCLI/releases/download/1.4.0/ESOAddOnUploaderCli-linux.tar.gz"
+          curl --fail --location --retry 3 "$url" --output /tmp/esocli.tar.gz
+          echo "74a263859b5cff215501f91c59fdb3b8a8c829dd2d9d347c6c014b7c18336ec1  /tmp/esocli.tar.gz" | sha256sum --check
+          mkdir -p "$RUNNER_TEMP/esocli"
+          tar -xzf /tmp/esocli.tar.gz -C "$RUNNER_TEMP/esocli"
+          chmod +x "$RUNNER_TEMP/esocli/ESOAddOnUploaderCli"
+          echo "$RUNNER_TEMP/esocli" >> "$GITHUB_PATH"
+
+      - name: Download and unpack changed add-ons
+        run: python3 scripts/mirror.py
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add addons catalog.json
+          if git diff --cached --quiet; then
+            echo "No published add-on changes."
+            exit 0
+          fi
+          git config user.name "eso-addon-mirror[bot]"
+          git config user.email "eso-addon-mirror[bot]@users.noreply.github.com"
+          git commit -m "mirror: Bethesda ESO add-on updates $(date -u +%F)"
+          git push
