@@ -1367,6 +1367,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5d612b95-1149-48f4-b359-2aaee406bd86",
       "title": "ItalianScrollsOnline"
+    },
+    "5da20bd4-9950-42b8-aca8-deadd5817210": {
+      "content_id": "5da20bd4-9950-42b8-aca8-deadd5817210",
+      "fingerprint": "ffa34c3866e7f6a277a30fe54ed2c110a9bfd47fc5e554cea8f558eaff24af85",
+      "path": "addons/InstaQ__5da20bd4-9950-42b8-aca8-deadd5817210",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5da20bd4-9950-42b8-aca8-deadd5817210",
+      "title": "InstaQ"
     }
   },
   "schema": 1
