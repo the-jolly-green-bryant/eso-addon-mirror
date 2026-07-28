@@ -2239,6 +2239,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/96103ec3-3c4e-4865-be32-cc3b57df04d0",
       "title": "LibCombat2"
+    },
+    "96520a08-2eeb-4aa3-a0ba-18c6fe0f2a0c": {
+      "content_id": "96520a08-2eeb-4aa3-a0ba-18c6fe0f2a0c",
+      "fingerprint": "eeb003b5c0d781de96d965e2afa22ed8e6eef4a64df7729a6e1a41f4d746ee35",
+      "path": "addons/Bweh__96520a08-2eeb-4aa3-a0ba-18c6fe0f2a0c",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/96520a08-2eeb-4aa3-a0ba-18c6fe0f2a0c",
+      "title": "Bweh"
     }
   },
   "schema": 1
