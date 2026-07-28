@@ -2023,6 +2023,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8bc4c7c2-ee0d-488d-a3b5-ecab07912f95",
       "title": "Seamstress"
+    },
+    "8c18ca98-8921-4bf3-b455-1d63b2f761e3": {
+      "content_id": "8c18ca98-8921-4bf3-b455-1d63b2f761e3",
+      "fingerprint": "6dbb734e814ceab17cc0ab217a771f5539ff2d7f26bd950af99e4078a2f2c6e4",
+      "path": "addons/VCAP2__8c18ca98-8921-4bf3-b455-1d63b2f761e3",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8c18ca98-8921-4bf3-b455-1d63b2f761e3",
+      "title": "VCAP2"
     }
   },
   "schema": 1
