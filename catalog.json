@@ -3103,6 +3103,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cebf06be-ff4d-4f54-96e4-7eec85c1be52",
       "title": "Fishing Map - Experimental"
+    },
+    "cebfe41b-3168-432c-a3cf-795bbe56e54e": {
+      "content_id": "cebfe41b-3168-432c-a3cf-795bbe56e54e",
+      "fingerprint": "73f46599c5fa68149e9447803eec373f091c139c68cf4d193939191782f8f4de",
+      "path": "addons/Chat-Log-Preserver__cebfe41b-3168-432c-a3cf-795bbe56e54e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cebfe41b-3168-432c-a3cf-795bbe56e54e",
+      "title": "Chat Log Preserver"
     }
   },
   "schema": 1
