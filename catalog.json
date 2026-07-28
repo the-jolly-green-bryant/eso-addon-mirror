@@ -3807,6 +3807,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f47025d4-d5d3-4863-b0b0-1d9f57dd6c41",
       "title": "BuffDebuffBar+"
+    },
+    "f524ac28-70c4-455c-8637-232a342f3c8f": {
+      "content_id": "f524ac28-70c4-455c-8637-232a342f3c8f",
+      "fingerprint": "dc92c7d5f2cbe8660083cbeb53519d6cc2d62c4249595b4ef4a66e27215c41b1",
+      "path": "addons/ThisIsTheWayshrine__f524ac28-70c4-455c-8637-232a342f3c8f",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f524ac28-70c4-455c-8637-232a342f3c8f",
+      "title": "ThisIsTheWayshrine"
     }
   },
   "schema": 1
