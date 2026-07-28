@@ -1143,6 +1143,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4b4ddced-3d97-431c-8c43-a9c732ea2cae",
       "title": "Vixen's Testing grounds"
+    },
+    "4b4ff5af-f023-4720-a9dd-1d85048d7be4": {
+      "content_id": "4b4ff5af-f023-4720-a9dd-1d85048d7be4",
+      "fingerprint": "f3d22997913e65d1d2c623c39f0088968bb1ad7efda506745c23f06d0121dbc5",
+      "path": "addons/MyTauntTimer__4b4ff5af-f023-4720-a9dd-1d85048d7be4",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4b4ff5af-f023-4720-a9dd-1d85048d7be4",
+      "title": "MyTauntTimer"
     }
   },
   "schema": 1
