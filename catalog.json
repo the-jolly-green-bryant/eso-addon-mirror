@@ -1359,6 +1359,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5af6522d-980d-4335-9328-4e5077cee058",
       "title": "Bag Space Indicator"
+    },
+    "5d612b95-1149-48f4-b359-2aaee406bd86": {
+      "content_id": "5d612b95-1149-48f4-b359-2aaee406bd86",
+      "fingerprint": "a043de4c57e495eb1aafef44dc2fe5fb634547e6d4789f974918d777ba3b0d01",
+      "path": "addons/ItalianScrollsOnline__5d612b95-1149-48f4-b359-2aaee406bd86",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5d612b95-1149-48f4-b359-2aaee406bd86",
+      "title": "ItalianScrollsOnline"
     }
   },
   "schema": 1
