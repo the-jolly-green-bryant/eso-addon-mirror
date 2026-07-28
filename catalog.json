@@ -831,6 +831,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/37466506-930a-44cb-864d-2bd760f24da7",
       "title": "LibChatMessage"
+    },
+    "37661fa7-7702-4eeb-b3ed-7e840aa17647": {
+      "content_id": "37661fa7-7702-4eeb-b3ed-7e840aa17647",
+      "fingerprint": "d748a2a23e63cec7a6578a11902bcc38500520df905d802b9d470e4313c837eb",
+      "path": "addons/LibGamepad__37661fa7-7702-4eeb-b3ed-7e840aa17647",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/37661fa7-7702-4eeb-b3ed-7e840aa17647",
+      "title": "LibGamepad"
     }
   },
   "schema": 1
