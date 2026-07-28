@@ -3855,6 +3855,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f6e1e99b-174a-401e-8acf-d4a7e6e2c352",
       "title": "LibMapPing"
+    },
+    "f74afae1-50fc-4e7f-8883-573992187a63": {
+      "content_id": "f74afae1-50fc-4e7f-8883-573992187a63",
+      "fingerprint": "77e25ef447964fa52097ceb3bc6aa97b92e5c930d9440163d0a3e883c83bc51d",
+      "path": "addons/Rainbow-AOE__f74afae1-50fc-4e7f-8883-573992187a63",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f74afae1-50fc-4e7f-8883-573992187a63",
+      "title": "Rainbow AOE"
     }
   },
   "schema": 1
