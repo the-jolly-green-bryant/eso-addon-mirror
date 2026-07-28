@@ -855,6 +855,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/37f459c1-e6dc-4d21-afd7-eaceb68cfd82",
       "title": "Screenshot Mode Enhanced"
+    },
+    "384135b6-4bca-4589-8b05-ebf91afd43ee": {
+      "content_id": "384135b6-4bca-4589-8b05-ebf91afd43ee",
+      "fingerprint": "3e90b7447d9c0e3f8ccd483c9d826abc9be2df93990437dacd2673b412bec711",
+      "path": "addons/Semi-s-experimental-addon__384135b6-4bca-4589-8b05-ebf91afd43ee",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/384135b6-4bca-4589-8b05-ebf91afd43ee",
+      "title": "Semi's experimental addon"
     }
   },
   "schema": 1
