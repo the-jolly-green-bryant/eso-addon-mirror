@@ -2471,6 +2471,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a453b6d3-5eb9-42cb-812d-605c297e8e87",
       "title": "PvP UA!"
+    },
+    "a6c22156-8b52-467d-ab02-287e5731a1fb": {
+      "content_id": "a6c22156-8b52-467d-ab02-287e5731a1fb",
+      "fingerprint": "cb528fbcb088a6a96f3fc015015ad72dfbe01cf3868291abf9288ff2d851c715",
+      "path": "addons/Synergy-Cooldown__a6c22156-8b52-467d-ab02-287e5731a1fb",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a6c22156-8b52-467d-ab02-287e5731a1fb",
+      "title": "Synergy Cooldown"
     }
   },
   "schema": 1
