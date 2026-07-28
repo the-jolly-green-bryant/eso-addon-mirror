@@ -1327,6 +1327,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/56b19964-a32d-4e97-b922-6d446ff6b6fc",
       "title": "T\u00fcrk\u00e7e \u00e7eviri - ESOTR"
+    },
+    "588eb388-ead2-4649-82cc-13838f638b1f": {
+      "content_id": "588eb388-ead2-4649-82cc-13838f638b1f",
+      "fingerprint": "0cb63eb0f2ec73cc71c658f949f2067e24ced3cb8fc42b802da6a6ed73446751",
+      "path": "addons/The-Synaptic-Registry-The-Clockwork-Arsenal-_in_development__588eb388-ead2-4649-82cc-13838f638b1f",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/588eb388-ead2-4649-82cc-13838f638b1f",
+      "title": "The Synaptic Registry(The Clockwork Arsenal) _in_development_"
     }
   },
   "schema": 1
