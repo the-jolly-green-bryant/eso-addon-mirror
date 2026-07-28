@@ -2967,6 +2967,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c75df85c-f9c0-4e54-a0f3-d5173e44a850",
       "title": "CasualClean"
+    },
+    "c786f4ab-0ae9-4067-bfd7-5d9ec9b2705b": {
+      "content_id": "c786f4ab-0ae9-4067-bfd7-5d9ec9b2705b",
+      "fingerprint": "2bf252d40a0bcbaac541341f2bb935b4247c555dcc58cbb5a404e12880e55706",
+      "path": "addons/Soul-Bombardment-Patch__c786f4ab-0ae9-4067-bfd7-5d9ec9b2705b",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c786f4ab-0ae9-4067-bfd7-5d9ec9b2705b",
+      "title": "Soul Bombardment Patch"
     }
   },
   "schema": 1
