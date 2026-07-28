@@ -1895,6 +1895,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/80e0a510-1882-45f4-9e0a-8ed6cdff9032",
       "title": "VampireStageReminder_v2"
+    },
+    "8289722e-8e80-4a3d-ba1a-31ae1194ffce": {
+      "content_id": "8289722e-8e80-4a3d-ba1a-31ae1194ffce",
+      "fingerprint": "ef45459beb5ce2035a119ea64ba71fea92d5f9ac2699810f58e6193abbe58fe4",
+      "path": "addons/Can-I-Travel-Back__8289722e-8e80-4a3d-ba1a-31ae1194ffce",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8289722e-8e80-4a3d-ba1a-31ae1194ffce",
+      "title": "Can I Travel Back?"
     }
   },
   "schema": 1
