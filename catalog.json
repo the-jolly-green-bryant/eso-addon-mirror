@@ -2695,6 +2695,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b3b32522-0ed3-419e-b20d-ef4b651bc013",
       "title": "702's Craft Completionist List"
+    },
+    "b57202fe-9b3a-4021-ad86-f2db8dfe0c5e": {
+      "content_id": "b57202fe-9b3a-4021-ad86-f2db8dfe0c5e",
+      "fingerprint": "f3ab950e83672509fe977c62c8d4a09b5fa6319b8662e6f3fbd08b34abbc3a3b",
+      "path": "addons/PairsWellWithCheese__b57202fe-9b3a-4021-ad86-f2db8dfe0c5e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b57202fe-9b3a-4021-ad86-f2db8dfe0c5e",
+      "title": "PairsWellWithCheese"
     }
   },
   "schema": 1
