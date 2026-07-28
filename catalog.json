@@ -2607,6 +2607,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b0c7d3d5-b3e6-4a61-b509-5d05a12c2130",
       "title": "Medic - UI Fixes"
+    },
+    "b0d2b98f-5e22-4809-a765-0398f6344350": {
+      "content_id": "b0d2b98f-5e22-4809-a765-0398f6344350",
+      "fingerprint": "f2696c34f59ca1fdcbaa6db8d8478057f2f75b01038202a38def70ff247e7ad5",
+      "path": "addons/Consistent-Colours__b0d2b98f-5e22-4809-a765-0398f6344350",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b0d2b98f-5e22-4809-a765-0398f6344350",
+      "title": "Consistent Colours"
     }
   },
   "schema": 1
