@@ -1783,6 +1783,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/76fce7e2-297a-472f-bdf6-3e80756e7e8c",
       "title": "Vestige Mirror"
+    },
+    "7752de6b-f23a-4a95-971b-dbf1e996df87": {
+      "content_id": "7752de6b-f23a-4a95-971b-dbf1e996df87",
+      "fingerprint": "d41219380845639fee475714a7b0143ad01889a1f6514499e5d96e33984bd33b",
+      "path": "addons/DeadMarker2-Metrics__7752de6b-f23a-4a95-971b-dbf1e996df87",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/7752de6b-f23a-4a95-971b-dbf1e996df87",
+      "title": "DeadMarker2 Metrics"
     }
   },
   "schema": 1
