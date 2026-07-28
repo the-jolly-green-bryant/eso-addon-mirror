@@ -2399,6 +2399,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a10a8862-6862-4916-a685-c75f5a098637",
       "title": "LeadReminder"
+    },
+    "a17836b4-17ec-478f-91a6-f0c59e123e2a": {
+      "content_id": "a17836b4-17ec-478f-91a6-f0c59e123e2a",
+      "fingerprint": "59cb60b5f256d1e580c6f0df7b2652c60b8dfa7ea78a0592540188b47606e45a",
+      "path": "addons/Ranckor-s-Baggage__a17836b4-17ec-478f-91a6-f0c59e123e2a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a17836b4-17ec-478f-91a6-f0c59e123e2a",
+      "title": "Ranckor's Baggage"
     }
   },
   "schema": 1
