@@ -951,6 +951,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3ce79776-65cd-4ba4-aff5-0703076be756",
       "title": "Research Panel"
+    },
+    "3d1bd08c-876b-4248-b347-1a5fd451912d": {
+      "content_id": "3d1bd08c-876b-4248-b347-1a5fd451912d",
+      "fingerprint": "c7904e3f6e0b0df863b094652b515750e51909ec99c71b5410a7dbda410aa897",
+      "path": "addons/Group-Resources__3d1bd08c-876b-4248-b347-1a5fd451912d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3d1bd08c-876b-4248-b347-1a5fd451912d",
+      "title": "Group Resources"
     }
   },
   "schema": 1
