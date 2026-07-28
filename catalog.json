@@ -3623,6 +3623,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ea5313bb-c034-4b91-8816-546e4d37a355",
       "title": "What's Missing? - Skill Point Tracker"
+    },
+    "eae4a86c-cd3b-44d0-81f9-5ca0caf0eb10": {
+      "content_id": "eae4a86c-cd3b-44d0-81f9-5ca0caf0eb10",
+      "fingerprint": "70a2532028f0f67156710860fa7c60f3226743ad87fbd4f9c8f5e5e8e90b7e24",
+      "path": "addons/MyDebuffLog__eae4a86c-cd3b-44d0-81f9-5ca0caf0eb10",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/eae4a86c-cd3b-44d0-81f9-5ca0caf0eb10",
+      "title": "MyDebuffLog"
     }
   },
   "schema": 1
