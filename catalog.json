@@ -1815,6 +1815,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/79b6b597-9e33-4cd7-b076-44e9a153a44c",
       "title": "Auto Opener"
+    },
+    "79d39b6d-3f2c-48e3-a08f-b6c2c69751fd": {
+      "content_id": "79d39b6d-3f2c-48e3-a08f-b6c2c69751fd",
+      "fingerprint": "ba57f55455d72c22ba18cf9a953431097c31e89faa686e773f3b5f234c7d3ac5",
+      "path": "addons/SurvivalMode__79d39b6d-3f2c-48e3-a08f-b6c2c69751fd",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/79d39b6d-3f2c-48e3-a08f-b6c2c69751fd",
+      "title": "SurvivalMode"
     }
   },
   "schema": 1
