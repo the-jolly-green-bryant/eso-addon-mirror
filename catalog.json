@@ -97,6 +97,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/081b2e52-b426-454f-9be3-3a9a4aa5678f",
       "title": "test"
+    },
+    "08954d6b-1604-4daf-9cf3-99b327dd7afd": {
+      "content_id": "08954d6b-1604-4daf-9cf3-99b327dd7afd",
+      "fingerprint": "5e48e1a7f10c74b10a5a2300db85a3c63e476394722d4a6273c87a64e1a85ec0",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/08954d6b-1604-4daf-9cf3-99b327dd7afd",
+      "title": "FunKillFeed"
     }
   },
   "schema": 1
