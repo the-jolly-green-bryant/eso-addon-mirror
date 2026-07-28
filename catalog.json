@@ -3615,6 +3615,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e816c8fb-9db6-4e60-a241-6bee24b8f1b0",
       "title": "Motif Tracker"
+    },
+    "ea5313bb-c034-4b91-8816-546e4d37a355": {
+      "content_id": "ea5313bb-c034-4b91-8816-546e4d37a355",
+      "fingerprint": "d0e39666e96a6bdb437895f471980dd25fe7d086424057fc9bf97b330a4d0fc2",
+      "path": "addons/What-s-Missing---Skill-Point-Tracker__ea5313bb-c034-4b91-8816-546e4d37a355",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ea5313bb-c034-4b91-8816-546e4d37a355",
+      "title": "What's Missing? - Skill Point Tracker"
     }
   },
   "schema": 1
