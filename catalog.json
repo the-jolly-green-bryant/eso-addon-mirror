@@ -3351,6 +3351,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/dd556dbe-ac20-41a5-8dba-9ba37eb97347",
       "title": "Ev"
+    },
+    "ddf1a1e2-b627-4cb5-a40a-a3ece40c609c": {
+      "content_id": "ddf1a1e2-b627-4cb5-a40a-a3ece40c609c",
+      "fingerprint": "a3953419cb39c21ff14e3790c8e40457ac429aedabfa68910c2ec169bd9aa085",
+      "path": "addons/AutoInteract__ddf1a1e2-b627-4cb5-a40a-a3ece40c609c",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ddf1a1e2-b627-4cb5-a40a-a3ece40c609c",
+      "title": "AutoInteract"
     }
   },
   "schema": 1
