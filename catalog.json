@@ -1623,6 +1623,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6c2f0adf-9ca4-4dc4-bd4f-e1f6f5059665",
       "title": "andy.s's Heat Shocker Tracker"
+    },
+    "6efaaa07-4ad5-48db-bda4-46d60c31b7cd": {
+      "content_id": "6efaaa07-4ad5-48db-bda4-46d60c31b7cd",
+      "fingerprint": "641346146e6860a2ae7039130ebc8e17b8a9334d7061f8e79ee524a9c22cbe53",
+      "path": "addons/Blackrose-Escape-Plan__6efaaa07-4ad5-48db-bda4-46d60c31b7cd",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6efaaa07-4ad5-48db-bda4-46d60c31b7cd",
+      "title": "Blackrose Escape Plan"
     }
   },
   "schema": 1
