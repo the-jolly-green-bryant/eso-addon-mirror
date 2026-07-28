@@ -3047,6 +3047,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cce864e9-8d4b-4b05-b635-c68b101420de",
       "title": "EsoLiveToolbar"
+    },
+    "cd045612-ec90-4885-be99-f35f328691f8": {
+      "content_id": "cd045612-ec90-4885-be99-f35f328691f8",
+      "fingerprint": "ad578d07c81a5d8e72a7cc09fd7615dc9f48997ad7de8bc2b753473198b959ec",
+      "path": "addons/TG-s-Group-Trackers__cd045612-ec90-4885-be99-f35f328691f8",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cd045612-ec90-4885-be99-f35f328691f8",
+      "title": "TG's Group Trackers"
     }
   },
   "schema": 1
