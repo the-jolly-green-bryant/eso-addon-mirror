@@ -1551,6 +1551,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/68111c3f-410f-4318-b9ec-582b8c68c374",
       "title": "LibNotification"
+    },
+    "684d4b00-96f6-49a9-acc3-b8baedc46c72": {
+      "content_id": "684d4b00-96f6-49a9-acc3-b8baedc46c72",
+      "fingerprint": "bf298f35e7c11765a5870e28a33e6aece6934d92c9caaf79b976ed7d38412c22",
+      "path": "addons/GOLD-ABOD__684d4b00-96f6-49a9-acc3-b8baedc46c72",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/684d4b00-96f6-49a9-acc3-b8baedc46c72",
+      "title": "GOLD ABOD"
     }
   },
   "schema": 1
