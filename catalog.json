@@ -433,6 +433,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/21f0cc83-5ba3-4776-ac75-a5a266fde574",
       "title": "CrutchAlerts"
+    },
+    "21f64968-c492-4b43-82ff-b7b1f25c7500": {
+      "content_id": "21f64968-c492-4b43-82ff-b7b1f25c7500",
+      "fingerprint": "00f1ff4a56e8c364ea3e9c7ffa018c0794b1379bdeb01f3d13a89b1922480488",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/21f64968-c492-4b43-82ff-b7b1f25c7500",
+      "title": "Alternative Group Frames"
     }
   },
   "schema": 1
