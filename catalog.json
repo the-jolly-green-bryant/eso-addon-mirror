@@ -300,6 +300,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/17071a4b-f373-41fa-8874-778672bae73c",
       "title": "LibRecipe"
+    },
+    "173a593f-d0c6-473b-a865-5c8961942c06": {
+      "content_id": "173a593f-d0c6-473b-a865-5c8961942c06",
+      "fingerprint": "593097896b500df223bcaaae99b332186d362faf76d7f994fe09637fec149e01",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/173a593f-d0c6-473b-a865-5c8961942c06",
+      "title": "Baas-Writ-Crafter"
     }
   },
   "schema": 1
