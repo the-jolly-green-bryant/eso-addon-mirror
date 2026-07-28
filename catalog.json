@@ -695,6 +695,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2d86078c-b982-4ffc-a7f0-7905e41c2354",
       "title": "Pvp Ready Emotes"
+    },
+    "2e7370ba-81d3-4bb3-8b0b-2bff4a943421": {
+      "content_id": "2e7370ba-81d3-4bb3-8b0b-2bff4a943421",
+      "fingerprint": "83325635610ca75ee4b2132a12e5066d3449ec962c134844d4d0f2eb86b02587",
+      "path": "addons/IAH-Test__2e7370ba-81d3-4bb3-8b0b-2bff4a943421",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2e7370ba-81d3-4bb3-8b0b-2bff4a943421",
+      "title": "IAH Test"
     }
   },
   "schema": 1
