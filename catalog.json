@@ -3007,6 +3007,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c9b85989-bab6-4000-a3fc-80ed49e25e87",
       "title": "Personal Dps Tracker"
+    },
+    "ca0d62e7-58ab-4ea4-9729-f139cb28a64d": {
+      "content_id": "ca0d62e7-58ab-4ea4-9729-f139cb28a64d",
+      "fingerprint": "51d4ef433e474926df6bed4663cb283e1d3b36cd8a85f123c30c666f9e61a4db",
+      "path": "addons/Lore-Book-Locations__ca0d62e7-58ab-4ea4-9729-f139cb28a64d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ca0d62e7-58ab-4ea4-9729-f139cb28a64d",
+      "title": "Lore Book Locations"
     }
   },
   "schema": 1
