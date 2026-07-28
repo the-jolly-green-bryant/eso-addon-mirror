@@ -2111,6 +2111,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8f125308-c2a5-40e6-b249-d29e85f81020",
       "title": "Alchemy Opener"
+    },
+    "8f176813-8471-496d-8957-4f8b5c93057a": {
+      "content_id": "8f176813-8471-496d-8957-4f8b5c93057a",
+      "fingerprint": "2f864b7227912b1687413870687820e8edde2d72d91a8ba51fc23d766d75230a",
+      "path": "addons/EWPFinder-2.0__8f176813-8471-496d-8957-4f8b5c93057a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8f176813-8471-496d-8957-4f8b5c93057a",
+      "title": "EWPFinder 2.0"
     }
   },
   "schema": 1
