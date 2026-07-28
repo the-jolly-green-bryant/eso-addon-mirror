@@ -111,6 +111,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/09511722-e9f3-4e32-b5f9-d04c0cbee9c4",
       "title": "Smart Looter"
+    },
+    "09535f7c-d041-4d75-963a-167fa47d3df2": {
+      "content_id": "09535f7c-d041-4d75-963a-167fa47d3df2",
+      "fingerprint": "093333c6fae9133d3f261a79494821566e85e746dd19e85c88ba7352d0915ed6",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/09535f7c-d041-4d75-963a-167fa47d3df2",
+      "title": "CadenceCoach"
     }
   },
   "schema": 1
