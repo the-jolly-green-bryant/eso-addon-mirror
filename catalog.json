@@ -398,6 +398,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1e746db5-8418-4a6f-9f17-4449e0d7e3f0",
       "title": "Tamriel Master Ledger"
+    },
+    "1e7d3c7d-1680-4f93-b82c-8c4601d3b449": {
+      "content_id": "1e7d3c7d-1680-4f93-b82c-8c4601d3b449",
+      "fingerprint": "dd62d66cae9a2fe19c1fd2d4ed91d93bbd5e450745dbdfa8bd1ef6723036448b",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1e7d3c7d-1680-4f93-b82c-8c4601d3b449",
+      "title": "Console Metrics"
     }
   },
   "schema": 1
