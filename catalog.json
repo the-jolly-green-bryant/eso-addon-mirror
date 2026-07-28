@@ -125,6 +125,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/097cf265-8ddc-4970-9836-914d69dbdc80",
       "title": "MyAutoMarker"
+    },
+    "09fedb91-c1d9-4f3b-8882-b8c9e36bda36": {
+      "content_id": "09fedb91-c1d9-4f3b-8882-b8c9e36bda36",
+      "fingerprint": "f83452bf00cc9b56247ecd6c3c78531e73751836cf4fe032501702e5f3f0728b",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/09fedb91-c1d9-4f3b-8882-b8c9e36bda36",
+      "title": "Antiquarian's Codex"
     }
   },
   "schema": 1
