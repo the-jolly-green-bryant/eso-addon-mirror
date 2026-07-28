@@ -419,6 +419,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1ff1b2cd-ba65-4264-a11d-2c55b57eb158",
       "title": "Addon Loadouts"
+    },
+    "2150f7ed-d4e8-426c-b6e0-2df807f1db92": {
+      "content_id": "2150f7ed-d4e8-426c-b6e0-2df807f1db92",
+      "fingerprint": "0247b809105439d3d98199b5fefc86b396d645ea15613c75db6d6cbe99f65f1d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2150f7ed-d4e8-426c-b6e0-2df807f1db92",
+      "title": "CleanLeadsUI"
     }
   },
   "schema": 1
