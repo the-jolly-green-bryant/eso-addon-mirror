@@ -2431,6 +2431,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a25448d4-0fb6-421f-bdb2-d9cf32a397d5",
       "title": "Aldrens Movable UI"
+    },
+    "a2b82a6f-4da6-492b-9132-52354a645321": {
+      "content_id": "a2b82a6f-4da6-492b-9132-52354a645321",
+      "fingerprint": "74cfe09501c9fe857b631cd6aeca703a57240dd75f9389f6294ab14e1c0f09dd",
+      "path": "addons/name__a2b82a6f-4da6-492b-9132-52354a645321",
+      "published": false,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a2b82a6f-4da6-492b-9132-52354a645321",
+      "title": "name"
     }
   },
   "schema": 1
