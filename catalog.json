@@ -2015,6 +2015,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8ba040d8-fba0-4a01-aa63-4ee74dd2d1d6",
       "title": "Adventurer's Toolkit"
+    },
+    "8bc4c7c2-ee0d-488d-a3b5-ecab07912f95": {
+      "content_id": "8bc4c7c2-ee0d-488d-a3b5-ecab07912f95",
+      "fingerprint": "6034e9fda10273dcdedaf660aa34ac8f710e0913a8e5d6a92d830a6f2b2f4da0",
+      "path": "addons/Seamstress__8bc4c7c2-ee0d-488d-a3b5-ecab07912f95",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8bc4c7c2-ee0d-488d-a3b5-ecab07912f95",
+      "title": "Seamstress"
     }
   },
   "schema": 1
