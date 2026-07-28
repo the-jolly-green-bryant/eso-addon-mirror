@@ -3215,6 +3215,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d38d1fe9-e738-4036-9d0d-baeaa4ebbe2e",
       "title": "Murf's Knickknacks"
+    },
+    "d527acdc-07b2-453a-9519-d34261e02e5c": {
+      "content_id": "d527acdc-07b2-453a-9519-d34261e02e5c",
+      "fingerprint": "d5520529d5eb307071a07f4f3eac1dde2c60fe97366f0e0f1aba9b4b055cd3b6",
+      "path": "addons/Loot-Log__d527acdc-07b2-453a-9519-d34261e02e5c",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d527acdc-07b2-453a-9519-d34261e02e5c",
+      "title": "Loot Log"
     }
   },
   "schema": 1
