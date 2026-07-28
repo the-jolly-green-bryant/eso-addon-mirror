@@ -3767,6 +3767,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f2495833-84b0-4142-8a25-f2063d0f0a23",
       "title": "Guild Trader Tracker"
+    },
+    "f252b54c-ca06-45e6-8a13-3211eb5d96ba": {
+      "content_id": "f252b54c-ca06-45e6-8a13-3211eb5d96ba",
+      "fingerprint": "03edfc174403033aaa819c071a47f0100b4a34d764c98222415e1c10c13f2a5c",
+      "path": "addons/Murf-s-Skyshards__f252b54c-ca06-45e6-8a13-3211eb5d96ba",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f252b54c-ca06-45e6-8a13-3211eb5d96ba",
+      "title": "Murf's Skyshards"
     }
   },
   "schema": 1
