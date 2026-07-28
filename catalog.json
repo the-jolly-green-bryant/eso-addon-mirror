@@ -3247,6 +3247,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d8639f08-8c9a-4f4c-af6d-5a86588cd787",
       "title": "Pet Health"
+    },
+    "d8edb913-8af4-455a-939f-5bbd598eeff7": {
+      "content_id": "d8edb913-8af4-455a-939f-5bbd598eeff7",
+      "fingerprint": "b1e43b91601b5b66844368df3b7f97d95eebb4f8ae5a4573ae9b08f11b923c91",
+      "path": "addons/RockGrove-Alkosh-Timer__d8edb913-8af4-455a-939f-5bbd598eeff7",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d8edb913-8af4-455a-939f-5bbd598eeff7",
+      "title": "RockGrove Alkosh Timer"
     }
   },
   "schema": 1
