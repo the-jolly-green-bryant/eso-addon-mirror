@@ -2743,6 +2743,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b73a092a-bcf8-4b42-9833-97402a32ed87",
       "title": "True DarkConvergence timer"
+    },
+    "b7f56e79-7bdd-41c5-89d4-a0b61b7719af": {
+      "content_id": "b7f56e79-7bdd-41c5-89d4-a0b61b7719af",
+      "fingerprint": "747f8946d3fe637ed89e74e9cba157d3b1b3626ea4c3fca70af5ed1a63bf76f2",
+      "path": "addons/T\u00fcrk\u00e7e-\u00e7eviri---ESOTR_Lite__b7f56e79-7bdd-41c5-89d4-a0b61b7719af",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b7f56e79-7bdd-41c5-89d4-a0b61b7719af",
+      "title": "T\u00fcrk\u00e7e \u00e7eviri - ESOTR_Lite"
     }
   },
   "schema": 1
