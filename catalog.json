@@ -503,6 +503,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/25cfa10b-66f5-4e8c-9d1a-1c452491665f",
       "title": "LibGroupCombatStats"
+    },
+    "2709a81d-caea-4f77-a89d-0d83661bf7ee": {
+      "content_id": "2709a81d-caea-4f77-a89d-0d83661bf7ee",
+      "fingerprint": "4c10be56129abb34bc235b66a9458791a318604b1272e0be9b518648eaf2b7ea",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2709a81d-caea-4f77-a89d-0d83661bf7ee",
+      "title": "Dark Convergence Timer"
     }
   },
   "schema": 1
