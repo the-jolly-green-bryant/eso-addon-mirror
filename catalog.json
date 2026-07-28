@@ -1103,6 +1103,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/47bd1882-3ae4-414d-929c-aad937946be0",
       "title": "Predefine Chat Messages"
+    },
+    "48762aef-8240-473f-aef5-17d1b5d5b9b6": {
+      "content_id": "48762aef-8240-473f-aef5-17d1b5d5b9b6",
+      "fingerprint": "30132fe17bba2a660fe8b4217b4f47824d741679f1b00a7b9e4427a0bbdd2148",
+      "path": "addons/LibAlchemy__48762aef-8240-473f-aef5-17d1b5d5b9b6",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/48762aef-8240-473f-aef5-17d1b5d5b9b6",
+      "title": "LibAlchemy"
     }
   },
   "schema": 1
