@@ -3511,6 +3511,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e27e2f85-110a-4725-ab46-5f878649b8a3",
       "title": "LCM Demo"
+    },
+    "e281d0bf-a7b6-4b0c-b4ff-78e38a6ed2f6": {
+      "content_id": "e281d0bf-a7b6-4b0c-b4ff-78e38a6ed2f6",
+      "fingerprint": "9bd6b63b3aa94919a83b57da0778d5bbea9a53101e4d21f6234b0d3c4611d0a7",
+      "path": "addons/Group-Kill-Feed__e281d0bf-a7b6-4b0c-b4ff-78e38a6ed2f6",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e281d0bf-a7b6-4b0c-b4ff-78e38a6ed2f6",
+      "title": "Group Kill Feed"
     }
   },
   "schema": 1
