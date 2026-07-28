@@ -991,6 +991,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/41e5cebd-c4b8-4ccd-acc9-e928698ecf16",
       "title": "DM2 Menu UI Sandbox"
+    },
+    "42a55498-b21a-4657-86ba-bdb954f7a09d": {
+      "content_id": "42a55498-b21a-4657-86ba-bdb954f7a09d",
+      "fingerprint": "8b65e68c27e2ea4ccd3ef2c4b4778a56f4940f73193b0867dc4a10b28b170d13",
+      "path": "addons/Insatiable-Hunger-Blocker__42a55498-b21a-4657-86ba-bdb954f7a09d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/42a55498-b21a-4657-86ba-bdb954f7a09d",
+      "title": "Insatiable Hunger Blocker"
     }
   },
   "schema": 1
