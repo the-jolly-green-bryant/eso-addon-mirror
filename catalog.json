@@ -2287,6 +2287,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9926b8d4-d4ca-4215-8790-013c0b1630c0",
       "title": "AUTO LUA MEMORY CLEANER"
+    },
+    "992e3a70-4653-4937-9089-bfee29417439": {
+      "content_id": "992e3a70-4653-4937-9089-bfee29417439",
+      "fingerprint": "382958df942301991abcb2bb46275f5cd8a07d9be92f8f1854d791c52fed9da8",
+      "path": "addons/SpringPeace-Dev__992e3a70-4653-4937-9089-bfee29417439",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/992e3a70-4653-4937-9089-bfee29417439",
+      "title": "SpringPeace (Dev)"
     }
   },
   "schema": 1
