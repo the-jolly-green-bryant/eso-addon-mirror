@@ -823,6 +823,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/36ae3d1e-dbb6-45d2-b0a4-30934a0634f8",
       "title": "MyGridHelper"
+    },
+    "37466506-930a-44cb-864d-2bd760f24da7": {
+      "content_id": "37466506-930a-44cb-864d-2bd760f24da7",
+      "fingerprint": "7ac3e3fed219bcefe201e9e343e0870b11c3a9acb1da00bc0efab15ea4750b12",
+      "path": "addons/LibChatMessage__37466506-930a-44cb-864d-2bd760f24da7",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/37466506-930a-44cb-864d-2bd760f24da7",
+      "title": "LibChatMessage"
     }
   },
   "schema": 1
