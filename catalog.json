@@ -3151,6 +3151,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d16fe7aa-9938-433f-bac9-3a808f810ae7",
       "title": "True Synergies Mover"
+    },
+    "d1d0a73f-951f-40f2-973b-6ddb92428cbb": {
+      "content_id": "d1d0a73f-951f-40f2-973b-6ddb92428cbb",
+      "fingerprint": "546f4d17a41856d8e8e166aed607a7c26f44a8b08945a304be5668ab915aad3f",
+      "path": "addons/FoodReminder_v2__d1d0a73f-951f-40f2-973b-6ddb92428cbb",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d1d0a73f-951f-40f2-973b-6ddb92428cbb",
+      "title": "FoodReminder_v2"
     }
   },
   "schema": 1
