@@ -2983,6 +2983,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c8397663-7bee-4e0b-89de-16dcf5c029d7",
       "title": "RecoveryTracker"
+    },
+    "c8456e9d-2e93-40d9-a266-88d0ad1f9332": {
+      "content_id": "c8456e9d-2e93-40d9-a266-88d0ad1f9332",
+      "fingerprint": "345a82952ba00d92a1fb7563761751a363a7cb054ccab88fa0c674aae9ffe6de",
+      "path": "addons/Gotta-Open-em-all__c8456e9d-2e93-40d9-a266-88d0ad1f9332",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c8456e9d-2e93-40d9-a266-88d0ad1f9332",
+      "title": "Gotta Open 'em all!"
     }
   },
   "schema": 1
