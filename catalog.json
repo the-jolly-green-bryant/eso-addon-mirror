@@ -1031,6 +1031,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/441715a3-5c4e-4ba6-8004-86dbf4485eb0",
       "title": "SimpleAddonMenu"
+    },
+    "443e6038-7baa-4e81-84fb-afe6cd3f92d6": {
+      "content_id": "443e6038-7baa-4e81-84fb-afe6cd3f92d6",
+      "fingerprint": "0e185f49200c7e282041a875b7c70ae0255e9bbebd4c5da9b09289acf7ae682c",
+      "path": "addons/Taunt-Assist__443e6038-7baa-4e81-84fb-afe6cd3f92d6",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/443e6038-7baa-4e81-84fb-afe6cd3f92d6",
+      "title": "Taunt Assist"
     }
   },
   "schema": 1
