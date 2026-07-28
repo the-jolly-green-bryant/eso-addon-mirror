@@ -3271,6 +3271,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d978b81f-b679-4aa8-b9a2-6d1b0511c3b3",
       "title": "WarHorn Tracker"
+    },
+    "d98298fa-549a-4a02-ad04-7c3f0dc92445": {
+      "content_id": "d98298fa-549a-4a02-ad04-7c3f0dc92445",
+      "fingerprint": "44edc09604a7bbe9691eeca96ca9e7d6598d707c279a224f27e289e86b806bbe",
+      "path": "addons/LibDynamicMail__d98298fa-549a-4a02-ad04-7c3f0dc92445",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d98298fa-549a-4a02-ad04-7c3f0dc92445",
+      "title": "LibDynamicMail"
     }
   },
   "schema": 1
