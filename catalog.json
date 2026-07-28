@@ -3391,6 +3391,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/dec0fe25-b1d4-4adf-b351-101e44def098",
       "title": "LibConsoleMenu"
+    },
+    "df55d66d-d19b-41dd-99a2-8d385916f4a1": {
+      "content_id": "df55d66d-d19b-41dd-99a2-8d385916f4a1",
+      "fingerprint": "b37e2703c2e53fe6d5ee4bf82ba419e00467aae910f2c42e6805a89f4fcde547",
+      "path": "addons/LibQuestStatus__df55d66d-d19b-41dd-99a2-8d385916f4a1",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/df55d66d-d19b-41dd-99a2-8d385916f4a1",
+      "title": "LibQuestStatus"
     }
   },
   "schema": 1
