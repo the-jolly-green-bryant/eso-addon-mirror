@@ -2839,6 +2839,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/be99bdeb-a9e3-4b63-abe8-9aa886190e8e",
       "title": "AutoReadyCheck"
+    },
+    "bf9cbf1c-54ac-48f3-b489-a2aeda4996e8": {
+      "content_id": "bf9cbf1c-54ac-48f3-b489-a2aeda4996e8",
+      "fingerprint": "b4a703cb7320323c4f33dfefbd5eaceb95fb35503cde7f6521bb9966a40059ee",
+      "path": "addons/EWPFinder__bf9cbf1c-54ac-48f3-b489-a2aeda4996e8",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/bf9cbf1c-54ac-48f3-b489-a2aeda4996e8",
+      "title": "EWPFinder"
     }
   },
   "schema": 1
