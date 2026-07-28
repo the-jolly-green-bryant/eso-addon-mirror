@@ -2999,6 +2999,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c8ab1f8d-4c10-4310-a76f-473ac11c3d05",
       "title": "KDStatTracker[BETA]"
+    },
+    "c9b85989-bab6-4000-a3fc-80ed49e25e87": {
+      "content_id": "c9b85989-bab6-4000-a3fc-80ed49e25e87",
+      "fingerprint": "56d15e4777229825c314331298113056559f1c934681a47cbda8acf67f667615",
+      "path": "addons/Personal-Dps-Tracker__c9b85989-bab6-4000-a3fc-80ed49e25e87",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c9b85989-bab6-4000-a3fc-80ed49e25e87",
+      "title": "Personal Dps Tracker"
     }
   },
   "schema": 1
