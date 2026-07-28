@@ -2247,6 +2247,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/96520a08-2eeb-4aa3-a0ba-18c6fe0f2a0c",
       "title": "Bweh"
+    },
+    "9653b3d8-c1bf-4328-9b31-5e18a4ea643d": {
+      "content_id": "9653b3d8-c1bf-4328-9b31-5e18a4ea643d",
+      "fingerprint": "5b7ef8cbc6b3140a7f4663f4830b87f8d3fcf809b2cb9690d91763a265b20958",
+      "path": "addons/MSPAINTUI__9653b3d8-c1bf-4328-9b31-5e18a4ea643d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9653b3d8-c1bf-4328-9b31-5e18a4ea643d",
+      "title": "MSPAINTUI"
     }
   },
   "schema": 1
