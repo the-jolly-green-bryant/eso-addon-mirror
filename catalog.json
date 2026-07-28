@@ -2655,6 +2655,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b2507553-0888-4fae-9f69-5b1f89f1b266",
       "title": "More Target Information"
+    },
+    "b288ca12-6f96-416d-8cc1-13397e5f997a": {
+      "content_id": "b288ca12-6f96-416d-8cc1-13397e5f997a",
+      "fingerprint": "20c9d8a8079dd4134bc1287005a5850fae8dad218a482ccc79edaf6c0ad1b1ee",
+      "path": "addons/ShowBagSpace__b288ca12-6f96-416d-8cc1-13397e5f997a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b288ca12-6f96-416d-8cc1-13397e5f997a",
+      "title": "ShowBagSpace"
     }
   },
   "schema": 1
