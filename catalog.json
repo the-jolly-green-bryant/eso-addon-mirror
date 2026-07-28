@@ -1423,6 +1423,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5fcc6401-3a36-427e-acd5-9611fb589e78",
       "title": "Puma"
+    },
+    "6062f2e4-8b5a-48e5-9327-cf8de18eb5e5": {
+      "content_id": "6062f2e4-8b5a-48e5-9327-cf8de18eb5e5",
+      "fingerprint": "1f14abb71e3ca11404e334da856ae84ef0f314aa829d92de828c599f8f3fb9fd",
+      "path": "addons/Trade-Skills__6062f2e4-8b5a-48e5-9327-cf8de18eb5e5",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6062f2e4-8b5a-48e5-9327-cf8de18eb5e5",
+      "title": "Trade Skills"
     }
   },
   "schema": 1
