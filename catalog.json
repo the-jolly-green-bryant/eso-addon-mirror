@@ -2263,6 +2263,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/96f579ed-c17e-44c6-b3e3-969c34e8f20f",
       "title": "IsItTaunted-testing"
+    },
+    "97602269-0c8d-4bb7-aa31-33cde23e39b7": {
+      "content_id": "97602269-0c8d-4bb7-aa31-33cde23e39b7",
+      "fingerprint": "265720115f8e58a7282b1390f3120f5eafbcddabaa58e67c9903377eb677e5f5",
+      "path": "addons/Guild-Items-Stacker__97602269-0c8d-4bb7-aa31-33cde23e39b7",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/97602269-0c8d-4bb7-aa31-33cde23e39b7",
+      "title": "Guild Items Stacker"
     }
   },
   "schema": 1
