@@ -3479,6 +3479,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e1b107d5-082e-4ed1-9cfc-81b9a42e0528",
       "title": "Alkosh Timer"
+    },
+    "e1b979e5-1c57-4da0-8980-5477f9d3b689": {
+      "content_id": "e1b979e5-1c57-4da0-8980-5477f9d3b689",
+      "fingerprint": "0bf5712a5ae9bf43a64850763c526c1cdb852f01634497e8c46675298ffbd87b",
+      "path": "addons/Dolgubon-s-Lazy-Set-Crafter-XBPA-ONLY__e1b979e5-1c57-4da0-8980-5477f9d3b689",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e1b979e5-1c57-4da0-8980-5477f9d3b689",
+      "title": "Dolgubon's Lazy Set Crafter (XBPA ONLY)"
     }
   },
   "schema": 1
