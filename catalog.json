@@ -3551,6 +3551,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e4a3d0f8-bf1e-4c57-8b4b-4d65364fb344",
       "title": "Mechanic Mentor"
+    },
+    "e4b71317-9236-4462-a9a2-889700f950bb": {
+      "content_id": "e4b71317-9236-4462-a9a2-889700f950bb",
+      "fingerprint": "4588f8d1c7de07b6b6db40383d0835ad933876736350002583d3aff74a7842bf",
+      "path": "addons/LibAbilityLogger__e4b71317-9236-4462-a9a2-889700f950bb",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e4b71317-9236-4462-a9a2-889700f950bb",
+      "title": "LibAbilityLogger"
     }
   },
   "schema": 1
