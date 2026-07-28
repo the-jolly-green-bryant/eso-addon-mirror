@@ -1407,6 +1407,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5ea04c1b-93b5-42c8-9870-118a7b08e4ae",
       "title": "MuteyPacrooti"
+    },
+    "5eaa0d91-47f8-4c5e-8673-db3ab518a752": {
+      "content_id": "5eaa0d91-47f8-4c5e-8673-db3ab518a752",
+      "fingerprint": "5c1ec2f730f7e5e7ea061cb645685337f88c998b66833887e954c6d48529792f",
+      "path": "addons/LibCustomNames__5eaa0d91-47f8-4c5e-8673-db3ab518a752",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5eaa0d91-47f8-4c5e-8673-db3ab518a752",
+      "title": "LibCustomNames"
     }
   },
   "schema": 1
