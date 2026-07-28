@@ -3567,6 +3567,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e4f41108-4101-452e-8607-b469bc8eb4b0",
       "title": "VersesAndVisions"
+    },
+    "e54271d9-a6d8-4004-8e2a-6f8ddb3a4045": {
+      "content_id": "e54271d9-a6d8-4004-8e2a-6f8ddb3a4045",
+      "fingerprint": "419a3bb340c3088a598830a33592d7f47d5ae050c0bbf1b86d8941c68709c8fb",
+      "path": "addons/LibGPS__e54271d9-a6d8-4004-8e2a-6f8ddb3a4045",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e54271d9-a6d8-4004-8e2a-6f8ddb3a4045",
+      "title": "LibGPS"
     }
   },
   "schema": 1
