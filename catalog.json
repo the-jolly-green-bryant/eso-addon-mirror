@@ -265,6 +265,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/13e3ca65-dc26-4831-a1f1-e950fd465df9",
       "title": "Spaulder Notifier"
+    },
+    "1428d8ab-7f1f-4741-833a-93180287dd09": {
+      "content_id": "1428d8ab-7f1f-4741-833a-93180287dd09",
+      "fingerprint": "aa63df08af7856601d3d974ff2b9c8b13a8f6a05c298c190d5c94f1b02ab29bb",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1428d8ab-7f1f-4741-833a-93180287dd09",
+      "title": "WeaveDelays"
     }
   },
   "schema": 1
