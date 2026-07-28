@@ -2367,6 +2367,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9d977c03-cdc6-45ef-99da-5dcd825ccfa1",
       "title": "RezAlert"
+    },
+    "9e55edc2-32f8-4c75-b87c-e921fd53e9cf": {
+      "content_id": "9e55edc2-32f8-4c75-b87c-e921fd53e9cf",
+      "fingerprint": "5d180226b580f1e7c95ac3f2f4bba5b711f84eb1c9406c440861c1c9583c2d49",
+      "path": "addons/AlternateDeathRecap__9e55edc2-32f8-4c75-b87c-e921fd53e9cf",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9e55edc2-32f8-4c75-b87c-e921fd53e9cf",
+      "title": "AlternateDeathRecap"
     }
   },
   "schema": 1
