@@ -3527,6 +3527,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e2dbb014-9ae4-408e-9617-05161b5c9650",
       "title": "LibTextFilter"
+    },
+    "e42700aa-3021-495e-9ff4-9e83377c9f99": {
+      "content_id": "e42700aa-3021-495e-9ff4-9e83377c9f99",
+      "fingerprint": "90c5dd2ea27b512879b6581a26a963d7b625021e216df015369470ebe08a50f5",
+      "path": "addons/Adventures-toolkit-Dev__e42700aa-3021-495e-9ff4-9e83377c9f99",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e42700aa-3021-495e-9ff4-9e83377c9f99",
+      "title": "Adventures toolkit (Dev)"
     }
   },
   "schema": 1
