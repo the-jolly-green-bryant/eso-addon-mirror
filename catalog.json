@@ -458,7 +458,8 @@
     },
     "1e7d3c7d-1680-4f93-b82c-8c4601d3b449": {
       "content_id": "1e7d3c7d-1680-4f93-b82c-8c4601d3b449",
-      "fingerprint": "dd62d66cae9a2fe19c1fd2d4ed91d93bbd5e450745dbdfa8bd1ef6723036448b",
+      "fingerprint": "1fe7b56687eea1bef2380391f1b0eb2fb9ae47cf818e643b434c5a2bd983fe21",
+      "path": "addons/Console-Metrics__1e7d3c7d-1680-4f93-b82c-8c4601d3b449",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1e7d3c7d-1680-4f93-b82c-8c4601d3b449",
       "title": "Console Metrics"
