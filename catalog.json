@@ -1967,6 +1967,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/85e2f419-414a-48a9-ad3b-4b713c098ca2",
       "title": "Chat Be Gone"
+    },
+    "863227c7-d9fe-4803-b842-d9fb1aa79f16": {
+      "content_id": "863227c7-d9fe-4803-b842-d9fb1aa79f16",
+      "fingerprint": "492cf39c734e9087fc9c8e4c11b30d73c6bd8c22515dc2d1ace0087ba0ba6b52",
+      "path": "addons/ChampionXPBar__863227c7-d9fe-4803-b842-d9fb1aa79f16",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/863227c7-d9fe-4803-b842-d9fb1aa79f16",
+      "title": "ChampionXPBar"
     }
   },
   "schema": 1
