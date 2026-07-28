@@ -679,6 +679,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2c07f374-57bc-4f20-814f-d40e4d93285b",
       "title": "MyMapPos"
+    },
+    "2d6ff530-edbc-4425-be68-daadbc3c0afa": {
+      "content_id": "2d6ff530-edbc-4425-be68-daadbc3c0afa",
+      "fingerprint": "eb9e7fb171684ee65891cb0bf5caae6931d35048e6ee1c68b73181aa77dd5506",
+      "path": "addons/Abah-s-Appraiser---Auto-Sell-Junk__2d6ff530-edbc-4425-be68-daadbc3c0afa",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2d6ff530-edbc-4425-be68-daadbc3c0afa",
+      "title": "Abah's Appraiser - Auto Sell Junk"
     }
   },
   "schema": 1
