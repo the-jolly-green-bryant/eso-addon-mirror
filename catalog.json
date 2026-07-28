@@ -3815,6 +3815,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f524ac28-70c4-455c-8637-232a342f3c8f",
       "title": "ThisIsTheWayshrine"
+    },
+    "f53af274-25ac-4c9f-8785-ad598d053a11": {
+      "content_id": "f53af274-25ac-4c9f-8785-ad598d053a11",
+      "fingerprint": "af6434ca90cfa71c0f9a534749f7904f4c5440bfc30fbf050d675fa3412c87e4",
+      "path": "addons/Volcano-s-Stat-Colours__f53af274-25ac-4c9f-8785-ad598d053a11",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f53af274-25ac-4c9f-8785-ad598d053a11",
+      "title": "Volcano's Stat Colours"
     }
   },
   "schema": 1
