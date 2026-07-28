@@ -3255,6 +3255,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d8edb913-8af4-455a-939f-5bbd598eeff7",
       "title": "RockGrove Alkosh Timer"
+    },
+    "d9742ac5-f315-4712-8383-b1a170801ba9": {
+      "content_id": "d9742ac5-f315-4712-8383-b1a170801ba9",
+      "fingerprint": "71afd013f92d245fc5c164c81ddf09e2aaef65c0eeb90415f32f47c4dd7e6fe2",
+      "path": "addons/Smart-Trader__d9742ac5-f315-4712-8383-b1a170801ba9",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d9742ac5-f315-4712-8383-b1a170801ba9",
+      "title": "Smart Trader"
     }
   },
   "schema": 1
