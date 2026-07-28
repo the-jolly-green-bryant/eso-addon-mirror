@@ -639,6 +639,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2a88cc14-8e8c-4b73-9605-2e1d7c764e23",
       "title": "TSC Price Fetcher 2"
+    },
+    "2aa223e9-ba88-45f7-90d3-0a47002c720c": {
+      "content_id": "2aa223e9-ba88-45f7-90d3-0a47002c720c",
+      "fingerprint": "175b015d57483788ff2547a8e0d5a76c07e595b456bf5b26ed43e46eb3113ef7",
+      "path": "addons/Permanent-Memento__2aa223e9-ba88-45f7-90d3-0a47002c720c",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2aa223e9-ba88-45f7-90d3-0a47002c720c",
+      "title": "Permanent Memento"
     }
   },
   "schema": 1
