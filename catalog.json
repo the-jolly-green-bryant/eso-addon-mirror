@@ -2271,6 +2271,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/97602269-0c8d-4bb7-aa31-33cde23e39b7",
       "title": "Guild Items Stacker"
+    },
+    "979371c6-2e58-4b2f-84af-cc9276c86b94": {
+      "content_id": "979371c6-2e58-4b2f-84af-cc9276c86b94",
+      "fingerprint": "4fcd382199a24e025d1392a2cebe7d9961fef4868cd0b0e48afc202195ff7085",
+      "path": "addons/Satchel-Exchange__979371c6-2e58-4b2f-84af-cc9276c86b94",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/979371c6-2e58-4b2f-84af-cc9276c86b94",
+      "title": "Satchel Exchange"
     }
   },
   "schema": 1
