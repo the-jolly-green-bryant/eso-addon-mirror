@@ -1351,6 +1351,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5aa01879-0f7a-42e6-a52d-979261f97cf1",
       "title": "Whispers Beyond"
+    },
+    "5af6522d-980d-4335-9328-4e5077cee058": {
+      "content_id": "5af6522d-980d-4335-9328-4e5077cee058",
+      "fingerprint": "dd835f9c97fce50172e63d242c047acf411abcc94d32cea62cc5780a81fa775a",
+      "path": "addons/Bag-Space-Indicator__5af6522d-980d-4335-9328-4e5077cee058",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5af6522d-980d-4335-9328-4e5077cee058",
+      "title": "Bag Space Indicator"
     }
   },
   "schema": 1
