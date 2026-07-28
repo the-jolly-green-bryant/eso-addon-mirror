@@ -1479,6 +1479,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/643e39fa-2b3f-46f8-aef4-eee9ff92360d",
       "title": "PVP Buddy"
+    },
+    "645213de-645d-4170-a4d0-0ee977090114": {
+      "content_id": "645213de-645d-4170-a4d0-0ee977090114",
+      "fingerprint": "07106aae94eaee70fb619d3ccbb2ff35e7cd67b570fd100c4e6d0518ad81e8c9",
+      "path": "addons/Wizard-s-Wardrobe__645213de-645d-4170-a4d0-0ee977090114",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/645213de-645d-4170-a4d0-0ee977090114",
+      "title": "Wizard's Wardrobe"
     }
   },
   "schema": 1
