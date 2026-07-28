@@ -1007,6 +1007,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/434ce5ca-211a-4a6b-8682-21f39dcb2d25",
       "title": "CanThisBeCraftedAtHome"
+    },
+    "436f6695-4798-423f-b276-d8c46cbd938e": {
+      "content_id": "436f6695-4798-423f-b276-d8c46cbd938e",
+      "fingerprint": "d15d88580653cba434e3f4f5906b9357628519d5139c9db52ece86a66fa9909f",
+      "path": "addons/dev-sandbox__436f6695-4798-423f-b276-d8c46cbd938e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/436f6695-4798-423f-b276-d8c46cbd938e",
+      "title": "dev sandbox"
     }
   },
   "schema": 1
