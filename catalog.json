@@ -847,6 +847,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/37bd7159-8611-4d29-8767-08434d4fe209",
       "title": "Cyrodiil Alerts"
+    },
+    "37f459c1-e6dc-4d21-afd7-eaceb68cfd82": {
+      "content_id": "37f459c1-e6dc-4d21-afd7-eaceb68cfd82",
+      "fingerprint": "68bba31e1c8505e225bb9923a54c4b61cb2677ebe21c49c8ca72805e6c287fe8",
+      "path": "addons/Screenshot-Mode-Enhanced__37f459c1-e6dc-4d21-afd7-eaceb68cfd82",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/37f459c1-e6dc-4d21-afd7-eaceb68cfd82",
+      "title": "Screenshot Mode Enhanced"
     }
   },
   "schema": 1
