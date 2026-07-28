@@ -3367,6 +3367,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/de3c943a-61a9-4a1a-b9b3-abee0ae8835c",
       "title": "Random Pet"
+    },
+    "de9c92f2-729c-45e6-8071-0155852da2c0": {
+      "content_id": "de9c92f2-729c-45e6-8071-0155852da2c0",
+      "fingerprint": "9a5db7e020dfba20dc32704fe8e555a0c5ed65397244a8c251584bc2c5f501ab",
+      "path": "addons/LibMousePointer__de9c92f2-729c-45e6-8071-0155852da2c0",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/de9c92f2-729c-45e6-8071-0155852da2c0",
+      "title": "LibMousePointer"
     }
   },
   "schema": 1
