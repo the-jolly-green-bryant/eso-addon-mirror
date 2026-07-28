@@ -2911,6 +2911,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c2664980-589b-4f81-a99e-02204268cab3",
       "title": "WestonUi"
+    },
+    "c41f5a50-974f-45e6-a218-e99590da3841": {
+      "content_id": "c41f5a50-974f-45e6-a218-e99590da3841",
+      "fingerprint": "7095f7d5934da2c5bf471c1ade85f020f717aa8420e9202b050bb63078fa9e7d",
+      "path": "addons/More-Markers__c41f5a50-974f-45e6-a218-e99590da3841",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c41f5a50-974f-45e6-a218-e99590da3841",
+      "title": "More Markers"
     }
   },
   "schema": 1
