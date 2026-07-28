@@ -727,6 +727,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2fe8e45f-ebf9-4507-b981-91023b441f3e",
       "title": "CPSlotsConsole"
+    },
+    "30102403-93a7-4fd2-a08a-4b249f03e4d4": {
+      "content_id": "30102403-93a7-4fd2-a08a-4b249f03e4d4",
+      "fingerprint": "40c1efc708e2be96c828f9de875f1d337f50e029c205cdd435fa00c4529d18ad",
+      "path": "addons/Oh-No-My-Menu__30102403-93a7-4fd2-a08a-4b249f03e4d4",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/30102403-93a7-4fd2-a08a-4b249f03e4d4",
+      "title": "Oh No My Menu"
     }
   },
   "schema": 1
