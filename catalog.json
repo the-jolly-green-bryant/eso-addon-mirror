@@ -1375,6 +1375,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5da20bd4-9950-42b8-aca8-deadd5817210",
       "title": "InstaQ"
+    },
+    "5dce8bc1-61a1-4273-a23e-f74372f36b40": {
+      "content_id": "5dce8bc1-61a1-4273-a23e-f74372f36b40",
+      "fingerprint": "c5304b2546879411e6eabf13e28b4a200c833dc8dc3179ca7ab122ec3480a09e",
+      "path": "addons/Gilded-UI__5dce8bc1-61a1-4273-a23e-f74372f36b40",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5dce8bc1-61a1-4273-a23e-f74372f36b40",
+      "title": "Gilded UI"
     }
   },
   "schema": 1
