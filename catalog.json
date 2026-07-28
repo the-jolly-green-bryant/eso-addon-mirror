@@ -1767,6 +1767,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/764a614a-74ad-46e6-b587-0bea7cd6174c",
       "title": "Aldrens Grandmaster Workshop"
+    },
+    "76d8e5e1-619c-48d4-b331-b3895b578dc6": {
+      "content_id": "76d8e5e1-619c-48d4-b331-b3895b578dc6",
+      "fingerprint": "6d7cac3911f7498e93ffbf0e558aea369bcb234b3e5022c0ea44ea6f9c68a0ac",
+      "path": "addons/Mara-M0R-s-Assorted-Radial-Actions__76d8e5e1-619c-48d4-b331-b3895b578dc6",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/76d8e5e1-619c-48d4-b331-b3895b578dc6",
+      "title": "Mara: M0R's Assorted Radial Actions"
     }
   },
   "schema": 1
