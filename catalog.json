@@ -911,6 +911,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3a04382d-3f1c-4340-9fa5-abd6af19a2af",
       "title": "Find My Stuff"
+    },
+    "3a49967e-c0fb-4b54-b2f0-f681b2a23b7d": {
+      "content_id": "3a49967e-c0fb-4b54-b2f0-f681b2a23b7d",
+      "fingerprint": "e3524f906feabb59977cf0a08e6f1b98f57feeacc9adf24f9088aa6d9a041fcb",
+      "path": "addons/Gamepad-UI-Tweaks__3a49967e-c0fb-4b54-b2f0-f681b2a23b7d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3a49967e-c0fb-4b54-b2f0-f681b2a23b7d",
+      "title": "Gamepad UI Tweaks"
     }
   },
   "schema": 1
