@@ -1847,6 +1847,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/7b940de0-c594-4695-8235-c75c98259513",
       "title": "Buy-In Bulk"
+    },
+    "7c18ff01-65ca-424a-9797-987227ea3ac6": {
+      "content_id": "7c18ff01-65ca-424a-9797-987227ea3ac6",
+      "fingerprint": "a320af85bcd35be26527bcbcb1c7fda6a320fef68450d34ace563c0bef176bb1",
+      "path": "addons/CombatTopHealthbar__7c18ff01-65ca-424a-9797-987227ea3ac6",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/7c18ff01-65ca-424a-9797-987227ea3ac6",
+      "title": "CombatTopHealthbar"
     }
   },
   "schema": 1
