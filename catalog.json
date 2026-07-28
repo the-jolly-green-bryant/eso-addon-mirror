@@ -3887,6 +3887,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f8e59501-116b-422a-90e9-f57cf2dc7b9d",
       "title": "RoaringOpportunist"
+    },
+    "f9506e69-c90e-42e8-bef8-115490c59348": {
+      "content_id": "f9506e69-c90e-42e8-bef8-115490c59348",
+      "fingerprint": "faa7555c8e333e71116cfb9fd5a8a9cd268f7801aae66b487042fe9846f74e12",
+      "path": "addons/TrueReticle__f9506e69-c90e-42e8-bef8-115490c59348",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f9506e69-c90e-42e8-bef8-115490c59348",
+      "title": "TrueReticle"
     }
   },
   "schema": 1
