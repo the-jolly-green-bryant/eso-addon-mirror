@@ -975,6 +975,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3f511a24-33c0-4c94-979a-97e0982dbb6b",
       "title": "Synergy Priority"
+    },
+    "40ce0c52-4479-40d1-b9d0-3f8fc4d53c4f": {
+      "content_id": "40ce0c52-4479-40d1-b9d0-3f8fc4d53c4f",
+      "fingerprint": "6808e665be73c99069924be53b93cb288796cab2541286dea85a043b3c5ba4ee",
+      "path": "addons/LibSTARSConnect__40ce0c52-4479-40d1-b9d0-3f8fc4d53c4f",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/40ce0c52-4479-40d1-b9d0-3f8fc4d53c4f",
+      "title": "LibSTARSConnect"
     }
   },
   "schema": 1
