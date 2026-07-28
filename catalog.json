@@ -967,6 +967,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3ea08b32-8d76-48a9-8c15-7f6867883984",
       "title": "ESO_BuildForge"
+    },
+    "3f511a24-33c0-4c94-979a-97e0982dbb6b": {
+      "content_id": "3f511a24-33c0-4c94-979a-97e0982dbb6b",
+      "fingerprint": "ca7d4bc7caff946276fa36e8f57518dc63f47b88fef3d84159aeb7cc60ac89af",
+      "path": "addons/Synergy-Priority__3f511a24-33c0-4c94-979a-97e0982dbb6b",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3f511a24-33c0-4c94-979a-97e0982dbb6b",
+      "title": "Synergy Priority"
     }
   },
   "schema": 1
