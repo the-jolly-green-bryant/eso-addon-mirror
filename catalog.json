@@ -363,6 +363,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1ac2188b-1200-476b-a90c-6561a7d3b52a",
       "title": "Side Quests"
+    },
+    "1b2eb3be-486b-48b5-b430-ba9e6409bf16": {
+      "content_id": "1b2eb3be-486b-48b5-b430-ba9e6409bf16",
+      "fingerprint": "5803694b36a9fd99ec210d1a25beb684f28b7a244efa2966ea1a376ffebf778b",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1b2eb3be-486b-48b5-b430-ba9e6409bf16",
+      "title": "MailMule"
     }
   },
   "schema": 1
