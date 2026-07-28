@@ -2951,6 +2951,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c720ddc7-a982-4027-ac83-204540d2b013",
       "title": "ClearSight"
+    },
+    "c75ace9c-ba19-4bce-b7b1-4793854c4754": {
+      "content_id": "c75ace9c-ba19-4bce-b7b1-4793854c4754",
+      "fingerprint": "3392ff5876a56e9245549555c9a1f18ed8a921983f02b42e83384ddfff8f994a",
+      "path": "addons/LibGroupPotionCooldowns__c75ace9c-ba19-4bce-b7b1-4793854c4754",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c75ace9c-ba19-4bce-b7b1-4793854c4754",
+      "title": "LibGroupPotionCooldowns"
     }
   },
   "schema": 1
