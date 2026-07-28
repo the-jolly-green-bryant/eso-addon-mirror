@@ -1015,6 +1015,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/436f6695-4798-423f-b276-d8c46cbd938e",
       "title": "dev sandbox"
+    },
+    "43eacadc-428c-4ca4-b0da-e2777148a4fb": {
+      "content_id": "43eacadc-428c-4ca4-b0da-e2777148a4fb",
+      "fingerprint": "0f83e74ecdba6f2910185dd01c08a5cce94457c948b1c69e2dbe82a7656f7f29",
+      "path": "addons/Test__43eacadc-428c-4ca4-b0da-e2777148a4fb",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/43eacadc-428c-4ca4-b0da-e2777148a4fb",
+      "title": "Test"
     }
   },
   "schema": 1
