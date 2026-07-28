@@ -538,6 +538,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/28cfc719-5113-4b1f-aab6-570be159ab81",
       "title": "AwesomeGuildStore"
+    },
+    "2918facc-2603-4099-bbcd-e4e91e58c429": {
+      "content_id": "2918facc-2603-4099-bbcd-e4e91e58c429",
+      "fingerprint": "a5d59c849babbc94ce9a754c43698f9f47e7d69068132b290e0df7042c8e966e",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2918facc-2603-4099-bbcd-e4e91e58c429",
+      "title": "The Artaeum Angler"
     }
   },
   "schema": 1
