@@ -2959,6 +2959,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c75ace9c-ba19-4bce-b7b1-4793854c4754",
       "title": "LibGroupPotionCooldowns"
+    },
+    "c75df85c-f9c0-4e54-a0f3-d5173e44a850": {
+      "content_id": "c75df85c-f9c0-4e54-a0f3-d5173e44a850",
+      "fingerprint": "8aa58f1c4693b0e88000c8b21682284865300c43e16a60894951fece243e58bc",
+      "path": "addons/CasualClean__c75df85c-f9c0-4e54-a0f3-d5173e44a850",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c75df85c-f9c0-4e54-a0f3-d5173e44a850",
+      "title": "CasualClean"
     }
   },
   "schema": 1
