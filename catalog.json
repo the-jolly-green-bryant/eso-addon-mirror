@@ -1471,6 +1471,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6214b947-f6ff-4d1b-b443-987daf528ecb",
       "title": "TraitCraft"
+    },
+    "643e39fa-2b3f-46f8-aef4-eee9ff92360d": {
+      "content_id": "643e39fa-2b3f-46f8-aef4-eee9ff92360d",
+      "fingerprint": "b13b45e035bb74ed0f45d7efa870b39f12aff5c1dc0b3ccc92b81de22cd88e5a",
+      "path": "addons/PVP-Buddy__643e39fa-2b3f-46f8-aef4-eee9ff92360d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/643e39fa-2b3f-46f8-aef4-eee9ff92360d",
+      "title": "PVP Buddy"
     }
   },
   "schema": 1
