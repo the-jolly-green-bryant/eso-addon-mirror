@@ -3015,6 +3015,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ca0d62e7-58ab-4ea4-9729-f139cb28a64d",
       "title": "Lore Book Locations"
+    },
+    "cae51d07-5b11-4feb-ab79-11e17ca47dca": {
+      "content_id": "cae51d07-5b11-4feb-ab79-11e17ca47dca",
+      "fingerprint": "cb8e0cc10d3780aac1dfe7af65118a4a03b952ac26d4bc6f3ec2f63ecf3bd3c5",
+      "path": "addons/Khajiit-Feng-Shui__cae51d07-5b11-4feb-ab79-11e17ca47dca",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cae51d07-5b11-4feb-ab79-11e17ca47dca",
+      "title": "Khajiit Feng Shui"
     }
   },
   "schema": 1
