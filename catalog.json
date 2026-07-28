@@ -1591,6 +1591,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6aa72f53-f802-446b-9be4-55671bec2726",
       "title": "EsoAR"
+    },
+    "6afd8b79-471b-4c3d-b785-aaef8319bc4f": {
+      "content_id": "6afd8b79-471b-4c3d-b785-aaef8319bc4f",
+      "fingerprint": "58b74ab0e6f696163bf1d36d8fdd32126725f1dba2f6681889b65a761294ec2e",
+      "path": "addons/Block-Item-Usage__6afd8b79-471b-4c3d-b785-aaef8319bc4f",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6afd8b79-471b-4c3d-b785-aaef8319bc4f",
+      "title": "Block Item Usage"
     }
   },
   "schema": 1
