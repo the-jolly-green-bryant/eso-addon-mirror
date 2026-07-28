@@ -1935,6 +1935,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8421afb6-ec3a-4d66-a247-e161c5656103",
       "title": "Trust, but Verify"
+    },
+    "844b3c4f-aa76-42d6-8ef7-dcf6dec3b447": {
+      "content_id": "844b3c4f-aa76-42d6-8ef7-dcf6dec3b447",
+      "fingerprint": "bb6ceba9c9bb14a4b5972930a7674591aeb61f238b5f9813fe22fb04072c6595",
+      "path": "addons/Forpl-KDA-Bar__844b3c4f-aa76-42d6-8ef7-dcf6dec3b447",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/844b3c4f-aa76-42d6-8ef7-dcf6dec3b447",
+      "title": "Forpl-KDA-Bar"
     }
   },
   "schema": 1
