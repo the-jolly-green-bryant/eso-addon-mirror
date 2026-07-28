@@ -3439,6 +3439,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e0a62e77-93d4-43e7-9639-fb2737b3e00a",
       "title": "Map Filter Test Case"
+    },
+    "e0ba98a7-7f17-4c46-8ef2-b2dfc1a2f1e1": {
+      "content_id": "e0ba98a7-7f17-4c46-8ef2-b2dfc1a2f1e1",
+      "fingerprint": "12b81a4826e00bc5af964909c2e7550fbb76ba48d9fcac7ea704368c1f19684a",
+      "path": "addons/Votan-s-Addon-List__e0ba98a7-7f17-4c46-8ef2-b2dfc1a2f1e1",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e0ba98a7-7f17-4c46-8ef2-b2dfc1a2f1e1",
+      "title": "Votan's Addon List"
     }
   },
   "schema": 1
