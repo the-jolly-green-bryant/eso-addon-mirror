@@ -1247,6 +1247,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/50a4c919-aff0-4475-8614-eb2576d6b6d9",
       "title": "Update 47 Tweaker"
+    },
+    "529cf85a-e597-4945-86c4-654d2a32a7bc": {
+      "content_id": "529cf85a-e597-4945-86c4-654d2a32a7bc",
+      "fingerprint": "66cae66b17b00cb5a7a00edadd1cf19c08d86af2affcb011d475180756802114",
+      "path": "addons/LycanMeter__529cf85a-e597-4945-86c4-654d2a32a7bc",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/529cf85a-e597-4945-86c4-654d2a32a7bc",
+      "title": "LycanMeter"
     }
   },
   "schema": 1
