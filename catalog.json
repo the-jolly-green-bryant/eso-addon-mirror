@@ -2303,6 +2303,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9a183ede-4e80-4f0b-bf0c-13843831d603",
       "title": "LibUndauntedPledges"
+    },
+    "9a439c8a-322c-472e-99f9-e05a6f76532b": {
+      "content_id": "9a439c8a-322c-472e-99f9-e05a6f76532b",
+      "fingerprint": "049b010c02552ec578dfcce006bb1ed14ded83a1055a6ee087aaf66dcb0d69d5",
+      "path": "addons/Quest-Mover__9a439c8a-322c-472e-99f9-e05a6f76532b",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9a439c8a-322c-472e-99f9-e05a6f76532b",
+      "title": "Quest Mover"
     }
   },
   "schema": 1
