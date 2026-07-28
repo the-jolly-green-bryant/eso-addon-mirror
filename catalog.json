@@ -2095,6 +2095,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8e880053-fe2b-4934-9745-a0670e1e12d6",
       "title": "Alliance Rank Progress"
+    },
+    "8edcdae2-d71b-4fb8-b99c-7d1fca55bfb2": {
+      "content_id": "8edcdae2-d71b-4fb8-b99c-7d1fca55bfb2",
+      "fingerprint": "2318f480abc447ac40dc49d48f713ad82914628e0017f70e86f7c1954c677c81",
+      "path": "addons/Speak-Like-Khajiit__8edcdae2-d71b-4fb8-b99c-7d1fca55bfb2",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8edcdae2-d71b-4fb8-b99c-7d1fca55bfb2",
+      "title": "Speak Like Khajiit"
     }
   },
   "schema": 1
