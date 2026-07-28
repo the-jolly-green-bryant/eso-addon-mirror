@@ -1047,6 +1047,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/44437e40-fb6e-46cb-9717-9b21c46fc1cf",
       "title": "A More Automated Invite"
+    },
+    "44df98e8-01a5-48d2-903d-41d3516f3289": {
+      "content_id": "44df98e8-01a5-48d2-903d-41d3516f3289",
+      "fingerprint": "718d5d1fd4e195affbcfcfc834458960ada3f8ba0765b69324d59108f0f7d41e",
+      "path": "addons/TraderFilter__44df98e8-01a5-48d2-903d-41d3516f3289",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/44df98e8-01a5-48d2-903d-41d3516f3289",
+      "title": "TraderFilter"
     }
   },
   "schema": 1
