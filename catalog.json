@@ -903,6 +903,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/39fc7c26-2635-417b-b2e4-1a071c50d41d",
       "title": "LoreTooltips"
+    },
+    "3a04382d-3f1c-4340-9fa5-abd6af19a2af": {
+      "content_id": "3a04382d-3f1c-4340-9fa5-abd6af19a2af",
+      "fingerprint": "f3b54cf5eae83700a74c67f355cf577562810b7c26a6a45b9383b9750a5a6a7e",
+      "path": "addons/Find-My-Stuff__3a04382d-3f1c-4340-9fa5-abd6af19a2af",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3a04382d-3f1c-4340-9fa5-abd6af19a2af",
+      "title": "Find My Stuff"
     }
   },
   "schema": 1
