@@ -3399,6 +3399,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/df55d66d-d19b-41dd-99a2-8d385916f4a1",
       "title": "LibQuestStatus"
+    },
+    "df7e78bb-63a0-4221-a1f6-36c7ac0c29e8": {
+      "content_id": "df7e78bb-63a0-4221-a1f6-36c7ac0c29e8",
+      "fingerprint": "f160d1c4320ffeb7383eb4d966bed1952f94abf63f4b962a69b9d3628cc9e7e3",
+      "path": "addons/TSC-Data-Hub__df7e78bb-63a0-4221-a1f6-36c7ac0c29e8",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/df7e78bb-63a0-4221-a1f6-36c7ac0c29e8",
+      "title": "TSC Data Hub"
     }
   },
   "schema": 1
