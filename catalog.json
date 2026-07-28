@@ -3791,6 +3791,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f386385b-2805-4720-8481-1d87d1cd1d0c",
       "title": "PinAutoResizer"
+    },
+    "f3dd1d3e-85df-448d-8d84-fdf6545dbebb": {
+      "content_id": "f3dd1d3e-85df-448d-8d84-fdf6545dbebb",
+      "fingerprint": "de021b5ff7876fc4e8130cbe2c14120653e1a878020d799dab3bb43e80080180",
+      "path": "addons/LibRadialMenu__f3dd1d3e-85df-448d-8d84-fdf6545dbebb",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f3dd1d3e-85df-448d-8d84-fdf6545dbebb",
+      "title": "LibRadialMenu"
     }
   },
   "schema": 1
