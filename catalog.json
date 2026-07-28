@@ -3471,6 +3471,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e17d8325-5ee4-4349-bae0-f777d0d9633b",
       "title": "Lazy Learner"
+    },
+    "e1b107d5-082e-4ed1-9cfc-81b9a42e0528": {
+      "content_id": "e1b107d5-082e-4ed1-9cfc-81b9a42e0528",
+      "fingerprint": "3c36682b4680dffc35344e43dbc1cf6c97631a3cd93a4e39e40869dd1f5ff428",
+      "path": "addons/Alkosh-Timer__e1b107d5-082e-4ed1-9cfc-81b9a42e0528",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e1b107d5-082e-4ed1-9cfc-81b9a42e0528",
+      "title": "Alkosh Timer"
     }
   },
   "schema": 1
