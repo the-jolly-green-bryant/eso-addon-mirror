@@ -3287,6 +3287,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d9a6dba3-bff5-4696-ac94-a914acd957c2",
       "title": "Map Pins"
+    },
+    "d9ba289c-0a0a-4233-80ab-25f3be9c35eb": {
+      "content_id": "d9ba289c-0a0a-4233-80ab-25f3be9c35eb",
+      "fingerprint": "88eda9c874c853ceddfeb8f177d7dd1ade97ed594d307d35d7f13bf993f4847f",
+      "path": "addons/Survey-Sentinel__d9ba289c-0a0a-4233-80ab-25f3be9c35eb",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d9ba289c-0a0a-4233-80ab-25f3be9c35eb",
+      "title": "Survey Sentinel"
     }
   },
   "schema": 1
