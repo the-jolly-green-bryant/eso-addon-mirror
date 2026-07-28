@@ -2439,6 +2439,14 @@
       "published": false,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a2b82a6f-4da6-492b-9132-52354a645321",
       "title": "name"
+    },
+    "a31e5f3e-6209-4f6c-9a2f-bac71a9a3af3": {
+      "content_id": "a31e5f3e-6209-4f6c-9a2f-bac71a9a3af3",
+      "fingerprint": "ae7383a7b18ef8604a055f7b84f85131e9da84e9972c194435c3c1aaae2064fa",
+      "path": "addons/This-One-Teaches__a31e5f3e-6209-4f6c-9a2f-bac71a9a3af3",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a31e5f3e-6209-4f6c-9a2f-bac71a9a3af3",
+      "title": "This One Teaches"
     }
   },
   "schema": 1
