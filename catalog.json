@@ -3647,6 +3647,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/eb5d6e39-de4d-4163-9c41-521a3eb2a1aa",
       "title": "Keep ONE for Research"
+    },
+    "ebdcb1e1-d96b-4d8c-a931-d6035865e34d": {
+      "content_id": "ebdcb1e1-d96b-4d8c-a931-d6035865e34d",
+      "fingerprint": "f954b6a653a3fc3ab193fedbe35ca1383b7975ab57437b693f026a39d6f6e0cc",
+      "path": "addons/ProximityAlert__ebdcb1e1-d96b-4d8c-a931-d6035865e34d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ebdcb1e1-d96b-4d8c-a931-d6035865e34d",
+      "title": "ProximityAlert"
     }
   },
   "schema": 1
