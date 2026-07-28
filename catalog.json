@@ -517,6 +517,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/271c1d87-b92b-4c7e-b1c6-199f8a56c776",
       "title": "LibZone"
+    },
+    "282169ec-5b28-4744-bed7-c866d07adb4a": {
+      "content_id": "282169ec-5b28-4744-bed7-c866d07adb4a",
+      "fingerprint": "c54785f937c3a185566d651ad8ae3f4accce9e0d3da16a38bec8130d7b159b64",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/282169ec-5b28-4744-bed7-c866d07adb4a",
+      "title": "Hero's Compass"
     }
   },
   "schema": 1
