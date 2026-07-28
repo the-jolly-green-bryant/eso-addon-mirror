@@ -2535,6 +2535,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ac31de38-34d3-4d5d-b0a4-282e26e25fa1",
       "title": "Companion Helper"
+    },
+    "ac816501-4787-4c8b-942f-574aa8ea6c01": {
+      "content_id": "ac816501-4787-4c8b-942f-574aa8ea6c01",
+      "fingerprint": "ef7f86efff06b7f27ac3a39c37bb9631a3b1c270b9327f7822b2e6c57e6c118a",
+      "path": "addons/TorigaHUD__ac816501-4787-4c8b-942f-574aa8ea6c01",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ac816501-4787-4c8b-942f-574aa8ea6c01",
+      "title": "TorigaHUD"
     }
   },
   "schema": 1
