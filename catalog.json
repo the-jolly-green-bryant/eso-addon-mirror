@@ -2455,6 +2455,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a3a0c6d0-3d0a-4e8c-a79a-1e4d3ca82d10",
       "title": "Guild Store Time Sort"
+    },
+    "a3bda6e6-a854-4387-825a-dccb05d706d8": {
+      "content_id": "a3bda6e6-a854-4387-825a-dccb05d706d8",
+      "fingerprint": "cb1ea8c78e75257964e8bf941e85acfd9080c1da974bbcf32e8a826ddd01662d",
+      "path": "addons/Persona__a3bda6e6-a854-4387-825a-dccb05d706d8",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a3bda6e6-a854-4387-825a-dccb05d706d8",
+      "title": "Persona"
     }
   },
   "schema": 1
