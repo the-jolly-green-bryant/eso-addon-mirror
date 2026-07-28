@@ -775,6 +775,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/324ffb56-dc57-4b03-a4b0-2c43de605ef1",
       "title": "DM2 Simple DPS"
+    },
+    "339e95fd-5cd9-46ec-b4b1-3512364698e0": {
+      "content_id": "339e95fd-5cd9-46ec-b4b1-3512364698e0",
+      "fingerprint": "bb6b3bbef42b888bbec8689548f992768cedb8c295b18d7bd6870992e06f7e77",
+      "path": "addons/Lykeion-s-Home-Sweet-Home---Dedicated-Slash-Command-Keybinding-jumping-to-Sugar-Bowl-Suite__339e95fd-5cd9-46ec-b4b1-3512364698e0",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/339e95fd-5cd9-46ec-b4b1-3512364698e0",
+      "title": "Lykeion's Home Sweet Home - Dedicated Slash Command & Keybinding jumping to Sugar Bowl Suite"
     }
   },
   "schema": 1
