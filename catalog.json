@@ -1159,6 +1159,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4b7473ab-b042-43c8-9fb3-117f372331c3",
       "title": "AdrosarSandbox"
+    },
+    "4b76af9c-bb6e-4eab-b0dc-c8c4e5c7c226": {
+      "content_id": "4b76af9c-bb6e-4eab-b0dc-c8c4e5c7c226",
+      "fingerprint": "4971596850f8952b1b3d54dda9610bdd1ca2036fee63e52c4ced946b30eae15a",
+      "path": "addons/Fishing-Map__4b76af9c-bb6e-4eab-b0dc-c8c4e5c7c226",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4b76af9c-bb6e-4eab-b0dc-c8c4e5c7c226",
+      "title": "Fishing Map"
     }
   },
   "schema": 1
