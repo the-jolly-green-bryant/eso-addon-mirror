@@ -1095,6 +1095,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/475ce77b-6d09-4c75-8c28-95fff8f907c9",
       "title": "NQOL-dev"
+    },
+    "47bd1882-3ae4-414d-929c-aad937946be0": {
+      "content_id": "47bd1882-3ae4-414d-929c-aad937946be0",
+      "fingerprint": "7e00270795cab6b12be45a4447b8a5b2913f635253deb80ea4282252d4a028cd",
+      "path": "addons/Predefine-Chat-Messages__47bd1882-3ae4-414d-929c-aad937946be0",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/47bd1882-3ae4-414d-929c-aad937946be0",
+      "title": "Predefine Chat Messages"
     }
   },
   "schema": 1
