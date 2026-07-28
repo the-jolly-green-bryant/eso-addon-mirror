@@ -3183,6 +3183,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d2f38194-bd78-47b6-817f-71932b3a5c42",
       "title": "DM2 Parse & Fight Stats"
+    },
+    "d324f223-1cd9-40d2-8e37-8cf302dde557": {
+      "content_id": "d324f223-1cd9-40d2-8e37-8cf302dde557",
+      "fingerprint": "a52d80548671b7490a7c487057935bd5d5f3a250137900125b67536f15e54b18",
+      "path": "addons/Lorebooks__d324f223-1cd9-40d2-8e37-8cf302dde557",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d324f223-1cd9-40d2-8e37-8cf302dde557",
+      "title": "Lorebooks"
     }
   },
   "schema": 1
