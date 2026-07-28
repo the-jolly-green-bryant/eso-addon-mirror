@@ -2767,6 +2767,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b95c419b-3f27-4214-aaae-c39bc4cbbeab",
       "title": "Asylum Timers"
+    },
+    "b9de0194-bc49-4ea7-9c65-b2db1caecca7": {
+      "content_id": "b9de0194-bc49-4ea7-9c65-b2db1caecca7",
+      "fingerprint": "e49ed1e7f6b2abbfeb80d69fbc07976b2e3d45f4fb32adb20cad0af8659a1be1",
+      "path": "addons/StatsForNerds__b9de0194-bc49-4ea7-9c65-b2db1caecca7",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b9de0194-bc49-4ea7-9c65-b2db1caecca7",
+      "title": "StatsForNerds"
     }
   },
   "schema": 1
