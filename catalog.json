@@ -2487,6 +2487,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a77b6722-e51b-4b17-9543-632248774cf3",
       "title": "Style New Cleaner"
+    },
+    "a84f8a0c-210f-481a-b8a7-6dc95bff7664": {
+      "content_id": "a84f8a0c-210f-481a-b8a7-6dc95bff7664",
+      "fingerprint": "5ca64984bbb3794185c8a86505d36db622d0f6de6a2e5e3a737c37086d0f47f9",
+      "path": "addons/Daily-Quest-Tracker__a84f8a0c-210f-481a-b8a7-6dc95bff7664",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a84f8a0c-210f-481a-b8a7-6dc95bff7664",
+      "title": "Daily Quest Tracker"
     }
   },
   "schema": 1
