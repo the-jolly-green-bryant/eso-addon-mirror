@@ -2863,6 +2863,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c0ae2cd5-69de-4e29-8be3-1607be88e54a",
       "title": "LibSlashCommander"
+    },
+    "c0bb6f24-c2ad-470f-885d-34928944caba": {
+      "content_id": "c0bb6f24-c2ad-470f-885d-34928944caba",
+      "fingerprint": "37e336905e4a36dac7964fd7c519e4bc38473bfdcadcf298264073c950a11124",
+      "path": "addons/PerfectWeavePort__c0bb6f24-c2ad-470f-885d-34928944caba",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c0bb6f24-c2ad-470f-885d-34928944caba",
+      "title": "PerfectWeavePort"
     }
   },
   "schema": 1
