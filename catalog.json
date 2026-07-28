@@ -1703,6 +1703,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/73752f6e-3ac5-4ecd-9bfe-b71c1b926c3b",
       "title": "LibConsoleDialogs"
+    },
+    "73d5304a-565a-4a9d-bd38-aa245219f955": {
+      "content_id": "73d5304a-565a-4a9d-bd38-aa245219f955",
+      "fingerprint": "70305009d0be2ed8d3aa47e7d1eeacb11828afee55c17f084faac7a47b36dc7e",
+      "path": "addons/VerticalBuffsDebuffs__73d5304a-565a-4a9d-bd38-aa245219f955",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/73d5304a-565a-4a9d-bd38-aa245219f955",
+      "title": "VerticalBuffsDebuffs"
     }
   },
   "schema": 1
