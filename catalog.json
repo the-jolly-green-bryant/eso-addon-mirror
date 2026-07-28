@@ -2383,6 +2383,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a00e3e80-0ad4-406b-bc48-322f6244f725",
       "title": "Unofficial U49 Camera Settings"
+    },
+    "a095f0da-9f45-4dde-a150-2c9b09ba7317": {
+      "content_id": "a095f0da-9f45-4dde-a150-2c9b09ba7317",
+      "fingerprint": "ab98d8375e5eaa6048fe94bbe77a74d41f3861c6c0e83fb288fda47633258d1c",
+      "path": "addons/True-Exploration__a095f0da-9f45-4dde-a150-2c9b09ba7317",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a095f0da-9f45-4dde-a150-2c9b09ba7317",
+      "title": "True Exploration"
     }
   },
   "schema": 1
