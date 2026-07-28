@@ -2295,6 +2295,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/992e3a70-4653-4937-9089-bfee29417439",
       "title": "SpringPeace (Dev)"
+    },
+    "9a183ede-4e80-4f0b-bf0c-13843831d603": {
+      "content_id": "9a183ede-4e80-4f0b-bf0c-13843831d603",
+      "fingerprint": "198a9ecd1eb5adc993cbe0227537c6c57b2e51ce387eeff06c3d75d1bc678a56",
+      "path": "addons/LibUndauntedPledges__9a183ede-4e80-4f0b-bf0c-13843831d603",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9a183ede-4e80-4f0b-bf0c-13843831d603",
+      "title": "LibUndauntedPledges"
     }
   },
   "schema": 1
