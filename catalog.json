@@ -2255,6 +2255,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9653b3d8-c1bf-4328-9b31-5e18a4ea643d",
       "title": "MSPAINTUI"
+    },
+    "96f579ed-c17e-44c6-b3e3-969c34e8f20f": {
+      "content_id": "96f579ed-c17e-44c6-b3e3-969c34e8f20f",
+      "fingerprint": "a38855845b72d4498a85f630ba6c7dcf2969c8b4b9159315f55ad10ea20fa7a1",
+      "path": "addons/IsItTaunted-testing__96f579ed-c17e-44c6-b3e3-969c34e8f20f",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/96f579ed-c17e-44c6-b3e3-969c34e8f20f",
+      "title": "IsItTaunted-testing"
     }
   },
   "schema": 1
