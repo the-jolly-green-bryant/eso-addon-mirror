@@ -2935,6 +2935,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c68c0503-c262-44d6-97a9-d2e8ee77ee72",
       "title": "Healing Buff Uptime"
+    },
+    "c6c7688f-dd22-4f0f-879c-ed00aea59004": {
+      "content_id": "c6c7688f-dd22-4f0f-879c-ed00aea59004",
+      "fingerprint": "bed356575289811269c106bc3f241814a43983455147416651b6a69f87d6a16e",
+      "path": "addons/Vault-Tracker__c6c7688f-dd22-4f0f-879c-ed00aea59004",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c6c7688f-dd22-4f0f-879c-ed00aea59004",
+      "title": "Vault Tracker"
     }
   },
   "schema": 1
