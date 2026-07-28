@@ -2775,6 +2775,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b9de0194-bc49-4ea7-9c65-b2db1caecca7",
       "title": "StatsForNerds"
+    },
+    "b9e43d9e-2e7b-4530-941b-01e90bd15f5a": {
+      "content_id": "b9e43d9e-2e7b-4530-941b-01e90bd15f5a",
+      "fingerprint": "e349f06427146e7eff5980a500712d6c2c660c134e6bb29dc2ea22e9404689f2",
+      "path": "addons/StoneTalker__b9e43d9e-2e7b-4530-941b-01e90bd15f5a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b9e43d9e-2e7b-4530-941b-01e90bd15f5a",
+      "title": "StoneTalker"
     }
   },
   "schema": 1
