@@ -3895,6 +3895,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f9506e69-c90e-42e8-bef8-115490c59348",
       "title": "TrueReticle"
+    },
+    "fa5da270-ccfe-454b-ba19-4599992e272a": {
+      "content_id": "fa5da270-ccfe-454b-ba19-4599992e272a",
+      "fingerprint": "66979399c9899d280dad9455064f547e728e592a8cc2c637b38a33c165cded7f",
+      "path": "addons/GearTracker__fa5da270-ccfe-454b-ba19-4599992e272a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fa5da270-ccfe-454b-ba19-4599992e272a",
+      "title": "GearTracker"
     }
   },
   "schema": 1
