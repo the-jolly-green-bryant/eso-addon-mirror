@@ -3831,6 +3831,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f55094d7-29e8-4a43-a3f5-bd748dda7c09",
       "title": "LibGroupResources"
+    },
+    "f552385a-cc51-4031-bf63-43abd2709e70": {
+      "content_id": "f552385a-cc51-4031-bf63-43abd2709e70",
+      "fingerprint": "029a3c6694af445025a172210b58a953c7122910a06cbb073413335d76bd4d58",
+      "path": "addons/HarvestMap__f552385a-cc51-4031-bf63-43abd2709e70",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f552385a-cc51-4031-bf63-43abd2709e70",
+      "title": "HarvestMap"
     }
   },
   "schema": 1
