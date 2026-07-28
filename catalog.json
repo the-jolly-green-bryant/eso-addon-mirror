@@ -1,4 +1,12 @@
 {
-  "addons": {},
+  "addons": {
+    "008cd443-6347-421a-bfcf-ddc830e8cfef": {
+      "content_id": "008cd443-6347-421a-bfcf-ddc830e8cfef",
+      "fingerprint": "1b0bf8cb83608a1106146b642db1cf5f993107dd6fc56e9304da33798ec320ea",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/008cd443-6347-421a-bfcf-ddc830e8cfef",
+      "title": "Can Craft Master Writ"
+    }
+  },
   "schema": 1
 }
