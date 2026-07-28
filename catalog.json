@@ -244,6 +244,13 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/118c6c05-d955-4eff-b2de-a1e171ee1215",
       "title": "Grumpy's Simple Playtime"
+    },
+    "126f9ed8-95dd-46e4-b365-18e7f56bb804": {
+      "content_id": "126f9ed8-95dd-46e4-b365-18e7f56bb804",
+      "fingerprint": "9f863395df1974d2d51f2a568b9a699b1c2e6c789d432cffd36e29fda124767a",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/126f9ed8-95dd-46e4-b365-18e7f56bb804",
+      "title": "AutoConsume"
     }
   },
   "schema": 1
