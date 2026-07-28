@@ -1615,6 +1615,14 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6b4f359b-e17e-46f6-b2c9-9a1e42e7de2b",
       "title": "IsItTaunted"
+    },
+    "6c2f0adf-9ca4-4dc4-bd4f-e1f6f5059665": {
+      "content_id": "6c2f0adf-9ca4-4dc4-bd4f-e1f6f5059665",
+      "fingerprint": "fc52f64811167b95a94d350614df08b283e327deb61c121ba9b37e4bcffd8937",
+      "path": "addons/andy.s-s-Heat-Shocker-Tracker__6c2f0adf-9ca4-4dc4-bd4f-e1f6f5059665",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6c2f0adf-9ca4-4dc4-bd4f-e1f6f5059665",
+      "title": "andy.s's Heat Shocker Tracker"
     }
   },
   "schema": 1
