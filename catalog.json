@@ -4000,7 +4000,8 @@
     },
     "ec09cf15-d910-4d7e-b9cc-17c759d03aa0": {
       "content_id": "ec09cf15-d910-4d7e-b9cc-17c759d03aa0",
-      "fingerprint": "e89c06725e71a8ddf742eb4f0fed6c0ac9df1af4b3c836898fec1ed80efce2f8",
+      "deleted": false,
+      "fingerprint": "4a51d6590700b0870e8ba0b3b8b6a9b4dd170162568b8229ca66b06da4f93ce8",
       "path": "addons/ArmoryRoleSwitcher__ec09cf15-d910-4d7e-b9cc-17c759d03aa0",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ec09cf15-d910-4d7e-b9cc-17c759d03aa0",
