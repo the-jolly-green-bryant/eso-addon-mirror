@@ -1298,7 +1298,8 @@
     },
     "4c4e9010-a3ef-435d-b540-4d292e289eca": {
       "content_id": "4c4e9010-a3ef-435d-b540-4d292e289eca",
-      "fingerprint": "0c399f9173ba4760f529dac86d181afa4bfa684267fa69a7551c63ea68631bcf",
+      "deleted": false,
+      "fingerprint": "ededa860a2a8127e1cce687442fa3fb9df70e6715378f8f887198b48ea3881ec",
       "path": "addons/Murf-s-Treasures__4c4e9010-a3ef-435d-b540-4d292e289eca",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4c4e9010-a3ef-435d-b540-4d292e289eca",
