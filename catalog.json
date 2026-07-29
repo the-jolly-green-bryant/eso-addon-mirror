@@ -2832,7 +2832,8 @@
     },
     "afe5bbbc-a2e0-48de-965a-29eff222393f": {
       "content_id": "afe5bbbc-a2e0-48de-965a-29eff222393f",
-      "fingerprint": "c0598984fc2a337374b56b093f50b4fcf1136bdb9ec54cb01e4799c751b5b8e1",
+      "deleted": false,
+      "fingerprint": "5253a47e4a460194e070a7842b707205cc583e7e343b8edf66309ff4fcef194e",
       "path": "addons/Votan-s-Minimap__afe5bbbc-a2e0-48de-965a-29eff222393f",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/afe5bbbc-a2e0-48de-965a-29eff222393f",
