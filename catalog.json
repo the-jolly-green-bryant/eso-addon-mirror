@@ -1369,7 +1369,8 @@
     },
     "53c19565-2bb9-4872-a40f-90825e736a2f": {
       "content_id": "53c19565-2bb9-4872-a40f-90825e736a2f",
-      "fingerprint": "42e5bf2d94a5cd9578f029416b00614e5826714235e0fdf081b02b18db130bd8",
+      "deleted": false,
+      "fingerprint": "df903bcbdaaf148321eff71073f0fe373eaae7dda38a4aa385fab0a152def808",
       "path": "addons/Gold-Ledger__53c19565-2bb9-4872-a40f-90825e736a2f",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/53c19565-2bb9-4872-a40f-90825e736a2f",
