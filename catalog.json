@@ -1404,7 +1404,8 @@
     },
     "54cf96b5-2fa3-481c-8c8f-80854b944e56": {
       "content_id": "54cf96b5-2fa3-481c-8c8f-80854b944e56",
-      "fingerprint": "ed57292e3c07458a8217430ab54a85186af81bc04c7306e835ea82f10c0ef104",
+      "deleted": false,
+      "fingerprint": "ac1b7dfdca0ad6bab9cbe813b0a38325e5bbfb0d56a2ef744e1e00a97f86cc92",
       "path": "addons/Research-Tracker__54cf96b5-2fa3-481c-8c8f-80854b944e56",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/54cf96b5-2fa3-481c-8c8f-80854b944e56",
