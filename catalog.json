@@ -2596,7 +2596,8 @@
     },
     "9e55edc2-32f8-4c75-b87c-e921fd53e9cf": {
       "content_id": "9e55edc2-32f8-4c75-b87c-e921fd53e9cf",
-      "fingerprint": "5d180226b580f1e7c95ac3f2f4bba5b711f84eb1c9406c440861c1c9583c2d49",
+      "deleted": false,
+      "fingerprint": "a1d51d47119949d90764b49b1e80380b7495e864e1f60a3ad12d8601bf93835b",
       "path": "addons/AlternateDeathRecap__9e55edc2-32f8-4c75-b87c-e921fd53e9cf",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9e55edc2-32f8-4c75-b87c-e921fd53e9cf",
