@@ -1387,7 +1387,8 @@
     },
     "543e2fe8-def0-4dc1-a833-07518e6432eb": {
       "content_id": "543e2fe8-def0-4dc1-a833-07518e6432eb",
-      "fingerprint": "ce31f6558575ab9d447b986513a085be4f50bfca4e031770bb2096dbad122133",
+      "deleted": false,
+      "fingerprint": "4146bd363eabb7a62df08d9912696bccf4c4e6ab64cec2ee7ac93659bffb9b75",
       "path": "addons/SimpleWarhornTimer__543e2fe8-def0-4dc1-a833-07518e6432eb",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/543e2fe8-def0-4dc1-a833-07518e6432eb",
