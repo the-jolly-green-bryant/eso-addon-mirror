@@ -1360,7 +1360,8 @@
     },
     "529cf85a-e597-4945-86c4-654d2a32a7bc": {
       "content_id": "529cf85a-e597-4945-86c4-654d2a32a7bc",
-      "fingerprint": "66cae66b17b00cb5a7a00edadd1cf19c08d86af2affcb011d475180756802114",
+      "deleted": false,
+      "fingerprint": "6f9120a5f1fc6ea5722b8a991869b5d79cfb92f1b870453c5903efc54a55f32a",
       "path": "addons/LycanMeter__529cf85a-e597-4945-86c4-654d2a32a7bc",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/529cf85a-e597-4945-86c4-654d2a32a7bc",
