@@ -3169,7 +3169,8 @@
     },
     "c26064b6-d685-492c-b750-3bc59f315109": {
       "content_id": "c26064b6-d685-492c-b750-3bc59f315109",
-      "fingerprint": "0732c23ca8f45a9dc1d2eda4b8002e20ed0de71993824f002ed6c947023b31fa",
+      "deleted": false,
+      "fingerprint": "980aef73d7b75698fa3b3498bdc72df075c13fd0f200098eb0195de703e11c4e",
       "path": "addons/Antiquities-Tracker__c26064b6-d685-492c-b750-3bc59f315109",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c26064b6-d685-492c-b750-3bc59f315109",
