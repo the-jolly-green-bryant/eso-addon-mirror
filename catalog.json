@@ -351,7 +351,8 @@
     },
     "154706f1-4dcc-478b-a08e-42bd6f7caeff": {
       "content_id": "154706f1-4dcc-478b-a08e-42bd6f7caeff",
-      "fingerprint": "f4fa34126c9793d09a61e311e960c7cbe29ff5c344673e1dd81dbf7e607c2431",
+      "deleted": false,
+      "fingerprint": "a6631b9443c61f2b490f2285ce16611d845258e9577d210abd67c73626f10f76",
       "path": "addons/CCTracker__154706f1-4dcc-478b-a08e-42bd6f7caeff",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/154706f1-4dcc-478b-a08e-42bd6f7caeff",
