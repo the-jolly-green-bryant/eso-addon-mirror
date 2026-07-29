@@ -1158,7 +1158,8 @@
     },
     "45d919f9-f85b-4930-9348-94fe2e245f98": {
       "content_id": "45d919f9-f85b-4930-9348-94fe2e245f98",
-      "fingerprint": "95d3ffbe63ff17b19c427c580f9f35c32857b6eba1e94dbf99ba2181ac36d2f1",
+      "deleted": false,
+      "fingerprint": "738b0ccd3266ab9bb5b9942d2e58b9b273e60b67ccd8e2b72cdb667891b01cca",
       "path": "addons/Where-Is-It__45d919f9-f85b-4930-9348-94fe2e245f98",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/45d919f9-f85b-4930-9348-94fe2e245f98",
