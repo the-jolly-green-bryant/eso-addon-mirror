@@ -940,7 +940,8 @@
     },
     "389fdfeb-6af9-48ad-8121-39ce405b4267": {
       "content_id": "389fdfeb-6af9-48ad-8121-39ce405b4267",
-      "fingerprint": "24edc61b29504b8f3e2578b13bb37091b2060c0b722088cfd7ca2550a936214c",
+      "deleted": false,
+      "fingerprint": "121c1bf8d8cf56d4450189ffa2ff7fe84bed5426115d6cc096d94e01996464c8",
       "path": "addons/S.T.A.R.S__389fdfeb-6af9-48ad-8121-39ce405b4267",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/389fdfeb-6af9-48ad-8121-39ce405b4267",
