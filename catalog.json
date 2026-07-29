@@ -2299,7 +2299,8 @@
     },
     "8edcdae2-d71b-4fb8-b99c-7d1fca55bfb2": {
       "content_id": "8edcdae2-d71b-4fb8-b99c-7d1fca55bfb2",
-      "fingerprint": "2318f480abc447ac40dc49d48f713ad82914628e0017f70e86f7c1954c677c81",
+      "deleted": false,
+      "fingerprint": "9fd4095f520226ed7caed366e42ed60f0c1825ecde5f1ef543b9725ecf94f199",
       "path": "addons/Speak-Like-Khajiit__8edcdae2-d71b-4fb8-b99c-7d1fca55bfb2",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8edcdae2-d71b-4fb8-b99c-7d1fca55bfb2",
