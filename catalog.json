@@ -1518,7 +1518,8 @@
     },
     "5e1a067b-7af6-4752-bbb0-3de588e8587e": {
       "content_id": "5e1a067b-7af6-4752-bbb0-3de588e8587e",
-      "fingerprint": "d9da671c853d5ca7d5d0fdf1eef9042da85f4957181cbe06c9ccbf70ff0b6cf0",
+      "deleted": false,
+      "fingerprint": "279e47f0101cb54be256b5aa5ac3c4fd1c2c0d36f0201a0738a56a38503275e3",
       "path": "addons/Chat-Skipper__5e1a067b-7af6-4752-bbb0-3de588e8587e",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5e1a067b-7af6-4752-bbb0-3de588e8587e",
