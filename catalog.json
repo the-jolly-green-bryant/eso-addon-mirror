@@ -630,7 +630,8 @@
     },
     "2709a81d-caea-4f77-a89d-0d83661bf7ee": {
       "content_id": "2709a81d-caea-4f77-a89d-0d83661bf7ee",
-      "fingerprint": "4c10be56129abb34bc235b66a9458791a318604b1272e0be9b518648eaf2b7ea",
+      "deleted": false,
+      "fingerprint": "9c7083a1d11c854b47158e3e217efdd30c1f4aa4f36321b3d956ff8f58e158f0",
       "path": "addons/Dark-Convergence-Timer__2709a81d-caea-4f77-a89d-0d83661bf7ee",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2709a81d-caea-4f77-a89d-0d83661bf7ee",
