@@ -949,7 +949,8 @@
     },
     "38c45fe7-8274-43a2-9eaa-570253d23fdb": {
       "content_id": "38c45fe7-8274-43a2-9eaa-570253d23fdb",
-      "fingerprint": "3f041850e0a48305608fecf68f70703daf6288508996dd54cecf559139f1a7ac",
+      "deleted": false,
+      "fingerprint": "4296de18ae5d6dd203b65375142515f13f3fd33881ffd9f814296fbd94f37737",
       "path": "addons/Stay-Mounted__38c45fe7-8274-43a2-9eaa-570253d23fdb",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/38c45fe7-8274-43a2-9eaa-570253d23fdb",
