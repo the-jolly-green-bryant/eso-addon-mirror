@@ -914,7 +914,8 @@
     },
     "37bd7159-8611-4d29-8767-08434d4fe209": {
       "content_id": "37bd7159-8611-4d29-8767-08434d4fe209",
-      "fingerprint": "438d73f747b08415177452bdb912ec446fc4e70b18b0964497eb4081adfc6b3e",
+      "deleted": false,
+      "fingerprint": "9c8ad62cbcab7a6791499a2e97a8e58be780b7a95ac56715bca794b403566d56",
       "path": "addons/Cyrodiil-Alerts__37bd7159-8611-4d29-8767-08434d4fe209",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/37bd7159-8611-4d29-8767-08434d4fe209",
