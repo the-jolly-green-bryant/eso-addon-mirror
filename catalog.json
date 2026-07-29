@@ -334,7 +334,8 @@
     },
     "1428d8ab-7f1f-4741-833a-93180287dd09": {
       "content_id": "1428d8ab-7f1f-4741-833a-93180287dd09",
-      "fingerprint": "aa63df08af7856601d3d974ff2b9c8b13a8f6a05c298c190d5c94f1b02ab29bb",
+      "deleted": false,
+      "fingerprint": "28a0929cb3019344f389c8397971afdbca393de4e0d991c0da654d59c63c1c55",
       "path": "addons/WeaveDelays__1428d8ab-7f1f-4741-833a-93180287dd09",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1428d8ab-7f1f-4741-833a-93180287dd09",
