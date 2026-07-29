@@ -1027,7 +1027,8 @@
     },
     "3ce79776-65cd-4ba4-aff5-0703076be756": {
       "content_id": "3ce79776-65cd-4ba4-aff5-0703076be756",
-      "fingerprint": "36c539c78b854cb4567650628021c1342f7f900ac550f2b8497f7a74bff3cd6f",
+      "deleted": false,
+      "fingerprint": "9967dd69b666da47676ea5fe2dc97e26b32d1ff991f205d6ae5df91abb1d07c6",
       "path": "addons/Research-Panel__3ce79776-65cd-4ba4-aff5-0703076be756",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3ce79776-65cd-4ba4-aff5-0703076be756",
