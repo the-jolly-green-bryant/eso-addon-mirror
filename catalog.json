@@ -2431,7 +2431,8 @@
     },
     "9341ca4f-303b-4e36-b2c8-b559e428c6d2": {
       "content_id": "9341ca4f-303b-4e36-b2c8-b559e428c6d2",
-      "fingerprint": "ff2f06137ce30319910191fc1b497f0cbe905d2471c1e327272e7eb42013d016",
+      "deleted": false,
+      "fingerprint": "01ba444fad64bb5e4d139c9d886c228a887ec0f2a329bf03fb5b7a917d55a659",
       "path": "addons/Aldrens-Timers__9341ca4f-303b-4e36-b2c8-b559e428c6d2",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9341ca4f-303b-4e36-b2c8-b559e428c6d2",
