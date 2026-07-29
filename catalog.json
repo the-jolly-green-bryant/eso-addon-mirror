@@ -1351,7 +1351,8 @@
     },
     "50a4c919-aff0-4475-8614-eb2576d6b6d9": {
       "content_id": "50a4c919-aff0-4475-8614-eb2576d6b6d9",
-      "fingerprint": "d3878e796db6fcf3d10656659a7e227379b2c854f5e92f8d1d8ed433be98aaf7",
+      "deleted": false,
+      "fingerprint": "77930c55ebba5a101e93ef72d725dbb30bd87f953ef0b4c836c0bd21c191a0fd",
       "path": "addons/Update-47-Tweaker__50a4c919-aff0-4475-8614-eb2576d6b6d9",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/50a4c919-aff0-4475-8614-eb2576d6b6d9",
