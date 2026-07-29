@@ -1167,7 +1167,8 @@
     },
     "4700c5de-fb02-411e-b563-1f326352b4ed": {
       "content_id": "4700c5de-fb02-411e-b563-1f326352b4ed",
-      "fingerprint": "d86f0f4dff2a96de77432f9dfe059d8c3b994967571708b0f7b2ef0bbfb20f83",
+      "deleted": false,
+      "fingerprint": "152738f4091cd4530767c000f32214a67a7721c99b453ecacaa3d06583ce5c91",
       "path": "addons/Cooldown-Tracker__4700c5de-fb02-411e-b563-1f326352b4ed",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4700c5de-fb02-411e-b563-1f326352b4ed",
