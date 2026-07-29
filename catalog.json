@@ -3617,7 +3617,8 @@
     },
     "db3e5212-7543-479f-a881-7cda2bd1a1c9": {
       "content_id": "db3e5212-7543-479f-a881-7cda2bd1a1c9",
-      "fingerprint": "0e27f05b2199398d38aa89ad8c5377d2c7cbdf9afc41ef0a5b6c5ea0931e3b79",
+      "deleted": false,
+      "fingerprint": "93735107018404e3ea5c6b85d763c35adeb51c2def4b11f70bef67c3103c97c0",
       "path": "addons/Undaunted-Daily__db3e5212-7543-479f-a881-7cda2bd1a1c9",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/db3e5212-7543-479f-a881-7cda2bd1a1c9",
