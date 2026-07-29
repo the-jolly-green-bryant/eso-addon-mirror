@@ -3522,7 +3522,8 @@
     },
     "d55988d9-2bec-4972-b8cb-795ea26131ad": {
       "content_id": "d55988d9-2bec-4972-b8cb-795ea26131ad",
-      "fingerprint": "777397263d8d0344194a453387db0ffc0b088f060354a8f576b38288fcdfd164",
+      "deleted": false,
+      "fingerprint": "1405ddd49b9631ebfceb781aae3e7b511516548654349d7c1c81bbe94607bae0",
       "path": "addons/The-Psijic-Way__d55988d9-2bec-4972-b8cb-795ea26131ad",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d55988d9-2bec-4972-b8cb-795ea26131ad",
