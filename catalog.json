@@ -3231,7 +3231,8 @@
     },
     "c75ace9c-ba19-4bce-b7b1-4793854c4754": {
       "content_id": "c75ace9c-ba19-4bce-b7b1-4793854c4754",
-      "fingerprint": "3392ff5876a56e9245549555c9a1f18ed8a921983f02b42e83384ddfff8f994a",
+      "deleted": false,
+      "fingerprint": "28ffe0a581df8b826206843b7c74f2c443f86d44fced036d53b8aa79edaa27d5",
       "path": "addons/LibGroupPotionCooldowns__c75ace9c-ba19-4bce-b7b1-4793854c4754",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c75ace9c-ba19-4bce-b7b1-4793854c4754",
