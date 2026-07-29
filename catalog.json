@@ -4286,6 +4286,15 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fba77669-8221-43e5-b44d-31ced9546f8b",
       "title": "Satiated Hunger"
+    },
+    "fc98f3c0-0b5a-4797-aaa4-379955c3310c": {
+      "content_id": "fc98f3c0-0b5a-4797-aaa4-379955c3310c",
+      "deleted": false,
+      "fingerprint": "d8b5a9756951846ec59dd17e256888c30aeb3c64962f2ac4a078943f011c707b",
+      "path": "addons/LibDateTime__fc98f3c0-0b5a-4797-aaa4-379955c3310c",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fc98f3c0-0b5a-4797-aaa4-379955c3310c",
+      "title": "LibDateTime"
     }
   },
   "schema": 1
