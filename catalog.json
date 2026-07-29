@@ -325,7 +325,8 @@
     },
     "13e3ca65-dc26-4831-a1f1-e950fd465df9": {
       "content_id": "13e3ca65-dc26-4831-a1f1-e950fd465df9",
-      "fingerprint": "bf623c91f904592e883aef48fd5e3668ff39ce18ac755b3925aa4f414e5efabc",
+      "deleted": false,
+      "fingerprint": "9944ce18fc0fffc003cf48e55b2ace745b8c8deb1f8d597631c4c8ae04c5fb86",
       "path": "addons/Spaulder-Notifier__13e3ca65-dc26-4831-a1f1-e950fd465df9",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/13e3ca65-dc26-4831-a1f1-e950fd465df9",
