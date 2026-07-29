@@ -1473,7 +1473,8 @@
     },
     "5af6522d-980d-4335-9328-4e5077cee058": {
       "content_id": "5af6522d-980d-4335-9328-4e5077cee058",
-      "fingerprint": "dd835f9c97fce50172e63d242c047acf411abcc94d32cea62cc5780a81fa775a",
+      "deleted": false,
+      "fingerprint": "a27a18564c1b5f5a95fe748c9c11147d4582f9ff935807c95724945b178baeb1",
       "path": "addons/Bag-Space-Indicator__5af6522d-980d-4335-9328-4e5077cee058",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5af6522d-980d-4335-9328-4e5077cee058",
