@@ -726,7 +726,8 @@
     },
     "2b95c809-f14b-4c3c-9c0c-945a3e8547c4": {
       "content_id": "2b95c809-f14b-4c3c-9c0c-945a3e8547c4",
-      "fingerprint": "73f1e79906f7d660f02d48947da945d2c28ba0bc1175e543747234be3b3e9a61",
+      "deleted": false,
+      "fingerprint": "917c013ed1125579eaaf69fd605261bc67ec71d8a6e22e934503bf837c8fe02a",
       "path": "addons/Auto-Guild-Welcome-Revised__2b95c809-f14b-4c3c-9c0c-945a3e8547c4",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2b95c809-f14b-4c3c-9c0c-945a3e8547c4",
