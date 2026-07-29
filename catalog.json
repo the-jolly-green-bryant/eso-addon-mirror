@@ -2144,7 +2144,8 @@
     },
     "853b60aa-f47b-4f79-bd43-88c1f37e8a9a": {
       "content_id": "853b60aa-f47b-4f79-bd43-88c1f37e8a9a",
-      "fingerprint": "2e5a913f3199a2d00fd501f3f46b1436508631fe77f1eb512f3684e10e036323",
+      "deleted": false,
+      "fingerprint": "25e27e13118850b44ca8c2385f1d983ecba40026df34ed80c07325ffaa675603",
       "path": "addons/TurningTide__853b60aa-f47b-4f79-bd43-88c1f37e8a9a",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/853b60aa-f47b-4f79-bd43-88c1f37e8a9a",
