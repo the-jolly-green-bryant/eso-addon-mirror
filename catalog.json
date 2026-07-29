@@ -1122,7 +1122,8 @@
     },
     "443e6038-7baa-4e81-84fb-afe6cd3f92d6": {
       "content_id": "443e6038-7baa-4e81-84fb-afe6cd3f92d6",
-      "fingerprint": "0e185f49200c7e282041a875b7c70ae0255e9bbebd4c5da9b09289acf7ae682c",
+      "deleted": false,
+      "fingerprint": "43b26fc485113dcb0a9a06703281fef0e6ad9fef25e799a4a65def0528ce96d8",
       "path": "addons/Taunt-Assist__443e6038-7baa-4e81-84fb-afe6cd3f92d6",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/443e6038-7baa-4e81-84fb-afe6cd3f92d6",
