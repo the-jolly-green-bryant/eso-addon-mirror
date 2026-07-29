@@ -4009,7 +4009,8 @@
     },
     "ec23fab6-f620-4366-90ab-82e8702a62bb": {
       "content_id": "ec23fab6-f620-4366-90ab-82e8702a62bb",
-      "fingerprint": "7124d68c96c8c439662ba134a87d5fb5a052789a3aed254a59f315869e279cc5",
+      "deleted": false,
+      "fingerprint": "878d091d18294995f4cae0ea6251567a4eda81e788cd8620ada99aa9a5d409eb",
       "path": "addons/LibCharacterKnowledge__ec23fab6-f620-4366-90ab-82e8702a62bb",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ec23fab6-f620-4366-90ab-82e8702a62bb",
