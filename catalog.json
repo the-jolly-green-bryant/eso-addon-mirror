@@ -2405,7 +2405,8 @@
     },
     "923318b4-3671-40d4-93f3-49d2f9203093": {
       "content_id": "923318b4-3671-40d4-93f3-49d2f9203093",
-      "fingerprint": "3934e421f910950fe8992a9572797b65cc46f54c43dc612be9c09dd684ae0e6a",
+      "deleted": false,
+      "fingerprint": "989035e1f85352ad22620fe01ca3c1eee00d2da00370052e3c94bbe3dcc0e8b4",
       "path": "addons/Smart-Node-Radar__923318b4-3671-40d4-93f3-49d2f9203093",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/923318b4-3671-40d4-93f3-49d2f9203093",
