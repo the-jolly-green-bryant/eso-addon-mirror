@@ -2631,7 +2631,8 @@
     },
     "a17836b4-17ec-478f-91a6-f0c59e123e2a": {
       "content_id": "a17836b4-17ec-478f-91a6-f0c59e123e2a",
-      "fingerprint": "59cb60b5f256d1e580c6f0df7b2652c60b8dfa7ea78a0592540188b47606e45a",
+      "deleted": false,
+      "fingerprint": "5b515364af9ae674405b5301208db18761a6e921faf3a47b1a6536f19f461c21",
       "path": "addons/Ranckor-s-Baggage__a17836b4-17ec-478f-91a6-f0c59e123e2a",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a17836b4-17ec-478f-91a6-f0c59e123e2a",
