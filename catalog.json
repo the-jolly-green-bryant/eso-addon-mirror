@@ -4044,7 +4044,8 @@
     },
     "eeff2a8e-c911-4984-a07f-784c7155ddad": {
       "content_id": "eeff2a8e-c911-4984-a07f-784c7155ddad",
-      "fingerprint": "2b82989cda2e5a8cf3177891960f6ada7fc01c3664188aafcfeb4fcd68ee408f",
+      "deleted": false,
+      "fingerprint": "818c42f81dc1c04ca7f4eee76b0f6e8d2c4a51b70befab4b66b1d5dd9a15b0fb",
       "path": "addons/Dolgubon-s-Lazy-Writ-Crafter__eeff2a8e-c911-4984-a07f-784c7155ddad",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/eeff2a8e-c911-4984-a07f-784c7155ddad",
