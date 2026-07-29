@@ -3948,7 +3948,8 @@
     },
     "ea5313bb-c034-4b91-8816-546e4d37a355": {
       "content_id": "ea5313bb-c034-4b91-8816-546e4d37a355",
-      "fingerprint": "d0e39666e96a6bdb437895f471980dd25fe7d086424057fc9bf97b330a4d0fc2",
+      "deleted": false,
+      "fingerprint": "f783ad7fbc3948b2de91ec27b651ac3b245d3ce1eb6f73774517dce93677c796",
       "path": "addons/What-s-Missing---Skill-Point-Tracker__ea5313bb-c034-4b91-8816-546e4d37a355",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ea5313bb-c034-4b91-8816-546e4d37a355",
