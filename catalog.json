@@ -2796,7 +2796,8 @@
     },
     "acf1ef04-4ec0-400b-86c6-98b7dd9d2f72": {
       "content_id": "acf1ef04-4ec0-400b-86c6-98b7dd9d2f72",
-      "fingerprint": "d721790262edc23b97d3a524c6ac6dab060b43398e68c5199bd5f3560d96f377",
+      "deleted": false,
+      "fingerprint": "3968e80d12abe4ba534ba0b57223ad45a2511015feb54f54ad36f903e582bac4",
       "path": "addons/Movable-Addon-Memory__acf1ef04-4ec0-400b-86c6-98b7dd9d2f72",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/acf1ef04-4ec0-400b-86c6-98b7dd9d2f72",
