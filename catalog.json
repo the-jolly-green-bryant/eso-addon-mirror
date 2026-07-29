@@ -3022,7 +3022,8 @@
     },
     "b95c419b-3f27-4214-aaae-c39bc4cbbeab": {
       "content_id": "b95c419b-3f27-4214-aaae-c39bc4cbbeab",
-      "fingerprint": "b1faa3e68f8e21ab0ecef1f00f74776258fd7f66a94a16955729801a7a34054d",
+      "deleted": false,
+      "fingerprint": "c33c82b3dd0d6cb093c18aff11c051fb70392d803b692618dd49c01a6f50368c",
       "path": "addons/Asylum-Timers__b95c419b-3f27-4214-aaae-c39bc4cbbeab",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b95c419b-3f27-4214-aaae-c39bc4cbbeab",
