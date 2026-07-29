@@ -4304,6 +4304,15 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fc9f4f62-3d31-41cd-b9ee-e1a0ea0f6ecb",
       "title": "Favorite Home Teleporter"
+    },
+    "fd1c014a-ca0d-42e8-91b7-3ce3c64be6b8": {
+      "content_id": "fd1c014a-ca0d-42e8-91b7-3ce3c64be6b8",
+      "deleted": false,
+      "fingerprint": "3e781ef5476036811e448bd71cab7df9cec55569b407d5aad5424f4171c4411e",
+      "path": "addons/Infinite-Archive-Helper__fd1c014a-ca0d-42e8-91b7-3ce3c64be6b8",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fd1c014a-ca0d-42e8-91b7-3ce3c64be6b8",
+      "title": "Infinite Archive Helper"
     }
   },
   "schema": 1
