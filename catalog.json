@@ -1875,7 +1875,8 @@
     },
     "747e5279-71c7-4d0b-8db8-5c7552b2ed65": {
       "content_id": "747e5279-71c7-4d0b-8db8-5c7552b2ed65",
-      "fingerprint": "5f68db744124be8b81f1c271ce17bec36c1125cc87891cabfed6834c0c39d3d8",
+      "deleted": false,
+      "fingerprint": "7dba2f5c61c0b1381168cb95d007eeb5bda0e73a09124ed72090d55518204521",
       "path": "addons/Dryzler-s-LoreBooks__747e5279-71c7-4d0b-8db8-5c7552b2ed65",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/747e5279-71c7-4d0b-8db8-5c7552b2ed65",
