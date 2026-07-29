@@ -1901,7 +1901,8 @@
     },
     "754151c2-90b5-4c5f-ba25-ab2b38c18284": {
       "content_id": "754151c2-90b5-4c5f-ba25-ab2b38c18284",
-      "fingerprint": "367db70d01a816519b224e0dc6e380012f14ca2b4029b33d0b4b96bc489dfeb0",
+      "deleted": false,
+      "fingerprint": "f0c9226b15c76f9f06353d8fa0154a54f528e93d7ad50ad032f558565075698e",
       "path": "addons/Gamepad-Mini-Chat-Tabs__754151c2-90b5-4c5f-ba25-ab2b38c18284",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/754151c2-90b5-4c5f-ba25-ab2b38c18284",
