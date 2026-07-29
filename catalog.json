@@ -3133,7 +3133,8 @@
     },
     "c0bb6f24-c2ad-470f-885d-34928944caba": {
       "content_id": "c0bb6f24-c2ad-470f-885d-34928944caba",
-      "fingerprint": "37e336905e4a36dac7964fd7c519e4bc38473bfdcadcf298264073c950a11124",
+      "deleted": false,
+      "fingerprint": "81c3b2d202527f8e4720736f8f35ff2e360cea1d0ebc58da44e5e7481f9c7e0c",
       "path": "addons/PerfectWeavePort__c0bb6f24-c2ad-470f-885d-34928944caba",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c0bb6f24-c2ad-470f-885d-34928944caba",
