@@ -4277,6 +4277,15 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fba4016e-4c55-48b5-9f38-f169d2190581",
       "title": "Rolodex"
+    },
+    "fba77669-8221-43e5-b44d-31ced9546f8b": {
+      "content_id": "fba77669-8221-43e5-b44d-31ced9546f8b",
+      "deleted": false,
+      "fingerprint": "04842da08c670056bddf1b86a7a92e5d0e705e1022fdf871d5dc2b0fa532a022",
+      "path": "addons/Satiated-Hunger__fba77669-8221-43e5-b44d-31ced9546f8b",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fba77669-8221-43e5-b44d-31ced9546f8b",
+      "title": "Satiated Hunger"
     }
   },
   "schema": 1
