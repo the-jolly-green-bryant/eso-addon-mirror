@@ -1334,7 +1334,8 @@
     },
     "4ff3bda0-2c6e-4838-b13e-8062d7d81ddc": {
       "content_id": "4ff3bda0-2c6e-4838-b13e-8062d7d81ddc",
-      "fingerprint": "40576d670b8c6bd2e6d642138239d755eea977974ef1676361fafde820f1f69d",
+      "deleted": false,
+      "fingerprint": "122f2236c1940e825fe8ec7b0a970ed3481f6903555ae12990d2bf9b6610d303",
       "path": "addons/Sales-History__4ff3bda0-2c6e-4838-b13e-8062d7d81ddc",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4ff3bda0-2c6e-4838-b13e-8062d7d81ddc",
