@@ -2077,7 +2077,8 @@
     },
     "80e0a510-1882-45f4-9e0a-8ed6cdff9032": {
       "content_id": "80e0a510-1882-45f4-9e0a-8ed6cdff9032",
-      "fingerprint": "536226cb9bcdd053341608549099dbea50ed41f816a0d618eab70d7b170f36cc",
+      "deleted": false,
+      "fingerprint": "1de513394ba64cc6158073f4ad0a639b0cdd4f4c7b08752ae8d1c50507ddbfa8",
       "path": "addons/VampireStageReminder_v2__80e0a510-1882-45f4-9e0a-8ed6cdff9032",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/80e0a510-1882-45f4-9e0a-8ed6cdff9032",
