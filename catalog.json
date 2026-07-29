@@ -4313,6 +4313,15 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fd1c014a-ca0d-42e8-91b7-3ce3c64be6b8",
       "title": "Infinite Archive Helper"
+    },
+    "fd260c09-574e-4494-9d13-dad835b05662": {
+      "content_id": "fd260c09-574e-4494-9d13-dad835b05662",
+      "deleted": false,
+      "fingerprint": "0ea1cfdd4e8ecae1abb4da796cc880f7427dc99fcef5bc278acadb1fe90627c8",
+      "path": "addons/Item-Stack-Splitter__fd260c09-574e-4494-9d13-dad835b05662",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fd260c09-574e-4494-9d13-dad835b05662",
+      "title": "Item Stack Splitter"
     }
   },
   "schema": 1
