@@ -3089,7 +3089,8 @@
     },
     "bcbbd5b5-03d6-4958-a225-2c9f4b63cfa8": {
       "content_id": "bcbbd5b5-03d6-4958-a225-2c9f4b63cfa8",
-      "fingerprint": "4582ca8d382f854d28f17d4115870d67dcd2d0080156da4c94dc61ea07f1fef6",
+      "deleted": false,
+      "fingerprint": "31f5ac23b468aa517d9c14aab94d1a544c20c4c157099fd60f99d32cfe9fce9c",
       "path": "addons/Critty-Live-Crit-Tracking__bcbbd5b5-03d6-4958-a225-2c9f4b63cfa8",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/bcbbd5b5-03d6-4958-a225-2c9f4b63cfa8",
