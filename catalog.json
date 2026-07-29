@@ -1378,7 +1378,8 @@
     },
     "541ab871-9386-4990-a3c7-32563ded9243": {
       "content_id": "541ab871-9386-4990-a3c7-32563ded9243",
-      "fingerprint": "b840144ae4cfee118cba20cfb1b73d7f9ca72507e17d0fb54efbff917b71a798",
+      "deleted": false,
+      "fingerprint": "5cb2691fc84981aac095e8d99390e79d31e53d3c22d6aa14e4ea024b608b3c7f",
       "path": "addons/Proc-Reminder__541ab871-9386-4990-a3c7-32563ded9243",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/541ab871-9386-4990-a3c7-32563ded9243",
