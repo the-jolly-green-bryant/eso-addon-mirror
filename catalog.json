@@ -3292,7 +3292,8 @@
     },
     "ca0d62e7-58ab-4ea4-9729-f139cb28a64d": {
       "content_id": "ca0d62e7-58ab-4ea4-9729-f139cb28a64d",
-      "fingerprint": "51d4ef433e474926df6bed4663cb283e1d3b36cd8a85f123c30c666f9e61a4db",
+      "deleted": false,
+      "fingerprint": "27c5638601f03dcce113e64403bf801ddc4a31a9689e5f49cb2a4fcf61feb389",
       "path": "addons/Lore-Book-Locations__ca0d62e7-58ab-4ea4-9729-f139cb28a64d",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ca0d62e7-58ab-4ea4-9729-f139cb28a64d",
