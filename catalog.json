@@ -1221,7 +1221,8 @@
     },
     "49a3eac1-a81d-43dc-8b84-097b6d7ee558": {
       "content_id": "49a3eac1-a81d-43dc-8b84-097b6d7ee558",
-      "fingerprint": "1bc0e8a9b8b3f8fa2c2bae82ba52224a99aca7573d0d0704a4b00b3024daaee7",
+      "deleted": false,
+      "fingerprint": "0954e824096d2105c5a8276d13fc67d9b24cfc7f79679dfff6e6357e76e35a25",
       "path": "addons/LibCInteraction__49a3eac1-a81d-43dc-8b84-097b6d7ee558",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/49a3eac1-a81d-43dc-8b84-097b6d7ee558",
