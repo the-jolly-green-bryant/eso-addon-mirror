@@ -1422,7 +1422,8 @@
     },
     "556512a1-fb7c-4558-9572-f7cf6fd8b171": {
       "content_id": "556512a1-fb7c-4558-9572-f7cf6fd8b171",
-      "fingerprint": "bc036e155e196c2e81a4b34cf1b53fa3131e52a2a5c1a67274af23bd69cb252e",
+      "deleted": false,
+      "fingerprint": "8f0a1e92aa11ed8122c768f175a3f9efc1d186c9d97145b8cf537f2f563555a0",
       "path": "addons/Anti-All-Caps__556512a1-fb7c-4558-9572-f7cf6fd8b171",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/556512a1-fb7c-4558-9572-f7cf6fd8b171",
