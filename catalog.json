@@ -2466,7 +2466,8 @@
     },
     "9653b3d8-c1bf-4328-9b31-5e18a4ea643d": {
       "content_id": "9653b3d8-c1bf-4328-9b31-5e18a4ea643d",
-      "fingerprint": "5b7ef8cbc6b3140a7f4663f4830b87f8d3fcf809b2cb9690d91763a265b20958",
+      "deleted": false,
+      "fingerprint": "db58f32cbbbaba516955589ce602c1be7c216164d88fba40e8071d5ee45a8d29",
       "path": "addons/MSPAINTUI__9653b3d8-c1bf-4328-9b31-5e18a4ea643d",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9653b3d8-c1bf-4328-9b31-5e18a4ea643d",
