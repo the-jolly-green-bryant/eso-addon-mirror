@@ -3039,7 +3039,8 @@
     },
     "b9e43d9e-2e7b-4530-941b-01e90bd15f5a": {
       "content_id": "b9e43d9e-2e7b-4530-941b-01e90bd15f5a",
-      "fingerprint": "e349f06427146e7eff5980a500712d6c2c660c134e6bb29dc2ea22e9404689f2",
+      "deleted": false,
+      "fingerprint": "86c942e6e6bd7496a9be5531fc2baf1c77237eb7860d778a0942e4108f7881d1",
       "path": "addons/StoneTalker__b9e43d9e-2e7b-4530-941b-01e90bd15f5a",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b9e43d9e-2e7b-4530-941b-01e90bd15f5a",
