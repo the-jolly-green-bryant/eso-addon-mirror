@@ -2946,7 +2946,8 @@
     },
     "b3b32522-0ed3-419e-b20d-ef4b651bc013": {
       "content_id": "b3b32522-0ed3-419e-b20d-ef4b651bc013",
-      "fingerprint": "18981484fb964760b438f578f697dd7d283decdfe528a501e4b3dd529c270d57",
+      "deleted": false,
+      "fingerprint": "8f4e93f14d2be791dc4e5a24267d9b1c3676696982f5b9f5002c3724d19b6820",
       "path": "addons/702-s-Craft-Completionist-List__b3b32522-0ed3-419e-b20d-ef4b651bc013",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b3b32522-0ed3-419e-b20d-ef4b651bc013",
