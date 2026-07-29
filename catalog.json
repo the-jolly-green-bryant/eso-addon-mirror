@@ -2972,7 +2972,8 @@
     },
     "b630804a-0ccd-4828-8c9e-945790ec3774": {
       "content_id": "b630804a-0ccd-4828-8c9e-945790ec3774",
-      "fingerprint": "a3e6e39f9a8243c6cc06f527b3f7a1c1e4314624b7a16a231dfa650de21de0af",
+      "deleted": false,
+      "fingerprint": "fa5c55ac39f6bef492dc2ea558d1cdafa500125dfe585c8f20281c854085224d",
       "path": "addons/Beta-Gear_Manage__b630804a-0ccd-4828-8c9e-945790ec3774",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b630804a-0ccd-4828-8c9e-945790ec3774",
