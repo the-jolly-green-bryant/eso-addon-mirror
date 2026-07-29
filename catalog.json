@@ -1552,7 +1552,8 @@
     },
     "6062f2e4-8b5a-48e5-9327-cf8de18eb5e5": {
       "content_id": "6062f2e4-8b5a-48e5-9327-cf8de18eb5e5",
-      "fingerprint": "1f14abb71e3ca11404e334da856ae84ef0f314aa829d92de828c599f8f3fb9fd",
+      "deleted": false,
+      "fingerprint": "98a62e9b30796eb67d0aad72a5134239033ee611c78fabb02b05066180e9fb64",
       "path": "addons/Trade-Skills__6062f2e4-8b5a-48e5-9327-cf8de18eb5e5",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6062f2e4-8b5a-48e5-9327-cf8de18eb5e5",
