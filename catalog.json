@@ -2014,7 +2014,8 @@
     },
     "7b940de0-c594-4695-8235-c75c98259513": {
       "content_id": "7b940de0-c594-4695-8235-c75c98259513",
-      "fingerprint": "11df3377088989073cb03a692dd12dece4fc2d8dfa7217805e6118f5c8f77525",
+      "deleted": false,
+      "fingerprint": "0174f598bd62a35d0c7f5434de752baffeebf08a0162acd5a0a493cecbae84b7",
       "path": "addons/Buy-In-Bulk__7b940de0-c594-4695-8235-c75c98259513",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/7b940de0-c594-4695-8235-c75c98259513",
