@@ -2483,7 +2483,8 @@
     },
     "97602269-0c8d-4bb7-aa31-33cde23e39b7": {
       "content_id": "97602269-0c8d-4bb7-aa31-33cde23e39b7",
-      "fingerprint": "265720115f8e58a7282b1390f3120f5eafbcddabaa58e67c9903377eb677e5f5",
+      "deleted": false,
+      "fingerprint": "40e62e93e65926994aca047a9345033d93c7ad46bc46e032340208b895bd67e5",
       "path": "addons/Guild-Items-Stacker__97602269-0c8d-4bb7-aa31-33cde23e39b7",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/97602269-0c8d-4bb7-aa31-33cde23e39b7",
