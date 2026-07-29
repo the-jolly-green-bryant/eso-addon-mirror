@@ -2440,7 +2440,8 @@
     },
     "93511248-c8d1-4b19-9167-08bbeb5d10ac": {
       "content_id": "93511248-c8d1-4b19-9167-08bbeb5d10ac",
-      "fingerprint": "bfde67ac453ee9c47dbffd74e773b898ba249a454aa26296cd2c9bf0bf08d9ef",
+      "deleted": false,
+      "fingerprint": "c88d5d1441412b4994b1cf5b57c7e432e36f50e9e6fd97ba0abafa30c102a0b6",
       "path": "addons/cChat__93511248-c8d1-4b19-9167-08bbeb5d10ac",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/93511248-c8d1-4b19-9167-08bbeb5d10ac",
