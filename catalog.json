@@ -2545,7 +2545,8 @@
     },
     "9bb39b20-896b-4b23-a901-0c9d110edac7": {
       "content_id": "9bb39b20-896b-4b23-a901-0c9d110edac7",
-      "fingerprint": "4f28b4a175f51fde85b74a90b81c0ebf34eb6f98173604864052481a773d6cc7",
+      "deleted": false,
+      "fingerprint": "43e61d115ef57ab76b370a86077abab18cea905695cd1e3c676694501c8fd467",
       "path": "addons/LuiData__9bb39b20-896b-4b23-a901-0c9d110edac7",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9bb39b20-896b-4b23-a901-0c9d110edac7",
