@@ -1787,7 +1787,8 @@
     },
     "6f38e877-6d9e-464c-a1c8-83de0f7f3d88": {
       "content_id": "6f38e877-6d9e-464c-a1c8-83de0f7f3d88",
-      "fingerprint": "1b0a6c950b98fbe6f378284395e9355d4a9bae244335f1398e25c4de8a4dee35",
+      "deleted": false,
+      "fingerprint": "f1ba6ce37e9eb15776dc64534a7c08c00e84b8ecb32a3e456a261065b4d6dc83",
       "path": "addons/DeadMarker2__6f38e877-6d9e-464c-a1c8-83de0f7f3d88",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6f38e877-6d9e-464c-a1c8-83de0f7f3d88",
