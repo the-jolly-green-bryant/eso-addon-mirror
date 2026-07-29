@@ -2570,7 +2570,8 @@
     },
     "9d131435-84c4-4c6d-9d73-5e2ec6fa61b7": {
       "content_id": "9d131435-84c4-4c6d-9d73-5e2ec6fa61b7",
-      "fingerprint": "30d93bfe4e8907562e8257b2c7024b8d6c4b79d6cf3eb6babe51eeed757582ca",
+      "deleted": false,
+      "fingerprint": "e276d9d7b89a0a92a3a39094f71e872cabfe995bb543d4fff82a351c319d0f1a",
       "path": "addons/CrowdednESO__9d131435-84c4-4c6d-9d73-5e2ec6fa61b7",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9d131435-84c4-4c6d-9d73-5e2ec6fa61b7",
