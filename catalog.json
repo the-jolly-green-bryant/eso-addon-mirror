@@ -3394,7 +3394,8 @@
     },
     "cebfe41b-3168-432c-a3cf-795bbe56e54e": {
       "content_id": "cebfe41b-3168-432c-a3cf-795bbe56e54e",
-      "fingerprint": "73f46599c5fa68149e9447803eec373f091c139c68cf4d193939191782f8f4de",
+      "deleted": false,
+      "fingerprint": "f05e2d2dad012334b6c7e5a838c5697246180429c7df03e19165a2d5fbcf3d96",
       "path": "addons/Chat-Log-Preserver__cebfe41b-3168-432c-a3cf-795bbe56e54e",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cebfe41b-3168-432c-a3cf-795bbe56e54e",
