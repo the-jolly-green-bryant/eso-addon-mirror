@@ -2709,7 +2709,8 @@
     },
     "a6c22156-8b52-467d-ab02-287e5731a1fb": {
       "content_id": "a6c22156-8b52-467d-ab02-287e5731a1fb",
-      "fingerprint": "cb528fbcb088a6a96f3fc015015ad72dfbe01cf3868291abf9288ff2d851c715",
+      "deleted": false,
+      "fingerprint": "c0d6fbb7640d6d3bfc658e0c0c7a13ee88ed7ce3eee7c6f62797a58d46ce92aa",
       "path": "addons/Synergy-Cooldown__a6c22156-8b52-467d-ab02-287e5731a1fb",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a6c22156-8b52-467d-ab02-287e5731a1fb",
