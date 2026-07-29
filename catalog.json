@@ -1812,7 +1812,8 @@
     },
     "7121f08a-1fe7-4a77-b582-ad1815dcb6e6": {
       "content_id": "7121f08a-1fe7-4a77-b582-ad1815dcb6e6",
-      "fingerprint": "b10b8cc356026b443f547e621596d58ef436f7e39df76910b250704fd515da96",
+      "deleted": false,
+      "fingerprint": "a85ec32cb7d5f1b288a6c00ad4f323c5259c50f17ef1fbe4a901baeec465c5ac",
       "path": "addons/LuiExecuteIcon__7121f08a-1fe7-4a77-b582-ad1815dcb6e6",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/7121f08a-1fe7-4a77-b582-ad1815dcb6e6",
