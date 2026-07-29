@@ -1980,7 +1980,8 @@
     },
     "79b6b597-9e33-4cd7-b076-44e9a153a44c": {
       "content_id": "79b6b597-9e33-4cd7-b076-44e9a153a44c",
-      "fingerprint": "c95cb19647c9967b668ecf1e98c9a8ddb51418ecae07a79a5b3bcc967a387753",
+      "deleted": false,
+      "fingerprint": "3b4c0799b90874ca1d10891b11729d2ad620fb7d93833d8075673e2f9f38bfbd",
       "path": "addons/Auto-Opener__79b6b597-9e33-4cd7-b076-44e9a153a44c",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/79b6b597-9e33-4cd7-b076-44e9a153a44c",
