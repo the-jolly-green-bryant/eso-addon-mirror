@@ -1176,7 +1176,8 @@
     },
     "47568dd9-5328-4e2a-9862-c59932473a4b": {
       "content_id": "47568dd9-5328-4e2a-9862-c59932473a4b",
-      "fingerprint": "29d9ef2fe46cc60a831b67f3c9d5e0a533d89e8376afd15e8285cd5dc9c555a0",
+      "deleted": false,
+      "fingerprint": "9e113d8e03f93a042c0beec7737790df293370960df11e1cf2d3d9ad5050de56",
       "path": "addons/Duel-Results__47568dd9-5328-4e2a-9862-c59932473a4b",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/47568dd9-5328-4e2a-9862-c59932473a4b",
