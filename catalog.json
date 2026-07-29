@@ -603,7 +603,8 @@
     },
     "256dc81e-d505-4eb6-9a51-1d7ffc360c69": {
       "content_id": "256dc81e-d505-4eb6-9a51-1d7ffc360c69",
-      "fingerprint": "e23075e214b3d27494c40d7491b82ccd895063e46ed89118ff3e19f3d6b5636c",
+      "deleted": false,
+      "fingerprint": "c793a89967ab0049b9ac27ed2ea4ecd2cb8efef85b1c9a338c209d9d70b3a175",
       "path": "addons/House-Hotkey__256dc81e-d505-4eb6-9a51-1d7ffc360c69",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/256dc81e-d505-4eb6-9a51-1d7ffc360c69",
