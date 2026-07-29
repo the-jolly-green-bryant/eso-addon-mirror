@@ -1272,7 +1272,8 @@
     },
     "4b9ce0b1-712c-4e43-9b41-d913d2772634": {
       "content_id": "4b9ce0b1-712c-4e43-9b41-d913d2772634",
-      "fingerprint": "74a4a9d4b9d2023c0b09f717bae7bddeb3809a43f068dda3846ce72e2ceac36f",
+      "deleted": false,
+      "fingerprint": "dd96d6b7ec0db6f36861ec89fb369e4e58497fd8227fec7984dfe0edf66ace15",
       "path": "addons/Group-UI-Mover__4b9ce0b1-712c-4e43-9b41-d913d2772634",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4b9ce0b1-712c-4e43-9b41-d913d2772634",
