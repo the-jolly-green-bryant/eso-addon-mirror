@@ -3437,7 +3437,8 @@
     },
     "d16fe7aa-9938-433f-bac9-3a808f810ae7": {
       "content_id": "d16fe7aa-9938-433f-bac9-3a808f810ae7",
-      "fingerprint": "8ddc3fb27c17e4d55c637823e057b264205e504362fd9f01cae9653490ae921a",
+      "deleted": false,
+      "fingerprint": "877bd934e29ca4c48a61a34e29ba02a4e1601fd25a31503fcf9261ef026edd92",
       "path": "addons/True-Synergies-Mover__d16fe7aa-9938-433f-bac9-3a808f810ae7",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d16fe7aa-9938-433f-bac9-3a808f810ae7",
