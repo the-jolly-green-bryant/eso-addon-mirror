@@ -3214,7 +3214,8 @@
     },
     "c6c7688f-dd22-4f0f-879c-ed00aea59004": {
       "content_id": "c6c7688f-dd22-4f0f-879c-ed00aea59004",
-      "fingerprint": "bed356575289811269c106bc3f241814a43983455147416651b6a69f87d6a16e",
+      "deleted": false,
+      "fingerprint": "4b86686e177f27608c1b147292f4af8b55a45879a843b77a17e5eabceee5b2e4",
       "path": "addons/Vault-Tracker__c6c7688f-dd22-4f0f-879c-ed00aea59004",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c6c7688f-dd22-4f0f-879c-ed00aea59004",
