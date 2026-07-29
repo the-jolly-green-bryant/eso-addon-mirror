@@ -2203,7 +2203,8 @@
     },
     "8ba040d8-fba0-4a01-aa63-4ee74dd2d1d6": {
       "content_id": "8ba040d8-fba0-4a01-aa63-4ee74dd2d1d6",
-      "fingerprint": "70081d9ab10458b64b1a742759efed9e8a483ac53a76f24c1c5769d97205818f",
+      "deleted": false,
+      "fingerprint": "4a31f72d326f590bc7cab4f2d18f96436680f9f003779532006ba2e85dc0f470",
       "path": "addons/Adventurer-s-Toolkit__8ba040d8-fba0-4a01-aa63-4ee74dd2d1d6",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8ba040d8-fba0-4a01-aa63-4ee74dd2d1d6",
