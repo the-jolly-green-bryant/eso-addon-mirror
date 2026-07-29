@@ -2290,7 +2290,8 @@
     },
     "8e880053-fe2b-4934-9745-a0670e1e12d6": {
       "content_id": "8e880053-fe2b-4934-9745-a0670e1e12d6",
-      "fingerprint": "ed3d64b6b0002a653794e87b81156bd471af4444688aeae506dd254e9ed0cb63",
+      "deleted": false,
+      "fingerprint": "54ddde02cac7e602ad27cc19736dbc9d30dea4ce1bb9930d45509d404c0ceab8",
       "path": "addons/Alliance-Rank-Progress__8e880053-fe2b-4934-9745-a0670e1e12d6",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8e880053-fe2b-4934-9745-a0670e1e12d6",
