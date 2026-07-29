@@ -2805,7 +2805,8 @@
     },
     "adeb7cae-c7d2-4f05-9f6b-398235624c33": {
       "content_id": "adeb7cae-c7d2-4f05-9f6b-398235624c33",
-      "fingerprint": "00312c6bb6e10c5d80418dc56b5299227f0063d513ab3979efb42a8d2d5ff0b0",
+      "deleted": false,
+      "fingerprint": "c4be4b96bbd1291830419205e6fa2a520eb9d81c8b2b4c5d1e8367aeb383154a",
       "path": "addons/Bloom-HPS__adeb7cae-c7d2-4f05-9f6b-398235624c33",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/adeb7cae-c7d2-4f05-9f6b-398235624c33",
