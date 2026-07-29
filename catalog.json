@@ -2334,7 +2334,8 @@
     },
     "902fc32f-1993-4f03-8d5c-0b17986d5681": {
       "content_id": "902fc32f-1993-4f03-8d5c-0b17986d5681",
-      "fingerprint": "afbccc1ac49c2a4a4773c58816789f42dc03f0c7f140d21677dc6a5110445e74",
+      "deleted": false,
+      "fingerprint": "083cd10ae61ebbea0cbe476960e38f96e6a9cec98c82d45cc1141eb018677796",
       "path": "addons/GCD-Weave-Timer__902fc32f-1993-4f03-8d5c-0b17986d5681",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/902fc32f-1993-4f03-8d5c-0b17986d5681",
