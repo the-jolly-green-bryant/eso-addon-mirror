@@ -1963,7 +1963,8 @@
     },
     "782c659c-1b9a-4e03-aaef-6526095363ad": {
       "content_id": "782c659c-1b9a-4e03-aaef-6526095363ad",
-      "fingerprint": "9287d435ad233b53fa56026abc8c3da5d67f8768a31abdeccc69680bfecca78c",
+      "deleted": false,
+      "fingerprint": "31cf6ca3ae39a825631dad884735a58dd544a58a9009ddd49763ce73e6937aa2",
       "path": "addons/Buffy-Live-Buff-Tracking__782c659c-1b9a-4e03-aaef-6526095363ad",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/782c659c-1b9a-4e03-aaef-6526095363ad",
