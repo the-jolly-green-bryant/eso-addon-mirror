@@ -2492,7 +2492,8 @@
     },
     "979371c6-2e58-4b2f-84af-cc9276c86b94": {
       "content_id": "979371c6-2e58-4b2f-84af-cc9276c86b94",
-      "fingerprint": "4fcd382199a24e025d1392a2cebe7d9961fef4868cd0b0e48afc202195ff7085",
+      "deleted": false,
+      "fingerprint": "119db36753f9f17d8e3cd583286c6dd125888bf55925f5ed7129a540681c4515",
       "path": "addons/Satchel-Exchange__979371c6-2e58-4b2f-84af-cc9276c86b94",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/979371c6-2e58-4b2f-84af-cc9276c86b94",
