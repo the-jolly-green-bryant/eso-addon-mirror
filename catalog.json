@@ -1212,7 +1212,8 @@
     },
     "48b63611-befb-44e1-b87a-1bac567ee234": {
       "content_id": "48b63611-befb-44e1-b87a-1bac567ee234",
-      "fingerprint": "29a61ccd19e68cc9f4786c07ecde0e5d740297788edae41557cfeb3bff065a11",
+      "deleted": false,
+      "fingerprint": "2112d62d8c6d590feedc6f55e13a877f43bb8bb8bfffa6f2765e90ef9783c20e",
       "path": "addons/Auto-Claim-or-Hide-Golden-Pursuits__48b63611-befb-44e1-b87a-1bac567ee234",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/48b63611-befb-44e1-b87a-1bac567ee234",
