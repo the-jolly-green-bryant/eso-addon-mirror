@@ -4201,7 +4201,8 @@
     },
     "f6e1e99b-174a-401e-8acf-d4a7e6e2c352": {
       "content_id": "f6e1e99b-174a-401e-8acf-d4a7e6e2c352",
-      "fingerprint": "f144af27312c32d0a2830be54f9fbbb197fc7ccd7ca7c8ad6ffe5d0b854ad87d",
+      "deleted": false,
+      "fingerprint": "62aa1bae005f8b257b6684098b75401b567f741ed1366a9a237c8485237f6d8b",
       "path": "addons/LibMapPing__f6e1e99b-174a-401e-8acf-d4a7e6e2c352",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f6e1e99b-174a-401e-8acf-d4a7e6e2c352",
