@@ -810,7 +810,8 @@
     },
     "30667c51-455c-4759-a4eb-84cb77525452": {
       "content_id": "30667c51-455c-4759-a4eb-84cb77525452",
-      "fingerprint": "31ff2e211e97c32a085a4cb865987b6b833f4cd5b1eff33fdfb65b560d485245",
+      "deleted": false,
+      "fingerprint": "9ff578b91b0462998c779db3ff12d20ebb335a8e9935010c6db73511351d1134",
       "path": "addons/Archaeology__30667c51-455c-4759-a4eb-84cb77525452",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/30667c51-455c-4759-a4eb-84cb77525452",
