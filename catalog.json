@@ -3766,7 +3766,8 @@
     },
     "e0f48487-697e-4d3f-8768-ce763362046a": {
       "content_id": "e0f48487-697e-4d3f-8768-ce763362046a",
-      "fingerprint": "a7aa11a436c540c9b50718aee1c3f327eff73d92bd7c3d40d700e40295a25065",
+      "deleted": false,
+      "fingerprint": "c26dcc62d83201b6faf75fdca1cae4d206b21bd403a61acf13bef1b9df8de217",
       "path": "addons/AKsAttributeBars__e0f48487-697e-4d3f-8768-ce763362046a",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e0f48487-697e-4d3f-8768-ce763362046a",
