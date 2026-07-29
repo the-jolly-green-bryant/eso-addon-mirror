@@ -1464,7 +1464,8 @@
     },
     "5aa01879-0f7a-42e6-a52d-979261f97cf1": {
       "content_id": "5aa01879-0f7a-42e6-a52d-979261f97cf1",
-      "fingerprint": "bba00d49e8bd10ee945767f9d628127abb23a5c1a72c58acaeb70bd3092ac563",
+      "deleted": false,
+      "fingerprint": "2021bdb2531edd3d36aafa7c3f970b35d8e10ecda2a95f039b3b24b61c4d7b32",
       "path": "addons/Whispers-Beyond__5aa01879-0f7a-42e6-a52d-979261f97cf1",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5aa01879-0f7a-42e6-a52d-979261f97cf1",
