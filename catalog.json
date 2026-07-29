@@ -2919,7 +2919,8 @@
     },
     "b2d38492-3b20-43e0-9262-af382d04fb04": {
       "content_id": "b2d38492-3b20-43e0-9262-af382d04fb04",
-      "fingerprint": "9ee6657effea0e9968c1846691887459638f78e1019d1dde28b8bfc867d8b14b",
+      "deleted": false,
+      "fingerprint": "5ae87de9c8a209eecbf96f58f7560e3f4c73e0f8da8dfe33333b8af8409be8d7",
       "path": "addons/Pocket-Money__b2d38492-3b20-43e0-9262-af382d04fb04",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b2d38492-3b20-43e0-9262-af382d04fb04",
