@@ -3160,7 +3160,8 @@
     },
     "c1b4f7e7-7899-4d68-ab6a-6ce46c563cc5": {
       "content_id": "c1b4f7e7-7899-4d68-ab6a-6ce46c563cc5",
-      "fingerprint": "49dfc4713fc24b8f3af00b82c44c927eee40045a96fe7baebf89899825330ff3",
+      "deleted": false,
+      "fingerprint": "aa6408744a3651e375a9a13df8e4009284e8d8d47dfb7ca02036b02b9ae6a920",
       "path": "addons/Weaving-Metronome__c1b4f7e7-7899-4d68-ab6a-6ce46c563cc5",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c1b4f7e7-7899-4d68-ab6a-6ce46c563cc5",
