@@ -905,7 +905,8 @@
     },
     "37661fa7-7702-4eeb-b3ed-7e840aa17647": {
       "content_id": "37661fa7-7702-4eeb-b3ed-7e840aa17647",
-      "fingerprint": "d748a2a23e63cec7a6578a11902bcc38500520df905d802b9d470e4313c837eb",
+      "deleted": false,
+      "fingerprint": "ae36b54b90dd4a504625f2d641cc02cf46fe0cf1695727d2d87dd51ce23175fe",
       "path": "addons/LibGamepad__37661fa7-7702-4eeb-b3ed-7e840aa17647",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/37661fa7-7702-4eeb-b3ed-7e840aa17647",
