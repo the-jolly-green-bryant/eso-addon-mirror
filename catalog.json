@@ -2272,7 +2272,8 @@
     },
     "8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f": {
       "content_id": "8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f",
-      "fingerprint": "bdee4ae5d87452cecbc0fb73693461447422bdbcf310725fb5e458d4cb927e31",
+      "deleted": false,
+      "fingerprint": "788673106d45a502b244ac2ad45c19fc365c50f7902b89a3c51dd4129a906aa5",
       "path": "addons/ShogrinUI__8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f",
