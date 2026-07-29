@@ -3048,7 +3048,8 @@
     },
     "bb565e61-5481-49e2-9550-7c8aa18aa17a": {
       "content_id": "bb565e61-5481-49e2-9550-7c8aa18aa17a",
-      "fingerprint": "0f22be47bba9e58e17c32e45ea9deaaed83473bff58b5e24857ebe4577229998",
+      "deleted": false,
+      "fingerprint": "7e228b8316856d21024395e843df425c3d342d1d030711c049a638a1ac277bb1",
       "path": "addons/Better-Scoreboard__bb565e61-5481-49e2-9550-7c8aa18aa17a",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/bb565e61-5481-49e2-9550-7c8aa18aa17a",
