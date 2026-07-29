@@ -1491,7 +1491,8 @@
     },
     "5da20bd4-9950-42b8-aca8-deadd5817210": {
       "content_id": "5da20bd4-9950-42b8-aca8-deadd5817210",
-      "fingerprint": "ffa34c3866e7f6a277a30fe54ed2c110a9bfd47fc5e554cea8f558eaff24af85",
+      "deleted": false,
+      "fingerprint": "a347f213c4f75ab0531d73566cb1e1d6cdaa788cdd1f2bd588ee3c52ddfc1428",
       "path": "addons/InstaQ__5da20bd4-9950-42b8-aca8-deadd5817210",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5da20bd4-9950-42b8-aca8-deadd5817210",
