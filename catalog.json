@@ -2135,7 +2135,8 @@
     },
     "845e13c0-5c9e-4d9b-94e1-a47d532e4b0c": {
       "content_id": "845e13c0-5c9e-4d9b-94e1-a47d532e4b0c",
-      "fingerprint": "27f6e6b611eaf8c728b3885db70400aa98878ea5f13fda6b751c00ec181c80c4",
+      "deleted": false,
+      "fingerprint": "c7939781e759373fea66e6bbfee61f8221123d6c1df9e334675461dfc12791f2",
       "path": "addons/Timer-in-Revive-Counter__845e13c0-5c9e-4d9b-94e1-a47d532e4b0c",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/845e13c0-5c9e-4d9b-94e1-a47d532e4b0c",
