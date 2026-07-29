@@ -1482,7 +1482,8 @@
     },
     "5d612b95-1149-48f4-b359-2aaee406bd86": {
       "content_id": "5d612b95-1149-48f4-b359-2aaee406bd86",
-      "fingerprint": "a043de4c57e495eb1aafef44dc2fe5fb634547e6d4789f974918d777ba3b0d01",
+      "deleted": false,
+      "fingerprint": "f4bca7fe2ac2618f9482014c76eb50677cde668ea83c428b0d396ca87343b58b",
       "path": "addons/ItalianScrollsOnline__5d612b95-1149-48f4-b359-2aaee406bd86",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/5d612b95-1149-48f4-b359-2aaee406bd86",
