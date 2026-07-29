@@ -2352,7 +2352,8 @@
     },
     "910446ca-4e83-47c8-8c9b-a5d99bcec73e": {
       "content_id": "910446ca-4e83-47c8-8c9b-a5d99bcec73e",
-      "fingerprint": "8b3fecfbec6b0925f4f2bf20fd494b68eaaf2d39cb6857025b54be17a78af115",
+      "deleted": false,
+      "fingerprint": "0ee41f29e82b44a61ce790de4c179951acd1eed5e933e1cf10d0211ed4120d40",
       "path": "addons/Auto-Claim-or-Hide-Tome-Challenges__910446ca-4e83-47c8-8c9b-a5d99bcec73e",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/910446ca-4e83-47c8-8c9b-a5d99bcec73e",
