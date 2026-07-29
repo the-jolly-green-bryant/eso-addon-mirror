@@ -4210,7 +4210,8 @@
     },
     "f74afae1-50fc-4e7f-8883-573992187a63": {
       "content_id": "f74afae1-50fc-4e7f-8883-573992187a63",
-      "fingerprint": "77e25ef447964fa52097ceb3bc6aa97b92e5c930d9440163d0a3e883c83bc51d",
+      "deleted": false,
+      "fingerprint": "36f80d7ccf3101526f4839a944dea4a454d06aa4ca7a0f2f142bc53787e04188",
       "path": "addons/Rainbow-AOE__f74afae1-50fc-4e7f-8883-573992187a63",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f74afae1-50fc-4e7f-8883-573992187a63",
