@@ -1062,7 +1062,8 @@
     },
     "40ce0c52-4479-40d1-b9d0-3f8fc4d53c4f": {
       "content_id": "40ce0c52-4479-40d1-b9d0-3f8fc4d53c4f",
-      "fingerprint": "6808e665be73c99069924be53b93cb288796cab2541286dea85a043b3c5ba4ee",
+      "deleted": false,
+      "fingerprint": "1118f11d4a7be4643e7908a11599ef0533d3cf625b7559018f712a9940fd6e59",
       "path": "addons/LibSTARSConnect__40ce0c52-4479-40d1-b9d0-3f8fc4d53c4f",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/40ce0c52-4479-40d1-b9d0-3f8fc4d53c4f",
