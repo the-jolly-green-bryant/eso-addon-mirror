@@ -3240,7 +3240,8 @@
     },
     "c75df85c-f9c0-4e54-a0f3-d5173e44a850": {
       "content_id": "c75df85c-f9c0-4e54-a0f3-d5173e44a850",
-      "fingerprint": "8aa58f1c4693b0e88000c8b21682284865300c43e16a60894951fece243e58bc",
+      "deleted": false,
+      "fingerprint": "9271869977cf13f2e8a427f00c64d90dd05efc668c975cf7d5713061b9a20821",
       "path": "addons/CasualClean__c75df85c-f9c0-4e54-a0f3-d5173e44a850",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c75df85c-f9c0-4e54-a0f3-d5173e44a850",
