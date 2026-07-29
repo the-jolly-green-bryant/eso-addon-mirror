@@ -852,7 +852,8 @@
     },
     "34dd2c26-eade-48fc-a1d0-4838faaeae0e": {
       "content_id": "34dd2c26-eade-48fc-a1d0-4838faaeae0e",
-      "fingerprint": "bfe1bd8d47c1d2a81508f1995098e6b3a6257b81ecf154d8a0f69e4b3effe602",
+      "deleted": false,
+      "fingerprint": "af37b8e4bc10657205495e4517dc96aebd28507e51c3b2d8c294a1ab57ae7d02",
       "path": "addons/Dark-Mode-ESO__34dd2c26-eade-48fc-a1d0-4838faaeae0e",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/34dd2c26-eade-48fc-a1d0-4838faaeae0e",
