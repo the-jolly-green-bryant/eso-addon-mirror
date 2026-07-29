@@ -1937,7 +1937,8 @@
     },
     "76d8e5e1-619c-48d4-b331-b3895b578dc6": {
       "content_id": "76d8e5e1-619c-48d4-b331-b3895b578dc6",
-      "fingerprint": "6d7cac3911f7498e93ffbf0e558aea369bcb234b3e5022c0ea44ea6f9c68a0ac",
+      "deleted": false,
+      "fingerprint": "c7d8ef53cb4d191370033a917e926ec9fba5aca1e58ae19ab45b02b97fe7f89b",
       "path": "addons/Mara-M0R-s-Assorted-Radial-Actions__76d8e5e1-619c-48d4-b331-b3895b578dc6",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/76d8e5e1-619c-48d4-b331-b3895b578dc6",
