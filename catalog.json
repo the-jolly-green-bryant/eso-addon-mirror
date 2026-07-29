@@ -2005,7 +2005,8 @@
     },
     "7b383e7f-a85f-491d-b950-dffc87bcec10": {
       "content_id": "7b383e7f-a85f-491d-b950-dffc87bcec10",
-      "fingerprint": "fb19c967958455cd0f37a534f9b875eebee60bfb0ea8c8e6ba9d364169e7b035",
+      "deleted": false,
+      "fingerprint": "813697fb4f215b0f75ac0c34ca991cff0f10d56fa149c768d4d596ddc3a1af8f",
       "path": "addons/ArchdruidTracker__7b383e7f-a85f-491d-b950-dffc87bcec10",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/7b383e7f-a85f-491d-b950-dffc87bcec10",
