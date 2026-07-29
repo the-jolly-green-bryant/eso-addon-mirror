@@ -3471,7 +3471,8 @@
     },
     "d2f38194-bd78-47b6-817f-71932b3a5c42": {
       "content_id": "d2f38194-bd78-47b6-817f-71932b3a5c42",
-      "fingerprint": "eaa70f65c2eb60a5de6baf9c1215914b5667c0a4d00ff2634639dc840007e6f3",
+      "deleted": false,
+      "fingerprint": "4d6492d4ae2ae871cec250497d1acc0f3911320c25ec8694c5f3ab62e82eebb7",
       "path": "addons/DM2-Parse-Fight-Stats__d2f38194-bd78-47b6-817f-71932b3a5c42",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d2f38194-bd78-47b6-817f-71932b3a5c42",
