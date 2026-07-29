@@ -701,7 +701,8 @@
     },
     "2aa223e9-ba88-45f7-90d3-0a47002c720c": {
       "content_id": "2aa223e9-ba88-45f7-90d3-0a47002c720c",
-      "fingerprint": "175b015d57483788ff2547a8e0d5a76c07e595b456bf5b26ed43e46eb3113ef7",
+      "deleted": false,
+      "fingerprint": "70d6404d295ae7747a99d0e8a36cfc434b65f5c610d5bb0bfc88dc2e9d5c4418",
       "path": "addons/Permanent-Memento__2aa223e9-ba88-45f7-90d3-0a47002c720c",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2aa223e9-ba88-45f7-90d3-0a47002c720c",
