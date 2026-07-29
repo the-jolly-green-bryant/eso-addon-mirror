@@ -2657,7 +2657,8 @@
     },
     "a25448d4-0fb6-421f-bdb2-d9cf32a397d5": {
       "content_id": "a25448d4-0fb6-421f-bdb2-d9cf32a397d5",
-      "fingerprint": "f107348c50f1ef1f86bd2d87c237565258c80442ff73a8e87cd493f8d4857d76",
+      "deleted": false,
+      "fingerprint": "2ba311b6dd54df96497ac4fb46caaa3d6c8a1f1b10ed5d01f0d54b57b2462c06",
       "path": "addons/Aldrens-Movable-UI__a25448d4-0fb6-421f-bdb2-d9cf32a397d5",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a25448d4-0fb6-421f-bdb2-d9cf32a397d5",
