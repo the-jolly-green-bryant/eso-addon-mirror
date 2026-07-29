@@ -3686,7 +3686,8 @@
     },
     "deb4d4a9-52ea-4c0d-b446-dbcf31a7d437": {
       "content_id": "deb4d4a9-52ea-4c0d-b446-dbcf31a7d437",
-      "fingerprint": "43eb43301445b703a2c4aae31051600aecc3255aa9d2f2571c1d1cfeba63315d",
+      "deleted": false,
+      "fingerprint": "76eaa32734d722695ccdf2f1c95444fced64552e740d9284d34dcab0fa6f4909",
       "path": "addons/LibTraitResearch__deb4d4a9-52ea-4c0d-b446-dbcf31a7d437",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/deb4d4a9-52ea-4c0d-b446-dbcf31a7d437",
