@@ -2094,7 +2094,8 @@
     },
     "834ff723-3c30-4778-855c-4431d3a2f040": {
       "content_id": "834ff723-3c30-4778-855c-4431d3a2f040",
-      "fingerprint": "19667ea1c983b3eb81a1a6e6c5caee7f8103a19cf463839893512d678f42a222",
+      "deleted": false,
+      "fingerprint": "879283bd48fe07910616a167443ff31197164cead474c8dced5c0f90bc76fad3",
       "path": "addons/Potion-Alert__834ff723-3c30-4778-855c-4431d3a2f040",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/834ff723-3c30-4778-855c-4431d3a2f040",
