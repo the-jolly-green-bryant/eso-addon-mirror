@@ -3480,7 +3480,8 @@
     },
     "d324f223-1cd9-40d2-8e37-8cf302dde557": {
       "content_id": "d324f223-1cd9-40d2-8e37-8cf302dde557",
-      "fingerprint": "a52d80548671b7490a7c487057935bd5d5f3a250137900125b67536f15e54b18",
+      "deleted": false,
+      "fingerprint": "79a24620d649f1be96d3948167a75f07880a0e3f883e7168b86eaab4e8f84125",
       "path": "addons/Lorebooks__d324f223-1cd9-40d2-8e37-8cf302dde557",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d324f223-1cd9-40d2-8e37-8cf302dde557",
