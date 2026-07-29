@@ -4358,6 +4358,15 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fe11caef-4426-405c-bb46-3c3ca893703b",
       "title": "LibMapPins"
+    },
+    "fe232f99-8f31-4163-906d-48182e80a59d": {
+      "content_id": "fe232f99-8f31-4163-906d-48182e80a59d",
+      "deleted": false,
+      "fingerprint": "83270a75b8a4afe53737e80d810877d6ff8b099f351e0bc5968d548f501679ff",
+      "path": "addons/Interrupt-Narc__fe232f99-8f31-4163-906d-48182e80a59d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fe232f99-8f31-4163-906d-48182e80a59d",
+      "title": "Interrupt Narc"
     }
   },
   "schema": 1
