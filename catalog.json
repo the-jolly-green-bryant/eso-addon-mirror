@@ -464,7 +464,8 @@
     },
     "1d8faf08-ce78-4d71-8e33-81d704e62fc5": {
       "content_id": "1d8faf08-ce78-4d71-8e33-81d704e62fc5",
-      "fingerprint": "1e6d307ba8635cd24250ee95b98495567657ba7401261f0bf61642e5fa66c2b2",
+      "deleted": false,
+      "fingerprint": "66fc020167578d17b74a7f4c98a0d70fc0991a30652b3891b46c57b076b76332",
       "path": "addons/Companion-Rapport__1d8faf08-ce78-4d71-8e33-81d704e62fc5",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1d8faf08-ce78-4d71-8e33-81d704e62fc5",
