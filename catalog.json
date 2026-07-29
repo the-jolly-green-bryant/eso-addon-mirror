@@ -2396,7 +2396,8 @@
     },
     "922792c1-1d90-4415-ada5-c356757e857f": {
       "content_id": "922792c1-1d90-4415-ada5-c356757e857f",
-      "fingerprint": "cda4c5917702984999f6e55204151f5a7c85ee5e3c0d603de94effa8e864795c",
+      "deleted": false,
+      "fingerprint": "9d769b39b7492eb8e13fc9c8af7cae46eaa04fd084208bcb8d2768f2f3103e38",
       "path": "addons/Fancy-Action-Bar__922792c1-1d90-4415-ada5-c356757e857f",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/922792c1-1d90-4415-ada5-c356757e857f",
