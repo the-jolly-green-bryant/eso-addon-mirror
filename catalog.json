@@ -73,7 +73,8 @@
     },
     "0604268b-f390-4fac-aebe-67b9148c94f4": {
       "content_id": "0604268b-f390-4fac-aebe-67b9148c94f4",
-      "fingerprint": "e67cc6b709c6e643a0740b0c8048619ac5f4f66282d1a63ed7e61d0cba49b1a0",
+      "deleted": false,
+      "fingerprint": "d57dfad0fbecbe499095d1f0994b33fed6fa080b4e06a10173cd8e4e5f182a8b",
       "path": "addons/Buff-Tracker__0604268b-f390-4fac-aebe-67b9148c94f4",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0604268b-f390-4fac-aebe-67b9148c94f4",
