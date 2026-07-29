@@ -3151,7 +3151,8 @@
     },
     "c12b4c6f-c657-4d0b-ac4e-77374335877c": {
       "content_id": "c12b4c6f-c657-4d0b-ac4e-77374335877c",
-      "fingerprint": "6c65b8ef14beb5bee86997917d91964b8f8b5ffed7cafa3b4ea08a58e0ce0271",
+      "deleted": false,
+      "fingerprint": "ef988b4a262a2a806fc6aa2d05a2f8f4c57af244a22b03e0d27f5f276659f271",
       "path": "addons/More-Camera-Sensitivity__c12b4c6f-c657-4d0b-ac4e-77374335877c",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c12b4c6f-c657-4d0b-ac4e-77374335877c",
