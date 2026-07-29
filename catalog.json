@@ -4295,6 +4295,15 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fc98f3c0-0b5a-4797-aaa4-379955c3310c",
       "title": "LibDateTime"
+    },
+    "fc9f4f62-3d31-41cd-b9ee-e1a0ea0f6ecb": {
+      "content_id": "fc9f4f62-3d31-41cd-b9ee-e1a0ea0f6ecb",
+      "deleted": false,
+      "fingerprint": "e0fd5477b76e6a49845d4d6d7b26839bdc76ba1637676cc50883a8e37e989636",
+      "path": "addons/Favorite-Home-Teleporter__fc9f4f62-3d31-41cd-b9ee-e1a0ea0f6ecb",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fc9f4f62-3d31-41cd-b9ee-e1a0ea0f6ecb",
+      "title": "Favorite Home Teleporter"
     }
   },
   "schema": 1
