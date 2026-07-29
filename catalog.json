@@ -4322,6 +4322,15 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fd260c09-574e-4494-9d13-dad835b05662",
       "title": "Item Stack Splitter"
+    },
+    "fd28ddff-8837-4702-8beb-110fee70b432": {
+      "content_id": "fd28ddff-8837-4702-8beb-110fee70b432",
+      "deleted": false,
+      "fingerprint": "e0a764907a2c801c2c68e28f2c847a409c8b1047760b757b874348a1319e4d81",
+      "path": "addons/ArcTech__fd28ddff-8837-4702-8beb-110fee70b432",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fd28ddff-8837-4702-8beb-110fee70b432",
+      "title": "ArcTech"
     }
   },
   "schema": 1
