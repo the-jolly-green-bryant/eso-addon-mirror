@@ -3555,7 +3555,8 @@
     },
     "d9742ac5-f315-4712-8383-b1a170801ba9": {
       "content_id": "d9742ac5-f315-4712-8383-b1a170801ba9",
-      "fingerprint": "71afd013f92d245fc5c164c81ddf09e2aaef65c0eeb90415f32f47c4dd7e6fe2",
+      "deleted": false,
+      "fingerprint": "9ba069024209815138f775f166b04a9688a4b86d41802f6b5d5713b29eb6de09",
       "path": "addons/Smart-Trader__d9742ac5-f315-4712-8383-b1a170801ba9",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d9742ac5-f315-4712-8383-b1a170801ba9",
