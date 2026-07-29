@@ -4403,6 +4403,15 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ff73a91e-28b3-476c-be2b-ac5e47d079eb",
       "title": "LibHarvensAddonSettings"
+    },
+    "ffe303a8-aa0e-4c0c-a21f-62dcc0da1107": {
+      "content_id": "ffe303a8-aa0e-4c0c-a21f-62dcc0da1107",
+      "deleted": false,
+      "fingerprint": "9e64f5ee7374ebbfbb9fcac403fa77e3ec7563254fb24328d69afe2685ed149f",
+      "path": "addons/PointsofColor__ffe303a8-aa0e-4c0c-a21f-62dcc0da1107",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ffe303a8-aa0e-4c0c-a21f-62dcc0da1107",
+      "title": "PointsofColor"
     }
   },
   "schema": 1
