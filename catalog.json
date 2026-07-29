@@ -186,7 +186,8 @@
     },
     "0ad00225-1c8b-4f4a-8e95-ca8986209a7f": {
       "content_id": "0ad00225-1c8b-4f4a-8e95-ca8986209a7f",
-      "fingerprint": "3a1c7ba908dfe5d588331a3fef7657afdb0690b8ef63a4c29d2c9d00997bc27b",
+      "deleted": false,
+      "fingerprint": "78c68b0c957070fa0c3a15792d7e2df6b56ef79bca484a12ccca9d87f7a5fefd",
       "path": "addons/Bulk-buy__0ad00225-1c8b-4f4a-8e95-ca8986209a7f",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0ad00225-1c8b-4f4a-8e95-ca8986209a7f",
