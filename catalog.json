@@ -1928,7 +1928,8 @@
     },
     "764a614a-74ad-46e6-b587-0bea7cd6174c": {
       "content_id": "764a614a-74ad-46e6-b587-0bea7cd6174c",
-      "fingerprint": "125b7ed2be46aeaae6d4e6e9fb2ae247f186b10bd9413795ba766db4fa0929c6",
+      "deleted": false,
+      "fingerprint": "5f806983d69a9f37f977d25fb1ef4242e3a66f50973bcec0420c453eaf6d9198",
       "path": "addons/Aldrens-Grandmaster-Workshop__764a614a-74ad-46e6-b587-0bea7cd6174c",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/764a614a-74ad-46e6-b587-0bea7cd6174c",
