@@ -1758,6 +1758,15 @@
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6b4f359b-e17e-46f6-b2c9-9a1e42e7de2b",
       "title": "IsItTaunted"
     },
+    "6bd5f4ac-b518-489a-b1b8-31811650b446": {
+      "content_id": "6bd5f4ac-b518-489a-b1b8-31811650b446",
+      "deleted": false,
+      "fingerprint": "74c1d1beb779d599da706f68bf6a8c1432bd681fcac9c453b0eb385deeed42c8",
+      "path": "addons/LibConsoleLogger__6bd5f4ac-b518-489a-b1b8-31811650b446",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6bd5f4ac-b518-489a-b1b8-31811650b446",
+      "title": "LibConsoleLogger"
+    },
     "6c2f0adf-9ca4-4dc4-bd4f-e1f6f5059665": {
       "content_id": "6c2f0adf-9ca4-4dc4-bd4f-e1f6f5059665",
       "fingerprint": "fc52f64811167b95a94d350614df08b283e327deb61c121ba9b37e4bcffd8937",
