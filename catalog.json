@@ -861,7 +861,8 @@
     },
     "35674482-a2ce-4dfb-86f8-519b941a350a": {
       "content_id": "35674482-a2ce-4dfb-86f8-519b941a350a",
-      "fingerprint": "54de4ea9b8dda0ffdf7f5eaef6a79072ac6696f966409faa972a75c1c512d4e9",
+      "deleted": false,
+      "fingerprint": "a26bb85db55008508f9661cea2bdab6ba1444f8359dc808007d145dc7f348411",
       "path": "addons/LibLoreLibraryCesarska__35674482-a2ce-4dfb-86f8-519b941a350a",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/35674482-a2ce-4dfb-86f8-519b941a350a",
