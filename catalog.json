@@ -2068,7 +2068,8 @@
     },
     "80a0dbcb-9e84-4f98-8d1d-d2fd78129f82": {
       "content_id": "80a0dbcb-9e84-4f98-8d1d-d2fd78129f82",
-      "fingerprint": "bf40f61e23b9b442203bdff08301afe5610eaf6c18afcedac2b12bdbabe2b849",
+      "deleted": false,
+      "fingerprint": "379cf865d95d14c129c1e3d94268922b76efaaf582754f2b22a7341036ceab13",
       "path": "addons/Hello-goodbye__80a0dbcb-9e84-4f98-8d1d-d2fd78129f82",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/80a0dbcb-9e84-4f98-8d1d-d2fd78129f82",
