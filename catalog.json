@@ -2449,7 +2449,8 @@
     },
     "96103ec3-3c4e-4865-be32-cc3b57df04d0": {
       "content_id": "96103ec3-3c4e-4865-be32-cc3b57df04d0",
-      "fingerprint": "d5277f30af555ab9674a69ad138889555ac0963fa1496d62dfdf6e064a15d8d1",
+      "deleted": false,
+      "fingerprint": "b4e00d9d14f363625800d8b8d06b9e0fe467c8446b6b42a40acfd518f0add41e",
       "path": "addons/LibCombat2__96103ec3-3c4e-4865-be32-cc3b57df04d0",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/96103ec3-3c4e-4865-be32-cc3b57df04d0",
