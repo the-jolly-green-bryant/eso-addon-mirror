@@ -2325,7 +2325,8 @@
     },
     "8fbbe7ae-8178-4e35-9755-3cafefd42095": {
       "content_id": "8fbbe7ae-8178-4e35-9755-3cafefd42095",
-      "fingerprint": "7f0c0ae08c6a00e2a8a4011336a845baed3c3cc2e8db12b1c2881373291a89cc",
+      "deleted": false,
+      "fingerprint": "dbecfb357b4a688a6a2992ffd2331a4313bac82e7bc68616b4ca7334293c25db",
       "path": "addons/Lazy-Confirm-and-delete__8fbbe7ae-8178-4e35-9755-3cafefd42095",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8fbbe7ae-8178-4e35-9755-3cafefd42095",
