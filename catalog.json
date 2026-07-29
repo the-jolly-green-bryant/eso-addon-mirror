@@ -1821,7 +1821,8 @@
     },
     "71f99aa0-341b-44fb-8b98-0dbda2a5b136": {
       "content_id": "71f99aa0-341b-44fb-8b98-0dbda2a5b136",
-      "fingerprint": "3006de18458bd3ff27a64d3cd244458a93e54ee714a02d4a536682d7b2549a34",
+      "deleted": false,
+      "fingerprint": "6e283594a435d0344bbb2942ec9ba7835549f92d69aca19aac9a98fc28ccb4d5",
       "path": "addons/GamePadHelper__71f99aa0-341b-44fb-8b98-0dbda2a5b136",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/71f99aa0-341b-44fb-8b98-0dbda2a5b136",
