@@ -4192,7 +4192,8 @@
     },
     "f5b8ee78-0ef3-4ee5-803c-79785f34173d": {
       "content_id": "f5b8ee78-0ef3-4ee5-803c-79785f34173d",
-      "fingerprint": "499d4d8c5992b58aad6a979132fca5ab42fce8ac690462b61cb976e008124478",
+      "deleted": false,
+      "fingerprint": "24fbf5b7849411fcf7cda79f75d3ebe277589baede5a1e63691b6b2c5a4ccb5a",
       "path": "addons/Circular-Votan-s-Mini-Map__f5b8ee78-0ef3-4ee5-803c-79785f34173d",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f5b8ee78-0ef3-4ee5-803c-79785f34173d",
