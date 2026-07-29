@@ -674,7 +674,8 @@
     },
     "2918facc-2603-4099-bbcd-e4e91e58c429": {
       "content_id": "2918facc-2603-4099-bbcd-e4e91e58c429",
-      "fingerprint": "a5d59c849babbc94ce9a754c43698f9f47e7d69068132b290e0df7042c8e966e",
+      "deleted": false,
+      "fingerprint": "75e5daf7f5df06fd4726839eeebe58be5100ead8cc148885e4d26655477a5e9d",
       "path": "addons/The-Artaeum-Angler__2918facc-2603-4099-bbcd-e4e91e58c429",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2918facc-2603-4099-bbcd-e4e91e58c429",
