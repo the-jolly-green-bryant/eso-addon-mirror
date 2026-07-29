@@ -2691,7 +2691,8 @@
     },
     "a3bda6e6-a854-4387-825a-dccb05d706d8": {
       "content_id": "a3bda6e6-a854-4387-825a-dccb05d706d8",
-      "fingerprint": "cb1ea8c78e75257964e8bf941e85acfd9080c1da974bbcf32e8a826ddd01662d",
+      "deleted": false,
+      "fingerprint": "a667a922c5f8a9c1b08809b377b44222a58d1e48d0bba03afb57f9e18ea43777",
       "path": "addons/Persona__a3bda6e6-a854-4387-825a-dccb05d706d8",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a3bda6e6-a854-4387-825a-dccb05d706d8",
