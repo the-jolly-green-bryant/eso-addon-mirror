@@ -2682,7 +2682,8 @@
     },
     "a3a0c6d0-3d0a-4e8c-a79a-1e4d3ca82d10": {
       "content_id": "a3a0c6d0-3d0a-4e8c-a79a-1e4d3ca82d10",
-      "fingerprint": "5f13bd29fa273229e690f1db76b406dcad4ed3757c468afbf49f22743a4d5c41",
+      "deleted": false,
+      "fingerprint": "a0602a9b7107b9b938263a9cd10d4fee4b93983fe706284a1870994639fdbcc3",
       "path": "addons/Guild-Store-Time-Sort__a3a0c6d0-3d0a-4e8c-a79a-1e4d3ca82d10",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a3a0c6d0-3d0a-4e8c-a79a-1e4d3ca82d10",
