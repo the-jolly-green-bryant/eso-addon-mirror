@@ -4236,7 +4236,8 @@
     },
     "f8e59501-116b-422a-90e9-f57cf2dc7b9d": {
       "content_id": "f8e59501-116b-422a-90e9-f57cf2dc7b9d",
-      "fingerprint": "a6a8357597a615971624c5ddfff259114177d84e9e7a5628c5a930d76f079acd",
+      "deleted": false,
+      "fingerprint": "e41ac6a9b3829c2821975273ab7425d93b113f94060cf424b40a0ae80a082651",
       "path": "addons/RoaringOpportunist__f8e59501-116b-422a-90e9-f57cf2dc7b9d",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f8e59501-116b-422a-90e9-f57cf2dc7b9d",
