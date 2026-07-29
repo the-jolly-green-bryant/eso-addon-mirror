@@ -1769,7 +1769,8 @@
     },
     "6c2f0adf-9ca4-4dc4-bd4f-e1f6f5059665": {
       "content_id": "6c2f0adf-9ca4-4dc4-bd4f-e1f6f5059665",
-      "fingerprint": "fc52f64811167b95a94d350614df08b283e327deb61c121ba9b37e4bcffd8937",
+      "deleted": false,
+      "fingerprint": "30684f5590716f8b55ab19e08b32979e9d02e47e8bfc031cacc2db0107befb5d",
       "path": "addons/andy.s-s-Heat-Shocker-Tracker__6c2f0adf-9ca4-4dc4-bd4f-e1f6f5059665",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6c2f0adf-9ca4-4dc4-bd4f-e1f6f5059665",
