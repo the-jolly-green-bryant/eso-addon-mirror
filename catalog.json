@@ -159,7 +159,8 @@
     },
     "09fedb91-c1d9-4f3b-8882-b8c9e36bda36": {
       "content_id": "09fedb91-c1d9-4f3b-8882-b8c9e36bda36",
-      "fingerprint": "f83452bf00cc9b56247ecd6c3c78531e73751836cf4fe032501702e5f3f0728b",
+      "deleted": false,
+      "fingerprint": "e7646b258615f8f872c16adcdc08b8880f46a66537183d1f3556424b5c443ac8",
       "path": "addons/Antiquarian-s-Codex__09fedb91-c1d9-4f3b-8882-b8c9e36bda36",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/09fedb91-c1d9-4f3b-8882-b8c9e36bda36",
