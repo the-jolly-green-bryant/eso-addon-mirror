@@ -2254,7 +2254,8 @@
     },
     "8e0a0bf5-7c84-4155-ba23-48c34887ff9f": {
       "content_id": "8e0a0bf5-7c84-4155-ba23-48c34887ff9f",
-      "fingerprint": "4d04ad9a3f5b1034eb9469f4420977a2ea25c7158d08f0f120f298b189ae62f0",
+      "deleted": false,
+      "fingerprint": "7e3840dbc7d93708ef099a544a49fa14b795d87e9c5ff2764f7bf29d0712b8e9",
       "path": "addons/Natey-s-Armory__8e0a0bf5-7c84-4155-ba23-48c34887ff9f",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8e0a0bf5-7c84-4155-ba23-48c34887ff9f",
