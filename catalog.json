@@ -1149,7 +1149,8 @@
     },
     "4500daea-ed3f-4071-822c-24329a5831e3": {
       "content_id": "4500daea-ed3f-4071-822c-24329a5831e3",
-      "fingerprint": "9cbcae288a1c6ad32c59b9b72a2e65146c5e3a4025860a22e1304f7f2a2517d0",
+      "deleted": false,
+      "fingerprint": "3b279fdbcdca49fe6558f13adc73447b55e6eee6308c8ae446d160722b427cc4",
       "path": "addons/LibCombatSkills__4500daea-ed3f-4071-822c-24329a5831e3",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/4500daea-ed3f-4071-822c-24329a5831e3",
