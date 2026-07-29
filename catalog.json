@@ -4112,7 +4112,8 @@
     },
     "f252b54c-ca06-45e6-8a13-3211eb5d96ba": {
       "content_id": "f252b54c-ca06-45e6-8a13-3211eb5d96ba",
-      "fingerprint": "03edfc174403033aaa819c071a47f0100b4a34d764c98222415e1c10c13f2a5c",
+      "deleted": false,
+      "fingerprint": "08e0337e46a464286096e05de7c24860ad860e7021d3e3af37bf246fb82663ee",
       "path": "addons/Murf-s-Skyshards__f252b54c-ca06-45e6-8a13-3211eb5d96ba",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f252b54c-ca06-45e6-8a13-3211eb5d96ba",
