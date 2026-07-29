@@ -3581,7 +3581,8 @@
     },
     "d9a6dba3-bff5-4696-ac94-a914acd957c2": {
       "content_id": "d9a6dba3-bff5-4696-ac94-a914acd957c2",
-      "fingerprint": "93cdfb3784a1121d10606bafc7d552004fc70f2dc4296325d8bcdb1fffc784a2",
+      "deleted": false,
+      "fingerprint": "922433975c53c3347d47c9af7f26065ce2c7cb9a87b6ead56b2c3c7a540b4728",
       "path": "addons/Map-Pins__d9a6dba3-bff5-4696-ac94-a914acd957c2",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d9a6dba3-bff5-4696-ac94-a914acd957c2",
