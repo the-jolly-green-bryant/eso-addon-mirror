@@ -1001,7 +1001,8 @@
     },
     "3b053cc9-5963-4eb9-96b7-de3d29a5fa8b": {
       "content_id": "3b053cc9-5963-4eb9-96b7-de3d29a5fa8b",
-      "fingerprint": "d12984dee878430130a5df528f2b0ff26a78a6c1486cdf5e73000defab174852",
+      "deleted": false,
+      "fingerprint": "675baa2183385145bb1ca2df09bca631f5d840dfb5d011941e45abe803b4fca8",
       "path": "addons/ESO-Assistant-by-ESO-hub.com__3b053cc9-5963-4eb9-96b7-de3d29a5fa8b",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3b053cc9-5963-4eb9-96b7-de3d29a5fa8b",
