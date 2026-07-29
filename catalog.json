@@ -1638,7 +1638,8 @@
     },
     "6681b779-77ba-4212-ba6d-2d20e6e08ee7": {
       "content_id": "6681b779-77ba-4212-ba6d-2d20e6e08ee7",
-      "fingerprint": "5c9ce54ed823ccc7d03a6a8fc9c00afd0738ce9dbf61248f4f3ea88ca1589194",
+      "deleted": false,
+      "fingerprint": "c2b403ef5710ed73db310c11990c5ff9a5ecd62fbd5e851f779a253b143b521e",
       "path": "addons/Bound-Armaments-Help__6681b779-77ba-4212-ba6d-2d20e6e08ee7",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6681b779-77ba-4212-ba6d-2d20e6e08ee7",
