@@ -3974,7 +3974,8 @@
     },
     "eb5d6e39-de4d-4163-9c41-521a3eb2a1aa": {
       "content_id": "eb5d6e39-de4d-4163-9c41-521a3eb2a1aa",
-      "fingerprint": "593f7fd11f91f32000336f15fffaa8fc629ca11fd5d9b2c018109c092e37b90a",
+      "deleted": false,
+      "fingerprint": "12e52bf6d97f7bcbd041d39a2eb68980cfbbce008d9db71c8e0fa06575739f5c",
       "path": "addons/Keep-ONE-for-Research__eb5d6e39-de4d-4163-9c41-521a3eb2a1aa",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/eb5d6e39-de4d-4163-9c41-521a3eb2a1aa",
