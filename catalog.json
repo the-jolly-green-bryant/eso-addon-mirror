@@ -1682,7 +1682,8 @@
     },
     "68111c3f-410f-4318-b9ec-582b8c68c374": {
       "content_id": "68111c3f-410f-4318-b9ec-582b8c68c374",
-      "fingerprint": "1acb3977f2e1608daf14ef1bbdda0c4d9a65ea28a35e1ee8eecc3663b3d945af",
+      "deleted": false,
+      "fingerprint": "7483d3e133325997c1bb05d00d84a48edb4eb476f759f4b87dfe776a670958d0",
       "path": "addons/LibNotification__68111c3f-410f-4318-b9ec-582b8c68c374",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/68111c3f-410f-4318-b9ec-582b8c68c374",
