@@ -4086,7 +4086,8 @@
     },
     "f10225ef-7745-4a1b-b0c3-5b45cc8655a6": {
       "content_id": "f10225ef-7745-4a1b-b0c3-5b45cc8655a6",
-      "fingerprint": "75375e6216ddae3a984666e3dd82d22aa3dc7b83afeb4f34a9247e66ae6a7bc5",
+      "deleted": false,
+      "fingerprint": "2f2d38afd6b90a4c8d4b3bd18df2e58ac1ad62fea6c90d67e67e4a381ec74da5",
       "path": "addons/Murf-s-Lorebooks__f10225ef-7745-4a1b-b0c3-5b45cc8655a6",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f10225ef-7745-4a1b-b0c3-5b45cc8655a6",
