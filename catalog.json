@@ -3643,7 +3643,8 @@
     },
     "dd337340-e6c9-4835-8e50-ba68c7e949e4": {
       "content_id": "dd337340-e6c9-4835-8e50-ba68c7e949e4",
-      "fingerprint": "4dd6a3c1531224d776fa18160ce859300235953ab379be05d938a4f6c951836d",
+      "deleted": false,
+      "fingerprint": "d4eefbc771079a62ceabdcefedd671c51e38d7a0f6591af43a64ba4c664be93a",
       "path": "addons/Lazy-Horse-Trainer__dd337340-e6c9-4835-8e50-ba68c7e949e4",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/dd337340-e6c9-4835-8e50-ba68c7e949e4",
