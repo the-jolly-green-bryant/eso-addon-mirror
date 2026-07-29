@@ -1010,7 +1010,8 @@
     },
     "3c805ef7-47fe-43a7-b480-52342549e9f4": {
       "content_id": "3c805ef7-47fe-43a7-b480-52342549e9f4",
-      "fingerprint": "0f24158ed194491751bd9e0fafa84586d056887aad698ba0d82d56389ba253fd",
+      "deleted": false,
+      "fingerprint": "91bcd41268f53710f61c3592d11d508d24bfbf4eb7e357bf4987250b9cea2601",
       "path": "addons/CustomCompassPins__3c805ef7-47fe-43a7-b480-52342549e9f4",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/3c805ef7-47fe-43a7-b480-52342549e9f4",
