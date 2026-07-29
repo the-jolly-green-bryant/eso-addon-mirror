@@ -1778,7 +1778,8 @@
     },
     "6efaaa07-4ad5-48db-bda4-46d60c31b7cd": {
       "content_id": "6efaaa07-4ad5-48db-bda4-46d60c31b7cd",
-      "fingerprint": "641346146e6860a2ae7039130ebc8e17b8a9334d7061f8e79ee524a9c22cbe53",
+      "deleted": false,
+      "fingerprint": "41e59050f69654623bd33d6a86be51b3a5d34f928049891152137d2f01ba7417",
       "path": "addons/Blackrose-Escape-Plan__6efaaa07-4ad5-48db-bda4-46d60c31b7cd",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6efaaa07-4ad5-48db-bda4-46d60c31b7cd",
