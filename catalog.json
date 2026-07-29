@@ -2823,7 +2823,8 @@
     },
     "aef7e9f0-ed11-4b67-99f7-c500cdc0b343": {
       "content_id": "aef7e9f0-ed11-4b67-99f7-c500cdc0b343",
-      "fingerprint": "2a7a70423c406b40547bab9144e472234ba7dd75fc2f9637163659143c27834c",
+      "deleted": false,
+      "fingerprint": "31ee5d7cd00a2ae539affe0bd1dab4a5fd424b41244706b539f553aa51ee900f",
       "path": "addons/CruxTracker-2.0__aef7e9f0-ed11-4b67-99f7-c500cdc0b343",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/aef7e9f0-ed11-4b67-99f7-c500cdc0b343",
