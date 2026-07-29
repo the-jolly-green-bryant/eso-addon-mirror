@@ -2050,7 +2050,8 @@
     },
     "7d3a20ff-160a-4988-b8d0-991681394db8": {
       "content_id": "7d3a20ff-160a-4988-b8d0-991681394db8",
-      "fingerprint": "4984df5bd958b9a8bd111b645d5bb4cd05d5ff9e1f2020a26c5f01ffd210ac86",
+      "deleted": false,
+      "fingerprint": "5c489511e68cd67d7a354e6e2e24a383288b67c60a0b2ee55de5c0d0bc4cce58",
       "path": "addons/Show-Equips__7d3a20ff-160a-4988-b8d0-991681394db8",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/7d3a20ff-160a-4988-b8d0-991681394db8",
