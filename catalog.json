@@ -656,7 +656,8 @@
     },
     "282c4ce3-9c61-409b-913c-b7bec357586d": {
       "content_id": "282c4ce3-9c61-409b-913c-b7bec357586d",
-      "fingerprint": "8eaf4588b7ee83991dee93ea6eb8b48f00e18af74144a27d2cfa95fb658b505e",
+      "deleted": false,
+      "fingerprint": "1e992cbc432259e2d3ce46a12cc96fd5c4f23a506faf79c85b127daca94c9314",
       "path": "addons/AntiDK2__282c4ce3-9c61-409b-913c-b7bec357586d",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/282c4ce3-9c61-409b-913c-b7bec357586d",
