@@ -2779,7 +2779,8 @@
     },
     "ac816501-4787-4c8b-942f-574aa8ea6c01": {
       "content_id": "ac816501-4787-4c8b-942f-574aa8ea6c01",
-      "fingerprint": "ef7f86efff06b7f27ac3a39c37bb9631a3b1c270b9327f7822b2e6c57e6c118a",
+      "deleted": false,
+      "fingerprint": "bff3939747a18ca7dcaa3c92347f4936454138cf2b47702ac95ff8f6268fed8d",
       "path": "addons/TorigaHUD__ac816501-4787-4c8b-942f-574aa8ea6c01",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ac816501-4787-4c8b-942f-574aa8ea6c01",
