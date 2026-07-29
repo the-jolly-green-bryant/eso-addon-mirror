@@ -4027,7 +4027,8 @@
     },
     "ec9ce729-a472-4150-8f3c-1df05a369ad0": {
       "content_id": "ec9ce729-a472-4150-8f3c-1df05a369ad0",
-      "fingerprint": "5593d0c800a131500bc78a012fa0a49cd779b42f7e2bac3db0f465891c9f88dd",
+      "deleted": false,
+      "fingerprint": "19e03c51050649f69b9dc4525bc4bc656aeb5f3d6d695f370a881ebf2ed62a84",
       "path": "addons/Battle-Scrolls---Combat-Stats-DPS-Tracking__ec9ce729-a472-4150-8f3c-1df05a369ad0",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ec9ce729-a472-4150-8f3c-1df05a369ad0",
