@@ -1230,7 +1230,8 @@
     },
     "49b41fa8-a5b3-4249-ae8d-44d7381651f4": {
       "content_id": "49b41fa8-a5b3-4249-ae8d-44d7381651f4",
-      "fingerprint": "e0d86e5b50aa45ec1c9166301df6803595e7d1f606e98c47fd811ad66e42e5a2",
+      "deleted": false,
+      "fingerprint": "2020ea51028e46f784cee15a8162e501457d21432aa8157bf7915c87caabe1eb",
       "path": "addons/Trials-Arenas-Tracker__49b41fa8-a5b3-4249-ae8d-44d7381651f4",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/49b41fa8-a5b3-4249-ae8d-44d7381651f4",
