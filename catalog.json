@@ -743,7 +743,8 @@
     },
     "2d6ff530-edbc-4425-be68-daadbc3c0afa": {
       "content_id": "2d6ff530-edbc-4425-be68-daadbc3c0afa",
-      "fingerprint": "eb9e7fb171684ee65891cb0bf5caae6931d35048e6ee1c68b73181aa77dd5506",
+      "deleted": false,
+      "fingerprint": "2edb63f67107a993f5e1f669593178d77123c318cfd3d6b8f56de17d7e0eec06",
       "path": "addons/Abah-s-Appraiser---Auto-Sell-Junk__2d6ff530-edbc-4425-be68-daadbc3c0afa",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/2d6ff530-edbc-4425-be68-daadbc3c0afa",
