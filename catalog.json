@@ -90,7 +90,8 @@
     },
     "070110ba-7a49-4a58-8a9a-a164977f2835": {
       "content_id": "070110ba-7a49-4a58-8a9a-a164977f2835",
-      "fingerprint": "7ec2d5fe634e1a05450d8bbfe5598074a2027094ac3b592fe4b6750ed2580a3c",
+      "deleted": false,
+      "fingerprint": "e44cd8f397ca513d9e65f164be7b91df3937d9a6274d76aac7ae3f7885f84ef2",
       "path": "addons/CCSentinel__070110ba-7a49-4a58-8a9a-a164977f2835",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/070110ba-7a49-4a58-8a9a-a164977f2835",
