@@ -2727,7 +2727,8 @@
     },
     "a84f8a0c-210f-481a-b8a7-6dc95bff7664": {
       "content_id": "a84f8a0c-210f-481a-b8a7-6dc95bff7664",
-      "fingerprint": "5ca64984bbb3794185c8a86505d36db622d0f6de6a2e5e3a737c37086d0f47f9",
+      "deleted": false,
+      "fingerprint": "877121cf97df63437aff9a20c79f6c9479f890c63212e5c112e936e14d06e880",
       "path": "addons/Daily-Quest-Tracker__a84f8a0c-210f-481a-b8a7-6dc95bff7664",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a84f8a0c-210f-481a-b8a7-6dc95bff7664",
