@@ -368,7 +368,8 @@
     },
     "17071a4b-f373-41fa-8874-778672bae73c": {
       "content_id": "17071a4b-f373-41fa-8874-778672bae73c",
-      "fingerprint": "1e94f7a9af0ccd0a46936ed0b33018a6261437dd343f001853660b750ec235eb",
+      "deleted": false,
+      "fingerprint": "86c03421d327fa138129468edd4de3479fbdc8dc9c989bbc2f21fbd18b11deec",
       "path": "addons/LibRecipe__17071a4b-f373-41fa-8874-778672bae73c",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/17071a4b-f373-41fa-8874-778672bae73c",
