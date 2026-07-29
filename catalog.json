@@ -3721,7 +3721,8 @@
     },
     "dfed21f9-988b-44b9-a054-89bfcce20639": {
       "content_id": "dfed21f9-988b-44b9-a054-89bfcce20639",
-      "fingerprint": "5c3f20910f4bdb6ee94bc460645d498381c31c4f8564c005730488bab00e4a6d",
+      "deleted": false,
+      "fingerprint": "d2185c2667ab86265eddcff211a36388893d181abfc158c73bba081bd747ed94",
       "path": "addons/NextQuest__dfed21f9-988b-44b9-a054-89bfcce20639",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/dfed21f9-988b-44b9-a054-89bfcce20639",
