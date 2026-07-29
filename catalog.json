@@ -1884,7 +1884,8 @@
     },
     "75167780-fb8c-479c-86be-c0a208443b97": {
       "content_id": "75167780-fb8c-479c-86be-c0a208443b97",
-      "fingerprint": "a990869b43f5f5d9f129ff93235137437e491e669ebd57998712d945d5ed782c",
+      "deleted": false,
+      "fingerprint": "d7a29627d7c389382dc3b877b1047c61687de5392e757dcc506064a7a3b31feb",
       "path": "addons/Collect-Them-All__75167780-fb8c-479c-86be-c0a208443b97",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/75167780-fb8c-479c-86be-c0a208443b97",
