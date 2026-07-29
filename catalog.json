@@ -3178,7 +3178,8 @@
     },
     "c2664980-589b-4f81-a99e-02204268cab3": {
       "content_id": "c2664980-589b-4f81-a99e-02204268cab3",
-      "fingerprint": "ad9b233c87258606a1ca9bd1fd9756e475fbdac083c7c99d080709178259e944",
+      "deleted": false,
+      "fingerprint": "834492da0f58a650fd8c96eff2e9e59b5af5690d540a9509253d8ab022b8f60e",
       "path": "addons/WestonUi__c2664980-589b-4f81-a99e-02204268cab3",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c2664980-589b-4f81-a99e-02204268cab3",
