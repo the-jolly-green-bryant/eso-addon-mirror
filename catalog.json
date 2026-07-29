@@ -1673,7 +1673,8 @@
     },
     "67c87375-bbf1-4841-933b-9beec7f88155": {
       "content_id": "67c87375-bbf1-4841-933b-9beec7f88155",
-      "fingerprint": "965fbaa3f619d8e6015d3518c5331ba1929c3a52acdd8287a52c3e75f1c45372",
+      "deleted": false,
+      "fingerprint": "28a9cfd6b13ace4e775ebb36208ba68048eed3a26b960622b7f73fde87bfd256",
       "path": "addons/Rags-To-Riches__67c87375-bbf1-4841-933b-9beec7f88155",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/67c87375-bbf1-4841-933b-9beec7f88155",
