@@ -3887,7 +3887,8 @@
     },
     "e4f41108-4101-452e-8607-b469bc8eb4b0": {
       "content_id": "e4f41108-4101-452e-8607-b469bc8eb4b0",
-      "fingerprint": "bdf08601a5f2f9c9b391e8d9dde40350a8c298035af1eedbf3fd4f69dd64cfb1",
+      "deleted": false,
+      "fingerprint": "38e957bd2e1de0054fe9d833f1a09f160c1ff6b01b5c07c6a4d64be5a7902cb9",
       "path": "addons/VersesAndVisions__e4f41108-4101-452e-8607-b469bc8eb4b0",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e4f41108-4101-452e-8607-b469bc8eb4b0",
