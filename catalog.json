@@ -1431,7 +1431,8 @@
     },
     "560a465f-d7b4-49ae-af7a-0558e1683ada": {
       "content_id": "560a465f-d7b4-49ae-af7a-0558e1683ada",
-      "fingerprint": "63bc931e55aef30b25913d1cafff0892df3b92d384a4bf8a8b6ebd0404d844ee",
+      "deleted": false,
+      "fingerprint": "5b677b648bb72a4f6197d0e88448876596a282ec536f886b5e02cee9baa5e827",
       "path": "addons/Auto-Repair-and-Recharge__560a465f-d7b4-49ae-af7a-0558e1683ada",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/560a465f-d7b4-49ae-af7a-0558e1683ada",
