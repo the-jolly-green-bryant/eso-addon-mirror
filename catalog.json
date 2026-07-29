@@ -2378,7 +2378,8 @@
     },
     "91a5e014-74ee-4d3b-a612-b2b05dd223d8": {
       "content_id": "91a5e014-74ee-4d3b-a612-b2b05dd223d8",
-      "fingerprint": "e0bcec99f2bf6344546bdd30435fe75b752b4336d797430c08fe17459cd0bc85",
+      "deleted": false,
+      "fingerprint": "4eae5f4a9b3e8124ed31cac7ca1f46c8ac5b02570d688f37b3c1331d3d8795cd",
       "path": "addons/Fashion-Mount__91a5e014-74ee-4d3b-a612-b2b05dd223d8",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/91a5e014-74ee-4d3b-a612-b2b05dd223d8",
