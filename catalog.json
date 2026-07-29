@@ -3775,7 +3775,8 @@
     },
     "e1710013-83a1-4e50-941a-5464d85d587c": {
       "content_id": "e1710013-83a1-4e50-941a-5464d85d587c",
-      "fingerprint": "743e75797fba390893b30604e7f300353931d1b1163664463282f913714679d7",
+      "deleted": false,
+      "fingerprint": "a91c7e928712dcf209877b7376d4ba56e9cd0249450e51a4ed35eaf6ae627a38",
       "path": "addons/Am-I-Blocking__e1710013-83a1-4e50-941a-5464d85d587c",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e1710013-83a1-4e50-941a-5464d85d587c",
