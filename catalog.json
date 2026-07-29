@@ -683,7 +683,8 @@
     },
     "29f1ad04-65ea-4a2b-9e23-8ccb597a8556": {
       "content_id": "29f1ad04-65ea-4a2b-9e23-8ccb597a8556",
-      "fingerprint": "07e991e42eb202137a79d83b05a46a2a45e05a48b31bca0cac35bab4371d5df4",
+      "deleted": false,
+      "fingerprint": "1241e4b572899375d2cacfb8ee1658f770c1d6b7a17893f75167638606f1324c",
       "path": "addons/LibCovetousCountess__29f1ad04-65ea-4a2b-9e23-8ccb597a8556",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/29f1ad04-65ea-4a2b-9e23-8ccb597a8556",
