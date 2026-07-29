@@ -2,7 +2,8 @@
   "addons": {
     "008cd443-6347-421a-bfcf-ddc830e8cfef": {
       "content_id": "008cd443-6347-421a-bfcf-ddc830e8cfef",
-      "fingerprint": "1b0bf8cb83608a1106146b642db1cf5f993107dd6fc56e9304da33798ec320ea",
+      "deleted": false,
+      "fingerprint": "0a7b9c1140ab5d978b31cdbc9633bd12284230c12a879044e9c5e319a39330b6",
       "path": "addons/Can-Craft-Master-Writ__008cd443-6347-421a-bfcf-ddc830e8cfef",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/008cd443-6347-421a-bfcf-ddc830e8cfef",
