@@ -1194,7 +1194,8 @@
     },
     "47bd1882-3ae4-414d-929c-aad937946be0": {
       "content_id": "47bd1882-3ae4-414d-929c-aad937946be0",
-      "fingerprint": "7e00270795cab6b12be45a4447b8a5b2913f635253deb80ea4282252d4a028cd",
+      "deleted": false,
+      "fingerprint": "e2e33bf4bc541d46c65cbebd9f88a9620c2061d8598bea7a3740b81f650a4697",
       "path": "addons/Predefine-Chat-Messages__47bd1882-3ae4-414d-929c-aad937946be0",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/47bd1882-3ae4-414d-929c-aad937946be0",
