@@ -1946,7 +1946,8 @@
     },
     "76fce7e2-297a-472f-bdf6-3e80756e7e8c": {
       "content_id": "76fce7e2-297a-472f-bdf6-3e80756e7e8c",
-      "fingerprint": "1d54c6e7f51730b0f87c861ddb7aa0e4ed38eac55d8f2f07f80681563543d199",
+      "deleted": false,
+      "fingerprint": "ccecaaa8da81a9cbd1be7cd6dc84562f00d9da3505b547629bc7ee6d957a997c",
       "path": "addons/Vestige-Mirror__76fce7e2-297a-472f-bdf6-3e80756e7e8c",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/76fce7e2-297a-472f-bdf6-3e80756e7e8c",
