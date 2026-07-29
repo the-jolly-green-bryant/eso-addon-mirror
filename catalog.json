@@ -2892,7 +2892,8 @@
     },
     "b22ade94-a817-47da-bc4f-cfa7e1dd25ff": {
       "content_id": "b22ade94-a817-47da-bc4f-cfa7e1dd25ff",
-      "fingerprint": "82673b3173da796c7d9661784281a4adb2cd2e75624ab36a842d30ef76a8a387",
+      "deleted": false,
+      "fingerprint": "06619ae1e5975d45012379832f7cd8063578b7b9515da5399be96499c688753f",
       "path": "addons/Eyes-of-the-Undaunted__b22ade94-a817-47da-bc4f-cfa7e1dd25ff",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b22ade94-a817-47da-bc4f-cfa7e1dd25ff",
