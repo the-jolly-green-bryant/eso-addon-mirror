@@ -2032,7 +2032,8 @@
     },
     "7c703441-775f-466c-9811-b6b2ee0e480e": {
       "content_id": "7c703441-775f-466c-9811-b6b2ee0e480e",
-      "fingerprint": "b424eb99b3090190b7f7fee42c70a2e589cd78c5e0acd63b25da7735e5e4a6a8",
+      "deleted": false,
+      "fingerprint": "2d786c3441c37ba17defae7b3535af6437f6afda66d5c4596f9013ec8c2cf836",
       "path": "addons/Murf-s-Timer__7c703441-775f-466c-9811-b6b2ee0e480e",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/7c703441-775f-466c-9811-b6b2ee0e480e",
