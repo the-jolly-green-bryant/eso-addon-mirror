@@ -3921,7 +3921,8 @@
     },
     "e6627cb6-5e78-4443-86bc-4340210a5684": {
       "content_id": "e6627cb6-5e78-4443-86bc-4340210a5684",
-      "fingerprint": "e73761486b0710a6756bc95f669600acf4325195bf5be268e1696fc9dce8b5dd",
+      "deleted": false,
+      "fingerprint": "3b4d58a579bf0709b8100eed7b55f307d109c46f5a6903e415e171a347588e9c",
       "path": "addons/Patron-s-Ledger__e6627cb6-5e78-4443-86bc-4340210a5684",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e6627cb6-5e78-4443-86bc-4340210a5684",
