@@ -1603,7 +1603,8 @@
     },
     "643e39fa-2b3f-46f8-aef4-eee9ff92360d": {
       "content_id": "643e39fa-2b3f-46f8-aef4-eee9ff92360d",
-      "fingerprint": "b13b45e035bb74ed0f45d7efa870b39f12aff5c1dc0b3ccc92b81de22cd88e5a",
+      "deleted": false,
+      "fingerprint": "2600d6a27723db25760db6a5c24ae7af1510f59e60d52e063eaa670b96d051dd",
       "path": "addons/PVP-Buddy__643e39fa-2b3f-46f8-aef4-eee9ff92360d",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/643e39fa-2b3f-46f8-aef4-eee9ff92360d",
