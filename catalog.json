@@ -3419,7 +3419,8 @@
     },
     "d081d271-bda5-4b78-a18c-251878246156": {
       "content_id": "d081d271-bda5-4b78-a18c-251878246156",
-      "fingerprint": "36c4693d1a0bf797d09d7bdf83b89d5cd9d359b8415667980e19a06476bbcf48",
+      "deleted": false,
+      "fingerprint": "84aec6ff1fb821fd0434759be077a77547581922469977230edd2e66f2030da4",
       "path": "addons/Map-Pins-Texture-Fix__d081d271-bda5-4b78-a18c-251878246156",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d081d271-bda5-4b78-a18c-251878246156",
