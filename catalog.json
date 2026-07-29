@@ -1830,7 +1830,8 @@
     },
     "72761e54-4d9a-471b-bd58-5dcec8942b9d": {
       "content_id": "72761e54-4d9a-471b-bd58-5dcec8942b9d",
-      "fingerprint": "b85e4ade93fe2cba9c75ad912dda4ea25ff543a7931ece1f84a2f616430322aa",
+      "deleted": false,
+      "fingerprint": "4be976be730049a8370fbac5575729bd031ebcd7c646b1204e68a2cea24922f4",
       "path": "addons/Destinations__72761e54-4d9a-471b-bd58-5dcec8942b9d",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/72761e54-4d9a-471b-bd58-5dcec8942b9d",
