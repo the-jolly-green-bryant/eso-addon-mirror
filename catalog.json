@@ -4412,6 +4412,15 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ffe303a8-aa0e-4c0c-a21f-62dcc0da1107",
       "title": "PointsofColor"
+    },
+    "fff7f7e3-b518-4545-9e96-a4f6c2a28dea": {
+      "content_id": "fff7f7e3-b518-4545-9e96-a4f6c2a28dea",
+      "deleted": false,
+      "fingerprint": "22c7f7bbe1f746e694e6185d40e84ee2c7068c1769b6266ca501c4bd9c13bf03",
+      "path": "addons/LibCustomMenu__fff7f7e3-b518-4545-9e96-a4f6c2a28dea",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fff7f7e3-b518-4545-9e96-a4f6c2a28dea",
+      "title": "LibCustomMenu"
     }
   },
   "schema": 1
