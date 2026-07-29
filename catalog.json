@@ -958,7 +958,8 @@
     },
     "38f0df90-e793-4c9c-af2b-44a958ed38cf": {
       "content_id": "38f0df90-e793-4c9c-af2b-44a958ed38cf",
-      "fingerprint": "b17b6d7e49789741b57c4dc975976ac34e2b48b99c098d45096bec7c1474fa64",
+      "deleted": false,
+      "fingerprint": "84de33d0725322d767f549a400222fdcb13b1138eeffebee66d68cbd928087d0",
       "path": "addons/One-More-Rockgrove-Helper__38f0df90-e793-4c9c-af2b-44a958ed38cf",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/38f0df90-e793-4c9c-af2b-44a958ed38cf",
