@@ -3784,7 +3784,8 @@
     },
     "e17d8325-5ee4-4349-bae0-f777d0d9633b": {
       "content_id": "e17d8325-5ee4-4349-bae0-f777d0d9633b",
-      "fingerprint": "2f84031efc3e4b441231d64949e9bf34987ebd7e302ecb0cc50e33e193890c1a",
+      "deleted": false,
+      "fingerprint": "d792cf628e5c8be02d6bf5d6e890ed59acea1b708ca6f6ec5bd1088455f3e837",
       "path": "addons/Lazy-Learner__e17d8325-5ee4-4349-bae0-f777d0d9633b",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e17d8325-5ee4-4349-bae0-f777d0d9633b",
