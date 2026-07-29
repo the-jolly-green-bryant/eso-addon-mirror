@@ -1751,7 +1751,8 @@
     },
     "6b4f359b-e17e-46f6-b2c9-9a1e42e7de2b": {
       "content_id": "6b4f359b-e17e-46f6-b2c9-9a1e42e7de2b",
-      "fingerprint": "291a891b41496047068fee73361aa40e0841a66b2878a5ceab7551daecd3c88a",
+      "deleted": false,
+      "fingerprint": "f70d312d532c7bfd9cd5901780b2c5d0a2dd56ef85bcb9e00ae6d42e838640d4",
       "path": "addons/IsItTaunted__6b4f359b-e17e-46f6-b2c9-9a1e42e7de2b",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6b4f359b-e17e-46f6-b2c9-9a1e42e7de2b",
