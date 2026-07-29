@@ -4367,6 +4367,15 @@
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fe232f99-8f31-4163-906d-48182e80a59d",
       "title": "Interrupt Narc"
+    },
+    "fe2be9f7-6b33-44e1-8b54-7a7afcc9b63d": {
+      "content_id": "fe2be9f7-6b33-44e1-8b54-7a7afcc9b63d",
+      "deleted": false,
+      "fingerprint": "09ff502b47ed3a005636d239051cbe8e8e99f4f6da58c438b87b0ff5810d7253",
+      "path": "addons/MyTankBars__fe2be9f7-6b33-44e1-8b54-7a7afcc9b63d",
+      "published": true,
+      "source": "https://mods.bethesda.net/en/elderscrollsonline/details/fe2be9f7-6b33-44e1-8b54-7a7afcc9b63d",
+      "title": "MyTankBars"
     }
   },
   "schema": 1
