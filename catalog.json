@@ -248,7 +248,8 @@
     },
     "1006e4e4-396e-4dec-9923-d80c541614d5": {
       "content_id": "1006e4e4-396e-4dec-9923-d80c541614d5",
-      "fingerprint": "7b411eb9fdbf4cdf0b2e4fa0c99dcb36a44c93c73ac509cce8e31d59f936651f",
+      "deleted": false,
+      "fingerprint": "e702853c605b4bc1ed0cd8e0471381de922fe87376fa88218b8712d346e526d2",
       "path": "addons/Transmute-Saver__1006e4e4-396e-4dec-9923-d80c541614d5",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1006e4e4-396e-4dec-9923-d80c541614d5",
