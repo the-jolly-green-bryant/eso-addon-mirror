@@ -3590,7 +3590,8 @@
     },
     "d9ba289c-0a0a-4233-80ab-25f3be9c35eb": {
       "content_id": "d9ba289c-0a0a-4233-80ab-25f3be9c35eb",
-      "fingerprint": "88eda9c874c853ceddfeb8f177d7dd1ade97ed594d307d35d7f13bf993f4847f",
+      "deleted": false,
+      "fingerprint": "a55d1604ecb9d20c291bfdf0f41948fec2e0b75478dff7b121f71ed748495e1a",
       "path": "addons/Survey-Sentinel__d9ba289c-0a0a-4233-80ab-25f3be9c35eb",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d9ba289c-0a0a-4233-80ab-25f3be9c35eb",
