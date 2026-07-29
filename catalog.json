@@ -55,7 +55,8 @@
     },
     "0495e6ed-49a8-4a03-b529-048fbc4b758a": {
       "content_id": "0495e6ed-49a8-4a03-b529-048fbc4b758a",
-      "fingerprint": "4bf43f8ff7d0e2662213ef06e63744410fa1c572e1e9e307c057381ffe3b14bd",
+      "deleted": false,
+      "fingerprint": "5b7ad1e7d2bf097081b7b457b9332ccafb4831877b7013633c47427411b952e7",
       "path": "addons/AddonAnalyzer-ANDY---Checks-for-malicious-stolen-or-other-flagged-content-in-addons__0495e6ed-49a8-4a03-b529-048fbc4b758a",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/0495e6ed-49a8-4a03-b529-048fbc4b758a",
