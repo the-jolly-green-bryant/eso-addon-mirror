@@ -4156,7 +4156,8 @@
     },
     "f524ac28-70c4-455c-8637-232a342f3c8f": {
       "content_id": "f524ac28-70c4-455c-8637-232a342f3c8f",
-      "fingerprint": "dc92c7d5f2cbe8660083cbeb53519d6cc2d62c4249595b4ef4a66e27215c41b1",
+      "deleted": false,
+      "fingerprint": "f970c62cea44d99ca164eaef1264f16b3a398e2406185ea8010285bf70704c7d",
       "path": "addons/ThisIsTheWayshrine__f524ac28-70c4-455c-8637-232a342f3c8f",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f524ac28-70c4-455c-8637-232a342f3c8f",
