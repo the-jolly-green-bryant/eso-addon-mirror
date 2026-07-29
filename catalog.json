@@ -3748,7 +3748,8 @@
     },
     "e0a62e77-93d4-43e7-9639-fb2737b3e00a": {
       "content_id": "e0a62e77-93d4-43e7-9639-fb2737b3e00a",
-      "fingerprint": "2de729c1b239072a35af97ab575c3c2384b311bfe48a031ebaacf7c0df98f2aa",
+      "deleted": false,
+      "fingerprint": "5b5185b4c50be6416a0b5f6d53476a497ec93278c6c024cd8c83a2970025111f",
       "path": "addons/Map-Filter-Test-Case__e0a62e77-93d4-43e7-9639-fb2737b3e00a",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e0a62e77-93d4-43e7-9639-fb2737b3e00a",
