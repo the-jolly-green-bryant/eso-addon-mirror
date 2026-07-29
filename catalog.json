@@ -2736,7 +2736,8 @@
     },
     "a8908085-8223-4986-ac34-5932bc2c5172": {
       "content_id": "a8908085-8223-4986-ac34-5932bc2c5172",
-      "fingerprint": "97289bc1027be2c50038a149902e78458fe653c5efd95d356d3a392499498e96",
+      "deleted": false,
+      "fingerprint": "41815b7f518763913802195463cba5f500dcf4eaa6103bcd01e78e41470ab3bf",
       "path": "addons/TargetInfo__a8908085-8223-4986-ac34-5932bc2c5172",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a8908085-8223-4986-ac34-5932bc2c5172",
