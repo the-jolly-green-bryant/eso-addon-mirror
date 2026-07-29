@@ -1733,7 +1733,8 @@
     },
     "6afd8b79-471b-4c3d-b785-aaef8319bc4f": {
       "content_id": "6afd8b79-471b-4c3d-b785-aaef8319bc4f",
-      "fingerprint": "58b74ab0e6f696163bf1d36d8fdd32126725f1dba2f6681889b65a761294ec2e",
+      "deleted": false,
+      "fingerprint": "0ed7a37ca9870e21529e6b93a100101a8aae9b3c7e25b9f8d9e52661fff84eed",
       "path": "addons/Block-Item-Usage__6afd8b79-471b-4c3d-b785-aaef8319bc4f",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/6afd8b79-471b-4c3d-b785-aaef8319bc4f",
