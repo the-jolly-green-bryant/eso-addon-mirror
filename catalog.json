@@ -3634,7 +3634,8 @@
     },
     "dc653131-c684-4f94-b875-35a29506436b": {
       "content_id": "dc653131-c684-4f94-b875-35a29506436b",
-      "fingerprint": "02ac0733326d5430ead69594e059c70875e20a33d2be806769141e92a4272679",
+      "deleted": false,
+      "fingerprint": "a96c7e4d3bda30e3c2e39d40e571b962d3fe944b6585cb155e3af2fb5a5ed7d3",
       "path": "addons/Artaeum-Group-Tool__dc653131-c684-4f94-b875-35a29506436b",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/dc653131-c684-4f94-b875-35a29506436b",
