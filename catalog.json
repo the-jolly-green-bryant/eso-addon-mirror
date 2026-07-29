@@ -2518,7 +2518,8 @@
     },
     "9a183ede-4e80-4f0b-bf0c-13843831d603": {
       "content_id": "9a183ede-4e80-4f0b-bf0c-13843831d603",
-      "fingerprint": "198a9ecd1eb5adc993cbe0227537c6c57b2e51ce387eeff06c3d75d1bc678a56",
+      "deleted": false,
+      "fingerprint": "73ffa9e210f549f490e002c14a21625db9125397b43071a094dbbf7f1106e111",
       "path": "addons/LibUndauntedPledges__9a183ede-4e80-4f0b-bf0c-13843831d603",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9a183ede-4e80-4f0b-bf0c-13843831d603",
