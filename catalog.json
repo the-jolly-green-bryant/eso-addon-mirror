@@ -3368,7 +3368,8 @@
     },
     "ce31d856-17b4-4951-9802-820df96527e2": {
       "content_id": "ce31d856-17b4-4951-9802-820df96527e2",
-      "fingerprint": "de04e33a7447ad284288adc021567427cb5dbd071e58aa064d6d5553d88dff47",
+      "deleted": false,
+      "fingerprint": "f424e862e840ff5d3fc9c3895beeb7ee73af2d06f6f76c872c448ce65b4666f7",
       "path": "addons/Simple-FPS-Ping__ce31d856-17b4-4951-9802-820df96527e2",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ce31d856-17b4-4951-9802-820df96527e2",
