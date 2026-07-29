@@ -3869,7 +3869,8 @@
     },
     "e4a3d0f8-bf1e-4c57-8b4b-4d65364fb344": {
       "content_id": "e4a3d0f8-bf1e-4c57-8b4b-4d65364fb344",
-      "fingerprint": "d763b1e6d9681ae4099f891025b17a2e7fac7e73ceca292c13fed42cb8e3f48f",
+      "deleted": false,
+      "fingerprint": "02d3953147e1c1dedc2f137bae383ddcb82ea14b409a8c3b3206e47f77f76c2d",
       "path": "addons/Mechanic-Mentor__e4a3d0f8-bf1e-4c57-8b4b-4d65364fb344",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e4a3d0f8-bf1e-4c57-8b4b-4d65364fb344",
