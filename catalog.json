@@ -3991,7 +3991,8 @@
     },
     "ebe3290d-93b5-49b9-8113-71ecf6bf6c52": {
       "content_id": "ebe3290d-93b5-49b9-8113-71ecf6bf6c52",
-      "fingerprint": "7554ffb277c392556d79d66d605c0f7a812d519e53302001fa43d876bc050a65",
+      "deleted": false,
+      "fingerprint": "c07bfb6ae69ddd03cc2c02806a29e13a4f80f6b8fe36053a8c80805b40a9ec2d",
       "path": "addons/MemoryUsage__ebe3290d-93b5-49b9-8113-71ecf6bf6c52",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/ebe3290d-93b5-49b9-8113-71ecf6bf6c52",
