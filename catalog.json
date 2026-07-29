@@ -2937,7 +2937,8 @@
     },
     "b3a44425-48ff-494d-bbfe-64c8be868720": {
       "content_id": "b3a44425-48ff-494d-bbfe-64c8be868720",
-      "fingerprint": "0761d79c7a62d0ba5449a34e204baa6e6e3b2f0569477bbb1c2e50a2b6f6f79c",
+      "deleted": false,
+      "fingerprint": "65f1bcc04198b200d80f66554238e38adb4d1af72346027fbd1ed33349aa106f",
       "path": "addons/PvPCooldownTracker__b3a44425-48ff-494d-bbfe-64c8be868720",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b3a44425-48ff-494d-bbfe-64c8be868720",
