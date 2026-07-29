@@ -46,7 +46,8 @@
     },
     "04141a46-3d9c-4b14-aa0e-d841090d128c": {
       "content_id": "04141a46-3d9c-4b14-aa0e-d841090d128c",
-      "fingerprint": "bac38931a428022f796911ea32e7c3810c692d49a1bafef800b4df5d1b05481c",
+      "deleted": false,
+      "fingerprint": "b9669211fa235d64d494508a58d7838fdfb1d07e937d37d5e77f362117d25389",
       "path": "addons/LibAddonMenu__04141a46-3d9c-4b14-aa0e-d841090d128c",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/04141a46-3d9c-4b14-aa0e-d841090d128c",
