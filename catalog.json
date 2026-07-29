@@ -2161,7 +2161,8 @@
     },
     "863227c7-d9fe-4803-b842-d9fb1aa79f16": {
       "content_id": "863227c7-d9fe-4803-b842-d9fb1aa79f16",
-      "fingerprint": "492cf39c734e9087fc9c8e4c11b30d73c6bd8c22515dc2d1ace0087ba0ba6b52",
+      "deleted": false,
+      "fingerprint": "59866d1b5582529a6556db5b8864e2d7bd1563887a6a7eeb924c52f7383c9529",
       "path": "addons/ChampionXPBar__863227c7-d9fe-4803-b842-d9fb1aa79f16",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/863227c7-d9fe-4803-b842-d9fb1aa79f16",
