@@ -2928,7 +2928,8 @@
     },
     "b344faa0-0b93-431e-ae22-befcaaa36333": {
       "content_id": "b344faa0-0b93-431e-ae22-befcaaa36333",
-      "fingerprint": "81812a66c4b5e080de7cef0fcbfe16e4f2d11f52c6a529b5ddef9a825535223c",
+      "deleted": false,
+      "fingerprint": "382a9fb349facb9544829a7be485d86ba9e966e375bbb228f3c35e912cb3e8b9",
       "path": "addons/Improved-Night-Market-HUD__b344faa0-0b93-431e-ae22-befcaaa36333",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b344faa0-0b93-431e-ae22-befcaaa36333",
