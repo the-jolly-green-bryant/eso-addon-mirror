@@ -665,7 +665,8 @@
     },
     "28cfc719-5113-4b1f-aab6-570be159ab81": {
       "content_id": "28cfc719-5113-4b1f-aab6-570be159ab81",
-      "fingerprint": "5fb55b94b117815ade8d330f6dff8471ffe16fc5062b9b52202e34474e9e6d8b",
+      "deleted": false,
+      "fingerprint": "d847233ae0fe391879147313f88cd4547ab5f57caba82e3ebc73c87ef1984d4b",
       "path": "addons/AwesomeGuildStore__28cfc719-5113-4b1f-aab6-570be159ab81",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/28cfc719-5113-4b1f-aab6-570be159ab81",
