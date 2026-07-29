@@ -3677,7 +3677,8 @@
     },
     "de9c92f2-729c-45e6-8071-0155852da2c0": {
       "content_id": "de9c92f2-729c-45e6-8071-0155852da2c0",
-      "fingerprint": "9a5db7e020dfba20dc32704fe8e555a0c5ed65397244a8c251584bc2c5f501ab",
+      "deleted": false,
+      "fingerprint": "b676b8adabb3e9662f8d9a2c6060b0822fc4837bd82a87bd34aa66564e0d1c3d",
       "path": "addons/LibMousePointer__de9c92f2-729c-45e6-8071-0155852da2c0",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/de9c92f2-729c-45e6-8071-0155852da2c0",
