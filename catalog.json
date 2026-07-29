@@ -4069,7 +4069,8 @@
     },
     "f0873593-4222-438e-8d90-019fa403178b": {
       "content_id": "f0873593-4222-438e-8d90-019fa403178b",
-      "fingerprint": "a2cda67d9828bc6ceeba36f48dc7d5bc99dfca823bdaaab971fb1195d624c2a4",
+      "deleted": false,
+      "fingerprint": "399575156ae6a78a4bc45630d2d4cdda2acfb705f985f26e4273772631ecd6ce",
       "path": "addons/Guild-Activity-Tracker__f0873593-4222-438e-8d90-019fa403178b",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f0873593-4222-438e-8d90-019fa403178b",
