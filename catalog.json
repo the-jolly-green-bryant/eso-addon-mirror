@@ -2527,7 +2527,8 @@
     },
     "9a439c8a-322c-472e-99f9-e05a6f76532b": {
       "content_id": "9a439c8a-322c-472e-99f9-e05a6f76532b",
-      "fingerprint": "049b010c02552ec578dfcce006bb1ed14ded83a1055a6ee087aaf66dcb0d69d5",
+      "deleted": false,
+      "fingerprint": "c194f1132259f0cab10800a1765073add24e9984fec6dd7c8ddedef9af694262",
       "path": "addons/Quest-Mover__9a439c8a-322c-472e-99f9-e05a6f76532b",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9a439c8a-322c-472e-99f9-e05a6f76532b",
