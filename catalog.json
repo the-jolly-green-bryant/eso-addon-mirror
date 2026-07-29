@@ -2536,7 +2536,8 @@
     },
     "9b9ff236-58fe-4815-8f7c-4b8c41245568": {
       "content_id": "9b9ff236-58fe-4815-8f7c-4b8c41245568",
-      "fingerprint": "5dca3db01478d7b8e56869e6bcaa83e8fa5ec38ef173b557815da3cd0fec367f",
+      "deleted": false,
+      "fingerprint": "42be823b521aed388251159e0ca3ab0e7d2be96e07074df45d2ce5266a71a701",
       "path": "addons/QAutoConfirm__9b9ff236-58fe-4815-8f7c-4b8c41245568",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/9b9ff236-58fe-4815-8f7c-4b8c41245568",
