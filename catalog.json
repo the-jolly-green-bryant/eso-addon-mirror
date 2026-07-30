@@ -3760,7 +3760,8 @@
     },
     "df55d66d-d19b-41dd-99a2-8d385916f4a1": {
       "content_id": "df55d66d-d19b-41dd-99a2-8d385916f4a1",
-      "fingerprint": "b37e2703c2e53fe6d5ee4bf82ba419e00467aae910f2c42e6805a89f4fcde547",
+      "deleted": false,
+      "fingerprint": "a660e215e27db4c338bed72b1647dda52ede2bb23c3121e9186c47a5537789fe",
       "path": "addons/LibQuestStatus__df55d66d-d19b-41dd-99a2-8d385916f4a1",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/df55d66d-d19b-41dd-99a2-8d385916f4a1",
