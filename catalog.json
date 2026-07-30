@@ -145,7 +145,8 @@
     },
     "09535f7c-d041-4d75-963a-167fa47d3df2": {
       "content_id": "09535f7c-d041-4d75-963a-167fa47d3df2",
-      "fingerprint": "093333c6fae9133d3f261a79494821566e85e746dd19e85c88ba7352d0915ed6",
+      "deleted": false,
+      "fingerprint": "c4292800abf3eaf2d764f2d2a9001d379b17606a86b8e10c365d40208c3c4467",
       "path": "addons/CadenceCoach__09535f7c-d041-4d75-963a-167fa47d3df2",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/09535f7c-d041-4d75-963a-167fa47d3df2",
