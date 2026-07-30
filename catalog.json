@@ -83,7 +83,8 @@
     },
     "06c46d53-3301-44b3-92fe-8d19165f5d93": {
       "content_id": "06c46d53-3301-44b3-92fe-8d19165f5d93",
-      "fingerprint": "82b79dc2c97e6e41371daf344ec209843e75565f3099ba4d5f30c01d96f26107",
+      "deleted": false,
+      "fingerprint": "e7ea0a21cc26007c22d7b1ece50465072df2eb036be3e50b2eb49b9f1f4640d6",
       "path": "addons/Vixen-s-Combat-Text__06c46d53-3301-44b3-92fe-8d19165f5d93",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/06c46d53-3301-44b3-92fe-8d19165f5d93",
