@@ -269,7 +269,8 @@
     },
     "10a87c9d-556d-4389-8952-629b42b5a3bc": {
       "content_id": "10a87c9d-556d-4389-8952-629b42b5a3bc",
-      "fingerprint": "c3f5019b89dc12af7b4630d0e8ec6cd154bb829ab5e587483515522073c38852",
+      "deleted": false,
+      "fingerprint": "95b80b206a16a5251fda22ba119898ca581478540abd487c813134a263bc6d84",
       "path": "addons/EsoPL---Spolszczenie__10a87c9d-556d-4389-8952-629b42b5a3bc",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/10a87c9d-556d-4389-8952-629b42b5a3bc",
