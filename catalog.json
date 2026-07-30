@@ -3356,7 +3356,8 @@
     },
     "cb26e578-84c4-4196-9aee-7e0e53f3d6a1": {
       "content_id": "cb26e578-84c4-4196-9aee-7e0e53f3d6a1",
-      "fingerprint": "85fe427432a9d8e9daf31e1b5a368865701548f85936e17662708d294f4d2a98",
+      "deleted": false,
+      "fingerprint": "02308942110986b26e5d60d1457ec3e11e6e56e24899a2469e5a8f8cd41cff03",
       "path": "addons/Under-Pressure__cb26e578-84c4-4196-9aee-7e0e53f3d6a1",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/cb26e578-84c4-4196-9aee-7e0e53f3d6a1",
