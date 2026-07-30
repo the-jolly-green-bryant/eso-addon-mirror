@@ -2121,7 +2121,8 @@
     },
     "8289722e-8e80-4a3d-ba1a-31ae1194ffce": {
       "content_id": "8289722e-8e80-4a3d-ba1a-31ae1194ffce",
-      "fingerprint": "ef45459beb5ce2035a119ea64ba71fea92d5f9ac2699810f58e6193abbe58fe4",
+      "deleted": false,
+      "fingerprint": "fb586d5760e1cb476e27076364dc444a47aff2704c0b3f8f5e61e4c22cf1c434",
       "path": "addons/Can-I-Travel-Back__8289722e-8e80-4a3d-ba1a-31ae1194ffce",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/8289722e-8e80-4a3d-ba1a-31ae1194ffce",
