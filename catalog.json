@@ -3921,7 +3921,8 @@
     },
     "e432e963-6c1d-4e4c-b9b9-491f51ff8d07": {
       "content_id": "e432e963-6c1d-4e4c-b9b9-491f51ff8d07",
-      "fingerprint": "d19ab02d8fb3b3cd526253cba9bc63790594d061733f87070926587295796e29",
+      "deleted": false,
+      "fingerprint": "9e728dab8f2a7d18892f5f32617980163ba31b9c417f8b66ddfcaeb9705c1a8a",
       "path": "addons/True-Options-Pannel-Mover__e432e963-6c1d-4e4c-b9b9-491f51ff8d07",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e432e963-6c1d-4e4c-b9b9-491f51ff8d07",
