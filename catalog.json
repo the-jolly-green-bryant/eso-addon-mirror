@@ -1476,7 +1476,8 @@
     },
     "59768602-717c-425b-a4ce-7ffc14887bc0": {
       "content_id": "59768602-717c-425b-a4ce-7ffc14887bc0",
-      "fingerprint": "cb63fea82f82245d6bf5b772b4a65d3f692d9d785cac76db211dd88512059850",
+      "deleted": false,
+      "fingerprint": "7eda03f1c587d17ef89ffd47359647c0b782dc925799aad4330b0fc4abddc2b4",
       "path": "addons/Many-Markers__59768602-717c-425b-a4ce-7ffc14887bc0",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/59768602-717c-425b-a4ce-7ffc14887bc0",
