@@ -804,7 +804,8 @@
     },
     "30102403-93a7-4fd2-a08a-4b249f03e4d4": {
       "content_id": "30102403-93a7-4fd2-a08a-4b249f03e4d4",
-      "fingerprint": "40c1efc708e2be96c828f9de875f1d337f50e029c205cdd435fa00c4529d18ad",
+      "deleted": false,
+      "fingerprint": "7c397eb316ff35de9b5185212a2793f6e8a551f49ceb44d2a2ef5da15d789095",
       "path": "addons/Oh-No-My-Menu__30102403-93a7-4fd2-a08a-4b249f03e4d4",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/30102403-93a7-4fd2-a08a-4b249f03e4d4",
