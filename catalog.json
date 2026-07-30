@@ -1095,7 +1095,8 @@
     },
     "42a55498-b21a-4657-86ba-bdb954f7a09d": {
       "content_id": "42a55498-b21a-4657-86ba-bdb954f7a09d",
-      "fingerprint": "8b65e68c27e2ea4ccd3ef2c4b4778a56f4940f73193b0867dc4a10b28b170d13",
+      "deleted": false,
+      "fingerprint": "62e50a7fa73d231fa85d39075c2e720db898bd69c281f149d7769d1210531ed0",
       "path": "addons/Insatiable-Hunger-Blocker__42a55498-b21a-4657-86ba-bdb954f7a09d",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/42a55498-b21a-4657-86ba-bdb954f7a09d",
