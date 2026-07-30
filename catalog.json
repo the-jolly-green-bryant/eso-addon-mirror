@@ -1988,7 +1988,8 @@
     },
     "7752de6b-f23a-4a95-971b-dbf1e996df87": {
       "content_id": "7752de6b-f23a-4a95-971b-dbf1e996df87",
-      "fingerprint": "d41219380845639fee475714a7b0143ad01889a1f6514499e5d96e33984bd33b",
+      "deleted": false,
+      "fingerprint": "7ac6b5b70217cdadd0960c11cf489882fa26f4f8fae081f58ee145f0bd19e977",
       "path": "addons/DeadMarker2-Metrics__7752de6b-f23a-4a95-971b-dbf1e996df87",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/7752de6b-f23a-4a95-971b-dbf1e996df87",
