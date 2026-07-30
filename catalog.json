@@ -3724,7 +3724,8 @@
     },
     "de3c943a-61a9-4a1a-b9b3-abee0ae8835c": {
       "content_id": "de3c943a-61a9-4a1a-b9b3-abee0ae8835c",
-      "fingerprint": "be12ca179bdb7caae12df992a06709a04a623dbac029c1d378b16f3ad4ac0cce",
+      "deleted": false,
+      "fingerprint": "b46523ff4588feb4947fd8a089c0a30a04d56b1752676f2221b94e567c43f456",
       "path": "addons/Random-Pet__de3c943a-61a9-4a1a-b9b3-abee0ae8835c",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/de3c943a-61a9-4a1a-b9b3-abee0ae8835c",
