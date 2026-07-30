@@ -2643,7 +2643,8 @@
     },
     "a00e3e80-0ad4-406b-bc48-322f6244f725": {
       "content_id": "a00e3e80-0ad4-406b-bc48-322f6244f725",
-      "fingerprint": "e5b3b7278e29ca8cafa0e07d6377368e94e08dbdb5a233e15a6bd7e0bbbdcee1",
+      "deleted": false,
+      "fingerprint": "38d41dd178d5b0ed210a29ee0611758e956625418f077a110af95342ff06a9a4",
       "path": "addons/Unofficial-U49-Camera-Settings__a00e3e80-0ad4-406b-bc48-322f6244f725",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/a00e3e80-0ad4-406b-bc48-322f6244f725",
