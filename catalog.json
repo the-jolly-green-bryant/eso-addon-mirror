@@ -1414,7 +1414,8 @@
     },
     "54495f75-791c-4010-8120-4aae3fdc19a1": {
       "content_id": "54495f75-791c-4010-8120-4aae3fdc19a1",
-      "fingerprint": "48283453c5eb4db9a31f75f4bfca0a723c9c5df336fe51538b3480aa181bfb32",
+      "deleted": false,
+      "fingerprint": "3b69aeb2d6b821a588b3d80f5d23f8dc86b1922c38a21704ceb43ef443077ccb",
       "path": "addons/Book-Font-Stylist__54495f75-791c-4010-8120-4aae3fdc19a1",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/54495f75-791c-4010-8120-4aae3fdc19a1",
