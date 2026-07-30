@@ -3048,7 +3048,8 @@
     },
     "b7f56e79-7bdd-41c5-89d4-a0b61b7719af": {
       "content_id": "b7f56e79-7bdd-41c5-89d4-a0b61b7719af",
-      "fingerprint": "747f8946d3fe637ed89e74e9cba157d3b1b3626ea4c3fca70af5ed1a63bf76f2",
+      "deleted": false,
+      "fingerprint": "f2f994012795bd768883e78886f220418a948f5df26d59e35fe8be5de8392f62",
       "path": "addons/T\u00fcrk\u00e7e-\u00e7eviri---ESOTR_Lite__b7f56e79-7bdd-41c5-89d4-a0b61b7719af",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b7f56e79-7bdd-41c5-89d4-a0b61b7719af",
