@@ -813,7 +813,8 @@
     },
     "301799ca-d139-4097-8799-022ef07985ad": {
       "content_id": "301799ca-d139-4097-8799-022ef07985ad",
-      "fingerprint": "aac0aeeea0ff37f41df10c49ad0698a12d3d2a7157dcb963e037980fde536619",
+      "deleted": false,
+      "fingerprint": "1122895b7a829508eb8b3c1e903ee0927386d633f58714de7c86600a8cec7199",
       "path": "addons/Additional-Reminders__301799ca-d139-4097-8799-022ef07985ad",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/301799ca-d139-4097-8799-022ef07985ad",
