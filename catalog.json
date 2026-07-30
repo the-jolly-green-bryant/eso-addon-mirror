@@ -3268,7 +3268,8 @@
     },
     "c720ddc7-a982-4027-ac83-204540d2b013": {
       "content_id": "c720ddc7-a982-4027-ac83-204540d2b013",
-      "fingerprint": "91d7bf197a63cbb7f22bd21363d26680f0939bed0d55da099f4fe9a13fea51b4",
+      "deleted": false,
+      "fingerprint": "1a6b7cef1cb16ee7b61e6f9980a832f1a29319ca4504a6491085de86502bf1e8",
       "path": "addons/ClearSight__c720ddc7-a982-4027-ac83-204540d2b013",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/c720ddc7-a982-4027-ac83-204540d2b013",
