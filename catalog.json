@@ -3557,7 +3557,8 @@
     },
     "d38d1fe9-e738-4036-9d0d-baeaa4ebbe2e": {
       "content_id": "d38d1fe9-e738-4036-9d0d-baeaa4ebbe2e",
-      "fingerprint": "f17da8a5fe2c731f7d5e8436813370161f7631da70c7a0f2563fa4a142106793",
+      "deleted": false,
+      "fingerprint": "5ce5baf072d5fe90a6d0d2848ac139b2ec9b30854a61a034d8f25189604fa920",
       "path": "addons/Murf-s-Knickknacks__d38d1fe9-e738-4036-9d0d-baeaa4ebbe2e",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d38d1fe9-e738-4036-9d0d-baeaa4ebbe2e",
