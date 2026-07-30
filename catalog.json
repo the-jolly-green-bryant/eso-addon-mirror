@@ -4220,7 +4220,8 @@
     },
     "f47025d4-d5d3-4863-b0b0-1d9f57dd6c41": {
       "content_id": "f47025d4-d5d3-4863-b0b0-1d9f57dd6c41",
-      "fingerprint": "78c3af18d16907ae9c116f99bd96618dbe7dce9967fd809706a6124c8a7621fb",
+      "deleted": false,
+      "fingerprint": "78ad5e7ed0087d176bed37e7d2c2187e9645a0e19e64fdda855a0a844dba616c",
       "path": "addons/BuffDebuffBar__f47025d4-d5d3-4863-b0b0-1d9f57dd6c41",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/f47025d4-d5d3-4863-b0b0-1d9f57dd6c41",
