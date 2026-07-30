@@ -3030,7 +3030,8 @@
     },
     "b72f36c7-bbd2-4b35-9deb-4d0bd2a7f277": {
       "content_id": "b72f36c7-bbd2-4b35-9deb-4d0bd2a7f277",
-      "fingerprint": "90d60ea6663540caf43a704ee5a88a4e5039485f3ffab8f20a0ea2355a07c4b4",
+      "deleted": false,
+      "fingerprint": "3aac7e99cf7ed00a75a02780e5aabade6d18a454cc3914ad86cfb7084ca4350a",
       "path": "addons/Saved-Chat-Messages__b72f36c7-bbd2-4b35-9deb-4d0bd2a7f277",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/b72f36c7-bbd2-4b35-9deb-4d0bd2a7f277",
