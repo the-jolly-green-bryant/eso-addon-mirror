@@ -831,7 +831,8 @@
     },
     "30b30033-06cc-48b7-a0c6-7be8d27487cf": {
       "content_id": "30b30033-06cc-48b7-a0c6-7be8d27487cf",
-      "fingerprint": "f0dc3e9749638d11f7a84386eacc1d208996377dc092fd0bd773dac5c7de5139",
+      "deleted": false,
+      "fingerprint": "0a6391f630778037c15bfefa4aff6b7ac1979e8af6ba25fe208332ae22e40b73",
       "path": "addons/Reticle-Rainbow__30b30033-06cc-48b7-a0c6-7be8d27487cf",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/30b30033-06cc-48b7-a0c6-7be8d27487cf",
