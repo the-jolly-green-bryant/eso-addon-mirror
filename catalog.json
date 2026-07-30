@@ -3540,7 +3540,8 @@
     },
     "d3514a63-e01b-4267-ab25-f1b8e79aa586": {
       "content_id": "d3514a63-e01b-4267-ab25-f1b8e79aa586",
-      "fingerprint": "e45f7eade6d8f1fa10b7aa38ffa000c6f8b54d8a842a16b5b94b7c6fba35bccf",
+      "deleted": false,
+      "fingerprint": "f4d7b4c62ffcff4c9ddfdb26b9880bb20a1f1f799ffc170bdc738d4afb681951",
       "path": "addons/HelloWorld__d3514a63-e01b-4267-ab25-f1b8e79aa586",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d3514a63-e01b-4267-ab25-f1b8e79aa586",
