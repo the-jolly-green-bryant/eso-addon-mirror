@@ -1608,7 +1608,8 @@
     },
     "61ffae27-7976-4d4b-a9fa-0fafb387434a": {
       "content_id": "61ffae27-7976-4d4b-a9fa-0fafb387434a",
-      "fingerprint": "39feceb9d7942bf88e192695f4ec125aedca6363c3f5d22380b884b645a56056",
+      "deleted": false,
+      "fingerprint": "906390d3295fd7d350cc92cf0ab66fdab1277791446d80fd6b89445467153cd9",
       "path": "addons/What-s-My-Build-Again__61ffae27-7976-4d4b-a9fa-0fafb387434a",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/61ffae27-7976-4d4b-a9fa-0fafb387434a",
