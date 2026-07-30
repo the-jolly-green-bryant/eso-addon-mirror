@@ -3706,7 +3706,8 @@
     },
     "dd556dbe-ac20-41a5-8dba-9ba37eb97347": {
       "content_id": "dd556dbe-ac20-41a5-8dba-9ba37eb97347",
-      "fingerprint": "7b7b0d7c6c0029fec706e7c95f26c4ec8997e71eb36d0a4de0178e27bd4832b9",
+      "deleted": false,
+      "fingerprint": "504bc2fda6b0083bffa2e5cb9102b31cde9d03606b5b4be2f9f8c2426f873766",
       "path": "addons/Ev__dd556dbe-ac20-41a5-8dba-9ba37eb97347",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/dd556dbe-ac20-41a5-8dba-9ba37eb97347",
