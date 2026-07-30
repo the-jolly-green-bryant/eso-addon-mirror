@@ -303,7 +303,8 @@
     },
     "118c6c05-d955-4eff-b2de-a1e171ee1215": {
       "content_id": "118c6c05-d955-4eff-b2de-a1e171ee1215",
-      "fingerprint": "f5e9e01ab4a6c431ff08a64645b3f30dad7d2119dd25f80213e1964e055a4227",
+      "deleted": false,
+      "fingerprint": "c79afda6a82fc4a16cc9a193cc1508389f51df0f41595bc0d85a07691edf5af2",
       "path": "addons/Grumpy-s-Simple-Playtime__118c6c05-d955-4eff-b2de-a1e171ee1215",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/118c6c05-d955-4eff-b2de-a1e171ee1215",
