@@ -840,7 +840,8 @@
     },
     "32111121-29be-4447-ba40-3c064d28680e": {
       "content_id": "32111121-29be-4447-ba40-3c064d28680e",
-      "fingerprint": "c63bcd4e98ee6cd3f09a23ac93e5e38d33cf8a470801d1cf370853bf331e3e9c",
+      "deleted": false,
+      "fingerprint": "b6b0d536e690f3a4898811ff08e49bd6cee4cd7c0b4eb233b5023158833c5de5",
       "path": "addons/Power-Lash-Tracker__32111121-29be-4447-ba40-3c064d28680e",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/32111121-29be-4447-ba40-3c064d28680e",
