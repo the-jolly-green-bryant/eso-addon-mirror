@@ -3912,7 +3912,8 @@
     },
     "e42700aa-3021-495e-9ff4-9e83377c9f99": {
       "content_id": "e42700aa-3021-495e-9ff4-9e83377c9f99",
-      "fingerprint": "90c5dd2ea27b512879b6581a26a963d7b625021e216df015369470ebe08a50f5",
+      "deleted": false,
+      "fingerprint": "bdb978b27d072c02dd2ab28daf8652a2192c7aeddc709735fbd474fec4135fb7",
       "path": "addons/Adventures-toolkit-Dev__e42700aa-3021-495e-9ff4-9e83377c9f99",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/e42700aa-3021-495e-9ff4-9e83377c9f99",
