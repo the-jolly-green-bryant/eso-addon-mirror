@@ -488,7 +488,8 @@
     },
     "1e6ecfd4-9947-49dc-9392-c5fab2256ab2": {
       "content_id": "1e6ecfd4-9947-49dc-9392-c5fab2256ab2",
-      "fingerprint": "14d3c262e8db4272b429e43b7f49e472dcc74ad24d98754a15a7403f9970730a",
+      "deleted": false,
+      "fingerprint": "a9f25f69817511a143c7f20e53c664ba180b62ff528e83f463ff4e9e3773c3b4",
       "path": "addons/Rebar__1e6ecfd4-9947-49dc-9392-c5fab2256ab2",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/1e6ecfd4-9947-49dc-9392-c5fab2256ab2",
