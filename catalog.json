@@ -3504,7 +3504,8 @@
     },
     "d1e62d86-1a34-4727-8221-e23b1c5b7616": {
       "content_id": "d1e62d86-1a34-4727-8221-e23b1c5b7616",
-      "fingerprint": "d5906552d0b70a9a9c7e4c4131bfd345b874f3919b21d08a11c679b294a0cc96",
+      "deleted": false,
+      "fingerprint": "5a08bb0de1acd373af764bee12a87af61c0f4c3a922a1820e5440eb2d6ae86a1",
       "path": "addons/LibServerResetTime__d1e62d86-1a34-4727-8221-e23b1c5b7616",
       "published": true,
       "source": "https://mods.bethesda.net/en/elderscrollsonline/details/d1e62d86-1a34-4727-8221-e23b1c5b7616",
