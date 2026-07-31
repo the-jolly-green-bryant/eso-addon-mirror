@@ -7,7 +7,10 @@ import argparse
 import json
 import shutil
 import tempfile
+import time
+import urllib.error
 import urllib.request
+import zipfile
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -27,6 +30,7 @@ from archive_common import (
 FEED_URL = "https://api.mmoui.com/v3/game/ESO/filelist.json"
 DOWNLOAD_URL = "https://www.esoui.com/downloads/dl{source_id}/"
 MAX_UNPACKED_BYTES = 512 * 1024 * 1024
+DOWNLOAD_ATTEMPTS = 4
 
 
 def read_feed(feed_path: Path | None) -> list[dict[str, Any]]:
@@ -104,14 +108,33 @@ def archive_release(record: dict[str, Any], old: dict[str, Any] | None, shard_ro
     with tempfile.TemporaryDirectory(prefix="esoui-addon-") as temporary:
         temporary_path = Path(temporary)
         archive = temporary_path / f"{record['source_id']}.zip"
-        request = urllib.request.Request(
-            str(record["download_url"]), headers={"User-Agent": "ESO-Addon-Mirror/2"}
-        )
-        with urllib.request.urlopen(request, timeout=120) as response:
-            archive.write_bytes(response.read())
         unpacked = temporary_path / "unpacked"
-        unpacked.mkdir()
-        safe_extract(archive, unpacked, MAX_UNPACKED_BYTES)
+        last_error: Exception | None = None
+        for attempt in range(1, DOWNLOAD_ATTEMPTS + 1):
+            try:
+                request = urllib.request.Request(
+                    str(record["download_url"]),
+                    headers={"User-Agent": "ESO-Addon-Mirror/2"},
+                )
+                with urllib.request.urlopen(request, timeout=120) as response:
+                    archive.write_bytes(response.read())
+                if not zipfile.is_zipfile(archive):
+                    raise zipfile.BadZipFile("ESOUI response is not a ZIP archive")
+                if unpacked.exists():
+                    shutil.rmtree(unpacked)
+                unpacked.mkdir()
+                safe_extract(archive, unpacked, MAX_UNPACKED_BYTES)
+                break
+            except (OSError, RuntimeError, urllib.error.URLError, zipfile.BadZipFile) as error:
+                last_error = error
+                if attempt < DOWNLOAD_ATTEMPTS:
+                    time.sleep(2 ** (attempt - 1))
+        else:
+            assert last_error is not None
+            raise RuntimeError(
+                f"ESOUI {record['source_id']} ({record['title']}) failed after "
+                f"{DOWNLOAD_ATTEMPTS} attempts: {type(last_error).__name__}: {last_error}"
+            ) from last_error
         if destination.exists():
             shutil.rmtree(destination)
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -144,6 +167,7 @@ def main() -> None:
     next_catalog = dict(previous)
     discovered: set[str] = set()
     archived = 0
+    failures: list[str] = []
     selected = read_feed(args.feed)
     if args.limit:
         selected = selected[: args.limit]
@@ -176,8 +200,13 @@ def main() -> None:
             or local_metadata.get("archive_path") != record["archive_path"]
         )
         if should_archive:
-            archive_release(record, old, args.shard_root.resolve())
-            archived += 1
+            try:
+                archive_release(record, old, args.shard_root.resolve())
+                archived += 1
+            except (OSError, RuntimeError, urllib.error.URLError, zipfile.BadZipFile) as error:
+                failure = f"{identifier}: {error}"
+                failures.append(failure)
+                print(f"::warning title=ESOUI archive skipped::{failure}")
         next_catalog[identifier] = record
 
     if not args.shard and not args.limit:
@@ -193,7 +222,12 @@ def main() -> None:
         {"schema": SCHEMA_VERSION, "source": "esoui", "addons": next_catalog},
     )
     write_unified_catalog(root)
-    print(f"Indexed {len(next_catalog)} ESOUI add-ons; archived {archived} releases")
+    print(
+        f"Indexed {len(next_catalog)} ESOUI add-ons; archived {archived} releases; "
+        f"{len(failures)} failures"
+    )
+    if failures:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

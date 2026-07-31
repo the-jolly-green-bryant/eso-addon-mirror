@@ -60,6 +60,8 @@ jobs:
             "$RUNNER_TEMP/shards/${{ matrix.shard }}" \
             -- --depth=1
       - name: Archive new and changed PC releases
+        id: archive
+        continue-on-error: true
         run: |
           python3 scripts/sync_esoui.py \
             --shard-root "$RUNNER_TEMP/shards" \
@@ -76,3 +78,9 @@ jobs:
           git add -A
           git commit -m "archive: refresh ESOUI releases"
           git push
+      - name: Report incomplete archive
+        if: steps.archive.outcome == 'failure'
+        run: |
+          echo "One or more ESOUI releases could not be archived after four attempts."
+          echo "Successful releases were published and failed releases will retry next run."
+          exit 1
