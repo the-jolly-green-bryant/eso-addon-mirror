@@ -1,9 +1,17 @@
+import json
 import tempfile
 import unittest
 import zipfile
 from pathlib import Path
 
-from scripts.archive_common import archive_path, canonical_id, safe_extract, shard_for, slug
+from scripts.archive_common import (
+    archive_path,
+    canonical_id,
+    safe_extract,
+    shard_for,
+    slug,
+    write_unified_catalog,
+)
 
 
 class ArchiveCommonTests(unittest.TestCase):
@@ -30,6 +38,42 @@ class ArchiveCommonTests(unittest.TestCase):
                 bundle.writestr("../escape.lua", "no")
             with self.assertRaises(RuntimeError):
                 safe_extract(archive, destination, 1024)
+
+    def test_unified_catalog_writes_a_compact_listing_index(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            catalogs = root / "catalogs"
+            catalogs.mkdir()
+            (catalogs / "bethesda.json").write_text(
+                json.dumps(
+                    {
+                        "addons": {
+                            "bethesda:one": {
+                                "canonical_id": "bethesda:one",
+                                "content_id": "one",
+                                "title": "One",
+                                "source": "bethesda",
+                                "fingerprint": "not-needed-for-browsing",
+                            }
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            write_unified_catalog(root)
+
+            index = json.loads((root / "catalog-index.json").read_text())
+            self.assertEqual(index["sources"], {"bethesda": 1})
+            self.assertEqual(
+                index["addons"]["bethesda:one"],
+                {
+                    "canonical_id": "bethesda:one",
+                    "content_id": "one",
+                    "source": "bethesda",
+                    "title": "One",
+                },
+            )
 
 
 if __name__ == "__main__":

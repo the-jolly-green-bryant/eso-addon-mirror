@@ -106,3 +106,42 @@ def write_unified_catalog(root: Path) -> None:
         root / "catalog.json",
         {"schema": SCHEMA_VERSION, "sources": sources, "addons": addons},
     )
+    listing_fields = (
+        "archive_path",
+        "archive_repository",
+        "archived",
+        "author",
+        "canonical_id",
+        "content_id",
+        "deleted",
+        "deleted_at",
+        "download_url",
+        "downloads",
+        "published",
+        "source",
+        "source_url",
+        "title",
+        "updated_at",
+        "version",
+    )
+    listing_addons = {
+        canonical: {
+            field: record[field]
+            for field in listing_fields
+            if field in record
+        }
+        for canonical, record in addons.items()
+    }
+    (root / "catalog-index.json").write_text(
+        json.dumps(
+            {
+                "schema": SCHEMA_VERSION,
+                "sources": sources,
+                "addons": listing_addons,
+            },
+            separators=(",", ":"),
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )

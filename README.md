@@ -8,6 +8,7 @@ This lightweight control repository stores normalized metadata and synchronizati
 
 ```text
 catalog.json                         unified searchable catalog
+catalog-index.json                   compact catalog for web/API browsing
 catalogs/bethesda.json               Bethesda source records
 catalogs/esoui.json                  official ESOUI/MMOUI feed records
 eso-addon-mirror-shard-00 … -0f      unpacked GitHub-browsable source
@@ -24,6 +25,10 @@ If an author or title changes, synchronization moves that one stable record to i
 ## Performance
 
 Daily GitHub Actions first refresh the small official ESOUI feed, then fan out across the 16 shards. Each runner shallow-clones only one shard and downloads a release only when its local `addon.json` fingerprint changed. Code-only work in this repository never checks out archived source.
+
+`catalog-index.json` contains only fields used for search, paging, source labels,
+downloads, and detail links. It stays below common server-rendering cache limits,
+while `catalog.json` remains the complete metadata source of truth.
 
 ZIP releases are safely unpacked. The handful of legacy ESOUI RAR releases are preserved in their original format, and a listing with no downloadable payload gets an explicit `ARCHIVE_UNAVAILABLE.md` marker. Individual generated files over 50 MiB are excluded from Git and recorded in `.mirror-omitted.json` with their byte size, SHA-256 checksum, and official download URL.
 
