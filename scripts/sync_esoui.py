@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import shutil
 import tempfile
@@ -30,7 +31,12 @@ from archive_common import (
 FEED_URL = "https://api.mmoui.com/v3/game/ESO/filelist.json"
 DOWNLOAD_URL = "https://www.esoui.com/downloads/dl{source_id}/"
 MAX_UNPACKED_BYTES = 512 * 1024 * 1024
+MAX_REPOSITORY_FILE_BYTES = 50 * 1024 * 1024
 DOWNLOAD_ATTEMPTS = 4
+
+
+class UnavailableReleaseError(RuntimeError):
+    """The upstream listing exists but currently has no downloadable payload."""
 
 
 def read_feed(feed_path: Path | None) -> list[dict[str, Any]]:
@@ -97,6 +103,49 @@ def record_from_entry(entry: dict[str, Any], old: dict[str, Any] | None) -> dict
     }
 
 
+def omit_oversized_files(root: Path, record: dict[str, Any]) -> list[dict[str, Any]]:
+    omitted: list[dict[str, Any]] = []
+    for file_path in sorted(root.rglob("*")):
+        if not file_path.is_file() or file_path.stat().st_size <= MAX_REPOSITORY_FILE_BYTES:
+            continue
+        digest = hashlib.sha256()
+        with file_path.open("rb") as source:
+            for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                digest.update(chunk)
+        omitted.append(
+            {
+                "path": file_path.relative_to(root).as_posix(),
+                "bytes": file_path.stat().st_size,
+                "sha256": digest.hexdigest(),
+                "reason": "exceeds the mirror's 50 MiB per-file Git limit",
+                "download_url": record["download_url"],
+            }
+        )
+        file_path.unlink()
+    if omitted:
+        write_json(root / ".mirror-omitted.json", {"files": omitted})
+    return omitted
+
+
+def write_unavailable_release(record: dict[str, Any], shard_root: Path, reason: str) -> None:
+    destination = shard_root / record["shard"] / record["archive_path"]
+    if destination.exists():
+        return
+    destination.mkdir(parents=True, exist_ok=True)
+    metadata = record | {
+        "archived": False,
+        "archive_status": "unavailable",
+        "archive_error": reason,
+    }
+    write_json(destination / "addon.json", metadata)
+    (destination / "ARCHIVE_UNAVAILABLE.md").write_text(
+        "# Archive unavailable\n\n"
+        "ESOUI lists this add-on, but its download endpoint returned an empty response "
+        "after multiple attempts. The mirror will retry if ESOUI publishes a changed release.\n",
+        encoding="utf-8",
+    )
+
+
 def archive_release(record: dict[str, Any], old: dict[str, Any] | None, shard_root: Path) -> None:
     shard_directory = shard_root / record["shard"]
     destination = shard_directory / record["archive_path"]
@@ -110,6 +159,7 @@ def archive_release(record: dict[str, Any], old: dict[str, Any] | None, shard_ro
         archive = temporary_path / f"{record['source_id']}.zip"
         unpacked = temporary_path / "unpacked"
         last_error: Exception | None = None
+        archive_format = "zip"
         for attempt in range(1, DOWNLOAD_ATTEMPTS + 1):
             try:
                 request = urllib.request.Request(
@@ -118,12 +168,19 @@ def archive_release(record: dict[str, Any], old: dict[str, Any] | None, shard_ro
                 )
                 with urllib.request.urlopen(request, timeout=120) as response:
                     archive.write_bytes(response.read())
-                if not zipfile.is_zipfile(archive):
-                    raise zipfile.BadZipFile("ESOUI response is not a ZIP archive")
+                if archive.stat().st_size == 0:
+                    raise UnavailableReleaseError("ESOUI returned an empty response")
                 if unpacked.exists():
                     shutil.rmtree(unpacked)
                 unpacked.mkdir()
-                safe_extract(archive, unpacked, MAX_UNPACKED_BYTES)
+                if zipfile.is_zipfile(archive):
+                    safe_extract(archive, unpacked, MAX_UNPACKED_BYTES)
+                    archive_format = "zip"
+                elif archive.read_bytes()[:8].startswith(b"Rar!"):
+                    shutil.copy2(archive, unpacked / "release.rar")
+                    archive_format = "rar"
+                else:
+                    raise zipfile.BadZipFile("ESOUI response is not a ZIP archive")
                 break
             except (OSError, RuntimeError, urllib.error.URLError, zipfile.BadZipFile) as error:
                 last_error = error
@@ -131,10 +188,16 @@ def archive_release(record: dict[str, Any], old: dict[str, Any] | None, shard_ro
                     time.sleep(2 ** (attempt - 1))
         else:
             assert last_error is not None
+            if isinstance(last_error, UnavailableReleaseError):
+                raise last_error
             raise RuntimeError(
                 f"ESOUI {record['source_id']} ({record['title']}) failed after "
                 f"{DOWNLOAD_ATTEMPTS} attempts: {type(last_error).__name__}: {last_error}"
             ) from last_error
+        omitted = omit_oversized_files(unpacked, record)
+        record["archive_format"] = archive_format
+        if omitted:
+            record["omitted_files"] = omitted
         if destination.exists():
             shutil.rmtree(destination)
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -167,6 +230,7 @@ def main() -> None:
     next_catalog = dict(previous)
     discovered: set[str] = set()
     archived = 0
+    unavailable = 0
     failures: list[str] = []
     selected = read_feed(args.feed)
     if args.limit:
@@ -203,6 +267,11 @@ def main() -> None:
             try:
                 archive_release(record, old, args.shard_root.resolve())
                 archived += 1
+            except UnavailableReleaseError as error:
+                write_unavailable_release(record, args.shard_root.resolve(), str(error))
+                record["archive_status"] = "unavailable"
+                unavailable += 1
+                print(f"::notice title=ESOUI archive unavailable::{identifier}: {error}")
             except (OSError, RuntimeError, urllib.error.URLError, zipfile.BadZipFile) as error:
                 failure = f"{identifier}: {error}"
                 failures.append(failure)
@@ -224,7 +293,7 @@ def main() -> None:
     write_unified_catalog(root)
     print(
         f"Indexed {len(next_catalog)} ESOUI add-ons; archived {archived} releases; "
-        f"{len(failures)} failures"
+        f"{unavailable} unavailable; {len(failures)} failures"
     )
     if failures:
         raise SystemExit(1)
