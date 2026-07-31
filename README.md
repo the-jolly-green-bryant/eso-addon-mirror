@@ -23,7 +23,27 @@ If an author or title changes, synchronization moves that one stable record to i
 
 ## Performance
 
-Daily GitHub Actions first refresh the small official ESOUI feed, then fan out across the 16 shards. Each runner shallow-clones only one shard and downloads a ZIP only when its local `addon.json` release fingerprint changed. Code-only work in this repository never checks out archived source.
+Daily GitHub Actions first refresh the small official ESOUI feed, then fan out across the 16 shards. Each runner shallow-clones only one shard and downloads a release only when its local `addon.json` fingerprint changed. Code-only work in this repository never checks out archived source.
+
+ZIP releases are safely unpacked. The handful of legacy ESOUI RAR releases are preserved in their original format, and a listing with no downloadable payload gets an explicit `ARCHIVE_UNAVAILABLE.md` marker. Individual generated files over 50 MiB are excluded from Git and recorded in `.mirror-omitted.json` with their byte size, SHA-256 checksum, and official download URL.
+
+For a lightweight local metadata checkout, clone each shard with blob filtering and sparse checkout:
+
+```bash
+mkdir -p ../eso-addon-mirror-shards
+for shard in 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f; do
+  target="../eso-addon-mirror-shards/$shard"
+  git clone --filter=blob:none --no-checkout \
+    "https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-$shard.git" \
+    "$target"
+  git -C "$target" sparse-checkout set --no-cone \
+    '/README.md' '/.gitattributes' '/addons/*/*/addon.json' \
+    '/addons/*/*/.mirror-omitted.json' '/addons/*/*/ARCHIVE_UNAVAILABLE.md'
+  git -C "$target" checkout main
+done
+```
+
+This keeps the complete, current metadata locally while downloading full add-on source blobs only when you explicitly request them.
 
 ## Stewardship
 
