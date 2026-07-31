@@ -109,19 +109,15 @@ def write_unified_catalog(root: Path) -> None:
     listing_fields = (
         "archive_path",
         "archive_repository",
-        "archived",
         "author",
         "canonical_id",
         "content_id",
         "deleted",
-        "deleted_at",
         "download_url",
         "downloads",
         "published",
         "source",
-        "source_url",
         "title",
-        "updated_at",
         "version",
     )
     listing_addons = {
