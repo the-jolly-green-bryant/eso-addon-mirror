@@ -2,6 +2,10 @@
 
 A public, GitHub-browsable catalog and preservation mirror for Elder Scrolls Online add-ons from Bethesda and ESOUI.
 
+## Browse add-ons
+
+**[Browse every Console and PC / Mac add-on A–Z](addons/README.md).** Each listing links directly to the add-on's unpacked source in its public archive shard. The index and current total are regenerated automatically when catalog metadata changes.
+
 ## Architecture
 
 This lightweight control repository stores normalized metadata and synchronization software. Unpacked source lives in 16 public archive shards, so browsing one add-on never requires cloning the whole ecosystem.
@@ -11,6 +15,7 @@ catalog.json                         unified searchable catalog
 catalog-index.json                   compact catalog for web/API browsing
 catalogs/bethesda.json               Bethesda source records
 catalogs/esoui.json                  official ESOUI/MMOUI feed records
+addons/                              generated A–Z GitHub browsing indexes
 eso-addon-mirror-shard-00 … -0f      unpacked GitHub-browsable source
 ```
 
@@ -52,4 +57,4 @@ This keeps the complete, current metadata locally while downloading full add-on 
 
 ## Stewardship
 
-This is an unofficial preservation project and is not endorsed by Bethesda Softworks, ZeniMax Online Studios, ESOUI, or MMOUI. Add-ons remain the work of their authors and retain their own licenses. The MIT license applies to the synchronization utility, not automatically to mirrored content. Please report attribution or takedown concerns through this repository.
+This is an unofficial preservation project and is not endorsed by Bethesda Softworks, ZeniMax Online Studios, ESOUI, or MMOUI. Add-ons remain the work of their authors and retain their own licenses. The repository's transparency-only license applies to the synchronization utility, not automatically to mirrored content. Please report attribution or takedown concerns through this repository.

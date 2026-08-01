@@ -49,6 +49,9 @@ class ArchiveCommonTests(unittest.TestCase):
                     {
                         "addons": {
                             "bethesda:one": {
+                                "archive_path": "addons/Example/One__one",
+                                "archive_repository": "example/shard",
+                                "author": "Example",
                                 "canonical_id": "bethesda:one",
                                 "content_id": "one",
                                 "title": "One",
@@ -68,12 +71,20 @@ class ArchiveCommonTests(unittest.TestCase):
             self.assertEqual(
                 index["addons"]["bethesda:one"],
                 {
+                    "archive_path": "addons/Example/One__one",
+                    "archive_repository": "example/shard",
+                    "author": "Example",
                     "canonical_id": "bethesda:one",
                     "content_id": "one",
                     "source": "bethesda",
                     "title": "One",
                 },
             )
+            browse_index = (root / "addons" / "README.md").read_text()
+            browse_page = (root / "addons" / "O.md").read_text()
+            self.assertIn("**1 add-ons**", browse_index)
+            self.assertIn("[One](https://github.com/example/shard/tree/main/addons/Example/One__one)", browse_page)
+            self.assertIn("| Example | Console |", browse_page)
 
 
 if __name__ == "__main__":

@@ -16,6 +16,7 @@ from typing import Any
 SCHEMA_VERSION = 2
 SHARD_COUNT = 16
 AUTHOR_RE = re.compile(r"^##\s*Author:\s*(.+?)\s*$", re.IGNORECASE | re.MULTILINE)
+BROWSE_BUCKETS = tuple("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") + ("OTHER",)
 
 
 def slug(value: str, fallback: str = "Unknown", maximum: int = 80) -> str:
@@ -89,6 +90,89 @@ def write_json(target: Path, value: Any) -> None:
     target.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def markdown_text(value: Any) -> str:
+    return (
+        str(value or "Unknown")
+        .replace("\\", "\\\\")
+        .replace("|", "\\|")
+        .replace("[", "\\[")
+        .replace("]", "\\]")
+        .replace("\r", " ")
+        .replace("\n", " ")
+    )
+
+
+def browse_bucket(title: str) -> str:
+    normalized = unicodedata.normalize("NFKC", html.unescape(title or "")).lstrip()
+    first = normalized[:1].upper()
+    return first if first in BROWSE_BUCKETS else "OTHER"
+
+
+def write_browse_indexes(root: Path, addons: dict[str, Any], sources: dict[str, int]) -> None:
+    browse_root = root / "addons"
+    browse_root.mkdir(parents=True, exist_ok=True)
+    grouped: dict[str, list[dict[str, Any]]] = {bucket: [] for bucket in BROWSE_BUCKETS}
+    for record in addons.values():
+        grouped[browse_bucket(str(record.get("title", "")))].append(record)
+
+    bucket_links = []
+    for bucket in BROWSE_BUCKETS:
+        records = sorted(
+            grouped[bucket],
+            key=lambda record: (
+                str(record.get("title", "")).casefold(),
+                str(record.get("author", "")).casefold(),
+                str(record.get("canonical_id", "")),
+            ),
+        )
+        label = "#" if bucket == "OTHER" else bucket
+        bucket_links.append(f"[{label}]({bucket}.md) ({len(records):,})")
+        lines = [
+            f"# ESO add-ons — {label}",
+            "",
+            "[← Browse all add-ons](README.md)",
+            "",
+            "This page is generated from the unified catalog. Add-on source remains in the public archive shards.",
+            "",
+            "| Add-on | Author | Platform | Version |",
+            "| --- | --- | --- | --- |",
+        ]
+        for record in records:
+            title = markdown_text(str(record.get("title", "")).strip())
+            repository = str(record.get("archive_repository", ""))
+            path = str(record.get("archive_path", ""))
+            if repository and path:
+                title = f"[{title}](https://github.com/{repository}/tree/main/{path})"
+            platform = "PC / Mac" if record.get("source") == "esoui" else "Console"
+            lines.append(
+                f"| {title} | {markdown_text(record.get('author'))} | {platform} | "
+                f"{markdown_text(record.get('version', '—'))} |"
+            )
+        (browse_root / f"{bucket}.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    source_summary = " · ".join(
+        f"{source.title()}: {count:,}" for source, count in sorted(sources.items())
+    )
+    (browse_root / "README.md").write_text(
+        "\n".join(
+            [
+                "# Browse ESO add-ons",
+                "",
+                f"**{len(addons):,} add-ons** · {source_summary}",
+                "",
+                "Choose a letter to browse every mirrored Console and PC / Mac add-on. "
+                "Each result opens its unpacked source in the appropriate public archive shard.",
+                "",
+                " · ".join(bucket_links),
+                "",
+                "This index is regenerated automatically whenever catalog metadata changes.",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
 def write_unified_catalog(root: Path) -> None:
     addons: dict[str, Any] = {}
     sources: dict[str, int] = {}
@@ -141,3 +225,4 @@ def write_unified_catalog(root: Path) -> None:
         + "\n",
         encoding="utf-8",
     )
+    write_browse_indexes(root, listing_addons, sources)
