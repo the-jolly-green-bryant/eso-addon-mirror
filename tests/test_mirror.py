@@ -1,4 +1,6 @@
 import importlib.util
+import base64
+import json
 import sys
 import tempfile
 import unittest
@@ -59,6 +61,28 @@ class MirrorTests(unittest.TestCase):
 
     def test_title_decodes_html_entities(self):
         self.assertEqual(mirror.title({"title": "Votan&#39;s Addon"}, "x"), "Votan's Addon")
+
+    def test_addon_record_preserves_bethesda_preview_image(self):
+        identifier = "00000000-0000-4000-8000-000000000000"
+        record = mirror.addon_record(
+            identifier,
+            {
+                "title": "Previewed Addon",
+                "preview_image": {
+                    "s3bucket": "ugcmods.bethesda.net",
+                    "s3key": "public/content/ESO/1/preview.png",
+                },
+            },
+            "fingerprint",
+            True,
+        )
+        self.assertTrue(
+            record["image_url"].startswith("https://ugcmods.bethesda.net/image/")
+        )
+        encoded = record["image_url"].rsplit("/", 1)[-1]
+        payload = json.loads(base64.b64decode(encoded))
+        self.assertEqual(payload["key"], "public/content/ESO/1/preview.png")
+        self.assertEqual(payload["edits"]["resize"]["width"], 228)
 
     def test_archive_path_is_readable_and_stable(self):
         identifier = "00000000-0000-4000-8000-000000000000"

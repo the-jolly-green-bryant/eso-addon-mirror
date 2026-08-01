@@ -108,6 +108,19 @@ def browse_bucket(title: str) -> str:
     return first if first in BROWSE_BUCKETS else "OTHER"
 
 
+def listing_image(record: dict[str, Any]) -> str | None:
+    """Return the primary upstream listing image without copying gallery metadata."""
+    direct = record.get("image_url")
+    if isinstance(direct, str) and direct.startswith("https://"):
+        return direct
+    images = record.get("images")
+    if isinstance(images, list):
+        for image in images:
+            if isinstance(image, str) and image.startswith("https://"):
+                return image
+    return None
+
+
 def write_browse_indexes(root: Path, addons: dict[str, Any], sources: dict[str, int]) -> None:
     browse_root = root / "addons"
     browse_root.mkdir(parents=True, exist_ok=True)
@@ -199,6 +212,7 @@ def write_unified_catalog(root: Path) -> None:
         "deleted",
         "download_url",
         "downloads",
+        "image_url",
         "published",
         "source",
         "title",
@@ -212,6 +226,10 @@ def write_unified_catalog(root: Path) -> None:
         }
         for canonical, record in addons.items()
     }
+    for canonical, record in addons.items():
+        image_url = listing_image(record)
+        if image_url:
+            listing_addons[canonical]["image_url"] = image_url
     (root / "catalog-index.json").write_text(
         json.dumps(
             {

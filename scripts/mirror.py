@@ -6,6 +6,7 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import base64
 import os
 import shutil
 import subprocess
@@ -109,6 +110,69 @@ def author(item: dict[str, Any], fallback: str = "Unknown") -> str:
     return fallback
 
 
+def image_url(item: dict[str, Any], fallback: str | None = None) -> str | None:
+    """Extract Bethesda's preferred listing image across API naming variants."""
+    candidates: list[Any] = [
+        item.get("image_url"),
+        item.get("preview_image_url"),
+        item.get("thumbnail_url"),
+    ]
+    for key in ("preview_image", "cover_image"):
+        raw_image = item.get(key)
+        if isinstance(raw_image, dict):
+            bucket = raw_image.get("s3bucket")
+            object_key = raw_image.get("s3key")
+            if (
+                isinstance(bucket, str)
+                and bucket.endswith(".bethesda.net")
+                and isinstance(object_key, str)
+                and object_key.startswith("public/")
+            ):
+                payload = {
+                    "bucket": bucket,
+                    "key": object_key,
+                    "edits": {"resize": {"width": 228, "fit": "cover"}},
+                    "outputFormat": "webp",
+                }
+                encoded = base64.b64encode(
+                    json.dumps(payload, separators=(",", ":")).encode()
+                ).decode()
+                candidates.append(f"https://{bucket}/image/{encoded}")
+    media = item.get("media")
+    if isinstance(media, dict):
+        for preview_key, image_key in (
+            ("previewImage", "previewImage"),
+            ("preview_image", "preview_image"),
+            ("coverImage", "mediaImage"),
+            ("cover_image", "media_image"),
+        ):
+            preview = media.get(preview_key)
+            if not isinstance(preview, dict):
+                continue
+            image = preview.get(image_key)
+            if isinstance(image, dict):
+                resolutions = image.get("additionalResolutions") or image.get(
+                    "additional_resolutions"
+                )
+                if isinstance(resolutions, dict):
+                    candidates.append(resolutions.get("xsmall"))
+                candidates.append(image.get("src"))
+            candidates.append(preview.get("src"))
+    images = item.get("images")
+    if isinstance(images, list):
+        candidates.extend(images)
+    candidates.append(fallback)
+    for candidate in candidates:
+        if isinstance(candidate, str) and candidate.startswith("https://"):
+            return candidate
+        if isinstance(candidate, dict):
+            for key in ("src", "url"):
+                nested = candidate.get(key)
+                if isinstance(nested, str) and nested.startswith("https://"):
+                    return nested
+    return None
+
+
 def stable_fingerprint(item: dict[str, Any]) -> str:
     """Hash release metadata while ignoring counters and other noisy fields."""
     volatile = {
@@ -166,7 +230,7 @@ def addon_record(
 ) -> dict[str, Any]:
     name = title(item, identifier)
     creator = author(item, str((old or {}).get("author") or "Unknown"))
-    return {
+    record = {
         "archive_path": archive_path(creator, name, identifier),
         "archive_repository": MAIN_REPOSITORY,
         "archived": published or bool(old and old.get("archived")),
@@ -182,6 +246,10 @@ def addon_record(
         "source_url": f"https://mods.bethesda.net/en/elderscrollsonline/details/{identifier}",
         "title": name,
     }
+    preferred_image = image_url(item, (old or {}).get("image_url"))
+    if preferred_image:
+        record["image_url"] = preferred_image
+    return record
 
 
 def omit_oversized_files(root: Path, record: dict[str, Any]) -> None:

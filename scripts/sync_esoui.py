@@ -83,6 +83,7 @@ def record_from_entry(
     author = str(entry.get("UIAuthorName") or "Unknown")
     shard = shard_for(identifier)
     relative_path = archive_path(author, title, source_id)
+    images = entry.get("UIIMGs") or []
     record = {
         "canonical_id": identifier,
         "content_id": identifier,
@@ -98,7 +99,7 @@ def record_from_entry(
         "category_id": entry.get("UICATID"),
         "directories": entry.get("UIDir") or [],
         "compatibility": entry.get("UICompatibility") or [],
-        "images": entry.get("UIIMGs") or [],
+        "images": images,
         "stats": {
             "downloads": int(entry.get("UIDownloadTotal") or 0),
             "monthly_downloads": int(entry.get("UIDownloadMonthly") or 0),
@@ -113,6 +114,8 @@ def record_from_entry(
         "archive_path": relative_path,
         "archived": bool(old and old.get("archived")),
     }
+    if images and isinstance(images[0], str) and images[0].startswith("https://"):
+        record["image_url"] = images[0]
     if not main_repository:
         record["shard"] = shard
     return record
