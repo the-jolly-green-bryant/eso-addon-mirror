@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Zgoo">
+      <Action name="TOGGLE_ZGOO">
+        <Down>Zgoo.CommandHandler()</Down>
+      </Action>
+      <Action name="TOGGLE_ZGOO_MOUSE">
+        <Down>Zgoo.CommandHandler("mouse")</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

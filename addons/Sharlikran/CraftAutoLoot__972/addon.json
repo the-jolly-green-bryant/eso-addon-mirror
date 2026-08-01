@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Sharlikran/CraftAutoLoot__972",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:972",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:972",
+  "deleted": false,
+  "directories": [
+    "CraftAutoLoot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl972/",
+  "fingerprint": "b8e9f55fb9f346ad56392fdc7b2c654d55d082255e6829719f407b856517af4c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2972.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "972",
+  "source_url": "https://www.esoui.com/downloads/info972-CraftAutoLoot.html",
+  "stats": {
+    "downloads": 121530,
+    "favorites": 187,
+    "monthly_downloads": 129
+  },
+  "title": "CraftAutoLoot",
+  "updated_at": 1705505014000,
+  "version": "1.23"
+}

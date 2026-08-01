@@ -1,0 +1,24 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c66CCFFStatic's Recruiter|r">
+			<Action name="SR_TRAVEL">
+				<Down>StaticsRecruiter:Travel()</Down>
+			</Action>
+			<Action name="SR_MESSAGE_1">
+				<Down>StaticsRecruiter:LoadMessage(1)</Down>
+			</Action>
+			<Action name="SR_MESSAGE_2">
+				<Down>StaticsRecruiter:LoadMessage(2)</Down>
+			</Action>
+			<Action name="SR_MESSAGE_3">
+				<Down>StaticsRecruiter:LoadMessage(3)</Down>
+			</Action>
+			<Action name="SR_MESSAGE_4">
+				<Down>StaticsRecruiter:LoadMessage(4)</Down>
+			</Action>
+			<Action name="SR_MESSAGE_5">
+				<Down>StaticsRecruiter:LoadMessage(5)</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

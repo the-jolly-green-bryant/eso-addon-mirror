@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/SirNightstorm/Gamepad-Stay-Mounted__3951",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SirNightstorm",
+  "canonical_id": "esoui:3951",
+  "category_id": "162",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:3951",
+  "deleted": false,
+  "directories": [
+    "GamepadStayMounted"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3951/",
+  "fingerprint": "831707c98bfb6831e43fe67e8acb2df127f9712ea756e3bb8848aa7770786f75",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13373.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3951",
+  "source_url": "https://www.esoui.com/downloads/info3951-GamepadStayMounted.html",
+  "stats": {
+    "downloads": 3982,
+    "favorites": 5,
+    "monthly_downloads": 59
+  },
+  "title": "Gamepad Stay Mounted",
+  "updated_at": 1747497044000,
+  "version": "1.1.0"
+}

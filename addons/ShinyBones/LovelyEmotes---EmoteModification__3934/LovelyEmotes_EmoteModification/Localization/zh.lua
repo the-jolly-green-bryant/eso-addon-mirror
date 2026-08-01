@@ -1,0 +1,14 @@
+local _zh = {
+	SI_LE_EMOTEDATAMOD_ADD_BUTTON_TOOLTIP = "添加条目",
+	SI_LE_EMOTEDATAMOD_APPLY_BUTTON_TOOLTIP = "保存更改并重新加载",
+	SI_LE_EMOTEDATAMOD_CANCEL_BUTTON_TOOLTIP = "丢弃更改",
+	SI_LE_EMOTEDATAMOD_CLEAN_BUTTON_TOOLTIP = "删除所有无效和空的条目",
+
+	SI_LE_EMOTEDATAMOD_CLEAN = "清洁",
+	SI_LE_EMOTEDATAMOD_REPLACE_NAME = "替换名称",
+	SI_LE_EMOTEDATAMOD_SELECT_OR_ADD = "选择或添加条目",
+}
+
+for k, v in pairs(_zh) do
+	SafeAddString(_G[k], v, 1)
+end

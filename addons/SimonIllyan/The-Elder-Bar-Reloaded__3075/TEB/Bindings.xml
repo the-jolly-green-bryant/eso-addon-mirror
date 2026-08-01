@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="The Elder Bar">
+      <Action name="LOCK_UNLOCK_BAR">
+        <Down>TEB.KeyLockUnlockBar()</Down>
+      </Action>
+      <Action name="LOCK_UNLOCK_GADGETS">
+        <Down>TEB.KeyLockUnlockGadgets()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

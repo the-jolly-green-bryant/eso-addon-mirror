@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/sirinsidiator/LibResurrection__1312",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:1312",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    }
+  ],
+  "content_id": "esoui:1312",
+  "deleted": false,
+  "directories": [
+    "LibResurrection"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1312/",
+  "fingerprint": "86ab4280af0fc6b6c6b9ccacb06d4e1b678c347791a21352334e21c7e9c41a49",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1312",
+  "source_url": "https://www.esoui.com/downloads/info1312-LibResurrection.html",
+  "stats": {
+    "downloads": 124046,
+    "favorites": 10,
+    "monthly_downloads": 499
+  },
+  "title": "LibResurrection",
+  "updated_at": 1457360555000,
+  "version": "r2"
+}

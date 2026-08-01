@@ -1,0 +1,27 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Bandits |c00FFE8Companions|r">
+			<Action name="BCUI_SUMMON_COMPANION_ACTIVE">
+				<Down>BCUI.Binds.SummonCompanionByIndex(BCUI.Vars.SidebarCompanion)</Down>
+			</Action>
+			<Action name="BCUI_SUMMON_COMPANION_1">
+				<Down>BCUI.Binds.SummonCompanionByIndex(3)</Down>
+			</Action>
+			<Action name="BCUI_SUMMON_COMPANION_2">
+				<Down>BCUI.Binds.SummonCompanionByIndex(4)</Down>
+			</Action>
+			<Action name="BCUI_SUMMON_COMPANION_3">
+				<Down>BCUI.Binds.SummonCompanionByIndex(5)</Down>
+			</Action>
+			<Action name="BCUI_SUMMON_COMPANION_4">
+				<Down>BCUI.Binds.SummonCompanionByIndex(6)</Down>
+			</Action>
+			<Action name="BCUI_SUMMON_COMPANION_5">
+				<Down>BCUI.Binds.SummonCompanionByIndex(7)</Down>
+			</Action>
+			<Action name="BCUI_SUMMON_COMPANION_6">
+				<Down>BCUI.Binds.SummonCompanionByIndex(8)</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

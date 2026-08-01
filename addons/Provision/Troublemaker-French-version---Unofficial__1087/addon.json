@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Provision/Troublemaker-French-version---Unofficial__1087",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Provision",
+  "canonical_id": "esoui:1087",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:1087",
+  "deleted": false,
+  "directories": [
+    "TroublemakerFR"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1087/",
+  "fingerprint": "febf0a913b7aa81b2c6399602c02f784cee8055505976a67ee181305ed0e8280",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3405.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1087",
+  "source_url": "https://www.esoui.com/downloads/info1087-TroublemakerFrenchversion-Unofficial.html",
+  "stats": {
+    "downloads": 8736,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "Troublemaker (French version - Unofficial)",
+  "updated_at": 1525467304000,
+  "version": "0.3.3"
+}

@@ -1,0 +1,718 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="MainDialogueWindow" mouseEnabled="true" movable="true" layer="OVERLAY" clampedToScreen="true" hidden="true">
+            <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetY="90"/>
+            <Dimensions x="810" />
+            <Controls>
+                <Control name="$(parent)Header">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                    <Dimensions x="810" y="40" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <Label name="$(parent)Title" font="ZoFontWindowTitle" color="CFDCBD" wrapMode="ELLIPSIS"
+                               verticalAlignment="CENTER"
+                        >
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="2" />
+                        </Label>
+                        <Button name="$(parent)Dock" inherits="ZO_ButtonBehaviorClickSound">
+                            <Anchor point="RIGHT" offsetX="-76" offsetY="20" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+                            <Dimensions x="32" y="32" />
+                            <Textures
+                                normal="SwissKnife/textures/dialogues/icons/dock_up.dds"
+                                pressed="SwissKnife/textures/dialogues/icons/dock_down.dds"
+                                mouseOver="SwissKnife/textures/dialogues/icons/dock_over.dds"
+                                highlight="SwissKnife/textures/dialogues/icons/dock_over.dds"
+                                disabled="SwissKnife/textures/dialogues/icons/dock_up.dds"
+                            />
+                            <OnMouseEnter>
+                                InitializeTooltip(InformationTooltip, self, TOP, 0, 1)
+                                SetTooltipText(InformationTooltip, GetString(SI_SK_DIALOG_DOCK))
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                SetTooltipText(InformationTooltip)
+                            </OnMouseExit>
+                            <OnMouseDown>
+                                SKMD:Dock()
+                            </OnMouseDown>
+                        </Button>
+                        <Button name="$(parent)Lock" inherits="ZO_ButtonBehaviorClickSound">
+                            <Anchor point="RIGHT" offsetX="-44" offsetY="20" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+                            <Dimensions x="32" y="32" />
+                            <Textures
+                                normal="SwissKnife/textures/dialogues/icons/lock_up.dds"
+                                pressed="SwissKnife/textures/dialogues/icons/lock_down.dds"
+                                mouseOver="SwissKnife/textures/dialogues/icons/lock_over.dds"
+                                highlight="SwissKnife/textures/dialogues/icons/lock_over.dds"
+                                disabled="SwissKnife/textures/dialogues/icons/lock_up.dds"
+                            />
+                            <OnMouseExit>
+                                SetTooltipText(InformationTooltip)
+                            </OnMouseExit>
+                            <OnMouseDown>
+                                SKMD:LockToggle()
+                                SetTooltipText(InformationTooltip)
+                            </OnMouseDown>
+                        </Button>
+                        <Texture name="$(parent)Icon">
+                            <Anchor point="RIGHT" offsetX="-44" offsetY="20" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+                            <Dimensions x="32" y="32" />
+                        </Texture>
+                        <Button name="$(parent)Close" inherits="ZO_ButtonBehaviorClickSound">
+                            <Anchor point="RIGHT" offsetX="-4" offsetY="20" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+                            <Dimensions x="40" y="40" />
+                            <Textures
+                                normal="SwissKnife/textures/dialogues/icons/cancel_up.dds"
+                                pressed="SwissKnife/textures/dialogues/icons/cancel_down.dds"
+                                mouseOver="SwissKnife/textures/dialogues/icons/cancel_over.dds"
+                                highlight="SwissKnife/textures/dialogues/icons/cancel_over.dds"
+                                disabled="SwissKnife/textures/dialogues/icons/cancel_up.dds"
+                            />
+                            <OnMouseEnter>
+                                InitializeTooltip(InformationTooltip, self, TOP, 0, 1)
+                                SetTooltipText(InformationTooltip, GetString(SI_SK_DIALOG_CLOSE))
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                SetTooltipText(InformationTooltip)
+                            </OnMouseExit>
+                            <OnMouseDown>
+                                SKMD:Close()
+                            </OnMouseDown>
+                        </Button>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)NavBar">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="47" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+                    <Dimensions x="41"/>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <Control name="$(parent)Mode" inherits="ZO_MenuBarTemplate">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="7" />
+                            <Dimensions x="41" y="381"/>
+                        </Control>
+                        <Button name="$(parent)Settings" inherits="ZO_ButtonBehaviorClickSound" tier="HIGH">
+                            <Anchor point="BOTTONLEFT" relativeTo="$(parent)NavBar" relativePoint="BOTTOMLEFT"
+                                offsetX="3" offsetY="-42"
+                            />
+                            <Dimensions x="36" y="36" />
+                            <Textures
+                                normal="SwissKnife/textures/dialogues/icons/cog_up.dds"
+                                pressed="SwissKnife/textures/dialogues/icons/cog_down.dds"
+                                mouseOver="SwissKnife/textures/dialogues/icons/cog_over.dds"
+                                highlight="SwissKnife/textures/dialogues/icons/cog_over.dds"
+                                disabled="SwissKnife/textures/dialogues/icons/cog_up.dds"
+                            />
+                            <OnMouseDown>
+                                SKMD:OpenSettings()
+                            </OnMouseDown>
+                            <OnMouseEnter>
+                                InitializeTooltip(InformationTooltip, self, TOP, 0, 1)
+                                SetTooltipText(InformationTooltip, GetString(SI_SK_SETTINGS_TOOLTIP))
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                SetTooltipText(InformationTooltip)
+                            </OnMouseExit>
+                        </Button>
+                        <Button name="$(parent)ToggleSize" inherits="ZO_ButtonBehaviorClickSound" tier="HIGH">
+                            <Anchor point="BOTTONLEFT" relativeTo="$(parent)Settings" relativePoint="TOPLEFT"
+                                offsetX="0" offsetY="-38"
+                            />
+                            <Dimensions x="36" y="36" />
+                            <Textures
+                                normal="SwissKnife/textures/dialogues/icons/size_up.dds"
+                                pressed="SwissKnife/textures/dialogues/icons/size_down.dds"
+                                mouseOver="SwissKnife/textures/dialogues/icons/size_over.dds"
+                                highlight="SwissKnife/textures/dialogues/icons/size_over.dds"
+                                disabled="SwissKnife/textures/dialogues/icons/size_up.dds"
+                            />
+                            <OnMouseDown>
+                                SKMD:ToggleSize()
+                            </OnMouseDown>
+                            <OnMouseEnter>
+                                InitializeTooltip(InformationTooltip, self, TOP, 0, 1)
+                                SetTooltipText(InformationTooltip, GetString(SI_SK_TOGGLE_SIZE_TOOLTIP))
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                SetTooltipText(InformationTooltip)
+                            </OnMouseExit>
+                        </Button>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Sets" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="49" offsetY="47" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <Control name="$(parent)Headers">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Sets" relativePoint="TOPLEFT" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Sets" relativePoint="TOPRIGHT" />
+                            <Dimensions y="36"/>
+                            <Controls>
+                                <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_TITLE), "setName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                    <Anchor point="LEFT" offsetX="10" />
+                                    <Dimensions x="501" y="36" />
+                                </Control>
+                                <Control name="$(parent)Actions" inherits="ZO_SortHeader" mouseEnabled="false">
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_ACTIONS), NO_SORT_KEY, ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                    <Anchor point="TOPRIGHT" offsetX="-46" />
+                                    <Dimensions x="100" y="36" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetX="10" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-35" />
+                        </Control>
+                        <Label name="$(parent)Counter" font="ZoFontEditChat" verticalAlignment="CENTER">
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="6"
+                                    offsetY="-5" />
+                        </Label>
+                        <Control name="$(parent)Search" tier="HIGH" inherits="SK_SearchEditBox">
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"
+                                    offsetX="-2" offsetY="-1"
+                            />
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)SetsItems" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="49" offsetY="47" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <Control name="$(parent)Headers">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)SetsItems" relativePoint="TOPLEFT" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)SetsItems" relativePoint="TOPRIGHT" />
+                            <Dimensions y="36"/>
+                            <Controls>
+                                <Control name="$(parent)WhatIsIt" inherits="ZO_SortHeaderIcon">
+                                    <Anchor point="TOPLEFT" offsetX="8"/>
+                                    <Dimensions x="16" y="36" />
+                                    <OnInitialized>
+                                        ZO_SortHeader_InitializeArrowHeader(self, "whatIsIt", ZO_SORT_ORDER_UP)
+                                    </OnInitialized>
+                                </Control>
+                                <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)WhatIsIt" relativePoint="TOPRIGHT"
+                                            offsetX="7" />
+                                    <Dimensions x="372" y="36" />
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_TITLE), "itemName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                </Control>
+                                <Control name="$(parent)WhereIsIt" inherits="ZO_SortHeaderIcon">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name"
+                                            relativePoint="TOPRIGHT" offsetX="4" />
+                                    <Dimensions x="16" y="36" />
+                                    <OnInitialized>
+                                        ZO_SortHeader_InitializeArrowHeader(self, "whereIsIt", ZO_SORT_ORDER_UP)
+                                    </OnInitialized>
+                                </Control>
+                                <Control name="$(parent)OwnerName" inherits="ZO_SortHeader">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)WhereIsIt" relativePoint="TOPRIGHT"
+                                            offsetX="9" />
+                                    <Dimensions x="144" y="36" />
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_LOCATION), "ownerName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                </Control>
+                                <Control name="$(parent)AccName" inherits="ZO_SortHeader">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)OwnerName" relativePoint="TOPRIGHT" />
+                                    <Dimensions x="128" y="36" />
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_ACCOUNT), "accName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                </Control>
+                            </Controls>
+                        </Control>
+                         <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetX="5" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-42" />
+                        </Control>
+                        <Label name="$(parent)Counter" font="ZoFontEditChat" verticalAlignment="CENTER">
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="6"
+                                    offsetY="-5" />
+                        </Label>
+                        <Control name="$(parent)Search" tier="HIGH" inherits="SK_SearchEditBox">
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"
+                                    offsetX="-2" offsetY="-1"
+                            />
+                        </Control>
+                        <Control name="$(parent)Filters" inherits="SK_Filters">
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Search" relativePoint="BOTTOMLEFT" offsetX="-3" />
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Items" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="49" offsetY="47" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <Control name="$(parent)Headers">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Items" relativePoint="TOPLEFT" offsetX="10" offsetY="0" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Items" relativePoint="TOPRIGHT" />
+                            <Dimensions y="36"/>
+                            <Controls>
+                                <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_TITLE), "itemName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                    <Anchor point="TOPLEFT" />
+                                    <Dimensions x="501" y="36" />
+                                </Control>
+                                <Control name="$(parent)Actions" inherits="ZO_SortHeader" mouseEnabled="false">
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_ACTIONS), NO_SORT_KEY, ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                    <Anchor point="TOPRIGHT" offsetX="-46" />
+                                    <Dimensions x="100" y="36" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-10" />
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)NotBindItems" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="49" offsetY="47" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <Control name="$(parent)Headers">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Items" relativePoint="TOPLEFT" offsetX="10" offsetY="0" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Items" relativePoint="TOPRIGHT" />
+                            <Dimensions y="36"/>
+                            <Controls>
+                                <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_TITLE), "itemName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                    <Anchor point="TOPLEFT" />
+                                    <Dimensions x="501" y="36" />
+                                </Control>
+                                <Control name="$(parent)Actions" inherits="ZO_SortHeader" mouseEnabled="false">
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_ACTIONS), NO_SORT_KEY, ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                    <Anchor point="TOPRIGHT" offsetX="-46" />
+                                    <Dimensions x="100" y="36" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-10" />
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)AbilitiesControl" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="49" offsetY="47" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <Control name="$(parent)Headers">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)AbilitiesControl" relativePoint="TOPLEFT" offsetX="10" offsetY="0" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)AbilitiesControl" relativePoint="TOPRIGHT" />
+                            <Dimensions y="36"/>
+                            <Controls>
+                                <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_TITLE), "abilityName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                    <Anchor point="TOPLEFT" />
+                                    <Dimensions x="287" y="36" />
+                                </Control>
+                                <Control name="$(parent)SkillLineName" inherits="ZO_SortHeader">
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_SKILL_LINE_TITLE), "orderKey", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name"
+                                            relativePoint="TOPRIGHT" offsetX="4" />
+                                    <Dimensions x="230" y="36" />
+                                </Control>
+                                <Control name="$(parent)Actions" inherits="ZO_SortHeader" mouseEnabled="false">
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_ACTIONS), NO_SORT_KEY, ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                    <Anchor point="TOPRIGHT" offsetX="-46" />
+                                    <Dimensions x="100" y="36" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-35" />
+                        </Control>
+                        <Label name="$(parent)Counter" font="ZoFontEditChat" verticalAlignment="CENTER">
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="6"
+                                    offsetY="-5" />
+                        </Label>
+                        <Control name="$(parent)Search" tier="HIGH" inherits="SK_SearchEditBox">
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"
+                                    offsetX="-2" offsetY="-1"
+                            />
+                        </Control>
+                        <Control name="$(parent)Filters" inherits="SK_Filters">
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Search" relativePoint="BOTTOMLEFT" offsetX="-3" />
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)AbilitiesTracker" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="49" offsetY="47" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <Control name="$(parent)Headers">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)AbilitiesTracker" relativePoint="TOPLEFT" offsetX="10" offsetY="0" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)AbilitiesTracker" relativePoint="TOPRIGHT" />
+                            <Dimensions y="36"/>
+                            <Controls>
+                                <Control name="$(parent)Abilities" inherits="ZO_SortHeader" mouseEnabled="true">
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_BATTLE_OPTIONS_HEADER), "presetName", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                    <Anchor point="TOPLEFT" />
+                                    <Dimensions x="250" y="36" />
+                                </Control>
+                                <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Abilities" relativePoint="TOPRIGHT" />
+                                    <Dimensions x="177" y="36" />
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_CHARACTER), "className", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                </Control>
+                                <Control name="$(parent)OwnerName" inherits="ZO_SortHeader">
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_ACCOUNT), "accName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name"
+                                            relativePoint="TOPRIGHT" offsetX="4" />
+                                    <Dimensions x="200" y="36" />
+                                </Control>
+                                <Control name="$(parent)Actions" inherits="ZO_SortHeader" mouseEnabled="false">
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, GetString(SI_SK_AUT_UNWANTED_LIST_ACTIONS), NO_SORT_KEY, ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+                                    </OnInitialized>
+                                    <Anchor point="TOPRIGHT" offsetX="-46" />
+                                    <Dimensions x="100" y="36" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-35" />
+                        </Control>
+                        <Button name="$(parent)AddButton" inherits="ZO_ButtonBehaviorClickSound" hidden="false">
+                            <Dimensions x="32" y="32" />
+                            <Textures
+                                normal="SwissKnife/textures/dialogues/icons/plus_up.dds"
+                                pressed="SwissKnife/textures/dialogues/icons/plus_down.dds"
+                                mouseOver="SwissKnife/textures/dialogues/icons/plus_over.dds"
+                                disabled="SwissKnife/textures/dialogues/icons/plus_up.dds"
+                            />
+                            <OnMouseEnter>
+                                InitializeTooltip(InformationTooltip, self, TOP, 0, 1)
+                                SetTooltipText(InformationTooltip, GetString(SI_SK_AUT_TRACKED_ABILITIES_ADD_PRESET))
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                SetTooltipText(InformationTooltip)
+                            </OnMouseExit>
+                            <OnMouseDown>
+                                SKMD.trackedAbilitiesList:AddPreset()
+                            </OnMouseDown>
+                        </Button>
+                        <Label name="$(parent)Counter" font="ZoFontEditChat" verticalAlignment="CENTER">
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="6"
+                                    offsetY="-5" />
+                        </Label>
+                        <Control name="$(parent)Search" tier="HIGH" inherits="SK_SearchEditBox">
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"
+                                    offsetX="-2" offsetY="-1"
+                            />
+                        </Control>
+                        <Control name="$(parent)Filters" inherits="SK_Filters">
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Search" relativePoint="BOTTOMLEFT" offsetX="-3" />
+                        </Control>
+                    </Controls>
+                </Control>
+			</Controls>
+		</TopLevelControl>
+		<Control name="MainDialogueNavBarButtonTemplate" verticalAlignment="CENTER" horizontalAlignment="LEFT" tier="HIGH"
+             inherits="ZO_MenuBarButtonTemplateWithTooltip" layer="OVERLAY" mouseEnabled="true" virtual="true">
+            <Dimensions x="41" y="41"/>
+        </Control>
+		<Button name="UnwantedSetsListRowTemplate" verticalAlignment="CENTER" horizontalAlignment="LEFT" virtual="true">
+            <Dimensions x="771" y="32"/>
+            <Controls>
+                <Label name="$(parent)Deconstruct" font="ZoFontWinT1" verticalAlignment="CENTER" horizontalAlignment="LEFT"
+                   linkEnabled="false" mouseEnabled="true" wrapMode="1" color="00EE00"
+                >
+                    <Anchor point="LEFT" />
+                    <Dimensions x="16" y="32" />
+                </Label>
+                <Label name="$(parent)DeconstructJewelry" font="ZoFontWinT1" verticalAlignment="CENTER" horizontalAlignment="LEFT"
+                   linkEnabled="false" mouseEnabled="true" wrapMode="1" color="00EE00"
+                >
+                    <Anchor point="LEFT" relativeTo="$(parent)Deconstruct" relativePoint="RIGHT" offsetX="0" />
+                    <Dimensions x="16" y="32" />
+                </Label>
+                <Label name="$(parent)SetName" font="ZoFontWinT1" verticalAlignment="CENTER" horizontalAlignment="LEFT"
+                       linkEnabled="true" mouseEnabled="true" wrapMode="1" color="00EE00"
+                >
+                    <Anchor point="LEFT" relativeTo="$(parent)DeconstructJewelry" relativePoint="RIGHT" offsetX="0" />
+                    <Dimensions x="520" y="32" />
+                </Label>
+                <Button name="$(parent)EditButton" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+                    <Anchor point="RIGHT" offsetX="-70" />
+                    <Dimensions x="32" y="32" />
+                    <Textures
+                        normal="SwissKnife/textures/dialogues/icons/edit_up.dds"
+                        pressed="SwissKnife/textures/dialogues/icons/edit_down.dds"
+                        mouseOver="SwissKnife/textures/dialogues/icons/edit_over.dds"
+                        disabled="SwissKnife/textures/dialogues/icons/edit_up.dds"
+                    />
+                </Button>
+                <Button name="$(parent)DelButton" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+                    <Anchor point="RIGHT" offsetX="-35" />
+                    <Dimensions x="32" y="32" />
+                    <Textures
+                        normal="SwissKnife/textures/dialogues/icons/disable_up.dds"
+                        pressed="SwissKnife/textures/dialogues/icons/disable_down.dds"
+                        mouseOver="SwissKnife/textures/dialogues/icons/disable_over.dds"
+                        disabled="SwissKnife/textures/dialogues/icons/disable_up.dds"
+                    />
+                </Button>
+            </Controls>
+        </Button>
+		<Button name="SetsItemsListRowTemplate" verticalAlignment="CENTER" horizontalAlignment="LEFT" virtual="true">
+            <Dimensions x="771" y="32"/>
+            <Controls>
+                <Texture name="$(parent)ItemIcon" alpha="0.8" layer="OVERLAY" mouseEnabled="true">
+                    <Anchor point="LEFT" />
+                    <Dimensions x="22" y="22" />
+                    <TextureCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Label name="$(parent)ItemName" font="ZoFontWinT1" verticalAlignment="CENTER" horizontalAlignment="LEFT"
+                       linkEnabled="true" mouseEnabled="true" wrapMode="1">
+                    <Anchor point="LEFT" relativeTo="$(parent)ItemIcon" relativePoint="RIGHT" offsetX="4" />
+                    <Dimensions x="248" y="32" />
+                </Label>
+                <Label name="$(parent)ItemType" font="ZoFontWinT1" verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+                    <Anchor point="LEFT" relativeTo="$(parent)ItemName" relativePoint="RIGHT" />
+                    <Dimensions x="16" y="32" />
+                </Label>
+                <Label name="$(parent)ItemTrait" font="ZoFontWinT1" verticalAlignment="CENTER" horizontalAlignment="LEFT"
+                       linkEnabled="true" mouseEnabled="true" wrapMode="1">
+                    <Anchor point="LEFT" relativeTo="$(parent)ItemType" relativePoint="RIGHT" offsetX="4"/>
+                    <Dimensions x="100" y="32" />
+                </Label>
+                <Texture name="$(parent)BagIcon" alpha="0.8" layer="OVERLAY" mouseEnabled="true">
+                    <Anchor point="LEFT" relativeTo="$(parent)ItemTrait" relativePoint="RIGHT" offsetX="4"/>
+                    <Dimensions x="24" y="24" />
+                    <TextureCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Label name="$(parent)OwnerName" font="ZoFontWinT1" verticalAlignment="CENTER" horizontalAlignment="LEFT"
+                       wrapMode="1">
+                    <Anchor point="LEFT" relativeTo="$(parent)BagIcon" relativePoint="RIGHT" offsetX="4" />
+                    <Dimensions x="140" y="32" />
+                </Label>
+                <Label name="$(parent)AccName" font="ZoFontWinT1" verticalAlignment="CENTER" horizontalAlignment="LEFT"
+                       wrapMode="1" >
+                    <Anchor point="LEFT" relativeTo="$(parent)OwnerName" relativePoint="RIGHT" offsetX="4" />
+                    <Dimensions x="198" y="32" />
+                </Label>
+            </Controls>
+        </Button>
+		<Button name="UnwantedItemsListRowTemplate" verticalAlignment="CENTER" horizontalAlignment="LEFT" virtual="true">
+            <Dimensions x="771" y="32"/>
+            <Controls>
+                <Texture name="$(parent)ItemIcon" alpha="1">
+                    <Anchor point="LEFT" />
+                    <Dimensions x="28" y="28" />
+                    <TextureCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Label name="$(parent)ItemName" font="ZoFontWinT1" verticalAlignment="CENTER" horizontalAlignment="LEFT" linkEnabled="true" mouseEnabled="true" wrapMode="1">
+                    <Anchor point="LEFT" relativeTo="$(parent)ItemIcon" relativePoint="RIGHT" offsetX="8" />
+                    <Dimensions x="430" y="32" />
+                    <OnLinkMouseUp>
+                        ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
+                    </OnLinkMouseUp>
+                </Label>
+                <Label name="$(parent)ActionName" font="ZoFontWinT1" verticalAlignment="CENTER" horizontalAlignment="LEFT" linkEnabled="true" mouseEnabled="true" wrapMode="1">
+                    <Anchor point="LEFT" relativeTo="$(parent)ItemName" relativePoint="RIGHT" offsetX="8" />
+                    <Dimensions x="100" y="32" />
+                </Label>
+                <Button name="$(parent)DelButton" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+                    <Anchor point="RIGHT" offsetX="-35" />
+                    <Dimensions x="32" y="32" />
+                    <Textures
+                        normal="SwissKnife/textures/dialogues/icons/disable_up.dds"
+                        pressed="SwissKnife/textures/dialogues/icons/disable_down.dds"
+                        mouseOver="SwissKnife/textures/dialogues/icons/disable_over.dds"
+                        disabled="SwissKnife/textures/dialogues/icons/disable_up.dds"
+                    />
+                </Button>
+            </Controls>
+        </Button>
+		<Button name="NotBindItemsListRowTemplate" verticalAlignment="CENTER" horizontalAlignment="LEFT" virtual="true">
+            <Dimensions x="771" y="32"/>
+            <Controls>
+                <Texture name="$(parent)ItemIcon" alpha="1">
+                    <Anchor point="LEFT" />
+                    <Dimensions x="28" y="28" />
+                    <TextureCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Label name="$(parent)ItemName" font="ZoFontWinT1" verticalAlignment="CENTER" horizontalAlignment="LEFT" linkEnabled="true" mouseEnabled="true" wrapMode="1">
+                    <Anchor point="LEFT" relativeTo="$(parent)ItemIcon" relativePoint="RIGHT" offsetX="8" />
+                    <Dimensions x="530" y="32" />
+                    <OnLinkMouseUp>
+                        ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
+                    </OnLinkMouseUp>
+                </Label>
+                <Button name="$(parent)DelButton" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+                    <Anchor point="RIGHT" offsetX="-35" />
+                    <Dimensions x="32" y="32" />
+                    <Textures
+                        normal="SwissKnife/textures/dialogues/icons/disable_up.dds"
+                        pressed="SwissKnife/textures/dialogues/icons/disable_down.dds"
+                        mouseOver="SwissKnife/textures/dialogues/icons/disable_over.dds"
+                        disabled="SwissKnife/textures/dialogues/icons/disable_up.dds"
+                    />
+                </Button>
+            </Controls>
+        </Button>
+		<Button name="WatchedAbilitiesListRowTemplate" verticalAlignment="CENTER" horizontalAlignment="LEFT" virtual="true">
+            <Dimensions x="771" y="48"/>
+            <Controls>
+                <Texture name="$(parent)AbilityIcon" alpha="1">
+                    <Anchor point="LEFT" offsetX="2" />
+                    <Dimensions x="44" y="44" />
+                    <TextureCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Label name="$(parent)AbilityName" font="ZoFontWinT1" verticalAlignment="CENTER"
+                       horizontalAlignment="LEFT" linkEnabled="true" mouseEnabled="true" wrapMode="1">
+                    <Anchor point="LEFT" relativeTo="$(parent)AbilityIcon" relativePoint="RIGHT" offsetX="12" />
+                    <Dimensions x="220" y="48" />
+                    <OnLinkMouseUp>
+                        ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
+                    </OnLinkMouseUp>
+                </Label>
+                <Label name="$(parent)SkillLineName" font="ZoFontWinT1" verticalAlignment="CENTER"
+                       horizontalAlignment="LEFT" linkEnabled="true" mouseEnabled="true" wrapMode="1">
+                    <Anchor point="LEFT" relativeTo="$(parent)AbilityName" relativePoint="RIGHT" offsetX="12" />
+                    <Dimensions x="180" y="48" />
+                </Label>
+                <Label name="$(parent)CorrectionInterval" font="ZoFontWinT2" verticalAlignment="CENTER"
+                       horizontalAlignment="CENTER" linkEnabled="true" mouseEnabled="true" wrapMode="1">
+                    <Anchor point="LEFT" relativeTo="$(parent)SkillLineName" relativePoint="RIGHT" offsetX="6" />
+                    <Dimensions x="28" y="48" />
+                </Label>
+                <Label name="$(parent)HP" font="ZoFontWinT2" verticalAlignment="CENTER"
+                       horizontalAlignment="CENTER" linkEnabled="true" mouseEnabled="true" wrapMode="1">
+                    <Anchor point="LEFT" relativeTo="$(parent)CorrectionInterval" relativePoint="RIGHT" offsetX="6" />
+                    <Dimensions x="32" y="48" />
+                </Label>
+                <Texture name="$(parent)TypeIcon" alpha="1" layer="OVERLAY" mouseEnabled="true">
+                    <Anchor point="LEFT" relativeTo="$(parent)HP" relativePoint="LEFT" />
+                    <Dimensions x="32" y="32" />
+                    <TextureCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Texture name="$(parent)ModeIcon" alpha="1" layer="OVERLAY" mouseEnabled="true">
+                    <Anchor point="LEFT" relativeTo="$(parent)HP" relativePoint="RIGHT" />
+                    <Dimensions x="32" y="32" />
+                    <TextureCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Texture name="$(parent)OptionalIcon" alpha="1" layer="OVERLAY" mouseEnabled="true">
+                    <Anchor point="LEFT" relativeTo="$(parent)ModeIcon" relativePoint="RIGHT" />
+                    <Dimensions x="32" y="32" />
+                    <TextureCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Texture name="$(parent)DisabledIcon" alpha="1" layer="OVERLAY" mouseEnabled="true">
+                    <Anchor point="LEFT" relativeTo="$(parent)OptionalIcon" relativePoint="RIGHT" />
+                    <Dimensions x="36" y="36" />
+                    <TextureCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Button name="$(parent)EditButton" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+                    <Anchor point="RIGHT" offsetX="-62" />
+                    <Dimensions x="32" y="32" />
+                    <Textures
+                        normal="SwissKnife/textures/dialogues/icons/edit_up.dds"
+                        pressed="SwissKnife/textures/dialogues/icons/edit_down.dds"
+                        mouseOver="SwissKnife/textures/dialogues/icons/edit_over.dds"
+                        disabled="SwissKnife/textures/dialogues/icons/edit_up.dds"
+                    />
+                </Button>
+                <Button name="$(parent)ToggleControlButton" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+                    <Anchor point="RIGHT" offsetX="-35" />
+                    <Dimensions x="32" y="32" />
+                    <Textures
+                        normal="SwissKnife/textures/dialogues/icons/power_up.dds"
+                        pressed="SwissKnife/textures/dialogues/icons/power_down.dds"
+                        mouseOver="SwissKnife/textures/dialogues/icons/power_over.dds"
+                        disabled="SwissKnife/textures/dialogues/icons/power_up.dds"
+                    />
+                </Button>
+            </Controls>
+        </Button>
+		<Button name="TrackedAbilitiesListRowTemplate" verticalAlignment="CENTER" horizontalAlignment="LEFT" virtual="true">
+            <Controls>
+                <Control name="$(parent)Skills">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="4" offsetY="8" />
+                    <Dimensions x="236" y="86" />
+                </Control>
+                <Label name="$(parent)OwnerName" font="ZoFontWinT1" verticalAlignment="TOP"
+                       horizontalAlignment="LEFT" linkEnabled="true" mouseEnabled="true" wrapMode="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Skills" relativePoint="TOPRIGHT" offsetX="10" offsetY="4" />
+                </Label>
+                <Label name="$(parent)ClassName" font="ZoFontWinT2" verticalAlignment="TOP"
+                       horizontalAlignment="LEFT" linkEnabled="true" mouseEnabled="true" wrapMode="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)OwnerName" relativePoint="TOPLEFT" offsetY="28" />
+                </Label>
+                <Label name="$(parent)PresetName" font="ZoFontWinT2" verticalAlignment="TOP"
+                       horizontalAlignment="LEFT" linkEnabled="true" mouseEnabled="true" wrapMode="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)OwnerName" relativePoint="TOPLEFT" offsetY="47" />
+                </Label>
+                <Label name="$(parent)AccName" font="ZoFontWinT1" verticalAlignment="TOP"
+                       horizontalAlignment="LEFT" linkEnabled="true" mouseEnabled="true" wrapMode="1">
+                    <Anchor point="LEFT" relativeTo="$(parent)OwnerName" relativePoint="RIGHT" offsetX="4" />
+                </Label>
+                <Button name="$(parent)ExportButton" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+                    <Anchor point="RIGHT" offsetX="-87" />
+                    <Dimensions x="32" y="32" />
+                    <Textures
+                        normal="SwissKnife/textures/dialogues/icons/send_up.dds"
+                        pressed="SwissKnife/textures/dialogues/icons/send_down.dds"
+                        mouseOver="SwissKnife/textures/dialogues/icons/send_over.dds"
+                        disabled="SwissKnife/textures/dialogues/icons/send_up.dds"
+                    />
+                </Button>
+                <Button name="$(parent)ApplyButton" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+                    <Anchor point="RIGHT" offsetX="-58" />
+                    <Dimensions x="28" y="28" />
+                    <Textures
+                        normal="SwissKnife/textures/dialogues/icons/apply_up.dds"
+                        pressed="SwissKnife/textures/dialogues/icons/apply_down.dds"
+                        mouseOver="SwissKnife/textures/dialogues/icons/apply_over.dds"
+                        disabled="SwissKnife/textures/dialogues/icons/apply_up.dds"
+                    />
+                </Button>
+                <Button name="$(parent)DelButton" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+                    <Anchor point="RIGHT" offsetX="-25" />
+                    <Dimensions x="32" y="32" />
+                    <Textures
+                        normal="SwissKnife/textures/dialogues/icons/disable_up.dds"
+                        pressed="SwissKnife/textures/dialogues/icons/disable_down.dds"
+                        mouseOver="SwissKnife/textures/dialogues/icons/disable_over.dds"
+                        disabled="SwissKnife/textures/dialogues/icons/disable_up.dds"
+                    />
+                </Button>
+            </Controls>
+        </Button>
+	</Controls>
+</GuiXml>

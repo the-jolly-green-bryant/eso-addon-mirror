@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/sirinsidiator/Screenshot-Helper__701",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:701",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:701",
+  "deleted": false,
+  "directories": [
+    "ScreenshotHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl701/",
+  "fingerprint": "1081e5364bd5c8261b8dcdfc318d666ee682722573a05453da1901c09646d5f9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2169.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "701",
+  "source_url": "https://www.esoui.com/downloads/info701-ScreenshotHelper.html",
+  "stats": {
+    "downloads": 43637,
+    "favorites": 70,
+    "monthly_downloads": 206
+  },
+  "title": "Screenshot Helper",
+  "updated_at": 1466879033000,
+  "version": "1.5"
+}

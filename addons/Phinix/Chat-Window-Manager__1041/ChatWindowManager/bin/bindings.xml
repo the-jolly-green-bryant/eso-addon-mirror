@@ -1,0 +1,18 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Chat Window Manager">
+			<Action name="TOGGLE_CHAT_WINDOW">
+				<Up>CWMAddon.Bindings(1)</Up>
+			</Action>
+			<Action name="TOGGLE_ONLINE_BINDING">
+				<Up>CWMAddon.Bindings(2)</Up>
+			</Action>
+			<Action name="CLEAR_CHAT_BINDING">
+				<Up>CWMAddon.Bindings(3)</Up>
+			</Action>
+			<Action name="RELOAD_UI_BINDING">
+				<Up>CWMAddon.Bindings(4)</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

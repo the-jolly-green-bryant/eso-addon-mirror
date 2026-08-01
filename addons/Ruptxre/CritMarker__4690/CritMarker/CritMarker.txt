@@ -1,0 +1,10 @@
+## Title: |cFf0000CritMarker|r
+## Description: Customizable FPS-style hitmarker system with critical hit and PvP killing blow detection.
+## Author: |cadff2f@Ruptxre|r & |c0FFFFF@Sikma|r
+## Version: 1.0
+## Category: Combat
+## APIVersion: 101050
+## SavedVariables: CritMarker_SV
+## DependsOn: LibAddonMenu-2.0>=43
+
+CritMarker.lua

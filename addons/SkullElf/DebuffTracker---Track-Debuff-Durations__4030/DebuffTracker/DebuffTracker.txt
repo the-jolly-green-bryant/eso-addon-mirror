@@ -1,0 +1,18 @@
+## Title: DebuffTracker
+## Author: SkullElf
+## Version: 1.0
+## APIVersion: 101046
+
+## Description: Tracks the effect of a debuff on enemies and visualizes it in user-friendly UI!
+
+## DependsOn: LibAddonMenu-2.0>=40 LibSetDetection
+## SavedVariables: DebuffTrackerSavedVars
+
+DebuffTracker_Namespace.lua
+DebuffTracker.xml
+DebuffTrackerProfileManager.lua
+DebuffTracker.lua
+GroupSetTracker.lua
+SetAbilityTracker.lua
+bindings.xml
+

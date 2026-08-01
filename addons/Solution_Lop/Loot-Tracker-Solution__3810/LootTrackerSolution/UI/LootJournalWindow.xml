@@ -1,0 +1,63 @@
+<!--LootJournalWindow.xml-->
+<GuiXml>        
+    <Controls>
+        <!-- Loot Window Title -->
+        <Label name="Solution_LootWindowTitle" font="ZoFontWinH4" text="Loot Tracker Solution" virtual="true">
+            <Anchor point="TOP" relativePoint="TOP" offsetY="15" />
+        </Label>
+
+        <!-- Info Bar Gold Label -->
+        <Label name="Solution_InfoBarGoldLabel" font="ZoFontWinH4" text="" virtual="true">
+        </Label>
+
+        <!-- Info Bar Time Label -->
+        <Label name="Solution_InfoBarTimeLabel" font="ZoFontWinH4" text="" virtual="true">
+        </Label>
+
+        <Button name="Solution_InfoBarInventorySpaceButton" font="ZoFontWinH4" text="" virtual="true">
+        </Button>
+        
+        <!-- Loot Window Settings Button -->
+        <Button name="Solution_LootWindowSettings" virtual="true">
+            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+            <Dimensions x="24" y="24" />
+            <Textures normal="LootTrackerSolution/Textures/GearIcon.dds" />
+        </Button>
+
+        <Button name="Solution_LootWindowStatistic" virtual="true">
+            <Dimensions x="24" y="24" />
+            <Textures normal="LootTrackerSolution/Textures/StatisticIcon.dds" />
+        </Button>
+
+        <!-- AutoLoot Button -->
+        <Button name="Solution_LootWindowAutoLoot" virtual="true">
+            <Dimensions x="24" y="24" />
+            <Textures normal="LootTrackerSolution/Textures/AutoLootIcon.dds" />
+        </Button>
+
+        <Button name="Solution_SettingsMenuItem" inherits="ZO_MenuItem" virtual="true" />
+
+        <!-- Row Template Button -->
+        <Button name="Solution_RowT" virtual="true">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+            <Controls>
+                <!-- Time Label -->
+                <Label name="$(parent)Time" font="ZoFontWinH5" wrapMode="TRUNCATE_AT_END" horizontalAlignment="LEFT">
+                </Label>
+                
+                <!-- Name Label -->
+                <Label name="$(parent)Name" font="ZoFontWinH5" wrapMode="TRUNCATE_AT_END" horizontalAlignment="LEFT">
+                </Label>
+                
+                <!-- Loot Label -->
+                <Label name="$(parent)Loot" font="ZoFontWinH5" wrapMode="TRUNCATE_AT_END" horizontalAlignment="LEFT">
+                </Label>
+                
+                <!-- Gold Label -->
+                <Label name="$(parent)Gold" font="ZoFontWinH5" wrapMode="TRUNCATE_AT_END" horizontalAlignment="LEFT">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)"  relativePoint="TOPRIGHT" offsetX="0" />
+                </Label>
+            </Controls>
+        </Button>        
+    </Controls>
+</GuiXml>

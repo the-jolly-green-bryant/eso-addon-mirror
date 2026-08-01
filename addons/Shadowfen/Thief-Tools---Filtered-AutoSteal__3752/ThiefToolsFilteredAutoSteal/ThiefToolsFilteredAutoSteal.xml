@@ -1,0 +1,9 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ThiefToolsFilteredAutoSteal">
+            <OnInitialized>
+                TTFAS_Startup(self)
+            </OnInitialized> 
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,8 @@
+## APIVersion: 10001
+## Title: Ultimate Charge Tracker
+## Version: 1.0
+## Author: Bogdan Caramalac
+## SavedVariables: ULTIMATE_CHARGE_TRACKER_SV
+
+UltimateChargeTracker.xml
+UltimateChargeTracker.lua

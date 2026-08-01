@@ -1,0 +1,571 @@
+<GuiXml>
+  <Controls>
+    <Control name="AUI_PlayerFrame_Health" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" level="1000" alpha="0" virtual="true" hidden="true">
+      <Dimensions x="320" y ="32" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" offsetY="-140" />
+      <Controls>
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER" offsetY="4"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" tier="LOW" level="500">
+          <LeadingEdge textureFile="AUI/images/attributes/aui/player/bar_leading_edge.dds" width="64" height="64" />
+          <Anchor point="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" />
+          <Controls>
+            <Texture name="$(parent)_IncreaseRegLeft" textureFile="AUI/images/attributes/aui/other/attributebar_arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <Anchor point="RIGHT" />
+              <OnInitialized>
+                self.endX = -4
+              </OnInitialized>
+            </Texture>
+            <Texture name="$(parent)_DecreaseRegLeft" textureFile="AUI/images/attributes/aui/other/attributebar_arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <TextureCoords left="1" right="0" top="0" bottom="1" />
+              <Anchor point="LEFT" />
+              <OnInitialized>
+                self.endX = -4
+              </OnInitialized>
+            </Texture>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" level="550" >
+              <LeadingEdge textureFile="AUI/images/attributes/aui/player/bar_leading_edge_gloss.dds" width="64" height="64" />
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <StatusBar name="$(parent)_Bar2" tier="LOW" level="500">
+          <LeadingEdge textureFile="AUI/images/attributes/aui/player/bar_leading_edge.dds" width="64" height="64" />
+          <Anchor point="TOPLEFT" relativePoint="TOP" />
+          <Anchor point="BOTTOMRIGHT" />
+          <Controls>
+            <Texture name="$(parent)_IncreaseRegRight" textureFile="AUI/images/attributes/aui/other/attributebar_arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <TextureCoords left="1" right="0" top="0" bottom="1" />
+              <Anchor point="LEFT" />
+              <OnInitialized>
+                self.endX = -4
+              </OnInitialized>
+            </Texture>
+            <Texture name="$(parent)_DecreaseRegRight" textureFile="AUI/images/attributes/aui/other/attributebar_arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <Anchor point="RIGHT" />
+              <OnInitialized>
+                self.endX = -4
+              </OnInitialized>
+            </Texture>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" level="550" >
+              <LeadingEdge textureFile="AUI/images/attributes/aui/player/bar_leading_edge_gloss.dds" width="64" height="64" />
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)FrameLeft" textureFile="AUI/images/attributes/aui/player/frame_right.dds" resizeToFitFile="true" tier="HIGH" level="1000">
+          <TextureCoords left="1" right="0" top="0" bottom="1" />
+          <Anchor point="LEFT" />
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/player/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <TextureCoords left="1" right="0" top="0" bottom="1" />
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameRight" textureFile="AUI/images/attributes/aui/player/frame_right.dds" resizeToFitFile="true" tier="HIGH" level="1000">
+          <Anchor point="RIGHT" />
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/player/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameCenter" textureFile="AUI/images/attributes/aui/player/frame_center.dds" tier="HIGH" level="1000">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeft" relativePoint="TOPRIGHT"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRight" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/player/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <TextureCoords left="0.1" right="0.1" top="1" bottom="0" />
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Control name="$(parent)Warner" tier="LOW" hidden="true">
+          <OnInitialized>
+            self.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual("AUI_LowStatWarnerAnimation_Middle", self)
+          </OnInitialized>
+          <AnchorFill/>
+          <Controls>
+            <Texture name="$(parent)FrameLeftWarner" textureFile="AUI/images/attributes/aui/player/bg.dds" resizeToFitFile="true" level="500" layer="OVERLAY" blendMode="ADD">
+              <TextureCoords left="0.1" right="0.1" top="0" bottom="1" />
+              <Anchor point="LEFT" />
+            </Texture>
+            <Texture name="$(parent)FrameRightWarner" textureFile="AUI/images/attributes/aui/player/bg.dds" resizeToFitFile="true" level="500" layer="OVERLAY" blendMode="ADD">
+              <TextureCoords left="0.1" right="0.1" top="0" bottom="1" />
+              <Anchor point="RIGHT" />
+            </Texture>
+            <Texture name="$(parent)FrameCenterWarner" textureFile="AUI/images/attributes/aui/player/bg.dds" level="500" layer="OVERLAY" blendMode="ADD">
+              <TextureCoords left="0.1" right="0.1" top="0" bottom="1"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeftWarner" relativePoint="TOPRIGHT"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRightWarner" relativePoint="BOTTOMLEFT"/>
+            </Texture>
+          </Controls>
+        </Control>
+        <Texture name="$(parent)IncreasedArmorOverlay" textureFile="AUI/images/attributes/aui/other/increased_armor_overlay.dds" resizeToFitFile="true" tier="HIGH" level="1100">
+          <TextureCoords left="1" right="0" top="1" bottom="0" />
+          <Anchor point="TOP" offsetY="-10"/>
+          <Dimensions x="256" y="32"/>
+        </Texture>
+        <Texture name="$(parent)DecreasedArmorOverlay" textureFile="AUI/images/attributes/aui/other/decreased_armor_overlay.dds" resizeToFitFile="true" tier="HIGH" level="900">
+          <Anchor point="TOPLEFT" offsetX="4" offsetY="5"/>
+          <Anchor point="TOPRIGHT" offsetX="-5" />
+          <Dimensions x="256" y="32"/>
+        </Texture>
+        <Texture name="$(parent)IncreasedPowerOverlay" tier="LOW"  textureFile="EsoUI/Art/UnitAttributeVisualizer/increasedpower_animatedhalo_32fr.dds" level="150" alpha="0.5">
+          <OnInitialized>
+            self.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual("AUI_IncreasedPowerAnimation", self)
+            self.offsetLeft = 30
+            self.offsetTop = -30
+            self.offsetRight = -20
+            self.offsetBottom = 36
+          </OnInitialized>
+        </Texture>
+        <Texture name="$(parent)DecreasedPowerOverlay" tier="LOW" textureFile="EsoUI/Art/UnitAttributeVisualizer/increasedpower_animatedhalo_32fr.dds" level="150">
+          <OnInitialized>
+            self.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual("AUI_IncreasedPowerAnimation", self)
+            self.offsetLeft = 30
+            self.offsetTop = -50
+            self.offsetRight = -20
+            self.offsetBottom = 56
+          </OnInitialized>
+        </Texture>
+      </Controls>
+    </Control>
+    <Control name="AUI_PlayerFrame_Magicka" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" level="1000" alpha="0" virtual="true" hidden="true">
+      <Dimensions x="320" y ="32" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" offsetX="-500" offsetY="-140" />
+      <Controls>
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER" offsetY="4"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" level="500">
+          <LeadingEdge textureFile="AUI/images/attributes/aui/player/bar_leading_edge.dds" width="64" height="64" />
+          <Anchor point="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" level="550" >
+              <LeadingEdge textureFile="AUI/images/attributes/aui/player/bar_leading_edge_gloss.dds" width="64" height="64" />
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)FrameLeft" textureFile="AUI/images/attributes/aui/player/frame_right.dds" resizeToFitFile="true" tier="HIGH" level="1000">
+          <TextureCoords left="1" right="0" top="0" bottom="1" />
+          <Anchor point="LEFT" />
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/player/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <TextureCoords left="1" right="0" top="0" bottom="1" />
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameRight" textureFile="AUI/images/attributes/aui/player/frame_left.dds" resizeToFitFile="true" tier="HIGH" level="1000">
+          <Anchor point="RIGHT" />
+          <TextureCoords left="1" right="0" top="0" bottom="1" />
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/player/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameCenter" textureFile="AUI/images/attributes/aui/player/frame_center.dds" tier="HIGH" level="1000">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeft" relativePoint="TOPRIGHT"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRight" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/player/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <TextureCoords left="0.1" right="0.1" top="1" bottom="0" />
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Control name="$(parent)Warner" tier="LOW" hidden="true">
+          <OnInitialized>
+            self.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual("AUI_LowStatWarnerAnimation_Middle", self)
+          </OnInitialized>
+          <AnchorFill/>
+          <Controls>
+            <Texture name="$(parent)FrameLeftWarner" textureFile="AUI/images/attributes/aui/player/bg.dds" resizeToFitFile="true" level="500" layer="OVERLAY" blendMode="ADD">
+              <TextureCoords left="0.1" right="0.1" top="0" bottom="1" />
+              <Anchor point="LEFT" />
+            </Texture>
+            <Texture name="$(parent)FrameRightWarner" textureFile="AUI/images/attributes/aui/player/bg.dds" resizeToFitFile="true" level="500" layer="OVERLAY" blendMode="ADD">
+              <TextureCoords left="0" right="1" top="0" bottom="1" />
+              <Anchor point="RIGHT" />
+            </Texture>
+            <Texture name="$(parent)FrameCenterWarner" textureFile="AUI/images/attributes/aui/player/bg.dds" level="500" layer="OVERLAY" blendMode="ADD">
+              <TextureCoords left="0.1" right="0.1" top="0" bottom="1"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeftWarner" relativePoint="TOPRIGHT"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRightWarner" relativePoint="BOTTOMLEFT"/>
+            </Texture>
+          </Controls>
+        </Control>
+      </Controls>
+    </Control>
+    <Control name="AUI_PlayerFrame_Stamina" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" level="1000" alpha="0" virtual="true" hidden="true">
+      <Dimensions x="320" y ="32" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" offsetX="500" offsetY="-140" />
+      <Controls>
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER" offsetY="4"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" level="500">
+          <LeadingEdge textureFile="AUI/images/attributes/aui/player/bar_leading_edge.dds" width="64" height="64" />
+          <Anchor point="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" level="550" >
+              <LeadingEdge textureFile="AUI/images/attributes/aui/player/bar_leading_edge_gloss.dds" width="64" height="64" />
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)FrameLeft" textureFile="AUI/images/attributes/aui/player/frame_left.dds" resizeToFitFile="true" tier="HIGH" level="1000">
+          <TextureCoords left="0" right="1" top="0" bottom="1" />
+          <Anchor point="LEFT" />
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/player/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <TextureCoords left="0.1" right="0.1" top="0" bottom="1" />
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameRight" textureFile="AUI/images/attributes/aui/player/frame_right.dds" resizeToFitFile="true" tier="HIGH" level="1000">
+          <Anchor point="RIGHT" />
+          <TextureCoords left="0" right="1" top="0" bottom="1" />
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/player/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameCenter" textureFile="AUI/images/attributes/aui/player/frame_center.dds" tier="HIGH" level="1000">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeft" relativePoint="TOPRIGHT"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRight" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/player/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <TextureCoords left="0.1" right="0.1" top="1" bottom="0" />
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Control name="$(parent)Warner" tier="LOW" hidden="true">
+          <OnInitialized>
+            self.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual("AUI_LowStatWarnerAnimation_Middle", self)
+          </OnInitialized>
+          <AnchorFill/>
+          <Controls>
+            <Texture name="$(parent)FrameLeftWarner" textureFile="AUI/images/attributes/aui/player/bg.dds" resizeToFitFile="true" level="500" layer="OVERLAY" blendMode="ADD">
+              <TextureCoords left="0.1" right="0.1" top="0" bottom="1" />
+              <Anchor point="LEFT" />
+            </Texture>
+            <Texture name="$(parent)FrameRightWarner" textureFile="AUI/images/attributes/aui/player/bg.dds" resizeToFitFile="true" level="500" layer="OVERLAY" blendMode="ADD">
+              <TextureCoords left="0" right="1" top="0" bottom="1" />
+              <Anchor point="RIGHT" />
+            </Texture>
+            <Texture name="$(parent)FrameCenterWarner" textureFile="AUI/images/attributes/aui/player/bg.dds" level="500" layer="OVERLAY" blendMode="ADD">
+              <TextureCoords left="0.1" right="0.1" top="0" bottom="1"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeftWarner" relativePoint="TOPRIGHT"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRightWarner" relativePoint="BOTTOMLEFT"/>
+            </Texture>
+          </Controls>
+        </Control>
+      </Controls>
+    </Control>
+    <Control name="AUI_PlayerFrame_Shield" tier="HIGH" mouseEnabled="true" clampedToScreen="true" alpha="0" virtual="true" hidden="true">
+      <Dimensions x="290" y ="17" />
+      <Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="0" offsetY="-172" />
+      <Controls>
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER" offsetY="2"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" tier="MEDIUM" textureFile="AUI/images/attributes/aui/shield/bar.dds" level="500">
+          <LeadingEdge textureFile="AUI/images/attributes/aui/shield/bar_leading_edge.dds" width="64" height="32" />
+          <Anchor point="TOPLEFT" offsetX="6"/>
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/shield/bar_gloss.dds" tier="MEDIUM" alpha="0.2" level="550" >
+              <LeadingEdge textureFile="AUI/images/attributes/aui/shield/bar_leading_edge_gloss.dds" width="64" height="32" />
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <StatusBar name="$(parent)_Bar2" tier="MEDIUM" textureFile="AUI/images/attributes/aui/shield/bar.dds" level="500">
+          <LeadingEdge textureFile="AUI/images/attributes/aui/shield/bar_leading_edge.dds" width="64" height="32" />
+          <Anchor point="TOPLEFT" relativePoint="TOP" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-6" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/shield/bar_gloss.dds" tier="MEDIUM" alpha="0.2" level="550" >
+              <LeadingEdge textureFile="AUI/images/attributes/aui/shield/bar_leading_edge_gloss.dds" width="64" height="32" />
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)FrameLeft" textureFile="AUI/images/attributes/aui/shield/frame_right.dds" resizeToFitFile="true" tier="HIGH" level="1000">
+          <TextureCoords left="1" right="0" top="0" bottom="1" />
+          <Anchor point="LEFT" />
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/shield/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <TextureCoords left="1" right="0" top="0" bottom="1" />
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameRight" textureFile="AUI/images/attributes/aui/shield/frame_right.dds" resizeToFitFile="true" tier="HIGH" level="1000">
+          <Anchor point="RIGHT" />
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/shield/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameCenter" textureFile="AUI/images/attributes/aui/shield/frame_center.dds" tier="HIGH" level="1000">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeft" relativePoint="TOPRIGHT"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRight" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/shield/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <TextureCoords left="0.1" right="0.1" top="1" bottom="0" />
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+      </Controls>
+    </Control>
+    <Control name="AUI_PlayerFrame_SiegeHealth" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" alpha="0" virtual="true" hidden="true">
+      <Dimensions x="320" y ="32" />
+      <Anchor point="BOTTOM" offsetX="0" offsetY="-360" />
+      <Controls>
+        <Texture name="$(parent)_Icon" />
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER" offsetY="2"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" textureFile="AUI/images/attributes/aui/siege/bar.dds" level="500">
+          <LeadingEdge textureFile="AUI/images/attributes/aui/siege/bar_leading_edge.dds" width="64" height="64" />
+          <Anchor point="TOPLEFT" offsetX="20" offsetY="2" />
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/siege/bar_gloss.dds" alpha="0.2" level="550" >
+              <LeadingEdge textureFile="AUI/images/attributes/aui/siege/bar_leading_edge_gloss.dds" width="64" height="64" />
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <StatusBar name="$(parent)_Bar2" textureFile="AUI/images/attributes/aui/siege/bar.dds" level="500">
+          <LeadingEdge textureFile="AUI/images/attributes/aui/siege/bar_leading_edge.dds" width="64" height="64" />
+          <Anchor point="TOPLEFT" relativePoint="TOP" offsetY="2" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-20" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/siege/bar_gloss.dds" alpha="0.2" level="550" >
+              <LeadingEdge textureFile="AUI/images/attributes/aui/siege/bar_leading_edge_gloss.dds" width="64" height="64" />
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)FrameLeft" textureFile="AUI/images/attributes/aui/siege/frame_right.dds" resizeToFitFile="true" tier="HIGH" level="1000">
+          <TextureCoords left="1" right="0" top="0" bottom="1" />
+          <Anchor point="LEFT" />
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/siege/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <TextureCoords left="1" right="0" top="0" bottom="1" />
+              <Anchor point="TOPLEFT" offsetX="20" offsetY="2"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="20" offsetY="2"/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameRight" textureFile="AUI/images/attributes/aui/siege/frame_right.dds" resizeToFitFile="true" tier="HIGH" level="1000">
+          <Anchor point="RIGHT" />
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/siege/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <Anchor point="TOPLEFT" offsetX="-20" offsetY="2"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="2"/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameCenter" textureFile="AUI/images/attributes/aui/siege/frame_center.dds" tier="HIGH" level="1000">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeft" relativePoint="TOPRIGHT"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRight" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/siege/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <TextureCoords left="0.1" right="0.1" top="1" bottom="0" />
+              <Anchor point="TOPLEFT" offsetX="20" offsetY="2"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="2"/>
+            </Texture>
+          </Controls>
+        </Texture>
+      </Controls>
+    </Control>
+    <Control name="AUI_PlayerFrame_StaminaMount" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" alpha="0" virtual="true" hidden="true">
+      <Dimensions x="312" y ="24" />
+      <Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="496" offsetY="-116" />
+      <Controls>
+        <Texture name="$(parent)_Icon" />
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" textureFile="AUI/images/attributes/aui/mount/bar.dds" level="500">
+          <LeadingEdge textureFile="AUI/images/attributes/aui/mount/bar_leading_edge.dds" width="64" height="64" />
+          <Anchor point="TOPLEFT" offsetX="2"/>
+          <Anchor point="BOTTOMRIGHT" offsetY="-2"/>
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/mount/bar_gloss.dds" alpha="0.2" level="550" >
+              <LeadingEdge textureFile="AUI/images/attributes/aui/mount/bar_leading_edge_gloss.dds" width="64" height="64" />
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)FrameLeft" textureFile="AUI/images/attributes/aui/mount/frame_left.dds" resizeToFitFile="true" tier="HIGH" level="1000">
+          <Anchor point="LEFT" />
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/mount/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameRight" textureFile="AUI/images/attributes/aui/mount/frame_right.dds" resizeToFitFile="true" tier="HIGH" level="1000">
+          <Anchor point="RIGHT" />
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/mount/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameCenter" textureFile="AUI/images/attributes/aui/mount/frame_center.dds" tier="HIGH" level="1000">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeft" relativePoint="TOPRIGHT"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRight" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/mount/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <TextureCoords left="0.1" right="0.1" top="1" bottom="0" />
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+      </Controls>
+    </Control>
+    <Control name="AUI_PlayerFrame_Werewolf" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" alpha="0" virtual="true" hidden="true">
+      <Dimensions x="312" y ="24" />
+      <Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="-496" offsetY="-116" />
+      <Controls>
+        <Texture name="$(parent)_Icon"/>
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" textureFile="AUI/images/attributes/aui/werewolf/bar.dds" level="500">
+          <LeadingEdge textureFile="AUI/images/attributes/aui/werewolf/bar_leading_edge.dds" width="64" height="64" />
+          <Anchor point="TOPLEFT" offsetX="2"/>
+          <Anchor point="BOTTOMRIGHT" offsetY="-2"/>
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/werewolf/bar_gloss.dds" alpha="0.2" level="550" >
+              <LeadingEdge textureFile="AUI/images/attributes/aui/werewolf/bar_leading_edge_gloss.dds" width="64" height="64" />
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)FrameLeft" textureFile="AUI/images/attributes/aui/werewolf/frame_left.dds" resizeToFitFile="true" tier="HIGH" level="1000">
+          <Anchor point="LEFT" />
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/werewolf/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameRight" textureFile="AUI/images/attributes/aui/werewolf/frame_right.dds" resizeToFitFile="true" tier="HIGH" level="1000">
+          <Anchor point="RIGHT" />
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/werewolf/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameCenter" textureFile="AUI/images/attributes/aui/werewolf/frame_center.dds" tier="HIGH" level="1000">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeft" relativePoint="TOPRIGHT"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRight" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="AUI/images/attributes/aui/werewolf/bg.dds" color="000000" alpha="0.5" tier="LOW">
+              <TextureCoords left="0.9" right="0.9" top="1" bottom="0" />
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Texture>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Saenic/Heroism-Potions__3568",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Saenic",
+  "canonical_id": "esoui:3568",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3568",
+  "deleted": false,
+  "directories": [
+    "HeroismPotions"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3568/",
+  "fingerprint": "fdce6ed77a2ad8ef235773d0e9e68c7a36219e6819ecba018f6204402e2db9f1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12109.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12110.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12111.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12112.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12113.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3568",
+  "source_url": "https://www.esoui.com/downloads/info3568-HeroismPotions.html",
+  "stats": {
+    "downloads": 3515,
+    "favorites": 2,
+    "monthly_downloads": 18
+  },
+  "title": "Heroism Potions",
+  "updated_at": 1677015733000,
+  "version": "1.0.1"
+}

@@ -1,0 +1,51 @@
+;Ward Helper Features:
+;
+;1.Displays FIGHTING! text when you enter combat
+;
+;2.Removes FIGHTING! text when you leave combat
+;
+;3.Displays Entering Combat text in chatbox when you enter combat
+;
+;4.Displays Exiting Combat text in chatbox when you leave combat
+;
+;5.Displays WARDUP! text when you are in combat and no damage shields are active
+;
+;6.Removes WARDUP! text when you leave combat or if a damage shield is activated
+;
+;7. Drag FIGHTING! text and WARDUP! text across the screen
+;
+;slash commands
+;
+;1.Use /showwh to show the FIGHTING! text and WARDUP! text. You can then press period drag these text boxes; use the command again to revert this
+;
+;2.Use /disablewh to hide the WARDUP! text at all times
+;
+;3.Use /enablewh to revert /disablewh
+;
+;4.Use /defaultwh to reset the positions of the text boxes and reenable WARDUP! text
+
+
+## Title: Ward Helper
+## APIVersion: 100019
+## SavedVariables: WardHelperSavedVariables
+## Author: @Ratparol101
+
+## OptionalDependsOn: LibAddonMenu-2.0
+Libs/LibStub/LibStub.lua
+Libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+Libs/LibAddonMenu-2.0/controls/panel.lua
+Libs/LibAddonMenu-2.0/controls/submenu.lua
+Libs/LibAddonMenu-2.0/controls/button.lua
+Libs/LibAddonMenu-2.0/controls/checkbox.lua
+Libs/LibAddonMenu-2.0/controls/colorpicker.lua
+Libs/LibAddonMenu-2.0/controls/custom.lua
+Libs/LibAddonMenu-2.0/controls/description.lua
+Libs/LibAddonMenu-2.0/controls/dropdown.lua
+Libs/LibAddonMenu-2.0/controls/editbox.lua
+Libs/LibAddonMenu-2.0/controls/header.lua
+Libs/LibAddonMenu-2.0/controls/slider.lua
+Libs/LibAddonMenu-2.0/controls/texture.lua
+Libs/LibAddonMenu-2.0/controls/iconpicker.lua
+
+WardHelper.lua
+WardHelper.xml

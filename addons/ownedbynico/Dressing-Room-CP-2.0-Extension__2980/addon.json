@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/ownedbynico/Dressing-Room-CP-2.0-Extension__2980",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ownedbynico",
+  "canonical_id": "esoui:2980",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:2980",
+  "deleted": false,
+  "directories": [
+    "DRCPA"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2980/",
+  "fingerprint": "2fe837a45f96106d05b65f08df1f23029bc7cb1fee41a002f3082dc257ff48d7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10064.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10065.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2980",
+  "source_url": "https://www.esoui.com/downloads/info2980-DressingRoomCP2.0Extension.html",
+  "stats": {
+    "downloads": 38811,
+    "favorites": 28,
+    "monthly_downloads": 62
+  },
+  "title": "Dressing Room CP 2.0 Extension",
+  "updated_at": 1629747320000,
+  "version": "1.0.2"
+}

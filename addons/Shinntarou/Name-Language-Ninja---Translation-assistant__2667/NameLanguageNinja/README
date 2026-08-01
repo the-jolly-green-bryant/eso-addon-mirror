@@ -1,0 +1,27 @@
+This add-on outputs names and descriptions of items and skills in other languages to your tooltip.
+Also can replace some LinkInChat.(in latest version, LinkInChat of Item only.)
+
+[B]DependsOn:[/B]
+
+[LIST]
+[*][URL="https://www.esoui.com/downloads/info2666-LibMultilingualName.html"]LibMultilingualName[/URL]
+
+[*][URL="https://www.esoui.com/downloads/info7-LibAddonMenu.html"]LibAddonMenu-2.0[/URL]
+[/LIST]
+
+[B]DependsOn(Optional):[/B]
+
+[LIST]
+[*][URL="https://www.esoui.com/downloads/info1480-ItemSetBrowser.html"]Item Set Browser[/URL]
+[/LIST]
+
+[B]Wishlist, Known issues[/B]
+
+[LIST]
+[*]another window, NPC message, dialogs.
+[*]collection
+[*]achievement
+[*]Potion, Poison(items having own level)
+[*]Skill(action bar), and another Tooltips
+[*]Quest
+[/LIST]

@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Solaris-Lorica/FishBreak__2597",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Solaris Lorica",
+  "canonical_id": "esoui:2597",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2597",
+  "deleted": false,
+  "directories": [
+    "FishBreak"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2597/",
+  "fingerprint": "2d54623a17c1a7676d47996383e744b6ce137f1361290989f827b0747234694b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2597",
+  "source_url": "https://www.esoui.com/downloads/info2597-FishBreak.html",
+  "stats": {
+    "downloads": 9258,
+    "favorites": 15,
+    "monthly_downloads": 28
+  },
+  "title": "FishBreak",
+  "updated_at": 1596545179000,
+  "version": "1.2"
+}

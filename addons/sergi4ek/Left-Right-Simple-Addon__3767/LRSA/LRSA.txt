@@ -1,0 +1,20 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+; Change Log is in the CHANGELOG.MD file, with preferred/manual install/update instructions
+
+## Title: |c00f6ffLeft Right Simple Addon|r
+## APIVersion: 101040
+## Author: @Sergi4ek
+## Description: A simple addon that shows arrows indicating the direction of the left and right sides. For those who constantly confuse left and right.
+## Version: 1.2.2
+## AddOnVersion: 20250401
+## DependsOn: LibAddonMenu-2.0>=35
+## SavedVariables: LRSAVars
+
+Language/$(language).lua
+
+LRSA.lua
+LRSA.xml

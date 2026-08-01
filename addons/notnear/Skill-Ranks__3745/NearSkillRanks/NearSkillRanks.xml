@@ -1,0 +1,558 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="NSR_GUI" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" tier="MEDIUM">
+            <DimensionConstraints minX="800" minY="700"/>
+            <Anchor point="CENTER"/>
+
+            <OnShow>
+				NEAR_SR.gui.OnShow()
+			</OnShow>
+
+            <Controls>
+                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop"/>
+
+				<!-- Add a header -->
+                <Control name="$(parent)_HEADER" hidden="false" resizeToFitDescendents="true">
+					<Dimensions y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+					<Controls>
+
+						<!-- Button to close the window on the right side -->
+						<Button name="$(parent)_CloseButton">
+							<Dimensions x="25" y="25" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-3" offsetY="3"/>
+							<Textures normal="/esoui/art/buttons/decline_up.dds" pressed="/esoui/art/buttons/decline_down.dds" mouseOver="/esoui/art/buttons/decline_over.dds"/>
+							<OnClicked>NSR_GUI:SetHidden(true)</OnClicked>
+						</Button>
+
+						<!-- Add title on the center -->
+						<Label name="$(parent)_Title" font="ZoFontWindowTitle" text="Near's Skill Ranks" horizontalAlignment="CENTER" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+							<Dimensions y="30"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+						</Label>
+
+
+					</Controls>
+				</Control>
+
+				<!-- Add main control -->
+				<Control name="$(parent)_MAIN" hidden="false" resizeToFitDescendents="true">
+                	<Anchor point="TOPLEFT" relativeTo="$(parent)_HEADER" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="10"/>
+					<Controls>
+					
+                		<!-- Left Side -->
+                		<Control name="$(parent)_skilldata">
+							<DimensionConstraints minX="280"/>
+                		    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="50"/>
+							<Controls>
+
+								<!-- Add character list dropdown -->
+								<Control name="$(parent)_CharList" inherits="ZO_ComboBox">
+									<Dimensions x="280" y="30"/>
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="5"/>
+                        		</Control>
+
+								<!-- Add skill type list dropdown -->
+								<Control name="$(parent)_SkillType" inherits="ZO_ComboBox">
+									<Dimensions x="280" y="30"/>
+									<Anchor point="TOPLEFT" relativeTo="$(parent)_CharList" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                        		</Control>
+
+								<!-- Add skill line list dropdown -->
+								<Control name="$(parent)_SkillLine" inherits="ZO_ComboBox">
+									<Dimensions x="280" y="30"/>
+									<Anchor point="TOPLEFT" relativeTo="$(parent)_SkillType" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                        		</Control>
+
+								<Button name="$(parent)_ShowQuick" font="ZoFontGameMedium">
+									<Dimensions x="280" y="30"/>
+									<Anchor point="TOPLEFT" relativeTo="$(parent)_SkillLine" relativePoint="BOTTOMLEFT" offsetY="100"/>
+									<OnClicked>NEAR_SR.gui.quick.ToggleWindow()</OnClicked>
+                        		</Button>
+
+							</Controls>
+                		</Control>
+
+						<!-- Right Side -->
+						<Control name="$(parent)_Abilities">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_skilldata" relativePoint="TOPRIGHT" offsetX="40"/>
+							<Controls>
+
+							<Label name="$(parent)_Name" font="ZoFontGameMedium">
+								<DimensionConstraints minX="440"/>
+								<Anchor point="TOPLEFT"/>
+							</Label>
+
+							<Label name="$(parent)_Rank" font="ZoFontGameMedium">
+								<DimensionConstraints minX="60"/>
+								<Anchor point="TOPRIGHT" relativeTo="$(parent)_Name" offsetX="20"/>
+							</Label>
+
+							</Controls>
+						</Control>
+
+					</Controls>
+				</Control>
+
+            </Controls>
+
+        </TopLevelControl>
+
+
+        <TopLevelControl name="NSR_QUICK" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" resizeToFitDescendents="true" tier="MEDIUM" level="1">
+            <DimensionConstraints minX="850" minY="100"/>
+            <Anchor point="CENTER"/>
+
+			<OnShow>
+				NEAR_SR.gui.quick.OnShow()
+			</OnShow>
+
+            <Controls>
+                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+					<AnchorFill/>
+				</Backdrop>
+
+				<!-- Add a header -->
+                <Control name="$(parent)_HEADER" hidden="false" resizeToFitDescendents="true">
+					<Dimensions y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="10"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="10"/>
+					<Controls>
+
+						<Button name="$(parent)_CloseButton">
+							<Dimensions x="20" y="20"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15" offsetY="5"/>
+							<Textures normal="/esoui/art/buttons/decline_up.dds" pressed="/esoui/art/buttons/decline_down.dds" mouseOver="/esoui/art/buttons/decline_over.dds"/>
+							<OnClicked>NSR_QUICK:SetHidden(true)</OnClicked>
+						</Button>
+
+						<Label name="$(parent)_Name" font="ZoFontGameMedium" text="Character name" horizontalAlignment="LEFT" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+							<Dimensions x="180" y="30"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20"/>
+						</Label>
+
+
+						<Control name="$(parent)_Skills1" hidden="false">
+                        	<Anchor point="TOPLEFT" relativeTo="$(parent)_Name" relativePoint="TOPRIGHT"/>
+							<Controls>
+
+							<Texture name="$(parent)_Class1" textureFile="/esoui/art/tutorial/menubar_skills_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetString(SI_SKILLTYPE1).." 1"
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Class2" textureFile="/esoui/art/tutorial/menubar_skills_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Class1" relativePoint="TOPRIGHT"/>
+                                <OnMouseEnter>
+									local name = GetString(SI_SKILLTYPE1).." 2"
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Class3" textureFile="/esoui/art/tutorial/menubar_skills_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Class2" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetString(SI_SKILLTYPE1).." 3"
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+
+                        	<Texture name="$(parent)_Weapon1" textureFile="/esoui/art/icons/progression_tabicon_2handed_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Class3" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_WEAPON, 1))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Weapon2" textureFile="/esoui/art/icons/progression_tabicon_1handed_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Weapon1" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_WEAPON, 2))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Weapon3" textureFile="/esoui/art/icons/progression_tabicon_dualwield_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Weapon2" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_WEAPON, 3))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Weapon4" textureFile="/esoui/art/icons/progression_tabicon_bow_inactive.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Weapon3" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_WEAPON, 4))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Weapon5" textureFile="/esoui/art/icons/progression_tabicon_damagestaff_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Weapon4" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_WEAPON, 5))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Weapon6" textureFile="/esoui/art/icons/progression_tabicon_healstaff_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Weapon5" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_WEAPON, 6))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+
+                        	<Texture name="$(parent)_Armor1" textureFile="/esoui/art/icons/progression_tabicon_armorlight_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Weapon6" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_ARMOR, 1))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Armor2" textureFile="/esoui/art/icons/progression_tabicon_armormedium_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Armor1" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_ARMOR, 2))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Armor3" textureFile="/esoui/art/icons/progression_tabicon_armorheavy_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Armor2" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_ARMOR, 3))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+
+                        	<Texture name="$(parent)_Craft1" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_alchemy_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Armor3" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_TRADESKILL, 1))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Craft2" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_blacksmithing_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Craft1" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_TRADESKILL, 2))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Craft3" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_clothing_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Craft2" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_TRADESKILL, 3))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Craft4" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_enchanting_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Craft3" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_TRADESKILL, 4))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Craft5" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_jewelrycrafting_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Craft4" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_TRADESKILL, 5))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Craft6" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_provisioning_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Craft5" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_TRADESKILL, 6))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Craft7" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_woodworking_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Craft6" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_TRADESKILL, 7))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)_Skills2" hidden="true">
+                        	<Anchor point="TOPLEFT" relativeTo="$(parent)_Name" relativePoint="TOPRIGHT"/>
+							<Controls>
+
+							<Texture name="$(parent)_World1" textureFile="/esoui/art/treeicons/journal_tabicon_antiquities_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_WORLD, 1))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_World2" textureFile="/esoui/art/progression/progression_indexicon_world_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_World1" relativePoint="TOPRIGHT"/>
+                                <OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_WORLD, 2))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_World3" textureFile="/esoui/art/treeicons/journal_tabicon_antiquities_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_World2" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_WORLD, 3))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_World4" textureFile="/esoui/art/progression/progression_indexicon_world_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_World3" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_WORLD, 4))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_World5" textureFile="/esoui/art/progression/progression_indexicon_world_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_World4" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_WORLD, 5))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_World6" textureFile="/esoui/art/progression/progression_indexicon_world_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_World5" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_WORLD, 6))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+
+                        	<Texture name="$(parent)_Guild1" textureFile="/esoui/art/treeicons/tutorial_idexicon_darkbrotherhood_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_World6" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_GUILD, 1))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Guild2" textureFile="/esoui/art/icons/progression_tabicon_fightersguild_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Guild1" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_GUILD, 2))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Guild3" textureFile="/esoui/art/tutorial/progression_tabicon_magesguild_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Guild2" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_GUILD, 3))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Guild4" textureFile="/esoui/art/icons/store_psijic_upgrade.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Guild3" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_GUILD, 4))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Guild5" textureFile="/esoui/art/treeicons/tutorial_idexicon_thievesguild_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Guild4" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_GUILD, 5))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Guild6" textureFile="/esoui/art/currency/undauntedkey.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Guild5" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_GUILD, 6))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+
+                        	<Texture name="$(parent)_Ava1" textureFile="/esoui/art/icons/progression_tabicon_avasiege_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Guild6" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_AVA, 1))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Ava2" textureFile="/esoui/art/icons/progression_tabicon_avaleadership_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Ava1" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_AVA, 2))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+                        	<Texture name="$(parent)_Ava3" textureFile="/esoui/art/icons/progression_tabicon_avadefender_up.dds" mouseEnabled="true" tier="MEDIUM">
+                        	    <Dimensions x="30" y="30"/>
+                        	    <Anchor point="TOPLEFT" relativeTo="$(parent)_Ava2" relativePoint="TOPRIGHT"/>
+								<OnMouseEnter>
+									local name = GetSkillLineNameById(GetSkillLineId(SKILL_TYPE_AVA, 3))
+									ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+								</OnMouseEnter>
+                                <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        	</Texture>
+
+							</Controls>
+						</Control>
+
+
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)_PAGE" hidden="false" resizeToFitDescendents="true">
+                	<Anchor point="TOPRIGHT" relativeTo="$(parent)_HEADER" relativePoint="BOTTOMRIGHT" offsetY="10"/>
+					<Controls>
+						<Button name="$(parent)_Page1">
+							<Dimensions x="30" y="30"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10"/>
+							<Textures normal="/esoui/art/guild/tabicon_roster_down.dds" pressed="/esoui/art/guild/tabicon_roster_down.dds" mouseOver="/esoui/art/guild/tabicon_roster_over.dds"/>
+							<OnClicked>NEAR_SR.gui.quick.OnClicked(1)</OnClicked>
+						</Button>
+
+						<!-- <Label name="$(parent)_Page1_label" text="1" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM">
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)_Page1" relativePoint="BOTTOMRIGHT"/>
+						</Label> -->
+
+						<Button name="$(parent)_Page2">
+							<Dimensions x="30" y="30"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)_Page1" relativePoint="BOTTOMRIGHT"/>
+							<Textures normal="/esoui/art/tutorial/tabicon_roster_up.dds" pressed="/esoui/art/guild/tabicon_roster_down.dds" mouseOver="/esoui/art/guild/tabicon_roster_over.dds"/>
+							<OnClicked>NEAR_SR.gui.quick.OnClicked(2)</OnClicked>
+						</Button>
+
+						<!-- <Label name="$(parent)_Page2_label" text="2" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM">
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)_Page2" relativePoint="BOTTOMRIGHT"/>
+						</Label> -->
+					</Controls>
+				</Control>
+
+				<!-- Add main control -->
+				<Control name="$(parent)_MAIN" hidden="false" resizeToFitDescendents="true">
+                	<Anchor point="TOPLEFT" relativeTo="$(parent)_HEADER" relativePoint="BOTTOMLEFT" offsetY="10"/>
+				</Control>
+
+            </Controls>
+
+        </TopLevelControl>
+
+
+		<TopLevelControl name="NSR_UNRANKED" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" tier="MEDIUM">
+            <DimensionConstraints minX="500" minY="700"/>
+            <Anchor point="CENTER"/>
+
+            <OnShow>
+				NEAR_SR.gui.unranked.OnShow()
+			</OnShow>
+
+            <Controls>
+                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop"/>
+
+				<!-- Add a header -->
+                <Control name="$(parent)_HEADER" hidden="false" resizeToFitDescendents="true">
+					<Dimensions y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+					<Controls>
+
+						<!-- Button to close the window on the right side -->
+						<Button name="$(parent)_CloseButton">
+							<Dimensions x="25" y="25" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-3" offsetY="3"/>
+							<Textures normal="/esoui/art/buttons/decline_up.dds" pressed="/esoui/art/buttons/decline_down.dds" mouseOver="/esoui/art/buttons/decline_over.dds"/>
+							<OnClicked>NSR_UNRANKED:SetHidden(true)</OnClicked>
+						</Button>
+
+						<!-- Add title on the center -->
+						<Label name="$(parent)_Title" font="ZoFontWindowTitle" text="Near's Skill Ranks - Unranked" horizontalAlignment="CENTER" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+							<Dimensions y="30"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+						</Label>
+
+					</Controls>
+				</Control>
+
+				<!-- Add character list dropdown -->
+				<Control name="$(parent)_CharList" inherits="ZO_ComboBox">
+					<Dimensions x="280" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_HEADER" relativePoint="BOTTOMLEFT" offsetY="10"/>
+				</Control>
+
+				<!-- Add main control -->
+				<Control name="$(parent)_MAIN" inherits="ZO_ScrollContainer">
+                	<Anchor point="TOPLEFT" relativeTo="$(parent)_CharList" relativePoint="BOTTOMLEFT" offsetX="10"/>
+                	<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+				</Control>
+
+            </Controls>
+
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

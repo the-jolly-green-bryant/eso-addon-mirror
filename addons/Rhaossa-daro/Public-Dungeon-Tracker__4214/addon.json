@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Rhaossa-daro/Public-Dungeon-Tracker__4214",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rhaossa-daro",
+  "canonical_id": "esoui:4214",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4214",
+  "deleted": false,
+  "directories": [
+    "PDT"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4214/",
+  "fingerprint": "dcb5d97557abe484ea4680e38e70b1c1847dac2bbb7162da4ad1b3fc6e01557c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14402.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4214",
+  "source_url": "https://www.esoui.com/downloads/info4214-PublicDungeonTracker.html",
+  "stats": {
+    "downloads": 1198,
+    "favorites": 1,
+    "monthly_downloads": 52
+  },
+  "title": "Public Dungeon Tracker",
+  "updated_at": 1755437518000,
+  "version": "1.0.1"
+}

@@ -1,0 +1,16 @@
+ZO_CreateStringId("HEADER_INFO",                    "Information")
+ZO_CreateStringId("DESC_ADDON",                     "This addon adds some immersion to the enchanting-system.\n"
+                                                 .. "It plays the runes sound, when picked up.\n"
+                                                 .. "It allows you to build your glyphs faster.")
+ZO_CreateStringId("HEADER_OPTIONS_DEBUG",           "Debug")
+ZO_CreateStringId("CB_TITLE_DEBUG",                 "Enable General Debugging")
+ZO_CreateStringId("CB_TITLE_DEBUG_INFO",            "Enable INFO")
+ZO_CreateStringId("CB_TITLE_DEBUG_WARNING",         "Enable WARNING")
+ZO_CreateStringId("CB_TITLE_DEBUG_ERROR",           "Enable ERROR")
+ZO_CreateStringId("CB_TT_DEBUG",                    "Enabel debug messages. If all below arn't enabled it wont show anything.")
+ZO_CreateStringId("CB_TT_INFO",                     "Enable debug messages with Debug-Level INFO. Does nothing without \"Enable General Debugging\" enabled.")
+ZO_CreateStringId("CB_TT_WARNING",                  "Enable debug messages with Debug-Level WARNING. Does nothing without \"Enable General Debugging\" enabled.")
+ZO_CreateStringId("CB_TT_ERROR",                    "Enable debug messages with Debug-Level ERROR. Does nothing without \"Enable General Debugging\" enabled.")
+ZO_CreateStringId("HEADER_OPTIONS_RAPIDCHANT",      "RapidChant")
+ZO_CreateStringId("CB_TITLE_RECH_ENABLE",           "Enable RapidChant")
+ZO_CreateStringId("CB_TT_RECH_ENABLE",              "Enable skipping animation and sound when crafting glyphs to speed up the progress.")

@@ -1,0 +1,13 @@
+## Title: New Dialog Order
+## Version: 0.2.5
+## APIVersion: 101049
+## Author: vexaiv
+## Description: Place more important dialog options (like open bank, shop, etc.) on top of other conversation options.
+## SavedVariables: NewDialogOrderSavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0>=43
+
+lang/en.lua
+lang/$(language).lua
+
+NewDialogOrder.lua
+NewDialogOrderMenu.lua

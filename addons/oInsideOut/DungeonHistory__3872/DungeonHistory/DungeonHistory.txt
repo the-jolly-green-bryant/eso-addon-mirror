@@ -1,0 +1,16 @@
+## Title: DungeonHistory
+## Author: @oInsideOut
+## APIVersion: 101042
+## AddOnVersion: 112
+## Version: 1.1.2
+## SavedVariables: DungeonHistoryData
+## IsLibrary: False
+## Description: A simple Dungeon Log for successfully completed Dungeons.
+## OptionalDependsOn: LibAddonMenu-2.0
+
+DungeonHistory.lua
+DungeonHistoryXML.lua
+DungeonHistoryAddonMenu.lua
+
+DungeonHistory.xml
+Bindings.xml

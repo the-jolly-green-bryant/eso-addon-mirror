@@ -1,0 +1,22 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="BlastNotifierFrame" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="140" y="25" />
+
+			<OnMoveStop>
+				BlastNotifier.OnMoveStop()
+			</OnMoveStop>
+
+			<Controls>
+				<Label name="$(parent)Title" width="110" height="25" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thick" inheritAlpha="true" color="1EA916"
+					wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Defiled Blast">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Label>
+				<Label name = "$(parent)Counter" width="30" height="25" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thick" inheritAlpha="true" color="1EA916"
+					wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,12 @@
+<GuiXml>
+	<Controls>
+	<Label name="ZO_SkillsNavigationEntry" override="true">
+		<Controls>
+			<Label name="$(parent)LevelText" text="123" horizontalAlignment="RIGHT" font="ZoFontHeader" inherits="ZO_SelectableLabel">
+				<Anchor point="LEFT" offsetX="-60" offsetY="0" />
+				<Dimensions x="50" y="0" />
+			</Label>
+		</Controls>
+	</Label>
+	  </Controls>
+</GuiXml>

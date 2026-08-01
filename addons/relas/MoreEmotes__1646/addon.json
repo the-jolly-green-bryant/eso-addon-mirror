@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/relas/MoreEmotes__1646",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "relas",
+  "canonical_id": "esoui:1646",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:1646",
+  "deleted": false,
+  "directories": [
+    "MoreEmotes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1646/",
+  "fingerprint": "53eb91cd3acd6296e516471c9eacb47ea34d38baa5663f727ff159e9c5177022",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5397.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1646",
+  "source_url": "https://www.esoui.com/downloads/info1646-MoreEmotes.html",
+  "stats": {
+    "downloads": 7235,
+    "favorites": 7,
+    "monthly_downloads": 14
+  },
+  "title": "MoreEmotes",
+  "updated_at": 1491493531000,
+  "version": "2.0"
+}

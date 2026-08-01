@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/static_recharge/LibStatic__4367",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "static_recharge",
+  "canonical_id": "esoui:4367",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4367",
+  "deleted": false,
+  "directories": [
+    "LibStatic"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4367/",
+  "fingerprint": "0359c0faa9e75fec7cf2c12fbbe1360f726837648342194ddb7b9d968f696bc5",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4367",
+  "source_url": "https://www.esoui.com/downloads/info4367-LibStatic.html",
+  "stats": {
+    "downloads": 4448,
+    "favorites": 3,
+    "monthly_downloads": 368
+  },
+  "title": "LibStatic",
+  "updated_at": 1773368379000,
+  "version": "2.0.0"
+}

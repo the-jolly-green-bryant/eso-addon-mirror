@@ -1,0 +1,9 @@
+;All of the good addons have comments here.
+
+## Title: Session Timer
+## APIVersion: 101033
+## Author: |c7f0000Rhyono|r
+## Description: Tracks current play session duration.
+## Version: 1.11
+
+SessionTimer.lua

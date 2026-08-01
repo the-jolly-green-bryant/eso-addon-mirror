@@ -1,0 +1,7 @@
+## Title: ZonePug
+## Description: Filter Zone Chat to only display Pug/PvP activities.
+## Author: Shawn
+## Version: 0.31
+## APIVersion: 100029
+
+ZonePug.lua

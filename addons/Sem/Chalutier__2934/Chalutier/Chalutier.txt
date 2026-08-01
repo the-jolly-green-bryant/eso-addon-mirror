@@ -1,0 +1,13 @@
+## Title: Chalutier
+## Description: Icons for fishing state and more. |c0000C0Version: 1.5|r
+## Author: |c0000C0Sem|r, |c00C000Provision|r
+## SavedVariables: ChalutierSV
+## APIVersion: 101040
+## Version: 1.5
+## AddOnVersion: 150
+## DependsOn: LibAddonMenu-2.0>=35, FishingStateMachine>=120
+## OptionalDependsOn: LibDebugLogger>=263
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+Chalutier.lua

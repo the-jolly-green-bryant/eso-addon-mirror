@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/notrix/Vampire-Info__377",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "notrix",
+  "canonical_id": "esoui:377",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:377",
+  "deleted": false,
+  "directories": [
+    "VampireInfo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl377/",
+  "fingerprint": "85fc07964bcdc747e2cad70a78a1d4cec9d8f07fd76dfa4c48c59a7fdd45ec56",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1046.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1047.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1045.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "377",
+  "source_url": "https://www.esoui.com/downloads/info377-VampireInfo.html",
+  "stats": {
+    "downloads": 18819,
+    "favorites": 44,
+    "monthly_downloads": 94
+  },
+  "title": "Vampire Info",
+  "updated_at": 1678799895000,
+  "version": "4"
+}

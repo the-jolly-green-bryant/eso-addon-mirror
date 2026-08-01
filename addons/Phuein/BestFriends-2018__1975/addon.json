@@ -1,0 +1,58 @@
+{
+  "archive_path": "addons/Phuein/BestFriends-2018__1975",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phuein",
+  "canonical_id": "esoui:1975",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1975",
+  "deleted": false,
+  "directories": [
+    "BestFriends2018"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1975/",
+  "fingerprint": "0d04213709221cee65ad92b21ef4c5a993711ae69756234708e82655d2ec1af2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6665.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6668.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1975",
+  "source_url": "https://www.esoui.com/downloads/info1975-BestFriends2018.html",
+  "stats": {
+    "downloads": 8234,
+    "favorites": 16,
+    "monthly_downloads": 23
+  },
+  "title": "BestFriends 2018",
+  "updated_at": 1627755321000,
+  "version": "2.16"
+}

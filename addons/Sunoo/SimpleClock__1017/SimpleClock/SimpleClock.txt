@@ -1,0 +1,33 @@
+## Title: SimpleClock
+## Author: |cFFA500Sunookitsune|r & alfpogs
+## Version: 1.2
+## Description: A simple addon that displays a clock
+## APIVersion: 100012
+## SavedVariables: SimpleClock_SavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0 LibMediaProvider-1.0
+
+SimpleClock.xml
+lib/LibStub.lua
+
+LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+
+LibAddonMenu-2.0\controls\panel.lua
+LibAddonMenu-2.0\controls\submenu.lua
+LibAddonMenu-2.0\controls\button.lua
+LibAddonMenu-2.0\controls\checkbox.lua
+LibAddonMenu-2.0\controls\colorpicker.lua
+LibAddonMenu-2.0\controls\custom.lua
+LibAddonMenu-2.0\controls\description.lua
+LibAddonMenu-2.0\controls\dropdown.lua
+LibAddonMenu-2.0\controls\editbox.lua
+LibAddonMenu-2.0\controls\header.lua
+LibAddonMenu-2.0\controls\slider.lua
+LibAddonMenu-2.0\controls\texture.lua
+
+lib/LAM-1to2-Interface-1.0.lua
+lib/LibMediaProvider-1.0.lua
+Main.lua
+Defaults.lua
+Interface.lua
+Events.lua
+Menu.lua

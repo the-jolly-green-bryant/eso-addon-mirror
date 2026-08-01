@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/StorybookTerror/Lazy-Deconstructor__3449",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "StorybookTerror",
+  "canonical_id": "esoui:3449",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3449",
+  "deleted": false,
+  "directories": [
+    "LazyDecon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3449/",
+  "fingerprint": "6801f943e6378fa3edfe1f32405762520e2fe036b9d169f69a670867c2ae1424",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11784.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11785.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3449",
+  "source_url": "https://www.esoui.com/downloads/info3449-LazyDeconstructor.html",
+  "stats": {
+    "downloads": 9989,
+    "favorites": 19,
+    "monthly_downloads": 856
+  },
+  "title": "Lazy Deconstructor",
+  "updated_at": 1783807153000,
+  "version": "0.6.1"
+}

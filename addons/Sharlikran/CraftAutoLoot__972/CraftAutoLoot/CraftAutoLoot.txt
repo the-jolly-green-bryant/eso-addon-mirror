@@ -1,0 +1,15 @@
+## Title: CraftAutoLoot v1.23
+## APIVersion: 101039 101040
+## Description: Automatically turns on autoloot when your target is a crafting node (wood, ore, plants, water, herbs, glyphs, or fishing) or other crafting related container.
+## Version: 1.23
+## AddOnVersion: 123
+## Author: Jhenox
+
+CraftAutoLoot.lua
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls© and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

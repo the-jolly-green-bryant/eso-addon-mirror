@@ -1,0 +1,92 @@
+{
+  "archive_path": "addons/Shadowfen/Where-s-My-Guild-Hall__1757",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shadowfen",
+  "canonical_id": "esoui:1757",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1757",
+  "deleted": false,
+  "directories": [
+    "WheresMyGuildHall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1757/",
+  "fingerprint": "8fb6ba547b5b1f4cfa5f7541bc705c128be05cf8058b1fbf55c120a9288a0aa5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5798.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5797.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5799.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5800.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1757",
+  "source_url": "https://www.esoui.com/downloads/info1757-WheresMyGuildHall.html",
+  "stats": {
+    "downloads": 32552,
+    "favorites": 43,
+    "monthly_downloads": 31
+  },
+  "title": "Where's My Guild Hall",
+  "updated_at": 1781033522000,
+  "version": "2.13.7"
+}

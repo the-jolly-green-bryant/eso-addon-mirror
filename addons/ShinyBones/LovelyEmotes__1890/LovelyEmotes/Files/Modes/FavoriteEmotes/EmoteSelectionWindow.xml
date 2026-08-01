@@ -1,0 +1,88 @@
+<GuiXml>
+	<Controls>
+
+		<TopLevelControl name="LE_EmoteSelectionWindowControl" clampedToScreen="true" tier="HIGH" mouseEnabled="true" movable="true" hidden="true" >
+			<Dimensions x="320" y="600" />
+			<Anchor point="CENTER" />
+
+			<OnMouseEnter>
+				LE_EmoteSelectionWindowControlBackground:SetEdgeColor(0, 1, 0, 1)
+				LE_EmoteSelectionWindowControlTopBoxBackground:SetEdgeColor(0, 1, 0, 1)
+			</OnMouseEnter>
+
+			<OnMouseExit>
+				LE_EmoteSelectionWindowControlBackground:SetEdgeColor(1, 1, 1, 1)
+				LE_EmoteSelectionWindowControlTopBoxBackground:SetEdgeColor(1, 1, 1, 1)
+			</OnMouseExit>
+
+			<Controls>
+				<Backdrop name="$(parent)Background" inherits="ZO_DefaultBackdrop" />
+
+				<Control name="$(parent)TopBox" >
+					<Dimensions y="60" />
+					<Anchor point="TOPLEFT" />
+					<Anchor point="TOPRIGHT" />
+					<Controls>
+						<Backdrop name="$(parent)Background" inherits="ZO_DefaultBackdrop" />
+
+						<Label name="$(parent)SelectedEmoteTextDisplayName" text=":(" font="ZoFontGame" color="FF9900" horizontalAlignment="CENTER" >
+							<Anchor point="TOP" offsetY="5" />
+						</Label>
+
+						<Label name="$(parent)SelectedEmoteTextSlashName" text=":(" font="ZoFontGame" color="FF9900" horizontalAlignment="CENTER" >
+							<Anchor point="BOTTOM" offsetY="-5" />
+						</Label>
+
+						<Button name="$(parent)CloseButton" inherits="LE_ButtonBehaviorClickSoundTemplate" >
+							<Dimensions x="30" y="30" />
+							<Anchor point="TOPLEFT" offsetX="2" />
+							<Textures
+								normal="esoui/art/buttons/decline_up.dds"
+								mouseOver="esoui/art/buttons/decline_over.dds"
+								pressed="esoui/art/buttons/decline_down.dds"
+								disabled="esoui/art/buttons/decline_up.dds"
+							/>
+
+							<OnClicked>
+								LE_EmoteSelectionWindow.HideWindow()
+							</OnClicked>
+						</Button>
+
+						<Button name="$(parent)EmptyButton" inherits="LE_ButtonBehaviorClickSoundTemplate" >
+							<Dimensions x="30" y="30" />
+							<Anchor point="BOTTOMLEFT" offsetX="2" />
+							<Textures
+								normal="esoui/art/dye/dyes_toolicon_erase_up.dds"
+								mouseOver="esoui/art/dye/dyes_toolicon_erase_over.dds"
+								pressed="esoui/art/dye/dyes_toolicon_erase_down.dds"
+								disabled="esoui/art/dye/dyes_toolicon_erase_up.dds"
+							/>
+
+							<OnClicked>
+								LE_EmoteSelectionWindow.EmptySlot()
+							</OnClicked>
+						</Button>
+
+						<Button name="$(parent)AcceptButton" inherits="LE_ButtonBehaviorClickSoundTemplate" >
+							<Dimensions x="30" y="30" />
+							<Anchor point="TOPRIGHT" offsetX="-2" />
+							<Textures
+								normal="esoui/art/buttons/accept_up.dds"
+								mouseOver="esoui/art/buttons/accept_over.dds"
+								pressed="esoui/art/buttons/accept_down.dds"
+								disabled="esoui/art/buttons/accept_up.dds"
+							/>
+
+							<OnClicked>
+								LE_EmoteSelectionWindow.SaveEmote()
+							</OnClicked>
+						</Button>
+
+					</Controls>
+				</Control>
+
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

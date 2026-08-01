@@ -1,0 +1,90 @@
+{
+  "archive_path": "addons/SamoAquila/EisherzGuildIcons__4495",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SamoAquila",
+  "canonical_id": "esoui:4495",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:4495",
+  "deleted": false,
+  "directories": [
+    "EisherzGuildIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4495/",
+  "fingerprint": "d1e16356571cd72a20ea8c9dc299c6870f4258991616284cac6e95064f69fcd6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15675.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15785.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4495",
+  "source_url": "https://www.esoui.com/downloads/info4495-EisherzGuildIcons.html",
+  "stats": {
+    "downloads": 115,
+    "favorites": 0,
+    "monthly_downloads": 11
+  },
+  "title": "EisherzGuildIcons",
+  "updated_at": 1776217774000,
+  "version": "1.0.2"
+}

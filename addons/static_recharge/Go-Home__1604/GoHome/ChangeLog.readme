@@ -1,0 +1,154 @@
+8.0.0
+- The list of houses now autopopulates from in game data
+- Streamlined and updated the settings menu
+- Made the settings menu update automatically without a reloadui
+- Added /ghmenu slash command for opening the settings menu
+- Updated the character saved variables to use character ID instead of character name (character specific houses will have to be reset)
+- The saved variables will now differentiate between servers
+
+7.2.2
+- Made the house list dropdown menus scrollable
+
+7.2.1
+- Added Japanese translations
+- Fixed an issue with the /gh command
+
+7.2.0
+- Updated for the Blackwood Chapter and Update 30
+- Added the ability to transport to the outside of houses that you own
+
+7.1.11
+- Updated for the Flames of Ambition DLC and Update 29
+
+7.1.10
+- Updated for the Markarth DLC and Update 28
+
+7.1.9
+- Removed the prepacked LibStub and LibAddonMenu libraries in favor of the global libraries available
+
+7.1.8
+- Updated for the Stonethorn DLC and Update 27
+
+7.1.7
+- Updated for the Greymoor Chapter and Update 26
+
+7.1.6
+- Updated for the Harrowstorm DLC and Update 25
+
+7.1.5
+- Updated for the Dragonhold DCL and Update 24
+
+7.1.4
+- Updated for the Scalebreaker DLC and Update 23
+
+7.1.3
+- Fixed an issue with traveling to a guild hall that was the guild leader's primary residence
+
+7.1.2
+- Updated for the Elsweyr chapter and Update 22
+
+7.1.1
+- Updated for Wrathstone DLC and Update 21
+
+7.1.0
+- Added a function for listing the houses that are set in the settings
+- Up to date for Murkmire DLC and Update 20
+
+7.0.3
+- Up to date for Wolfhunter DLC and update 19
+
+7.0.2
+- Re-added the character specific house option to the settings menu
+
+7.0.1
+- Fixed an issue with the slash commands producing a UI error and not working
+
+7.0.0
+- Created LibHomes library for ease of use and easy porting to other projects
+- Redesigned the keybindings and settings system to be more flexible and added up to 10 keybinds
+- Incorporated LibCustomMenu for better compatability between other addons
+- Updated LibAddonMenu-2.0 to the latest version (v2.0r25)
+- Up to date for Summerset and Update 18
+- Added support for the French client
+
+6.0.1
+- Updated for Dragon Bones DLC and Update 17
+
+6.0.0
+- Added an option to the right click menu in chat to travel directly to a player's primary house. This only works if you have permission to go there in the first place.
+
+5.1.2
+- Up to date for the Clockwork City DLC
+- Upgraded the LibAddonMenu library to the latest version (v2.0r24)
+
+5.1.1
+- Fixed an issue that was causing an error to show up when teleporting to your hosues.
+
+5.1.0
+- Fixed the issue with certain houses not showing up in the list. The crown exclusive houses no long need their own settings.
+- Expanded the toggles at the bottom of the settings menu so that all of the text is visible in German clients
+- Up to date for Horns of the Reach
+
+5.0.0
+- Added the ability to select a guild house and respective keybinding
+- Added a set of options for crown exclusive houses to circumvent the current API issues
+
+4.5.4
+- Worked around a UI error caused by no information from crown store only houses
+
+4.5.3
+- Fixed an issue with the character house teleport producing a UI error
+
+4.5.2
+- Fixed an issue where you would get a UI error with limited time sale houses. This just removed the UI error, more work will be done in the future to provide more compatibilty
+
+4.5.1
+- Fixed an issue with the embedded LibAddonMenu-2.0
+
+4.5
+- Added slash commands for all 3 teleport functions
+
+4.4
+- Improved the ability to read house information from the game
+- Fixed an issue that was causing the change log to show up as another addon
+
+4.3
+- Added support for the German client
+- Fixed an issue that was preventing the house nicknames from showing up in the chat messages when this option was toggled on
+- Added a chat message for trying to port out of a PvP area
+
+4.2
+- Fixed an issue that was preventing two of the new houses from Morrowind from showing up in the settings menu
+- Added the option to use house nicknames instead of default names in the settings menu and chat feedback
+- The addon is no longer dependent on LibAddonMenu-2.0 and can function without it being installed separately
+
+4.1
+- Made the addon more future proof, auto reading the housing information from the game
+- This version is compatible with Morrowind
+
+4.0
+- Added the ability to change your primary residence from the settings menu
+- Streamlined the settings menu and addon code
+- Updated the chat messages to include the name of the house you are traveling to (for your houses)
+
+3.2
+- Fixed a bug that was preventing the /gh command from working
+
+3.1
+- Added Earthtear Cavern and Grand Topal Hideaway to the list of recognized houses
+- Added a proper feedback message for when you tried to travel to your characters preferred house before setting one.
+
+3.0
+- Added a keybinding for a character's favourite home
+- Added a settings menu for all user settings
+
+2.1
+- Added a slash command to toggle chat output
+- Cleaned up and organised the internal structure of the addon to be more streamlined and allow for easier updating
+
+2.0
+- Added keybinding for friend's home
+- Added text feedback for each action
+
+1.0
+- Initial release

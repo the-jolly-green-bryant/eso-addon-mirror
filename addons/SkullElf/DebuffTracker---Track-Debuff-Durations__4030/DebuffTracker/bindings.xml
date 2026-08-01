@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="DebuffTracker">
+            <Action name="DebuffTracker_OpenMenu">
+                <Down>DebuffTracker_ToggleSettings()</Down>
+            </Action>
+            <Action name="DebuffTracker_OpenProfiles">
+                <Down>DebuffTrackerProfileManager:Show()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

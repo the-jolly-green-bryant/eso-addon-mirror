@@ -1,0 +1,10 @@
+<!-- Bindings.xml -->
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<Category name="Solution Test">
+			<Action name="LOOT_TRACKER_TEST">
+				<Down>OnHotkeyPressed()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

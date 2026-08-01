@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/static_recharge/Static-s-Quickslot-Profiles__1775",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "static_recharge",
+  "canonical_id": "esoui:1775",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:1775",
+  "deleted": false,
+  "directories": [
+    "StaticsQuickslotProfiles"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1775/",
+  "fingerprint": "8bd64ef1d356a25eaf071b66fcb46980c600412793ddef40deb37e49ca5e2c7b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10274.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10273.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1775",
+  "source_url": "https://www.esoui.com/downloads/info1775-StaticsQuickslotProfiles.html",
+  "stats": {
+    "downloads": 24389,
+    "favorites": 51,
+    "monthly_downloads": 21
+  },
+  "title": "Static's Quickslot Profiles",
+  "updated_at": 1620246817000,
+  "version": "2.3.0"
+}

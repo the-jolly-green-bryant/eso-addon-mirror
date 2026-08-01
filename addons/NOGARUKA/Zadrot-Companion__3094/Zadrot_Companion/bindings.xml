@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cFFFFFFZadrot |c0099FFCompanion|r">
+			<Action name="Trader">
+				<Up>Zadrot_SummonTrader()</Up>
+			</Action>
+			<Action name="Banker">
+				<Up>Zadrot_SummonBanker()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/ragingpix3l/UnstableUnicornGuildGrabber__2751",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ragingpix3l",
+  "canonical_id": "esoui:2751",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2751",
+  "deleted": false,
+  "directories": [
+    "UnstableUnicornGuildGrabber"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2751/",
+  "fingerprint": "8ea66410d8c6a322012142243afaf4cfc4721725b849528be411f9f304bf0598",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9323.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9324.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9334.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9335.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2751",
+  "source_url": "https://www.esoui.com/downloads/info2751-UnstableUnicornGuildGrabber.html",
+  "stats": {
+    "downloads": 2490,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "UnstableUnicornGuildGrabber",
+  "updated_at": 1598575759000,
+  "version": "0.10"
+}

@@ -1,0 +1,27 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="IC the next Boss - akamatsu version">
+			<Action name="SI_ICTHENEXTBOSS_CAN">
+				<Down>ICT.markDistrict(0)</Down>
+			</Action>
+			<Action name="SI_ICTHENEXTBOSS_MEMORIALDISTRICT">
+				<Down>ICT.markDistrict(1)</Down>
+			</Action>
+			<Action name="SI_ICTHENEXTBOSS_ARENADISTRICT">
+				<Down>ICT.markDistrict(2)</Down>
+			</Action>
+			<Action name="SI_ICTHENEXTBOSS_ARBORETUMDISTRICT">
+				<Down>ICT.markDistrict(3)</Down>
+			</Action>
+			<Action name="SI_ICTHENEXTBOSS_TEMPLEDISTRICT">
+				<Down>ICT.markDistrict(4)</Down>
+			</Action>
+			<Action name="SI_ICTHENEXTBOSS_NOBLESDISTRICT">
+				<Down>ICT.markDistrict(5)</Down>
+			</Action>
+			<Action name="SI_ICTHENEXTBOSS_ELVENGARDENSDISTRICT">
+				<Down>ICT.markDistrict(6)</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

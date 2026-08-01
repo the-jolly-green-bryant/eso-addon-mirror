@@ -1,0 +1,11 @@
+## Title: DungeonStrats
+## Author: smitf
+## Version: 0.1.0
+## AddOnVersion: 1
+## APIVersion: 101049 101050
+## Description: Browse dungeon and trial boss strategies in-game.
+
+Bindings.xml
+DungeonStratsData.lua
+DungeonStratsUI.xml
+DungeonStrats.lua

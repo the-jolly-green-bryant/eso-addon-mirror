@@ -1,0 +1,45 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cB759FFStatic's Quickslot Profiles|r">
+			<Action name="SQP_LOAD_PROFILE_1_HOTKEY">
+				<Down>SQP_LOAD_PROFILE_1_HOTKEY()</Down>
+			</Action>
+			<Action name="SQP_LOAD_PROFILE_2_HOTKEY">
+				<Down>SQP_LOAD_PROFILE_2_HOTKEY()</Down>
+			</Action>
+			<Action name="SQP_LOAD_PROFILE_3_HOTKEY">
+				<Down>SQP_LOAD_PROFILE_3_HOTKEY()</Down>
+			</Action>
+			<Action name="SQP_LOAD_PROFILE_4_HOTKEY">
+				<Down>SQP_LOAD_PROFILE_4_HOTKEY()</Down>
+			</Action>
+			<Action name="SQP_LOAD_PROFILE_5_HOTKEY">
+				<Down>SQP_LOAD_PROFILE_5_HOTKEY()</Down>
+			</Action>
+			<Action name="SQP_SELECT_QUICKSLOT_1">
+				<Down>SQP_SELECT_QUICKSLOT(9)</Down>
+			</Action>
+			<Action name="SQP_SELECT_QUICKSLOT_2">
+				<Down>SQP_SELECT_QUICKSLOT(10)</Down>
+			</Action>
+			<Action name="SQP_SELECT_QUICKSLOT_3">
+				<Down>SQP_SELECT_QUICKSLOT(11)</Down>
+			</Action>
+			<Action name="SQP_SELECT_QUICKSLOT_4">
+				<Down>SQP_SELECT_QUICKSLOT(12)</Down>
+			</Action>
+			<Action name="SQP_SELECT_QUICKSLOT_5">
+				<Down>SQP_SELECT_QUICKSLOT(13)</Down>
+			</Action>
+			<Action name="SQP_SELECT_QUICKSLOT_6">
+				<Down>SQP_SELECT_QUICKSLOT(14)</Down>
+			</Action>
+			<Action name="SQP_SELECT_QUICKSLOT_7">
+				<Down>SQP_SELECT_QUICKSLOT(15)</Down>
+			</Action>
+			<Action name="SQP_SELECT_QUICKSLOT_8">
+				<Down>SQP_SELECT_QUICKSLOT(16)</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

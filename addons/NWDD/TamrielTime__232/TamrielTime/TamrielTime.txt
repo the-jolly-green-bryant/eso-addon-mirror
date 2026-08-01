@@ -1,0 +1,8 @@
+## Title: TamrielTime
+## Author: [NWDD]Gindar
+## APIVersion: 100003
+## SavedVariables: tt_svars
+lib\LibAddonMenu-1.0.lua
+lib\LibTT.lua
+lib\LibUtils.lua
+TamrielTime.lua

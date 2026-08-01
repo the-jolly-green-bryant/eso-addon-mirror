@@ -1,0 +1,16 @@
+## APIVersion: 100035 101031
+## Title: Combat Reticle
+## Description: Customizable context-senstitve reticle
+## Version: 2.1.1.1
+## Author: Aetheron, |c4EFFF6Calia1120|r, fix by skawiaw
+## SavedVariables: CombatReticle_Settings
+## DependsOn: LibAddonMenu-2.0>=30
+
+
+## Core:
+CombatReticle.lua
+CombatReticleSettings.lua
+CombatReticleThemes.lua
+CombatReticle.xml
+Bindings/Bindings.xml
+Bindings/Bindings.lua

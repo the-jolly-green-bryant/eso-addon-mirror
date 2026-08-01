@@ -1,0 +1,15 @@
+## Title: LovelyEmotes - EmoteModification
+## Description: A Tool to modify the emote data of LovelyEmotes by ShinyBones. Open the menu by typing "/lemodifyemotedata" into the chat.
+## Author: ShinyBones
+## Version: 1.0
+## AddOnVersion: 1
+## APIVersion: 101042
+## DependsOn: LovelyEmotes>=66
+## SavedVariables: EmoteDataModVariables
+
+Localization/Default.lua
+Localization/$(language).lua
+Files/Main.lua
+Files/ModificationMenu.lua
+Files/ModificationWindow.xml
+EmoteDataMod.lua

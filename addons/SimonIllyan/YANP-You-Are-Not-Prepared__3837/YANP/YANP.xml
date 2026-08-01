@@ -1,0 +1,97 @@
+<GuiXml>
+    <Controls>
+        <!--##########################################-->
+        <!-- List row                                 -->
+        <!--##########################################-->
+		<Control name="YANP_ItemTemplate" virtual="true">
+			<Dimensions x="300" y="22" />
+			<Controls>
+				<Texture name="$(parent)Bg" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds" alpha="0.2">
+					<AnchorFill />
+					<TextureCoords left="0" right="1" top="0" bottom=".8125" />
+				</Texture>
+				<Label name="$(parent)_Label" font="ZoFontChat" color="cccccc" wrapMode="ELLIPSIS">
+					<Dimensions x="240" y="22" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Label>
+				<Label name="$(parent)_Value" font="ZoFontChat" color="cccccc" horizontalAlignment="RIGHT">
+					<Dimensions x="100" y="22" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+				</Label>
+			</Controls>
+		</Control>
+        <!--##########################################-->
+        <!-- List separator - currently not used      -->
+        <!--##########################################-->		
+		<Control name="YANP_ListSeparator" virtual="true">
+			<Controls>
+				<Line name="$(parent)_Line" color="FFCCCC" thickness="2" pixelRoundingEnabled="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+				</Line>
+			</Controls>
+		</Control>
+        <!--##########################################-->
+        <!-- Main window                              -->
+        <!--##########################################-->
+        <TopLevelControl name="YANP_Top" mouseEnabled="true" movable="true" clampedToScreen="true" tier="HIGH" allowBringToTop="true" hidden="true">
+			<Dimensions x="940" y="660" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <Controls>
+                <Backdrop name="$(parent)BG" alpha="1" edge="0" inherits="ZO_DefaultBackdrop" />
+				<Button name="$(parent)_Hide">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-3" offsetY="3" />
+					<OnMouseUp>YANP:Toggle()</OnMouseUp>
+					<Dimensions x="25" y="25" />
+					<Textures normal="/esoui/art/buttons/decline_up.dds"
+						pressed="/esoui/art/buttons/decline_down.dds"
+						mouseOver="/esoui/art/buttons/decline_over.dds" />
+				</Button>
+				<Label name="$(parent)_Title" color="D5B526" font="ZoFontWinH2" horizontalAlignment="LEFT" text="You Are Not Prepared">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20"/>
+					<Dimensions y="40"/>
+				</Label>
+				<Label name="$(parent)_Character" color="D5B526" font="ZoFontWinH3" horizontalAlignment="CENTER" wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_Title" relativePoint="BOTTOMLEFT" offsetX="0"/>
+					<Dimensions x="920" y="30"/>
+				</Label>
+				<Control name="$(parent)_Left" inherits="ZO_ScrollList">
+					<Dimensions x="300" y="440" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_Character" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+				</Control>
+				<Control name="$(parent)_Middle" inherits="ZO_ScrollList">
+					<Dimensions x="300" y="440" />
+					<Anchor point="TOP" relativeTo="$(parent)_Character" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+				</Control>
+				<Control name="$(parent)_Right" inherits="ZO_ScrollList">
+					<Dimensions x="300" y="440" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)_Character" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+				</Control>
+				<Control name="$(parent)_CP" >
+					<Dimensions x="940" y="140" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-10" />
+					<Controls>
+						<Label name="$(parent)_Header" color="D5B526" font="ZoFontChat" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Champion Points">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="0" />
+							<Dimensions x="920" y="30" />
+						</Label>
+						<Control name="$(parent)_Craft" inherits="ZO_ScrollList">
+							<Dimensions x="300" y="110" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+						</Control>
+						<Control name="$(parent)_Warfare" inherits="ZO_ScrollList">
+							<Dimensions x="300" y="110" />
+							<Anchor point="TOP" relativeTo="$(parent)_Header" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+						</Control>
+						<Control name="$(parent)_Fitness" inherits="ZO_ScrollList">
+							<Dimensions x="300" y="110" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)_Header" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Control>
+					</Controls>
+				</Control>
+            </Controls>
+        </TopLevelControl>
+
+
+  </Controls>
+</GuiXml>

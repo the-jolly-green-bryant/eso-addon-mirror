@@ -1,0 +1,9 @@
+## Title: Screen Shake
+## APIVersion: 101037
+## Version: 1.0.0
+## AddOnVersion: 1
+## Author: napalmskull
+## SavedVariables: savedScreenShake
+## DependsOn: LibAddonMenu-2.0>=34
+
+ScreenShake.lua

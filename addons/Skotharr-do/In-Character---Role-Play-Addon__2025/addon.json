@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Skotharr-do/In-Character---Role-Play-Addon__2025",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Skotharr-do",
+  "canonical_id": "esoui:2025",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2025",
+  "deleted": false,
+  "directories": [
+    "InCharacter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2025/",
+  "fingerprint": "c77b9cffc44c137a00a7d6fdfc9b071ee21cf401e680c5cecbf84fcbab0bcb86",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6820.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7101.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2025",
+  "source_url": "https://www.esoui.com/downloads/info2025-In-Character-RolePlayAddon.html",
+  "stats": {
+    "downloads": 11031,
+    "favorites": 28,
+    "monthly_downloads": 42
+  },
+  "title": "In-Character - Role Play Addon",
+  "updated_at": 1606772730000,
+  "version": "1.1.3"
+}

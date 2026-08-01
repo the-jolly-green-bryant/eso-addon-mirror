@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/Shadowfen/Fast-Ride__1936",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shadowfen",
+  "canonical_id": "esoui:1936",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1936",
+  "deleted": false,
+  "directories": [
+    "FastRide"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1936/",
+  "fingerprint": "a5d3c582acc0e822203c66432e1fe961d05697610f6614f0efb261d386300895",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6540.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6541.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6542.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6543.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6544.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6545.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1936",
+  "source_url": "https://www.esoui.com/downloads/info1936-FastRide.html",
+  "stats": {
+    "downloads": 129854,
+    "favorites": 77,
+    "monthly_downloads": 22
+  },
+  "title": "Fast Ride",
+  "updated_at": 1604261652000,
+  "version": "3.2.1"
+}

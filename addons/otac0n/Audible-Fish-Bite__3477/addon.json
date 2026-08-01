@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/otac0n/Audible-Fish-Bite__3477",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "otac0n",
+  "canonical_id": "esoui:3477",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3477",
+  "deleted": false,
+  "directories": [
+    "AudibleFishBite"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3477/",
+  "fingerprint": "29592fb9b69ee217372f982a6bbf2497fc8a01bb7041bf9b60df59ab420951ed",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3477",
+  "source_url": "https://www.esoui.com/downloads/info3477-AudibleFishBite.html",
+  "stats": {
+    "downloads": 9483,
+    "favorites": 18,
+    "monthly_downloads": 65
+  },
+  "title": "Audible Fish Bite",
+  "updated_at": 1664755681000,
+  "version": "1.0"
+}

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Parietic/Hedning-Quotes__2622",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Parietic",
+  "canonical_id": "esoui:2622",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2622",
+  "deleted": false,
+  "directories": [
+    "HedningQuotes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2622/",
+  "fingerprint": "641dde7db9a027a3d436ff195679cb1b47e584a58e6209aac69a77f4dfae6b5e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8930.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2622",
+  "source_url": "https://www.esoui.com/downloads/info2622-HedningQuotes.html",
+  "stats": {
+    "downloads": 2741,
+    "favorites": 2,
+    "monthly_downloads": 12
+  },
+  "title": "Hedning Quotes",
+  "updated_at": 1589720682000,
+  "version": "1.0.1"
+}

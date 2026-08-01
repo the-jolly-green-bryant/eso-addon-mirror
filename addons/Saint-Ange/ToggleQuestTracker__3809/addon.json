@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Saint-Ange/ToggleQuestTracker__3809",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Saint-Ange",
+  "canonical_id": "esoui:3809",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3809",
+  "deleted": false,
+  "directories": [
+    "ToggleQuestTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3809/",
+  "fingerprint": "36e7af7319d675d08a130993a2516f7eb01e1fc17bad8f79cc62b8e9442dcaad",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12953.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12952.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3809",
+  "source_url": "https://www.esoui.com/downloads/info3809-ToggleQuestTracker.html",
+  "stats": {
+    "downloads": 3165,
+    "favorites": 1,
+    "monthly_downloads": 33
+  },
+  "title": "ToggleQuestTracker",
+  "updated_at": 1754756555000,
+  "version": "1.2.2"
+}

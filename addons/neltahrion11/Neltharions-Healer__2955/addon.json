@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/neltahrion11/Neltharions-Healer__2955",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "neltahrion11",
+  "canonical_id": "esoui:2955",
+  "category_id": "150",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:2955",
+  "deleted": false,
+  "directories": [
+    "NeltharionsHealer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2955/",
+  "fingerprint": "67f71bfc6660a099f93c850aa9a21d23ddfb7381d3509763b63ad87d9227d500",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11110.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11111.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10848.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10849.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10850.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10851.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10852.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10846.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2955",
+  "source_url": "https://www.esoui.com/downloads/info2955-NeltharionsHealer.html",
+  "stats": {
+    "downloads": 23415,
+    "favorites": 35,
+    "monthly_downloads": 53
+  },
+  "title": "Neltharions Healer",
+  "updated_at": 1750241030000,
+  "version": "2.22"
+}

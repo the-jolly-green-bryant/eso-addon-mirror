@@ -1,0 +1,5 @@
+<GuiXml>
+	<Controls>
+		<Texture name="HM_MapPin" textureFile="HarvestMap/Textures/Map/mining.dds" mouseEnabled="false" hidden="true" virtual="true" tier="HIGH" />
+	</Controls>
+</GuiXml>

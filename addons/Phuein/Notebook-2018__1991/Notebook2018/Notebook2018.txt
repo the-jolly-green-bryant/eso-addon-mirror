@@ -1,0 +1,15 @@
+## Title: Notebook 2018
+## Description: An advanced notebook.
+## APIVersion: 101050
+## Version: 5.00
+## Author: phuein & Bloodspill
+## SavedVariables: NBUISVDB NBUISVDBACCT
+## DependsOn: LibAddonMenu-2.0>=43
+
+Lang/en.lua
+Lang/$(language).lua
+
+Startup.lua
+Notebook1.lua
+Settings.lua
+Bindings.xml

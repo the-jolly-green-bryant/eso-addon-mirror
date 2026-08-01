@@ -1,0 +1,19 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: raggsz attributes
+## Author: @raggsz
+; Version/AddOnVersion are injected from the git tag at release time
+; (.github/workflows/release.yml); these are local-dev placeholders.
+## Version: 3
+## AddOnVersion: 3
+## APIVersion: 101050 101051
+## SavedVariables: RaggszAttributesSavedVars
+## DependsOn: LibAddonMenu-2.0
+## Description: Legible, unintrusive numeric attributes near your feet; subtle when healthy, standing out as they run low or in combat.
+
+raggsz-attributes.lua
+settings.lua

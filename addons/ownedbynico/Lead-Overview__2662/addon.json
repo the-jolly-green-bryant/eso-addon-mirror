@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/ownedbynico/Lead-Overview__2662",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ownedbynico",
+  "canonical_id": "esoui:2662",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2662",
+  "deleted": false,
+  "directories": [
+    "LeadOverview"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2662/",
+  "fingerprint": "0f3f881aa0c5ad0fd630c0943df11c0944499ba46ffa3606a7dceb7e2caa7aba",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9021.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9022.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2662",
+  "source_url": "https://www.esoui.com/downloads/info2662-LeadOverview.html",
+  "stats": {
+    "downloads": 9784,
+    "favorites": 22,
+    "monthly_downloads": 23
+  },
+  "title": "Lead Overview",
+  "updated_at": 1591920850000,
+  "version": "1.1.1"
+}

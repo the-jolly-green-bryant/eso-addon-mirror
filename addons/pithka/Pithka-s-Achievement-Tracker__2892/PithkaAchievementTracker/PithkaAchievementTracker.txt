@@ -1,0 +1,51 @@
+## Title: Pithka's Achievement Tracker
+## APIVersion: 101046
+## Author: @pithka
+## Description: Achievement tracking addon with group finder integration. Requires: LibAddonMenu-2.0 and LibQRCode for full functionality.
+## SavedVariables: PithkaSavedVariables
+## DependsOn: LibAddonMenu-2.0>=40 LibQRCode
+
+fontstrings.xml
+
+Bindings.xml
+
+common/utils.lua
+common/constants.lua 
+common/api.lua
+
+data/achievements.lua
+data/scores.lua
+data/savedVars.lua
+data/generateQR.lua
+
+groupFinder/DataStore.lua
+groupFinder/SearchQueue.lua
+groupFinder/StateMachine.lua
+groupFinder/GroupFinder.lua
+groupFinder/GroupListingCreator.lua
+
+PithkaAchievementTracker.xml
+PithkaGroupFinder.xml
+
+ui/icon.lua
+ui/label.lua
+ui/button.lua
+ui/other.lua
+
+
+
+layout/screen.lua
+layout/navBar.lua
+layout/grid.lua
+
+views/tab1_baseDungeons.lua
+views/tab2_triDungeons.lua
+views/tab3_trials.lua
+views/tab4_scoresAndTris.lua
+views/GroupFinderStandalone.lua
+views/tray_QR.lua
+views/tray_joinGF.lua
+views/commonView.lua
+
+
+main.lua

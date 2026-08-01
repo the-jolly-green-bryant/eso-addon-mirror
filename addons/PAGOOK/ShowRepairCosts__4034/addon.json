@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/PAGOOK/ShowRepairCosts__4034",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "PAGOOK",
+  "canonical_id": "esoui:4034",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:4034",
+  "deleted": false,
+  "directories": [
+    "ShowRepairCosts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4034/",
+  "fingerprint": "35941cc4dcec98c027d768686aa60fdc63c6b659470fee259aaabe40a37efce0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16251.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4034",
+  "source_url": "https://www.esoui.com/downloads/info4034-ShowRepairCosts.html",
+  "stats": {
+    "downloads": 1190,
+    "favorites": 0,
+    "monthly_downloads": 21
+  },
+  "title": "ShowRepairCosts",
+  "updated_at": 1781212515000,
+  "version": "1.0"
+}

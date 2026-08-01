@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/sirinsidiator/Social-Indicators__276",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:276",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    }
+  ],
+  "content_id": "esoui:276",
+  "deleted": false,
+  "directories": [
+    "SocialIndicators"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl276/",
+  "fingerprint": "b6b5b481168a20f9b5c729f750bd7c79bc7b95a5ac397595b782a77b667a7525",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1832.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1421.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1148.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1147.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1351.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "276",
+  "source_url": "https://www.esoui.com/downloads/info276-SocialIndicators.html",
+  "stats": {
+    "downloads": 32996,
+    "favorites": 124,
+    "monthly_downloads": 15
+  },
+  "title": "Social Indicators",
+  "updated_at": 1470852617000,
+  "version": "1.11"
+}

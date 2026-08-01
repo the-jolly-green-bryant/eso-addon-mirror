@@ -1,0 +1,16 @@
+V1.0.5 -- 2019/05/17
+- API bump for Elsweyr
+- Do not attempt to open style plage containers.
+
+V1.0.4 -- 2019/03/03
+- API bump for Wrathstone.
+
+V1.0.3
+- API bump for Wolfhunter.
+
+V1.0.2
+- Removed debugging code.
+- Aligned all version numbers correctly.
+
+V1.0.1
+- First version. This addon is dedicated to @inklings to help him out with his powerleveling of the upcoming Summerset crafting skill line :)

@@ -1,0 +1,55 @@
+## Title: DailyAutoShare
+## Author: manavortex
+## Version: 4.6.2
+## APIVersion: 101042
+## SavedVariables: DAS_Settings DAS_Globals
+## DependsOn: LibAddonMenu-2.0 LibCustomMenu
+## OptionalDependsOn: pchat rChat
+
+libs/LibCustomTitles.lua
+
+xml/VirtualButtons.xml
+DAS_xml.xml
+
+locale/en.lua
+locale/$(language).lua
+
+00_startup.lua
+
+xml/Bindings.xml
+
+DASHelper.lua
+DASData.lua
+
+questData/Activity_guilds.lua
+questData/Activity_newLife.lua
+questData/Blackwood.lua
+questData/ClockworkCity.lua
+questData/Craglorn.lua
+questData/Cyrodiil.lua
+questData/Fargrave.lua
+questData/Galen.lua
+questData/GoldCoast.lua
+questData/HewsBane.lua
+questData/HighIsle.lua
+questData/Murkmire.lua
+questData/NorthElsweyr.lua
+questData/Reach.lua
+questData/SouthElsweyr.lua
+questData/Summerset.lua
+questData/Telvanni.lua
+questData/Vvardenfell.lua
+questData/WestSkyrim.lua
+questData/WestWeald.lua
+questData/Wrothgar.lua
+
+DASUserSettingsAdapter.lua
+DasChatMessage.lua
+DASContextMenu.lua
+DasGui.lua
+DasQuestAccept.lua
+DasGuiStringBuilder.lua
+DasTooltip.lua
+DasMapMarker.lua
+DASMenu.lua
+DasLog.lua

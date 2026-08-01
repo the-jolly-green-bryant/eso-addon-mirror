@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/quentinlamamy/Imperial-City-Tracker__1467",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "quentinlamamy",
+  "canonical_id": "esoui:1467",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1467",
+  "deleted": false,
+  "directories": [
+    "imperialTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1467/",
+  "fingerprint": "6b3a79be99580579bf0fe5ab5d5ff93db98b5af2c41c1e60ff16e24b0fcc295e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4759.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1467",
+  "source_url": "https://www.esoui.com/downloads/info1467-ImperialCityTracker.html",
+  "stats": {
+    "downloads": 3819,
+    "favorites": 3,
+    "monthly_downloads": 16
+  },
+  "title": "Imperial City Tracker",
+  "updated_at": 1472613549000,
+  "version": "1.0"
+}

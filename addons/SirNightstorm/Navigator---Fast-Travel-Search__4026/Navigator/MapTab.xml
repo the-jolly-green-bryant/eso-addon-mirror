@@ -1,0 +1,293 @@
+<GuiXml>
+    <Controls>
+	
+	    <Control name="Navigator_CategoryRow" virtual="true" mouseEnabled="true">
+			<OnInitialized>
+				self.offsetX = 30
+				self.label = self:GetNamedChild("Label")
+				--self.icon = self:GetNamedChild("Icon")
+				--self.icon:SetDrawLayer(self.label:GetDrawLayer() + 1)
+				self.label.GetTextColor = function() return GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_SELECTED) end
+			</OnInitialized>
+            <Dimensions x="285" y="40"/>
+            <Controls>
+				<!--<Texture name="$(parent)Icon" textureFile="EsoUI/Art/Quest/questJournal_trackedQuest_icon.dds" hidden="false" mouseEnabled="true">
+					<Dimensions x="25" y="25"/>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="14" />
+					<TextureCoords top="0" bottom="1" left="0" right="1"/>
+				</Texture>-->
+				<Label name="$(parent)Label" inherits="ZO_SelectableLabel" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" modifyTextType="UPPERCASE" mouseEnabled="false">
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="14"/>
+				</Label>
+            </Controls>
+			<OnMouseUp>
+				if upInside then self.tab:CategoryRowMouseUp(self, button) end
+			</OnMouseUp>
+        </Control>
+
+	    <Control name="Navigator_CollapsedCategoryRow" virtual="true" mouseEnabled="true">
+			<OnInitialized>
+				self.offsetX = 30
+				self.label = self:GetNamedChild("Label")
+				self.icon = self:GetNamedChild("Icon")
+				--self.icon:SetDrawLayer(self.label:GetDrawLayer() + 1)
+				self.label.GetTextColor = function() return GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_SELECTED) end
+			</OnInitialized>
+            <Dimensions x="285" y="40"/>
+            <Controls>
+				<Texture name="$(parent)Icon" textureFile="EsoUI/Art/Buttons/plus_up.dds" hidden="false" mouseEnabled="false">
+					<Dimensions x="25" y="25"/>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="14" />
+					<TextureCoords top="0" bottom="1" left="0" right="1"/>
+				</Texture>
+				<Label name="$(parent)Label" inherits="ZO_SelectableLabel" font="ZoFontHeader2"  modifyTextType="UPPERCASE" mouseEnabled="false">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+				</Label>
+            </Controls>
+			<OnMouseUp>
+				if upInside then self.tab:CategoryRowMouseUp(self, button) end
+			</OnMouseUp>
+        </Control>
+
+        <Control name="Navigator_WayshrineRow" virtual="true" mouseEnabled="true">
+			<OnInitialized>
+				self.offsetX = 30
+				self.label = self:GetNamedChild("Label")
+				self.icon = self:GetNamedChild("Icon")
+				self.overlay = self:GetNamedChild("Overlay")
+				self.keybind = self:GetNamedChild("Keybind")
+				self.bg = self:GetNamedChild("BG")
+			</OnInitialized>
+            <Dimensions y="25"/>
+            <Controls>
+			<!-- EsoUI/Art/Buttons/ESO_buttonLarge_normal.dds  -->
+			<!-- /esoui/art/miscellaneous/listitem_highlight.dds -->
+				<Texture name="$(parent)BG" textureFile="/esoui/art/miscellaneous/listitem_backdrop.dds" hidden="true" mouseEnabled="false">
+		            <Dimensions y="30"/>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+					<Anchor point="TOPRIGHT" offsetX="0" offsetY="0" />
+				</Texture>
+				<Texture name="$(parent)Icon" textureFile="EsoUI/Art/Quest/questJournal_trackedQuest_icon.dds" level="0" hidden="false" mouseEnabled="false">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOPLEFT" offsetX="10" offsetY="1" />
+					<TextureCoords top="0" bottom="1" left="0" right="1"/>
+				</Texture>
+				<Texture name="$(parent)Overlay" textureFile="Navigator/media/overlays/coin.dds" color="FFCC33" level="1" hidden="false" mouseEnabled="false">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOPLEFT" offsetX="10" offsetY="1" />
+					<TextureCoords top="0" bottom="1" left="0" right="1"/>
+				</Texture>
+
+				<Label name="$(parent)Keybind" font="$(MEDIUM_FONT)|$(KB_16)" text="NAVIGATOR_KEY_ENTER"  horizontalAlignment="CENTER">
+					<Anchor point="TOPRIGHT" offsetX="-8" offsetY="1"/>
+					<Controls>
+						<Backdrop name="$(parent)Bg" inherits="ZO_LargeKeyBackdrop" alpha="1">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-8" offsetY="-4" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="8" offsetY="4" />
+						</Backdrop>
+						<Texture name="$(parent)Up" textureFile="/esoui/art/miscellaneous/gamepad/arrow_up.dds" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" layer="OVERLAY" level="1" hidden="false" mouseEnabled="false">
+							<Dimensions x="12" y="12"/>
+							<Anchor point="BOTTOM" relativeTo="$(parent)Bg" relativePoint="TOP" offsetX="0" offsetY="1" />
+							<TextureCoords top="0" bottom="1" left="0" right="1"/>
+						</Texture>
+						<Texture name="$(parent)Down" textureFile="/esoui/art/miscellaneous/gamepad/arrow_down.dds" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" layer="OVERLAY" level="1" hidden="false" mouseEnabled="false">
+							<Dimensions x="12" y="12"/>
+							<Anchor point="TOP" relativeTo="$(parent)Bg" relativePoint="BOTTOM" offsetX="0" offsetY="-3" />
+							<TextureCoords top="0" bottom="1" left="0" right="1"/>
+						</Texture>
+						<!-- /esoui/art/miscellaneous/gamepad/arrow_down.dds -->
+					</Controls>
+				</Label>
+
+				<Label name="$(parent)Label" inherits="ZO_SelectableLabel" font="ZoFontHeader" wrapMode="ELLIPSIS" mouseEnabled="false" verticalAlignment="CENTER">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetX="6" offsetY="0" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-4" />
+		            <Dimensions y="24" />
+				</Label>
+            </Controls>
+			<OnMouseUp>
+				self.tab:HandleMouseUp(Navigator.mainTab.RowMouseUp, self, button, upInside)
+			</OnMouseUp>
+        </Control>
+
+        <Control name="Navigator_HintRow" virtual="true" mouseEnabled="true">
+			<OnInitialized>
+				self.offsetX = 30
+				self.label = self:GetNamedChild("Label")
+			</OnInitialized>
+            <Dimensions x="285" y="70"/>
+            <Controls>
+				<Label name="$(parent)Label" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" maxLineCount="3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" mouseEnabled="false">
+					<AnchorFill/>
+				</Label>
+            </Controls>
+			<OnMouseUp>
+				if upInside then self.tab:HintRowMouseUp(self, button, false) end
+			</OnMouseUp>
+        </Control>
+
+        <TopLevelControl name="Navigator_MainTab" inherits="ZO_WorldMapInfoContent">
+            <OnInitialized>
+				Navigator_MainTab_OnInitialized(self)
+			</OnInitialized>
+            <Controls>
+				<Backdrop name="$(parent)Search" tier="HIGH"  inherits="ZO_SingleLineEditBackdrop_Keyboard"  mouseEnabled="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="-30"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="-30" />
+
+					<Controls>
+						<Button name="$(parent)View" tier="HIGH">
+							<Anchor point="TOPLEFT" offsetX="2" offsetY="3"/>
+							<OnMouseUp>
+								if button == 1 then
+									Navigator.mainTab:OpenViewMenu()
+								else
+									Navigator.mainTab:ResetView()
+									Navigator.mainTab:UpdateViewControl()
+								end
+								ZO_Tooltips_HideTextTooltip()
+							</OnMouseUp>
+							<Dimensions x="24" y="24" />
+							<Textures 	 normal="Navigator/media/icons/search_up.dds"
+										pressed="Navigator/media/icons/search_down.dds"
+									  mouseOver="Navigator/media/icons/search_over.dds"
+							/>
+						</Button>
+
+						<Texture name="$(parent)Separator" textureFile="Navigator/media/verticalbar.dds" hidden="false" mouseEnabled="false">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)View" relativePoint="TOPRIGHT" offsetX="2" offsetY="0" />
+							<Dimensions x="4" y="24"/>
+							<!--<TextureCoords top="0" bottom="1" left="0" right="1"/>-->
+						</Texture>
+
+						<Button name="$(parent)Clear" tier="HIGH">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="5"/>
+							<OnMouseUp>
+								Navigator.mainTab:ResetSearch()
+								Navigator.mainTab:ResetView()
+								Navigator.mainTab:UpdateViewControl()
+							</OnMouseUp>
+							<Dimensions x="23" y="23" />
+							<Textures 	normal="EsoUI/art/buttons/decline_up.dds"
+										pressed="EsoUI/art/buttons/decline_down.dds"
+										mouseOver="EsoUI/art/buttons/decline_over.dds"
+							/>
+						</Button>
+
+						<EditBox name="$(parent)Edit" maxInputCharacters="30" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" newLineEnabled="true" >
+							<!--<Anchor point="TOPLEFT" relativeTo="$(parent)Filter" relativePoint="TOPRIGHT" offsetX="0" offsetY="-1" />-->
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Separator" relativePoint="TOPRIGHT" offsetX="2" offsetY="-1" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Clear" relativePoint="TOPLEFT" offsetX="-4" offsetY="-1" />
+							<OnInitialized>
+								--self.tab = self.owningWindow.tab --self:GetParent():GetParent().tab
+							</OnInitialized>
+							<OnBackspace>
+								--Navigator.log("OnBackspace: pos="..self:GetCursorPosition().." changed="..(self.editTextChanged and 1 or 0))
+								if self:GetCursorPosition() == 0 and not self.editTextChanged then
+									Navigator.mainTab:ResetView()
+									Navigator.mainTab:UpdateViewControl()
+								end
+								self.editTextChanged = false
+							</OnBackspace>
+							<OnEnter>
+								local tab = self:GetOwningWindow().tab
+								tab:OnEnter()
+							</OnEnter>
+							<OnEscape>
+								-- self:LoseFocus()
+								ZO_WorldMap_HideWorldMap()
+							</OnEscape>
+							<OnEffectivelyShown>
+								local tab = self:GetOwningWindow().tab
+								tab:ResetSearch()
+								if Navigator.saved.autoFocus then
+									self:TakeFocus()
+								end
+							</OnEffectivelyShown>
+							<OnFocusGained>
+								local tab = self:GetOwningWindow().tab
+								tab:buildScrollList()
+								zo_callLater(function() tab:UpdateEditDefaultText() end, 10)
+							</OnFocusGained>
+							<OnFocusLost>
+								local tab = self:GetOwningWindow().tab
+								tab:UpdateEditDefaultText()
+								tab:buildScrollList()
+							</OnFocusLost>
+							<OnTextChanged>
+								local tab = self:GetOwningWindow().tab
+								--Navigator.log("onTextChanged: pos="..self:GetCursorPosition())
+								tab:onTextChanged(self)
+							</OnTextChanged>
+							<OnMouseDown>
+								self:TakeFocus()
+								ZO_EditDefaultText_Disable(self)
+							</OnMouseDown>
+							<OnDownArrow>
+								self:GetOwningWindow().tab:nextResult()
+							</OnDownArrow>
+							<OnUpArrow>
+								self:GetOwningWindow().tab:previousResult()
+							</OnUpArrow>
+							<OnPageDown>
+								self:GetOwningWindow().tab:nextCategory()
+							</OnPageDown>
+							<OnPageUp>
+								self:GetOwningWindow().tab:previousCategory()
+							</OnPageUp>
+							<OnTab>
+								self:GetOwningWindow().tab.editControl:LoseFocus()
+							</OnTab>
+						</EditBox>						
+					</Controls>
+				</Backdrop>
+
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Dimensions x="285" y="400" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Search" relativePoint="BOTTOMLEFT" offsetY="5" />
+                    <Anchor point="BOTTOMRIGHT" />
+                </Control>
+
+            </Controls>
+        </TopLevelControl>
+
+		<TopLevelControl name="Navigator_QuestTab" inherits="ZO_WorldMapInfoContent">
+			<OnInitialized>
+				Navigator_QuestTab_OnInitialized(self)
+			</OnInitialized>
+			<Controls>
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Dimensions x="285" y="400" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="-30"/>
+					<Anchor point="BOTTOMRIGHT" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="Navigator_HousingTab" inherits="ZO_WorldMapInfoContent">
+			<OnInitialized>
+				Navigator_HousingTab_OnInitialized(self)
+			</OnInitialized>
+			<Controls>
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Dimensions x="285" y="400" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="-30"/>
+					<Anchor point="BOTTOMRIGHT" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="Navigator_ZonesTab" inherits="ZO_WorldMapInfoContent">
+			<OnInitialized>
+				Navigator_ZonesTab_OnInitialized(self)
+			</OnInitialized>
+			<Controls>
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Dimensions x="285" y="400" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="-30"/>
+					<Anchor point="BOTTOMRIGHT" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

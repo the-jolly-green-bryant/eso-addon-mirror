@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/remosito/Undaunted-Pledge-Queuer__2706",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "remosito",
+  "canonical_id": "esoui:2706",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:2706",
+  "deleted": false,
+  "directories": [
+    "UndauntedDailyQueuer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2706/",
+  "fingerprint": "aa68cd68f69255eaf0cdba648d960c21a8bad61c92284774eef825fc5cfcb97f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10320.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9163.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9181.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2706",
+  "source_url": "https://www.esoui.com/downloads/info2706-UndauntedPledgeQueuer.html",
+  "stats": {
+    "downloads": 16981,
+    "favorites": 15,
+    "monthly_downloads": 60
+  },
+  "title": "Undaunted Pledge Queuer",
+  "updated_at": 1710200115000,
+  "version": "41.0"
+}

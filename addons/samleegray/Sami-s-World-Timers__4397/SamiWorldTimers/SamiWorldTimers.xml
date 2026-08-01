@@ -1,0 +1,21 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="SamiWorldTimersTLC" clampedToScreen="true" movable="true"
+            mouseEnabled="true" hidden="false">
+            <Dimensions x="200" y="100" />
+            <Anchor point="TOPLEFT" relativeTo="GUI_ROOT" relativePoint="TOPLEFT" offsetY="100"
+                offsetX="400" />
+            <OnMoveStop>
+                SamiWorldTimers.savePosition()
+            </OnMoveStop>
+            <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12)</OnMouseEnter>
+            <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0)</OnMouseExit>
+            <Controls>
+                <Label name="$(parent)Label" width="200" height="100" font="ZoFontWinH4"
+                    color="FFFFFF">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

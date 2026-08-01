@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Skvysh/Martial-Knowledge-Tracker__2680",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Skvysh",
+  "canonical_id": "esoui:2680",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:2680",
+  "deleted": false,
+  "directories": [
+    "MKTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2680/",
+  "fingerprint": "bf2dece53998583b6224fca222f25ff3549f530cefe3f0750dece0ca8fb3b278",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9091.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9078.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9079.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9080.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2680",
+  "source_url": "https://www.esoui.com/downloads/info2680-MartialKnowledgeTracker.html",
+  "stats": {
+    "downloads": 41212,
+    "favorites": 14,
+    "monthly_downloads": 54
+  },
+  "title": "Martial Knowledge Tracker",
+  "updated_at": 1649591233000,
+  "version": "1.7.1"
+}

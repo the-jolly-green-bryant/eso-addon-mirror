@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/sinnereso/OBSOLETE__3759",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sinnereso",
+  "canonical_id": "esoui:3759",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3759",
+  "deleted": false,
+  "directories": [
+    "DarkBrotherhoodSpree"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3759/",
+  "fingerprint": "a3a151f1e8952bf19ca0c7baa43e9be5787b31d2c76e34392518ef4d9b25c37b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3759",
+  "source_url": "https://www.esoui.com/downloads/info3759-OBSOLETE.html",
+  "stats": {
+    "downloads": 1986,
+    "favorites": 3,
+    "monthly_downloads": 10
+  },
+  "title": "OBSOLETE",
+  "updated_at": 1701195393000,
+  "version": "1.2"
+}

@@ -1,0 +1,32 @@
+## Title: |cCC922FThiefTools-FilteredAutoSteal|r
+## Author: Shadowfen
+## Description: A filtered auto-stealing manager to make your stealing faster and easier.
+## APIVersion: 101050 101051
+## Version: 1.3.9
+## AddOnVersion: 12
+## SavedVariables: TTFAS_VARS TTFAS_Profiles
+## DependsOn: LibAddonMenu-2.0>=41 LibSFUtils>=66 LibDebugLogger>=268
+## OptionalDependsOn: ThiefTools>=54 
+## OptionalDependsOn: UnknownTracker>=79 TamrielTradeCentre
+
+
+lang/en.lua
+lang/$(language).lua
+
+SFLootItem.lua
+TTFAS_Global.lua
+FAS_Saves.lua
+TTFAS_Settings.lua
+TTFAS_Rules.lua
+ThiefToolsFilteredAutoSteal.lua
+ThiefToolsFilteredAutoSteal.xml
+
+; DISCLAIMER:
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

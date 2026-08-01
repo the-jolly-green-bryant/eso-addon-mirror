@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/pesakm/AIRG-Unof.patch-Fixes42__3883",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "pesakm",
+  "canonical_id": "esoui:3883",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3883",
+  "deleted": false,
+  "directories": [
+    "AIResearchGrid"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3883/",
+  "fingerprint": "3f2c208fafd9aebb61df71ad339b22d43300c76760f0572d30b6ca14cc01c200",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3883",
+  "source_url": "https://www.esoui.com/downloads/info3883-AIRG-Unof.patch-Fixes42.html",
+  "stats": {
+    "downloads": 3755,
+    "favorites": 0,
+    "monthly_downloads": 15
+  },
+  "title": "AIRG-Unof.patch-Fixes42",
+  "updated_at": 1717432741000,
+  "version": "11.5.04"
+}

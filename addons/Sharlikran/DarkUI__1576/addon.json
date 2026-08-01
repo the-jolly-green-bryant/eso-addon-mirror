@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/Sharlikran/DarkUI__1576",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:1576",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:1576",
+  "deleted": false,
+  "directories": [
+    "DarkUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1576/",
+  "fingerprint": "4d3459b467977f462b68f833ddc9b77c6a0b892394e80b08b46a5ccc5e079818",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5258.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5259.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5363.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5362.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5155.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5194.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5357.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5203.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5193.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5196.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5304.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5330.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5331.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5332.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5333.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1576",
+  "source_url": "https://www.esoui.com/downloads/info1576-DarkUI.html",
+  "stats": {
+    "downloads": 1258000,
+    "favorites": 609,
+    "monthly_downloads": 1561
+  },
+  "title": "DarkUI",
+  "updated_at": 1749487345000,
+  "version": "2.76"
+}

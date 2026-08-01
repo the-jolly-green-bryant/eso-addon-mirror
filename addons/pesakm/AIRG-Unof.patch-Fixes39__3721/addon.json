@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/pesakm/AIRG-Unof.patch-Fixes39__3721",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "pesakm",
+  "canonical_id": "esoui:3721",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3721",
+  "deleted": false,
+  "directories": [
+    "AIResearchGrid"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3721/",
+  "fingerprint": "be62029b382b8708b622a3294e6d9e4b60c3b3a7055ec27b1775e12122fd2cd8",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3721",
+  "source_url": "https://www.esoui.com/downloads/info3721-AIRG-Unof.patch-Fixes39.html",
+  "stats": {
+    "downloads": 7867,
+    "favorites": 0,
+    "monthly_downloads": 14
+  },
+  "title": "AIRG-Unof.patch-Fixes39",
+  "updated_at": 1694624912000,
+  "version": "11.5.04"
+}

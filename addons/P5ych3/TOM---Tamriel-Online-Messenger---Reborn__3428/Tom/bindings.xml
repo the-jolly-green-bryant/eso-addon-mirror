@@ -1,0 +1,15 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|c4779ceTamriel Online Messenger - Reborn|r">
+      <Action name="TOM_TOGGLE"><Down>tomUI.AlerterClick()</Down></Action>
+      <Action name="TOM_GUILD"><Down>tomUI.guildClick()</Down></Action>
+      <Action name="TOM_CATAC"><Down>tomUI.catacombClick()</Down></Action>
+      <Action name="TOM_MAGIC"><Down>tomUI.magicClick()</Down></Action>
+      <Action name="TOM_SCAN"><Down>tomUI.scanClick()</Down></Action>
+      <Action name="TOM_FAIL"><Down>tomUI.failMailClick()</Down></Action>
+      <Action name="TOM_RELOAD"><Down>tomUI.executeAction(1)</Down></Action>
+      <Action name="TOM_LOGOUT"><Down>tomUI.executeAction(2)</Down></Action>
+      <Action name="TOM_QUIT"><Down>tomUI.executeAction(3)</Down></Action>
+    </Category>
+  </Layer>
+</Bindings>

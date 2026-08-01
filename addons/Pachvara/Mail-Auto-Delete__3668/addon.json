@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Pachvara/Mail-Auto-Delete__3668",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Pachvara",
+  "canonical_id": "esoui:3668",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3668",
+  "deleted": false,
+  "directories": [
+    "MailAutoDelete"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3668/",
+  "fingerprint": "6700491f7aa96caeb815da046506678131406cfc4de44caf2184aa2ee5e7a678",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3668",
+  "source_url": "https://www.esoui.com/downloads/info3668-MailAutoDelete.html",
+  "stats": {
+    "downloads": 4233,
+    "favorites": 5,
+    "monthly_downloads": 50
+  },
+  "title": "Mail Auto Delete",
+  "updated_at": 1688398044000,
+  "version": "0.0.2"
+}

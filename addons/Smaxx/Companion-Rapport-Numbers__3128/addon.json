@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Smaxx/Companion-Rapport-Numbers__3128",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Smaxx",
+  "canonical_id": "esoui:3128",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3128",
+  "deleted": false,
+  "directories": [
+    "CompanionRapportNumbers"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3128/",
+  "fingerprint": "59455b6e674923499083390fab25360374f1ed49644435ea0a3380e5f7b9b1a0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10628.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10578.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3128",
+  "source_url": "https://www.esoui.com/downloads/info3128-CompanionRapportNumbers.html",
+  "stats": {
+    "downloads": 11072,
+    "favorites": 34,
+    "monthly_downloads": 102
+  },
+  "title": "Companion Rapport Numbers",
+  "updated_at": 1698870978000,
+  "version": "1.2"
+}

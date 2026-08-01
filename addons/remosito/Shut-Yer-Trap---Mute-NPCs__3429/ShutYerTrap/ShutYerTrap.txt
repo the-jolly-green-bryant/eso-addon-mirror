@@ -1,0 +1,16 @@
+## Title: ShutYerTrap
+## Author: remosito
+## Version: 37.1
+## APIVersion: 101037
+## Description: Mute Selected NPCs, Players
+## DependsOn: LibAddonMenu-2.0>=34
+## OptionalDependsOn: pChat rchat
+## IsLibrary: false
+## SavedVariables: SYTVars
+
+
+locale/en.lua
+locale/$(language).lua
+StartUp.lua
+Settings.lua
+ShutYerTrap.lua

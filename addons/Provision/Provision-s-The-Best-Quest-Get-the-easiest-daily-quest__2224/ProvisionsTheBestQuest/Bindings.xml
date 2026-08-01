@@ -1,0 +1,15 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="SI_KEYBINDINGS_CATEGORY_INTERACTION">
+      <Action name="THEBESTQUEST_GIVEUP">
+        <Down>ProvTBQ_GiveUp()</Down>
+      </Action>
+      <Action name="THEBESTQUEST_TOGGLE">
+        <Down>ProvTBQ_Toggle()</Down>
+      </Action>
+      <Action name="THEBESTQUEST_TARGET">
+        <Down>ProvTBQ_ToggleForTarget()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

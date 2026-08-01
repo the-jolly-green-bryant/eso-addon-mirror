@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Smugger21/Event-Box-Timer__3755",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Smugger21",
+  "canonical_id": "esoui:3755",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3755",
+  "deleted": false,
+  "directories": [
+    "STG_EventBoxTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3755/",
+  "fingerprint": "bf0f116f78c3d7763f03d36de9ed128664a4522c089416b8eb7c2d0acbd7da12",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12714.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12715.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3755",
+  "source_url": "https://www.esoui.com/downloads/info3755-EventBoxTimer.html",
+  "stats": {
+    "downloads": 3278,
+    "favorites": 7,
+    "monthly_downloads": 88
+  },
+  "title": "Event Box Timer",
+  "updated_at": 1700788359000,
+  "version": "2023.11.23-1.1a"
+}

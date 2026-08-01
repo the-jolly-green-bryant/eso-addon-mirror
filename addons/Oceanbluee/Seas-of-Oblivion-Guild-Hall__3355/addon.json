@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Oceanbluee/Seas-of-Oblivion-Guild-Hall__3355",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Oceanbluee",
+  "canonical_id": "esoui:3355",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3355",
+  "deleted": false,
+  "directories": [
+    "SeasGuildHall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3355/",
+  "fingerprint": "0acce25690603d7e9b9d8d3679398d8af0d30e8ff95336d80f091bee878b7d48",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11451.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11452.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3355",
+  "source_url": "https://www.esoui.com/downloads/info3355-SeasofOblivionGuildHall.html",
+  "stats": {
+    "downloads": 1870,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "Seas of Oblivion Guild Hall",
+  "updated_at": 1651548750000,
+  "version": "1"
+}

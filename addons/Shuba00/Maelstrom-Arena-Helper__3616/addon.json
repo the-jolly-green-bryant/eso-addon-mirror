@@ -1,0 +1,63 @@
+{
+  "archive_path": "addons/Shuba00/Maelstrom-Arena-Helper__3616",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shuba00",
+  "canonical_id": "esoui:3616",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3616",
+  "deleted": false,
+  "directories": [
+    "MAHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3616/",
+  "fingerprint": "66ed375eb7520fed066f0ea2984ec59c144028c38f36bab2bb6c0539e98a9439",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12320.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12321.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12350.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3616",
+  "source_url": "https://www.esoui.com/downloads/info3616-MaelstromArenaHelper.html",
+  "stats": {
+    "downloads": 10193,
+    "favorites": 11,
+    "monthly_downloads": 181
+  },
+  "title": "Maelstrom Arena Helper",
+  "updated_at": 1700177062000,
+  "version": "0.1.6"
+}

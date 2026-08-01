@@ -1,0 +1,18 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="BGHelper">
+      <Action name="BGH_QUEUE_SELECTED">
+        <Down>BGHelper_QueueSelected()</Down>
+      </Action>
+      <Action name="BGH_OPEN_SETTINGS">
+        <Down>BGHelper_OpenSettings()</Down>
+      </Action>
+      <Action name="BGH_TOGGLE_RELEASE">
+        <Down>BGHelper_ToggleRelease()</Down>
+      </Action>
+      <Action name="BGH_TOGGLE_HUD">
+        <Down>BGHelper_ToggleHud()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

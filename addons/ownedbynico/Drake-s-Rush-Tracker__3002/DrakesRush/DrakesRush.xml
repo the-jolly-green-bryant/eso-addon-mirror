@@ -1,0 +1,31 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="DrakesRushPanel" mouseEnabled="true" movable="true" clampedToScreen="false" hidden="true">
+			<Dimensions x="64" y="64" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" />
+			<OnMoveStop>
+				DrakesRush.SavedVariables.trackerLeft = DrakesRushPanel:GetLeft()
+				DrakesRush.SavedVariables.trackerTop = DrakesRushPanel:GetTop()
+			</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)OuterBorder"  centerColor="FF0000" alpha="1">
+					<Anchor point="CENTER" relativeTo="$(parent)" />
+					<Dimensions x="66" y="66" />
+					<Edge edgeSize="0" />
+				</Backdrop>
+				<Texture textureFile="/esoui/art/icons/ability_buff_major_heroism.dds">
+					<Anchor point="CENTER" relativeTo="$(parent)" />
+					<Dimensions x="64" y="64" />
+				</Texture>
+				<Texture name="$(parent)InnerBorder" textureFile="/esoui/art/actionbar/abilityframe64_up.dds">
+					<Anchor point="CENTER" relativeTo="$(parent)" />
+					<Dimensions x="64" y="64" />
+				</Texture>
+				<Label name="$(parent)Time" font="/esoui/common/fonts/univers67.otf|50|soft-shadow-thick" color="FF0000"
+					verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

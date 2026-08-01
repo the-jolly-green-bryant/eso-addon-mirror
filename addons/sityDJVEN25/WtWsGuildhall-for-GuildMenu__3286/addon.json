@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/sityDJVEN25/WtWsGuildhall-for-GuildMenu__3286",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sityDJVEN25",
+  "canonical_id": "esoui:3286",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3286",
+  "deleted": false,
+  "directories": [
+    "WtWsChatGuildhalls"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3286/",
+  "fingerprint": "b3c79894029f78a368b759e7a4bca2af42c14b855c2234b0df81d9fde3467034",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11484.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3286",
+  "source_url": "https://www.esoui.com/downloads/info3286-WtWsGuildhallforGuildMenu.html",
+  "stats": {
+    "downloads": 2613,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "WtWsGuildhall for GuildMenu",
+  "updated_at": 1652895762000,
+  "version": "2.0 beta"
+}

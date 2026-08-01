@@ -1,0 +1,34 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="OvercritUI" mouseEnabled="true" movable="true" clampedToScreen="true" editEnabled="true">
+			<Dimensions x="110" y="29" />
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="0" />
+			<OnMoveStop>
+				Overcrit.SavePosition()
+			</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)Bg" centerColor="55222222" edgeColor="AACCCCCC">
+					<AnchorFill/>
+					<Edge edgeSize="1"/>
+				</Backdrop>
+
+				<Control name="$(parent)Box" inheritAlpha="false">
+					<Dimensions x="105" y="26" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="3"/>
+					<Controls>
+						<Label name="$(parent)Label2" font="ZoFontGame" inheritAlpha="true" color="FFFFFF"
+							wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="0%" >
+							<Dimensions x="60" y="26"/>
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="35" />
+						</Label>
+						<Label name="$(parent)Label" font="ZoFontGame" inheritAlpha="true" color="FFFFFF"
+							wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="0%" >
+							<Dimensions x="40" y="26"/>
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="1" />
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

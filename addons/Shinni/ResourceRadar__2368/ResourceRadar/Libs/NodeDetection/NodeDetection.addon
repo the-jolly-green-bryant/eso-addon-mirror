@@ -1,0 +1,16 @@
+## Title: NodeDetection
+## Author: Shinni
+## Description: Detects nearby crafting resources for the Add-Ons HarvestMap and ResourceRadar
+## Version: 1.13
+## AddOnVersion: 113
+## APIVersion: 101047
+## IsLibrary: true
+
+## This is not a public library. It was tailored to ResourceRadar and HarvestMap. The API may change in the future.
+
+NodeDetection.lua
+PinTypes.lua
+Localization/default.lua
+Localization/$(language).lua
+Detection.lua
+CompassPins.xml

@@ -1,0 +1,11 @@
+## Title: ZoneAchievements
+## APIVersion: 101047
+## Version: 1.0.2
+## Author: Soul_Hagans
+## Description: Shows achievements for current zone
+## SavedVariables: ZA_SavedVars
+
+ZA_Data.lua
+--ZA_Names.lua
+ZoneAchievements.lua
+Bindings.xml

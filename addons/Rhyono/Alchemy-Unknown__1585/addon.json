@@ -1,0 +1,69 @@
+{
+  "archive_path": "addons/Rhyono/Alchemy-Unknown__1585",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rhyono",
+  "canonical_id": "esoui:1585",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1585",
+  "deleted": false,
+  "directories": [
+    "AlchemyUnknown"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1585/",
+  "fingerprint": "2560b83edd6fb3fc38ff7e33a4a68a8fb9ac82cc84bcfce1ed9d9ff41b2915bd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5179.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1585",
+  "source_url": "https://www.esoui.com/downloads/info1585-AlchemyUnknown.html",
+  "stats": {
+    "downloads": 111610,
+    "favorites": 152,
+    "monthly_downloads": 103
+  },
+  "title": "Alchemy Unknown",
+  "updated_at": 1655682637000,
+  "version": "1.25"
+}

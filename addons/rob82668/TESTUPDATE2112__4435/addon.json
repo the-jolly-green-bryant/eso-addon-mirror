@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/rob82668/TESTUPDATE2112__4435",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "rob82668",
+  "canonical_id": "esoui:4435",
+  "category_id": "27",
+  "compatibility": [],
+  "content_id": "esoui:4435",
+  "deleted": false,
+  "directories": [
+    "CameraAlter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4435/",
+  "fingerprint": "da16d19d9e896c0f9daec13d5a7a04362a6dea2f91357a3e90dd4213859f33b6",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4435",
+  "source_url": "https://www.esoui.com/downloads/info4435-TESTUPDATE2112.html",
+  "stats": {
+    "downloads": 177,
+    "favorites": 1,
+    "monthly_downloads": 28
+  },
+  "title": "TESTUPDATE2112",
+  "updated_at": 1772891312000,
+  "version": "1.0.0"
+}

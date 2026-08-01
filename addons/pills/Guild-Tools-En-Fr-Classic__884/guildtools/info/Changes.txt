@@ -1,0 +1,60 @@
+== Guild Tools==
+== Add-on Change Log ==
+=== Version 0.1 ===
+
+# Updated TOC
+# First Beta release
+
+=== Version 0.11 ===
+
+# Fixed TOC - references to shared libraries were incorrect.
+
+=== Version 0.20 ===
+
+# Added bulk guild mail function (/gt gmail <subject;message> and /gt gsend). (interface to be developed)
+# You are now alerted to guild status (online, offline, etc) and level changes in chat and in a message window.
+# alerts in the message window are cached, so you see them in sequence (1.5 seconds each).  When you are not in reticle mode (config, chat, etc), messages will be cached and show once you leave the screen. This also means they will cache if you leave the game window.
+# alert window can be moved in the config window.
+# New command lines the active guild: /gquit (quit guild), /gpromote (promote player), /gdemote (demote player), /gremove (remove player form guild)
+# Changes to guild members (rank, note, left guild,  re-joined/joined guild) are summarised in chat at login and during game play.
+# Status widget crated, showing the currently selected guild, players in the current guild (online + all), players in all guilds (online + all) 
+# Status widget can be unlocked/locked in config and drag/dropped any where on screen.
+# fixed loading bug
+
+=== Version 0.21 ===
+
+# Fixed advert setting errors when first launching.
+
+=== Version 0.23 ===
+
+# Fixed: guild switch message error.
+# New: Configure alerting for individual guilds.
+
+=== Version 0.24 ===
+
+# Added guild mail functionality
+# re-factored for translation and localisation.
+
+=== Version 0.25 ===
+
+# Added command lines for direct guild invite (/g1invite -> /g5invite)
+# Added key binding for placing advert.
+# Only adverts with text in them will be used.
+# Added key binds for changing the active guild
+# tidied up status display
+# added buttons to change active guild to status display
+# added info pop-up in status for currently active guild.
+# Increased number of character allowed for each advert (now at hard limit of 1022).
+# Added ability to invite the last player that whispered you (just type /ginvite, /g1invite, etc without any name)
+# Added ability for auto invite to a guild if a player whispers a specific piece of text (be careful).
+# Fixed issues where Guild Tools crashed if you were not using  the English version of the client.
+
+Thanks go to  Mera Luna, hellorush, Saiasanc,  Saftsuse, callahan, @thatlostone for suggesting some of the above ideas.
+
+=== Version 0.26 ===
+# Fixed issues with errors on first load.
+# Fixed issues with errors if chat watch is not installed.
+
+=== Version 0.27 ===
+# Added "/GA" command (same as "/gt ga")
+# Added config for length of time HUD messages are shown.

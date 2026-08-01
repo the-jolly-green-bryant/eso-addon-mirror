@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Provision/Do-I-need-Arkadius-Guild-Update-Block__2213",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Provision",
+  "canonical_id": "esoui:2213",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2213",
+  "deleted": false,
+  "directories": [
+    "DoIneedArkadiusGuildUpdateBlock"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2213/",
+  "fingerprint": "b0077fed19ed6ec49f320373478fa3e1fc0da78a65abfe6e74a49b296830cdc7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7588.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2213",
+  "source_url": "https://www.esoui.com/downloads/info2213-DoIneedArkadiusGuildUpdateBlock.html",
+  "stats": {
+    "downloads": 3171,
+    "favorites": 2,
+    "monthly_downloads": 8
+  },
+  "title": "Do I need `Arkadius Guild Update Block` ?",
+  "updated_at": 1544216600000,
+  "version": "1.0.1"
+}

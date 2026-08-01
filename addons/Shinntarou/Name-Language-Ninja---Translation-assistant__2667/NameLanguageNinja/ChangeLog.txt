@@ -1,0 +1,52 @@
+1.1.16
+new option: 
+  Link In Chat: 
+    NotReplaceIfLengthGreaterThan (default 1500. if string.len(new_message) > 1500, replacer gives original messsage.)
+    LinkTitle (default "LINK")
+
+bugfix: addon's version in chat windows wasn't correct since v1.1.14. 
+
+1.1.15
+bug fix
+Link In Chat replacer is fixed.
+
+1.1.14
+Chinese
+
+1.1.13
+Spanish
+
+1.1.12
+bugfix: in some langCode, description failure.
+
+1.1.11
+Integration for Item Set Browser 
+@see https://www.esoui.com/downloads/info1480-ItemSetBrowser.html
+
+1.1.10
+Armory Cp and skill
+Divider for CP and Skill
+
+1.1.9
+delete messages "Not Found...", in skill description
+
+1.1.8
+add translations: Champion skill
+init message improvement
+
+1.1.7
+delete messages "Not Found..."
+
+1.1.6
+Set Bonus Description: FR, DE, RU
+
+1.1.5
+Set Bonus Description: Add alert mark when suspicious description are detected.
+Link In Chat Shorten: Omit some prefix.(Recipe, style, etc)
+
+1.1.4
+color picker for each language
+
+1.1.3
+bugfix almost done.
+I decided to write a diary starting today.

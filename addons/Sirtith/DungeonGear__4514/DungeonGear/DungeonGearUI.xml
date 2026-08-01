@@ -1,0 +1,225 @@
+<GuiXml>
+    <Controls>
+
+        <!-- Virtual row template for ZO_ScrollList -->
+        <Control name="DungeonGearRow" virtual="true" mouseEnabled="true">
+            <Dimensions y="128" />
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="22222266" edgeColor="44444488">
+                    <AnchorFill />
+                    <Edge edgeSize="1" />
+                </Backdrop>
+
+                <Label name="$(parent)SetName" font="ZoFontHeader2" color="FFD700FF" wrapMode="WRAP">
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="6" />
+                    <Anchor point="TOPRIGHT" offsetX="-120" offsetY="6" />
+                    <Dimensions y="52" />
+                </Label>
+
+                <Label name="$(parent)Meta" font="ZoFontGameSmall" color="CCCCCCFF" wrapMode="WRAP">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SetName" relativePoint="BOTTOMLEFT" offsetY="2" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)SetName" relativePoint="BOTTOMRIGHT" offsetY="2" />
+                    <Dimensions y="36" />
+                </Label>
+
+                <Label name="$(parent)Reason" font="ZoFontGame" color="EEEEEEFF" wrapMode="WRAP" verticalAlignment="TOP">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Meta" relativePoint="BOTTOMLEFT" offsetY="2" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-6" />
+                </Label>
+
+                <Button name="$(parent)TrackBtn" inherits="ZO_DefaultButton" font="ZoFontGameSmall">
+                    <Dimensions x="100" y="28" />
+                    <Anchor point="TOPRIGHT" offsetX="-14" offsetY="8" />
+                    <OnClicked>
+                        DungeonGear.OnTrackClicked(self)
+                    </OnClicked>
+                </Button>
+
+                <!-- Progress bar for collection header rows -->
+                <StatusBar name="$(parent)ProgressBar" inherits="ZO_ArrowStatusBar" hidden="true">
+                    <Dimensions x="200" y="16" />
+                    <Anchor point="TOPRIGHT" offsetX="-14" offsetY="42" />
+                </StatusBar>
+                <Label name="$(parent)ProgressText" font="ZoFontGameSmall" color="FFFFFFFF" hidden="true">
+                    <Anchor point="RIGHT" relativeTo="$(parent)ProgressBar" relativePoint="LEFT" offsetX="-8" />
+                </Label>
+
+                <!-- Queue button for dungeon finder shortcut -->
+                <Button name="$(parent)QueueBtn" inherits="ZO_DefaultButton" font="ZoFontGameSmall" hidden="true">
+                    <Dimensions x="80" y="28" />
+                    <Anchor point="TOPRIGHT" offsetX="-120" offsetY="8" />
+                    <OnClicked>
+                        DungeonGear.OnQueueClicked(self)
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </Control>
+
+        <!-- Main window -->
+        <TopLevelControl name="DungeonGearWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" resizeHandleSize="16">
+            <Dimensions x="820" y="560" />
+            <DimensionConstraints minX="820" minY="480" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <OnMoveStop>
+                DungeonGear.OnWindowMoveStop()
+            </OnMoveStop>
+            <OnResizeStop>
+                DungeonGear.OnWindowResizeStop()
+            </OnResizeStop>
+
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Label name="$(parent)Title" text="DungeonGear" font="ZoFontWinH1" color="FFD700FF">
+                    <Anchor point="TOP" offsetY="14" />
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="10" />
+                    <OnClicked>
+                        DungeonGear.Hide()
+                    </OnClicked>
+                </Button>
+
+                <!-- View selector (replaces old role button grid) -->
+                <Label name="$(parent)ViewLabel" text="View:" font="ZoFontGame">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="60" />
+                </Label>
+                <Control name="$(parent)ViewCombo" inherits="ZO_ComboBox">
+                    <Dimensions x="260" y="28" />
+                    <Anchor point="TOPLEFT" offsetX="80" offsetY="56" />
+                </Control>
+
+                <!-- Collection: visually distinct button, separate from View dropdown -->
+                <Button name="$(parent)RoleCollection" inherits="ZO_DefaultButton" text="Collection">
+                    <Dimensions x="130" y="32" />
+                    <Anchor point="TOPRIGHT" offsetX="-20" offsetY="56" />
+                    <OnClicked>DungeonGear.ShowCollection()</OnClicked>
+                </Button>
+
+                <!-- Filters row: class + damage type + meta toggle -->
+                <Label name="$(parent)ClassLabel" text="Class:" font="ZoFontGame">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="96" />
+                </Label>
+                <Control name="$(parent)ClassFilter" inherits="ZO_ComboBox">
+                    <Dimensions x="180" y="28" />
+                    <Anchor point="TOPLEFT" offsetX="80" offsetY="92" />
+                </Control>
+                <Label name="$(parent)DamageLabel" text="Damage:" font="ZoFontGame">
+                    <Anchor point="TOPLEFT" offsetX="290" offsetY="96" />
+                </Label>
+                <Control name="$(parent)DamageFilter" inherits="ZO_ComboBox">
+                    <Dimensions x="160" y="28" />
+                    <Anchor point="TOPLEFT" offsetX="370" offsetY="92" />
+                </Control>
+                <Button name="$(parent)MetaToggle" inherits="ZO_DefaultButton" text="Showing: Meta">
+                    <Dimensions x="160" y="28" />
+                    <Anchor point="TOPLEFT" offsetX="560" offsetY="92" />
+                    <OnClicked>DungeonGear.ToggleMetaOnly()</OnClicked>
+                </Button>
+
+                <!-- Search row -->
+                <Label name="$(parent)SearchLabel" text="Search:" font="ZoFontGame">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="132" />
+                </Label>
+                <Backdrop name="$(parent)SearchBG" inherits="ZO_EditBackdrop">
+                    <Dimensions x="480" y="30" />
+                    <Anchor point="TOPLEFT" offsetX="80" offsetY="128" />
+                </Backdrop>
+                <EditBox name="$(parent)SearchBox" inherits="ZO_DefaultEdit">
+                    <Dimensions x="470" y="24" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SearchBG" relativePoint="TOPLEFT" offsetX="6" offsetY="3" />
+                    <OnTextChanged>DungeonGear.OnSearchChanged(self)</OnTextChanged>
+                </EditBox>
+                <Button name="$(parent)SearchClear" inherits="ZO_DefaultButton" text="Clear">
+                    <Dimensions x="80" y="28" />
+                    <Anchor point="TOPLEFT" offsetX="574" offsetY="129" />
+                    <OnClicked>DungeonGear.ClearSearch()</OnClicked>
+                </Button>
+
+                <!-- Results scroll list -->
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" offsetX="14" offsetY="170" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-48" />
+                </Control>
+
+                <!-- Status footer -->
+                <Label name="$(parent)Status" font="ZoFontGameSmall" color="AAAAAAFF">
+                    <Anchor point="BOTTOMLEFT" offsetX="20" offsetY="-16" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+
+        <!-- Detail window for build knowledge-base text -->
+        <TopLevelControl name="DungeonGearDetailWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" resizeHandleSize="16">
+            <Dimensions x="700" y="560" />
+            <DimensionConstraints minX="560" minY="400" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="60" offsetY="60" />
+
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Label name="$(parent)Title" text="Build Details" font="ZoFontWinH1" color="FFD700FF">
+                    <Anchor point="TOP" offsetY="14" />
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="10" />
+                    <OnClicked>DungeonGearDetailWindow:SetHidden(true)</OnClicked>
+                </Button>
+
+                <!-- Scrollable text area: ZO_ScrollContainer with a wrapping label child -->
+                <Control name="$(parent)Scroll" inherits="ZO_ScrollContainer">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="56" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-16" offsetY="-16" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Export / Import dialog for tracked sets -->
+        <TopLevelControl name="DungeonGearExportWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="600" y="220" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Label name="$(parent)Title" text="Export / Import Tracked Sets" font="ZoFontWinH2" color="FFD700FF">
+                    <Anchor point="TOP" offsetY="12" />
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="10" />
+                    <OnClicked>DungeonGearExportWindow:SetHidden(true)</OnClicked>
+                </Button>
+
+                <Backdrop name="$(parent)EditBG" inherits="ZO_EditBackdrop">
+                    <Dimensions x="560" y="90" />
+                    <Anchor point="TOP" offsetY="46" />
+                </Backdrop>
+                <EditBox name="$(parent)EditBox" inherits="ZO_DefaultEdit" multiLine="true" selectAllOnGainFocus="true">
+                    <Dimensions x="550" y="80" />
+                    <Anchor point="CENTER" relativeTo="$(parent)EditBG" relativePoint="CENTER" />
+                </EditBox>
+
+                <Button name="$(parent)ImportBtn" inherits="ZO_DefaultButton" text="Import">
+                    <Dimensions x="100" y="28" />
+                    <Anchor point="BOTTOMLEFT" offsetX="140" offsetY="-14" />
+                    <OnClicked>DungeonGear.DoImport()</OnClicked>
+                </Button>
+                <Button name="$(parent)CloseBtn" inherits="ZO_DefaultButton" text="Close">
+                    <Dimensions x="100" y="28" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-140" offsetY="-14" />
+                    <OnClicked>DungeonGearExportWindow:SetHidden(true)</OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

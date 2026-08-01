@@ -1,0 +1,98 @@
+{
+  "archive_path": "addons/Nesferatum/Swiss-Knife__3349",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Nesferatum",
+  "canonical_id": "esoui:3349",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3349",
+  "deleted": false,
+  "directories": [
+    "SwissKnife"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3349/",
+  "fingerprint": "da4163f43d71faebecdea4a8f5e7a6dfff60bc6ad83dd5bd12bb142c148c61b1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12380.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12382.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11383.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12384.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12385.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12386.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12387.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11649.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12388.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12389.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3349",
+  "source_url": "https://www.esoui.com/downloads/info3349-SwissKnife.html",
+  "stats": {
+    "downloads": 22322,
+    "favorites": 37,
+    "monthly_downloads": 90
+  },
+  "title": "Swiss Knife",
+  "updated_at": 1781290447000,
+  "version": "1.06.7"
+}

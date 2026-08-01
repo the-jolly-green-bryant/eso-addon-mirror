@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Slater2715/Advanced-Autoloot---Update-Proofing__835",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Slater2715",
+  "canonical_id": "esoui:835",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:835",
+  "deleted": false,
+  "directories": [
+    "AdvancedAutoLoot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl835/",
+  "fingerprint": "3357d33a861ef81a17fcfe553fe756173fbf5095e0b5c22adaa73e52b8577be6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2558.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2559.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "835",
+  "source_url": "https://www.esoui.com/downloads/info835-AdvancedAutoloot-UpdateProofing.html",
+  "stats": {
+    "downloads": 6576,
+    "favorites": 2,
+    "monthly_downloads": 9
+  },
+  "title": "Advanced Autoloot - Update/Proofing",
+  "updated_at": 1416889729000,
+  "version": "1.3b"
+}

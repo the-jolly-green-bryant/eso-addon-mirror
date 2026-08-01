@@ -1,0 +1,14 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="Banker">
+			<Dimensions x="180" y="42" />
+			<Anchor point="LEFT" offsetX="50" offsetY="100" />
+            <Controls>
+                <Backdrop name="$(parent)BG1" inherits="ZO_ThinBackdrop" />
+				<Label name="$(parent)Lable1" font="ZoFontGameMedium" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="... could be free">
+					<AnchorFill />
+				</Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

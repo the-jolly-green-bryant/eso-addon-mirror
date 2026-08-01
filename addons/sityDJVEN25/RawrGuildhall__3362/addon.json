@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/sityDJVEN25/RawrGuildhall__3362",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sityDJVEN25",
+  "canonical_id": "esoui:3362",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3362",
+  "deleted": false,
+  "directories": [
+    "RawrGuildhall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3362/",
+  "fingerprint": "dd54518b6cec3a1e4b3568490f4ebc384e30681d557a8716e8b70ae54acba05f",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3362",
+  "source_url": "https://www.esoui.com/downloads/info3362-RawrGuildhall.html",
+  "stats": {
+    "downloads": 1893,
+    "favorites": 0,
+    "monthly_downloads": 9
+  },
+  "title": "RawrGuildhall",
+  "updated_at": 1652132486000,
+  "version": "1.0"
+}

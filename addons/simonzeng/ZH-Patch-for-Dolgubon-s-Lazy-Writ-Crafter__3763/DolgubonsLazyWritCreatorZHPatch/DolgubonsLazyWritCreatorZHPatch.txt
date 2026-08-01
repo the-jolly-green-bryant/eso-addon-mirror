@@ -1,0 +1,13 @@
+## Title: ZH Patch for Dolgubon's Lazy Writ Crafter
+## Description: Dolgubon's Lazy Writ Crafter 委托制作中文汉化插件
+## APIVersion: 101044
+## Author: @simonzeng
+## AddOnVersion: 16
+## Version: 1.1.4
+## DependsOn: DolgubonsLazyWritCreator
+
+Languages/$(language).lua
+WritCreater.lua
+SettingsMenu.lua
+
+#$(language).lua

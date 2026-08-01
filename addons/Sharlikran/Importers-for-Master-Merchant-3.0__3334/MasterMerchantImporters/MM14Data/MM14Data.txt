@@ -1,0 +1,12 @@
+## APIVersion: 101047 101048
+## Title: Master Merchant Data File MM14Data
+## Description: MM14Data Stores data for Master Merchant
+## Version 3.3.1
+## AddOnVersion: 331
+## License: See license - distribution without license is prohibited!
+## LastUpdated: Mar 2021
+## SavedVariables: MM14DataSavedVariables
+## DisableSavedVariablesAutoSaving: 1
+## IsLibrary: true
+
+MM14Data.lua

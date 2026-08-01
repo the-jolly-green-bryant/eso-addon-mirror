@@ -1,0 +1,61 @@
+<GuiXml>
+	<Controls>
+		<Control name="RepeatableActionTimer_SlotTemplate" virtual="true"  movable="true">
+			<Dimensions x="1155" y="24" />
+			<Controls>
+				<Texture name="$(parent)Bg" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds" alpha="0.2">
+					<AnchorFill />
+					<TextureCoords left="0" right="1" top="0" bottom=".8125" />
+				</Texture>
+				<Label name="$(parent)_Name" font="ZoFontChat" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="210" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimeStables" font="ZoFontChat" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="135" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_Name" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimeShadowySupplier" font="ZoFontChat" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="135" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_TimeStables" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+			</Controls>
+		</Control>
+		<TopLevelControl name="RepeatableActionTimer_GUI" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="512" y="78"/>
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+			<Controls>
+                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop"/>
+				<Control name="$(parent)_Header" mouseEnabled="true" movable="true" hidden="false" resizeToFitDescendents="true">
+					<Dimensions y="54"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="12" offsetY="6"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-12" offsetY="6"/>
+					<Controls>
+						<Label name="$(parent)_Title" mouseEnabled="true" movable="true" font="$(ANTIQUE_FONT)|18" text="Action Timer" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+							<Dimensions y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)_HeaderName" mouseEnabled="true" font="$(CHAT_FONT)|16" text="Character" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+							<Dimensions x="210" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Title" relativePoint="BOTTOMLEFT" offsetX="-12" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)_HeaderStables" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="Stables" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+							<Dimensions x="135" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderName" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)_HeaderShadowySupplier" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="Shadowy Supplier" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+							<Dimensions x="135" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderStables" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)_ListHolder">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="66" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+					<OnUpdate>RepeatableActionTimer:OnUpdate(RepeatableActionTimer)</OnUpdate>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

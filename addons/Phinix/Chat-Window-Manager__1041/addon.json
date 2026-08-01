@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Phinix/Chat-Window-Manager__1041",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phinix",
+  "canonical_id": "esoui:1041",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:1041",
+  "deleted": false,
+  "directories": [
+    "ChatWindowManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1041/",
+  "fingerprint": "09192a7d1d18dd3980c97aa6aa3d5ba42b626a9f63babaaa433fe0e4490c8ef6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9298.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11347.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9320.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9300.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1041",
+  "source_url": "https://www.esoui.com/downloads/info1041-ChatWindowManager.html",
+  "stats": {
+    "downloads": 58108,
+    "favorites": 96,
+    "monthly_downloads": 187
+  },
+  "title": "Chat Window Manager",
+  "updated_at": 1698723918000,
+  "version": "1.37"
+}

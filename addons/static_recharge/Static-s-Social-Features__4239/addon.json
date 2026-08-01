@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/static_recharge/Static-s-Social-Features__4239",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "static_recharge",
+  "canonical_id": "esoui:4239",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4239",
+  "deleted": false,
+  "directories": [
+    "StaticsSocialFeatures"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4239/",
+  "fingerprint": "e79d64713304f47da99777b9317fcc3ff4ae56fc24d219ea8c19170ffdc29048",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14495.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14491.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14492.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14493.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14494.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15108.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15109.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4239",
+  "source_url": "https://www.esoui.com/downloads/info4239-StaticsSocialFeatures.html",
+  "stats": {
+    "downloads": 408,
+    "favorites": 1,
+    "monthly_downloads": 27
+  },
+  "title": "Static's Social Features",
+  "updated_at": 1774101338000,
+  "version": "2.0.1"
+}

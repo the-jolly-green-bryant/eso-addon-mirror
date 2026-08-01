@@ -1,0 +1,23 @@
+## Title: The Elder Bar |cD6660CReloaded|r
+## Description: The Elder Bar adds a configurable information bar anywhere on the screen.
+## Author: SimonIllyan (original The Elder Bar: Eldrni)
+## Version: 12.1.2
+## AddOnVersion: 120102
+## APIVersion: 101049 101050
+## SavedVariables: TEBSavedVariables
+## DependsOn: LibAddonMenu-2.0>=41 LibFoodDrinkBuff>=18 LibSavedVars>=60004
+## OptionalDependsOn: LibClockTST>=1 LibAddonMenuDatePicker>=007 LibSetDetection>=4 LibSets>=000709
+
+TEB.lua
+TEB.xml
+Bindings.xml
+
+## View the changelog here: 
+##
+## Report issues here: 
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

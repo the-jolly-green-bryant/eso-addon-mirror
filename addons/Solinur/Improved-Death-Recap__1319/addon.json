@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Solinur/Improved-Death-Recap__1319",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Solinur",
+  "canonical_id": "esoui:1319",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:1319",
+  "deleted": false,
+  "directories": [
+    "ImprovedDeathRecap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1319/",
+  "fingerprint": "e8c18ab2095153895cf03e0800d3a3b6d0917320382a33c72792281b604f58b3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4280.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4281.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1319",
+  "source_url": "https://www.esoui.com/downloads/info1319-ImprovedDeathRecap.html",
+  "stats": {
+    "downloads": 83071,
+    "favorites": 69,
+    "monthly_downloads": 560
+  },
+  "title": "Improved Death Recap",
+  "updated_at": 1768075850000,
+  "version": "1.0.2"
+}

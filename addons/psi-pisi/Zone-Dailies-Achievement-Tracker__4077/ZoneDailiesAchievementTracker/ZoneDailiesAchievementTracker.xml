@@ -1,0 +1,27 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ZDAT_GUI" mouseEnabled="true" movable="true" clampedToScreen="true" tier="LOW" hidden="true ">
+            <Dimensions x="750" y="1100" />
+            <Anchor point="CENTER" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" mouseEnabled="false" tier="LOW"/>            
+                
+                <Label name="$(parent)WindowTitle" font="ZoFontAnnounceMedium" text="Zone Dailies Achievement Tracker">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+                </Label>
+
+                <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="5" />
+                    <Textures   normal    ="EsoUI/Art/Buttons/closebutton_up.dds"
+                                pressed   ="EsoUI/Art/Buttons/closebutton_down.dds"
+                                mouseOver ="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+                                disabled  ="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+                    <OnClicked>
+                        ZDAT.UI.Layout.toggleWindow()
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

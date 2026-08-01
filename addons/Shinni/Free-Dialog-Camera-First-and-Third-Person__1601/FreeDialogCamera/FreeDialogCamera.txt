@@ -1,0 +1,7 @@
+## Title: FreeDialogCamera
+## Author: Shinni
+## Version: 1.1
+## APIVersion: 100021 100020
+
+FreeDialogCamera.lua
+

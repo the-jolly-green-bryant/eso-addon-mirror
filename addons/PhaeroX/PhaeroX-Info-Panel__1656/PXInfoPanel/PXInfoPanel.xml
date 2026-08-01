@@ -1,0 +1,27 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="PXInfoPanelAddonIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" resizeToFitDescendents="true" tier="LOW">
+      <!-- <Dimensions x="10" y="10" /> -->
+      <!--<Anchor point="TOPLEFT" offsetX="10" offsetY="5" />-->
+
+      <OnMoveStop>
+        PXInfoPanelAddon.OnIndicatorMoveStop()
+      </OnMoveStop>
+ 
+      <Controls>
+
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" centerColor="020202" alpha="0.5" edgeSize="2" edgeColor="888888">
+          <AnchorFill />
+        </Backdrop>
+
+        <Label name="$(parent)Label" font="ZoFontWinH4" inheritAlpha="true" 
+               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" wrapMode="ELLIPSIS"
+               verticalAlignment="TOP" horizontalAlignment="LEFT" text="">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+        </Label>
+
+      </Controls>
+
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

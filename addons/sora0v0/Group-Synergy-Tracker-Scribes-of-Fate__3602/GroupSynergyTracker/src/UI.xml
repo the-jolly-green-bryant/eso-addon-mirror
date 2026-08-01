@@ -1,0 +1,74 @@
+<GuiXml>
+	<Controls>
+		<Control name="SynergyRowTemplate" resizeToFitDescendents="true" virtual="true">
+			<Controls>
+				<Backdrop name="$(parent)BG1" hidden="true" centerColor="5500FF00" edgeColor="5500FF00" >
+					<Edge edgeSize="1" />
+					<Anchor point="TOPLEFT" offsetY="1"/>
+					<Dimensions x="113" y="18" />
+				</Backdrop>
+				<Label name="$(parent)SynergyName1" inheritAlpha="true" color="FFFFF" font="$(CHAT_FONT)|$(KB_15)|soft-shadow-thick" verticalAlignment="BOTTOM" >
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="82" y="18" />
+				</Label>
+				<Label name="$(parent)SynergyTime1" text='' inheritAlpha="true" color="FFFFF" font="$(CHAT_FONT)|$(KB_15)|soft-shadow-thick" verticalAlignment="BOTTOM" >
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)SynergyName1" />
+					<Dimensions x="30" y="18" />
+				</Label>
+				<Backdrop name="$(parent)BG2" hidden="true" centerColor="5500FF00" edgeColor="5500FF00" >
+					<Edge edgeSize="1" />
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)SynergyTime1" offsetX="2" offsetY="1"/>
+					<Dimensions x="113" y="18" />
+				</Backdrop>
+				<Label name="$(parent)SynergyName2" inheritAlpha="true" color="FFFFF" font="$(CHAT_FONT)|$(KB_15)|soft-shadow-thick" verticalAlignment="BOTTOM" >
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)SynergyTime1" offsetX="2" />
+					<Dimensions x="82" y="18" />
+				</Label>
+				<Label name="$(parent)SynergyTime2" text='' inheritAlpha="true" color="FFFFF" font="$(CHAT_FONT)|$(KB_15)|soft-shadow-thick" verticalAlignment="BOTTOM" >
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)SynergyName2" />
+					<Dimensions x="30" y="18" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="PlayerFrameTemplate" mouseEnabled="false" movable="false" clampedToScreen="true" hidden="true" virtual="true" >
+			<Dimensions x="235" y="116" />
+
+			<OnMoveStop>
+				GroupSynergyTracker.OnMoveStop()
+			</OnMoveStop>
+
+			<Controls>
+				<Backdrop name="$(parent)BG" centerColor="55000000" edgeColor="AA000000">
+					<AnchorFill />
+					<Edge edgeSize="2" />
+				</Backdrop>
+
+				<Texture name="$(parent)Icon" textureFile="esoui/art/icons/class/class_templar.dds">
+					<Dimensions x="20" y="20"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="3" offsetY="2"/>
+				</Texture>
+				<Label name="$(parent)PlayerName" inheritAlpha="true" color="3ABAE8" font="$(CHAT_FONT)|$(KB_16)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="BOTTOM" >
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Icon" offsetX="2"/>
+					<Dimensions x="235" y="20" />
+				</Label>
+				<Label name="$(parent)Row1" inherits="SynergyRowTemplate" >
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Icon" offsetX="2"/>
+				</Label>
+				<Label name="$(parent)Row2" inherits="SynergyRowTemplate" >
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row1" />
+				</Label>
+				<Label name="$(parent)Row3" inherits="SynergyRowTemplate" >
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row2" />
+				</Label>
+				<Label name="$(parent)Row4" inherits="SynergyRowTemplate" >
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row3" />
+				</Label>
+				<Label name="$(parent)Row5" inherits="SynergyRowTemplate" >
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row4" />
+				</Label>
+
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

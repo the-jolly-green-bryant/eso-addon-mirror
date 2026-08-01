@@ -1,0 +1,7 @@
+## Title: Let's Talk Later
+## Version: 0.1.4
+## APIVersion: 101049
+## Author: vexaiv
+## Description: Place more important dialog options (like open bank, shop, etc.) on top of other conversation options.
+
+LetsTalkLater.lua

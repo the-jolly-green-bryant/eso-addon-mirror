@@ -1,0 +1,234 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CraftyWatchList" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOM" offsetX="0" offsetY="-200"/>
+            <OnMoveStop>
+        		Crafty.OnIndicatorMoveStop()
+			</OnMoveStop>
+            <Dimensions x="300" y="600" />
+            <Controls>
+            
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+            
+                <Button name="$(parent)MinMode" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="20" y="20" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="-10" />
+					<Textures normal="esoui/art/buttons/minus_up.dds"
+						mouseOver="esoui/art/buttons/minus_over.dds"/>
+					<OnClicked>
+						Crafty.ToggleMinMode()
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,TOP,"Toggle minimized mode")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ThresholdMode" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="22" y="22" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)MinMode" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="0" />
+					<Textures normal="/esoui/art/treeicons/tutorial_idexicon_charprogression_up.dds"
+						mouseOver="/esoui/art/treeicons/tutorial_idexicon_charprogression_over.dds"/>
+					<OnClicked>
+						Crafty.ToggleThresholdMode()
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ThresholdTooltip(self)
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				
+                <Label name="$(parent)WatchList1" mouseEnabled="true" color="CFDCBD" font="ZoFontWinH4" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" text="1">
+                	<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
+                	<OnMouseUp>
+                		Crafty.SetActiveWatchList(1)
+    				</OnMouseUp>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,TOP,"Open Watchlist 1")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+                </Label>
+                <Label name="$(parent)WatchList2" mouseEnabled="true" color="CFDCBD" font="ZoFontWinH4" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" text="2">
+                	<Anchor point="TOPLEFT" relativeTo="$(parent)WatchList1" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                	<OnMouseUp>
+                		Crafty.SetActiveWatchList(2)
+    				</OnMouseUp>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,TOP,"Open Watchlist 2")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+                </Label>
+                <Label name="$(parent)WatchList3" mouseEnabled="true" color="CFDCBD" font="ZoFontWinH4" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" text="3">
+                	<Anchor point="TOPLEFT" relativeTo="$(parent)WatchList2" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                	<OnMouseUp>
+                		Crafty.SetActiveWatchList(3)
+    				</OnMouseUp>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,TOP,"Open Watchlist 3")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+                </Label>
+                
+                <Button name="$(parent)ButtonClose" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="20" y="20" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="5" />
+					<Textures normal="esoui/art/buttons/decline_up.dds"
+						mouseOver="esoui/art/buttons/decline_over.dds"/>
+					<OnClicked>
+						Crafty.CloseWL()
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,TOP,"Close")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonSettings" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="30" y="30" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)ButtonClose" relativePoint="TOPLEFT" offsetX="2" offsetY="-5" />
+					<Textures
+						normal="esoui\art\chatwindow\chat_options_up.dds"
+						mouseOver="esoui\art\chatwindow\chat_options_over.dds"
+					/>
+					<OnClicked>
+						Crafty.ShowSettings()
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,TOP,"Open settings")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonStockList" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="29" y="29" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)ButtonSettings" relativePoint="TOPLEFT" offsetX="5" offsetY="0" />
+					<Textures normal="esoui/art/buttons/plus_up.dds"
+						mouseOver="esoui/art/buttons/plus_over.dds"/>
+					<OnClicked>
+						Crafty.ToggleSL()
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,TOP,"Show/Hide stocklist")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonLootHistory" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="29" y="29" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)ButtonStockList" relativePoint="TOPLEFT" offsetX="5" offsetY="0" />
+					<Textures normal="esoui\art\campaign\campaign_tabicon_history_up.dds"
+						mouseOver="esoui\art\campaign\campaign_tabicon_history_over.dds"/>
+					<OnClicked>
+						Crafty.ToggleLH()
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,TOP,"Show/Hide loothistory")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+						
+				<Button name="$(parent)ButtonUndo" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+					<Dimensions x="25" y="25" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="-5" />
+					<Textures normal="esoui\art\vendor\vendor_tabicon_buyback_up.dds"
+						mouseOver="esoui\art\vendor\vendor_tabicon_buyback_over.dds"/>
+					<OnClicked>
+						Crafty.UndoRemove()
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.UndoTooltip(self)
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>	
+		
+				<Texture name="$(parent)Divider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+					<Dimensions x="280" y="4"/>
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOP" offsetY="45" />
+				</Texture>
+				
+				<Button name="$(parent)SortName" inherits="ZO_ButtonBehaviorClickSound" hidden="false">
+					<Dimensions x="15" y="25" />
+					<Anchor point="CENTER" relativeTo="$(parent)Divider" relativePoint="CENTER" offsetX="-100" offsetY="-2" />
+					<Textures normal="esoui\art\miscellaneous\list_sortheader_icon_neutral.dds"
+						mouseOver="esoui\art\miscellaneous\list_sortheader_icon_over.dds"/>
+					<OnClicked>
+						Crafty.SortWLName()
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,TOP,"Sort name")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				<Button name="$(parent)SortAmount" inherits="ZO_ButtonBehaviorClickSound" hidden="false">
+					<Dimensions x="15" y="25" />
+					<Anchor point="CENTER" relativeTo="$(parent)Divider" relativePoint="CENTER" offsetX="100" offsetY="-2" />
+					<Textures normal="esoui\art\miscellaneous\list_sortheader_icon_neutral.dds"
+						mouseOver="esoui\art\miscellaneous\list_sortheader_icon_over.dds"/>
+					<OnClicked>
+						Crafty.SortWLAmount()
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,TOP,"Sort amount")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-5" offsetY="-10" />
+                </Control>
+                
+            </Controls>
+        </TopLevelControl>      
+        
+        <Button name="WatchRow" virtual="true">
+        	<Dimensions y="32" />
+            <Anchor point="LEFT" relativeTo="$(parent)" />
+            <OnMouseEnter>
+                if Crafty.toolTip then Crafty.ShowTooltip(self) end
+            </OnMouseEnter>
+            <OnMouseExit>
+                if Crafty.toolTip then Crafty.HideTooltip(self) end
+            </OnMouseExit>
+            <OnMouseUp>
+                Crafty.OnMouseUpWL(self, button, upInside)
+            </OnMouseUp>
+            <Controls>
+            	<Texture name="$(parent)Icon" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds">
+					<Dimensions x="25" y="25"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+				</Texture>
+                <Label name="$(parent)Name" font="ZoFontWinH4" wrapMode="ELLIPSIS" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Icon"  relativePoint="TOPRIGHT" offsetX="10" />
+                    <Dimensions x="175" y="32" />
+                    <!-- see function Crafty.LayoutRow -->
+                </Label>
+                <Label name="$(parent)Amount" font="ZoFontWinH4" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="-5"/>
+                    <Dimensions x="50" y="32" />
+                </Label>
+            </Controls>
+        </Button>
+               
+    </Controls>
+</GuiXml>

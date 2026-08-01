@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Niwasaka/Arcanum-Artis-GuildHall__3013",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Niwasaka",
+  "canonical_id": "esoui:3013",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3013",
+  "deleted": false,
+  "directories": [
+    "ArcanumGuildHall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3013/",
+  "fingerprint": "54a8691d0df9820f258fd4ed4877a387106a7a13112a53cfa9d39b6957bd355e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3013",
+  "source_url": "https://www.esoui.com/downloads/info3013-ArcanumArtisGuildHall.html",
+  "stats": {
+    "downloads": 11508,
+    "favorites": 6,
+    "monthly_downloads": 31
+  },
+  "title": "Arcanum Artis GuildHall",
+  "updated_at": 1781038525000,
+  "version": "1.22.0"
+}

@@ -1,0 +1,7 @@
+## Title: YssEquipmentIndicator v0.2.2
+## APIVersion: 100015
+## Version: 0.2.2
+## Author: Yssaril/Quadro.Tony
+
+
+YssEquipmentIndicator.lua

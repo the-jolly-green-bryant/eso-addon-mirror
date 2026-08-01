@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/shiftyshifter/Shifty-s-Craft-Cost-Calculator__4731",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "shiftyshifter",
+  "canonical_id": "esoui:4731",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4731",
+  "deleted": false,
+  "directories": [
+    "CraftCostCalculator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4731/",
+  "fingerprint": "c0aff9076eb52257beb06df83beba70e2c4cc027ffeceaeb2fad66ee47fb0a62",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16841.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16842.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16843.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16844.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16845.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4731",
+  "source_url": "https://www.esoui.com/downloads/info4731-ShiftysCraftCostCalculator.html",
+  "stats": {
+    "downloads": 51,
+    "favorites": 2,
+    "monthly_downloads": 47
+  },
+  "title": "Shifty's Craft Cost Calculator",
+  "updated_at": 1785273785000,
+  "version": "1.1.0"
+}

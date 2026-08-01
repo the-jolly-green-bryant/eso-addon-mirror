@@ -1,0 +1,18 @@
+## Title: Restock Bank Materials
+## Author: SSM24
+## Description: Adds a feature to deposit all materials which already have stacks in your bank, without adding any new stacks.
+## APIVersion: 101041
+## Version: 1.0.1
+## AddOnVersion: 2
+## SavedVariables: RestockBankMaterials_SavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+Bindings.xml
+lang/en.lua
+lang/$(language).lua
+RestockBankMaterialsSettings.lua
+RestockBankMaterials.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

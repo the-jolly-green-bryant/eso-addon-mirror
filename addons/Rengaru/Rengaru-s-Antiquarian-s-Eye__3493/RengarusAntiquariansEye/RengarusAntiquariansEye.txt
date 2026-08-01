@@ -1,0 +1,8 @@
+## APIVersion: 101035
+## Title: Rengaru's Antiquarian's Eye
+## Author: Rengaru
+## Version: 1
+## SavedVariables: RengarusAntiquariansEye_SavedVars
+## DependsOn: LibAddonMenu-2.0
+
+RengarusAntiquariansEye.lua

@@ -1,0 +1,11 @@
+;All of the good addons have comments here.
+
+## Title: LBE Test
+## APIVersion: 101033
+## Author: |c7f0000Rhyono|r
+## Description: For testing LibBinaryEncode
+## Version: 1.16
+## OptionalDependsOn: Zgoo
+## DependsOn: LibBinaryEncode>=33
+
+LBETest.lua

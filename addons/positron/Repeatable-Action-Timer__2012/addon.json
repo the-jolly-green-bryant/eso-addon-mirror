@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/positron/Repeatable-Action-Timer__2012",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "positron",
+  "canonical_id": "esoui:2012",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2012",
+  "deleted": false,
+  "directories": [
+    "RepeatableActionTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2012/",
+  "fingerprint": "14af5eb804f34c55cc21bccbf38ba26eb74fae79c394767dc2a2e4a46a52f224",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6775.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2012",
+  "source_url": "https://www.esoui.com/downloads/info2012-RepeatableActionTimer.html",
+  "stats": {
+    "downloads": 3930,
+    "favorites": 3,
+    "monthly_downloads": 15
+  },
+  "title": "Repeatable Action Timer",
+  "updated_at": 1544162628000,
+  "version": "0.3.0"
+}

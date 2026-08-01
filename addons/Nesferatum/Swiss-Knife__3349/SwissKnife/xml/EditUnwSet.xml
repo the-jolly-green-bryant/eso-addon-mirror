@@ -1,0 +1,275 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="UnwantedSetEdit" mouseEnabled="true" layer="OVERLAY" clampedToScreen="true" hidden="true">
+            <Dimensions x="720" y="438" />
+            <Controls>
+                <Control name="$(parent)Header">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="0" offsetX="0" />
+                    <Dimensions x="720" y="40" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <Texture name="$(parent)Tex" textureFile="SwissKnife/textures/dialogues/icons/edit_over.dds" color="CFDCBD">
+                            <Dimensions x="40" y="40" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                                    offsetX="3" offsetY="0"
+                            />
+                        </Texture>
+                        <Label name="$(parent)Title" font="ZoFontAnnounceMedium" color="CFDCBD"
+                               wrapMode="ELLIPSIS" verticalAlignment="CENTER"
+                        >
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Tex" relativePoint="TOPRIGHT"
+                                    offsetX="0" offsetY="0"
+                            />
+                            <Dimensions x="650" y="40" />
+                        </Label>
+                        <Button name="$(parent)Close" inherits="ZO_ButtonBehaviorClickSound">
+                            <Anchor point="RIGHT" offsetX="-4" offsetY="20" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+                            <Dimensions x="40" y="40" />
+                            <Textures
+                                normal="SwissKnife/textures/dialogues/icons/cancel_up.dds"
+                                pressed="SwissKnife/textures/dialogues/icons/cancel_down.dds"
+                                mouseOver="SwissKnife/textures/dialogues/icons/cancel_over.dds"
+                                highlight="SwissKnife/textures/dialogues/icons/cancel_over.dds"
+                                disabled="SwissKnife/textures/dialogues/icons/cancel_up.dds"
+                            />
+                            <OnMouseEnter>
+                                InitializeTooltip(InformationTooltip, self, LEFT, 0, 1)
+                                SetTooltipText(InformationTooltip, GetString(SI_SK_DIALOG_CLOSE))
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                SetTooltipText(InformationTooltip)
+                            </OnMouseExit>
+                            <OnMouseDown>
+                                SKEUS:Close()
+                            </OnMouseDown>
+                        </Button>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Body">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="47" />
+                    <Dimensions x="720" y="388"/>
+                    <Controls>
+                        <Control name="$(parent)Top">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Body" relativePoint="TOPLEFT" />
+                            <Dimensions x="720" y="112"/>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                                <Label name="$(parent)JunkLabel" font="ZoFontWinT1" height="30"
+                                       wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER"
+                                       text="SI_SK_AUT_UNWANTED_EDIT_SET_JUNK_QUALITY_LABEL" color="F7E351"
+                                >
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Body" relativePoint="TOPLEFT"
+                                        offsetX="12" offsetY="0"
+                                    />
+                                    <Dimensions x="345" y="32"/>
+                                </Label>
+                                <Label name="$(parent)DeconstructLabel" font="ZoFontWinT1" height="30"
+                                   wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER"
+                                   text="SI_SK_AUT_UNWANTED_EDIT_SET_DECONSTRUCT_QUALITY_LABEL" color="F7E351"
+                                >
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)BODY" relativePoint="TOPRIGHT"
+                                        offsetX="-12" offsetY="0"
+                                    />
+                                    <Dimensions x="345" y="32"/>
+                                </Label>
+                                <Label name="$(parent)EquipmentJunkQualityLabel" font="ZoFontWinT1" height="30"
+                                       wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER"
+                                       text="SI_SK_AUT_UNWANTED_EDIT_SET_JUNK_EQUIPMENT_LABEL"
+                                >
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)JunkLabel" relativePoint="BOTTOMLEFT"
+                                        offsetY="5"
+                                    />
+                                    <Dimensions y="32"/>
+                                </Label>
+                                <Control name="$(parent)EquipmentJunkQuality" inherits="ZO_ComboBox">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)EquipmentJunkQualityLabel" relativePoint="TOPRIGHT"
+                                        offsetX="10"
+                                    />
+                                    <Dimensions x="140" y="30"/>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SK_AUT_UNWANTED_EDIT_SET_JUNK_QUALITY_TOOLTIP))
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        ZO_Tooltips_HideTruncatedTextTooltip()
+                                    </OnMouseExit>
+                                </Control>
+                                <Control name="$(parent)EquipmentDeconstructQuality" inherits="ZO_ComboBox">
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)DeconstructLabel" relativePoint="BOTTOMRIGHT"
+                                        offsetY="5"
+                                    />
+                                    <Dimensions x="140" y="30"/>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SK_AUT_UNWANTED_EDIT_SET_DECONSTRUCT_QUALITY_TOOLTIP))
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        ZO_Tooltips_HideTruncatedTextTooltip()
+                                    </OnMouseExit>
+                                </Control>
+                                <Label name="$(parent)EquipmentDeconstructQualityLabel" font="ZoFontWinT1" height="30"
+                                   wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT"
+                                   text="SI_SK_AUT_UNWANTED_EDIT_SET_JUNK_EQUIPMENT_LABEL"
+                                >
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)EquipmentDeconstructQuality" relativePoint="TOPLEFT"
+                                        offsetX="-10"
+                                    />
+                                    <Dimensions y="32"/>
+                                </Label>
+                                <Label name="$(parent)JewelryJunkQualityLabel" font="ZoFontWinT1" height="30"
+                                       wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER"
+                                       text="SI_SK_AUT_UNWANTED_EDIT_SET_JUNK_JEWELRY_LABEL"
+                                >
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)EquipmentJunkQualityLabel" relativePoint="BOTTOMRIGHT"
+                                        offsetY="5"
+                                    />
+                                    <Dimensions y="32"/>
+                                </Label>
+                                <Control name="$(parent)JewelryJunkQuality" inherits="ZO_ComboBox">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)JewelryJunkQualityLabel" relativePoint="TOPRIGHT"
+                                        offsetX="10" offsetY="1"
+                                    />
+                                    <Dimensions x="140" y="30"/>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SK_AUT_UNWANTED_EDIT_SET_JUNK_QUALITY_TOOLTIP))
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        ZO_Tooltips_HideTruncatedTextTooltip()
+                                    </OnMouseExit>
+                                </Control>
+                                <Label name="$(parent)JewelryDeconstructQualityLabel" font="ZoFontWinT1" height="30"
+                                       wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER"
+                                       text="SI_SK_AUT_UNWANTED_EDIT_SET_JUNK_JEWELRY_LABEL"
+                                >
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)EquipmentDeconstructQualityLabel" relativePoint="BOTTOMRIGHT"
+                                        offsetY="5"
+                                    />
+                                    <Dimensions y="32"/>
+                                </Label>
+                                <Control name="$(parent)JewelryDeconstructQuality" inherits="ZO_ComboBox">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)JewelryDeconstructQualityLabel" relativePoint="TOPRIGHT"
+                                        offsetX="10" offsetY="1"
+                                    />
+                                    <Dimensions x="140" y="30"/>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SK_AUT_UNWANTED_EDIT_SET_DECONSTRUCT_QUALITY_TOOLTIP))
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        ZO_Tooltips_HideTruncatedTextTooltip()
+                                    </OnMouseExit>
+                                </Control>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)Main">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Top" relativePoint="BOTTOMLEFT" offsetY="7" />
+                            <Dimensions x="720" y="328"/>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                                <Button name="$(parent)ToggleBodyParts" inherits="ZO_DefaultButton"
+                                        text="SI_SK_AUT_UNWANTED_TOGGLE_BODY_PARTS"
+                                >
+                                    <Dimensions x="175" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Main" relativePoint="TOPLEFT"
+                                            offsetX="-2" offsetY="10"
+                                    />
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SK_AUT_UNWANTED_TOGGLE_BODY_PARTS_TOOLTIP))
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        ZO_Tooltips_HideTruncatedTextTooltip()
+                                    </OnMouseExit>
+                                    <OnClicked>
+                                        SKEUS:ToggleCheckBoxes(0)
+                                    </OnClicked>
+                                </Button>
+                                <Button name="$(parent)ToggleOneHanded" inherits="ZO_DefaultButton"
+                                        text="SI_SK_AUT_UNWANTED_TOGGLE_ONE_HANDED"
+                                >
+                                    <Dimensions x="175" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Main" relativePoint="TOPLEFT"
+                                            offsetX="181" offsetY="10"
+                                    />
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SK_AUT_UNWANTED_TOGGLE_ONE_HANDED_TOOLTIP))
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        ZO_Tooltips_HideTruncatedTextTooltip()
+                                    </OnMouseExit>
+                                    <OnClicked>
+                                        SKEUS:ToggleCheckBoxes(2)
+                                    </OnClicked>
+                                </Button>
+                                <Button name="$(parent)ToggleTwoHanded" inherits="ZO_DefaultButton"
+                                        text="SI_SK_AUT_UNWANTED_TOGGLE_TWO_HANDED"
+                                >
+                                    <Dimensions x="175" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Main" relativePoint="TOPRIGHT"
+                                            offsetX="-181" offsetY="10"
+                                    />
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SK_AUT_UNWANTED_TOGGLE_TWO_HANDED_TOOLTIP))
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        ZO_Tooltips_HideTruncatedTextTooltip()
+                                    </OnMouseExit>
+                                    <OnClicked>
+                                        SKEUS:ToggleCheckBoxes(3)
+                                    </OnClicked>
+                                </Button>
+                                <Button name="$(parent)ToggleStaffs" inherits="ZO_DefaultButton"
+                                        text="SI_SK_AUT_UNWANTED_TOGGLE_STAFFS"
+                                >
+                                    <Dimensions x="175" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Main" relativePoint="TOPRIGHT"
+                                            offsetX="0" offsetY="10"
+                                    />
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SK_AUT_UNWANTED_TOGGLE_STAFFS_TOOLTIP))
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        ZO_Tooltips_HideTruncatedTextTooltip()
+                                    </OnMouseExit>
+                                    <OnClicked>
+                                        SKEUS:ToggleCheckBoxes(4)
+                                    </OnClicked>
+                                </Button>
+                                <Control name="$(parent)Options">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Body" relativePoint="TOPLEFT"
+                                            offsetX="5" offsetY="20"
+                                    />
+                                    <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-10" />
+                                </Control>
+                                <Button name="$(parent)Accept" inherits="ZO_DefaultButton" text="SI_SK_DIALOG_SAVE">
+                                    <Dimensions x="200" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Body" relativePoint="BOTTOM" offsetY="-39" />
+                                    <OnClicked>
+                                        SKEUS:Save()
+                                    </OnClicked>
+                                </Button>
+                                <Button name="$(parent)Decline" inherits="ZO_DefaultButton" text="SI_SK_DIALOG_CANCEL">
+                                    <Dimensions x="200" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Body" relativePoint="BOTTOM" offsetY="-39" />
+                                    <OnClicked>
+                                        SKEUS:Close()
+                                    </OnClicked>
+                                </Button>
+                            </Controls>
+                        </Control>
+        	        </Controls>
+                </Control>
+	        </Controls>
+		</TopLevelControl>
+		<Button name="ItemOfSetTemplate" verticalAlignment="CENTER" horizontalAlignment="LEFT" virtual="true">
+            <Controls>
+                <Button name="$(parent)CheckBox" inherits="ZO_GamepadCheckButton">
+                    <Anchor point="LEFT" />
+                    <Dimensions x="32" y="32" />
+                </Button>
+                <Label name="$(parent)ItemName" font="ZoFontGame" verticalAlignment="CENTER" horizontalAlignment="LEFT"
+                       mouseEnabled="true" wrapMode="1"
+                >
+                    <Anchor point="LEFT" relativeTo="$(parent)CheckBox" relativePoint="RIGHT" offsetX="0" />
+                    <Dimensions y="32" />
+                </Label>
+            </Controls>
+        </Button>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/necco889/LostPassives__3733",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "necco889",
+  "canonical_id": "esoui:3733",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3733",
+  "deleted": false,
+  "directories": [
+    "LostPassives"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3733/",
+  "fingerprint": "f3cdb6dfcafdf24151a91945fb36931418584ea11849d1f4b9e10476a1af45dc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12644.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12645.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3733",
+  "source_url": "https://www.esoui.com/downloads/info3733-LostPassives.html",
+  "stats": {
+    "downloads": 2005,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "LostPassives",
+  "updated_at": 1697360292000,
+  "version": "0.0.2"
+}

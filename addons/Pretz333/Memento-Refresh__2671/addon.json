@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Pretz333/Memento-Refresh__2671",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Pretz333",
+  "canonical_id": "esoui:2671",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2671",
+  "deleted": false,
+  "directories": [
+    "MementoRefresh"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2671/",
+  "fingerprint": "f181be93f3cc5b899efb8c3ae275faae6a873cd2b8ab665186e27c46cca86ef2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2671",
+  "source_url": "https://www.esoui.com/downloads/info2671-MementoRefresh.html",
+  "stats": {
+    "downloads": 13639,
+    "favorites": 17,
+    "monthly_downloads": 32
+  },
+  "title": "Memento Refresh",
+  "updated_at": 1719881129000,
+  "version": "0.1.7"
+}

@@ -1,0 +1,6 @@
+## Title: CovetousCountess
+## Version: 5
+## Author: Shinni
+## APIVersion: 100017 100016
+
+CovetousCountess.lua

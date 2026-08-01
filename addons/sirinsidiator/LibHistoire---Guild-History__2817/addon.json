@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/sirinsidiator/LibHistoire---Guild-History__2817",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:2817",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:2817",
+  "deleted": false,
+  "directories": [
+    "LibHistoire"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2817/",
+  "fingerprint": "7fd37f4ff97ce896f7b948f26eb118cd089c1889866f1a13e99a545a8d6470f9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9521.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9510.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9513.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12997.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12996.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12999.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12998.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2817",
+  "source_url": "https://www.esoui.com/downloads/info2817-LibHistoire-GuildHistory.html",
+  "stats": {
+    "downloads": 1529894,
+    "favorites": 429,
+    "monthly_downloads": 11426
+  },
+  "title": "LibHistoire - Guild History",
+  "updated_at": 1780943999000,
+  "version": "2.7.1"
+}

@@ -1,0 +1,36 @@
+<GuiXml>
+    <!-- common font string defintions for TurkishScrollsOnline. -->
+    <BackupFont originalFont="$(ESOTR_CENTURY_GOTHIC_FONT)" backupFont="esoui/common/fonts/univers55.slug"/>
+    <BackupFont originalFont="$(ESOTR_CRIMSON_REGULAR_FONT)" backupFont="esoui/common/fonts/univers55.slug"/>
+    <BackupFont originalFont="$(ESOTR_GENTIUM_FONT)" backupFont="esoui/common/fonts/univers55.slug"/>
+    <BackupFont originalFont="$(ESOTR_METAMORPHOUS_REGULAR_FONT)" backupFont="esoui/common/fonts/univers55.slug"/>
+    <BackupFont originalFont="$(ESOTR_PATRICK_HAND_SC_FONT)" backupFont="esoui/common/fonts/univers55.slug"/>
+    <BackupFont originalFont="$(ESOTR_PROSEANTIQUE_FONT)" backupFont="esoui/common/fonts/univers55.slug"/>
+    
+     <!-- common backup font string defintions for ESO fonts. -->
+    <BackupFont originalFont="$(FTN47_FONT)" backupFont="esoui/common/fonts/univers55.slug"/>
+    <BackupFont originalFont="$(TRAJAN_PRO_R_FONT)" backupFont="esoui/common/fonts/univers55.slug"/>
+    <BackupFont originalFont="$(GAMEPAD_LIGHT_FONT)" backupFont="esoui/common/fonts/univers55.slug"/>
+
+    <BackupFont originalFont="$(FTN57_FONT)" backupFont="esoui/common/fonts/univers57.slug"/>
+    <BackupFont originalFont="$(GAMEPAD_MEDIUM_FONT)" backupFont="esoui/common/fonts/univers57.slug"/>
+
+    <BackupFont originalFont="$(FTN87_FONT)" backupFont="esoui/common/fonts/univers67.slug"/>
+    <BackupFont originalFont="$(HANDWRITTEN_BOLD_FONT)" backupFont="esoui/common/fonts/univers67.slug"/>
+    <BackupFont originalFont="$(GAMEPAD_BOLD_FONT)" backupFont="esoui/common/fonts/univers67.slug"/>
+
+    <BackupFont originalFont="$(PROSE_ANTIQUE_FONT)" backupFont="TurkishScrollsOnline/fonts/ProseAntique.slug"/>
+    <BackupFont originalFont="$(ANTIQUE_FONT)" backupFont="TurkishScrollsOnline/fonts/ProseAntique.slug"/>
+
+    <BackupFont originalFont="$(BOLD_FONT)" backupFont="esoui/common/fonts/univers67.slug"/>
+    <BackupFont originalFont="$(HANDWRITTEN_FONT)" backupFont="esoui/common/fonts/Metamorphous-Regular.slug"/>
+    <BackupFont originalFont="$(UNIVERS67_FONT)" backupFont="esoui/common/fonts/univers67.slug"/>
+
+    <BackupFont originalFont="$(UNIVERS55_FONT)" backupFont="esoui/common/fonts/univers55.slug"/>
+    <BackupFont originalFont="$(STONE_TABLET_FONT)" backupFont="esoui/common/fonts/Metamorphous-Regular.slug"/>
+    <BackupFont originalFont="$(CONSOLAS_FONT)" backupFont="esoui/common/fonts/univers55.slug"/>
+
+    <BackupFont originalFont="$(CHAT_FONT)" backupFont="esoui/common/fonts/univers57.slug"/>
+    <BackupFont originalFont="$(MEDIUM_FONT)" backupFont="esoui/common/fonts/univers57.slug"/>
+    <BackupFont originalFont="$(UNIVERS57_FONT)" backupFont="esoui/common/fonts/univers57.slug"/>
+</GuiXml>

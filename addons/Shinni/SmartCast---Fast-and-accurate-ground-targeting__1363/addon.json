@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Shinni/SmartCast---Fast-and-accurate-ground-targeting__1363",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shinni",
+  "canonical_id": "esoui:1363",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:1363",
+  "deleted": false,
+  "directories": [
+    "SmartCast"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1363/",
+  "fingerprint": "9c6297d3e6a565ef469618eb5582a952849f5c7706d9103107a5ec4935b00e89",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4425.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1363",
+  "source_url": "https://www.esoui.com/downloads/info1363-SmartCast-Fastandaccurategroundtargeting.html",
+  "stats": {
+    "downloads": 23731,
+    "favorites": 41,
+    "monthly_downloads": 33
+  },
+  "title": "SmartCast - Fast and accurate ground targeting",
+  "updated_at": 1584135331000,
+  "version": "1.3"
+}

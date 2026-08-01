@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/Shinni/HarvestMap-Data__3034",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shinni",
+  "canonical_id": "esoui:3034",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3034",
+  "deleted": false,
+  "directories": [
+    "HarvestMapData"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3034/",
+  "fingerprint": "7369cffcd2dfe372ae6e4183b29325872a5ba035825705ba8a17dd840fae7e8d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3034",
+  "source_url": "https://www.esoui.com/downloads/info3034-HarvestMap-Data.html",
+  "stats": {
+    "downloads": 620668,
+    "favorites": 494,
+    "monthly_downloads": 6577
+  },
+  "title": "HarvestMap-Data",
+  "updated_at": 1651790208000,
+  "version": "3.15.3"
+}

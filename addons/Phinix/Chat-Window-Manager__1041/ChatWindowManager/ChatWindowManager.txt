@@ -1,0 +1,32 @@
+## Title: |c66ccffChat Window Manager|r
+## Author: |c66ccffPhinix|r
+## Description: Remember chat minimize state. Options for reload/clear button and online status selector in chat window.
+## Version: 1.37
+## APIVersion: 101039 101040
+## SavedVariables: ChatWindowManager
+## DependsOn: LibAddonMenu-2.0>=30
+
+
+bin\ChatWindowManager.xml
+
+language\en.lua
+language\de.lua
+language\es.lua
+language\fr.lua
+language\it.lua
+language\ja.lua
+language\pl.lua
+language\ru.lua
+
+bin\Status.xml
+ChatWindowManager.lua
+bin\bindings.xml
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

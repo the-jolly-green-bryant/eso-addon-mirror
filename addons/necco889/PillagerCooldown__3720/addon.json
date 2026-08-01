@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/necco889/PillagerCooldown__3720",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "necco889",
+  "canonical_id": "esoui:3720",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3720",
+  "deleted": false,
+  "directories": [
+    "PillagerCooldown"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3720/",
+  "fingerprint": "45116bb6eaadcc82e53050a87b704680f27578537dba738220c5a15a1b9c62ed",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12603.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12604.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12605.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3720",
+  "source_url": "https://www.esoui.com/downloads/info3720-PillagerCooldown.html",
+  "stats": {
+    "downloads": 2270,
+    "favorites": 2,
+    "monthly_downloads": 14
+  },
+  "title": "PillagerCooldown",
+  "updated_at": 1694586508000,
+  "version": "1.0.0"
+}

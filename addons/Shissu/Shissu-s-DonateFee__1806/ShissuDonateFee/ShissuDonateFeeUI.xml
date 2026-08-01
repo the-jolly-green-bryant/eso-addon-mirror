@@ -1,0 +1,102 @@
+<GuiXml>
+  <Controls>
+    <Label name="ShissuDonateFeeUIRowLabel" font="ZoFontGame" wrapMode="ELLIPSIS" virtual="true"/>
+
+    <Control name="ShissuDonateFeeUIRow" mouseEnabled="true" virtual="true">
+      <Dimensions y="30"/>
+      <Controls>
+   
+        <Label name="$(parent)Index" inherits="ShissuDonateFeeUIRowLabel" hidden="false" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="true">
+         <Anchor point="LEFT" offsetX="8" />  
+         <Dimensions x="30" y="30"/> 
+        </Label> 
+
+        <Label name="$(parent)Date" inherits="ShissuDonateFeeUIRowLabel" hidden="false" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="true">
+         <Anchor point="LEFT" relativeTo="$(parent)Index" relativePoint="RIGHT" offsetX="0" offsetY="0" /> 
+         <Dimensions x="140" y="30"/> 
+        </Label> 
+
+        <Label name="$(parent)Guild" inherits="ShissuDonateFeeUIRowLabel" hidden="false" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="true">
+         <Anchor point="LEFT" relativeTo="$(parent)Date" relativePoint="RIGHT" offsetX="20" offsetY="0" />  
+         <Dimensions x="170" y="30"/> 
+        </Label> 
+
+        <Label name="$(parent)Gold" inherits="ShissuDonateFeeUIRowLabel" hidden="false" horizontalAlignment="RIGHT" verticalAlignment="CENTER" mouseEnabled="true">
+         <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="20" offsetY="0" />  
+         <Dimensions x="90" y="30"/> 
+        </Label> 
+
+        <Texture name="$(parent)Affirmed" hidden="false" horizontalAlignment="RIGHT" verticalAlignment="CENTER" mouseEnabled="true">
+         <Anchor point="LEFT" relativeTo="$(parent)Gold" relativePoint="RIGHT" offsetX="20" offsetY="0" />  
+         <Dimensions x="40" y="30"/> 
+        </Texture> 
+      </Controls>
+    </Control>         
+          
+  <TopLevelControl name="ShissuDonateFeeUI" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+    <Dimensions x="580" y="480" />
+    <Anchor point="CENTER" offsetX="100" offsetY="100" />      
+    <Controls>
+
+  		<Label name="$(parent)_Version" font="$(ANTIQUE_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="RIGHT" text="Shissu's Guild Tools">
+  			<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-80" offsetY="0" />
+  		</Label>
+
+      <Control name="$(parent)Headers">
+        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="30"/>
+        <Anchor point="TOPRIGHT" offsetY="45"/>      
+        <Dimensions y="32"/>
+          
+        <Controls>
+          <Control name="$(parent)Index" inherits="ZO_SortHeader">
+            <Anchor point="TOPLEFT" offsetX="8"/>
+            <Dimensions x="30" y="32" /> 
+            <OnInitialized>
+              ZO_SortHeader_Initialize(self, "|cAFD3FF#", "index", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+            </OnInitialized>              
+          </Control> 
+
+          <Control name="$(parent)Date" inherits="ZO_SortHeader">
+            <Anchor point="LEFT" relativeTo="$(parent)Index" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+            <Dimensions x="140" y="32" /> 
+            <OnInitialized>
+              ZO_SortHeader_Initialize(self, "|cAFD3FFDate", "date", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+            </OnInitialized>              
+          </Control>            
+
+          <Control name="$(parent)Guild" inherits="ZO_SortHeader">
+            <Anchor point="LEFT" relativeTo="$(parent)Date" relativePoint="RIGHT" offsetX="20" offsetY="0" />
+            <Dimensions x="170" y="32" /> 
+            <OnInitialized>
+              ZO_SortHeader_Initialize(self, "|cAFD3FFGuild", "guild", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+            </OnInitialized>              
+          </Control>      
+
+          <Control name="$(parent)Gold" inherits="ZO_SortHeader">
+            <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="50" offsetY="0" />
+            <Dimensions x="100" y="32" /> 
+            <OnInitialized>
+              ZO_SortHeader_Initialize(self, "|cAFD3FFGold", "gold", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+            </OnInitialized>              
+          </Control>                  
+
+          <Control name="$(parent)Affirmed" inherits="ZO_SortHeader">
+            <Anchor point="LEFT" relativeTo="$(parent)Gold" relativePoint="RIGHT" offsetX="50" offsetY="0" />
+            <Dimensions x="40" y="32" /> 
+            <OnInitialized>
+              ZO_SortHeader_Initialize(self, "", "affirmed", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+            </OnInitialized>              
+          </Control>      
+        </Controls>
+      </Control>
+                            
+      <Control name="$(parent)List" inherits="ZO_ScrollList"> 
+        <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3"/>
+        <Anchor point="BOTTOMRIGHT" offsetX="-5" offsetY="-2"/>
+      </Control>
+
+    </Controls>
+  </TopLevelControl>
+  
+  </Controls>
+</GuiXml>

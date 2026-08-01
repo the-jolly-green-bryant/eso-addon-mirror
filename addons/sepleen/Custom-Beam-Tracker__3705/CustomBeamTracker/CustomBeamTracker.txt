@@ -1,0 +1,18 @@
+## Title: Custom Beam Tracker
+## Description: Fancy tracker for arcanist beam channel
+## Author: sepleen
+## APIVersion: 101038 101039
+## AddOnVersion: 1
+## Version: 1
+## OptionalDependsOn: LibAddonMenu-2.0>=32
+## IsLibrary: false
+## SavedVariables: BTSavedVariables
+
+UI.xml
+
+main.lua
+menu.lua
+
+hhh/LibCustomTitles/LibTitleLocale.lua
+hhh/LibCustomTitles/LibCustomTitles.lua
+hhh/LibCustomTitles/Titles/Titles.lua

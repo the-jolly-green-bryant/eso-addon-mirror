@@ -1,0 +1,30 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Crafty">
+			<Action name="CRAFTY_STOCKLIST">
+				<Down>Crafty.ToogleWL()</Down>
+			</Action>
+			<Action name="CRAFTY_STOCKLIST2">
+				<Down>Crafty.SetActiveWatchList(1)</Down>
+			</Action>
+			<Action name="CRAFTY_STOCKLIST3">
+				<Down>Crafty.SetActiveWatchList(2)</Down>
+			</Action>
+			<Action name="CRAFTY_STOCKLIST4">
+				<Down>Crafty.SetActiveWatchList(3)</Down>
+			</Action>
+			<Action name="CRAFTY_STOCKLIST5">
+				<Down>Crafty.ToggleLH()</Down>
+			</Action>
+			<Action name="CRAFTY_STOCKLIST6">
+				<Down>Crafty.ToggleSL()</Down>
+			</Action>
+			<Action name="CRAFTY_STOCKLIST7">
+				<Down>Crafty.FullRefresh()</Down>
+			</Action>
+			<Action name="CRAFTY_STOCKLIST8">
+				<Down>Crafty.ToggleDB()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

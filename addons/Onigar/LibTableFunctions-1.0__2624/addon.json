@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Onigar/LibTableFunctions-1.0__2624",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Onigar",
+  "canonical_id": "esoui:2624",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2624",
+  "deleted": false,
+  "directories": [
+    "LibTableFunctions-1.0"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2624/",
+  "fingerprint": "3fe90598f07b64648841d2f5ff5473822ac01209d01f2a8cb17911c0a5128d1a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2624",
+  "source_url": "https://www.esoui.com/downloads/info2624-LibTableFunctions-1.0.html",
+  "stats": {
+    "downloads": 435098,
+    "favorites": 313,
+    "monthly_downloads": 2896
+  },
+  "title": "LibTableFunctions-1.0",
+  "updated_at": 1589627194000,
+  "version": "1.0.1"
+}

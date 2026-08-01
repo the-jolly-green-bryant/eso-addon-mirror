@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/STUDLETON/SPAULDER__4092",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "STUDLETON",
+  "canonical_id": "esoui:4092",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4092",
+  "deleted": false,
+  "directories": [
+    "SPAULDER"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4092/",
+  "fingerprint": "31f1cef97767101be2f33793213c2ece31630b9f7e41e8125917058970a0dff9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13953.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4092",
+  "source_url": "https://www.esoui.com/downloads/info4092-SPAULDER.html",
+  "stats": {
+    "downloads": 799,
+    "favorites": 3,
+    "monthly_downloads": 24
+  },
+  "title": "SPAULDER",
+  "updated_at": 1745961852000,
+  "version": "1.0.2"
+}

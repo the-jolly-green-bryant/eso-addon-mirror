@@ -1,0 +1,73 @@
+<GuiXml>
+    <Controls>
+		<Control name="EPCCheckbuttonContainer" virtual="true">
+			<Dimensions y="34" />
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+			<Controls>
+				<Label name="$(parent)CheckbuttonLabel" font="EPCFontNormal" text="Text">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Button name="$(parent)Checkbutton" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="200" y="25" />                                                                                   
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="200" offsetY="0" />
+					
+					<OnMouseEnter>
+						EPC.UI.UpdateCheckButtonHighlight(self:GetParent(), true)
+					</OnMouseEnter>
+					<OnMouseExit>
+						EPC.UI.UpdateCheckButtonHighlight(self:GetParent(), false)
+					</OnMouseExit>
+					
+					<Controls>
+						<Label name="$(parent)Text" font="EPCFontNormalBold" text="Inactive" modifyTextType="UPPERCASE">
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+						</Label>
+					</Controls>
+				</Button>
+			</Controls>
+		</Control>
+		
+		<Control name="EPCComboboxContainer" virtual="true">
+			<Dimensions y="34" />
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+			<Controls>
+				<Label name="$(parent)ComboboxLabel" font="EPCFontNormal" text="Text">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				</Label>
+				<Control name="$(parent)Combobox" inherits="ZO_ComboBox">
+					<OnInitialized>
+						ZO_ComboBox:New(self) --Else this gets ignored and overwritten...
+						self.m_comboBox:SetFont("EPCFontNormal")
+					</OnInitialized>
+					<Dimensions x="200" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="200" />
+				</Control>
+			</Controls>
+		</Control>
+		
+		<Control name="EPCSummaryTextRow" virtual="true">
+			<Dimensions x="185" y="25" />
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="5" offsetY="25"/>
+			<Controls>
+				<Label name="$(parent)Label" font="EPCFontNormal" text="NEEDED">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="50" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)Number" font="EPCFontNormal" text="18.000">
+					<Anchor point="RIGHT" relativeTo="$(parent)Label" relativePoint="LEFT" offsetX="-10" offsetY="0"/>
+				</Label>
+			</Controls>
+		</Control>
+		
+		<Label name="EPCWindowHeader" virtual="true" font="EPCFontHeader" text="WindowHeader" modifyTextType="UPPERCASE">
+			<Dimensions x="400" />
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="12"/>
+			<Controls>
+				<Texture name="$(parent)Divider" textureFile="EsoUI\Art\Login\login_divider.dds">
+					<Dimensions y="4" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="-4"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="-4"/>
+				</Texture>
+			</Controls>
+		</Label>
+    </Controls>
+</GuiXml>

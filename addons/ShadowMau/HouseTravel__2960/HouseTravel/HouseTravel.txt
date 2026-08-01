@@ -1,0 +1,30 @@
+#Manifest File
+
+## Title: |c00E600HouseTravel|r
+## Description: Use the World Map house list to visit or travel.  -  Version: 1.0.1 (20210613)
+## Author: |c787878ShadowMau|r
+## SavedVariables: HouseTravelSavedVariables
+## DependsOn: LibAddonMenu-2.0>=31
+## IsLibrary: false
+
+## Version: 1.0.1
+## APIVersion: 100035
+## AddOnVersion: 20210613
+
+
+# List of lua and xml files associated with your addon - they are loaded in the order listed
+
+HouseTravel.lua
+
+
+# This Addon is not created by, affiliated with, or sponsored by
+# ZeniMax Media Inc. or its affiliates
+# The Elder Scrolls (c) and related logos are registered trademarks
+# or trademarks of ZeniMax Media Inc. in the United States and/or
+# other countries.  All rights reserved
+
+
+# Make sure the name of the folder containing the addon and the name
+# of the .txt manifest file are EXACTLY the same, including Caps.
+# The string that is passed to the handler for EVENT_ADD_ON_LOADED
+# should also match.  

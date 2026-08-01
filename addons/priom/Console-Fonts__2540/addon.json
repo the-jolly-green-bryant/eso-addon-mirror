@@ -1,0 +1,92 @@
+{
+  "archive_path": "addons/priom/Console-Fonts__2540",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "priom",
+  "canonical_id": "esoui:2540",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2540",
+  "deleted": false,
+  "directories": [
+    "ConsoleFont"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2540/",
+  "fingerprint": "b2272d537f425cf78be3d1dd51c7440514f43abf3eee7e62055094f1fecf4523",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8706.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8707.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8708.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8709.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2540",
+  "source_url": "https://www.esoui.com/downloads/info2540-ConsoleFonts.html",
+  "stats": {
+    "downloads": 9527,
+    "favorites": 11,
+    "monthly_downloads": 134
+  },
+  "title": "Console Fonts",
+  "updated_at": 1783650625000,
+  "version": "0.8"
+}

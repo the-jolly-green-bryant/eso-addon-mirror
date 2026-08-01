@@ -1,0 +1,45 @@
+## Title: LMB
+## APIVersion: 101044
+## Version: 1.3.5
+## Author: Neugeniko
+LMB.lua
+
+Slash command /lmb  -- Link my bars
+Slash command /lmc  -- Link my champion points and misc
+Slash command /lmd  -- Link my sets
+
+## Change log:
+## Version 1.0.0:
+## Addon Release.
+
+## Version 1.1.0:
+## Added Active Food Effect and Active Quickslot.
+
+## Version 1.1.5:
+## Made functions local and used a more compatible function for chat input.
+
+## Version 1.2.0:
+## Added a command to link equipped sets.
+
+## Version 1.2.1:
+## Removed global variable.
+
+## Version 1.3.0:
+## Better sorting for sets and a indicator for partial sets.
+
+## Version 1.3.1:
+## Added Weights and Better Chat Handling.
+
+## Version 1.3.2:
+## Fix whisper handling.
+
+## Version 1.3.3:
+## Better/Fixed scribed skill detection.
+
+## Version 1.3.4:
+## Bow is two handed.
+
+## Version 1.3.5:
+## Fix error with lmc command no food display.
+
+

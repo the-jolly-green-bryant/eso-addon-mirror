@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Solinur/LibCombat__2528",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Solinur",
+  "canonical_id": "esoui:2528",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:2528",
+  "deleted": false,
+  "directories": [
+    "LibCombat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2528/",
+  "fingerprint": "3f1d6335977e176c02eff00ebba23e1ec87c84a5a879a94867cb73eab20b6a32",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2528",
+  "source_url": "https://www.esoui.com/downloads/info2528-LibCombat.html",
+  "stats": {
+    "downloads": 5093645,
+    "favorites": 721,
+    "monthly_downloads": 41754
+  },
+  "title": "LibCombat",
+  "updated_at": 1782764827000,
+  "version": "89"
+}

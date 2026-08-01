@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="GamepadUIMode">
+		<Category name="Immersive Dialogue for Gamepad">
+			<Action name="TOGGLE_HIDE_BODY">
+				<Down>ToggleBody()</Down>
+			</Action>
+			<Action name="TOGGLE_HIDE_OPTIONS">
+				<Down>ToggleOptions()</Down>
+			</Action>
+			<Action name="REPEAT_DIALOGUE">
+				<Down>RepeatDialogue()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

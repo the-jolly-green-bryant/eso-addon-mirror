@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/rockingdice/Quick-Menu__1816",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "rockingdice",
+  "canonical_id": "esoui:1816",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    }
+  ],
+  "content_id": "esoui:1816",
+  "deleted": false,
+  "directories": [
+    "QuickMenu"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1816/",
+  "fingerprint": "4425e47c8126a5f93b3a058b9dc218d8e1b54bbb0361f6ce2a53789b66107574",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6149.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6150.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6151.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6152.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1816",
+  "source_url": "https://www.esoui.com/downloads/info1816-QuickMenu.html",
+  "stats": {
+    "downloads": 10666,
+    "favorites": 32,
+    "monthly_downloads": 25
+  },
+  "title": "Quick Menu",
+  "updated_at": 1508811167000,
+  "version": "1.03"
+}

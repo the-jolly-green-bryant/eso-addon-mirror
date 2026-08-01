@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/ownedbynico/Wizard-s-Wardrobe__3170",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ownedbynico",
+  "canonical_id": "esoui:3170",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3170",
+  "deleted": false,
+  "directories": [
+    "WizardsWardrobe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3170/",
+  "fingerprint": "8ef534bd45d5f294a69f2d8e70ee23fcb621b0a4500e98b79214124a553f8ef0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14233.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14234.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14235.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14236.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14237.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14238.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14239.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14240.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14241.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14242.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3170",
+  "source_url": "https://www.esoui.com/downloads/info3170-WizardsWardrobe.html",
+  "stats": {
+    "downloads": 487245,
+    "favorites": 237,
+    "monthly_downloads": 3350
+  },
+  "title": "Wizard's Wardrobe",
+  "updated_at": 1769718810000,
+  "version": "1.23.2"
+}

@@ -1,0 +1,17 @@
+## This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+## and/or other countries. All rights reserved.
+
+## Title: Hedning Quotes
+## Description: A simple addon that adds quotes from Hedning to the death recap hints.
+## Author: Parietic
+## AddOnVersion: 101
+## Version: 1.0.1
+## APIVersion: 100030
+
+HedningQuotes.lua
+
+##Change log:
+##Version 1.0.1:
+##- Added more quotes
+##- Changed the quote "A broken clock it right two times a day" to "Even a broken clock is right at least twice a day"

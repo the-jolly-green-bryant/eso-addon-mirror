@@ -1,0 +1,25 @@
+.#Manifest File
+
+## Title: |c00E600FavoritePet|r
+## Description: Select and save favorite pets by character and randomly change between the favorites  -  Version: 2.01 (20250423)
+## Author: |c787878ShadowMau / Pawprints.Shadow|r
+## SavedVariables: FavoritePetSavedVariables
+## DependsOn: LibAddonMenu-2.0>=38
+## IsLibrary: false
+
+## Version: 2.02
+## APIVersion: 101046
+## AddOnVersion: 220250705
+
+
+# List of lua and xml files associated with your addon - they are loaded in the order listed
+
+FavoritePet.lua
+bindings.xml
+
+# This Addon is not created by, affiliated with, or sponsored by
+# ZeniMax Media Inc. or its affiliates
+# The Elder Scrolls (c) and related logos are registered trademarks
+# or trademarks of ZeniMax Media Inc. in the United States and/or
+# other countries.  All rights reserved
+  

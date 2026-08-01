@@ -1,0 +1,8 @@
+## Title: HarvestMap-DC-Zones
+## Author: Shinni
+## Description: This HarvestMap-module is used to store data for zones that belong to the Daggerfall Covenant.
+## DependsOn: HarvestMap
+## AddOnVersion: 31501
+## APIVersion: 101049 101050
+## SavedVariables: HarvestDC_SavedVars
+## DisableSavedVariablesAutoSaving: 1

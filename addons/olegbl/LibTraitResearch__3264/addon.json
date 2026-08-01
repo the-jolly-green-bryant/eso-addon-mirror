@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/olegbl/LibTraitResearch__3264",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "olegbl",
+  "canonical_id": "esoui:3264",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3264",
+  "deleted": false,
+  "directories": [
+    "LibTraitResearch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3264/",
+  "fingerprint": "da806d8c13b43839858184d5ca3c3af96e4e08fdcc5383ff2ca0c1ef9e8978e9",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3264",
+  "source_url": "https://www.esoui.com/downloads/info3264-LibTraitResearch.html",
+  "stats": {
+    "downloads": 80512,
+    "favorites": 8,
+    "monthly_downloads": 1445
+  },
+  "title": "LibTraitResearch",
+  "updated_at": 1781044227000,
+  "version": "1.05"
+}

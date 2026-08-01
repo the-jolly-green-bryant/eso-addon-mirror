@@ -1,0 +1,33 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|c8334ebDismiss|rThis">
+      <Action name="SUMMON_BANKER">
+        <Up>DismissThis:SummonBanker()</Up>
+	  </Action>
+      <Action name="SUMMON_FENCE">
+        <Up>DismissThis:SummonFence()</Up>
+	  </Action>
+	  <Action name="SUMMON_MERCHANT">
+        <Up>DismissThis:SummonMerchant()</Up>
+	  </Action>
+	  <Action name="DISMISS_FAMILIAR">
+        <Up>DismissThis:DismissPet(DismissThis.Familiars)</Up>
+      </Action>
+      <Action name="DISMISS_TWILIGHT">
+        <Up>DismissThis:DismissPet(DismissThis.Twilights)</Up>
+      </Action>
+      <Action name="DISMISS_GRIZZLY">
+        <Up>DismissThis:DismissPet(DismissThis.Grizzlys)</Up>
+      </Action>
+      <Action name="DISMISS_ALL_PETS">
+        <Up>DismissThis:DismissAllPets()</Up>
+      </Action>
+      <Action name="DISMISS_ASSISTANTS">
+        <Up>DismissThis:DismissAssistants()</Up>
+      </Action>
+      <Action name="DISMISS_ALL">
+        <Up>DismissThis:DismissAllPetsAssistants()</Up>
+      </Action>	  
+    </Category>
+  </Layer>
+</Bindings>

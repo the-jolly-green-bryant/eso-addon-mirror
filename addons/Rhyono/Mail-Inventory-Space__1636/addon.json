@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Rhyono/Mail-Inventory-Space__1636",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rhyono",
+  "canonical_id": "esoui:1636",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1636",
+  "deleted": false,
+  "directories": [
+    "MailInventorySpace"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1636/",
+  "fingerprint": "ae8871d759dc57ec70ca79b280219873af6e1b2f2d0fa7610fe313b311dffc76",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5358.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1636",
+  "source_url": "https://www.esoui.com/downloads/info1636-MailInventorySpace.html",
+  "stats": {
+    "downloads": 14078,
+    "favorites": 34,
+    "monthly_downloads": 8
+  },
+  "title": "Mail Inventory Space",
+  "updated_at": 1647384278000,
+  "version": "1.20"
+}

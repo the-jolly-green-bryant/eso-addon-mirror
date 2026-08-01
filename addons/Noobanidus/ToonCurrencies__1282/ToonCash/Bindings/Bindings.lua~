@@ -1,0 +1,4 @@
+ZO_CreateStringId("SI_BINDING_NAME_TOON_CASH", "Toon Cash Hot-Key")
+ZO_CreateStringId("SI_BINDING_NAME_TOON_CASH_AP", "Toon Cash AP Hot-Key")
+ZO_CreateStringId("SI_BINDING_NAME_TOON_CASH_TV", "Toon Cash Tel Var Hot-Key")
+ZO_CreateStringId("SI_BINDING_NAME_TOON_CASH_WV", "Toon Cash Writ Vouchers Hot-Key")

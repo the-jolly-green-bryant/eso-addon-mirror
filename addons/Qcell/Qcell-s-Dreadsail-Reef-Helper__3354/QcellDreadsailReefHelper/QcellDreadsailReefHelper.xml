@@ -1,0 +1,457 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="QDRHMessage1" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="800" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-150" />
+      <OnMoveStop>QDRH.OnQDRHMessage1Move()</OnMoveStop>
+
+      <Controls>
+        <Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|80|soft-shadow-thick" inheritAlpha="true" color="99CCFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="MESSAGE ONE">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="QDRHMessage2" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="800" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="50" />
+      <OnMoveStop>QDRH.OnQDRHMessage2Move()</OnMoveStop>
+      
+      <Controls>
+        <Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|80|soft-shadow-thick" inheritAlpha="true" color="FF5733"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="MESSAGE TWO" alpha="0.85">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="QDRHMessage3" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="800" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="150" />
+      <OnMoveStop>QDRH.OnQDRHMessage3Move()</OnMoveStop>
+      
+      <Controls>
+        <Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|80|soft-shadow-thick" inheritAlpha="true" color="FF00FF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="MESSAGE THREE" alpha="0.85">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="QDRHStatus" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="500" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-150" offsetX="600" />
+      <OnMoveStop>QDRH.OnQDRHStatusMove()</OnMoveStop>
+      <Controls>
+      <Label name="$(parent)LabelAddonName" font="EsoUI/Common/Fonts/univers67.otf|16|soft-shadow-thick" color="FFFFFF" text="Dreadsail Reef Helper" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-30"/>
+      </Label>
+      
+      <Texture name="$(parent)Divider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds">
+          <Dimensions x="270" y="4"/>
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-20" offsetX="-210"/>
+      </Texture>
+      
+      <Label name="$(parent)LabelTop" font="ZoFontWinH1" color="FFFFFF" text="TOP MESSAGE" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-60" offsetX="0"/>
+      </Label>
+
+      <Label name="$(parent)Label1" font="ZoFontWinH1" color="FF5733" text="Fire Dome:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0"/>
+      </Label>
+      <Label name="$(parent)Label1Value" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="170"/>
+      </Label>
+      
+      <Label name="$(parent)Label2" font="ZoFontWinH1" color="FF5733" text="Fire Cooldown:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40"/>
+      </Label>
+      <Label name="$(parent)Label2Value" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="200"/>
+      </Label>
+
+      <Label name="$(parent)Label3" font="ZoFontWinH1" color="FF5733" text="Fire Fragility:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80"/>
+      </Label>
+      <Label name="$(parent)Label3Value" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="170"/>
+      </Label>
+      <Label name="$(parent)Label4" font="ZoFontWinH1" color="FF5733" text="Next Axe:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120"/>
+      </Label>
+      <Label name="$(parent)Label4Value" font="ZoFontWinH1" color="ff8500" text="INC" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120" offsetX="170"/>
+      </Label>
+      <Label name="$(parent)Label5" font="ZoFontWinH1" color="FF5733" text="Fire Hounds:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160"/>
+      </Label>
+      <Label name="$(parent)Label5Value" font="ZoFontWinH1" color="ff8500" text="INC" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160" offsetX="170"/>
+      </Label>
+      
+      <Label name="$(parent)Label1Right" font="ZoFontWinH1" color="99CCFF" text="Ice Dome:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="380"/>
+      </Label>
+      <Label name="$(parent)Label1RightValue" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="550"/>
+      </Label>
+            
+      <Label name="$(parent)Label2Right" font="ZoFontWinH1" color="99CCFF" text="Ice Cooldown:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="380"/>
+      </Label>
+      <Label name="$(parent)Label2RightValue" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="580"/>
+      </Label>
+            
+      <Label name="$(parent)Label3Right" font="ZoFontWinH1" color="99CCFF" text="Ice Fragility:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="380"/>
+      </Label>
+      <Label name="$(parent)Label3RightValue" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="550"/>
+      </Label>
+
+      <Label name="$(parent)Label4Right" font="ZoFontWinH1" color="99CCFF" text="Next Sword:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120" offsetX="380"/>
+      </Label>
+      <Label name="$(parent)Label4RightValue" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120" offsetX="550"/>
+      </Label>
+
+       <Label name="$(parent)Label5Right" font="ZoFontWinH1" color="99CCFF" text="Ice Hounds:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160" offsetX="380"/>
+      </Label>
+      <Label name="$(parent)Label5RightValue" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160" offsetX="550"/>
+      </Label>
+
+      <!-- Boss 2: Reef Guardian -->
+      <Label name="$(parent)LabelLightning" font="ZoFontWinH1" color="FFD666" text="Building Static:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0"/>
+      </Label>
+      <Label name="$(parent)LabelLightningValue" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="230"/>
+      </Label>
+      
+      <Label name="$(parent)LabelPoison" font="ZoFontWinH1" color="66CC66" text="Volatile Residue:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40"/>
+      </Label>
+      <Label name="$(parent)LabelPoisonValue" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="230"/>
+      </Label>
+
+      <!-- Reef Guardian: HP tracking -->
+      <Label name="$(parent)LabelGuardian1" font="ZoFontWinH1" color="CC0000" text="HP (L):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80"/>
+      </Label>
+      <Label name="$(parent)LabelGuardian1Value" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="120"/>
+      </Label>
+
+      <Label name="$(parent)LabelGuardian2" font="ZoFontWinH1" color="CC0000" text="HP (M):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120"/>
+      </Label>
+      <Label name="$(parent)LabelGuardian2Value" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120" offsetX="120"/>
+      </Label>
+
+      <Label name="$(parent)LabelGuardian3" font="ZoFontWinH1" color="CC0000" text="HP (S):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160"/>
+      </Label>
+      <Label name="$(parent)LabelGuardian3Value" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160" offsetX="120"/>
+      </Label>
+
+      <Label name="$(parent)LabelGuardian4" font="ZoFontWinH1" color="CC0000" text="HP (S):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="200"/>
+      </Label>
+      <Label name="$(parent)LabelGuardian4Value" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="200" offsetX="120"/>
+      </Label>
+
+      <Label name="$(parent)LabelGuardian5" font="ZoFontWinH1" color="CC0000" text="HP (M):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="240"/>
+      </Label>
+      <Label name="$(parent)LabelGuardian5Value" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="240" offsetX="120"/>
+      </Label>
+
+
+      <Label name="$(parent)LabelGuardian6" font="ZoFontWinH1" color="CC0000" text="HP (S):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="280"/>
+      </Label>
+      <Label name="$(parent)LabelGuardian6Value" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="280" offsetX="120"/>
+      </Label>
+
+      <!-- Reef Guardian: Reef tracking -->
+      <Label name="$(parent)LabelGuardianReef1" font="ZoFontWinH1" color="03C0C1" text="Reef Wipe (1):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="420"/>
+      </Label>
+      <Label name="$(parent)LabelGuardianReef1Value" font="ZoFontWinH1" color="ff8500" text="INC" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="610"/>
+      </Label>
+      
+      <Label name="$(parent)LabelGuardianReef2" font="ZoFontWinH1" color="03C0C1" text="Reef Wipe (2):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="420"/>
+      </Label>
+      <Label name="$(parent)LabelGuardianReef2Value" font="ZoFontWinH1" color="ff8500" text="INC" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="610"/>
+      </Label>
+      
+      <Label name="$(parent)LabelGuardianReef3" font="ZoFontWinH1" color="03C0C1" text="Reef Wipe (3):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="420"/>
+      </Label>
+      <Label name="$(parent)LabelGuardianReef3Value" font="ZoFontWinH1" color="ff8500" text="INC" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="610"/>
+      </Label>
+      <Label name="$(parent)LabelGuardianReef4" font="ZoFontWinH1" color="03C0C1" text="Reef Wipe (4):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120" offsetX="420"/>
+      </Label>
+      <Label name="$(parent)LabelGuardianReef4Value" font="ZoFontWinH1" color="ff8500" text="INC" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120" offsetX="610"/>
+      </Label>
+      <Label name="$(parent)LabelGuardianReef5" font="ZoFontWinH1" color="03C0C1" text="Reef Wipe (5):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160" offsetX="420"/>
+      </Label>
+      <Label name="$(parent)LabelGuardianReef5Value" font="ZoFontWinH1" color="ff8500" text="INC" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160" offsetX="610"/>
+      </Label>
+      <Label name="$(parent)LabelGuardianReef6" font="ZoFontWinH1" color="03C0C1" text="Reef Wipe (6):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="200" offsetX="420"/>
+      </Label>
+      <Label name="$(parent)LabelGuardianReef6Value" font="ZoFontWinH1" color="ff8500" text="INC" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="200" offsetX="610"/>
+      </Label>
+
+      <!-- Boss 3: Taleria -->
+      <Label name="$(parent)LabelTaleria1" font="ZoFontWinH1" color="CCCC66" text="Next Maelstrom:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0"/>
+      </Label>
+      <Label name="$(parent)LabelTaleria1Value" font="ZoFontWinH1" color="ff8500" text="32s" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="230"/>
+      </Label>
+
+      <Label name="$(parent)LabelTaleria2" font="ZoFontWinH1" color="2274e0" text="Next Behemoth:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40"/>
+      </Label>
+      <Label name="$(parent)LabelTaleria2Value" font="ZoFontWinH1" color="ff8500" text="INC" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="230"/>
+      </Label>
+
+      <Label name="$(parent)LabelTaleria3" font="ZoFontWinH1" color="63cbf7" text="Next Ice Storm:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80"/>
+      </Label>
+      <Label name="$(parent)LabelTaleria3Value" font="ZoFontWinH1" color="ff8500" text="INC" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="230"/>
+      </Label>
+
+      <Label name="$(parent)LabelTaleria4" font="ZoFontWinH1" color="61ed6f" text="Next Bridge (1):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120"/>
+      </Label>
+      <Label name="$(parent)LabelTaleria4Value" font="ZoFontWinH1" color="ff8500" text="INC" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120" offsetX="230"/>
+      </Label>
+
+      <Label name="$(parent)LabelTaleriaDebuff1" font="ZoFontWinH1" color="65c966" text="Attributes Debuff" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160"/>
+      </Label>
+
+      <Label name="$(parent)LabelTaleriaDebuff2" font="ZoFontWinH1" color="c15adb" text="Healing Debuff" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="200"/>
+      </Label>
+
+      <Label name="$(parent)LabelTaleriaDebuff3" font="ZoFontWinH1" color="e8dd68" text="Speed Debuff" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="240"/>
+      </Label>
+
+      <Label name="$(parent)LabelTaleriaBridge1" font="ZoFontWinH1" color="61ed6f" text="Bridge Wipe (1):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="380"/>
+      </Label>
+      <Label name="$(parent)LabelTaleriaBridge1Value" font="ZoFontWinH1" color="ff8500" text="INC" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="600"/>
+      </Label>
+      
+      <Label name="$(parent)LabelTaleriaBridge2" font="ZoFontWinH1" color="61ed6f" text="Bridge Wipe (2):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="380"/>
+      </Label>
+      <Label name="$(parent)LabelTaleriaBridge2Value" font="ZoFontWinH1" color="ff8500" text="INC" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="600"/>
+      </Label>
+      
+      <Label name="$(parent)LabelTaleriaBridge3" font="ZoFontWinH1" color="61ed6f" text="Bridge Wipe (3):" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="380"/>
+      </Label>
+      <Label name="$(parent)LabelTaleriaBridge3Value" font="ZoFontWinH1" color="ff8500" text="INC" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="600"/>
+      </Label>
+
+      <!-- Trash -->
+      <Label name="$(parent)LabelLever1" font="ZoFontWinH1" color="FF00FF" text="Lever 1:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80"/>
+      </Label>
+      <Label name="$(parent)LabelLever1Value" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="130"/>
+      </Label>
+
+      <Label name="$(parent)LabelLever2" font="ZoFontWinH1" color="FF00FF" text="Lever 2:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120"/>
+      </Label>
+      <Label name="$(parent)LabelLever2Value" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120" offsetX="130"/>
+      </Label>
+
+      <Label name="$(parent)LabelLever3" font="ZoFontWinH1" color="FF00FF" text="Lever 3:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160"/>
+      </Label>
+      <Label name="$(parent)LabelLever3Value" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160" offsetX="130"/>
+      </Label>
+      
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="QDRHMap" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="256" y="256" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-350" offsetX="700" />
+      <OnMoveStop>QDRH.OnQDRHMapMove()</OnMoveStop>
+      <Controls>
+      
+      <Texture name="$(parent)Texture" textureFile="QcellDreadsailReefHelper/icons/reefguardianmap.dds">
+          <Dimensions x="256" y="256"/>
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="0"/>
+      </Texture>
+      
+      <Label name="$(parent)Label1" font="ZoFontWinH1" color="61ed6f" text="OFF" verticalAlignment="TOP" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="50" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="80" offsetX="90"/>
+      </Label>
+      <Label name="$(parent)Label2" font="ZoFontWinH1" color="61ed6f" text="OFF" verticalAlignment="TOP" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="50" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="80" offsetX="180"/>
+      </Label>
+      <Label name="$(parent)Label3" font="ZoFontWinH1" color="61ed6f" text="OFF" verticalAlignment="TOP" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="50" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="140" offsetX="210"/>
+      </Label>
+      <Label name="$(parent)Label4" font="ZoFontWinH1" color="61ed6f" text="OFF" verticalAlignment="TOP" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="50" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="190" offsetX="170"/>
+      </Label>
+      <Label name="$(parent)Label5" font="ZoFontWinH1" color="61ed6f" text="OFF" verticalAlignment="TOP" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="50" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="190" offsetX="100"/>
+      </Label>
+      <Label name="$(parent)Label6" font="ZoFontWinH1" color="61ed6f" text="OFF" verticalAlignment="TOP" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="50" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="130" offsetX="80"/>
+      </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="QDRHDebuff" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="100" y="100" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="350" offsetX="-700" />
+      <OnMoveStop>QDRH.OnQDRHDebuffMove()</OnMoveStop>
+      <Controls>
+      
+      <Texture name="$(parent)Texture" textureFile="/esoui/art/icons/death_recap_poison_aoe.dds">
+          <Dimensions x="100" y="100"/>
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="0"/>
+      </Texture>
+      
+      <Label name="$(parent)Stacks" font="ZoFontWinH1" color="FF0000" text="4" verticalAlignment="TOP" horizontalAlignment="LEFT"  alpha="0.85">
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-30"/>
+      </Label>
+      <Label name="$(parent)Time" font="ZoFontWinH1" color="FFFFFF" text="3.2s" verticalAlignment="TOP" horizontalAlignment="LEFT"  alpha="0.85">
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="30"/>
+      </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="QDRHScreenBorder" tier="HIGH" alpha="0.5" hidden="true">
+      <AnchorFill />
+      <Controls>
+        <Backdrop name="$(parent)Overlay" edgeColor="CC00CC">
+          <AnchorFill />
+          <Center file="EsoUI/Art/HUD/UITelvarOverlayCenter.dds" />
+          <Edge file="EsoUI/Art/HUD/UITelvarOverlayEdge.dds" edgeFileWidth="2048" edgeFileHeight="256" />
+          <Insets left="256" top="256" right="-256" bottom="-256" />
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/olegbl/PinHelper__3259",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "olegbl",
+  "canonical_id": "esoui:3259",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3259",
+  "deleted": false,
+  "directories": [
+    "PinHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3259/",
+  "fingerprint": "49987db371e6699a3fa6be224d40f9d0a04e4859ff5644e5475dd1c6ef41a988",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11096.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11095.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11097.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3259",
+  "source_url": "https://www.esoui.com/downloads/info3259-PinHelper.html",
+  "stats": {
+    "downloads": 5422,
+    "favorites": 5,
+    "monthly_downloads": 20
+  },
+  "title": "PinHelper",
+  "updated_at": 1641774843000,
+  "version": "1.06"
+}

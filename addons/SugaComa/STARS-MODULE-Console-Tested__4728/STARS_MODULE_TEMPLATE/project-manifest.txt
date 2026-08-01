@@ -1,0 +1,37 @@
+## Title: Project Name
+## Description: Describe the addon and the STARS Journal content it provides.
+## APIVersion: 101049 101050
+## Author: Your Name
+## Version: 0.0.1
+## SavedVariables: ProjectName_SV
+## DependsOn: LibSTARSConnect
+## OptionalDependsOn: STARS
+
+; DISCLAIMER:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls(r) and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms
+
+; Root configuration must load first.
+config.lua
+
+; Reusable STARS connection layer. Do not put project-specific code here.
+STARSConnect/Developer/Diagnostics.lua
+STARSConnect/Core/Events.lua
+STARSConnect/Core/State.lua
+STARSConnect/Core/Controller.lua
+
+; Project-specific behaviour loads before reusable data/UI adapters.
+Project.lua
+STARSConnect/Records/Records.lua
+STARSConnect/UI/HUD.lua
+STARSConnect/UI/Presentations.lua
+
+; Fixed startup file.
+Main.lua
+
+; Rename this manifest to match the addon folder, for example ProjectName.addon.
+; Delete this final instruction line from the finished addon.

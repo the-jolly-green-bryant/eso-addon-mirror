@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Negifis/SmartGear---Intelligent-Gear-Advisor__4478",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Negifis",
+  "canonical_id": "esoui:4478",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4478",
+  "deleted": false,
+  "directories": [
+    "SmartGear"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4478/",
+  "fingerprint": "6d512f581ff06a400b7ef6d638ac13caaa7d2cc45a70ed9564daf2b38ad386f6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15604.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15605.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15603.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4478",
+  "source_url": "https://www.esoui.com/downloads/info4478-SmartGear-IntelligentGearAdvisor.html",
+  "stats": {
+    "downloads": 275,
+    "favorites": 1,
+    "monthly_downloads": 45
+  },
+  "title": "SmartGear - Intelligent Gear Advisor",
+  "updated_at": 1774786894000,
+  "version": "1.1.1"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/STUDLETON/Stud-s-Group-Finder-Tweaks__4118",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "STUDLETON",
+  "canonical_id": "esoui:4118",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4118",
+  "deleted": false,
+  "directories": [
+    "StudsGroupFinderTweaks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4118/",
+  "fingerprint": "f59ee4cf7713626a572e4d6ea8068fd58d49ac535c12c18dd64544c6557b13c0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14059.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4118",
+  "source_url": "https://www.esoui.com/downloads/info4118-StudsGroupFinderTweaks.html",
+  "stats": {
+    "downloads": 661,
+    "favorites": 2,
+    "monthly_downloads": 27
+  },
+  "title": "Stud's Group Finder Tweaks",
+  "updated_at": 1747976572000,
+  "version": "1.0.0"
+}

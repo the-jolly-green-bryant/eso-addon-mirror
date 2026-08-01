@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/stybbe/Only-Cast-Crystal-Fragments-Proc__2577",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "stybbe",
+  "canonical_id": "esoui:2577",
+  "category_id": "58",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2577",
+  "deleted": false,
+  "directories": [
+    "OnlyCastCrystalFragmentsProc"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2577/",
+  "fingerprint": "297806c5696b7a3cead418477bfb116cfcfbc4fc5f887bcbca8fd439e39f081b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2577",
+  "source_url": "https://www.esoui.com/downloads/info2577-OnlyCastCrystalFragmentsProc.html",
+  "stats": {
+    "downloads": 34468,
+    "favorites": 35,
+    "monthly_downloads": 95
+  },
+  "title": "Only Cast Crystal Fragments Proc",
+  "updated_at": 1629747618000,
+  "version": "1.7"
+}

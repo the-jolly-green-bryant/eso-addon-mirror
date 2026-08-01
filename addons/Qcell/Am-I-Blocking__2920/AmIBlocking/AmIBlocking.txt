@@ -1,0 +1,10 @@
+## Title: AmIBlocking
+## Version: 2.7
+## AddOnVersion: 27
+## Author: |cFF4500Q|r|cFF6200c|r|cFF7F00e|r|cFF9C00l|r|cFFB900l|r
+## DependsOn: LibAddonMenu-2.0
+## APIVersion: 100034 101031 101032
+## SavedVariables: AmIBlockingSavedVariables
+
+AmIBlocking.xml
+AmIBlocking.lua

@@ -1,0 +1,8 @@
+## Title: HarvestMap-DLC-Zones
+## Author: Shinni
+## Description: This HarvestMap-module is used to store data for zones that belong to DLCs or Chapters
+## DependsOn: HarvestMap
+## AddOnVersion: 31501
+## APIVersion: 101049 101050
+## SavedVariables: HarvestDLC_SavedVars
+## DisableSavedVariablesAutoSaving: 1

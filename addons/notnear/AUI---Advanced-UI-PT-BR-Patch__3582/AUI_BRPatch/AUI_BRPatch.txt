@@ -1,0 +1,8 @@
+## Title: |c77ee02Advanced UI|r Patch BR
+## APIVersion: 101036
+## Version: 1.0.0
+## AddOnVersion: 100
+## Author: |cCC99FFnotnear|r
+## DependsOn: AUI EsoBR
+
+L10n/$(language).lua

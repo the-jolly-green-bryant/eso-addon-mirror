@@ -1,0 +1,64 @@
+<GuiXml>
+    <Controls>
+		<TopLevelControl
+			name="CraftingStationSpCpDisplayNinja_UI"
+			clampedToScreen="false" 
+			mouseEnabled="true" 
+			movable="true" 
+			hidden="true"
+		>
+
+			<Dimensions x="192" y="32" />
+			<Anchor
+				point="TOPLEFT"
+				relativePoint="TOPLEFT" 
+				relativeTo="GuiRoot" 
+				offsetX="0" 
+				offsetY="0"
+			/>
+
+			<OnMouseUp>
+				CraftingStationSpCpDisplayNinja_UI_SavePosition()
+			</OnMouseUp>
+
+            <Controls>
+				<Backdrop name="$(parent)_BGDark" alpha="0.5" inherits="ZO_ThinBackdrop"/>
+
+				<Button name="$(parent)_OpenSettings" clickSound="Click" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="8" />
+					<Dimensions x="48" y="32"/>
+					<OnClicked>
+						CraftingStationSpCpDisplayNinja_UI_OnClickOpenSettings()
+					</OnClicked>
+					<Controls>
+						<Texture name="$(parent)Texture" textureFile="/esoui/art/menubar/gamepad/gp_playermenu_icon_settings.dds" color="CCAA1A">
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+							<Dimensions y="32" x="32"/>
+						</Texture>
+					</Controls>
+				</Button>
+
+                <Label name="$(parent)_BasicSkillLevel" font="ZoFontWinH4" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="B">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="3"/>
+                    <Dimensions y="32" x="48"/>
+                </Label>
+
+                <Label name="$(parent)_ExtractingSkillLevel" font="ZoFontWinH4" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="E">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="3"/>
+                    <Dimensions y="32" x="48"/>
+                </Label>
+                <Label name="$(parent)_MeticulousDisassemblyLevel" font="ZoFontWinH4" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="M">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="3"/>
+                    <Dimensions y="32" x="48"/>
+                </Label>
+                <Label name="$(parent)_ImprovingSkillLevel" font="ZoFontWinH4" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="I">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="3"/>
+                    <Dimensions y="32" x="48"/>
+                </Label>
+				
+            </Controls>
+			
+
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

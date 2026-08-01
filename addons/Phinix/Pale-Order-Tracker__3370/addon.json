@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Phinix/Pale-Order-Tracker__3370",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phinix",
+  "canonical_id": "esoui:3370",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3370",
+  "deleted": false,
+  "directories": [
+    "RotPO_Tracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3370/",
+  "fingerprint": "97b74f546b64783c94addb95752e08cda7c15c29cc11e0a91a8461751b765ce5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11488.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11489.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3370",
+  "source_url": "https://www.esoui.com/downloads/info3370-PaleOrderTracker.html",
+  "stats": {
+    "downloads": 2428,
+    "favorites": 3,
+    "monthly_downloads": 11
+  },
+  "title": "Pale Order Tracker",
+  "updated_at": 1652962615000,
+  "version": "1.0"
+}

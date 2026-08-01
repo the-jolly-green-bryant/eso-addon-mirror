@@ -1,0 +1,26 @@
+<GuiXml>
+	<Animations>
+		<AnimationTimeline name="TranslateAnimation">
+			<Animations>
+				<TranslateAnimation />
+			</Animations>
+		</AnimationTimeline>
+		
+		<AnimationTimeline name="AlphaAnimation">
+			<Animations>
+				<AlphaAnimation />
+			</Animations>
+		</AnimationTimeline>
+	</Animations>
+
+	<Controls>
+		<TopLevelControl name="TopLevelControl" virtual="true" resizeToFitDescendents="true" alpha="0" clampedToScreen="true">
+		<Dimensions x="700" y="35" />
+			<Controls>
+				<Label name="$(parent)Label" wrapMode="TRUNCATE" verticalAlignment="CENTER" >
+					<Anchor offsetX="20" offsetY="70" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>	
+</GuiXml>

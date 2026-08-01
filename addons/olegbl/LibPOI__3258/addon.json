@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/olegbl/LibPOI__3258",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "olegbl",
+  "canonical_id": "esoui:3258",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3258",
+  "deleted": false,
+  "directories": [
+    "LibPOI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3258/",
+  "fingerprint": "692c42059f5826861295cb2b5d5810d00964b04b5f2033b20cadc8c79da0a1f5",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3258",
+  "source_url": "https://www.esoui.com/downloads/info3258-LibPOI.html",
+  "stats": {
+    "downloads": 60888,
+    "favorites": 7,
+    "monthly_downloads": 401
+  },
+  "title": "LibPOI",
+  "updated_at": 1641774684000,
+  "version": "1.02"
+}

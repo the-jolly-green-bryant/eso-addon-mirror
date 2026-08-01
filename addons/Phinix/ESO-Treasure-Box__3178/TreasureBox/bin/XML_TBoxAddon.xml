@@ -1,0 +1,9 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="TBoxAddon" tier="HIGH" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="true">
+			<Anchor point="CENTER"/>
+			<Controls>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

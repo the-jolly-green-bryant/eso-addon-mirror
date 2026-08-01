@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_HUD_HOUSING">
+    <Category name="Target Dummy Tools">
+      <Action name="TARGETDUMMYTOOLS_RESETDUMMY">
+		    <Up>TargetDummyTools.ResetDummy()</Up>
+      </Action>
+      <Action name="TARGETDUMMYTOOLS_RESETALLDUMMIES">
+        <Up>TargetDummyTools.ResetAllDummies()</Up>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

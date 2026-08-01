@@ -1,0 +1,40 @@
+V1.0.5 -- 2019/05/17
+- API bump for Elsweyr
+- Made LibAddonMenu2 an external dependency you need to hvae this addon installed.
+
+V1.0.4 -- 2019/03/03
+- API bump for Wrathstone.
+
+V1.0.3
+- API bump for Wolfhunter.
+- Now correctly iterating quests, and as a result, writ display is now accurate on login, quest log full and upon delivery!
+
+V1.0.2
+- Fixed problem with wrong language strings being referenced making it appear as if the addon was not registering writ completions.
+
+V1.0.1
+- Fixed another bug in the part of the code that determines if writs are done or not. Hopefully that is the last of the bugs that surfaced for Provisioning bugs!
+
+V1.0.0
+- Revived PXWritStatus and it is compatible with Summerset.
+
+V0.0.6
+- Removed LibAddonMenu-2.0.txt file as it could potentially cause problems loading the global addon. Thanks to sirinsidiator for reporting this. Please note that this addon is discontinued and the functionality contained in this addon, is also available in the PhaeroX Info Panel addon.
+
+V0.0.5
+- Added settings entry which you find under Settings->Addons->PXWritStatus
+- Added setting to change the color of the font that is displayed.
+- Added setting to scale the size of the display.
+- Added setting to toggle whether or not to show the last update date and time at the top.
+
+V0.0.4
+- Removed accidentally added git files.
+
+V0.0.3
+- Now comparing quests to RepeatType and QuestType instead of fixed english quest names, hopefully making this addon work for any language. Let me know if there are issues with other languages.
+
+V0.0.2
+- Corrected Zip file to contain the addon folder.
+
+V0.0.1
+- First version.

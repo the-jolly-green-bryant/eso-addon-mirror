@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Shissu/Shissu-s-Guild-Tools__910",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shissu",
+  "canonical_id": "esoui:910",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:910",
+  "deleted": false,
+  "directories": [
+    "ShissuAutoAFK",
+    "ShissuBlackList",
+    "ShissuChat",
+    "ShissuColor",
+    "ShissuCompareMember",
+    "ShissuContextMenu",
+    "ShissuDonateFee",
+    "ShissuFramework",
+    "ShissuGuildHome",
+    "ShissuGuildTools",
+    "ShissuHistory",
+    "ShissuHistoryScanner",
+    "ShissuMemberStatus",
+    "ShissuNotebook",
+    "ShissuNotifications",
+    "ShissuObservePlayer",
+    "ShissuPlayerObservation",
+    "ShissuProvisionMember",
+    "ShissuRoster",
+    "ShissuTeleporter",
+    "ShissuTeleporterMap",
+    "ShissuWelcome"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl910/",
+  "fingerprint": "f12cb8e5f8fbf62690a27885e6cb2151977af64d1ae678e47ed5ce6c52186a56",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5347.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2837.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5344.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2835.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2833.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5346.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5345.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3301.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "910",
+  "source_url": "https://www.esoui.com/downloads/info910-ShissusGuildTools.html",
+  "stats": {
+    "downloads": 187030,
+    "favorites": 130,
+    "monthly_downloads": 234
+  },
+  "title": "Shissu's Guild Tools",
+  "updated_at": 1608408863000,
+  "version": "3.5.19-2"
+}

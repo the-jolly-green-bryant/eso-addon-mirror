@@ -1,0 +1,7 @@
+## Title: SpentSkillPoints
+## Author: Shinni
+## Contributors:  TemporalPersonage
+## Version: 1.24
+## APIVersion: 101046
+
+SpentSkillPoints.lua

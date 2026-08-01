@@ -1,0 +1,30 @@
+<!-- To get the XML to load properly, exit out of game and reload client -->
+<!-- More information on controls: https://wiki.esoui.com/Controls#Control -->
+<GuiXml> <!-- Wrappter tag for any XML files used for constructing ESO UI elements -->
+	<Controls> <!-- Holds any definitions of controls
+					Any control which isn't a child of another control is a TopLevelControl;
+					the highest level of organization of elements 	-->
+		<TopLevelControl name="FightingIndicator" mouseEnabled="true" movable="true" clampToScreen="true" hidden="true">
+		<!-- The name of our text box is "FightingIndicator" -->
+			<Dimensions x="200" y="25" /> <!-- Specify the size of the control -->
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+			<!-- Defines how various controls should be positioned relative to one another -->
+			
+			<OnMoveStop>
+				SimpleBox.OnIndicatorMoveStop()
+			</OnMoveStop>
+			<!-- Had to completely get out of the game and then restart client before this worked -->
+			
+			<Controls> <!-- Child controls of our TopLevelControl -->
+				<Label 	name="$(parent)Output" width="200" height="25" font="ZoFontWinH1"
+						inheritAlpha="true" color="FF0000" wrapMode="TRUNCATE" verticalAlignment="TOP"
+						horizontalAlignment="CENTER" text="Fighting!">
+				<!-- A label is a piece of text that will be rendered as part of a UI element -->
+				<!-- In this case our label is named "FightingIndicatorOutput" -->
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+					<!-- This anchor makes the label line up with its parent control -->
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

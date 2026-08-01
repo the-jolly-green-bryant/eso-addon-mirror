@@ -1,0 +1,19 @@
+## Title: Qcell's Dreadsail Reef Helper
+## Description: Additional alerts for Dreadsail Reef
+## Author: |cFF4500Q|r|cFF6200c|r|cFF7F00e|r|cFF9C00l|r|cFFB900l|r
+## DependsOn: CombatAlerts LibAddonMenu-2.0
+## OptionalDependsOn: OdySupportIcons 
+## Version: 2.0.3
+## APIVersion: 101041
+## SavedVariables: QcellDreadsailReefHelperSavedVariables
+
+QcellDreadsailReefHelper.lua
+QcellDreadsailReefHelperData.lua
+QcellDreadsailReefHelperUI.lua
+QcellDreadsailReefHelperUtil.lua
+QcellDreadsailReefHelperMenu.lua
+boss/Lylanar.lua
+boss/ReefGuardian.lua
+boss/Taleria.lua
+boss/Trash.lua
+QcellDreadsailReefHelper.xml

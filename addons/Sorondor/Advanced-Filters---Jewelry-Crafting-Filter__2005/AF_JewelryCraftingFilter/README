@@ -1,0 +1,5 @@
+DISCLAIMER: This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+This is a plugin using the Advanced Filters extensible dropdown filter system. It adds Jewelry Crafting materials filters that can be accessed when Materials >> All is selected.
+
+This add-on was originally intended only as a stopgap until integrated functionality (new subfilter button) was added to Advanced Filters. However, viewing all Jewelry Crafting items in a single location is useful enough that it'll probably stick around even after Advanced Filters is fully updated.

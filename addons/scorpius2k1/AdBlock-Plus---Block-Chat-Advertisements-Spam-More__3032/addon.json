@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/scorpius2k1/AdBlock-Plus---Block-Chat-Advertisements-Spam-More__3032",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "scorpius2k1",
+  "canonical_id": "esoui:3032",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3032",
+  "deleted": false,
+  "directories": [
+    "AdBlockPlus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3032/",
+  "fingerprint": "8c3288caf4d15b5e831045d86a6a786cbf419221910bee1eaaed82333a15985a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10209.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10204.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10205.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10210.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10211.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10208.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10207.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3032",
+  "source_url": "https://www.esoui.com/downloads/info3032-AdBlockPlus-BlockChatAdvertisementsSpamMore.html",
+  "stats": {
+    "downloads": 10316,
+    "favorites": 28,
+    "monthly_downloads": 106
+  },
+  "title": "AdBlock Plus - Block Chat Advertisements, Spam, & More!",
+  "updated_at": 1661960452000,
+  "version": "1.7"
+}

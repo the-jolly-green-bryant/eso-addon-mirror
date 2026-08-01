@@ -1,0 +1,6 @@
+2026.07.30
+- Removed companion taunt logic for increased performance due to there being 6 different taunts they can possibly use.
+- Misc text output tweaks.
+** POSSIBLE FUTURE OPTIONS **
+- Auto com res?
+

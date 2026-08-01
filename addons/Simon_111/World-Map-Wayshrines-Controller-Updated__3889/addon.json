@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Simon_111/World-Map-Wayshrines-Controller-Updated__3889",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Simon_111",
+  "canonical_id": "esoui:3889",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3889",
+  "deleted": false,
+  "directories": [
+    "WorldMapWayshrinesController"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3889/",
+  "fingerprint": "da462e95bc27b89080a05accd6c1ad29c5be7072012b3998e41906ecbd437284",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13198.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3889",
+  "source_url": "https://www.esoui.com/downloads/info3889-WorldMapWayshrinesControllerUpdated.html",
+  "stats": {
+    "downloads": 3044,
+    "favorites": 3,
+    "monthly_downloads": 31
+  },
+  "title": "World Map Wayshrines Controller Updated",
+  "updated_at": 1717799063000,
+  "version": "1.9.1"
+}

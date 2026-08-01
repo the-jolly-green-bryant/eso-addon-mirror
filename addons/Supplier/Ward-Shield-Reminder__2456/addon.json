@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Supplier/Ward-Shield-Reminder__2456",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Supplier",
+  "canonical_id": "esoui:2456",
+  "category_id": "58",
+  "compatibility": [
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    }
+  ],
+  "content_id": "esoui:2456",
+  "deleted": false,
+  "directories": [
+    "WardReminder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2456/",
+  "fingerprint": "9925a0bc4b07bec2a3c88a470d47e9c7d09d83dddd80eb1d08cbd5f5f64ada58",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8383.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8384.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2456",
+  "source_url": "https://www.esoui.com/downloads/info2456-WardShieldReminder.html",
+  "stats": {
+    "downloads": 6753,
+    "favorites": 3,
+    "monthly_downloads": 22
+  },
+  "title": "Ward Shield Reminder",
+  "updated_at": 1567783535000,
+  "version": "1.1"
+}

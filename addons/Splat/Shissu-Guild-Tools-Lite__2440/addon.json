@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Splat/Shissu-Guild-Tools-Lite__2440",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Splat",
+  "canonical_id": "esoui:2440",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:2440",
+  "deleted": false,
+  "directories": [
+    "ShissuAutoAFK",
+    "ShissuBlackList",
+    "ShissuChat",
+    "ShissuColor",
+    "ShissuCompareMember",
+    "ShissuContextMenu",
+    "ShissuDonateFee",
+    "ShissuFramework",
+    "ShissuGuildHome",
+    "ShissuGuildTools",
+    "ShissuHistory",
+    "ShissuHistoryScanner",
+    "ShissuMemberStatus",
+    "ShissuNotebook",
+    "ShissuNotifications",
+    "ShissuProvisionMember",
+    "ShissuRoster",
+    "ShissuSuiteManager",
+    "ShissuTeleporter",
+    "ShissuTeleporterMap",
+    "ShissuWelcome"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2440/",
+  "fingerprint": "1406187c1b471096b44d47cb40725484d186ab11469c6d4cccd6513d85aa9cb9",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2440",
+  "source_url": "https://www.esoui.com/downloads/info2440-ShissuGuildToolsLite.html",
+  "stats": {
+    "downloads": 30349,
+    "favorites": 19,
+    "monthly_downloads": 15
+  },
+  "title": "Shissu Guild Tools Lite",
+  "updated_at": 1717704561000,
+  "version": "1.2"
+}

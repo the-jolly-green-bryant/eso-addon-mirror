@@ -1,0 +1,6 @@
+## Title: MirrorlandGuildHalls
+## Author: Plotgraph
+## Version: 0.0.1
+## APIVersion: 100000
+## Edited @MechaN1ck 11/02/2021
+MirrorlandGuildHalls.lua

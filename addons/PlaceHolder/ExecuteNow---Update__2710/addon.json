@@ -1,0 +1,70 @@
+{
+  "archive_path": "addons/PlaceHolder/ExecuteNow---Update__2710",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "PlaceHolder",
+  "canonical_id": "esoui:2710",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2710",
+  "deleted": false,
+  "directories": [
+    "ExecuteNow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2710/",
+  "fingerprint": "fe059f969d2f99824416f69b18cbde77c2bff603ef5cf30bfcb00401670e5046",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9178.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9179.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2710",
+  "source_url": "https://www.esoui.com/downloads/info2710-ExecuteNow-Update.html",
+  "stats": {
+    "downloads": 12038,
+    "favorites": 13,
+    "monthly_downloads": 29
+  },
+  "title": "ExecuteNow - Update",
+  "updated_at": 1653453936000,
+  "version": "0.3.7"
+}

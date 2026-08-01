@@ -1,0 +1,11 @@
+## Title: Qcell's Repair
+## Description: Repairs your gear, simple as that. No crashes.
+## Author: |cFF4500Q|r|cFF6200c|r|cFF7F00e|r|cFF9C00l|r|cFFB900l|r
+## DependsOn: LibAddonMenu-2.0
+## Version: 1.0
+## APIVersion: 101034
+## SavedVariables: QcellRepairSavedVariables
+
+QcellRepair.lua
+QcellRepairMenu.lua
+bindings.xml

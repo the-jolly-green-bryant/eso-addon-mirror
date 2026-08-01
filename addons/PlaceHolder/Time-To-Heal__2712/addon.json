@@ -1,0 +1,70 @@
+{
+  "archive_path": "addons/PlaceHolder/Time-To-Heal__2712",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "PlaceHolder",
+  "canonical_id": "esoui:2712",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2712",
+  "deleted": false,
+  "directories": [
+    "TimeToHeal"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2712/",
+  "fingerprint": "788ac73df129a30d30e99c7b137e12526cc2a7d4a157c208f313e196b5a1cdbb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9183.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9182.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2712",
+  "source_url": "https://www.esoui.com/downloads/info2712-TimeToHeal.html",
+  "stats": {
+    "downloads": 10621,
+    "favorites": 8,
+    "monthly_downloads": 164
+  },
+  "title": "Time To Heal",
+  "updated_at": 1653453730000,
+  "version": "1.0.8"
+}

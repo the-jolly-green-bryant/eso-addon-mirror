@@ -1,0 +1,47 @@
+## Title: AetheriusBadgeFilter
+## Author: sirinsidiator
+## Version: 1.11.0
+## APIVersion: 101033 101034
+## AddOnVersion: 20
+## DependsOn: LibCustomMenu>=680 LibGetText>=10
+## SavedVariables: AetheriusBadgeFilter_Data
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+StartUp.lua
+i18n/en.lua
+i18n/$(language).lua
+FilterWindow.lua
+BadgeFilter.lua
+MemberNoteEditor.lua
+Controls.xml
+data/AetheriusEight.lua
+data/AetheriusGuard.lua
+data/AetheriusTrade.lua
+data/ALDMERI.lua
+data/ArsNecandi.lua
+data/BlackHorseCourier.lua
+data/BoethiahsReapers.lua
+data/CoinsGuilds.lua
+data/Constellation.lua
+data/EternalForestMerchantry.lua
+data/Hanedan.lua
+data/HausWinterfell.lua
+data/HungerForce.lua
+data/ImperialTradingCompany.lua
+data/Inevitable.lua
+data/JustTraders.lua
+data/NightingalesUtopia.lua
+data/NirnTraders.lua
+data/SiyahAtliKurye.lua
+data/TamrielsEmporium.lua
+data/TamrielStockExchange.lua
+data/Tesall.lua
+data/TheMisadventurersLeague.lua
+data/TheNobleMerchants.lua
+data/WorldAuctionHouse.lua
+data/ZenitharsTradingHouse.lua

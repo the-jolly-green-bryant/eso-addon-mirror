@@ -1,0 +1,475 @@
+Complete Thievery / Legerdemain guide 
+(with statistics, images, how much money can you earn)
+
+
+Before we begin - note that all numbers displayed in this thread are results 
+of experiments. With over 1800 pickpockets, 300+ safeboxes and 3000+ items 
+stolen from the container just for the purpose of this guide, I believe these 
+numbers are fairly accurate. The exact item distribution might be slightly 
+different in Zenimax code due to luck factor.
+
+The reason I'm writing this guide is because I had no idea how Legerdemain 
+skill affects item quality. I felt the items were a bit better with higher 
+skill, but had no solid proof, so I begun a series of experiments with 
+characters of different levels and legerdemain skill and marked everything 
+down in my notebook. Note: I do not own Thieves guild DLC, so I do not know 
+if this skill line affects loot.
+
+Most people swear by daily crafting writs, and while that really is an 
+extremely good money-making method (4600 gold in 5-10 minutes per character 
+sounds nice), thieving can really match it, especially for newer players 
+(since as you will see, most of the thievery depends only on Legerdemain, 
+and not player levels), as low level players get very little gold from 
+crafting quests.
+
+
+Safeboxes
+
+There are 4 different levels of safeboxes: Simple, Intermediate, Advanced 
+and Master. While higher ones are harder to open, I have not actually 
+noticed any change in the items they drop.
+
+Each safebox (unrelated to level of safebox) drops gold based on character 
+level. Fortune seeker (passive champion skill, available at Rank 10 Shadow 
+tree) increases gold received this way by 50%. Character with Fortune 
+seeker will find 106 gold at level 50 in a safebox.
+
+Aside from gold, each safebox contains a stolen item of green or blue 
+quality (and maybe purple, but I haven't encountered it while making 
+this guide).
+
+There is another passive champion skill - Treasure Hunter which should 
+increase the quality of all locked chests by 1 (simple chest awards you 
+with intermediate loot; Intermediate chests award you with advanced loot, 
+and so on). However, in my experiments this skill made absolutely no changes. 
+Half of the safeboxes I opened were with this skill on, yet item quality 
+percentages remained the same in all cases. This might have something to 
+do with the following:
+
+Safebox levels made no difference in item quality either! 
+While I expected Master safebox to have better chance of getting blue items, 
+this did not happen. From 304 safeboxes I opened, I have received 239 green 
+items and 112 blue items. This puts us at following percentages:
+
+    68% chance of getting a green
+    32% chance of getting a blue
+    about 15% chance of getting two items at once (any combination)
+
+This percentage was true for all safebox levels individually (+/- 1-2 
+percent). I don't know if this was intentional, a bug, or simply bad 
+luck on my part.
+
+    At character level  4, safebox yields 194 gold on average.
+    At character level 50, safebox yields 278 gold on average.
+
+
+Pickpocketing
+
+There are three levels of pickpocketing difficulty based on type of NPC: 
+Easy, Normal, Hard. You can differentiate them based on % chance of 
+success, displayed in the link I provided. You can only pickpocket an 
+enemy 3 times before they become empty.
+
+Note: Since pickpocketing increases Legerdemain skill quite rapidly, 
+and with very low base chances of success at low Legerdemain levels, 
+I could not reliably test this aspect of thievery with a low Legerdemain 
+level character. I found out based on my results so far is that level 
+of this skill DOES affect quality of items looted, but to what degree, 
+I cannot say.
+
+Level of character does not affect quality of pickpocketing loot. Level 
+of Legerdemain skill does (see above). There is quite a noticeable 
+difference in the quality of items dropped between different NPC 
+difficulties at max level Legerdemain. Characters of all difficulties 
+can drop white, green, blue quality items (and possibly purple, though 
+I haven't encountered them either during making of this guide), as well 
+as lockpicks, recipes, food, and a few additional things.
+
+Something I have noticed is that each successive pickpocket on the same 
+person has better chance of awarding you with higher quality loot. Blue 
+items dropped on second or third attempt more often than on first. I 
+have summed up all items dropped in each category and divided by number 
+of said items to find the following:
+
+Easy Difficulty (Laborers, Beggars, Artisians, Fishers,...)
+    First pickpocket  yields 68 gold on average
+    Second pickpocket yields 77 gold on average
+    Third pickpocket  yields 80 gold on average*
+
+Normal Difficulty (Commoners, Scholars, Warriors, Sailors,...)
+    First pickpocket  yields 68 gold on average
+    Second pickpocket yields 83 gold on average
+    Third pickpocket  yields 117 gold on average
+
+Hard difficulty (Guards, Outlaws, Smiths, Watchmen, Bards, Nobles, Priests,...)
+    First pickpocket  yields 99 gold on average
+    Second pickpocket yields 113 gold on average
+    Third pickpocket  yields 130 gold on average
+
+*This particular number might be skewed - While I was doing Easy 
+difficulty targets, I started off by doing Rob-Rob-Kill routine 
+when I could, and going Rob-Rob-Rob when I couldn't kill the 
+target for whatever reason. I noticed that I gained higher quality 
+items on average when I robbed 3 times. I have not tested this 
+further yet, so I continued tests with Rob-Rob-Rob (-kill) technique 
+on Normal and Hard difficulty targets. Killing instead of robbing may 
+or may not reduce loot quality.
+
+This puts us at following:
+    Easy Target   = 225 gold total on average
+    Normal Target = 268 gold total on average
+    Hard Target   = 343 gold total on average
+
+At Legerdemain level 20 and Character level 50, this means that 
+Normal Target will yield almost as much gold as an average safebox! 
+The advantage safebox has over pickpocketing is that 106 gold will 
+be added to your inventory directly, and you will only receive 1 item 
+to sell rather than 3. When given a choice, you should loot safeboxes 
+if you have the time and nerves to compete with others (and only one 
+character, thus limited fencing number), and just pickpocket people 
+otherwise.
+
+One exception to everything above are Guards. Guards are considered 
+hard difficulty NPC's, therefore it's rather difficult to rob them 
+without raising an alarm, plus you will have to flee if you fail, since 
+they are immortal. However, guards are the most profitable targets, as 
+they have a very large chance to replace white item with Polished 
+Shilling (Abah's watch crafting ingredient, can be sold for ~100 gold on 
+EU/PC instead of ordinary 40 gold white item), and they have a very 
+small chance to drop a golden Wanted poster (worth between 3000-4000 
+gold on EU/PC).
+
+Some other characters drop items based on their profession (you can 
+get soul gem from a mage for example).
+
+Failing a pickpocket will put your target on alert, preventing you from 
+pickpocketing them again for around 60 seconds. Empty targets will 
+automatically replenish in 15-30 minutes, or when they die.
+
+u/DinoZavr notes the following in comment section: Vvardenfell NPCs have 
+a chance of providing one of 3 houses motif pages (which are 5..8K at 
+PC EU) and some specific NPCs have green/blue furnishing plans which 
+are available from pickpocketing only.
+
+
+Classic Thievery - Stealing items from containers
+
+Quality of items is not dependent on character level. Loot quality found 
+in containers differs A LOT between Legerdemain levels. A lot of chests 
+randomly spawn empty, or contain lockpicks. All chests that actually 
+contain something that can be sold have quality distribution as following:
+
+Legerdemain level 1
+    White quality - 77.2% chance
+    Green quality - 14.6% chance
+    Blue quality - 0.45% chance
+    Equipment - 6.4% chance (quality of equipment does not change with 
+		Legerdemain level, 20% to get green equipment at all times)
+    Furnishing - 1.35% chance
+
+Legerdemain level 10
+    White quality - 68.2% chance
+    Green quality - 22% chance
+    Blue quality - 2.2% chance
+    Equipment - 6.2% chance
+    Furnishing - 1.4% chance
+
+Legerdemain level 20
+    White quality - 45.5% chance
+    Green quality - 37.7% chance
+    Blue quality - 5.1% chance
+    Purple quality - 0.5% chance
+    Equipment - 9.83% chance*
+    Furnishing - 1.37% chance
+
+I do not know when purple items start to appear. The first one I 
+found was on legerdemain level 14 a long time ago. They can probably 
+appear sooner, at an abysmal rate. During the testing, I have 
+found 3 purple items at level 20 Legerdemain - Bone fragments from 
+the spine of Ashpit, Vial of Ashpit air and The Ruby Paragon.
+
+The average amount of gold per non-empty container that has white, 
+green, blue, purple item or equipment is as follows:
+
+    Legerdemain level  1 - 50.35 gold per such container on average
+    Legerdemain level 10 - 59.34 gold per such container on average
+    Legerdemain level 20 - 82.5 gold per such container on average
+
+NOTE: The section above dealt with only quality of loot in general, 
+and not for each type of container. I also ignored recipes, lockpicks, 
+empty containers and so on while doing this research just to show how 
+higher legerdemain increases chance of green, blue and purple items 
+at the expense of white items. The far more accurate price per container 
+is found bellow.
+
+Upon further research, I've noticed that many containers provide 
+different kinds of loot - ie. you are far more likely to find ingredients 
+in barrels, crates, sacks and cupboards than anywhere else. You are 
+unlikely to find weapons in cabinets, barrels, crates, sacks and 
+cupboards, and so on. I have started another research and here are results 
+based on 1400 stolen items with percentage chances of each drop:
+Average worth refers to the average price of all items found inside such 
+crates. It is affected by everything, including chance of said container 
+to be empty. Blue-Green worth refers to average price of all items found 
+inside if you only collect blue and green items as to avoid reaching daily 
+fencing limit. I will update this statistic once I have higher sample size.
+
+This data shows that you should try to find houses with high amounts of 
+dressers, cabinets, desks and wardrobes if you are going for blue-green 
+runs, otherwise any place that doesn't have prevalence of barrels, crates 
+and sacks does the trick.
+
+For ingredient farming, barrels, sacks, crates, and cupboards are the best.
+
+There is a very small chance to get a high-quality recipe or motif / 
+blueprint in containers you can steal from. This is because such containers 
+are very diluted with huge amounts of stolen items. If you are after 
+blueprints and such, you will have much better luck in containers that 
+are available to you (aka non-owned, non-stealable).
+
+While container stealing is the absolute fastest way to reach fencing 
+limit, and most reliable + safest way, you can earn far more money by 
+running safebox routes or pickpocketing hard difficulty targets.
+
+At level 20 legerdemain, since your ability to get green and blue items 
+surpasses appearance of white items through combined means of pickpocketing, 
+safeboxes and simple stealing, you can safely ignore white items and 
+head for green / blue mix for a lot more cash, or full blue items if 
+you have the time.
+
+A common sight after a 30 minute run, when you get to Legerdemain level 20.
+
+
+How to level up Legerdemain
+
+Leveling this skill is quite fast in the beginning as you only need 40 
+experience to reach level 2. However, this turns into an awful grind as 
+just getting from 19 to 20 takes 400 experience! I have no idea of the 
+total amount of experience needed, but it can still technically be achieved 
+in one day (although you really shouldn't try to).
+    Fencing (selling) a stolen item = +1
+    Laundering an item at fence = +1
+	
+    Pickpocketing an Easy target = +1
+    Pickpocketing a Normal target = +2
+    Pickpocketing a Hard target = +4
+	
+    Opening a Simple lock = +1
+    Opening an Intermediate lock = +2
+    Opening an Advanced lock = +4
+    Opening a Master lock = +8 (I think, I will have to check this one again)
+
+Note: Forcing locks open does not give you experience.
+
+From my experience, the absolute fastest way to level up is to just 
+keep running Safebox routes in cities. The link contains locations 
+of every single safebox in all major cities. If you are lucky and 
+there are no people around, you can take tons of safeboxes (look at 
+Vulkhel Guard for example, there are 15 lootboxes that give up to 54 
+Legerdemain skill for simply opening, plus at least 15 more for 
+selling all the loot in there; Pretty much any city works for this). 
+Know that this is the absolute best scenario, in truth a lot of people 
+are running these routes, so it is quite difficult to get a perfect 
+safebox city run. Try picking cities that are unpopulated. It is possible 
+to entirely level up Legerdemain to the max in one day by just using this.
+
+If you don't have patience to deal with others and don't want to 
+deal with trespassing, head to Daggerfall, Glenumbra and find these ships:
+
+Those ships are completely unguarded, you don't even have to sneak 
+while inside. Each ship has 2 cabins, and a whole section in the 
+middle (none of them are connected so you have to enter separately). 
+Take EVERYTHING inside, including ingredients, lockpicks, and style 
+materials. After you have completely looted those, just head to the 
+Outlaws Refuge (just east of the ships) and launder 0-15 gold items, 
+while fencing everything else. Repeat this after 15-20 minutes 
+(it takes that long to respawn containers) until you fill up fencing 
+and laundering slots.
+
+At legerdemain 17 you gain +50% pickpocket chance, which makes 
+pickpocketing the best way to move up to 20. You can get 12 
+legerdemain in 10 seconds by successfully pickpocketing any hard target.
+
+
+How much money can you earn through thievery daily?
+
+Maximum number of fenced items daily is 140 with maxed Legerdemain 
+skill tree. At level 20 Legerdemain, you will find blue items quite 
+often, and it is not uncommon for you to skip white and green items 
+in favor of blue ones (if your time allows it). That means you can 
+gain up to 35,000 gold daily per thieving character from fencing. 
+This number can be vastly different if you hunt safeboxes instead, 
+as a third of money gained from them does not affect fencing limit, 
+or if you happen to find purple items (worth 1500 gold) or wanted 
+posters (worth 3000-4000 gold).
+
+This can be a bit time consuming of course depending on your luck, 
+but at higher legerdemain levels you should ignore white items 
+anyway and just head for green / blue combination. With green items 
+alone, you will earn 14,000 gold per character daily.
+
+Of course, the exact number will be somewhere in between, and will 
+fluctuate every day. You should expect about 18,000 daily for 40 
+minutes of work. Here is the run I usually do and have found to 
+be effective:
+
+Anvil Castle (Requires Dark Brotherhood DLC) - each run through here 
+nets me about 50-90 items and takes 10-25 minutes depending if I 
+rob-rob-kill or just kill and loot.
+
+If you prefer safebox hunting, bear in mind that most cities have 
+at least 5-6 safeboxes, but can contain up to 26 safeboxes 
+(Wayrest, Stormhaven)! If you do a perfect Wayrest run, you will 
+net 7200 gold on average, at ANY level of Legerdemain.
+
+By far the most profitable (and most luck-dependent) thing to do 
+is to pickpocket guards. Since hard difficulty pickpocket targets 
+are worth 343 gold on average, you'd have to pickpocket them 63 
+times to reach Wayrest level of safeboxes. Bear in mind that you 
+are likely to find a gold Wanted poster worth 3000-4000 gold from 
+doing this, and 40 gold white items are often replaced with 
+Polished Shilling worth 100 gold, so average you get from a guard 
+is far higher than that (probably around 400 gold on average)!
+
+Of course, you shouldn't resort to a single method. There are many 
+places in the world where you can do all three at the same time, 
+and come out filthy rich.
+
+
+How to farm full blue items?
+
+If you have plenty of time and want to maximize your daily fencing 
+limit, you need to skip white and green items, and hunt blue items 
+only. Taking from everything I've written above, we have the following 
+chance of blue items appearing:
+
+    Containers - 5.1% chance
+    Safebox - 32% chance
+    Normal difficulty 2nd pickpocket - 5% chance
+    Normal difficulty 3rd pickpocket - 18% chance
+    Hard difficulty 2nd pickpocket - 16% chance
+    Hard difficulty 3rd pickpocket - 24% chance
+
+Farming hard difficulty targets yields 40% chance of acquiring 
+a blue item total but is the most dangerous way to go, as you 
+can rack up quite a bounty if you get caught. We don't want 
+that, as it completely contradicts the money we've earned by 
+going for full blue items. If you have multiple thief characters, 
+you could alternate between them and simply wait for the bounty 
+to fade away.
+
+
+Acquiring Furnishing from thievery
+
+I have not delved into this area, but thankfully u/HrabiaVulpes 
+in the comments section has provided the following info:
+
+Many furnishings can be obtained through pickpocketing specific 
+targets. So if you like furnishing your homes you may look into 
+pickpocketing specific people.
+
+Some examples I noticed:
+
+    Drunkards - mugs, bottles
+    Fishers - fishes, fishing rods
+    Guards - bounty sheets
+    Cultists - skulls
+    Outlaws - dice
+
+Stealing from desks will also fill your furnishing storage with 
+personal letters, ink, quills and signed contracts.
+
+Here is also a link on more pickpocketing-related furnishing 
+provided by u/benevolentbowd in the comments.
+
+
+How to create thieving character?
+
+Best thieves are Khajiit. They gain 3 meter detection radius 
+decrease with their passive racial abilities, and also +5% 
+pickpocket chance! This further helps with pickpocketing guards.
+
+Best class by far is Nightblade. Your shadow cloak ability is 
+a godsend and it's very, very difficult and time consuming to 
+try and do this without it. Your veiled strike upgrade, Concealed 
+Weapon, makes you move faster when invisible and sneaking.
+
+Best DLC to have is Dark Brotherhood. Thieves guild DLC adds nice 
+repeatable quests which will increase your gold generation for 
+sure, but Blade of Woe is a must for any stealthy character as 
+it considerably increases your clearing speed and reduces chance 
+of detection. They can't detect you if they are dead hehe. Not only 
+that, but you also get a Shadowy Supplier who provides you with free 
+daily Counterfeit Pardon Edicts (they instantly remove 500 bounty 
+from you). Thieves guild dailies also provide Counterfeit Pardon Edicts.
+
+I also recommend being a vampire for Dark Stalker and Unnatural Movement 
+passive abilities. The first one (combined with previously mentioned 
+concealed weapon) makes you pretty much move faster when invisible 
+than when you can be seen, and the second one helps SO MUCH when you 
+are being chased by guards. Just run in a straight line and you will 
+become invisible plus outrun their visibility shot.
+
+The best item sets for a thief are:
+
+    Night's Silence - if you cannot become a vampire, this will be very helpful.
+    Night Mother's Embrace - very useful for avoiding detection, 
+		especially when you are safebox hunting and invisibility can't help you.
+    Night Terror - same as above, but required effect needs only 3 
+		items instead of 5!
+    Vesture of Darloc Brae - With this, nightblade can be permanently 
+		invisible without ever running out of mana. If you are going 3 
+		piece Night Terror, get 4 piece Darloc for sneak bonus and you 
+		can fit in another full set.
+
+
+Closing
+
+I hope you enjoyed this guide and found it helpful! If you have any 
+questions, or would like me to test something out, feel free to 
+mention it in the comment and I'll do my best to reply.
+----
+There is another way to quickly acquire alot of stolen goods. The murder 
+farm in grahtwood. Have someone murder a ton of npcs and then sneak and 
+loot them. No bounty.
+----
+It's possible to find legendary loot in safeboxes... or at least I found 
+The shivering cheese in one in Bal foyen crafting area in an intermediate box.
+
+----
+Still: "Best thieves are Khajiit and Wood Elves. Both gain 3 meter 
+detection radius decrease with their passive racial abilities" is 
+wrong. With U21 (Wrathstone DLC | February 2019) Bosmer's 3m 
+detection radius reduction (Stealthy racial passive) was replaced 
+with Stealth detection radius by 3m (Hunter Eye racial passive). 
+So Wood Elves has lost their detection radius reduction. Patch 
+notes (there is also a developers comment on this change): 
+https://forums.elderscrollsonline.com/en/discussion/460633/pc-mac-patch-notes-v4-3-5-wrathstone-update-21
+
+Also it worths to note, that pickpocketing might be more profitable, 
+as Vvardenfell NPCs have a chance of providing one of 3 houses motif 
+pages (which are 5..8K at PC EU) and some specific NPCs have green/blue 
+furnishing plans which are available from pickpocketing only.
+
+Again, thank you for the guide. It is great you use your own experience 
+and share this.
+
+----
+
+and one more comment regarding stealth detection, if you please:
+
+Basically, using 3 overland sets reducing detection radius (namely: 
+3pcs of Night Terror (Stormhaven), 4pcs of Vesture of Darloc Brae 
+(N. Elsweyr), 5pcs of Night Mother's Embrace (Deshaan) renders toon 
+of any race barely invisible, however, i believe that at Murkmire 
+Celebration (Feb 2020) Guards detection radius was boosted without 
+any references in Patch Notes.. Or it might be only me?
+
+(My characters often steal in Murkmire for furnishing plans, as green 
+furnishing plans are traded for 6 digits prices: check Blueprint: 
+Murkmire Shelf, Reed or Design: Dragonfruit, Wax at TTC, to get my idea 
+(there are too few unowned containers in Murkmire and they are situated 
+deep in a distant dungeon, so that makes stealing the only time-efficient 
+option, despites plans drop rates from owned containers are lower than 
+from unowned ones), so i notices they got caught by guards way more often 
+since the supposed change).

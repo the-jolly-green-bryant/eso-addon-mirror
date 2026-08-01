@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Sharlikran/Importers-for-Master-Merchant-3.0__3334",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:3334",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3334",
+  "deleted": false,
+  "directories": [
+    "MasterMerchantImporters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3334/",
+  "fingerprint": "082c238d9c314c1ab3dd687a695aad793fdfe9f2578a24a639bc7abffe4821ae",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3334",
+  "source_url": "https://www.esoui.com/downloads/info3334-ImportersforMasterMerchant3.0.html",
+  "stats": {
+    "downloads": 9029,
+    "favorites": 3,
+    "monthly_downloads": 76
+  },
+  "title": "Importers for Master Merchant 3.0",
+  "updated_at": 1765987730000,
+  "version": "1.03"
+}

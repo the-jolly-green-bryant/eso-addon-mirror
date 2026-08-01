@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Phinix/Audio-Control__1390",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phinix",
+  "canonical_id": "esoui:1390",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1390",
+  "deleted": false,
+  "directories": [
+    "AudioControl"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1390/",
+  "fingerprint": "60822618466c7a52447aa46603051ec1ac1e0a138b600a5231776c56a3510fb2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11052.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4523.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1390",
+  "source_url": "https://www.esoui.com/downloads/info1390-AudioControl.html",
+  "stats": {
+    "downloads": 15648,
+    "favorites": 35,
+    "monthly_downloads": 34
+  },
+  "title": "Audio Control",
+  "updated_at": 1679164599000,
+  "version": "1.19"
+}

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Solinur/Constellations__1736",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Solinur",
+  "canonical_id": "esoui:1736",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:1736",
+  "deleted": false,
+  "directories": [
+    "Constellations"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1736/",
+  "fingerprint": "69f18524b4087ba6d34fd9b6f465152e7beb278b02c442ca7c2d6660332b9fd7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5723.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5724.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1736",
+  "source_url": "https://www.esoui.com/downloads/info1736-Constellations.html",
+  "stats": {
+    "downloads": 277287,
+    "favorites": 139,
+    "monthly_downloads": 98
+  },
+  "title": "Constellations",
+  "updated_at": 1605488096000,
+  "version": "1.1.6"
+}

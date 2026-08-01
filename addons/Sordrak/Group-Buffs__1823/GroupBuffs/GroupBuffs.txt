@@ -1,0 +1,33 @@
+## Title: GroupBuffs
+## APIVersion: 101042
+## AddOnVersion: 30
+## Version: 1.5.22
+## SavedVariables: GroupBuffsVars
+## Author: @s0rdrak, @Graham82 (PC / EU)
+## Description: This addon displayes specific buffs of other group members
+## DependsOn: LibAddonMenu-2.0
+
+#Lib/LibStub/LibStub.lua
+#Lib/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+#Lib/LibAddonMenu-2.0/controls/panel.lua
+#Lib/LibAddonMenu-2.0/controls/submenu.lua
+#Lib/LibAddonMenu-2.0/controls/button.lua
+#Lib/LibAddonMenu-2.0/controls/checkbox.lua
+#Lib/LibAddonMenu-2.0/controls/colorpicker.lua
+#Lib/LibAddonMenu-2.0/controls/custom.lua
+#Lib/LibAddonMenu-2.0/controls/description.lua
+#Lib/LibAddonMenu-2.0/controls/divider.lua
+#Lib/LibAddonMenu-2.0/controls/dropdown.lua
+#Lib/LibAddonMenu-2.0/controls/editbox.lua
+#Lib/LibAddonMenu-2.0/controls/header.lua
+#Lib/LibAddonMenu-2.0/controls/slider.lua
+#Lib/LibAddonMenu-2.0/controls/texture.lua
+#Lib/LibAddonMenu-2.0/controls/iconpicker.lua
+
+GroupBuffs.lua
+Lang/en.lua
+Lang/$(language).lua
+GroupBuffsData.lua
+GroupBuffsSound.lua
+GroupBuffsMenu.lua
+

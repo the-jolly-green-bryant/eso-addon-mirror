@@ -1,0 +1,8 @@
+## Title: Written Item Quality
+## Author: SatinderESO
+## Version: 1.0.1
+## APIVersion: 101049 101050
+## AddOnVersion: 1
+## Description: Displays the item quality as colored text in every item tooltip.
+
+WrittenItemQuality.lua

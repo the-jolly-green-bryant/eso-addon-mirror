@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Shoyru/Shoyru-s-House__4549",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shoyru",
+  "canonical_id": "esoui:4549",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4549",
+  "deleted": false,
+  "directories": [
+    "ShoyHouse"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4549/",
+  "fingerprint": "bc303f7a9c15360cd2e1c30a6daa7599c9cef5b5b15686cd76fe85a801fa2fb0",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4549",
+  "source_url": "https://www.esoui.com/downloads/info4549-ShoyrusHouse.html",
+  "stats": {
+    "downloads": 171,
+    "favorites": 0,
+    "monthly_downloads": 100
+  },
+  "title": "Shoyru's House",
+  "updated_at": 1777185465000,
+  "version": "1"
+}

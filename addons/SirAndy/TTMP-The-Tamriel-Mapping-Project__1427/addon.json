@@ -1,0 +1,58 @@
+{
+  "archive_path": "addons/SirAndy/TTMP-The-Tamriel-Mapping-Project__1427",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SirAndy",
+  "canonical_id": "esoui:1427",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1427",
+  "deleted": false,
+  "directories": [
+    "",
+    "TamrielMapping"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1427/",
+  "fingerprint": "3a647b898317678f92fbc2a03933fb34d6c0e4da236149872ff7eedbb606f13a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4637.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4638.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4639.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4640.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4642.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1427",
+  "source_url": "https://www.esoui.com/downloads/info1427-TTMPTheTamrielMappingProject.html",
+  "stats": {
+    "downloads": 107057,
+    "favorites": 128,
+    "monthly_downloads": 162
+  },
+  "title": "TTMP: The Tamriel Mapping Project",
+  "updated_at": 1623461211000,
+  "version": "3.5.1"
+}

@@ -1,0 +1,22 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|cFFAA33Stylich|r">
+            <Action name="SHOW_STL_WINDOW"><Down>Stylich.UI.ToggleMain()</Down></Action>
+            <Action name="APPLY_STL_SLOT_1"><Down>Stylich.UI.ApplySlot(1)</Down></Action>
+            <Action name="APPLY_STL_SLOT_2"><Down>Stylich.UI.ApplySlot(2)</Down></Action>
+            <Action name="APPLY_STL_SLOT_3"><Down>Stylich.UI.ApplySlot(3)</Down></Action>
+            <Action name="APPLY_STL_SLOT_4"><Down>Stylich.UI.ApplySlot(4)</Down></Action>
+            <Action name="APPLY_STL_SLOT_5"><Down>Stylich.UI.ApplySlot(5)</Down></Action>
+            <Action name="APPLY_STL_SLOT_6"><Down>Stylich.UI.ApplySlot(6)</Down></Action>
+            <Action name="APPLY_STL_SLOT_7"><Down>Stylich.UI.ApplySlot(7)</Down></Action>
+            <Action name="APPLY_STL_SLOT_8"><Down>Stylich.UI.ApplySlot(8)</Down></Action>
+            <Action name="APPLY_STL_SLOT_9"><Down>Stylich.UI.ApplySlot(9)</Down></Action>
+            <Action name="APPLY_STL_SLOT_10"><Down>Stylich.UI.ApplySlot(10)</Down></Action>
+            <Action name="APPLY_STL_SLOT_11"><Down>Stylich.UI.ApplySlot(11)</Down></Action>
+            <Action name="APPLY_STL_SLOT_12"><Down>Stylich.UI.ApplySlot(12)</Down></Action>
+            <Action name="APPLY_STL_SLOT_13"><Down>Stylich.UI.ApplySlot(13)</Down></Action>
+            <Action name="APPLY_STL_SLOT_14"><Down>Stylich.UI.ApplySlot(14)</Down></Action>
+            <Action name="APPLY_STL_SLOT_15"><Down>Stylich.UI.ApplySlot(15)</Down></Action>
+        </Category>
+    </Layer>
+</Bindings>

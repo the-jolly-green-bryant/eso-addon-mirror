@@ -1,0 +1,99 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CraftyStockListThreshold" hidden="true" mouseEnabled="true" movable="false" clampedToScreen="true">
+            <Dimensions x="300" y="140" />
+         
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+				
+				<Button name="$(parent)ButtonClose" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="20" y="20" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="5" />
+					<Textures normal="esoui/art/buttons/decline_up.dds"
+						mouseOver="esoui/art/buttons/decline_over.dds"/>
+					<OnClicked>
+						Crafty.CloseTH()
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,TOP,"Close")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				
+				<Label name="$(parent)ItemLink" font="ZoFontGameLargeBold" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
+                	<Dimensions x="250" y="32" />
+                </Label>
+
+				<Texture name="$(parent)ThresholdIcon" textureFile="/esoui/art/treeicons/tutorial_idexicon_charprogression_up.dds" tier="HIGH">
+					<Dimensions x="40" y="40"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ItemLink" relativePoint="BOTTOMLEFT" offsetX="-5" offsetY="5" />
+				</Texture>
+
+				<Backdrop name="$(parent)ThresholdAmount" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+                    <Dimensions x="80" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)ThresholdIcon" relativePoint="TOPRIGHT" offsetX="5" offsetY="3" />
+                    <Controls>
+                        <EditBox name="$(parent)ThresholdAmountText" textType="NUMERIC_UNSIGNED_INT" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" maxInputCharacters="6"/>
+                    </Controls>
+                </Backdrop>
+                
+                <Button name="$(parent)ButtonSave" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="30" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ThresholdAmount" relativePoint="TOPRIGHT" offsetX="10" offsetY="3" />
+					<Textures normal="esoui/art/buttons/accept_up.dds"
+						mouseOver="esoui/art/buttons/accept_over.dds"/>
+					<OnClicked>
+						Crafty.SetThreshold()
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,TOP,"Save")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonDelete" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="35" y="35" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ButtonSave" relativePoint="TOPRIGHT" offsetX="5" offsetY="-3" />
+					<Textures normal="EsoUI/Art/Inventory/inventory_tabIcon_trash_up.dds"
+						mouseOver="EsoUI/Art/Inventory/inventory_tabIcon_trash_over.dds"/>
+					<OnClicked>
+						Crafty.DeleteThreshold()
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,TOP,"Delete")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				
+				<Texture name="$(parent)Divider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+					<Dimensions x="300" y="4"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ThresholdIcon" relativePoint="BOTTOMLEFT" offsetY="10" />
+				</Texture>
+				<Texture name="$(parent)AlarmIcon" textureFile="esoui\art\lfg\lfg_healer_up_64.dds" tier="HIGH">
+					<Dimensions x="40" y="40"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+				</Texture>
+				
+				<Label name="$(parent)AlarmSwitch" mouseEnabled="true" font="ZoFontGameLargeBold" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="OFF">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)AlarmIcon" relativePoint="TOPRIGHT" offsetX="8" offsetY="9"/>
+                	<OnMouseUp>
+						Crafty.SetAlarm()
+					</OnMouseUp>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,TOP,"Toggle lootalarm")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+                </Label>
+
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/scorpius2k1/Randomote---Automatic-Manual-Random-Emotes-New-Extended-Personalities__3461",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "scorpius2k1",
+  "canonical_id": "esoui:3461",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3461",
+  "deleted": false,
+  "directories": [
+    "Randomote"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3461/",
+  "fingerprint": "1a1dafe369b3b75c3817c481ae776b35ec895b9272ba2c18565ec2e816db28b4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11827.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11825.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11826.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3461",
+  "source_url": "https://www.esoui.com/downloads/info3461-Randomote-AutomaticManualRandomEmotesNewExtendedPersonalities.html",
+  "stats": {
+    "downloads": 5461,
+    "favorites": 7,
+    "monthly_downloads": 55
+  },
+  "title": "Randomote - Automatic/Manual Random Emotes | New & Extended Personalities!",
+  "updated_at": 1662742099000,
+  "version": "1.3"
+}

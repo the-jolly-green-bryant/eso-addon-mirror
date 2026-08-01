@@ -1,0 +1,21 @@
+<GuiXml> 
+   <Controls>
+   <TopLevelControl name="FastRideWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">	
+		<Dimensions x="64" y="64" />
+		<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPCENTER" offsetX="0" offsetY="0"/>
+		<OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+		<OnMoveStop>FastRide:SavePosition()</OnMoveStop>
+      <Controls>
+         <Backdrop name="$(parent)BG" edgeColor="000000" centerColor="000000" alpha="0" >
+            <Dimensions x="60" y="60" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+        </Backdrop>
+ 
+		<Texture textureFile="FastRide/darkhorse.dds" name="$(parent)Indicator" hidden="false">
+            <Dimensions x="48" y="48" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+		</Texture>
+      </Controls>
+   </TopLevelControl>
+   </Controls>
+</GuiXml>

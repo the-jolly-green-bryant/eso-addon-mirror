@@ -1,0 +1,222 @@
+<GuiXml>
+	<Controls>
+<!----------------------------------------------------------------------------------------------------------------------------------------------------------
+Top-level control frame, backdrop, header, close and info buttons.
+----------------------------------------------------------------------------------------------------------------------------------------------------------->
+		<TopLevelControl name="PMAddon_MainFrame" tier="HIGH" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="252" y="72"/>
+			<Anchor point="CENTER"/>
+			<OnMoveStop>
+				PMAddon.XMLNavigation(02)
+			</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.9"/>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Tooltip name="$(parent)PoisonTooltip" inherits="ZO_ItemIconTooltip" hidden="true">
+					<OnInitialized>
+						PMAddon.XMLNavigation(04, nil, self)
+					</OnInitialized>
+				</Tooltip>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Button name="$(parent)CloseButton">
+					<Dimensions x="18" y="18"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" offsetY="-4"/>
+					<Textures
+						normal="/esoui/art/buttons/cancel_up.dds"
+						pressed="/esoui/art/buttons/cancel_over.dds"
+						mouseOver="/esoui/art/buttons/cancel_down.dds"
+						disabled="/esoui/art/buttons/cancel_down.dds"
+					/>
+					<OnClicked>
+						PMAddon.XMLNavigation(01)
+					</OnClicked>
+				</Button>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Button name="$(parent)PoisonSlot01">
+					<Dimensions x="48" y="48"/>
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="12" offsetY="0" />
+					<Textures
+						normal="/esoui/art/characterwindow/gearslot_poison.dds"
+						pressed="/esoui/art/characterwindow/gearslot_poison.dds"
+						mouseOver="/esoui/art/characterwindow/gearslot_poison.dds"
+						disabled="/esoui/art/characterwindow/gearslot_poison.dds"
+					/>
+					<OnMouseEnter>
+						PMAddon.XMLNavigation(03, 1, self, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						PMAddon.XMLNavigation(03, 1, self, 2)
+					</OnMouseExit>
+					<OnMouseUp>
+						if(upInside) then
+							PMAddon.XMLNavigation(11, 1, button)
+						end
+					</OnMouseUp>
+				</Button>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Label name="$(parent)PoisonSlot01_Stack" horizontalAlignment="CENTER" font="$(BOLD_FONT)|18|soft-shadow-thin" color="FFFFFF">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PoisonSlot01" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="1" />
+				</Label>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot01_EquipAb" textureFile="/PoisonMaster/bin/borderA.dds">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="CENTER" relativeTo="$(parent)PoisonSlot01" relativePoint="CENTER" offsetX="2" offsetY="2" />
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot01_EquipOb" textureFile="/PoisonMaster/bin/borderO.dds">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="CENTER" relativeTo="$(parent)PoisonSlot01" relativePoint="CENTER" offsetX="2" offsetY="2" />
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot01_EquipAc" textureFile="/PoisonMaster/bin/equipA.dds">
+					<Dimensions x="16" y="16"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)PoisonSlot01" relativePoint="TOPRIGHT"/>
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot01_EquipOc" textureFile="/PoisonMaster/bin/equipO.dds">
+					<Dimensions x="16" y="16"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)PoisonSlot01" relativePoint="TOPRIGHT"/>
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Button name="$(parent)PoisonSlot02">
+					<Dimensions x="48" y="48"/>
+					<Anchor point="LEFT" relativeTo="$(parent)PoisonSlot01" relativePoint="RIGHT" offsetX="12" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/characterwindow/gearslot_poison.dds"
+						pressed="/esoui/art/characterwindow/gearslot_poison.dds"
+						mouseOver="/esoui/art/characterwindow/gearslot_poison.dds"
+						disabled="/esoui/art/characterwindow/gearslot_poison.dds"
+					/>
+					<OnMouseEnter>
+						PMAddon.XMLNavigation(03, 2, self, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						PMAddon.XMLNavigation(03, 2, self, 2)
+					</OnMouseExit>
+					<OnMouseUp>
+						if(upInside) then
+							PMAddon.XMLNavigation(11, 2, button)
+						end
+					</OnMouseUp>
+				</Button>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Label name="$(parent)PoisonSlot02_Stack" horizontalAlignment="CENTER" font="$(BOLD_FONT)|18|soft-shadow-thin" color="FFFFFF">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PoisonSlot02" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="1" />
+				</Label>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot02_EquipAb" textureFile="/PoisonMaster/bin/borderA.dds">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="CENTER" relativeTo="$(parent)PoisonSlot02" relativePoint="CENTER" offsetX="2" offsetY="2" />
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot02_EquipOb" textureFile="/PoisonMaster/bin/borderO.dds">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="CENTER" relativeTo="$(parent)PoisonSlot02" relativePoint="CENTER" offsetX="2" offsetY="2" />
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot02_EquipAc" textureFile="/PoisonMaster/bin/equipA.dds">
+					<Dimensions x="16" y="16"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)PoisonSlot02" relativePoint="TOPRIGHT"/>
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot02_EquipOc" textureFile="/PoisonMaster/bin/equipO.dds">
+					<Dimensions x="16" y="16"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)PoisonSlot02" relativePoint="TOPRIGHT"/>
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Button name="$(parent)PoisonSlot03">
+					<Dimensions x="48" y="48"/>
+					<Anchor point="LEFT" relativeTo="$(parent)PoisonSlot02" relativePoint="RIGHT" offsetX="12" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/characterwindow/gearslot_poison.dds"
+						pressed="/esoui/art/characterwindow/gearslot_poison.dds"
+						mouseOver="/esoui/art/characterwindow/gearslot_poison.dds"
+						disabled="/esoui/art/characterwindow/gearslot_poison.dds"
+					/>
+					<OnMouseEnter>
+						PMAddon.XMLNavigation(03, 3, self, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						PMAddon.XMLNavigation(03, 3, self, 2)
+					</OnMouseExit>
+					<OnMouseUp>
+						if(upInside) then
+							PMAddon.XMLNavigation(11, 3, button)
+						end
+					</OnMouseUp>
+				</Button>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Label name="$(parent)PoisonSlot03_Stack" horizontalAlignment="CENTER" font="$(BOLD_FONT)|18|soft-shadow-thin" color="FFFFFF">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PoisonSlot03" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="1" />
+				</Label>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot03_EquipAb" textureFile="/PoisonMaster/bin/borderA.dds">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="CENTER" relativeTo="$(parent)PoisonSlot03" relativePoint="CENTER" offsetX="2" offsetY="2" />
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot03_EquipOb" textureFile="/PoisonMaster/bin/borderO.dds">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="CENTER" relativeTo="$(parent)PoisonSlot03" relativePoint="CENTER" offsetX="2" offsetY="2" />
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot03_EquipAc" textureFile="/PoisonMaster/bin/equipA.dds">
+					<Dimensions x="16" y="16"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)PoisonSlot03" relativePoint="TOPRIGHT"/>
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot03_EquipOc" textureFile="/PoisonMaster/bin/equipO.dds">
+					<Dimensions x="16" y="16"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)PoisonSlot03" relativePoint="TOPRIGHT"/>
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Button name="$(parent)PoisonSlot04">
+					<Dimensions x="48" y="48"/>
+					<Anchor point="LEFT" relativeTo="$(parent)PoisonSlot03" relativePoint="RIGHT" offsetX="12" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/characterwindow/gearslot_poison.dds"
+						pressed="/esoui/art/characterwindow/gearslot_poison.dds"
+						mouseOver="/esoui/art/characterwindow/gearslot_poison.dds"
+						disabled="/esoui/art/characterwindow/gearslot_poison.dds"
+					/>
+					<OnMouseEnter>
+						PMAddon.XMLNavigation(03, 4, self, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						PMAddon.XMLNavigation(03, 4, self, 2)
+					</OnMouseExit>
+					<OnMouseUp>
+						if(upInside) then
+							PMAddon.XMLNavigation(11, 4, button)
+						end
+					</OnMouseUp>
+				</Button>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Label name="$(parent)PoisonSlot04_Stack" horizontalAlignment="CENTER" font="$(BOLD_FONT)|18|soft-shadow-thin" color="FFFFFF">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PoisonSlot04" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="1" />
+				</Label>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot04_EquipAb" textureFile="/PoisonMaster/bin/borderA.dds">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="CENTER" relativeTo="$(parent)PoisonSlot04" relativePoint="CENTER" offsetX="2" offsetY="2" />
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot04_EquipOb" textureFile="/PoisonMaster/bin/borderO.dds">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="CENTER" relativeTo="$(parent)PoisonSlot04" relativePoint="CENTER" offsetX="2" offsetY="2" />
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot04_EquipAc" textureFile="/PoisonMaster/bin/equipA.dds">
+					<Dimensions x="16" y="16"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)PoisonSlot04" relativePoint="TOPRIGHT"/>
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)PoisonSlot04_EquipOc" textureFile="/PoisonMaster/bin/equipO.dds">
+					<Dimensions x="16" y="16"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)PoisonSlot04" relativePoint="TOPRIGHT"/>
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,52 @@
+{
+  "archive_path": "addons/rkirgizov/KelaPadUI__2394",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "rkirgizov",
+  "canonical_id": "esoui:2394",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2394",
+  "deleted": false,
+  "directories": [
+    "",
+    "kpui_core",
+    "kpui_lang",
+    "libs",
+    "settings"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2394/",
+  "fingerprint": "c49e9bb48403a95fb088825c51e93c5f57f16065b9a1cd9bb0c91a8f62e9b5f2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9269.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9266.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9265.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9268.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9267.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9264.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9263.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9262.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2394",
+  "source_url": "https://www.esoui.com/downloads/info2394-KelaPadUI.html",
+  "stats": {
+    "downloads": 10645,
+    "favorites": 8,
+    "monthly_downloads": 65
+  },
+  "title": "KelaPadUI",
+  "updated_at": 1597253645000,
+  "version": "0.5a"
+}

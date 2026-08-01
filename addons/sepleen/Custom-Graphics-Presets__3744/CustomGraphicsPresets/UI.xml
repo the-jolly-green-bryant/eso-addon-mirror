@@ -1,0 +1,131 @@
+<GuiXml>
+    <Controls>
+        <Control name="Options_Video_Graphics_Presets" parent="ZO_OptionsWindowSettingsScrollChild" inherits="ZO_Options_Video_Dropdown_IncludeApplyScreenWarning">
+            <OnInitialized>
+                self:SetParent(ZO_OptionsWindowSettingsScrollChild)
+                self.data = {tooltipText = function() return "Sets the graphics settings of the selected preset." end}
+                self:GetChild(2):SetText("Graphics Preset")
+                self:SetHidden(false)
+                local scrollControl = self:GetChild(1).m_comboBox.m_scroll
+                ZO_ScrollList_Clear(scrollControl)
+                ZO_ScrollList_Commit(scrollControl)
+
+                self:SetAnchor(TOPLEFT, OptionsPanel1Header3, BOTTOMLEFT, 0 * 20, 10)
+                self:SetWidth(self:GetWidth() - (0 * 20))
+
+                table.insert(KEYBOARD_OPTIONS.controlTable[1], self)
+            </OnInitialized>
+        </Control>
+
+        <Control name="Options_Video_Graphics_Presets_Editbox" parent="Options_Video_Graphics_PresetsDropdown" inherits="ZO_SavingEditBox">
+            <OnInitialized>
+                self:SetParent(Options_Video_Graphics_Presets:GetNamedChild("Dropdown"))
+
+                local savingEditBoxObject = ZO_SavingEditBox:New(self)
+                self.savingEditBox = savingEditBoxObject
+                savingEditBoxObject.edit:SetMultiLine(false)
+                savingEditBoxObject:SetPutTextInQuotes(false)
+                savingEditBoxObject.display:SetText("Create preset")
+                savingEditBoxObject:SetDefaultText("Preset name")
+                savingEditBoxObject.empty:SetHidden(false)
+
+                self:SetAnchor(TOP, Options_Video_Graphics_Presets:GetNamedChild("Dropdown"), BOTTOM)
+                self:SetWidth(200)
+                self:SetHeight(100)
+                savingEditBoxObject.editBackdrop:ClearAnchors()
+                savingEditBoxObject.editBackdrop:SetAnchor(TOPLEFT, savingEditBoxObject.control, TOPLEFT, 0, 4)
+                savingEditBoxObject.editBackdrop:SetHeight(30)
+                savingEditBoxObject.editBackdrop:SetWidth(198)
+                savingEditBoxObject.edit:ClearAnchors()
+                savingEditBoxObject.edit:SetAnchor(TOPLEFT, savingEditBoxObject.editBackdrop, TOPLEFT, 8, 3)
+                savingEditBoxObject.edit:SetAnchor(BOTTOMRIGHT, savingEditBoxObject.editBackdrop, BOTTOMRIGHT)
+                savingEditBoxObject.edit:SetHeight(24)
+                savingEditBoxObject.modifyButton:ClearAnchors()
+                savingEditBoxObject.modifyButton:SetAnchor(RIGHT, savingEditBoxObject.editBackdrop, RIGHT)
+                savingEditBoxObject.cancelButton:ClearAnchors()
+                savingEditBoxObject.cancelButton:SetAnchor(RIGHT, savingEditBoxObject.editBackdrop, RIGHT)
+
+                savingEditBoxObject.saveButton:SetHandler("OnClicked", function()
+                    local self = savingEditBoxObject
+                    local newText = self:GetText()
+
+                    for i=1,#GP.savedVariables.presets do
+                        if string.match(newText, GP.savedVariables.presets[i].name) then
+                            ZO_Dialogs_ShowDialog("GraphicsPresetsOverwrite")
+                            return
+                        end
+                    end
+
+                    self:FireCallbacks("Save", newText)
+                    self:ResetText()
+                    self:SetEditing(false)
+                    self.display:SetText("Create preset")
+
+                    if string.len(newText) ~= 0 then
+                        GP.AddPreset(newText)
+                    end
+                end)
+
+                savingEditBoxObject.edit:SetHandler("OnEnter", function()  end)
+
+                savingEditBoxObject.modifyButton:SetHandler("OnMouseEnter", function()
+                    InitializeTooltip(InformationTooltip, savingEditBoxObject.modifyButton, BOTTOM, 0, -2)
+                    SetTooltipText(InformationTooltip, "New")
+                end)
+                savingEditBoxObject.modifyButton:SetHandler("OnMouseExit", function()
+                    ClearTooltip(InformationTooltip)
+                end)
+            </OnInitialized>
+        </Control>
+
+        <Button name="Graphics_Presets_Delete_Button" excludeFromResizeToFitExtents="true" parent="Options_Video_Graphics_PresetsDropdown" disabled="true">
+            <Anchor point="LEFT" relativeTo="Options_Video_Graphics_PresetsDropdown" relativePoint="RIGHT" />
+            <Dimensions x="32" y="32"/>
+            <Textures
+                normal="EsoUI/Art/Inventory/inventory_tabIcon_trash_up.dds"
+                pressed="EsoUI/Art/Inventory/inventory_tabIcon_trash_down.dds"
+                mouseOver="EsoUI/Art/Inventory/inventory_tabIcon_trash_over.dds"
+            />
+            <OnMouseEnter>
+                InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -2)
+                SetTooltipText(InformationTooltip, "Delete")
+            </OnMouseEnter>
+            <OnMouseExit>
+                ClearTooltip(InformationTooltip)
+            </OnMouseExit>
+
+            <OnInitialized>
+                self:SetParent(Options_Video_Graphics_Presets:GetNamedChild("Dropdown"))
+
+                ZO_Dialogs_RegisterCustomDialog("GraphicsPresetsOverwrite", {
+                    canQueue = true,
+                    title = {text = "Preset exists"},
+                    mainText = {text = "A preset with same name already exists. Would you like to overwrite current preset?"},
+                    buttons = {[1] = {text = "Overwrite", callback = function(dlg)
+                        for i=1, #GP.savedVariables.presets do
+                            if Options_Video_Graphics_Presets_Editbox.savingEditBox:GetText() == GP.savedVariables.presets[i].name then
+                                GP.OverwritePreset(i)
+                                Options_Video_Graphics_Presets_Editbox.savingEditBox:FireCallbacks("Save", newText)
+                                Options_Video_Graphics_Presets_Editbox.savingEditBox:ResetText()
+                                Options_Video_Graphics_Presets_Editbox.savingEditBox:SetEditing(false)
+                                Options_Video_Graphics_Presets_Editbox.savingEditBox.display:SetText("Create preset")
+                                return
+                            end
+                        end
+                    end }, [2] = {text = "Cancel"}}
+                })
+
+                ZO_Dialogs_RegisterCustomDialog("GraphicsPresetsLimitExceeded", {
+                    canQueue = true,
+                    title = {text = "Preset limit exceeded"},
+                    mainText = {text = "You have reached the maximum preset limit, you may increase the limit through addon settings"},
+                    buttons = {[1] = {text = "O k"}}
+                })
+            </OnInitialized>
+
+            <OnClicked>
+                GP.DeletePreset()
+            </OnClicked>
+        </Button>
+    </Controls>
+</GuiXml>

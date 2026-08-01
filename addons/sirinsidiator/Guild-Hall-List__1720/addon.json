@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/sirinsidiator/Guild-Hall-List__1720",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:1720",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    }
+  ],
+  "content_id": "esoui:1720",
+  "deleted": false,
+  "directories": [
+    "GuildHallList"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1720/",
+  "fingerprint": "c2a6da81e3d63656ef51f7fdf563e0e2bd54ff9b7b7513f99ae3ca1ec89140dc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7467.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1720",
+  "source_url": "https://www.esoui.com/downloads/info1720-GuildHallList.html",
+  "stats": {
+    "downloads": 17801,
+    "favorites": 27,
+    "monthly_downloads": 29
+  },
+  "title": "Guild Hall List",
+  "updated_at": 1565627457000,
+  "version": "1.2"
+}

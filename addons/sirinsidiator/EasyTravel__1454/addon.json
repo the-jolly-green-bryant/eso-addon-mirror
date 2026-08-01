@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/sirinsidiator/EasyTravel__1454",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:1454",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:1454",
+  "deleted": false,
+  "directories": [
+    "EasyTravel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1454/",
+  "fingerprint": "f0a68c4dda8367189f9141ea25f3064e379a6ac45f609fa071748b413c0186f6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4733.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1454",
+  "source_url": "https://www.esoui.com/downloads/info1454-EasyTravel.html",
+  "stats": {
+    "downloads": 295078,
+    "favorites": 261,
+    "monthly_downloads": 584
+  },
+  "title": "EasyTravel",
+  "updated_at": 1781203159000,
+  "version": "1.9.7"
+}

@@ -1,0 +1,56 @@
+<GuiXml>
+  <Animations>
+    <AnimationTimeline name="AUI_Actionbar_Time_Low" playbackType="LOOP">
+      <Animations>
+        <TranslateAnimation />
+        <AlphaAnimation duration="350" startAlpha="1" endAlpha="0.4"/>
+        <AlphaAnimation delay="350" duration="350" startAlpha="0.4" endAlpha="1"/>
+      </Animations>
+    </AnimationTimeline>
+    <AnimationTimeline name="AbilityProcReadyBurst">
+      <Animations>
+        <TextureAnimation cellsWide="16" cellsHigh="1" framerate="32"/>
+      </Animations>
+    </AnimationTimeline>
+    <AnimationTimeline name="AbilityProcReadyLoop" playbackType="LOOP" loopCount="LOOP_INDEFINITELY">
+      <Animations>
+        <TextureAnimation cellsWide="64" cellsHigh="1" framerate="32"/>
+      </Animations>
+    </AnimationTimeline>	
+  </Animations>
+  <Controls>
+    <Backdrop name="AUI_Actionbar_KeybindBG" virtual="true">
+      <AnchorFill />
+    </Backdrop>
+    <Label name="AUI_Actionbar_StackCountText" tier="HIGH" virtual="true" />
+	<Cooldown name="AUI_Actionbar_Button_CooldownFrame" fillColor="00b711" tier="MEDIUM" DrawLayer="1" virtual="true" />
+    <Label name="AUI_Actionbar_Button_CountText" tier="HIGH" virtual="true" />
+    <Control name="AUI_Actionbar_Swap_Info" hidden="true" tier="LOW" DrawLayer="1" virtual="true">
+      <Controls>
+        <Texture name="$(parent)_Frame" tier="LOW" >
+          <OnInitialized>
+            self:SetColor(0, 0, 0, 1)
+          </OnInitialized>
+          <AnchorFill />
+          <Controls>
+            <Texture name="$(grandparent)_Icon" tier="MEDIUM" >
+              <Anchor point="TOPLEFT" offsetX="2" offsetY="2"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2"/>
+              <Controls>
+                <Texture name="$(parent)_BG" level="0" tier="LOW">
+                  <AnchorFill />
+                  <OnInitialized>
+                    self:SetColor(0, 0, 0, 0.5)
+                  </OnInitialized>
+                </Texture>
+              </Controls>
+            </Texture>
+          </Controls>
+        </Texture>
+		<Cooldown name="$(parent)_CooldownFrame" fillColor="00b711" tier="LOW" />
+        <Label name="$(parent)_CooldownText" hidden="true" tier="HIGH"/>
+		<Label name="$(parent)_StackCountText" hidden="true" tier="HIGH"/>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

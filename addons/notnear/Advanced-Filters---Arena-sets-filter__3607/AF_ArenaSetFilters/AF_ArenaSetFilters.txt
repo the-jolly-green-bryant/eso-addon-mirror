@@ -1,0 +1,12 @@
+## Title: Advanced Filters - Arena Sets Filter
+## Author: Baertram, |cCC99FFnotnear|r
+## Version: 1.1.1
+## AddOnVersion: 111
+## APIVersion: 101037 101038
+## SavedVariables: AF_ArenaSetFilters_Data
+## DependsOn: AdvancedFilters>=1613 LibSets>=000301
+
+lang/en.lua
+lang/$(language).lua
+
+AF_ArenaSetFilters.lua

@@ -1,0 +1,8 @@
+## Title: |cFFFFFFZadrot |c0099FFFPS|r
+## Author: |c5EFFF5NOGARUKA|r
+## APIVersion: 100035
+## Description: Limits foreground and background FPS. Usage: /zfps foreground background. Example: /zfps 65 20
+## Version: 1
+## SavedVariables: Zadrot_FPS_Saved
+
+Zadrot_FPS.lua

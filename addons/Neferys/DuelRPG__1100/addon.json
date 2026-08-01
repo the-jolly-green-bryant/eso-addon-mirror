@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Neferys/DuelRPG__1100",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Neferys",
+  "canonical_id": "esoui:1100",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    }
+  ],
+  "content_id": "esoui:1100",
+  "deleted": false,
+  "directories": [
+    "DuelRPG"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1100/",
+  "fingerprint": "07d486aec8f239308f48844d48126f54d4b36d8c7600e5ca7a0fee7c8388d11c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3450.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3451.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1100",
+  "source_url": "https://www.esoui.com/downloads/info1100-DuelRPG.html",
+  "stats": {
+    "downloads": 3806,
+    "favorites": 0,
+    "monthly_downloads": 6
+  },
+  "title": "DuelRPG",
+  "updated_at": 1457770866000,
+  "version": "0.6d"
+}

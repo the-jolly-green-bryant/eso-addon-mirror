@@ -1,0 +1,55 @@
+﻿SafeAddString(SI_BINDING_NAME_CAMERA_HORIZONTAL_INC, "Position horizontale droite", 1)
+SafeAddString(SI_BINDING_NAME_CAMERA_HORIZONTAL_DEC, "Position horizontale restante", 1)
+SafeAddString(SI_BINDING_NAME_CAMERA_HORIZONTALOFFSET_INC, "Décalage horizontal à droite", 1)
+SafeAddString(SI_BINDING_NAME_CAMERA_HORIZONTALOFFSET_DEC, "Décalage horizontal gauche", 1)
+SafeAddString(SI_BINDING_NAME_CAMERA_VERTICAL_INC, "Décalage vertical vers le haut", 1)
+SafeAddString(SI_BINDING_NAME_CAMERA_VERTICAL_DEC, "Décalage vertical vers le bas", 1)
+SafeAddString(SI_BINDING_NAME_CAMERA_RECENTER, "Caméra centre", 1)
+
+SafeAddString(SI_BINDING_NAME_SAVE_QUICKSLOT_1, "Sauvegarder rapide fente 1", 1)
+SafeAddString(SI_BINDING_NAME_LOAD_QUICKSLOT_1, "Restaurer rapide fente 1", 1)
+SafeAddString(SI_BINDING_NAME_SAVE_QUICKSLOT_2, "Sauvegarder rapide fente 2", 1)
+SafeAddString(SI_BINDING_NAME_LOAD_QUICKSLOT_2, "Restaurer rapide fente 2", 1)
+SafeAddString(SI_BINDING_NAME_SAVE_QUICKSLOT_3, "Sauvegarder rapide fente 3", 1)
+SafeAddString(SI_BINDING_NAME_LOAD_QUICKSLOT_3, "Restaurer rapide fente 3", 1)
+SafeAddString(SI_BINDING_NAME_SAVE_QUICKSLOT_4, "Sauvegarder rapide fente 4", 1)
+SafeAddString(SI_BINDING_NAME_LOAD_QUICKSLOT_4, "Restaurer rapide fente 4", 1)
+SafeAddString(SI_BINDING_NAME_SAVE_QUICKSLOT_5, "Sauvegarder rapide fente 5", 1)
+SafeAddString(SI_BINDING_NAME_LOAD_QUICKSLOT_5, "Restaurer rapide fente 5", 1)
+SafeAddString(SI_BINDING_NAME_SAVE_QUICKSLOT_6, "Sauvegarder rapide fente 6", 1)
+SafeAddString(SI_BINDING_NAME_LOAD_QUICKSLOT_6, "Restaurer rapide fente 6", 1)
+SafeAddString(SI_BINDING_NAME_SAVE_QUICKSLOT_7, "Sauvegarder rapide fente 7", 1)
+SafeAddString(SI_BINDING_NAME_LOAD_QUICKSLOT_7, "Restaurer rapide fente 7", 1)
+SafeAddString(SI_BINDING_NAME_SAVE_QUICKSLOT_8, "Sauvegarder rapide fente 8", 1)
+SafeAddString(SI_BINDING_NAME_LOAD_QUICKSLOT_8, "Restaurer rapide fente 8", 1)
+
+SafeAddString(SI_BINDING_NAME_CAMERA_TG_ZOOM, "basculer le zoom")
+
+SafeAddString(SETTINGS_LABLE_NAME, "Neltharions Cam Controller")
+SafeAddString(SETTINGS_DISPLA_NAME, "Cam Controller")
+SafeAddString(SETTINGS_SAVE, "Choix du stockage")
+
+SafeAddString(SETTINGS_ZOOM_HEADER, "Paramètres de zoom")
+SafeAddString(SETTINGS_ZOOM_ENABLE, "Zoom")
+SafeAddString(SETTINGS_ZOOM_ENABLE_TP, "Activez le modus Ultimate Zoom")
+SafeAddString(SETTINGS_FPERSON_ENABLE, "Première personne")
+SafeAddString(SETTINGS_FPERSON_ENABLE_TP, "Permettre à la caméra de passer en vue à la première personne")
+
+SafeAddString(SETTINGS_HEAD_QUICKSLOT, "Paramètres QuickSlot")
+SafeAddString(SETTINGS_DISCR_QUICKSLOT, "Ici, tu peux gérer les différents QuickSlots via le menu.")
+SafeAddString(SETTINGS_HORIZ_SETT, "Réglage horizontal")
+SafeAddString(SETTINGS_HORIZ_SETT_TP, "Réglage horizontal")
+SafeAddString(SETTINGS_HORIZ_OFFS_SETT, "Réglage de l'offset horizontal")
+SafeAddString(SETTINGS_HORIZ_OFFS_SETT_TP, "Réglage de l'offset horizontal")
+SafeAddString(SETTINGS_VERT_SETT, "Réglage vertical")
+SafeAddString(SETTINGS_VERT_SETT_TP, "Réglage vertical")
+SafeAddString(SETTINGS_FIELDVIEW_SETT, "Réglage de Fieldview")
+SafeAddString(SETTINGS_FIELDVIEW_SETT_TP, "Réglage de Fieldview")
+SafeAddString(SETTINGS_QUICK_SETT, "Réglages des quickslots")
+
+
+
+
+-- Neltharion lua
+SafeAddString(CONSOLE_OUT_SAVE_SL, "Paramètres sauvegardés dans l'emplacement: ")
+SafeAddString(CONSOLE_OUT_LOAD_SL, "Paramètres chargés à partir de la fente: ")

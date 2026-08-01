@@ -1,0 +1,27 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+	<Category name="|cFEE854LootDrop|r |cFF9900Reborn|r">
+	  <Action name="LOOTDROP_LOCKUNLOCK_ADDON">
+		<Down>LootDrop_LockUnlock()</Down>
+	  </Action>
+	  <Action name="LOOTDROP_TOGGLE_LOOTWINDOW">
+        <Down>LootDrop_ToggleLootWindow()</Down>
+      </Action>
+	  <Action name="LOOTDROP_TOGGLE_CHAT">
+        <Down>LootDrop_ToggleChat()</Down>
+      </Action>
+	  <Action name="LOOTDROP_TOGGLE_AUTOLOOT">
+        <Down>LootDrop_ToggleAutoloot()</Down>
+      </Action>
+	  <Action name="LOOTDROP_TOGGLE_PREVIEW">
+        <Down>LootDrop_TogglePreview()</Down>
+      </Action>
+	  <Action name="LOOTDROP_TOGGLE_LWFILTER">
+        <Down>LootDrop_LWFilter()</Down>
+      </Action>
+	  <Action name="LOOTDROP_TOGGLE_CLFILTER">
+        <Down>LootDrop_CLFilter()</Down>
+      </Action>
+	</Category>
+  </Layer>
+</Bindings>

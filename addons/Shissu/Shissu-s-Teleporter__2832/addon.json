@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Shissu/Shissu-s-Teleporter__2832",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shissu",
+  "canonical_id": "esoui:2832",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2832",
+  "deleted": false,
+  "directories": [
+    "ShissuFramework",
+    "ShissuTeleporter",
+    "ShissuTeleporterMap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2832/",
+  "fingerprint": "c588baad1bcceeb2dd17d260f3e8868238278dc32d0546bb36e0b3b7125daaf1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9574.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9575.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9696.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2832",
+  "source_url": "https://www.esoui.com/downloads/info2832-ShissusTeleporter.html",
+  "stats": {
+    "downloads": 5800,
+    "favorites": 1,
+    "monthly_downloads": 26
+  },
+  "title": "Shissu's Teleporter",
+  "updated_at": 1608408697000,
+  "version": "1.6.2"
+}

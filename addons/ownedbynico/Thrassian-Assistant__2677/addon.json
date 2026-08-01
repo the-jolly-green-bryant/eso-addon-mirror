@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/ownedbynico/Thrassian-Assistant__2677",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ownedbynico",
+  "canonical_id": "esoui:2677",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2677",
+  "deleted": false,
+  "directories": [
+    "ThrassianAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2677/",
+  "fingerprint": "9462bb44b6e10dd07de613563f2c741085625fbcdf4e83eee981cf69883e1d84",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9067.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9068.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9069.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2677",
+  "source_url": "https://www.esoui.com/downloads/info2677-ThrassianAssistant.html",
+  "stats": {
+    "downloads": 5582,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "Thrassian Assistant",
+  "updated_at": 1593519651000,
+  "version": "1.2"
+}

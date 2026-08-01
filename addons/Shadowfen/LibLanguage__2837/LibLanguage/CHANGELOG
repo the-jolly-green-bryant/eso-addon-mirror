@@ -1,0 +1,137 @@
+[COLOR="DeepSkyBlue"]46[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]45[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]44[/COLOR]:
+[LIST]
+[*] Adjusted namespace identifications.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]43[/COLOR]:
+[LIST]
+[*] Update language functions after changes to them in LibSFUtil.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]42[/COLOR]:
+[LIST]
+[*] Convert from .txt manifest to .addon
+[/LIST]
+
+[COLOR="DeepSkyBlue"]41[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]40[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]39[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]38[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]37[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]36[/COLOR]:
+[LIST]
+[*] API bump (Necrom).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]35[/COLOR]:
+[LIST]
+[*] API bump (Scribes of Fate).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]34[/COLOR]:
+[LIST]
+[*] API bump (High Isle).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]33[/COLOR]
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]32[/COLOR]
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]31[/COLOR]
+[LIST]
+[*] API bump. Waking Flame.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]30[/COLOR]
+[LIST]
+[*] API bump. Blackwood.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]29[/COLOR]
+[LIST]
+[*] API bump. Flames of Ambition.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]28[/COLOR]
+[LIST]
+[*] Split language string management capability out of LibSFUtil version 28 for better availability.
+[/LIST]
+
+
+Previously, in LibSFUtil:
+
+[COLOR="DeepSkyBlue"]LibSFUtil 16[/COLOR]
+[LIST]
+[*] Modified and tested the LibSFUtil enhanced version of SafeAddString() to support the LoadLanguage() function.
+[*] Fixed error in loading of default language strings in LoadLanguage().
+[/LIST]
+
+[COLOR="DeepSkyBlue"]LibSFUtil 15[/COLOR]
+[LIST]
+[*] Added new Localization function LoadLanguage().
+
+function sfutil.LoadLanguage(localization_strings, defaultLang)
+    Add strings to the string table for the client language (or
+    the default language if the client language did not have strings
+    defined for it). The localization_strings parameter is a table of tables
+    of localization strings, and defaultLang defaults to "en" if not
+    provided.
+    
+    An example of a localization_strings table might be:
+    
+    MyAddon.localization_strings = {
+    ["en"] = {
+            MYADDON_RANDOM_TEXT = "This is a test",
+			MYADDON_SPECIAL_TEXT = "This will only be in English",
+        },
+    ["de"] = {
+            MYADDON_RANDOM_TEXT = "Dies ist ein Test",
+        },
+    ["fr"] = {
+            MYADDON_RANDOM_TEXT = "C'est un test",
+        },
+    }
+    
+    Then the sfutil.LoadLanguage(MyAddon.localization_strings, "en") would load
+    the appropriate strings table for the client language, or the "en" strings
+    if there isn't a table for the language (say it was "jp").
+	If there is a table for the current language, but there is not a string
+	defined in it, then the string for the default language will be used instead.
+[/LIST]
+

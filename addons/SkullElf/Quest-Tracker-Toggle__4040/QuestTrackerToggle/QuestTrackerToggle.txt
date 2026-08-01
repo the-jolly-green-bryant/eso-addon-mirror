@@ -1,0 +1,11 @@
+## Title: Quest Tracker Toggle
+## APIVersion: 101045
+## Author: SkullElf
+## Version: 1.0
+## SavedVariables: QuestTrackerToggle_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=40
+
+## Description: Allows you to toggle the visibility of the quest tracker on the User Interface. Use the settings menu or bind to a key via Menu > Controls > Addons
+
+QuestTrackerToggle.lua
+bindings.xml

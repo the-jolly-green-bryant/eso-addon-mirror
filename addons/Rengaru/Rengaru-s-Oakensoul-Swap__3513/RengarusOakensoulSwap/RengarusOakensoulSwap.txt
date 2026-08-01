@@ -1,0 +1,7 @@
+## APIVersion: 101036
+## Title: Rengaru's Oakensoul Swap
+## Author: Rengaru
+## Version: 1
+
+RengarusOakensoulSwap.lua
+Bindings.xml

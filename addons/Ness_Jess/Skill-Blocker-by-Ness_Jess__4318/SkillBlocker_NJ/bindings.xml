@@ -1,0 +1,27 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|c00FFFFSkill Blocker by Ness_Jess|r">
+      <Action name="SKILLBLOCKER_NJ_UNLOCK_ALL">
+        <Down>SkillBlocker_NJ.unlockAll()</Down>
+      </Action>
+      <Action name="SKILLBLOCKER_NJ_TOGGLE_SLOT_1">
+        <Down>SkillBlocker_NJ.ToggleSlot(1)</Down>
+      </Action>
+      <Action name="SKILLBLOCKER_NJ_TOGGLE_SLOT_2">
+        <Down>SkillBlocker_NJ.ToggleSlot(2)</Down>
+      </Action>
+      <Action name="SKILLBLOCKER_NJ_TOGGLE_SLOT_3">
+        <Down>SkillBlocker_NJ.ToggleSlot(3)</Down>
+      </Action>
+      <Action name="SKILLBLOCKER_NJ_TOGGLE_SLOT_4">
+        <Down>SkillBlocker_NJ.ToggleSlot(4)</Down>
+      </Action>
+      <Action name="SKILLBLOCKER_NJ_TOGGLE_SLOT_5">
+        <Down>SkillBlocker_NJ.ToggleSlot(5)</Down>
+      </Action>
+      <Action name="SKILLBLOCKER_NJ_TOGGLE_SLOT_6">
+        <Down>SkillBlocker_NJ.ToggleSlot(6)</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

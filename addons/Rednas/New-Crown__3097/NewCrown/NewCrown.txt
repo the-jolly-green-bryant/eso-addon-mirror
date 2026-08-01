@@ -1,0 +1,32 @@
+## Title: NewCrown
+## Description: Adds a icon above the group leader's head. This add-on also lets you configure when it needs to be shown and when it needs to be hidden. A set of icons are included aswell. When the same functionality is enabled on other addons it could overwrite this addon.
+## Author: Rednas
+## Version: 1.0.3
+## APIVersion: 101038
+## SavedVariables: NCSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+
+NewCrownData.lua
+NewCrown.lua
+NewCrownEvents.lua
+NewCrownMenu.lua
+
+
+
+
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

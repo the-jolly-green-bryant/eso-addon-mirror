@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/notnear/Skill-Ranks__3745",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "notnear",
+  "canonical_id": "esoui:3745",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3745",
+  "deleted": false,
+  "directories": [
+    "NearSkillRanks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3745/",
+  "fingerprint": "f0000d2442f7b080c4d277cced5d4b4d04dbb9676c330aa2887d7b3060e207e2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12677.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12678.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12679.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3745",
+  "source_url": "https://www.esoui.com/downloads/info3745-SkillRanks.html",
+  "stats": {
+    "downloads": 3216,
+    "favorites": 6,
+    "monthly_downloads": 17
+  },
+  "title": "Skill Ranks",
+  "updated_at": 1757043077000,
+  "version": "1.4.0"
+}

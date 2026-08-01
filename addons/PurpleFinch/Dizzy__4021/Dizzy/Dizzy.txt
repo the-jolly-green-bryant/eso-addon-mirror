@@ -1,0 +1,10 @@
+## Title: Dizzy
+## Author: PurpleFinch
+## Version: 1.23
+## APIVersion: 101045
+## Description: Prevents the camera from spinning while opening inventories and status screens.
+## SavedVariables: DizzySavedVars
+## DependsOn: LibAddonMenu-2.0>=38
+
+MenuScenes.lua
+Dizzy.lua

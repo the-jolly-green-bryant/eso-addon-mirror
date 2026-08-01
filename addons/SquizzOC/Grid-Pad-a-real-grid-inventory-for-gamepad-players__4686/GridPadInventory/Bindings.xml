@@ -1,0 +1,51 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Grid Pad">
+            <Action name="GPI_TOGGLE">
+                <Down>GridPadInventory.Toggle()</Down>
+            </Action>
+            <Action name="GPI_MOVE_LEFT">
+                <Down>GridPadInventory:RunInputAction("LEFT", "binding")</Down>
+            </Action>
+            <Action name="GPI_MOVE_RIGHT">
+                <Down>GridPadInventory:RunInputAction("RIGHT", "binding")</Down>
+            </Action>
+            <Action name="GPI_MOVE_UP">
+                <Down>GridPadInventory:RunInputAction("UP", "binding")</Down>
+            </Action>
+            <Action name="GPI_MOVE_DOWN">
+                <Down>GridPadInventory:RunInputAction("DOWN", "binding")</Down>
+            </Action>
+            <Action name="GPI_PAGE_PREVIOUS">
+                <Down>GridPadInventory:RunInputAction("FILTER_PREV", "binding")</Down>
+            </Action>
+            <Action name="GPI_PAGE_NEXT">
+                <Down>GridPadInventory:RunInputAction("FILTER_NEXT", "binding")</Down>
+            </Action>
+            <Action name="GPI_FILTER_PREVIOUS">
+                <Down>GridPadInventory:RunInputAction("INFO", "binding")</Down>
+            </Action>
+            <Action name="GPI_FILTER_NEXT">
+                <Down>GridPadInventory:RunInputAction("COMPARE", "binding")</Down>
+            </Action>
+            <Action name="GPI_USE_SELECTED">
+                <Down>GridPadInventory:UseSelected("binding")</Down>
+            </Action>
+            <Action name="GPI_BAG_TYPE">
+                <Down>GridPadInventory:RunInputAction("BAG_TYPE_TOGGLE", "binding")</Down>
+            </Action>
+            <Action name="GPI_TOGGLE_JUNK">
+                <Down>GridPadInventory:RunInputAction("SECONDARY", "binding")</Down>
+            </Action>
+            <Action name="GPI_COMPARE">
+                <Down>GridPadInventory:RunInputAction("COMPARE", "binding")</Down>
+            </Action>
+            <Action name="GPI_LINK_SELECTED">
+                <Down>GridPadInventory:RunInputAction("TERTIARY", "binding")</Down>
+            </Action>
+            <Action name="GPI_CLOSE">
+                <Down>GridPadInventory:Close()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

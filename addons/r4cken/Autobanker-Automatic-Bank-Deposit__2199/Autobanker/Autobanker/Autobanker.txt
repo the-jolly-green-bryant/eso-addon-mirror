@@ -1,0 +1,22 @@
+﻿## Title: |cEFFBBEAutobanker|r
+## Version: 2.5
+## Author: r4cken + updated by Muffins714
+## Description: Autobanker automatically deposits items to the bank and allows you to decide what types of items to deposit.
+## APIVersion: 101049 101050
+## DependsOn: LibAddonMenu-2.0>=38 LibResearch>=43
+## SavedVariables: AutobankerSavedVars AutobankerGlobalSavedVars
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls ® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+; Load the AddOn files, declare them in the correct order so that functions are declared before usage.
+
+; Languages
+Localization\en.lua
+
+; Main AddOn code
+Autobanker.lua
+AutobankerMenu.lua

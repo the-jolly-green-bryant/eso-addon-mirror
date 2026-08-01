@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Solinur/LibDataEncode__3980",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Solinur",
+  "canonical_id": "esoui:3980",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3980",
+  "deleted": false,
+  "directories": [
+    "LibDataEncode"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3980/",
+  "fingerprint": "240d36764ca804f81c1b008cd0546f1bdb21a7a1a6e627d9380a01a3c1c6f1dc",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3980",
+  "source_url": "https://www.esoui.com/downloads/info3980-LibDataEncode.html",
+  "stats": {
+    "downloads": 211230,
+    "favorites": 133,
+    "monthly_downloads": 6969
+  },
+  "title": "LibDataEncode",
+  "updated_at": 1740525388000,
+  "version": "2"
+}

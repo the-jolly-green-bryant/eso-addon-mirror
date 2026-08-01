@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/QuadroTony/YssEquipmentIndicator-Revived__975",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "QuadroTony",
+  "canonical_id": "esoui:975",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:975",
+  "deleted": false,
+  "directories": [
+    "YssEquipmentIndicator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl975/",
+  "fingerprint": "f61a555ca445ef20ba3dcebe937aef0a4110264e1346d5366f5375f3eb6a7f5b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2976.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "975",
+  "source_url": "https://www.esoui.com/downloads/info975-YssEquipmentIndicatorRevived.html",
+  "stats": {
+    "downloads": 12725,
+    "favorites": 21,
+    "monthly_downloads": 8
+  },
+  "title": "YssEquipmentIndicator Revived",
+  "updated_at": 1467093952000,
+  "version": "0.2.2"
+}

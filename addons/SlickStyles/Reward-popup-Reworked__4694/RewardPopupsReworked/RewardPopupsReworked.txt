@@ -1,0 +1,23 @@
+## Title: Reward Popups Reworked
+## APIVersion: 101050 101051
+## Version: 1.0.8
+## AddOnVersion: 10008
+## Author: SlickStyles
+## Description: Replaces intrusive reward popups with a unified Action Widget and safely automates supported reward claims.
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: RewardPopupsReworkedSavedVariables
+
+RewardPopupsReworked.lua
+
+Core/Utilities.lua
+Core/SourceBase.lua
+Core/PopupSuppressor.lua
+Core/RewardManager.lua
+
+UI/ActionWidget.lua
+UI/WelcomeDialog.lua
+UI/Settings.lua
+
+Sources/TamrielTomes.lua
+Sources/GoldenPursuits.lua
+Sources/VeterancyRewards.lua

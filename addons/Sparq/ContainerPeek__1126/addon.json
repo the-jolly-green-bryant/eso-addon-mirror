@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Sparq/ContainerPeek__1126",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sparq",
+  "canonical_id": "esoui:1126",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1126",
+  "deleted": false,
+  "directories": [
+    "ContainerPeek"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1126/",
+  "fingerprint": "d7b2b495f11783494a20c849c84008c04fd19d0d99acec6a2e719854f2cb8dff",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3608.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3609.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3618.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1126",
+  "source_url": "https://www.esoui.com/downloads/info1126-ContainerPeek.html",
+  "stats": {
+    "downloads": 3811,
+    "favorites": 5,
+    "monthly_downloads": 10
+  },
+  "title": "ContainerPeek",
+  "updated_at": 1435091284000,
+  "version": "1.1.0"
+}

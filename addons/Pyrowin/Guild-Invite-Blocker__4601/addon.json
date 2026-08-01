@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Pyrowin/Guild-Invite-Blocker__4601",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Pyrowin",
+  "canonical_id": "esoui:4601",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4601",
+  "deleted": false,
+  "directories": [
+    "GuildInviteBlocker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4601/",
+  "fingerprint": "3109414b680ac0ad07bbba366a24b0e9fd986a57c05b2e8b53e1147f538cc53b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4601",
+  "source_url": "https://www.esoui.com/downloads/info4601-GuildInviteBlocker.html",
+  "stats": {
+    "downloads": 75,
+    "favorites": 0,
+    "monthly_downloads": 14
+  },
+  "title": "Guild Invite Blocker",
+  "updated_at": 1780003959000,
+  "version": "1.0.0"
+}

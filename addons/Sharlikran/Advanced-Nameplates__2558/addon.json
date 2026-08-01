@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Sharlikran/Advanced-Nameplates__2558",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:2558",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:2558",
+  "deleted": false,
+  "directories": [
+    "AdvancedNameplates"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2558/",
+  "fingerprint": "5a96da7a840256a128283ec90a3d02a58bf05e0df2175ffa9688e72fb498576a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8742.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2558",
+  "source_url": "https://www.esoui.com/downloads/info2558-AdvancedNameplates.html",
+  "stats": {
+    "downloads": 21483,
+    "favorites": 32,
+    "monthly_downloads": 73
+  },
+  "title": "Advanced Nameplates",
+  "updated_at": 1752008003000,
+  "version": "2.34"
+}

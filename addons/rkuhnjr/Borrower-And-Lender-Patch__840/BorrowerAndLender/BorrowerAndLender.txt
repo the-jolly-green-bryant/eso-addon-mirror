@@ -1,0 +1,12 @@
+## Title: Borrower And Lender
+## Author: Wobin and CrazyDutchGuy
+## Version: 3.4c
+## APIVersion: 100010
+## SavedVariables: BorrowerAndLender_Settings
+
+libs/LibStub/LibStub.lua
+libs/AceTimer-3.0/AceTimer-3.0.lua
+libs\LibAddonMenu-1.0\LibAddonMenu-1.0.lua
+
+BorrowerAndLender.lua
+Bindings.xml

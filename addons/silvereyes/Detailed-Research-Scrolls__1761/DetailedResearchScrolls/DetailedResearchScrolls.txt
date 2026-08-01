@@ -1,0 +1,13 @@
+## Title: Detailed Research Scrolls
+## Author: silvereyes
+## Description: Adds a warning to research scroll tooltips if your current character does not have 3 active researches with over a day left.
+## Version: 1.4.13
+## APIVersion: 101031 101032
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+localization\EN.lua
+localization\$(language).lua
+localization\CreateStrings.lua
+
+DetailedResearchScrolls.lua

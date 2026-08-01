@@ -1,0 +1,9 @@
+## Title: MiniStats - Post Combat Summary
+## Author: You
+## Version: 0.1.0
+## APIVersion: 101046
+## Description: Shows a short DPS/healing summary when you leave combat. Lightweight and console-friendly.
+## IsLibrary: false
+## AddOnVersion: 1
+
+MiniStats.lua

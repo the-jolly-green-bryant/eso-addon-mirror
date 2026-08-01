@@ -1,0 +1,16 @@
+﻿; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: rChatData
+## Description: Separate save location for rChat chat history data.
+## Version: 1.14
+## AddOnVersion: 6
+## Author: Shadowfen
+## APIVersion: 101050 101049
+## DependsOn: LibSFUtils>=70 
+## SavedVariables: RCHAT_CACHE RCHAT_CMDS
+
+rChatData.lua

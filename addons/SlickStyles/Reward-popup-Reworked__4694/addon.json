@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/SlickStyles/Reward-popup-Reworked__4694",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SlickStyles",
+  "canonical_id": "esoui:4694",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4694",
+  "deleted": false,
+  "directories": [
+    "RewardPopupsReworked"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4694/",
+  "fingerprint": "aa79ef0b253f1c5f413770a098dc9d7cfd948287a3dc9b646add79a65affa7df",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16637.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4694",
+  "source_url": "https://www.esoui.com/downloads/info4694-RewardpopupReworked.html",
+  "stats": {
+    "downloads": 82,
+    "favorites": 1,
+    "monthly_downloads": 80
+  },
+  "title": "Reward popup Reworked",
+  "updated_at": 1783822623000,
+  "version": "1.8"
+}

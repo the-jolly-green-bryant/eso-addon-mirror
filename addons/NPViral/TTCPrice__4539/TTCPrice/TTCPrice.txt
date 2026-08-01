@@ -1,0 +1,10 @@
+## Title: TTC Price
+## Description: Adds a TTC price button to AwesomeGuildStore sell tab with undercut and thin market protection.
+## Author: @NPViral
+## Version: 1.1
+## AddOnVersion: 2
+## APIVersion: 101049
+## SavedVariables: TTCPriceSavedVars
+## DependsOn: TamrielTradeCentre AwesomeGuildStore LibAddonMenu-2.0>=41
+
+TTCPrice.lua

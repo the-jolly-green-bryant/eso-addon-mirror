@@ -1,0 +1,20 @@
+## Title: QP's Account Achievements
+## Author: @|ca67300Q|r|cffc124u|r|cffffffa|r|cffc124ntumpie|r [NA]
+## Description: Achievement tracking across all characters
+## Version: 2.0.2
+## APIVersion: 101032
+## SavedVariables: QuantumPiesGlobalAchievementsSV
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: VotansAchievementsOvw VotansAchievementFavorites
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls� and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+Constants.lua
+Db.lua
+Interface.xml
+CustomCategory.lua
+Achievement.lua
+compatibility/VotansAchievementsOvw.lua
+compatibility/VotansAchievementFavorites.lua
+QuantumsGlobalAchievements.lua
+Settings.lua

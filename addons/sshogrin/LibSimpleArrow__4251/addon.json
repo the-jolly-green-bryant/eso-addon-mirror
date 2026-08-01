@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/sshogrin/LibSimpleArrow__4251",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sshogrin",
+  "canonical_id": "esoui:4251",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4251",
+  "deleted": false,
+  "directories": [
+    "LibSimpleArrow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4251/",
+  "fingerprint": "55c807a485f8f5d23c118377bf4f337785b875ecbbb0392005f904729e7c3805",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4251",
+  "source_url": "https://www.esoui.com/downloads/info4251-LibSimpleArrow.html",
+  "stats": {
+    "downloads": 6927,
+    "favorites": 2,
+    "monthly_downloads": 462
+  },
+  "title": "LibSimpleArrow",
+  "updated_at": 1757879266000,
+  "version": "1.0.0"
+}

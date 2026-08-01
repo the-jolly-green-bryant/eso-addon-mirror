@@ -1,0 +1,14 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="RdKGTool_AutoInvite" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<OnInitialized>
+				
+			</OnInitialized>
+			<Controls>
+				<!--<Control name="$(parent)Body">>
+				
+				</Control>-->
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

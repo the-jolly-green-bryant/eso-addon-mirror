@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Sharabri/Emote-Thief__3732",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharabri",
+  "canonical_id": "esoui:3732",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:3732",
+  "deleted": false,
+  "directories": [
+    "EmoteThief"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3732/",
+  "fingerprint": "95a30e1c4d2f34aa66bcbf0b0a211704c13dc281835d0c09b3eb0d2fa0cdaebc",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3732",
+  "source_url": "https://www.esoui.com/downloads/info3732-EmoteThief.html",
+  "stats": {
+    "downloads": 2393,
+    "favorites": 4,
+    "monthly_downloads": 14
+  },
+  "title": "Emote Thief",
+  "updated_at": 1742710776000,
+  "version": "2.0.1"
+}

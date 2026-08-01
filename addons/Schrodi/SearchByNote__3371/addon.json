@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/Schrodi/SearchByNote__3371",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Schrodi",
+  "canonical_id": "esoui:3371",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3371",
+  "deleted": false,
+  "directories": [
+    "SearchByNote"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3371/",
+  "fingerprint": "08924b2db358e96db06e2efc6ead9200d69eebf9ec97dc3785f9f48ebd22a58b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3371",
+  "source_url": "https://www.esoui.com/downloads/info3371-SearchByNote.html",
+  "stats": {
+    "downloads": 1979,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "SearchByNote",
+  "updated_at": 1653131209000,
+  "version": "1.0"
+}

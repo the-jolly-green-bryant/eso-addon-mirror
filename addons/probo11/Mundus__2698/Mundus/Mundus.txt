@@ -1,0 +1,10 @@
+## Title: Mundus
+## Version: 5.0
+## APIVersion: 101032
+## Author: @probo11
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: MundusSavedVariables
+
+Mundus.xml
+Mundus.lua
+Settings.lua

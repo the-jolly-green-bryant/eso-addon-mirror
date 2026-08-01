@@ -1,0 +1,5 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="LSAddon" />
+	</Controls>
+</GuiXml>

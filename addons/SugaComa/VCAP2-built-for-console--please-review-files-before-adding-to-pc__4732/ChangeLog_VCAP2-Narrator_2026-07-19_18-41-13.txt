@@ -1,0 +1,34 @@
+VCAP2 2.2.0-test1
+==================
+
+TEST BUILD - based on working VCAP2 2.1.6.
+
+Changes
+-------
+- Replaced the old hard-coded 1-19 "channel" filter model with ESO runtime chat categories.
+- Added a CHAT_ROUTER source marker so VCAP2 can distinguish AddSystemMessage injections
+  from normal ESO event-driven system chat before narration occurs.
+- Renamed "Channel 9" controls to "Addon / Local Messages".
+- Preserved individual per-addon mute controls for messages beginning with registered [Tags].
+- REGISTERED ONLY now blocks untagged/unknown AddSystemMessage injections as a group.
+- OFF blocks AddSystemMessage injections and known tagged system narration.
+- ALL preserves current permissive behaviour while still honoring muted registered tags.
+- Registered addon tags can now actually be stripped from the narration string before speech.
+- Added an independent "ESO System" narration toggle.
+- Language-specific Zone chat categories now follow the single Zone narration toggle.
+- Migrates existing 2.1.6 1-19 filter choices into stable logical chat settings.
+- Keeps SavedVariables version 7 to avoid resetting the user's current VCAP2 configuration.
+- Keeps legacy channel9Mode/readChannel9Tags fields mirrored for downgrade compatibility.
+- Removed duplicate _RebuildChannel9Section implementation.
+- Fixed loop-closure captures so each dynamic tag and chat toggle controls its own setting.
+- Moved the dynamic addon-tag section to the end of the settings menu so refreshes cannot
+  delete Debugging or normal chat narration controls.
+- Removed the EVENT_PLAYER_DEACTIVATED SavedVariables timestamp mutation.
+- Updated /vcap2filtest to test the real CHAT_ROUTER:AddSystemMessage path.
+- Synced manifest/test version to 2.2.0-test1 / AddOnVersion 2200.
+
+Important limitation
+--------------------
+ESO's AddSystemMessage path does not identify the addon that called it. VCAP2 can classify
+the message as a local/system injection, but exact per-addon control still requires the
+message itself to begin with a registered [Tag].

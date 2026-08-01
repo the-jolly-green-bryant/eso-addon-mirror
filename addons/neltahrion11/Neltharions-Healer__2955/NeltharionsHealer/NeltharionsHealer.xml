@@ -1,0 +1,32 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="neltharionsHealerIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="600" y="50" />
+      <OnMoveStop>
+        NeltharionsHealer.OnIndicatorMoveStop()
+      </OnMoveStop>
+
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+        <Label name="$(parent)T" font="ZoFontAnnounceLarge" color="FFFFFF" inheritAlpha="true"
+			         wrapMode="TRUNCATE" verticalAlignment="CENTER">Neltharions Healer</Label>
+      </Controls>
+    </TopLevelControl>
+
+
+
+  <TopLevelControl name="neltharionsHealerAlertBorder" tier="HIGH" alpha="0.5" hidden="true">
+     <AnchorFill />
+     <Controls>
+       <Backdrop name="$(parent)Overlay" edgeColor="ff0000">
+         <AnchorFill />
+         <Center file="EsoUI/Art/HUD/UITelvarOverlayCenter.dds" />
+         <Edge file="EsoUI/Art/HUD/UITelvarOverlayEdge.dds" edgeFileWidth="2048" edgeFileHeight="256" />
+
+         <Insets left="256" top="256" right="-256" bottom="-256" />
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+
+</GuiXml>

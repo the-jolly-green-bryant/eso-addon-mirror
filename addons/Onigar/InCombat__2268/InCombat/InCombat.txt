@@ -1,0 +1,12 @@
+## Title: In Combat
+## Author: Onigar
+## Version: 1.3.0
+## Description: Displays Combat state after a change and the current Enlightenment value in the chat window.
+## APIVersion: 100030
+
+InCombat.lua
+
+;  This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+;  The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+;  in the United States and/or other countries. All rights reserved.
+;  You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

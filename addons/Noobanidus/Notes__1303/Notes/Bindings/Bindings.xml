@@ -1,0 +1,21 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Notes">
+      <Action name="NOTES_1">
+        <Down>SLASH_COMMANDS["/note1"]()</Down>
+      </Action>
+      <Action name="NOTES_2">
+        <Down>SLASH_COMMANDS["/note2"]()</Down>
+      </Action>
+      <Action name="NOTES_3">
+        <Down>SLASH_COMMANDS["/note3"]()</Down>
+      </Action>
+      <Action name="NOTES_4">
+        <Down>SLASH_COMMANDS["/note4"]()</Down>
+      </Action>
+      <Action name="NOTES_5">
+        <Down>SLASH_COMMANDS["/note5"]()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

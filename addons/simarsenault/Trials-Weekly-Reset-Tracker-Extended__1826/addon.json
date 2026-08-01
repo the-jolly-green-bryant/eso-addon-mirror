@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/simarsenault/Trials-Weekly-Reset-Tracker-Extended__1826",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "simarsenault",
+  "canonical_id": "esoui:1826",
+  "category_id": "45",
+  "compatibility": [],
+  "content_id": "esoui:1826",
+  "deleted": false,
+  "directories": [
+    "TrialsWeeklyResetTrackerExtended"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1826/",
+  "fingerprint": "5a4695fe455a48b344e4af72a9d04d7024f5fb71c8a644112cd327c375f877f1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6189.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1826",
+  "source_url": "https://www.esoui.com/downloads/info1826-TrialsWeeklyResetTrackerExtended.html",
+  "stats": {
+    "downloads": 19783,
+    "favorites": 16,
+    "monthly_downloads": 53
+  },
+  "title": "Trials Weekly Reset Tracker Extended",
+  "updated_at": 1607522556000,
+  "version": "1.9.0"
+}

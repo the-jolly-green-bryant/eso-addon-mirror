@@ -1,0 +1,256 @@
+<GuiXml>
+  <Controls>
+    <Button name="AUI_MeterStatisticTabButton" font="ZoFontGameBold" endCapWidth="9" verticalAlignment="CENTER" mouseOverBlendMode="ADD" virtual="true">
+      <FontColors
+          normalColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+          pressedColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+          mouseOverColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT"
+          disabledColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED"
+            />
+      <Textures
+          normal="EsoUI/Art/Buttons/ESO_buttonLarge_normal.dds"
+          pressed="EsoUI/Art/Buttons/ESO_buttonLarge_mouseOver.dds"
+          mouseOver="EsoUI/Art/Buttons/ESO_buttonLarge_mouseOver.dds"
+          disabled="EsoUI/Art/Buttons/ESO_buttonLarge_mouseOver.dds"
+            />
+    </Button>
+    <TopLevelControl name="AUI_MeterStatistic" tier="MEDIUM" clampedToScreen="true" mouseEnabled="true" hidden="true" layer="OVERLAY">
+      <Controls>
+        <Backdrop name="$(parent)_Border" tier="MEDIUM" >
+          <AnchorFill />
+          <Edge file="EsoUI/Art/WorldMap/worldmap_frame_edge.dds" edgeFileWidth="128" edgeFileHeight="16" />
+          <OnInitialized>
+            self:SetCenterColor(0, 0, 0, 0.8)
+          </OnInitialized>
+        </Backdrop>
+        <Button name="$(parent)_CloseButton" tier="MEDIUM">
+          <Dimensions x="24" y="24" />
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-8" offsetY="8" />
+        </Button>
+        <Label name="$(parent)_LabelHeader" tier="MEDIUM">
+          <Anchor point="TOP" relativePoint="TOP" offsetX="0" offsetY="8" />
+        </Label>
+        <Label name="$(parent)_LabelDate" tier="MEDIUM">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="30" offsetY="8" />
+        </Label>
+        <Button name="$(parent)_PreviousRecord" tier="MEDIUM">
+          <Dimensions x="32" y="32"/>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="320" offsetY="10" />
+        </Button>
+        <Button name="$(parent)_NextRecord" tier="MEDIUM">
+          <Dimensions x="32" y="32"/>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-320" offsetY="10" />
+        </Button>
+        <Button name="$(parent)_LoadRecord" tier="MEDIUM">
+          <Dimensions x="32" y="32"/>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-220" offsetY="10" />
+        </Button>
+        <Button name="$(parent)_SaveRecord" tier="MEDIUM">
+          <Dimensions x="32" y="32"/>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-180" offsetY="10" />
+        </Button>
+        <Button name="$(parent)_DeleteRecord" tier="MEDIUM">
+          <Dimensions x="32" y="32"/>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-140" offsetY="10" />
+        </Button>
+        <Texture name="$(parent)_HeaderLine" tier="MEDIUM"/>
+        <Label name="$(parent)_LabelNoData" tier="MEDIUM">
+          <Anchor point="CENTER" />
+        </Label>
+        <Control name="$(parent)_Inner" tier="MEDIUM">
+          <Controls>
+            <Control name="$(parent)_InfoContainer" />
+            <Control name="$(parent)_VerticalButtonContainer" >
+              <Anchor point="TOPLEFT" relativeTo="$(parent)_Inner" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+              <Dimensions x="40" y="200"/>
+              <Controls>
+                <Button name="$(parent)_SelectDamageOutButton" tier="MEDIUM">
+                  <Dimensions x="48" y="42"/>
+                  <Anchor point="TOP" relativeTo="$(parent)_Inner" relativePoint="TOPT" offsetX="-12" offsetY="30" />
+                  <Controls>
+                    <Texture name="$(parent)_Icon" textureFile="/esoui/art/treeicons/gamepad/gp_housing_categoryicon_weapons.dds" tier="MEDIUM">
+                      <AnchorFill />
+                    </Texture>
+                  </Controls>
+                </Button>
+                <Button name="$(parent)_SelectHealOutButton" tier="MEDIUM">
+                  <Dimensions x="48" y="42"/>
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_SelectDamageOutButton" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+                  <Controls>
+                    <Texture name="$(parent)_Icon" textureFile="/esoui/art/buttons/gamepad/gp_plus_large.dds" tier="MEDIUM">
+                      <AnchorFill />
+                    </Texture>
+                  </Controls>
+                </Button>
+                <Button name="$(parent)_SelectDamageInButton" tier="MEDIUM">
+                  <Dimensions x="48" y="42"/>
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_SelectHealOutButton" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+                  <Controls>
+                    <Texture name="$(parent)_Icon" textureFile="/esoui/art/icons/heraldrycrests_weapon_shield_01.dds" tier="MEDIUM">
+                      <AnchorFill />
+                    </Texture>
+                  </Controls>
+                </Button>
+                <Button name="$(parent)_SelectHealInButton" tier="MEDIUM">
+                  <Dimensions x="48" y="42"/>
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_SelectDamageInButton" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+                  <Controls>
+                    <Texture name="$(parent)_Icon" textureFile="/esoui/art/hud/gamepad/gp_radialicon_invitegroup_down.dds" tier="MEDIUM">
+                      <AnchorFill />
+                    </Texture>
+                  </Controls>
+                </Button>
+
+                <Texture name="$(parent)_VerticalButtonLine" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_VerticalButtonContainer" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+                  <Dimensions x="1" y="200"/>
+                </Texture>
+              </Controls>
+            </Control>
+            <Control name="$(parent)_PanelLeft">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)_Inner" relativePoint="TOPRIGHT" offsetX="40" offsetY="0"/>
+              <Dimensions x="620" y="400"/>
+              <Controls>
+                <Texture name="$(parent)_BuffListHeaderLine" tier="MEDIUM"/>
+                <Button name="$(parent)_ButtonShowBuffs" inherits="AUI_MeterStatisticTabButton" tier="MEDIUM">
+                  <Dimensions x="80" y="30"/>
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_BuffListHeaderLine" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
+                </Button>
+                <Button name="$(parent)_ButtonShowDebuffs" inherits="AUI_MeterStatisticTabButton" tier="MEDIUM">
+                  <Dimensions x="80" y="30"/>
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_ButtonShowBuffs" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+                </Button>
+              </Controls>
+            </Control>
+            <Control name="$(parent)_PanelRight">
+              <Dimensions x="280" y="400"/>
+              <Controls>
+                <Label name="$(parent)_LabelDamageType" tier="MEDIUM">
+                  <Anchor point="TOP" relativeTo="$(parent)_PanelLeft" relativePoint="TOP" offsetX="0" offsetY="0" />
+                </Label>
+                <Texture name="$(parent)_DamageHeaderLine" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_PanelLeft" relativePoint="TOPLEFT" offsetX="0" offsetY="30" />
+                </Texture>
+                <Label name="$(parent)_LabelHeaderUnitName" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_DamageHeaderLine" relativePoint="BOTTOMLEFT" offsetX="110" offsetY="10" />
+                </Label>
+                <Label name="$(parent)_LabelHeaderGroup" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelHeaderUnitName" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelHeaderGroupPercent" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelHeaderGroup" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                </Label>
+                <Texture name="$(parent)_StatHeaderLine" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_DamageHeaderLine" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="30" />
+                </Texture>
+                <Label name="$(parent)_LabelStatLeft1Name" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_StatHeaderLine" relativePoint="TOPLEFT" offsetX="0" offsetY="14" />
+                </Label>
+                <Label name="$(parent)_LabelStatLeft1Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft1Name" relativePoint="TOPLEFT" offsetX="110" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatMiddle1Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft1Value" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatRight1Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatMiddle1Value" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatLeft2Name" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft1Name" relativePoint="TOPLEFT" offsetX="0" offsetY="26" />
+                </Label>
+                <Label name="$(parent)_LabelStatLeft2Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft2Name" relativePoint="TOPLEFT" offsetX="110" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatMiddle2Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft2Value" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatRight2Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatMiddle2Value" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatLeft3Name" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft2Name" relativePoint="TOPLEFT" offsetX="0" offsetY="26" />
+                </Label>
+                <Label name="$(parent)_LabelStatLeft3Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft3Name" relativePoint="TOPLEFT" offsetX="110" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatMiddle3Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft3Value" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatRight3Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatMiddle3Value" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatLeft4Name" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft3Name" relativePoint="TOPLEFT" offsetX="0" offsetY="26" />
+                </Label>
+                <Label name="$(parent)_LabelStatLeft4Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft4Name" relativePoint="TOPLEFT" offsetX="110" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatMiddle4Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft4Value" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatRight4Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatMiddle4Value" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatLeft5Name" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft4Name" relativePoint="TOPLEFT" offsetX="0" offsetY="26" />
+                </Label>
+                <Label name="$(parent)_LabelStatLeft5Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft5Name" relativePoint="TOPLEFT" offsetX="110" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatMiddle5Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft5Value" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatRight5Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatMiddle5Value" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatLeft6Name" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft5Name" relativePoint="TOPLEFT" offsetX="0" offsetY="26" />
+                </Label>
+                <Label name="$(parent)_LabelStatLeft6Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft6Name" relativePoint="TOPLEFT" offsetX="110" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatMiddle6Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatLeft6Value" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelStatRight6Value" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelStatMiddle6Value" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelTime" tier="MEDIUM">
+                  <Anchor point="TOP" relativeTo="$(parent)_PanelRight" relativePoint="TOP" offsetX="0" offsetY="260" />
+                </Label>
+                <Texture name="$(parent)_Line2" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_PanelRight" relativePoint="TOPLEFT" offsetX="0" offsetY="290" />
+                </Texture>
+                <Label name="$(parent)_LabelMeasuringTimeName" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_Line2" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
+                </Label>
+                <Label name="$(parent)_LabelMeasuringTimeValue" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelMeasuringTimeName" relativePoint="TOPLEFT" offsetX="190" offsetY="0" />
+                </Label>
+                <Label name="$(parent)_LabelCombatTimeName" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelMeasuringTimeName" relativePoint="TOPLEFT" offsetX="0" offsetY="26" />
+                </Label>
+                <Label name="$(parent)_LabelCombatTimeValue" tier="MEDIUM">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_LabelCombatTimeName" relativePoint="TOPLEFT" offsetX="190" offsetY="0" />
+                </Label>
+              </Controls>
+            </Control>
+          </Controls>
+        </Control>
+        <Button name="$(parent)_ButtonPostCombatStatic" inherits="ZO_DefaultButton" hidden="true" tier="MEDIUM">
+          <Dimensions x="200" y="30"/>
+          <Anchor point="CENTER" offsetY="-26" relativePoint="BOTTOM" />
+        </Button>
+        <Label name="$(parent)_LabelAUIVersion" tier="MEDIUM">
+          <Anchor point="BOTTOMLEFT" offsetX="20" offsetY="-12" />
+        </Label>
+        <Label name="$(parent)_LabelSaveLimit" tier="MEDIUM">
+          <Anchor point="BOTTOMLEFT" offsetX="160" offsetY="-12" />
+        </Label>
+        <Label name="$(parent)_LabelESOVersion" tier="MEDIUM">
+          <Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="-12" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

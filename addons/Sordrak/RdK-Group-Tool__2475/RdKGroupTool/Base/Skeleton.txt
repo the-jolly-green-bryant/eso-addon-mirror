@@ -1,0 +1,51 @@
+-- RdK Group Tool Recharger
+-- By @s0rdrak (PC / EU)
+
+RdKGTool.toolbox.recharger = RdKGTool.toolbox.recharger or {}
+local RdKGToolRecharger = RdKGTool.toolbox.recharger
+RdKGTool.util = RdKGTool.util or {}
+local RdKGToolUtil = RdKGTool.util
+
+
+RdKGToolRecharger.constants = RdKGToolRecharger.constants or {}
+
+RdKGToolRecharger.callbackName = RdKGTool.addonName .. "Recharger"
+
+RdKGToolRecharger.config = {}
+
+RdKGToolRecharger.state = {}
+RdKGToolRecharger.state.initialized = false
+
+function RdKGToolRecharger.Initialize()
+	RdKGTool.profile.AddProfileChangeListener(RdKGToolRecharger.callbackName, RdKGToolRecharger.OnProfileChanged)
+	
+	RdKGToolRecharger.state.initialized = true
+	RdKGToolRecharger.SetEnabled(RdKGToolRecharger.rcVars.enabled)
+end
+
+function RdKGToolRecharger.GetDefaults()
+	local defaults = {}
+	defaults.enabled = true
+	return defaults
+end
+
+function RdKGToolRecharger.SetEnabled(value)
+	if RdKGToolRecharger.state.initialized == true and value ~= nil then
+		RdKGToolRecharger.rcVars.enabled = value
+		if value == true then
+
+		else
+
+		end
+	end
+end
+
+--callbacks
+function RdKGToolRecharger.OnProfileChanged(currentProfile)
+	if currentProfile ~= nil then
+		RdKGToolRecharger.rcVars = currentProfile.toolbox.recharger
+		RdKGToolRecharger.SetEnabled(RdKGToolRecharger.rcVars.enabled)
+	end
+end
+
+--menu interactions

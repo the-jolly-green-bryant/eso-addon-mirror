@@ -1,0 +1,107 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="LeadList" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="false">
+			<Dimensions x="750" y="475" />
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="130" offsetY="230"/>
+			<OnMoveStop>
+				LO.OnWindowMove()
+			</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+				
+				<!-- SORT -->
+				<Button name="$(parent)SortDifficulty">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="42" />
+					<OnMouseUp>
+						LO.Sort("DIFFICULTY")
+						LO.BuildTable()
+					</OnMouseUp>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, TOP, "Difficulty")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+					<Dimensions x="25" y="25" />
+					<Textures normal="esoui/art/progression/progression_crafting_unlocked_up.dds"
+							  pressed="esoui/art/progression/progression_crafting_unlocked_down.dds"
+							  mouseOver="esoui/art/progression/progression_crafting_unlocked_over.dds"
+					/>
+				</Button>
+				<Button name="$(parent)SortZone">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="285" />
+					<OnMouseUp>
+						LO.Sort("ZONE")
+						LO.BuildTable()
+					</OnMouseUp>
+					<Dimensions x="25" y="25" />
+					<Textures normal="esoui/art/progression/progression_crafting_unlocked_up.dds"
+							  pressed="esoui/art/progression/progression_crafting_unlocked_down.dds"
+							  mouseOver="esoui/art/progression/progression_crafting_unlocked_over.dds"
+					/>
+				</Button>
+				<Button name="$(parent)SortReward">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="555" />
+					<OnMouseUp>
+						LO.Sort("REWARD")
+						LO.BuildTable()
+					</OnMouseUp>
+					<Dimensions x="25" y="25" />
+					<Textures normal="esoui/art/progression/progression_crafting_unlocked_up.dds"
+							  pressed="esoui/art/progression/progression_crafting_unlocked_down.dds"
+							  mouseOver="esoui/art/progression/progression_crafting_unlocked_over.dds"
+					/>
+				</Button>
+				
+				<!-- CONTENT -->
+				<Label name="$(parent)Names" font="ZoFontWinH4" color="FFFFFF"
+					verticalAlignment="TOP" horizontalAlignment="LEFT" text="Name">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+				</Label>
+				<Label name="$(parent)Zones" font="ZoFontWinH4" color="FFFFFF"
+					verticalAlignment="TOP" horizontalAlignment="LEFT" text="Zone">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="250" />
+				</Label>
+				<Label name="$(parent)Rewards" font="ZoFontWinH4" color="FFFFFF"
+					verticalAlignment="TOP" horizontalAlignment="LEFT" text="Zone">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="500" />
+				</Label>
+				
+				<!-- HIDE -->
+				<Button name="$(parent)Hide">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+					<OnMouseUp>LeadList:SetHidden(true)</OnMouseUp>
+					<Dimensions x="25" y="25" />
+					<Textures normal="esoui/art/buttons/decline_up.dds"
+							  pressed="esoui/art/buttons/decline_down.dds"
+							  mouseOver="esoui/art/buttons/decline_over.dds"
+					/>
+				</Button>
+				
+				<!-- NAVIGATION -->
+				<Button name="$(parent)PageLeft" enabled="false">
+					<Anchor point="CENTER" relativePoint="BOTTOM" relativeTo="$(parent)" offsetX="-50" offsetY="-8" />
+					<OnMouseUp>LO.TurnPage(-1)</OnMouseUp>
+					<Dimensions x="20" y="20" />
+					<Textures normal="esoui/art/charactercreate/charactercreate_leftarrow_up.dds"
+							  pressed="esoui/art/charactercreate/charactercreate_leftarrow_down.dds"
+							  mouseOver="esoui/art/charactercreate/charactercreate_leftarrow_over.dds"
+					/>
+				</Button>
+				<Button name="$(parent)PageRight" enabled="false">
+					<Anchor point="CENTER" relativePoint="BOTTOM" relativeTo="$(parent)" offsetX="50" offsetY="-8" />
+					<OnMouseUp>LO.TurnPage(1)</OnMouseUp>
+					<Dimensions x="20" y="20" />
+					<Textures normal="esoui/art/charactercreate/charactercreate_rightarrow_up.dds"
+							  pressed="esoui/art/charactercreate/charactercreate_rightarrow_down.dds"
+							  mouseOver="esoui/art/charactercreate/charactercreate_rightarrow_over.dds"
+					/>
+				</Button>
+				<Label name="$(parent)PageIndex" font="ZoFontWinH5" color="FFFFFF"
+					verticalAlignment="CENTER" horizontalAlignment="CENTER" text="1 / 1">
+					<Anchor point="CENTER" relativePoint="BOTTOM" relativeTo="$(parent)" offsetY="-10" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

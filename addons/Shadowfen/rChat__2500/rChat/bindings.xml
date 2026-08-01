@@ -1,0 +1,78 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="rChat">
+			<Action name="RCHAT_SWITCH_TAB">
+				<Down>rChat.SwitchToNextTab()</Down>
+			</Action>
+			<Action name="RCHAT_TOGGLE_CHAT_WINDOW">
+				<Down>rChat.ToggleChat()</Down>
+			</Action>
+			<Action name="RCHAT_SHOW_AUTO_MSG">
+				<Down>rChat.ShowAutoMsg()</Down>
+			</Action>
+			<Action name="RCHAT_WHISPER_MY_TARGET">
+				<Down>rChat.WhispMyTarget()</Down>
+			</Action>
+			<Action name="TAB_1">
+				<Down>
+					rChat.ChangeTab(1)
+				</Down>
+			</Action>
+			<Action name="TAB_2">
+				<Down>
+					rChat.ChangeTab(2)
+				</Down>
+			</Action>
+			<Action name="TAB_3">
+				<Down>
+					rChat.ChangeTab(3)
+				</Down>
+			</Action>
+			<Action name="TAB_4">
+				<Down>
+					rChat.ChangeTab(4)
+				</Down>
+			</Action>
+			<Action name="TAB_5">
+				<Down>
+					rChat.ChangeTab(5)
+				</Down>
+			</Action>
+			<Action name="TAB_6">
+				<Down>
+					rChat.ChangeTab(6)
+				</Down>
+			</Action>
+			<Action name="TAB_7">
+				<Down>
+					rChat.ChangeTab(7)
+				</Down>
+			</Action>
+			<Action name="TAB_8">
+				<Down>
+					rChat.ChangeTab(8)
+				</Down>
+			</Action>
+			<Action name="TAB_9">
+				<Down>
+					rChat.ChangeTab(9)
+				</Down>
+			</Action>
+			<Action name="TAB_10">
+				<Down>
+					rChat.ChangeTab(10)
+				</Down>
+			</Action>
+			<Action name="TAB_11">
+				<Down>
+					rChat.ChangeTab(11)
+				</Down>
+			</Action>
+			<Action name="TAB_12">
+				<Down>
+					rChat.ChangeTab(12)
+				</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

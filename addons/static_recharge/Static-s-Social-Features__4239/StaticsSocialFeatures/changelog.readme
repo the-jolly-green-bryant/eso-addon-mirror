@@ -1,0 +1,40 @@
+2.0.1
+  - Fixed an issue with the collections context menu not working properly
+
+2.0.0
+  - Fixed bug with mutual guilds showing for the user
+  - Upped requirement for LibStatic to version 2
+  - Added account wide repped guild option
+  - Fixed Saved Variables to differenciate between servers
+  - Added repped guild marquee feature
+  - Updated to 49
+
+1.2.3
+  - Added support for LibStatic
+  - Added check for if in group on login for multirider mount setting
+  - Added new notification sound to list of sounds
+
+1.2.1
+  - bug fix for constant offline reminders
+
+1.2.0
+  - Added hotkey to mount multi-rider group member mounts
+  - Added the ability to select a multi mount and solo mount and swap automatically when grouping
+
+1.0.5
+  - Added mutual guilds info and option to group list
+
+1.0.4
+  - Add/Remove Fav friends
+  - Fav friend icon options
+  - Keep Fav friends at top
+  - Offline Group invite
+  - AFK Timer
+  - Offline notification on login
+  - Login/Logout player status control
+  - Send notifications to chat/center/alert areas
+  - Friend login/logout message control
+  - Context menu and keybind strip additions
+  - Offline timer (works through reload)
+  - Notification for whispering someone while offline
+  - Show mutual guilds for friends in tooltip

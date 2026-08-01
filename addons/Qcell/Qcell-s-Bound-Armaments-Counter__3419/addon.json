@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Qcell/Qcell-s-Bound-Armaments-Counter__3419",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Qcell",
+  "canonical_id": "esoui:3419",
+  "category_id": "58",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3419",
+  "deleted": false,
+  "directories": [
+    "QcellBoundArmamentsCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3419/",
+  "fingerprint": "deaf2ef23bb3b8465ed7febce92ebe4a6ec4894e01343ead03a50392e753c88c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11688.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11689.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3419",
+  "source_url": "https://www.esoui.com/downloads/info3419-QcellsBoundArmamentsCounter.html",
+  "stats": {
+    "downloads": 4243,
+    "favorites": 6,
+    "monthly_downloads": 36
+  },
+  "title": "Qcell's Bound Armaments Counter",
+  "updated_at": 1657423711000,
+  "version": "0.8"
+}

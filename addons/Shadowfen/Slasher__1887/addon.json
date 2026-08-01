@@ -1,0 +1,93 @@
+{
+  "archive_path": "addons/Shadowfen/Slasher__1887",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shadowfen",
+  "canonical_id": "esoui:1887",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1887",
+  "deleted": false,
+  "directories": [
+    "Slasher"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1887/",
+  "fingerprint": "f86920516d2082112a7404d4643f01f445bb162d0cfd72c2cdec53978e9e39a2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10884.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10883.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10886.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10882.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10881.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1887",
+  "source_url": "https://www.esoui.com/downloads/info1887-Slasher.html",
+  "stats": {
+    "downloads": 25030,
+    "favorites": 34,
+    "monthly_downloads": 196
+  },
+  "title": "Slasher",
+  "updated_at": 1785347125000,
+  "version": "2.48"
+}

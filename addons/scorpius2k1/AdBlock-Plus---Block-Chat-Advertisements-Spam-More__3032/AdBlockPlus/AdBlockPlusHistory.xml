@@ -1,0 +1,86 @@
+<GuiXml>
+	<Controls>
+		<!-- Virtuals -->
+		<Label name="AdBlockPlusHistoryLabel" font="ZoFontGame" wrapMode="ELLIPSIS" virtual="true" alpha="1.0"/>
+		<Control name="AdBlockPlusHistoryRow" mouseEnabled="true" virtual="true">
+			<Dimensions x="600" y="28"/>
+			<OnMouseEnter> AD_BLOCK_PLUS_LIST:EnterRow(self) </OnMouseEnter>
+			<OnMouseExit> AD_BLOCK_PLUS_LIST:ExitRow(self) </OnMouseExit>
+			<OnMouseUp>
+				<!--
+				if upInside then 
+				AD_BLOCK_PLUS_LIST:MouseClickHandler(self, button, shift) 
+				end
+				-->
+			</OnMouseUp>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" >
+					<Dimensions x="1014"/>
+				</Texture>
+				<Label name="$(parent)Number" inherits="AdBlockPlusHistoryLabel" hidden="true">
+					<Anchor point="LEFT" relativeTo="$(parent)BG" relativePoint="LEFT" offsetX="0"/>
+					<Dimensions x="0"/>
+				</Label>
+				<Label name="$(parent)Command" inherits="AdBlockPlusHistoryLabel">
+					<Anchor point="LEFT" relativeTo="$(parent)Number" relativePoint="LEFT" offsetX="10"/>
+					<Dimensions x="994" y="27"/>
+				</Label>
+			</Controls>
+		</Control>
+		<!-- End Virtuals -->
+
+		<!-- Main Control -->
+		<TopLevelControl  name="AdBlockPlusHistory" mouseEnabled="true" movable="false" hidden="true" >
+			<Dimensions x="1024" y="640" />
+			<Anchor point="CENTER" offsetX="0" offsetY="0" />
+			<OnMoveStop>
+				<!-- AD_BLOCK_PLUS_LIST:OnMoveStop()  -->
+			</OnMoveStop>
+			<OnInitialized> AD_BLOCK_PLUS_LIST:OnInitialized(self) </OnInitialized>
+			
+			<Controls>
+
+				<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="15" offsetY="15" />
+					<Anchor point="TOPRIGHT" retativeTo="$(parent)" offsetX="-15" offsetY="15" />
+					<Dimensions y="32"/>
+					<Controls>
+						<Control name="$(parent)Name" inherits="ZO_SortHeader">
+							<OnInitialized> 
+								ZO_SortHeader_Initialize(self, "AdBlock Plus "..GetString(SI_AD_BLOCK_PLUS_DESCRIPTION_HISTORY).." ("..GetString(SI_AD_BLOCK_PLUS_HISTORY_LAST).." "..AD_BLOCK_PLUS.numberFormat(AD_BLOCK_PLUS.maxHistory)..")", "number", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold") 
+							</OnInitialized>
+							<OnMouseEnter></OnMouseEnter>
+							<OnMouseExit>
+								<!-- AD_BLOCK_PLUS_LIST.SV.order = AD_BLOCK_PLUS_LIST.currentSortOrder -->
+							</OnMouseExit>
+							<Anchor point="TOPLEFT" offsetX="10"/>
+							<Dimensions x="512" y="32"/>
+						</Control>
+					</Controls>
+				</Control>
+
+				<Label name="$(parent)TotalBlocked" width="200" height="40" color="ffffff" font="ZoFontGame" inheritAlpha="true" wrapMode="ELLIPSIS" verticalAlignment="TOP" horizontalAlignment="RIGHT" text="">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Headers" offsetX="-7" offsetY="4" />
+				</Label>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3"/>
+					<Dimensions x="1008" y="580" />
+				</Control>
+
+				<Backdrop name="$(parent)_BG" inherits="ZO_ThinBackdrop" verticalAlignment="CENTER" edgeColor="FFFFFF" centerColor="FFFFFF" horizontalAlignment="CENTER" alpha="0.75">
+					<Dimensions x="350" y="25" />
+				</Backdrop>
+
+				<Button name="$(parent)CloseButton" inherits="ZO_DefaultButton" text="Close">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetY="0" offsetX="0" />
+					<OnMouseUp>AD_BLOCK_PLUS.HideHistoryWindow()</OnMouseUp>
+				</Button>
+
+			</Controls>
+
+		</TopLevelControl>
+		<!-- End Main Control -->
+
+	</Controls>
+</GuiXml>

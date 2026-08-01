@@ -1,0 +1,4 @@
+## Title: CombatTip
+## APIVersion: 100030
+
+CombatTip.lua

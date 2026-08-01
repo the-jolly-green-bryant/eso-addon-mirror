@@ -1,0 +1,14 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="CombatStateFrame" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false">
+			<OnMoveStop>
+				CombatState.OnMoveStop()
+			</OnMoveStop>
+			<Controls>
+				<Label name="$(parent)Label" text="CombatState" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="BOTTOM">
+					<Anchor point="TOPLEFT" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

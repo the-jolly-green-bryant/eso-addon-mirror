@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Sorondor/Advanced-Filters---Recipe-Filters__1804",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sorondor",
+  "canonical_id": "esoui:1804",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:1804",
+  "deleted": false,
+  "directories": [
+    "AF_RecipeFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1804/",
+  "fingerprint": "64d72aff80d1bd3722cb2b1a6ed2683644e13eb171b97fe8f65eb030b95f9855",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6888.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1804",
+  "source_url": "https://www.esoui.com/downloads/info1804-AdvancedFilters-RecipeFilters.html",
+  "stats": {
+    "downloads": 27821,
+    "favorites": 31,
+    "monthly_downloads": 64
+  },
+  "title": "Advanced Filters - Recipe Filters",
+  "updated_at": 1529295002000,
+  "version": "1.5"
+}

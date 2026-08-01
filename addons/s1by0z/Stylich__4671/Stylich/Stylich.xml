@@ -1,0 +1,502 @@
+<?xml version="1.0"?>
+<GuiXml>
+    <Font name="STLFont" font="$(MEDIUM_FONT)|18"/>
+    <Font name="STLFontSmall" font="$(BOLD_FONT)|14"/>
+    <Font name="STLFontBold" font="$(BOLD_FONT)|22"/>
+    <Font name="STLFontBig" font="$(BOLD_FONT)|18|soft-shadow-thick"/>
+
+    <Controls>
+
+        <Backdrop name="STL_DefaultBG" virtual="true" alpha="0"> <!--  centerColor="40FF0000" edgeColor="40FF0000"  -->
+            <AnchorFill/>
+            <Edge edgeSize="1"/>
+        </Backdrop>
+
+        <Control name="STL_SimpleRow" mouseEnabled="true" virtual="true">
+            <Dimensions y="30" />
+			<OnMouseEnter>Stylich.UI.SimpleRow_OnMouseEnter(self)</OnMouseEnter>
+			<OnMouseExit>Stylich.UI.SimpleRow_OnMouseExit(self)</OnMouseExit>
+			<OnMouseUp>Stylich.UI.SimpleRow_OnMouseUp(self, button, upInside)</OnMouseUp>
+
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				<Label name="$(parent)Name" font="STLFont" wrapMode="ELLIPSIS">
+					<AnchorFill/>
+				</Label>
+            </Controls>
+        </Control>
+
+        <Control name="STL_SetItemTemplate" mouseEnabled="true" virtual="true">
+            <Dimensions x="80" y="80" />
+			<OnMouseEnter></OnMouseEnter>
+			<OnMouseExit></OnMouseExit>
+			<OnMouseUp></OnMouseUp>
+
+            <Controls>
+                <Button name="$(parent)Icon">
+                    <Dimensions x="76" y="76" />
+                    <Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)"/>
+                </Button>
+                <Backdrop name="$(parent)BG" alpha="1">
+                    <AnchorFill/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+            </Controls>
+        </Control>
+
+        <Control name="STL_SetLabelTemplate" mouseEnabled="true" virtual="true">
+            <!-- Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="5"/>
+            <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetY="35"/ -->
+
+            <Controls>
+            <Backdrop name="$(parent)BG" inherits="STL_DefaultBG"/>
+				<Label name="$(parent)Label" font="STLFont" wrapMode="ELLIPSIS">
+                    <AnchorFill/>
+                </Label>
+            </Controls>
+        </Control>
+
+
+        <Control name="STL_SectionLabelTemplate" mouseEnabled="true" virtual="true">
+            <Dimensions x="150" y="25" />
+
+            <Controls>
+                <Button name="$(parent)Label" font="STLFont" wrapMode="ELLIPSIS">
+                    <AnchorFill/>
+                </Button>
+            </Controls>
+        </Control>
+
+        <Control name="STL_SetItem" mouseEnabled="true" virtual="true">
+            <Dimensions x="200" y="40" />
+			<OnMouseEnter></OnMouseEnter>
+			<OnMouseExit></OnMouseExit>
+			<OnMouseUp></OnMouseUp>
+
+            <Controls>
+                <Button name="$(parent)Icon">
+                    <Dimensions x="40" y="40" />
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                </Button>
+				<Label name="$(parent)Name" font="STLFont" wrapMode="ELLIPSIS">
+                    <Dimensions x="155" y="40" />
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="5"/>
+				</Label>
+            </Controls>
+        </Control>
+
+        <EditBox name="STL_DefaultNameEdit" inherits="ZO_EditDefaultText ZO_DefaultEditForDarkBackdrop" virtual="true">
+            <OnFocusLost></OnFocusLost>
+            <OnEscape>self:LoseFocus()</OnEscape>
+            <OnEnter>self:LoseFocus()</OnEnter>
+            <!--Controls>
+                <Backdrop name="$(parent)BG" alpha="0.25" centerColor="FFFFFFFF" edgeColor="FFFFFFFF">
+                    <AnchorFill/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+            </Controls-->
+        </EditBox>
+
+
+        <Control name="STL_SetDetailsTemplate" virtual="true">
+            <AnchorFill />
+            <!-- Controls>
+                <Backdrop name="$(parent)NameEditBG" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="5"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetY="35"/>
+                    <Controls>
+                        <EditBox name="$(grandparent)NameEdit" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText"/>
+                    </Controls>
+                </Backdrop>
+
+                <! - - Controls for Set-Items are created programmatically - - >  
+            </Controls-->
+        </Control>
+
+
+        <Button name="STL_DefaultButton" virtual="true">
+            <Dimensions x="40" y="40" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="STL_DefaultBG"/>
+                <Label name="$(parent)Name" font="STLFont" color="FFFFFF" text="Hallo">
+                    <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="4"/>
+                </Label>
+            </Controls>
+        </Button>
+
+        <!-- List/Detail Template -->
+
+        <Control name="STL_ListDetailPanel" virtual="true">
+            <Controls>
+                <Control name="$(parent)ListContainer">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)" offsetX="200"/>
+
+                    <Controls>
+                        <!-- Backdrop name="$(parent)BG" inherits="STL_DefaultBG"/ -->
+
+                        <!-- List-Toolbar with Add/Delete -->
+                        <Control name="$(parent)Toolbar">
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                            <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetY="40"/>
+                            <Controls>
+                                <Button name="$(parent)Add" clickSound="Click">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                                    <Dimensions y="40" x="40"/>
+                                    <OnMouseEnter>Stylich.UI.ShowEditorTooltip(self, 'Add Style') </OnMouseEnter>
+                                    <OnMouseExit>Stylich.UI.HideEditorTooltip()</OnMouseExit>
+                                    <Textures normal="esoui/art/buttons/plus_up.dds" pressed="esoui/art/buttons/plus_down.dds" mouseOver="esoui/art/buttons/plus_over.dds"/>
+                                    <OnClicked>Stylich.UI.OnListAdd()</OnClicked>
+                                </Button>
+                            </Controls>
+                            <Controls>
+                                <Button name="$(parent)Delete" clickSound="Click">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Add"/>
+                                    <Dimensions y="40" x="40"/>
+                                    <OnMouseEnter>Stylich.UI.ShowEditorTooltip(self, 'Delete Style') </OnMouseEnter>
+                                    <OnMouseExit>Stylich.UI.HideEditorTooltip()</OnMouseExit>
+                                    <Textures normal="esoui/art/buttons/minus_up.dds" pressed="esoui/art/buttons/minus_down.dds" mouseOver="esoui/art/buttons/minus_over.dds"/>
+                                    <OnClicked>Stylich.UI.OnListDelete()</OnClicked>
+                                </Button>
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)List" mouseEnabled="true" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Toolbar" offsetX="10" offsetY="5"/>
+                            <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="-5"/>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)DetailContainer">
+                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)ListContainer" offsetX="10"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)"/>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="STL_DefaultBG"/>
+
+                        <!-- Detail-Toolbar with Edit -->
+                        <Control name="$(parent)Toolbar">
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                            <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetY="40"/>
+                            <Controls>
+	                            <Button name="$(parent)EditStyleMeta" clickSound="Click">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+				                    <Dimensions y="40" x="40"/>
+                                    <OnMouseEnter>Stylich.UI.ShowEditorTooltip(self, 'Edit Style Properties') </OnMouseEnter>
+                                    <OnMouseExit>Stylich.UI.HideEditorTooltip()</OnMouseExit>
+                                    <Textures normal="esoui/art/buttons/edit_up.dds" pressed="esoui/art/buttons/edit_down.dds" mouseOver="esoui/art/buttons/edit_over.dds"/>
+				                    <OnClicked>Stylich.UI.OnEditStyleProperties()</OnClicked>
+			                    </Button>	                            
+                                <Button name="$(parent)Use" clickSound="Click">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)EditStyleMeta"/>
+                                    <Dimensions y="40" x="40"/>
+                                    <OnMouseEnter>Stylich.UI.ShowEditorTooltip(self, 'Use Style') </OnMouseEnter>
+                                    <OnMouseExit>Stylich.UI.HideEditorTooltip()</OnMouseExit>
+                                    <Textures normal="esoui/art/buttons/accept_up.dds" pressed="esoui/art/buttons/accept_down.dds" mouseOver="esoui/art/buttons/accept_over.dds"/>
+                                    <OnClicked>Stylich.UI.OnUseStyle()</OnClicked>
+                                </Button>
+                                <Button name="$(parent)Reload" clickSound="Click">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Use"/>
+                                    <Dimensions y="40" x="40"/>
+                                    <OnMouseEnter>Stylich.UI.ShowEditorTooltip(self, 'Reload Style form Charcter') </OnMouseEnter>
+                                    <OnMouseExit>Stylich.UI.HideEditorTooltip()</OnMouseExit>
+                                    <Textures normal="esoui/art/help/help_tabicon_feedback_up.dds" pressed="esoui/art/help/help_tabicon_feedback_down.dds" mouseOver="esoui/art/help/help_tabicon_feedback_over.dds"/>
+
+                                    <OnClicked>Stylich.UI.OnReloadStyle()</OnClicked>
+                                </Button>
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)Details">
+                            <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Toolbar" offsetX="10" offsetY="5"/>
+                            <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)"/>
+                            <Controls>
+                                <Control name="$(parent)StyleSetDetails" inherits="STL_SetDetailsTemplate" hidden="true"/>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+
+
+        <!-- New Stile Main Panel -->
+        <TopLevelControl name="STL_Main" clampedToScreen="true" movable="true" mouseEnabled="true" allowBringToTop="true"  hidden="true">
+            <Dimensions x="720" y="620" />
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="GuiRoot"/>
+            <OnInitialized>Stylich.UI.OnInitMain()</OnInitialized>
+
+            <Controls>
+                <Backdrop name="$(parent)SolidBG" centerColor="EE0E0E0E" edgeColor="00000000">
+                    <AnchorFill/>
+                </Backdrop>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+                <!--Backdrop name="$(parent)BG" integralWrapping="true" centerColor="F0000000"> 
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="-8" offsetY="-6"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="4"/>
+                    <Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeFileWidth="256" edgeFileHeight="256" edgeSize="32"/>
+                    <!- - Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" / - - >
+                    <Insets left="32" top="32" right="-32" bottom="-32" />
+                </Backdrop-->
+
+                <!-- Header/Title -->
+                <Control name="$(parent)Header">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="10"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="40"/>
+
+                    <Controls>
+
+                        <Backdrop name="$(parent)BG" inherits="STL_DefaultBG"/>
+
+                        <Texture name="$(parent)Logo" textureFile="esoui/art/mainmenu/menubar_collections_up.dds">
+                            <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="2"/>
+                            <Dimensions x="28" y="28"/>
+                        </Texture>
+
+                        <Label name="$(parent)Headline" font="STLFont" color="FFFFFF">
+                            <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)"/>
+                            <OnInitialized>self:SetText("|cFFAA33"..Stylich.App.displayname.."|r "..Stylich.App.version)</OnInitialized>
+                        </Label>
+
+                        <Button name="$(parent)CloseButton" clickSound="Click">
+                            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" />
+                            <Dimensions y="25" x="25"/>
+                            <Textures normal="esoui/art/buttons/decline_up.dds" pressed="esoui/art/buttons/decline_down.dds" mouseOver="esoui/art/buttons/decline_over.dds"/>
+                            <OnClicked>Stylich.UI.HideMain()</OnClicked>
+                        </Button>
+
+                        <Button name="$(parent)OptionsButton" clickSound="Click">
+                            <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)CloseButton" offsetX="-8"/>
+                            <Dimensions y="24" x="24"/>
+                            <OnMouseEnter>Stylich.UI.ShowEditorTooltip(self, Stylich.Lang.msg.TT_OPTIONS)</OnMouseEnter>
+                            <OnMouseExit>Stylich.UI.HideEditorTooltip()</OnMouseExit>
+                            <Textures normal="esoui/art/chatwindow/chat_options_up.dds" pressed="esoui/art/chatwindow/chat_options_down.dds" mouseOver="esoui/art/chatwindow/chat_options_over.dds"/>
+                            <OnClicked>Stylich.UI.ToggleOptions()</OnClicked>
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <!-- Divider -->
+                <Texture name="$(parent)Divider1" textureFile="EsoUI/Art/Miscellaneous/centerscreen_topDivider.dds">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Header" offsetX="10" offsetY="5" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Header" offsetX="-10" offsetY="8" />
+                </Texture>
+
+                <!-- Style selector -->
+                <Control name="$(parent)StyleBar">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Header" offsetX="10" offsetY="13"/>
+                    <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Header" offsetX="-10" offsetY="13"/>
+                    <Dimensions y="34"/>
+                    <Controls>
+                        <Label name="$(parent)Label" font="STLFont" text="Style" verticalAlignment="CENTER">
+                            <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)"/>
+                            <Dimensions x="48" y="34"/>
+                        </Label>
+                        <Control name="$(parent)Combo" inherits="ZO_ComboBox">
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Label" offsetX="5"/>
+                            <Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)"/>
+                            <Dimensions y="28"/>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <!-- Action buttons -->
+                <Control name="$(parent)Actions">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)StyleBar" offsetX="0" offsetY="8"/>
+                    <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)StyleBar" offsetX="0" offsetY="8"/>
+                    <Dimensions y="40"/>
+                    <Controls>
+                        <Label name="$(parent)OutfitLabel" font="STLFont" text="Outfit" verticalAlignment="CENTER">
+                            <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)"/>
+                            <Dimensions x="48" y="40"/>
+                        </Label>
+                        <Control name="$(parent)OutfitCombo" inherits="ZO_ComboBox">
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)OutfitLabel" offsetX="5"/>
+                            <Dimensions x="120" y="28"/>
+                        </Control>
+                        <Label name="$(parent)TitleLabel" font="STLFont" text="Title" verticalAlignment="CENTER">
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)OutfitCombo" offsetX="10"/>
+                            <Dimensions x="40" y="40"/>
+                        </Label>
+                        <Control name="$(parent)TitleCombo" inherits="ZO_ComboBox">
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)TitleLabel" offsetX="3"/>
+                            <Dimensions x="150" y="28"/>
+                        </Control>
+
+                        <Button name="$(parent)Delete" clickSound="Click">
+                            <Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)"/>
+                            <Dimensions y="40" x="40"/>
+                            <OnMouseEnter>Stylich.UI.ShowEditorTooltip(self, Stylich.Lang.msg.TT_DELETE)</OnMouseEnter>
+                            <OnMouseExit>Stylich.UI.HideEditorTooltip()</OnMouseExit>
+                            <Textures normal="esoui/art/buttons/decline_up.dds" pressed="esoui/art/buttons/decline_down.dds" mouseOver="esoui/art/buttons/decline_over.dds"/>
+                            <OnClicked>Stylich.UI.OnListDelete()</OnClicked>
+                        </Button>
+                        <Button name="$(parent)Apply" clickSound="Click">
+                            <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)Delete" offsetX="-6"/>
+                            <Dimensions y="40" x="40"/>
+                            <OnMouseEnter>Stylich.UI.ShowEditorTooltip(self, Stylich.Lang.msg.TT_APPLY)</OnMouseEnter>
+                            <OnMouseExit>Stylich.UI.HideEditorTooltip()</OnMouseExit>
+                            <Textures normal="esoui/art/miscellaneous/check_icon_32.dds"/>
+                            <OnClicked>Stylich.UI.OnUseStyle()</OnClicked>
+                        </Button>
+                        <Button name="$(parent)Update" clickSound="Click">
+                            <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)Apply" offsetX="-6"/>
+                            <Dimensions y="40" x="40"/>
+                            <OnMouseEnter>Stylich.UI.ShowEditorTooltip(self, Stylich.Lang.msg.TT_UPDATE)</OnMouseEnter>
+                            <OnMouseExit>Stylich.UI.HideEditorTooltip()</OnMouseExit>
+                            <Textures normal="esoui/art/mainmenu/menubar_character_up.dds" pressed="esoui/art/mainmenu/menubar_character_down.dds" mouseOver="esoui/art/mainmenu/menubar_character_over.dds"/>
+                            <OnClicked>Stylich.UI.OnReloadStyle()</OnClicked>
+                        </Button>
+                        <Button name="$(parent)Rename" clickSound="Click">
+                            <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)Update" offsetX="-6"/>
+                            <Dimensions y="40" x="40"/>
+                            <OnMouseEnter>Stylich.UI.ShowEditorTooltip(self, Stylich.Lang.msg.TT_RENAME)</OnMouseEnter>
+                            <OnMouseExit>Stylich.UI.HideEditorTooltip()</OnMouseExit>
+                            <Textures normal="esoui/art/buttons/edit_up.dds" pressed="esoui/art/buttons/edit_down.dds" mouseOver="esoui/art/buttons/edit_over.dds"/>
+                            <OnClicked>Stylich.UI.OnEditStyleProperties()</OnClicked>
+                        </Button>
+                        <Button name="$(parent)New" clickSound="Click">
+                            <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)Rename" offsetX="-6"/>
+                            <Dimensions y="40" x="40"/>
+                            <OnMouseEnter>Stylich.UI.ShowEditorTooltip(self, Stylich.Lang.msg.TT_NEW)</OnMouseEnter>
+                            <OnMouseExit>Stylich.UI.HideEditorTooltip()</OnMouseExit>
+                            <Textures normal="esoui/art/buttons/plus_up.dds" pressed="esoui/art/buttons/plus_down.dds" mouseOver="esoui/art/buttons/plus_over.dds"/>
+                            <OnClicked>Stylich.UI.OnListAdd()</OnClicked>
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <!-- Separator below the actions -->
+                <Texture name="$(parent)Divider2" textureFile="EsoUI/Art/Miscellaneous/centerscreen_topDivider.dds">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Actions" offsetX="0" offsetY="12" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Actions" offsetX="0" offsetY="16" />
+                </Texture>
+
+                <!-- "A l'application": shortcut (step 3) + entrance memento -->
+                <Control name="$(parent)ApplyBand">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Divider2" offsetX="0" offsetY="14"/>
+                    <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Divider2" offsetX="0" offsetY="14"/>
+                    <Dimensions y="62"/>
+                    <Controls>
+                        <Label name="$(parent)Title" font="STLFontSmall" color="FFAA33">
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                            <OnInitialized>self:SetText("|cFFAA33A L'APPLICATION|r")</OnInitialized>
+                        </Label>
+                        <Label name="$(parent)HotkeyLabel" font="STLFont" text="Hotkey" verticalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Title" offsetX="0" offsetY="6"/>
+                            <Dimensions x="52" y="28"/>
+                        </Label>
+                        <Control name="$(parent)HotkeyCombo" inherits="ZO_ComboBox">
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)HotkeyLabel" offsetX="4" offsetY="0"/>
+                            <Dimensions x="104" y="28"/>
+                        </Control>
+                        <Label name="$(parent)MementoLabel" font="STLFont" text="Memento" verticalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)HotkeyCombo" offsetX="16" offsetY="0"/>
+                            <Dimensions x="70" y="28"/>
+                        </Label>
+                        <Control name="$(parent)RevealCombo" inherits="ZO_ComboBox">
+                            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="22"/>
+                            <Dimensions x="76" y="28"/>
+                        </Control>
+                        <Label name="$(parent)RevealLabel" font="STLFont" text="Reveal" verticalAlignment="CENTER" horizontalAlignment="RIGHT" mouseEnabled="true">
+                            <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)RevealCombo" offsetX="-4" offsetY="0"/>
+                            <Dimensions x="76" y="28"/>
+                            <OnMouseEnter>Stylich.UI.ShowEditorTooltip(self, Stylich.Lang.msg.TT_REVEAL)</OnMouseEnter>
+                            <OnMouseExit>Stylich.UI.HideEditorTooltip()</OnMouseExit>
+                        </Label>
+                        <Button name="$(parent)MementoPreview">
+                            <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)RevealLabel" offsetX="-12" offsetY="0"/>
+                            <Dimensions x="28" y="28"/>
+                        </Button>
+                        <Control name="$(parent)MementoCombo" inherits="ZO_ComboBox">
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)MementoLabel" offsetX="4" offsetY="0"/>
+                            <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)MementoPreview" offsetX="-8" offsetY="0"/>
+                            <Dimensions y="28"/>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <!-- Separator below the application band -->
+                <Texture name="$(parent)Divider3" textureFile="EsoUI/Art/Miscellaneous/centerscreen_topDivider.dds">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)ApplyBand" offsetX="0" offsetY="14" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)ApplyBand" offsetX="0" offsetY="18" />
+                </Texture>
+
+                <!-- Detail content (icons built programmatically into STL_MainContent) -->
+                <Control name="$(parent)Content">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Divider3" offsetX="0" offsetY="14"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="-10"/>
+                </Control>
+
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Options window (separate movable dialog, opened by the gear button) -->
+        <TopLevelControl name="STL_Options" hidden="true" clampedToScreen="true" movable="true" mouseEnabled="true" allowBringToTop="true">
+            <Dimensions x="480" y="390"/>
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="GuiRoot"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="F2121212" edgeColor="FF555555">
+                    <AnchorFill/>
+                    <Edge edgeSize="2"/>
+                </Backdrop>
+                <Label name="$(parent)Title" font="STLFontBold" color="FFAA33" text="Options">
+                    <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetY="12"/>
+                </Label>
+                <Button name="$(parent)Close" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="10"/>
+                    <Dimensions x="24" y="24"/>
+                    <Textures normal="esoui/art/buttons/decline_up.dds" pressed="esoui/art/buttons/decline_down.dds" mouseOver="esoui/art/buttons/decline_over.dds"/>
+                    <OnClicked>Stylich.UI.ToggleOptions()</OnClicked>
+                </Button>
+                <Button name="$(parent)ShowButtonCheck" inherits="ZO_CheckButton">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="24" offsetY="48"/>
+                </Button>
+                <Button name="$(parent)ShowDropdownCheck" inherits="ZO_CheckButton">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)ShowButtonCheck" offsetX="0" offsetY="12"/>
+                </Button>
+                <Button name="$(parent)LockButtonCheck" inherits="ZO_CheckButton">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)ShowDropdownCheck" offsetX="0" offsetY="12"/>
+                </Button>
+                <Button name="$(parent)PlayMementosCheck" inherits="ZO_CheckButton">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)LockButtonCheck" offsetX="0" offsetY="12"/>
+                </Button>
+                <Button name="$(parent)CloseCombatCheck" inherits="ZO_CheckButton">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)PlayMementosCheck" offsetX="0" offsetY="12"/>
+                </Button>
+                <Label name="$(parent)Help" font="STLFontSmall">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)CloseCombatCheck" offsetX="0" offsetY="26"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-20" offsetY="-16"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Floating quick-access bar: draggable icon (opens window) + quick style dropdown -->
+        <Backdrop name="STL_QuickBarBg" alpha="0" clampedToScreen="true" movable="true" mouseEnabled="true">
+            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="GuiRoot" offsetX="60" offsetY="250"/>
+            <Dimensions x="56" y="56"/>
+            <Edge edgeSize="1"/>
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+            <OnMouseEnter>Stylich.UI.OnQuickBarEnter()</OnMouseEnter>
+            <OnMouseExit>Stylich.UI.OnQuickBarExit()</OnMouseExit>
+            <OnMoveStop>Stylich.UI.OnQuickBarMoved(self)</OnMoveStop>
+        </Backdrop>
+
+        <Button name="STL_QuickBarButton" topmost="true">
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="STL_QuickBarBg"/>
+            <Dimensions x="40" y="40"/>
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+            <Textures normal="esoui/art/mainmenu/menubar_collections_up.dds" pressed="esoui/art/mainmenu/menubar_collections_down.dds" mouseOver="esoui/art/mainmenu/menubar_collections_over.dds"/>
+            <OnMouseEnter>Stylich.UI.ShowEditorTooltip(self, 'Stylich')</OnMouseEnter>
+            <OnMouseExit>Stylich.UI.HideEditorTooltip()</OnMouseExit>
+            <OnMouseUp>Stylich.UI.OnQuickBarButtonMouseUp(self, button, upInside)</OnMouseUp>
+        </Button>
+
+        <Control name="STL_QuickBarCombo" inherits="ZO_ComboBox" topmost="true">
+            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="STL_QuickBarBg" offsetX="2"/>
+            <Dimensions x="190" y="30"/>
+        </Control>
+
+    </Controls>
+
+</GuiXml>

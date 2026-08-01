@@ -1,0 +1,31 @@
+<!-- 
+    This XML file defines the UI controls for the LootTrackerSolution addon in the game Elder Scrolls Online.
+    It contains the following controls:
+    - Solution_DropDown: A scrollable combo box control.
+    - Solution_RowSettings: A button control.
+    - CheckBoxControl: A button control with a checkbox appearance.
+    - DropDownControl: A button control with dimensions and a dropdown appearance.
+-->
+<!-- Solution_Controls.xml -->
+<GuiXml>
+    <Controls>
+
+
+        <Control name="Solution_DropDown" virtual="true" inherits="ZO_ScrollableComboBox">
+            <OnInitialized>
+                ZO_ScrollableComboBox:New(self)
+            </OnInitialized>
+        </Control>
+
+
+        <Button name="CheckBoxControl" virtual="true">
+            <Dimensions x="24" y="24" />
+            <Textures normal="LootTrackerSolution/Textures/CheckBoxFalseIcon.dds" />
+        </Button>
+
+
+        <Button name="DropDownControl" virtual="true">
+            <Dimensions x="150" y="24" />
+        </Button>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,23 @@
+## APIVersion: 101050
+## Title: CyrHUD
+## Version: 2026.07.20
+## Author: Sasky, |c4779ce@aldericon|r, |c3CB371@Masteroshi430|r
+## SavedVariables: CyrHUD_SavedVars
+## DependsOn: LibAddonMenu-2.0>=40
+
+lang/en.lua
+lang/$(language).lua
+
+classes/Info.lua
+classes/Label.lua
+classes/Battle.lua
+classes/MovingObjectives.lua
+classes/Graveyards.lua
+classes/PatrollingHorrors.lua
+classes/ScoringBar.lua
+classes/RankingBar.lua
+classes/Locations.lua
+
+CyrHUD.lua
+menu.lua
+bindings.xml

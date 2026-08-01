@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/silvereyes/Honestly-Earned-Achievements__3313",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "silvereyes",
+  "canonical_id": "esoui:3313",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3313",
+  "deleted": false,
+  "directories": [
+    "HonestAchievements"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3313/",
+  "fingerprint": "bfe28a92eeb99127749e411cba81848b70c51529e9e5469878423aaf35bc9ef9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11259.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3313",
+  "source_url": "https://www.esoui.com/downloads/info3313-Honestly-EarnedAchievements.html",
+  "stats": {
+    "downloads": 3776,
+    "favorites": 2,
+    "monthly_downloads": 14
+  },
+  "title": "Honestly-Earned Achievements",
+  "updated_at": 1646002278000,
+  "version": "1.0.0"
+}

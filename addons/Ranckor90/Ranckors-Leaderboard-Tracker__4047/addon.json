@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/Ranckor90/Ranckors-Leaderboard-Tracker__4047",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ranckor90",
+  "canonical_id": "esoui:4047",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4047",
+  "deleted": false,
+  "directories": [
+    "RanckorsLeaderBoardTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4047/",
+  "fingerprint": "115a81d6ec47380438670f6ad31e5c007270ed50cbd99ddbe8219f36702ff554",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13779.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4047",
+  "source_url": "https://www.esoui.com/downloads/info4047-RanckorsLeaderboardTracker.html",
+  "stats": {
+    "downloads": 632,
+    "favorites": 0,
+    "monthly_downloads": 19
+  },
+  "title": "Ranckors Leaderboard Tracker",
+  "updated_at": 1783900099000,
+  "version": "v1.0.3"
+}

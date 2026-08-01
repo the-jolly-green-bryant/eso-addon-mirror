@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/scorpius2k1/Guild-AdBlock---Block-Guild-Advertisement-Spam__2968",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "scorpius2k1",
+  "canonical_id": "esoui:2968",
+  "category_id": "55",
+  "compatibility": [],
+  "content_id": "esoui:2968",
+  "deleted": false,
+  "directories": [
+    "GuildAdBlock"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2968/",
+  "fingerprint": "ebdcc3e5fccfce0d5624b6bd99199613f4ea6ee0b0fa93845c42d45c0367f30a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10021.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2968",
+  "source_url": "https://www.esoui.com/downloads/info2968-GuildAdBlock-BlockGuildAdvertisementSpam.html",
+  "stats": {
+    "downloads": 3950,
+    "favorites": 7,
+    "monthly_downloads": 26
+  },
+  "title": "Guild AdBlock - Block Guild Advertisement Spam",
+  "updated_at": 1616011437000,
+  "version": "1.1"
+}

@@ -1,0 +1,36 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cFF9900Audio Control|r">
+			<Action name="TOGGLE_ALL">
+				<Up>EACAddon.Bindings(1)</Up>
+			</Action>
+			<Action name="TOGGLE_ALL_SOUNDS">
+				<Up>EACAddon.Bindings(2)</Up>
+			</Action>
+			<Action name="TOGGLE_MUSIC">
+				<Up>EACAddon.Bindings(3)</Up>
+			</Action>
+			<Action name="TOGGLE_AMBIENT">
+				<Up>EACAddon.Bindings(4)</Up>
+			</Action>
+			<Action name="TOGGLE_EFFECTS">
+				<Up>EACAddon.Bindings(5)</Up>
+			</Action>
+			<Action name="TOGGLE_FOOTSTEPS">
+				<Up>EACAddon.Bindings(6)</Up>
+			</Action>
+			<Action name="TOGGLE_DIALOGUE">
+				<Up>EACAddon.Bindings(7)</Up>
+			</Action>
+			<Action name="TOGGLE_INTERFACE">
+				<Up>EACAddon.Bindings(8)</Up>
+			</Action>
+			<Action name="TOGGLE_CINEMATICS">
+				<Up>EACAddon.Bindings(9)</Up>
+			</Action>
+			<Action name="TOGGLE_COMBAT">
+				<Up>EACAddon.Bindings(10)</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

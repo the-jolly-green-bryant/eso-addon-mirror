@@ -1,0 +1,15 @@
+2.0.1
+  - Fixed an issue with the add-on not recognizing the companion ranged taunt debuff
+  - Updated for Update 44
+
+2.0.0
+  - Added player taunt detection
+  - Added companion taunt detection
+  - Added over taunt detection
+  - Added duration and stack counter information
+  - Add-on settings had to be reset to defaults to accommodate the changes
+
+1.0.0
+  - Full release
+  - Icon, color and size selection
+  - Unlockable and movable

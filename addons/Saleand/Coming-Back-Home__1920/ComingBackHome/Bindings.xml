@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Coming Back Home">
+      <Action name="COMING_BACK_HOME">
+        <Up>CBH:teleportNow()</Up>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

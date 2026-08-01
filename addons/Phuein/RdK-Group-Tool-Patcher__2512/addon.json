@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Phuein/RdK-Group-Tool-Patcher__2512",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phuein",
+  "canonical_id": "esoui:2512",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2512",
+  "deleted": false,
+  "directories": [
+    "RdKGroupToolPatcher"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2512/",
+  "fingerprint": "371b5b226c125ad20006306a363f4c388104ffeed2484d629ce24797f2dd119a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2512",
+  "source_url": "https://www.esoui.com/downloads/info2512-RdKGroupToolPatcher.html",
+  "stats": {
+    "downloads": 9695,
+    "favorites": 5,
+    "monthly_downloads": 46
+  },
+  "title": "RdK Group Tool Patcher",
+  "updated_at": 1627755521000,
+  "version": "1.02"
+}

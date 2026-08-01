@@ -1,0 +1,14 @@
+## Title: Store Helper Rune
+## Author: Rexorn
+## Description: At store buy potency runes for basic writs if below stock level in settings.
+## APIVersion: 101049 101050
+## Version: 0.22
+## SavedVariables: StoreHelperRuneAcct StoreHelperRuneToon
+## DependsOn: LibAddonMenu-2.0>=43 StoreHelper>=25
+;all published versions of StoreHelper have the queue2shop feature needed by SHRune
+;but it is best to keep newest version
+
+StoreHelperRune.lua
+SHR_default_lang.lua
+SHR_$(language).lua
+

@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/silvereyes/ESO-Master-Recipe-List-Alt-Format__1621",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "silvereyes",
+  "canonical_id": "esoui:1621",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:1621",
+  "deleted": false,
+  "directories": [
+    "MasterRecipeListAltFormat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1621/",
+  "fingerprint": "8177f7d071405bfbe765b7638585aea5b8c876a3fc7fcaaf88884e0a21b5c912",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5319.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5320.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1621",
+  "source_url": "https://www.esoui.com/downloads/info1621-ESOMasterRecipeListAltFormat.html",
+  "stats": {
+    "downloads": 72093,
+    "favorites": 130,
+    "monthly_downloads": 45
+  },
+  "title": "ESO Master Recipe List Alt Format",
+  "updated_at": 1635611485000,
+  "version": "1.1.17"
+}

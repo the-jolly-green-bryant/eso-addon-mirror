@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/sirinsidiator/LibNotification__1224",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": " sirinsidiator",
+  "canonical_id": "esoui:1224",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:1224",
+  "deleted": false,
+  "directories": [
+    "LibNotification"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1224/",
+  "fingerprint": "3e5368acd1b7725766635da9e143fe0f8537a0e264f8b913810e49af177fdc45",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3955.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3952.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3953.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1224",
+  "source_url": "https://www.esoui.com/downloads/info1224-LibNotification.html",
+  "stats": {
+    "downloads": 1393335,
+    "favorites": 795,
+    "monthly_downloads": 7940
+  },
+  "title": "LibNotification",
+  "updated_at": 1746819138000,
+  "version": "1.1.0"
+}

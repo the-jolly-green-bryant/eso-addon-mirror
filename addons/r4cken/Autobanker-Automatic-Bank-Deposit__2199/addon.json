@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/r4cken/Autobanker-Automatic-Bank-Deposit__2199",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "r4cken",
+  "canonical_id": "esoui:2199",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2199",
+  "deleted": false,
+  "directories": [
+    "Autobanker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2199/",
+  "fingerprint": "07b331a1b75d87c7cd8b1ca78ad214ba2f1475973a51dfb563dcc22369ec2ada",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7567.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13795.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13794.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7568.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7533.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7527.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7526.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2199",
+  "source_url": "https://www.esoui.com/downloads/info2199-AutobankerAutomaticBankDeposit.html",
+  "stats": {
+    "downloads": 25228,
+    "favorites": 37,
+    "monthly_downloads": 310
+  },
+  "title": "Autobanker (Automatic Bank Deposit)",
+  "updated_at": 1781830450000,
+  "version": "2.5"
+}

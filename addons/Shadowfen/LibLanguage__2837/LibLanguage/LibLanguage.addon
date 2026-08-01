@@ -1,0 +1,11 @@
+## APIVersion: 101050 101051
+## Title: LibLanguage
+## Author: Shadowfen
+## IsLibrary: true
+## AddOnVersion: 46
+## Version: 46
+## Description: Library containing language localisation functionality for use by addons.
+
+; Library
+LibLanguage_Global.lua
+LibLanguage.lua

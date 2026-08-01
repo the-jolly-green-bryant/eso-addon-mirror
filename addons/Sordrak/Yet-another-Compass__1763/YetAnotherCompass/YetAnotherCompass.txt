@@ -1,0 +1,31 @@
+## Title: YetAnotherCompass
+## APIVersion: 101042
+## AddOnVersion: 15
+## Version: 1.5.21
+## SavedVariables: YetAnotherCompassVars
+## Author: @s0rdrak, @schorse4044 (PC / EU)
+## Description: This addon adds a compass around the hud
+## DependsOn: LibAddonMenu-2.0
+
+#Lib/LibStub/LibStub.lua
+#Lib/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+#Lib/LibAddonMenu-2.0/controls/panel.lua
+#Lib/LibAddonMenu-2.0/controls/submenu.lua
+#Lib/LibAddonMenu-2.0/controls/button.lua
+#Lib/LibAddonMenu-2.0/controls/checkbox.lua
+#Lib/LibAddonMenu-2.0/controls/colorpicker.lua
+#Lib/LibAddonMenu-2.0/controls/custom.lua
+#Lib/LibAddonMenu-2.0/controls/description.lua
+#Lib/LibAddonMenu-2.0/controls/divider.lua
+#Lib/LibAddonMenu-2.0/controls/dropdown.lua
+#Lib/LibAddonMenu-2.0/controls/editbox.lua
+#Lib/LibAddonMenu-2.0/controls/header.lua
+#Lib/LibAddonMenu-2.0/controls/slider.lua
+#Lib/LibAddonMenu-2.0/controls/texture.lua
+#Lib/LibAddonMenu-2.0/controls/iconpicker.lua
+
+YetAnotherCompass.lua
+YetAnotherCompassMenu.lua
+Lang/en.lua
+Lang/$(language).lua
+bindings.xml

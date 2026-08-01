@@ -1,0 +1,11 @@
+## APIVersion: 100036
+## Version: 1.0.6
+## Title: QuickEmotes
+## Author: @KL1SK |caeba00patched by Sven_re|r
+## Description:
+## DependsOn:
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: QuickEmotes_SV
+
+QuickEmotes.lua
+bindings.xml

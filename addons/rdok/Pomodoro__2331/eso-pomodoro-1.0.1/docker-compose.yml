@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+
+  lua:
+    build:
+      context: ./docker/lua
+    image: lua:5.1
+
+  luarocks:
+    build:
+      context: ./docker/luarocks
+    image: luarocks:5.1
+    working_dir: /luarocks
+
+  busted:
+    build:
+      context: ./docker/busted
+    image: busted:5.1
+    working_dir: /app
+    volumes:
+      - .:/app

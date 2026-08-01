@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/NPViral/GuildSalesTracker__4559",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "NPViral",
+  "canonical_id": "esoui:4559",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4559",
+  "deleted": false,
+  "directories": [
+    "GuildSalesTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4559/",
+  "fingerprint": "612f35fef9ac70d05f8cdbb31de9969836c52eff560710aa92bd854ea4fc8116",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15953.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15955.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15954.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4559",
+  "source_url": "https://www.esoui.com/downloads/info4559-GuildSalesTracker.html",
+  "stats": {
+    "downloads": 194,
+    "favorites": 3,
+    "monthly_downloads": 30
+  },
+  "title": "GuildSalesTracker",
+  "updated_at": 1777890966000,
+  "version": "1.1"
+}

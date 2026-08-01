@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/silvereyes/Character-Achievements__3322",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "silvereyes",
+  "canonical_id": "esoui:3322",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3322",
+  "deleted": false,
+  "directories": [
+    "CharacterAchievements"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3322/",
+  "fingerprint": "5e036c8fc109ba7b9353433a3c3fc2cdf67f6465090354f7cef06e1ed7ec77d0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11276.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3322",
+  "source_url": "https://www.esoui.com/downloads/info3322-CharacterAchievements.html",
+  "stats": {
+    "downloads": 7097,
+    "favorites": 16,
+    "monthly_downloads": 19
+  },
+  "title": "Character Achievements",
+  "updated_at": 1647276062000,
+  "version": "1.0.2"
+}

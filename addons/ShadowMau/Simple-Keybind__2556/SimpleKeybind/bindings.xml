@@ -1,0 +1,19 @@
+<!-- To get the XML to load properly, exit out of game and reload client -->
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cEECA2ASimple Keybind|r">
+		<!-- The category heading that will appear in the binding list -->
+			<Action name="SK1">
+			<!-- This is the name we assigned in the main lua file
+			ZO_CreateStringId("SI_BINDING_NAME_EAGLE" . . . -->
+				<Down>example1()</Down>
+			</Action>
+			<Action name="SK2">
+				<Down>example2("2")</Down>
+			</Action>
+			<Action name="SK3">
+				<Down>example2("three")</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

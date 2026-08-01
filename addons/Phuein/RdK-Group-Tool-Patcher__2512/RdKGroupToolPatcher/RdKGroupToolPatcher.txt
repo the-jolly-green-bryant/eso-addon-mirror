@@ -1,0 +1,16 @@
+## APIVersion: 100035
+## Title: RdK Group Tool Patcher
+## Version: 1.02
+## Author: phuein
+## Description: Patch RdK Group Tool to modify its default functionality.
+## SavedVariables: RdKGroupToolPatcherVars
+## DependsOn: LibAddonMenu-2.0 RdKGroupTool
+
+Languages\en.lua
+## Languages\$(language).lua
+
+## Bindings.xml
+## BanditsUserInterfacePatcher.xml
+
+RdKGroupToolPatcher.lua
+## Settings.lua

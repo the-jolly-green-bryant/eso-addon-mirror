@@ -1,0 +1,5 @@
+## Title: AutoTrans
+## APIVersion: 100033
+## SavedVariables: AutoTransSavedVariables
+
+AutoTrans.lua

@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Phuein/Patcher-for-Bandits-User-Interface__2480",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phuein",
+  "canonical_id": "esoui:2480",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2480",
+  "deleted": false,
+  "directories": [
+    "BanditsUserInterfacePatcher"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2480/",
+  "fingerprint": "eb639c41d50df8a2ede6416e0343d05ae7fdcc50059a03c5df3c50ed2f68b665",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2480",
+  "source_url": "https://www.esoui.com/downloads/info2480-PatcherforBanditsUserInterface.html",
+  "stats": {
+    "downloads": 24029,
+    "favorites": 7,
+    "monthly_downloads": 119
+  },
+  "title": "Patcher for Bandits User Interface",
+  "updated_at": 1627755983000,
+  "version": "1.02"
+}

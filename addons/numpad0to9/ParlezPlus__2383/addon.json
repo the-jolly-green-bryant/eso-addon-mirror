@@ -1,0 +1,60 @@
+{
+  "archive_path": "addons/numpad0to9/ParlezPlus__2383",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "numpad0to9",
+  "canonical_id": "esoui:2383",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2383",
+  "deleted": false,
+  "directories": [
+    "ParlezPlus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2383/",
+  "fingerprint": "2e58276bc8a0b04818c8c6481d851bb74384df325803c020b6f87b1519ea2af1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8117.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8118.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8121.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8120.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2383",
+  "source_url": "https://www.esoui.com/downloads/info2383-ParlezPlus.html",
+  "stats": {
+    "downloads": 9513,
+    "favorites": 19,
+    "monthly_downloads": 53
+  },
+  "title": "ParlezPlus",
+  "updated_at": 1597091903000,
+  "version": "1.3"
+}

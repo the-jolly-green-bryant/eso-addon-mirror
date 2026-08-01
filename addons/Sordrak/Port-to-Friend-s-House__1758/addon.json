@@ -1,0 +1,79 @@
+{
+  "archive_path": "addons/Sordrak/Port-to-Friend-s-House__1758",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sordrak",
+  "canonical_id": "esoui:1758",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1758",
+  "deleted": false,
+  "directories": [
+    "PortToFriendsHouse"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1758/",
+  "fingerprint": "6f180208a66c0f30e5057f8af985e01707d69a5f105aa5d78e7258ea42092d99",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5838.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5837.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5839.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1758",
+  "source_url": "https://www.esoui.com/downloads/info1758-PorttoFriendsHouse.html",
+  "stats": {
+    "downloads": 1305935,
+    "favorites": 349,
+    "monthly_downloads": 1110
+  },
+  "title": "Port to Friend's House",
+  "updated_at": 1756414073000,
+  "version": "2.5.46"
+}

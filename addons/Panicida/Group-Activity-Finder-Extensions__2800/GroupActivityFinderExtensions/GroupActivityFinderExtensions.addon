@@ -1,0 +1,77 @@
+﻿## Title: Group & Activity Finder Extensions
+## Description: Quality of life improvements for the Group & Activity Finder.
+## Author: Panicida
+## Version: 6.2.0
+## AddOnVersion: 006002000
+## APIVersion: 101048
+## DependsOn: LibPanicida>=002000000 LibSavedVars>=60007 LibAddonMenu-2.0>=41 LibQuestData>=276 LibScroll>=002 LibUndauntedPledges>=102020
+## OptionalDependsOn: AwesomeGuildStore>=3274 TamrielTradeCentre MasterMerchant>=3824
+## SavedVariables: GroupActivityFinderExtensions_Vars
+
+; DISCLAIMER:
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms
+
+src/vars.lua
+
+src/modules/activity-finder/activity-id.lua
+src/modules/activity-finder/collapse-mode.lua
+src/modules/activity-finder/set-id.lua
+
+src/modules/activity-finder/dungeons/dungeons-activity-data.lua
+
+src/modules/activity-finder/trials/trials-activity-data.lua
+src/modules/activity-finder/trials/trials-chests.lua
+
+src/lang/en.lua
+src/lang/$(language).lua
+
+src/modules/quest-automation/quest-automation.lua
+
+src/modules/activity-finder/schedule/activity-schedule-panel.lua
+src/modules/activity-finder/schedule/activity-schedule-panel.xml
+
+src/modules/activity-finder/core/queue-manager.lua
+src/modules/activity-finder/core/reward-tracker.lua
+src/modules/activity-finder/core/base-extender.lua
+
+src/modules/activity-finder/dungeons/pledge-tracker.lua
+
+src/modules/activity-finder/group/group-extensions.lua
+src/modules/activity-finder/group/unit-frame-extensions.lua
+src/modules/activity-finder/dungeons/dungeons-commands.lua
+src/modules/activity-finder/dungeons/dungeons-extensions.lua
+src/modules/activity-finder/battlegrounds/battlegrounds-commands.lua
+src/modules/activity-finder/battlegrounds/battlegrounds-extensions.lua
+src/modules/activity-finder/queue/queue-extensions.lua
+src/modules/activity-finder/schedule/schedule.lua
+
+src/modules/map/map.lua
+
+src/modules/inventory/armory.lua
+src/modules/inventory/currency-tracker.lua
+src/modules/inventory/inventory-slot-hooks.lua
+src/modules/inventory/ttc-price.lua
+src/modules/inventory/crafted-icon.lua
+src/modules/inventory/inventory.lua
+
+src/modules/pvp/ram/ram.lua
+src/modules/pvp/ram/ram.xml
+
+src/modules/activity-finder/schedule/schedules/dailies-schedule.lua
+src/modules/activity-finder/schedule/schedules/dailies-schedule.xml
+src/modules/activity-finder/schedule/schedules/pledges-schedule.lua
+src/modules/activity-finder/schedule/schedules/pledges-schedule.xml
+src/modules/activity-finder/schedule/schedules/trials-schedule.lua
+src/modules/activity-finder/schedule/schedules/trials-schedule.xml
+src/modules/activity-finder/schedule/schedules/quests-schedule.lua
+src/modules/activity-finder/schedule/schedules/quests-schedule.xml
+
+src/settings-menu.lua
+src/main.lua

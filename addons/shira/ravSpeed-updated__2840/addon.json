@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/shira/ravSpeed-updated__2840",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "shira",
+  "canonical_id": "esoui:2840",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2840",
+  "deleted": false,
+  "directories": [
+    "ravSpeed"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2840/",
+  "fingerprint": "31f55988004d3a3d1a238cc46c71eebf76cd0b88c41d521a9569046219d3f472",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10034.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10033.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2840",
+  "source_url": "https://www.esoui.com/downloads/info2840-ravSpeedupdated.html",
+  "stats": {
+    "downloads": 23244,
+    "favorites": 21,
+    "monthly_downloads": 41
+  },
+  "title": "ravSpeed (updated)",
+  "updated_at": 1645129649000,
+  "version": "1.3.1"
+}

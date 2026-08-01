@@ -1,0 +1,18 @@
+## Title: NextTry StatusTracker
+## Author: R0ctan
+## Credits: AI-assisted development by Auralith / ChatGPT
+## Version: 1.2.0
+## APIVersion: 101050 101051
+## AddOnVersion: 10200
+## SavedVariables: NextTryStatusTrackerSavedVariables
+## DependsOn: LibAddonMenu-2.0>=43
+
+Shared/NextTryChat.lua
+Shared/NextTryWindowVisibility.lua
+lang/default.lua
+lang/$(language).lua
+Bindings.xml
+NextTryStatusTracker.lua
+NextTryStatusTrackerUI.lua
+NextTryStatusTrackerAnimation.lua
+NextTryStatusTrackerSettings.lua

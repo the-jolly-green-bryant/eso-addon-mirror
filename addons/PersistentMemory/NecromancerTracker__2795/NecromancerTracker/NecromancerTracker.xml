@@ -1,0 +1,75 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="BlastbonesIndicator" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="200" y="25" />
+      <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" offsetX="0" />
+	 <Controls>
+	    <Label name="$(parent)SezLabel" width="200" height="25" font="$(BOLD_FONT)|$(KB_16)|soft-shadow-thick" inheritAlpha="true" color="FFFF00"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Blastbones sez:" mouseEnabled="true" movable="true" clampedToScreen="true">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-200" />
+		  <OnMoveStop>
+			NecromancerTracker.OnIndicatorMoveStop("bbsez")
+		  </OnMoveStop>
+        </Label>
+        <Label name="$(parent)Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFF00"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Blastbones go BOOM" mouseEnabled="true" movable="true" clampedToScreen="true">
+		  <OnMoveStop>
+			NecromancerTracker.OnIndicatorMoveStop("bb")
+		  </OnMoveStop>
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-170" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+	<TopLevelControl name="BlastbonesLeftIndicator" hidden="true"  mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="200" y="25" />
+      <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="LEFT" offsetY="-30" offsetX="100" />
+	  <OnMoveStop>
+        NecromancerTracker.OnIndicatorMoveStop("bbleft")
+      </OnMoveStop>
+      <Controls>
+	    <Label name="$(parent)SezLabel" width="200" height="25" font="$(BOLD_FONT)|$(KB_14)|soft-shadow-thick" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Blastbones inactive">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+        <Label name="$(parent)Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_14)|soft-shadow-thick"inheritAlpha="true" color="FFFF00"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="245"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+	<TopLevelControl name="SkeletalMageIndicator" hidden="true"  mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="200" y="25" />
+      <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="LEFT" offsetY="0" offsetX="100" />
+	  <OnMoveStop>
+        NecromancerTracker.OnIndicatorMoveStop("mage")
+      </OnMoveStop>
+      <Controls>
+	    <Label name="$(parent)SezLabel" width="200" height="25" font="$(BOLD_FONT)|$(KB_14)|soft-shadow-thick"  inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Skeletal Mage inactive">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+        <Label name="$(parent)Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_14)|soft-shadow-thick" inheritAlpha="true" color="FFFF00"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="245"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+	<TopLevelControl name="SpiritMenderIndicator" hidden="true"  mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="200" y="25" />
+      <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="LEFT" offsetY="30" offsetX="100" />
+	  <OnMoveStop>
+        NecromancerTracker.OnIndicatorMoveStop("mender")
+      </OnMoveStop>		
+      <Controls>
+	    <Label name="$(parent)SezLabel" width="200" height="25" font="$(BOLD_FONT)|$(KB_14)|soft-shadow-thick" fontSize="12" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Spirit Mender inactive">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+        <Label name="$(parent)Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_14)|soft-shadow-thick" fontSize="16" inheritAlpha="true" color="FFFF00"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="245"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

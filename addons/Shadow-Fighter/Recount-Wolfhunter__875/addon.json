@@ -1,0 +1,66 @@
+{
+  "archive_path": "addons/Shadow-Fighter/Recount-Wolfhunter__875",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shadow-Fighter",
+  "canonical_id": "esoui:875",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    },
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:875",
+  "deleted": false,
+  "directories": [
+    "Recount"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl875/",
+  "fingerprint": "bf6a15b65bc9c36b6c26c7bc072dc44f411a6d045c9f265c7fb23de972d02c18",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3127.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3126.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3128.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3129.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3130.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3131.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3132.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3133.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3134.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3135.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "875",
+  "source_url": "https://www.esoui.com/downloads/info875-RecountWolfhunter.html",
+  "stats": {
+    "downloads": 220571,
+    "favorites": 84,
+    "monthly_downloads": 55
+  },
+  "title": "Recount (Wolfhunter)",
+  "updated_at": 1534182365000,
+  "version": "0.6.3"
+}

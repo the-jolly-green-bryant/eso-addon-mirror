@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/silvereyes/Quality-Sort__677",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "silvereyes",
+  "canonical_id": "esoui:677",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:677",
+  "deleted": false,
+  "directories": [
+    "QualitySort"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl677/",
+  "fingerprint": "84d70c6f31a71e32a7fc39d13bfad964c8e6efa0ce3bc749c026e9d696863462",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7934.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7933.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7935.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "677",
+  "source_url": "https://www.esoui.com/downloads/info677-QualitySort.html",
+  "stats": {
+    "downloads": 102409,
+    "favorites": 185,
+    "monthly_downloads": 125
+  },
+  "title": "Quality Sort",
+  "updated_at": 1725137172000,
+  "version": "2.6.1"
+}

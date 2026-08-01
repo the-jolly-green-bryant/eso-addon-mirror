@@ -1,0 +1,8 @@
+## Title: Advanced Filters - Jewelry Crafting Filters
+## Author: Sorondor
+## Description: |cC5C29EMaterials|r >> |cC5C29EAll|r >> |cC5C29E[ Jewelry Crafting ]|r
+## Version: 1.1
+## APIVersion: 100023 100024 100025
+## DependsOn: AdvancedFilters
+
+AF_JewelryCraftingFilter.lua

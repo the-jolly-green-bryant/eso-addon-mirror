@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/sirinsidiator/LibSlashCommander__1508",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:1508",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:1508",
+  "deleted": false,
+  "directories": [
+    "LibSlashCommander"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1508/",
+  "fingerprint": "e40cfab292918430cd21c8f741ee5eb82f1311f4089df691cca051bc53ac0c1e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4912.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1508",
+  "source_url": "https://www.esoui.com/downloads/info1508-LibSlashCommander.html",
+  "stats": {
+    "downloads": 634690,
+    "favorites": 464,
+    "monthly_downloads": 2814
+  },
+  "title": "LibSlashCommander",
+  "updated_at": 1746651148000,
+  "version": "1.2.0"
+}

@@ -1,0 +1,8 @@
+## APIVersion: 100020
+## Author: Naxmaardur
+## Title: Naxmaardur's Dialogue Disabler
+## Notes: Disables Dialogue and background.
+## Version: 1
+
+
+NoDialogue.lua

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Othric/Guild-Events-Revised__2052",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Othric",
+  "canonical_id": "esoui:2052",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:2052",
+  "deleted": false,
+  "directories": [
+    "GuildEventsRevised"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2052/",
+  "fingerprint": "cef3d234ba202aef8c218fdea1f630c47e3da9edb22989787c38d74d9b09ce4e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6922.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7227.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7228.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2052",
+  "source_url": "https://www.esoui.com/downloads/info2052-GuildEventsRevised.html",
+  "stats": {
+    "downloads": 18829,
+    "favorites": 14,
+    "monthly_downloads": 68
+  },
+  "title": "Guild Events Revised",
+  "updated_at": 1536675008000,
+  "version": "1.3.2"
+}

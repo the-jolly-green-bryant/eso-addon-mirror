@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/sirinsidiator/LibId64__3585",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:3585",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:3585",
+  "deleted": false,
+  "directories": [
+    "LibId64"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3585/",
+  "fingerprint": "03e9413349abbea40df04ad16180ca2abf4628d4608c0ede4aad5fd8c4976916",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3585",
+  "source_url": "https://www.esoui.com/downloads/info3585-LibId64.html",
+  "stats": {
+    "downloads": 200611,
+    "favorites": 136,
+    "monthly_downloads": 3543
+  },
+  "title": "LibId64",
+  "updated_at": 1746123230000,
+  "version": "1.0.1"
+}

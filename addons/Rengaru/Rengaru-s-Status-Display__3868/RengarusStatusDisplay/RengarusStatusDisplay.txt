@@ -1,0 +1,11 @@
+## APIVersion: 101048
+## Title: Rengaru's Status Display
+## Author: Rengaru
+## Version: 0.97
+## SavedVariables: RengarusStatusDisplay_SavedVars
+## OptionalDependsOn: LibAddonMenu-2.0 LuiExtended
+
+RengarusStatusDisplayTextUP.xml
+RengarusStatusDisplayTextDOWN.xml
+
+RengarusStatusDisplay.lua

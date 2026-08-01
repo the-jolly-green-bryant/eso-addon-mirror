@@ -1,0 +1,44 @@
+## Title: |c67b1e9S|c4779ce'rendarr|r
+## Description: Adds graphical tracking of buffs and debuffs on both yourself and others in a manner that meshes with the stock interface theme.
+## Version: 2.5.49
+## AddOnVersion: 2549
+## Author: |c66ccffPhinix|r, Kith, & |cEFEBBEGarkin|r, DakJaniels
+## APIVersion: 101050 101051
+## SavedVariables: SrendarrDB
+## DependsOn: LibMediaProvider>=38 LibAddonMenu-2.0>=43
+## OptionalDependsOn: FoundryTacticalCombat LuiExtended BanditsUserInterface AUI AltGroupFrames
+
+
+Srendarr.xml
+
+Locales\Local_en.lua
+Locales\Local_de.lua
+Locales\Local_fr.lua
+Locales\Local_ru.lua
+Locales\Local_es.lua
+Locales\Local_jp.lua
+
+Defaults.lua
+AuraData.lua
+
+Core.lua
+
+Aura.lua
+DisplayFrame.lua
+CastBar.lua
+AuraControl.lua
+Procs.lua
+
+Settings.lua
+bindings.xml
+
+
+; DISCLAIMER:
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

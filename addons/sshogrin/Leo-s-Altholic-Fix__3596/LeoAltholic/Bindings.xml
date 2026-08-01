@@ -1,0 +1,25 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Leo's Altholic">
+      <Action name="LEOALTHOLIC_TOGGLE_WINDOW">
+        <Down>LeoAltholic:ToggleUI()</Down>
+      </Action>
+      <Action name="LEOALTHOLIC_TOGGLE_CHECKLIST">
+        <Down>LeoAltholicChecklistUI.ToggleUI()</Down>
+      </Action>
+      <Action name="LEOALTHOLIC_TOGGLE_TOOLBAR">
+        <Down>
+          if LeoAltholicToolbarUI.IsEnabled() then
+            LeoAltholicToolbarUI.BumpCompass(false)
+            LeoAltholicToolbarUI.SetEnabled(false)
+          else
+            LeoAltholicToolbarUI.SetEnabled(true)
+          end
+          </Down>
+      </Action>
+      <Action name="LEOALTHOLIC_TRACK_QUEST">
+        <Down>LeoAltholic.trackQuest(QUEST_JOURNAL_MANAGER:GetFocusedQuestIndex())</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

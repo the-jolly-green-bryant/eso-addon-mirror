@@ -1,0 +1,10 @@
+## Title: HighlandTickTracker
+## Author: SkullElf
+## Version: 1.0
+## APIVersion: 101045
+
+## DependsOn: LibAddonMenu-2.0 LibSetDetection LibGroupBroadcast
+## Description: An addon that gives a visual indicator on how to correctly time your movements while wearing the Highland Sentinel set without losing stacks.
+## SavedVariables: HighlandTracker_SavedVariables
+
+HighlandTickTracker.lua

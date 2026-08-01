@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="N'|c887788Tak'|r Dialog">
+			<Action name="REPEAT_DIALOG">
+				<Up>KeyUp_DialogRepeat()</Up>
+			</Action>
+			<Action name="TOGGLE_BODY_HIDDEN">
+				<Up>KeyUp_ToggleBodyHidden()</Up>
+			</Action>
+        </Category>
+    </Layer>
+</Bindings>

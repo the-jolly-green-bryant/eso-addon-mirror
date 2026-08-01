@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Sharlikran/ScuttleBuddy__2719",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:2719",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2719",
+  "deleted": false,
+  "directories": [
+    "ScuttleBuddy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2719/",
+  "fingerprint": "54d05f9a858ee51a23602bb6d91245310dc30aac8a495d40f2267b1fafa6df16",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9206.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2719",
+  "source_url": "https://www.esoui.com/downloads/info2719-ScuttleBuddy.html",
+  "stats": {
+    "downloads": 10713,
+    "favorites": 13,
+    "monthly_downloads": 31
+  },
+  "title": "ScuttleBuddy",
+  "updated_at": 1765854704000,
+  "version": "1.14"
+}

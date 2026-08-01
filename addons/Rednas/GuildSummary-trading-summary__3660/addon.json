@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Rednas/GuildSummary-trading-summary__3660",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rednas",
+  "canonical_id": "esoui:3660",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3660",
+  "deleted": false,
+  "directories": [
+    "GuildSummary"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3660/",
+  "fingerprint": "7995c54c2589e6db9d24ac5f678e89cb612f00cf9c84185cb977dd81d580da66",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12467.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3660",
+  "source_url": "https://www.esoui.com/downloads/info3660-GuildSummarytradingsummary.html",
+  "stats": {
+    "downloads": 1510,
+    "favorites": 1,
+    "monthly_downloads": 16
+  },
+  "title": "GuildSummary (trading summary)",
+  "updated_at": 1686842081000,
+  "version": "1.0"
+}

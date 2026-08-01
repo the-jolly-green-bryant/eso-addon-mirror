@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Solinur/Untaunted__1475",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Solinur",
+  "canonical_id": "esoui:1475",
+  "category_id": "151",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:1475",
+  "deleted": false,
+  "directories": [
+    "Untaunted"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1475/",
+  "fingerprint": "e749e55397e30ea0a4e3c02ad73abcb153ab656d8068543bd1523748944a11cf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4769.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1475",
+  "source_url": "https://www.esoui.com/downloads/info1475-Untaunted.html",
+  "stats": {
+    "downloads": 643761,
+    "favorites": 375,
+    "monthly_downloads": 1186
+  },
+  "title": "Untaunted",
+  "updated_at": 1697144720000,
+  "version": "1.1.5"
+}

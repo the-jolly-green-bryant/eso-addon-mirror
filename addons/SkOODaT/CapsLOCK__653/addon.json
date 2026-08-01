@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/SkOODaT/CapsLOCK__653",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SkOODaT",
+  "canonical_id": "esoui:653",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:653",
+  "deleted": false,
+  "directories": [
+    "CapsLOCK"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl653/",
+  "fingerprint": "2e9b6615c3036c17284087a375a9cdbacd3465882fc4cd1197b1cbe89f861372",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1986.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1987.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "653",
+  "source_url": "https://www.esoui.com/downloads/info653-CapsLOCK.html",
+  "stats": {
+    "downloads": 6805,
+    "favorites": 9,
+    "monthly_downloads": 11
+  },
+  "title": "CapsLOCK",
+  "updated_at": 1635813713000,
+  "version": "101032.1"
+}

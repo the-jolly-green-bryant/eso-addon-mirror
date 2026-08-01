@@ -1,0 +1,1 @@
+ZO_CreateStringId("SI_BINDING_NAME_OMNISTATS_TOGGLE", "OmniStats toggle on/off")

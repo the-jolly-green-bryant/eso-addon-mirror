@@ -1,0 +1,15 @@
+## APIVersion: 101045 101046 
+## Version: 3.2.0
+## AddOnVersion: 320
+## Title: |cFFFFB0Set Tracker|r updated 2025 01
+## Author: @Shinntarou ( original @Elephant42 updated by @q.bit )
+## SavedVariables: ST_SavedVariables
+## DependsOn: LibMsgWin-1.0>=11 LibCustomMenu>=722 LibAddonMenu-2.0>=37
+
+## Description: Unofficial update for original Set Tracker and updated ver. (original: https://www.esoui.com/downloads/info1518-SetTracker.html , updated ver: https://www.esoui.com/downloads/info2291-SetTracker-UPDATED.html )
+
+locales/en.lua
+locales/$(language).lua
+SetTracker.lua
+SetTracker.xml
+Bindings.xml

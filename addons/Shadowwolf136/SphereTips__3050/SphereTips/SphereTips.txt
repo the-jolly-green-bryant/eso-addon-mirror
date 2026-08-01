@@ -1,0 +1,16 @@
+## APIVersion: 100034
+## Title: SphereTips
+## Version: 0.3
+## Author: Shadowwolf136
+## Description: Shows health of spheres in asylum
+## SavedVariables: SphereTipsSV
+## DependsOn: LibAddonMenu-2.0>=31
+
+
+SphereTips.lua
+Settings.lua
+
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

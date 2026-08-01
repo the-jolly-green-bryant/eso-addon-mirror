@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Shinni/TrueExploration__500",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shinni",
+  "canonical_id": "esoui:500",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:500",
+  "deleted": false,
+  "directories": [
+    "TrueExploration"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl500/",
+  "fingerprint": "5d6cc36e3c9b9944a99dd4e657c3cf85fa41cacee2ad1f50d4caedb113d4a10c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1831.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1502.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "500",
+  "source_url": "https://www.esoui.com/downloads/info500-TrueExploration.html",
+  "stats": {
+    "downloads": 78527,
+    "favorites": 227,
+    "monthly_downloads": 133
+  },
+  "title": "TrueExploration",
+  "updated_at": 1651728348000,
+  "version": "1.10"
+}

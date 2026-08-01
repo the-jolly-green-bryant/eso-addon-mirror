@@ -1,0 +1,2207 @@
+<GuiXml>
+    <Font name="LeoAltholicLargeFont" font="$(MEDIUM_FONT)|18|soft-shadow-thin"/>
+    <Font name="LeoAltholicNormalFont" font="$(MEDIUM_FONT)|16|soft-shadow-thin"/>
+    <Font name="LeoAltholicBoldFont" font="$(BOLD_FONT)|16|soft-shadow-thin"/>
+    <Font name="LeoAltholicSmallFont" font="$(MEDIUM_FONT)|14|soft-shadow-thin"/>
+    <Font name="LeoAltholicExtraSmallFont" font="$(MEDIUM_FONT)|12|soft-shadow-thin"/>
+    <Controls>
+
+        <TopLevelControl name="LeoAltholicWindow" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true">
+            <Dimensions x="1000" y="700" />
+            <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="100" />
+
+            <OnMoveStop> LeoAltholic:OnWindowMoveStop() </OnMoveStop>
+            <OnHide> LeoAltholicUI:OnHide(self, hidden) </OnHide>
+            <OnShow> LeoAltholicUI:OnShow(self, hidden) </OnShow>
+
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="000000" edgeColor="222222">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                    <Dimensions x="1000" y="50"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+                <Label name="$(parent)Title" color="39B027" font="ZoFontWinH3" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="10"/>
+                </Label>
+                <Button name="$(parent)Close" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-5" offsetY="4"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnClicked>LeoAltholic:CloseUI()</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/buttons/decline_up.dds">
+                            <Dimensions y="25" x="25"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)FeedbackButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)Close" offsetX="-5"/>
+                    <Dimensions x="40" y="40"/>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)SettingsButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)FeedbackButton" offsetX="-5"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Settings')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>
+                        SCENE_MANAGER:HideTopLevel(LeoAltholicInventoryWindow)
+                        SCENE_MANAGER:HideTopLevel(LeoAltholicWindow)
+                        DoCommand("/leoaltoptions")
+                    </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/chatwindow/chat_options_up.dds">
+                            <Dimensions y="35" x="35"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)ResearchButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)SettingsButton" offsetX="-5"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Research')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>LeoAltholic.ShowTab("Research")</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/crafting/smithing_tabicon_research_up.dds">
+                            <Dimensions y="35" x="35"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)InventoryButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)ResearchButton" offsetX="-5"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Inventory')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>LeoAltholic.ShowTab("Inventory")</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/mainmenu/menubar_inventory_up.dds">
+                            <Dimensions y="35" x="35"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)WritsButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)InventoryButton" offsetX="-5"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Writs')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>LeoAltholic.ShowTab("Writs")</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/icons/achievements_indexicon_crafting_up.dds">
+                            <Dimensions y="30" x="30"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)TrackedButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)WritsButton" offsetX="-5"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Tracked Quests')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>LeoAltholic.ShowTab("Tracked")</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/quest/tracked_pin.dds">
+                            <Dimensions y="30" x="30"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)ChampionButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)TrackedButton" offsetX="-5"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Champion')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>LeoAltholic.ShowTab("Champion")</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/mainmenu/menubar_champion_up.dds">
+                            <Dimensions y="35" x="35"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)Skills2Button" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)ChampionButton" offsetX="-5"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Skills 2')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>LeoAltholic.ShowTab("Skills2")</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/mainmenu/menubar_skills_up.dds">
+                            <Dimensions y="35" x="35"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)SkillsButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)Skills2Button" offsetX="-5"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Skills')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>LeoAltholic.ShowTab("Skills")</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/mainmenu/menubar_skills_up.dds">
+                            <Dimensions y="35" x="35"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)StatsButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)SkillsButton" offsetX="-5"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Stats')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>LeoAltholic.ShowTab("Stats")</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/characterwindow/charsheet_statstab_icon_inactive.dds">
+                            <Dimensions y="35" x="35"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)BioButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)StatsButton" offsetX="-5" />
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Bio')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>LeoAltholic.ShowTab("Bio")</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/mainmenu/menubar_character_up.dds">
+                            <Dimensions y="35" x="35"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+
+                <Backdrop name="$(parent)HeaderBG" centerColor="111111" edgeColor="222222">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="5" offsetY="2"/>
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)BioButton" offsetX="-5" offsetY="0"/>
+                    <Dimensions x="390" y="40"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+
+                <Backdrop name="LeoAltholicWindowBioPanel" tier="1" centerColor="000000" edgeColor="202020" hidden="true" clampedToScreen="true" movable="false" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="LeoAltholicWindow" offsetX="0" offsetY="52"/>
+                    <Dimensions x="1000" y="700"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Control name="$(parent)ListScroll" inheritAlpha="true">
+                            <AnchorFill/>
+                            <Controls>
+                                <Control name="$(parent)Headers">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="20" />
+                                    <Controls>
+                                        <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                                            <Dimensions x="180" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, GetString(SI_ADDON_MANAGER_NAME), "name", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Control name="$(parent)Level" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="60" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, GetString(SI_ITEM_FORMAT_STR_LEVEL), "level", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Control name="$(parent)Race" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Level" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="120" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, GetString(SI_COLLECTIBLERESTRICTIONTYPE1), "race", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Control name="$(parent)Class" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Race" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="120" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, GetString(SI_COLLECTIBLERESTRICTIONTYPE3), "class", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Control name="$(parent)Alliance" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Class" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="200" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, GetString(SI_COLLECTIBLERESTRICTIONTYPE2), "alliance", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Control name="$(parent)Riding" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Alliance" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="240" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, GetString(SI_COLLECTIBLECATEGORYTYPE2), "riding", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                    </Controls>
+                                </Control>
+                                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                                    <Dimensions x="990" y="650" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="30" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+
+                <Backdrop name="LeoAltholicWindowStatsPanel" tier="1" centerColor="000000" edgeColor="202020" hidden="true" clampedToScreen="true" movable="false" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="LeoAltholicWindow" offsetX="0" offsetY="52"/>
+                    <Dimensions x="1000" y="700"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Control name="$(parent)ListScroll" inheritAlpha="true">
+                            <AnchorFill/>
+                            <Controls>
+                                <Control name="$(parent)Headers">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="20" />
+                                    <Controls>
+                                        <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                                            <Dimensions x="180" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, GetString(SI_ADDON_MANAGER_NAME), "name", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Label name="$(parent)Points" font="ZoFontGameLargeBold" color="C4C4A0">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="100" y="20" />
+                                            <OnInitialized>
+                                                self:SetText(GetString(SI_LEADERBOARDS_HEADER_POINTS))
+                                                self:SetModifyTextType(MODIFY_TEXT_TYPE_UPPERCASE)
+                                            </OnInitialized>
+                                        </Label>
+                                        <Label name="$(parent)Maximum" font="ZoFontGameLargeBold" color="C4C4A0">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Points" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="200" y="20" />
+                                            <OnInitialized>
+                                                self:SetText(GetString(LEOALT_MAXIMUM))
+                                                self:SetModifyTextType(MODIFY_TEXT_TYPE_UPPERCASE)
+                                            </OnInitialized>
+                                        </Label>
+                                        <Label name="$(parent)Recovery" font="ZoFontGameLargeBold" color="C4C4A0">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Maximum" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="120" y="20" />
+                                            <OnInitialized>
+                                                self:SetText(GetString(LEOALT_RECOVERY))
+                                                self:SetModifyTextType(MODIFY_TEXT_TYPE_UPPERCASE)
+                                            </OnInitialized>
+                                        </Label>
+                                        <Label name="$(parent)WeaponSpellCrit" font="ZoFontGameLargeBold" color="C4C4A0">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Recovery" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="200" y="20" />
+                                            <OnInitialized>
+                                                self:SetText(GetString(SI_ITEMTYPE1).."/"..GetString(SI_DERIVEDSTATS23))
+                                                self:SetModifyTextType(MODIFY_TEXT_TYPE_UPPERCASE)
+                                            </OnInitialized>
+                                        </Label>
+                                    </Controls>
+                                </Control>
+                                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                                    <Dimensions x="990" y="650" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="30" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+
+                <Backdrop name="LeoAltholicWindowSkillsPanel" tier="1" centerColor="000000" edgeColor="202020" hidden="true" clampedToScreen="true" movable="false" mouseEnabled="true" inherits="ZO_ScrollContainerBase">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="LeoAltholicWindow" offsetX="0" offsetY="52"/>
+                    <Dimensions x="1000" y="700"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Control name="$(parent)ListScroll" inheritAlpha="true">
+                            <AnchorFill/>
+                            <Controls>
+                                <Control name="$(parent)Headers">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="20" />
+                                    <Controls>
+                                        <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                                            <Dimensions x="180" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, GetString(SI_ADDON_MANAGER_NAME), "name", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "LeoAltholicSmallFont")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Texture name="$(parent)Class1" mouseEnabled="true" textureFile="/esoui/art/tutorial/menubar_skills_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SKILLTYPE1).." 1") </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Class2" mouseEnabled="true" textureFile="/esoui/art/tutorial/menubar_skills_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Class1" relativePoint="TOPRIGHT" offsetX="6"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SKILLTYPE1).." 2") </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Class3" mouseEnabled="true" textureFile="/esoui/art/tutorial/menubar_skills_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Class2" relativePoint="TOPRIGHT" offsetX="6"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SKILLTYPE1).." 3") </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)TwoHanded" mouseEnabled="true" textureFile="/esoui/art/icons/progression_tabicon_2handed_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Class3" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_GAMEPADWEAPONCATEGORY2)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)OneHanded" mouseEnabled="true" textureFile="/esoui/art/icons/progression_tabicon_1handed_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)TwoHanded" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_GAMEPADWEAPONCATEGORY1)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)DualWield" mouseEnabled="true" textureFile="/esoui/art/icons/progression_tabicon_dualwield_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)OneHanded" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_WEAPONCONFIGTYPE2)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Bow" mouseEnabled="true" textureFile="/esoui/art/icons/progression_tabicon_bow_inactive.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)DualWield" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_GAMEPADWEAPONCATEGORY3)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)DestructionStaff" mouseEnabled="true" textureFile="/esoui/art/icons/progression_tabicon_damagestaff_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Bow" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_GAMEPADWEAPONCATEGORY4)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)RestorationStaff" mouseEnabled="true" textureFile="/esoui/art/icons/progression_tabicon_healstaff_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)DestructionStaff" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_GAMEPADWEAPONCATEGORY5)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)ArmorLight" mouseEnabled="true" textureFile="/esoui/art/icons/progression_tabicon_armorlight_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)RestorationStaff" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_GAMEPADITEMCATEGORY37)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)ArmorMedium" mouseEnabled="true" textureFile="/esoui/art/icons/progression_tabicon_armormedium_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)ArmorLight" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_GAMEPADITEMCATEGORY36)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)ArmorHeavy" mouseEnabled="true" textureFile="/esoui/art/icons/progression_tabicon_armorheavy_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)ArmorMedium" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_GAMEPADITEMCATEGORY35)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Racial" mouseEnabled="true" textureFile="/esoui/art/mainmenu/menubar_character_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)ArmorHeavy" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SKILLTYPE7)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Craft1" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_alchemy_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Racial" relativePoint="TOPRIGHT" offsetX="6"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE16)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Craft2" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_blacksmithing_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft1" relativePoint="TOPRIGHT" offsetX="6"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE13)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Craft3" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_clothing_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft2" relativePoint="TOPRIGHT" offsetX="6"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE14)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Craft4" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_enchanting_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft3" relativePoint="TOPRIGHT" offsetX="6"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE17)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Craft5" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_jewelrycrafting_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft4" relativePoint="TOPRIGHT" offsetX="6"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE24)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Craft6" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_provisioning_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft5" relativePoint="TOPRIGHT" offsetX="6"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE18)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Craft7" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_woodworking_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft6" relativePoint="TOPRIGHT" offsetX="6"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE15)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                    </Controls>
+                                </Control>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersName" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersName" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersClass1" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersClass1" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersClass2" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersClass2" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersClass3" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersClass3" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersTwoHanded" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersTwoHanded" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersOneHanded" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersOneHanded" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersDualWield" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersDualWield" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersBow" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersBow" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersDestructionStaff" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersDestructionStaff" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersRestorationStaff" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersRestorationStaff" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersArmorLight" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersArmorLight" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersArmorMedium" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersArmorMedium" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersArmorHeavy" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersArmorHeavy" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersRacial" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersRacial" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersCraft1" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersCraft1" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersCraft2" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersCraft2" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersCraft3" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersCraft3" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersCraft4" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersCraft4" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersCraft5" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersCraft5" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersCraft6" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersCraft6" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersCraft7" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersCraft7" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                                    <Dimensions x="990" y="650" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="30" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+                <Backdrop name="LeoAltholicWindowSkills2Panel" tier="1" centerColor="000000" edgeColor="202020" hidden="true" clampedToScreen="true" movable="false" mouseEnabled="true" inherits="ZO_ScrollContainerBase">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="LeoAltholicWindow" offsetX="0" offsetY="52"/>
+                    <Dimensions x="1000" y="700"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Control name="$(parent)ListScroll" inheritAlpha="true">
+                            <AnchorFill/>
+                            <Controls>
+                                <Control name="$(parent)Headers">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="20" />
+                                    <Controls>
+                                        <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                                            <Dimensions x="180" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, GetString(SI_ADDON_MANAGER_NAME), "name", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "LeoAltholicSmallFont")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Texture name="$(parent)World1" mouseEnabled="true" textureFile="/esoui/art/progression/progression_indexicon_world_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter>
+                                                local name = GetSkillLineInfo(SKILL_TYPE_WORLD,1)
+                                                ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+                                            </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)World2" mouseEnabled="true" textureFile="/esoui/art/progression/progression_indexicon_world_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)World1" relativePoint="TOPRIGHT" offsetX="6"/>
+                                            <OnMouseEnter>
+                                                local name = GetSkillLineInfo(SKILL_TYPE_WORLD,2)
+                                                ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+                                            </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)World3" mouseEnabled="true" textureFile="/esoui/art/progression/progression_indexicon_world_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)World2" relativePoint="TOPRIGHT" offsetX="6"/>
+                                            <OnMouseEnter>
+                                                local name = GetSkillLineInfo(SKILL_TYPE_WORLD,3)
+                                                ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+                                            </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)World4" mouseEnabled="true" textureFile="/esoui/art/progression/progression_indexicon_world_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)World3" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter>
+                                                local name = GetSkillLineInfo(SKILL_TYPE_WORLD,4)
+                                                ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+                                            </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Guild1" mouseEnabled="true" textureFile="/esoui/art/treeicons/tutorial_idexicon_darkbrotherhood_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)World4" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter>
+                                                local name = GetSkillLineInfo(SKILL_TYPE_GUILD,1)
+                                                ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+                                            </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Guild2" mouseEnabled="true" textureFile="/esoui/art/icons/progression_tabicon_fightersguild_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Guild1" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter>
+                                                local name = GetSkillLineInfo(SKILL_TYPE_GUILD,2)
+                                                ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+                                            </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Guild3" mouseEnabled="true" textureFile="/esoui/art/tutorial/progression_tabicon_magesguild_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Guild2" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter>
+                                                local name = GetSkillLineInfo(SKILL_TYPE_GUILD,3)
+                                                ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+                                            </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Guild4" mouseEnabled="true" textureFile="/esoui/art/icons/store_psijic_upgrade.dds">
+                                            <Dimensions x="24" y="24"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Guild3" relativePoint="TOPRIGHT" offsetX="6" offsetY="2"/>
+                                            <OnMouseEnter>
+                                                local name = GetSkillLineInfo(SKILL_TYPE_GUILD,4)
+                                                ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+                                            </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Guild5" mouseEnabled="true" textureFile="/esoui/art/treeicons/tutorial_idexicon_thievesguild_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Guild4" relativePoint="TOPRIGHT" offsetX="6" offsetY="-2"/>
+                                            <OnMouseEnter>
+                                                local name = GetSkillLineInfo(SKILL_TYPE_GUILD,5)
+                                                ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+                                            </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Guild6" mouseEnabled="true" textureFile="/esoui/art/icons/undaunted_bronze_key_01.dds">
+                                            <Dimensions x="26" y="26"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Guild5" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter>
+                                                local name = GetSkillLineInfo(SKILL_TYPE_GUILD,6)
+                                                ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+                                            </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Assault" mouseEnabled="true" textureFile="/esoui/art/icons/progression_tabicon_avasiege_up.dds">
+                                            <Dimensions x="30" y="30"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Guild6" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter>
+                                                local name = GetSkillLineInfo(SKILL_TYPE_AVA,1)
+                                                ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+                                            </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Emperor" mouseEnabled="true" textureFile="/esoui/art/icons/progression_tabicon_avaleadership_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Assault" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter>
+                                                local name = GetSkillLineInfo(SKILL_TYPE_AVA,2)
+                                                ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+                                            </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)Support" mouseEnabled="true" textureFile="/esoui/art/icons/progression_tabicon_avadefender_up.dds">
+                                            <Dimensions x="28" y="28"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Emperor" relativePoint="TOPRIGHT" offsetX="6" offsetY="0"/>
+                                            <OnMouseEnter>
+                                                local name = GetSkillLineInfo(SKILL_TYPE_AVA,3)
+                                                ZO_Tooltips_ShowTextTooltip(self, TOP, name)
+                                            </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                    </Controls>
+                                </Control>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersName" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersName" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersWorld1" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersWorld1" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersWorld2" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersWorld2" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersWorld3" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersWorld3" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersWorld4" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersWorld4" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersGuild1" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersGuild1" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersGuild2" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersGuild2" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersGuild3" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersGuild3" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersGuild4" relativePoint="TOPRIGHT" offsetX="8" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersGuild4" relativePoint="BOTTOMRIGHT" offsetX="8" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersGuild5" relativePoint="TOPRIGHT" offsetX="8" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersGuild5" relativePoint="BOTTOMRIGHT" offsetX="8" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersGuild6" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersGuild6" relativePoint="BOTTOMRIGHT" offsetX="10" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersAssault" relativePoint="TOPRIGHT" offsetX="8" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersAssault" relativePoint="BOTTOMRIGHT" offsetX="8" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersEmperor" relativePoint="TOPRIGHT" offsetX="8" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersEmperor" relativePoint="BOTTOMRIGHT" offsetX="8" offsetY="10"/>
+                                </Line>
+                                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeadersSupport" relativePoint="TOPRIGHT" offsetX="8" offsetY="0"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)HeadersSupport" relativePoint="BOTTOMRIGHT" offsetX="8" offsetY="10"/>
+                                </Line>
+                                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                                    <Dimensions x="990" y="650" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="30" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+
+                <Backdrop name="LeoAltholicWindowChampionPanel" tier="1" centerColor="000000" edgeColor="202020" hidden="true" clampedToScreen="true" movable="false" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="LeoAltholicWindow" offsetX="0" offsetY="52"/>
+                    <Dimensions x="1000" y="700"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Control name="$(parent)ListScroll" inheritAlpha="true">
+                            <AnchorFill/>
+                            <Controls>
+                                <Control name="$(parent)Headers">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="20" />
+                                    <Controls>
+                                        <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                                            <Dimensions x="180" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, GetString(SI_ADDON_MANAGER_NAME), "name", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "LeoAltholicSmallFont")
+                                            </OnInitialized>
+                                        </Control>
+                                    </Controls>
+                                </Control>
+                                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                                    <Dimensions x="990" y="650" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="30" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+
+                <Backdrop name="LeoAltholicWindowTrackedPanel" tier="1" centerColor="000000" edgeColor="202020" hidden="true" clampedToScreen="true" movable="false" mouseEnabled="true" inherits="ZO_ScrollContainerBase">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="LeoAltholicWindow" offsetX="0" offsetY="52"/>
+                    <Dimensions x="1000" y="700"/>
+                    <Edge edgeSize="1"/>
+                    <OnInitialized>ZO_Scroll_Initialize(self)</OnInitialized>
+                    <Controls>
+                        <Control name="$(parent)ScrollChild">
+                            <OnInitialized>self:SetParent(self:GetParent():GetNamedChild("Scroll"));self:SetAnchor(3,nil,3,0,0)</OnInitialized>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+
+                <Backdrop name="LeoAltholicWindowInventoryPanel" tier="1" centerColor="000000" edgeColor="202020" hidden="true" clampedToScreen="true" movable="false" mouseEnabled="true" inherits="ZO_ScrollContainerBase">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="LeoAltholicWindow" offsetX="0" offsetY="52"/>
+                    <Dimensions x="1000" y="700"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Control name="$(parent)ListScroll" inheritAlpha="true">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                            <Dimensions x="1000" y="550"/>
+                            <Controls>
+                                <Control name="$(parent)Headers">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="20" />
+                                    <Controls>
+                                        <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                                            <Dimensions x="180" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, GetString(SI_ADDON_MANAGER_NAME), "name", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Texture name="$(parent)BagIcon" textureFile="esoui/art/mainmenu/menubar_inventory_up.dds" mouseEnabled="true">
+                                            <Dimensions y="30" x="30"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="14" offsetY="-4"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_GAMEPAD_PLAYER_INVENTORY_CAPACITY_FOOTER_LABEL)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)GoldIcon" textureFile="esoui/art/currency/currency_gold.dds" mouseEnabled="true">
+                                            <Dimensions y="20" x="20"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)BagIcon" relativePoint="TOPRIGHT" offsetX="70" offsetY="4"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_GAMEPAD_INVENTORY_AVAILABLE_FUNDS)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)SoulGemsIcon" textureFile="esoui/art/currency/currency_seedcrystal_16.dds" mouseEnabled="true">
+                                            <Dimensions y="20" x="20"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)GoldIcon" relativePoint="TOPRIGHT" offsetX="130" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMTYPE19)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)APIcon" textureFile="esoui/art/currency/alliancepoints.dds" mouseEnabled="true">
+                                            <Dimensions y="20" x="20"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)SoulGemsIcon" relativePoint="TOPRIGHT" offsetX="80" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_GAMEPAD_INVENTORY_ALLIANCE_POINTS)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)TelVarIcon" textureFile="esoui/art/currency/currency_telvar.dds" mouseEnabled="true">
+                                            <Dimensions y="25" x="25"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)APIcon" relativePoint="TOPRIGHT" offsetX="80" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_GAMEPAD_INVENTORY_TELVAR_STONES)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)WritIcon" textureFile="esoui/art/currency/currency_writvoucher.dds" mouseEnabled="true">
+                                            <Dimensions y="25" x="25"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)TelVarIcon" relativePoint="TOPRIGHT" offsetX="80" offsetY="0"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_QUEST_REWARD_WRIT_VOUCHERS_NAME)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                    </Controls>
+                                </Control>
+                                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                                    <Dimensions x="990" y="500" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="30" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+
+                <Backdrop name="LeoAltholicWindowResearchPanel" tier="1" centerColor="000000" edgeColor="202020" hidden="true" clampedToScreen="true" movable="false" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="LeoAltholicWindow" offsetX="0" offsetY="52"/>
+                    <Dimensions x="1000" y="700"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Control name="$(parent)ListScroll" inheritAlpha="true">
+                            <AnchorFill/>
+                            <Controls>
+                                <Control name="$(parent)Headers">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="20" />
+                                    <Controls>
+                                        <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                                            <Dimensions x="180" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, GetString(SI_ADDON_MANAGER_NAME), "name", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Label name="$(parent)Craft1" font="ZoFontGameLargeBold" color="C4C4A0">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="200" y="20" />
+                                            <OnInitialized>
+                                                self:SetText(GetString(SI_ITEMFILTERTYPE13))
+                                                self:SetModifyTextType(MODIFY_TEXT_TYPE_UPPERCASE)
+                                            </OnInitialized>
+                                        </Label>
+                                        <Label name="$(parent)Craft2" font="ZoFontGameLargeBold" color="C4C4A0">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft1" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="200" y="20" />
+                                            <OnInitialized>
+                                                self:SetText(GetString(SI_ITEMFILTERTYPE14))
+                                                self:SetModifyTextType(MODIFY_TEXT_TYPE_UPPERCASE)
+                                            </OnInitialized>
+                                        </Label>
+                                        <Label name="$(parent)Craft6" font="ZoFontGameLargeBold" color="C4C4A0">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft2" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="200" y="20" />
+                                            <OnInitialized>
+                                                self:SetText(GetString(SI_ITEMFILTERTYPE15))
+                                                self:SetModifyTextType(MODIFY_TEXT_TYPE_UPPERCASE)
+                                            </OnInitialized>
+                                        </Label>
+                                        <Label name="$(parent)Craft7" font="ZoFontGameLargeBold" color="C4C4A0">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft6" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="100" y="20" />
+                                            <OnInitialized>
+                                                self:SetText(GetString(SI_ITEMFILTERTYPE25))
+                                                self:SetModifyTextType(MODIFY_TEXT_TYPE_UPPERCASE)
+                                            </OnInitialized>
+                                        </Label>
+                                    </Controls>
+                                </Control>
+                                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                                    <Dimensions x="990" y="650" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="30" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+
+                <Backdrop name="LeoAltholicWindowWritsPanel" tier="1" centerColor="000000" edgeColor="202020" hidden="true" clampedToScreen="true" movable="false" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="LeoAltholicWindow" offsetX="0" offsetY="52"/>
+                    <Dimensions x="1000" y="700"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Control name="$(parent)ListScroll" inheritAlpha="true">
+                            <AnchorFill/>
+                            <Controls>
+                                <Control name="$(parent)Headers">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="20" />
+                                    <Controls>
+                                        <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                                            <Dimensions x="180" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, GetString(SI_ADDON_MANAGER_NAME), "name", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "LeoAltholicSmallFont")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Texture name="$(parent)1Label" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_blacksmithing_up.dds">
+                                            <Dimensions x="38" y="38"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="16" offsetY="-8"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE13)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)2Label" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_clothing_up.dds">
+                                            <Dimensions x="38" y="38"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)1Label" relativePoint="TOPRIGHT" offsetX="70"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE14)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)6Label" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_woodworking_up.dds">
+                                            <Dimensions x="38" y="38"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)2Label" relativePoint="TOPRIGHT" offsetX="70"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE15)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)7Label" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_jewelrycrafting_up.dds">
+                                            <Dimensions x="38" y="38"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)6Label" relativePoint="TOPRIGHT" offsetX="70"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE24)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)3Label" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_enchanting_up.dds">
+                                            <Dimensions x="38" y="38"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)7Label" relativePoint="TOPRIGHT" offsetX="70"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE17)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)4Label" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_alchemy_up.dds">
+                                            <Dimensions x="38" y="38"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)3Label" relativePoint="TOPRIGHT" offsetX="70"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE16)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                        <Texture name="$(parent)5Label" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_provisioning_up.dds">
+                                            <Dimensions x="38" y="38"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)4Label" relativePoint="TOPRIGHT" offsetX="70"/>
+                                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE18)) </OnMouseEnter>
+                                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                        </Texture>
+                                    </Controls>
+                                </Control>
+                                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                                    <Dimensions x="990" y="650" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="30" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+
+        <Control name="LeoAltholicBioListTemplate" virtual="true" mouseEnabled="true">
+            <Dimensions x="1000" y="30" />
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+
+                <Label name="$(parent)Name" font="LeoAltholicLargeFont" color="ffffff" verticalAlignment="CENTER">
+                    <Dimensions x="180" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="TOPLEFT"/>
+                </Label>
+                <Label name="$(parent)Level" font="LeoAltholicLargeFont" verticalAlignment="CENTER"  horizontalAlignment="RIGHT">
+                    <Dimensions x="60" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Label name="$(parent)Race" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="120" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Level" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Label name="$(parent)Class" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="120" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Race" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Label name="$(parent)Alliance" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="200" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Class" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Label name="$(parent)Riding" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="240" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Alliance" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Riding" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+            </Controls>
+        </Control>
+
+        <Control name="LeoAltholicStatsListTemplate" virtual="true" mouseEnabled="true">
+            <Dimensions x="1000" y="30" />
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+
+                <Label name="$(parent)Name" font="LeoAltholicLargeFont" color="ffffff" verticalAlignment="CENTER">
+                    <Dimensions x="180" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="TOPLEFT"/>
+                </Label>
+                <Label name="$(parent)Points" font="LeoAltholicLargeFont" verticalAlignment="CENTER"  horizontalAlignment="LEFT">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Label name="$(parent)Maximum" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="200" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Points" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Label name="$(parent)Recovery" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="120" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Maximum" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Label name="$(parent)WeaponSpellCrit" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="200" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Recovery" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)WeaponSpellCrit" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+            </Controls>
+        </Control>
+
+        <Control name="LeoAltholicTrackedRowTemplate" virtual="true" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+            <Dimensions x="990" y="110"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="010101" edgeColor="222222" tier="LOW">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="2"/>
+                    <Dimensions x="990" y="110"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+
+                <Label name="$(parent)Alliance" mouseEnabled="true" font="ZoFontWinH3" normalColor="ffffff" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10"/>
+                    <Dimensions x="60" y="75"/>
+                    <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.data) </OnMouseEnter>
+                    <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                </Label>
+
+                <Label name="$(parent)Name" font="ZoFontWinH3" normalColor="ffffff" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="80" offsetY="20"/>
+                    <Dimensions x="180" y="30"/>
+                </Label>
+
+                <Label name="$(parent)RaceClass" font="ZoFontGame" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="80" offsetY="50"/>
+                    <Dimensions x="450" y="30"/>
+                </Label>
+
+                <Label name="$(parent)Quest1Label" mouseEnabled="true" font="ZoFontGame" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="250" offsetY="4"/>
+                    <Dimensions x="160" y="35"/>
+                </Label>
+                <Label name="$(parent)Quest1Done" mouseEnabled="true" font="ZoFontGame" color="FFFFFF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="420" offsetY="4"/>
+                    <Dimensions x="120" y="35"/>
+                </Label>
+
+                <Label name="$(parent)Quest2Label" mouseEnabled="true" font="ZoFontGame" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="580" offsetY="4"/>
+                    <Dimensions x="160" y="35"/>
+                </Label>
+                <Label name="$(parent)Quest2Done" mouseEnabled="true" font="ZoFontGame" color="FFFFFF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="760" offsetY="4"/>
+                    <Dimensions x="120" y="35"/>
+                </Label>
+
+                <Label name="$(parent)Quest3Label" mouseEnabled="true" font="ZoFontGame" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="250" offsetY="34"/>
+                    <Dimensions x="160" y="35"/>
+                </Label>
+                <Label name="$(parent)Quest3Done" mouseEnabled="true" font="ZoFontGame" color="FFFFFF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="420" offsetY="34"/>
+                    <Dimensions x="120" y="35"/>
+                </Label>
+
+                <Label name="$(parent)Quest4Label" mouseEnabled="true" font="ZoFontGame" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="580" offsetY="34"/>
+                    <Dimensions x="160" y="35"/>
+                </Label>
+                <Label name="$(parent)Quest4Done" mouseEnabled="true" font="ZoFontGame" color="FFFFFF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="760" offsetY="34"/>
+                    <Dimensions x="120" y="35"/>
+                </Label>
+
+                <Label name="$(parent)Quest5Label" mouseEnabled="true" font="ZoFontGame" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="250" offsetY="64"/>
+                    <Dimensions x="160" y="35"/>
+                </Label>
+                <Label name="$(parent)Quest5Done" mouseEnabled="true" font="ZoFontGame" color="FFFFFF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="420" offsetY="64"/>
+                    <Dimensions x="120" y="35"/>
+                </Label>
+
+                <Label name="$(parent)Quest6Label" mouseEnabled="true" font="ZoFontGame" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="580" offsetY="64"/>
+                    <Dimensions x="160" y="35"/>
+                </Label>
+                <Label name="$(parent)Quest6Done" mouseEnabled="true" font="ZoFontGame" color="FFFFFF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="760" offsetY="64"/>
+                    <Dimensions x="120" y="35"/>
+                </Label>
+
+                <Label name="$(parent)Quest7Label" mouseEnabled="true" font="ZoFontGame" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="250" offsetY="94"/>
+                    <Dimensions x="160" y="35"/>
+                </Label>
+                <Label name="$(parent)Quest7Done" mouseEnabled="true" font="ZoFontGame" color="FFFFFF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="420" offsetY="94"/>
+                    <Dimensions x="120" y="35"/>
+                </Label>
+
+                <Label name="$(parent)Quest8Label" mouseEnabled="true" font="ZoFontGame" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="580" offsetY="94"/>
+                    <Dimensions x="160" y="35"/>
+                </Label>
+                <Label name="$(parent)Quest8Done" mouseEnabled="true" font="ZoFontGame" color="FFFFFF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="760" offsetY="94"/>
+                    <Dimensions x="120" y="35"/>
+                </Label>
+
+                <Label name="$(parent)Quest9Label" mouseEnabled="true" font="ZoFontGame" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="250" offsetY="124"/>
+                    <Dimensions x="160" y="35"/>
+                </Label>
+                <Label name="$(parent)Quest9Done" mouseEnabled="true" font="ZoFontGame" color="FFFFFF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="420" offsetY="124"/>
+                    <Dimensions x="120" y="35"/>
+                </Label>
+
+                <Label name="$(parent)Quest10Label" mouseEnabled="true" font="ZoFontGame" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="580" offsetY="124"/>
+                    <Dimensions x="160" y="35"/>
+                </Label>
+                <Label name="$(parent)Quest10Done" mouseEnabled="true" font="ZoFontGame" color="FFFFFF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="760" offsetY="124"/>
+                    <Dimensions x="120" y="35"/>
+                </Label>
+
+            </Controls>
+        </Control>
+
+        <Control name="LeoAltholicWritsListTemplate" virtual="true" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+            <Dimensions x="990" y="30"/>
+            <Controls>
+                <Label name="$(parent)Name" font="ZoFontGame" normalColor="ffffff" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="0"/>
+                    <Dimensions x="180" y="30"/>
+                </Label>
+
+                <Texture name="$(parent)Craft1Icon" hidden="false">
+                    <Dimensions y="24" x="24"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="10" offsetY="2"/>
+                </Texture>
+                <Label name="$(parent)Craft1Status" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="70" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft1Icon" relativePoint="TOPRIGHT" offsetX="2" offsetY="-2"/>
+                </Label>
+
+                <Texture name="$(parent)Craft2Icon" hidden="false">
+                    <Dimensions y="24" x="24"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft1Status" relativePoint="TOPRIGHT" offsetX="12" offsetY="2"/>
+                </Texture>
+                <Label name="$(parent)Craft2Status" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="70" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft2Icon" relativePoint="TOPRIGHT" offsetX="2" offsetY="-2"/>
+                </Label>
+
+                <Texture name="$(parent)Craft6Icon" hidden="false">
+                    <Dimensions y="24" x="24"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft2Status" relativePoint="TOPRIGHT" offsetX="12" offsetY="2"/>
+                </Texture>
+                <Label name="$(parent)Craft6Status" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="70" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft6Icon" relativePoint="TOPRIGHT" offsetX="2" offsetY="-2"/>
+                </Label>
+
+                <Texture name="$(parent)Craft7Icon" hidden="false">
+                    <Dimensions y="24" x="24"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft6Status" relativePoint="TOPRIGHT" offsetX="12" offsetY="2"/>
+                </Texture>
+                <Label name="$(parent)Craft7Status" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="70" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft7Icon" relativePoint="TOPRIGHT" offsetX="2" offsetY="-2"/>
+                </Label>
+
+                <Texture name="$(parent)Craft3Icon" hidden="false">
+                    <Dimensions y="24" x="24"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft7Status" relativePoint="TOPRIGHT" offsetX="12" offsetY="2"/>
+                </Texture>
+                <Label name="$(parent)Craft3Status" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="70" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft3Icon" relativePoint="TOPRIGHT" offsetX="2" offsetY="-2"/>
+                </Label>
+
+                <Texture name="$(parent)Craft4Icon" hidden="false">
+                    <Dimensions y="24" x="24"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft3Status" relativePoint="TOPRIGHT" offsetX="12" offsetY="2"/>
+                </Texture>
+                <Label name="$(parent)Craft4Status" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="70" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft4Icon" relativePoint="TOPRIGHT" offsetX="2" offsetY="-2"/>
+                </Label>
+
+                <Texture name="$(parent)Craft5Icon" hidden="false">
+                    <Dimensions y="24" x="24"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft4Status" relativePoint="TOPRIGHT" offsetX="12" offsetY="2"/>
+                </Texture>
+                <Label name="$(parent)Craft5Status" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="70" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft5Icon" relativePoint="TOPRIGHT" offsetX="2" offsetY="-2"/>
+                </Label>
+
+                <Line name="$(parent)HorizLine" color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Craft5Status" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2"/>
+                </Line>
+            </Controls>
+        </Control>
+
+        <Control name="LeoAltholicSkillsListTemplate" virtual="true" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+            <Dimensions x="990" y="30"/>
+            <Controls>
+                <Label name="$(parent)Name" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                    <Dimensions x="180" y="30"/>
+                </Label>
+
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Class1" mouseEnabled="true" font="LeoAltholicLargeFont" color="FF0000" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="14" offsetY="0"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Class1" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Class1" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Class2" mouseEnabled="true" font="LeoAltholicLargeFont" color="FF0000" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Class1" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Class2" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Class2" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Class3" mouseEnabled="true" font="LeoAltholicLargeFont" color="FF0000" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Class2" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Class3" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Class3" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Weapon1" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Class3" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Weapon1" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Weapon1" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Weapon2" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Weapon1" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Weapon2" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Weapon2" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Weapon3" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Weapon2" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Weapon3" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Weapon3" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Weapon4" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Weapon3" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Weapon4" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Weapon4" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Weapon5" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Weapon4" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Weapon5" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Weapon5" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Weapon6" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Weapon5" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Weapon6" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Weapon6" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Armor1" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Weapon6" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Armor1" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Armor1" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Armor2" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Armor1" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Armor2" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Armor2" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Armor3" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Armor2" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Armor3" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Armor3" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Racial" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Armor3" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Racial" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Racial" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Craft1" mouseEnabled="true" font="LeoAltholicLargeFont" color="FF0000" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Racial" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft1" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Craft1" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Craft2" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft1" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft2" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Craft2" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Craft3" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft2" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft3" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Craft3" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Craft4" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft3" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft4" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Craft4" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Craft5" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft4" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft5" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Craft5" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Craft6" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft5" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft6" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Craft6" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Craft7" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft6" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft7" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Craft7" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+
+                <Line name="$(parent)HorizLine" color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Craft7" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2"/>
+                </Line>
+            </Controls>
+        </Control>
+
+        <Control name="LeoAltholicSkills2ListTemplate" virtual="true" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+            <Dimensions x="990" y="30"/>
+            <Controls>
+                <Label name="$(parent)Name" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                    <Dimensions x="180" y="30"/>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)World1" mouseEnabled="true" font="LeoAltholicLargeFont" color="FF0000" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="14" offsetY="0"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)World1" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)World1" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)World2" mouseEnabled="true" font="LeoAltholicLargeFont" color="FF0000" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)World1" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)World2" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)World2" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)World3" mouseEnabled="true" font="LeoAltholicLargeFont" color="FF0000" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)World2" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)World3" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)World3" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)World4" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)World3" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)World4" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)World4" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Guild1" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)World4" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Guild1" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Guild1" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Guild2" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Guild1" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Guild2" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Guild2" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Guild3" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Guild2" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Guild3" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Guild3" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Guild4" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Guild3" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Guild4" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Guild4" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Guild5" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Guild4" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Guild5" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Guild5" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)Guild6" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Guild5" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Guild6" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Guild6" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)AvA1" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Guild6" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)AvA1" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)AvA1" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)AvA2" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)AvA1" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)AvA2" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)AvA2" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+                <Label name="$(parent)AvA3" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="24" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)AvA2" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)AvA3" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)AvA3" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+
+                <Line name="$(parent)HorizLine" color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)AvA3" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2"/>
+                </Line>
+            </Controls>
+        </Control>
+
+        <Control name="LeoAltholicChampionListTemplate" virtual="true" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+            <Dimensions x="1000" y="30" />
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+
+                <Label name="$(parent)Name" font="LeoAltholicLargeFont" color="ffffff" verticalAlignment="CENTER">
+                    <Dimensions x="180" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="TOPLEFT"/>
+                </Label>
+                <Label name="$(parent)Disc1" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT" mouseEnabled="true">
+                    <Dimensions x="250" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipChampionSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipChampionSkill(self, false) </OnMouseExit>
+                </Label>
+                <Label name="$(parent)Disc2" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT" mouseEnabled="true">
+                    <Dimensions x="250" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Disc1" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipChampionSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipChampionSkill(self, false) </OnMouseExit>
+                </Label>
+                <Label name="$(parent)Disc3" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT" mouseEnabled="true">
+                    <Dimensions x="250" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Disc2" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipChampionSkill(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipChampionSkill(self, false) </OnMouseExit>
+                </Label>
+                <Line name="$(parent)HorizLine" color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Craft7" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2"/>
+                </Line>
+            </Controls>
+        </Control>
+
+        <Control name="LeoAltholicInventoryListTemplate" virtual="true" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+            <Dimensions x="990" y="105"/>
+            <Controls>
+                <Label name="$(parent)Name" font="LeoAltholicLargeFont" color="ffffff" verticalAlignment="CENTER">
+                    <Dimensions x="180" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                </Label>
+                <Label name="$(parent)Bag" font="LeoAltholicLargeFont" color="ffffff" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)Gold" font="LeoAltholicLargeFont" color="ffffff" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="150" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Bag" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)SoulGems" font="LeoAltholicLargeFont" color="ffffff" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Gold" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)AP" font="LeoAltholicLargeFont" color="ffffff" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SoulGems" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)TelVar" font="LeoAltholicLargeFont" color="ffffff" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)AP" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)Writ" font="LeoAltholicLargeFont" color="ffffff" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)TelVar" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+                </Label>
+
+                <Button name="$(parent)ListButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Writ" relativePoint="TOPRIGHT" offsetX="20" offsetY="-4"/>
+                    <Dimensions x="40" y="40"/>
+                    <Textures normal="/esoui/art/buttons/large_rightarrow_up.dds" mouseOver="/esoui/art/buttons/large_rightarrow_over.dds" />
+                </Button>
+
+                <Line name="$(parent)HorizLine" color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Writ" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Line>
+            </Controls>
+        </Control>
+
+        <Control name="LeoAltholicResearchListTemplate" virtual="true" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+            <Dimensions x="880" y="260"/>
+            <Controls>
+                <Label name="$(parent)Name" font="LeoAltholicLargeFont" color="ffffff" verticalAlignment="CENTER">
+                    <Dimensions x="180" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                </Label>
+
+                <Label name="$(parent)Craft1" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                    <Dimensions x="200" y="35"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipResearch(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipResearch(self, false) </OnMouseExit>
+                </Label>
+                <Label name="$(parent)Craft2" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft1" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                    <Dimensions x="200" y="35"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipResearch(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipResearch(self, false) </OnMouseExit>
+                </Label>
+                <Label name="$(parent)Craft6" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft2" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                    <Dimensions x="200" y="35"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipResearch(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipResearch(self, false) </OnMouseExit>
+                </Label>
+                <Label name="$(parent)Craft7" mouseEnabled="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft6" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                    <Dimensions x="200" y="35"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipResearch(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipResearch(self, false) </OnMouseExit>
+                </Label>
+
+                <Line color="444444" thickness="2" pixelRoundingEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Craft7" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-1"/>
+                </Line>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="LeoAltholicInventoryWindow" mouseEnabled="true" movable="false" hidden="true" clampedToScreen="true">
+            <Dimensions x="400" y="700" />
+            <Anchor point="TOPLEFT" relativeTo="LeoAltholicWindow" relativePoint="TOPRIGHT" offsetX="4" offsetY="0" />
+
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="000000" edgeColor="222222">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                    <Dimensions x="400" y="700"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+                <Backdrop name="$(parent)HeaderBG" centerColor="111111" edgeColor="222222">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="8" offsetY="5"/>
+                    <Dimensions x="392" y="40"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+                <Label name="$(parent)Title" color="39B027" font="ZoFontWinH3" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="10"/>
+                    <OnInitialized>self:SetText(GetString(SI_MAIN_MENU_INVENTORY))</OnInitialized>
+                </Label>
+                <Button name="$(parent)FilterInvButton" clickSound="Click">
+                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)BG" offsetX="-90" offsetY="4"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnClicked> LeoAltholic.ChangeInventoryUI(1) </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/mainmenu/menubar_inventory_up.dds">
+                            <Dimensions y="25" x="25"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)FilterEquipedButton" clickSound="Click">
+                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)BG" offsetX="-135" offsetY="4"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnClicked> LeoAltholic.ChangeInventoryUI(0) </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/mainmenu/menubar_character_up.dds">
+                            <Dimensions y="25" x="25"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)Close" clickSound="Click">
+                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)BG" offsetX="-45" offsetY="4"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnClicked> LeoAltholic.HideInventoryUI() </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/buttons/decline_up.dds">
+                            <Dimensions y="25" x="25"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+
+                <Backdrop name="$(parent)List" tier="1" centerColor="000000" edgeColor="202020" hidden="false" clampedToScreen="true" movable="false" mouseEnabled="true" inherits="ZO_ScrollContainerBase">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="LeoAltholicInventoryWindow" offsetX="0" offsetY="52"/>
+                    <Dimensions x="400" y="650"/>
+                    <Edge edgeSize="1"/>
+                    <OnInitialized>ZO_Scroll_Initialize(self)</OnInitialized>
+                    <Controls>
+                        <Control name="$(parent)ScrollChild">
+                            <OnInitialized>self:SetParent(self:GetParent():GetNamedChild("Scroll"));self:SetAnchor(3,nil,3,0,0)</OnInitialized>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+
+            </Controls>
+        </TopLevelControl>
+
+        <Control name="LeoAltholicInventoryTemplate" virtual="true" mouseEnabled="true" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+            <Dimensions x="400" y="30" />
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+                <Texture name="$(parent)Icon">
+                    <Dimensions y="25" x="25"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="2" />
+                </Texture>
+                <Label name="$(parent)Qty" hidden="false" mouseEnabled="false" font="LeoAltholicBoldFont" color="ffffff" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Icon" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="4" />
+                </Label>
+                <Label name="$(parent)Item" visible="true" mouseEnabled="true" font="ZoFontWinH4" color="ffffff" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="386" y="30" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetX="8" offsetY="0" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="LeoAltholicItemToolTipTopLevel" inherits="TooltipTopLevel">
+            <Controls>
+                <Tooltip name="LeoAltholicItemToolTip" inherits="ZO_ItemIconTooltip" />
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="LeoAltholicToolbar" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true">
+            <Dimensions x="600" y="32" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="100" offsetY="100" />
+            <OnMoveStop> LeoAltholicToolbarUI:OnWindowMoveStop() </OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="000000" edgeColor="222222" alpha="0.5">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                    <Dimensions x="600" y="32"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+                <Texture name="$(parent)InventoryTexture" hidden="true" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_bagvendor.dds">
+                    <Dimensions y="32" x="32"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="0"/>
+                </Texture>
+                <Label name="$(parent)Inventory" hidden="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="70" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)InventoryTexture" relativePoint="TOPRIGHT" offsetX="2"/>
+                </Label>
+<!--Teva added the section below-->
+                <Texture name="$(parent)BankSizeTexture" hidden="true" textureFile="/esoui/art/icons/mapkey/mapkey_bank.dds">
+                    <Dimensions y="30" x="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" verticalAlignment="CENTER"/>
+                </Texture>
+                <Label name="$(parent)Bank" hidden="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="70" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)BankSizeTexture" relativePoint="TOPRIGHT" offsetX="7"/>
+                </Label>
+<!--Teva added the section above-->
+                <Line name="$(parent)RidingLine" color="777777" hidden="true" thickness="2" pixelRoundingEnabled="true"/>
+                <Texture name="$(parent)RidingTexture" hidden="true" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_stablemaster.dds">
+                    <Dimensions y="32" x="32"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="0"/>
+                </Texture>
+                <Label name="$(parent)Riding" hidden="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="80" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)RidingTexture" relativePoint="TOPRIGHT" offsetX="2"/>
+                </Label>
+                <Line name="$(parent)CraftLine" color="777777" hidden="true" thickness="2" pixelRoundingEnabled="true"/>
+                <Texture name="$(parent)Craft1Texture" hidden="true" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_weaponsmithingstation.dds">
+                    <Dimensions y="32" x="32"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10"/>
+                </Texture>
+                <Label name="$(parent)Craft1" hidden="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft1Texture" relativePoint="TOPRIGHT" offsetX="2" offsetY="0"/>
+                </Label>
+                <Texture name="$(parent)Craft2Texture" hidden="true" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_armorsmithingstation.dds">
+                    <Dimensions y="32" x="32"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10"/>
+                </Texture>
+                <Label name="$(parent)Craft2" hidden="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft2Texture" relativePoint="TOPRIGHT" offsetX="2" offsetY="0"/>
+                </Label>
+                <Texture name="$(parent)Craft6Texture" hidden="true" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_woodworker.dds">
+                    <Dimensions y="32" x="32"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10"/>
+                </Texture>
+                <Label name="$(parent)Craft6" hidden="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft6Texture" relativePoint="TOPRIGHT" offsetX="2" offsetY="0"/>
+                </Label>
+                <Texture name="$(parent)Craft7Texture" hidden="true" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_jewelrycrafting.dds">
+                    <Dimensions y="32" x="32"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10"/>
+                </Texture>
+                <Label name="$(parent)Craft7" hidden="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Craft6Texture" relativePoint="TOPRIGHT" offsetX="2" offsetY="0"/>
+                </Label>
+                <Texture name="$(parent)HirelingTexture" hidden="true" textureFile="/esoui/art/chatwindow/chat_mail_up.dds">
+                    <Dimensions y="32" x="32"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10"/>
+                </Texture>
+                <Label name="$(parent)Hireling" hidden="true" font="LeoAltholicLargeFont" verticalAlignment="CENTER">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)HirelingTexture" relativePoint="TOPRIGHT" offsetX="2" offsetY="0"/>
+                </Label>
+
+                <Line name="$(parent)ChecklistLine" color="777777" hidden="true" thickness="2" pixelRoundingEnabled="true"/>
+                <Control name="$(parent)Checklist" hidden="false" inheritAlpha="false">
+                    <Dimensions x="200" y="32"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10"/>
+                    <Controls>
+                        <Texture name="$(parent)Craft1Icon" hidden="true"  inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_weaponsmithingstation.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE13)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)Craft2Icon" hidden="true"  inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_armorsmithingstation.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE14)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)Craft3Icon" hidden="true"  inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_enchantingstation.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE17)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)Craft4Icon" hidden="true"  inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_alchemystation.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE16)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)Craft5Icon" hidden="true"  inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_provisioner.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE18)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)Craft6Icon" hidden="true"  inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_woodworker.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE15)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)Craft7Icon" hidden="true"  inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_jewelrycrafting.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE24)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)RidingIcon" hidden="true"  inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_stablemaster.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_STAT_GAMEPAD_RIDING_HEADER_TRAINING)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                    </Controls>
+                </Control>
+                <Line name="$(parent)WarningLine" color="777777" hidden="true" thickness="2" pixelRoundingEnabled="true"/>
+                <Texture name="$(parent)WarningIcon" hidden="true" mouseEnabled="true" color="FFC000" textureFile="/esoui/art/miscellaneous/eso_icon_warning.dds">
+                    <Dimensions y="32" x="32"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-30" offsetY="-2"/>
+                    <OnMouseEnter> LeoAltholicUI.TooltipWarning(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoAltholicUI.TooltipWarning(self, false) </OnMouseExit>
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="LeoAltholicChecklist" mouseEnabled="true" movable="true" hidden="false" clampedToScreen="true">
+            <Dimensions x="200" y="50" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="100" offsetY="100" />
+            <OnMoveStop> LeoAltholicChecklistUI.OnWindowMoveStop() </OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)BGHeader" mouseEnabled="false" centerColor="000000" edgeColor="222222" alpha="0.6">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                    <Dimensions x="200" y="40"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+                <Label name="$(parent)Header" color="39B027" font="LeoAltholicLargeFont" verticalAlignment="CENTER" inheritAlpha="false">
+                    <Dimensions x="200" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)BGHeader" relativePoint="TOPLEFT" offsetX="10" offsetY="4"/>
+                    <OnInitialized> self:SetText(GetString(LEOALT_CHECKLIST)) </OnInitialized>
+                </Label>
+                <Button name="$(parent)MinButton" clickSound="Click" inheritAlpha="false">
+                    <Dimensions x="30" y="30"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)BGHeader" relativePoint="TOPRIGHT" offsetX="-2" offsetY="4"/>
+                    <Textures normal="/esoui/art/chatwindow/maximize_up.dds" mouseOver="/esoui/art/chatwindow/maximize_over.dds" mouseDown="esoui/art/chatwindow/maximize_down.dds" />
+                    <OnClicked> LeoAltholicChecklistUI:MinimizeUI() </OnClicked>
+                </Button>
+                <Button name="$(parent)MaxButton" hidden="true" clickSound="Click" inheritAlpha="false">
+                    <Dimensions x="30" y="30"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)BGHeader" relativePoint="TOPRIGHT" offsetX="-2" offsetY="4"/>
+                    <Textures normal="/esoui/art/chatwindow/minimize_up.dds" mouseOver="/esoui/art/chatwindow/minimize_over.dds" mouseDown="esoui/art/chatwindow/minimize_down.dds" />
+                    <OnClicked> LeoAltholicChecklistUI:MaximizeUI() </OnClicked>
+                </Button>
+
+                <Backdrop name="$(parent)Panel" centerColor="000000" edgeColor="222222" alpha="0.3" hidden="false">
+                    <Dimensions x="200" y="10"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="40"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Texture name="$(parent)Craft1Status" hidden="true" mouseEnabled="true" textureFile="/esoui/art/buttons/decline_up.dds" inheritAlpha="false">
+                            <Dimensions x="28" y="28"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)Craft1Icon" hidden="true" mouseEnabled="true" inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_weaponsmithingstation.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft1Status" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE13)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Label name="$(parent)Craft1" hidden="true" font="LeoAltholicLargeFont" color="FFFFFF" verticalAlignment="CENTER" inheritAlpha="false">
+                            <Dimensions x="200" y="32" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft1Status" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                        </Label>
+
+                        <Texture name="$(parent)Craft2Status" hidden="true" mouseEnabled="true" textureFile="/esoui/art/buttons/decline_up.dds" inheritAlpha="false">
+                            <Dimensions x="28" y="28"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)Craft2Icon" hidden="true" mouseEnabled="true" inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_armorsmithingstation.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft2Status" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE14)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Label name="$(parent)Craft2" hidden="true" font="LeoAltholicLargeFont" color="FFFFFF" verticalAlignment="CENTER" inheritAlpha="false">
+                            <Dimensions x="200" y="32" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft2Status" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                        </Label>
+
+                        <Texture name="$(parent)Craft3Status" hidden="true" mouseEnabled="true" textureFile="/esoui/art/buttons/decline_up.dds" inheritAlpha="false">
+                            <Dimensions x="28" y="28"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)Craft3Icon" hidden="true" mouseEnabled="true" inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_enchantingstation.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft3Status" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE17)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Label name="$(parent)Craft3" hidden="true" font="LeoAltholicLargeFont" color="FFFFFF" verticalAlignment="CENTER" inheritAlpha="false">
+                            <Dimensions x="200" y="32" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft3Status" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                        </Label>
+
+                        <Texture name="$(parent)Craft4Status" hidden="true" mouseEnabled="true" textureFile="/esoui/art/buttons/decline_up.dds" inheritAlpha="false">
+                            <Dimensions x="28" y="28"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)Craft4Icon" hidden="true" mouseEnabled="true" inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_alchemystation.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft4Status" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE16)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Label name="$(parent)Craft4" hidden="true" font="LeoAltholicLargeFont" color="FFFFFF" verticalAlignment="CENTER" inheritAlpha="false">
+                            <Dimensions x="200" y="32" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft4Status" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                        </Label>
+
+                        <Texture name="$(parent)Craft5Status" hidden="true" mouseEnabled="true" textureFile="/esoui/art/buttons/decline_up.dds" inheritAlpha="false">
+                            <Dimensions x="28" y="28"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)Craft5Icon" hidden="true" mouseEnabled="true" inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_provisioner.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft5Status" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE18)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Label name="$(parent)Craft5" hidden="true" font="LeoAltholicLargeFont" color="FFFFFF" verticalAlignment="CENTER" inheritAlpha="false">
+                            <Dimensions x="200" y="32" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft5Status" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                        </Label>
+
+                        <Texture name="$(parent)Craft6Status" hidden="true" mouseEnabled="true" textureFile="/esoui/art/buttons/decline_up.dds" inheritAlpha="false">
+                            <Dimensions x="28" y="28"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)Craft6Icon" hidden="true" mouseEnabled="true" inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_woodworker.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft6Status" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE15)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Label name="$(parent)Craft6" hidden="true" font="LeoAltholicLargeFont" color="FFFFFF" verticalAlignment="CENTER" inheritAlpha="false">
+                            <Dimensions x="200" y="32" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft6Status" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                        </Label>
+
+                        <Texture name="$(parent)Craft7Status" hidden="true" mouseEnabled="true" textureFile="/esoui/art/buttons/decline_up.dds" inheritAlpha="false">
+                            <Dimensions x="28" y="28"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)Craft7Icon" hidden="true" mouseEnabled="true" inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_jewelrycrafting.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft7Status" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_ITEMFILTERTYPE24)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Label name="$(parent)Craft7" hidden="true" font="LeoAltholicLargeFont" color="FFFFFF" verticalAlignment="CENTER" inheritAlpha="false">
+                            <Dimensions x="200" y="32" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Craft7Status" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                        </Label>
+
+                        <Texture name="$(parent)RidingStatus" hidden="true" mouseEnabled="true" textureFile="/esoui/art/buttons/decline_up.dds" inheritAlpha="false">
+                            <Dimensions x="28" y="28"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="44"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Texture name="$(parent)RidingIcon" hidden="true" mouseEnabled="true" inheritAlpha="false" color="FFFFFF" textureFile="/esoui/art/icons/servicetooltipicons/gamepad/gp_servicetooltipicon_stablemaster.dds">
+                            <Dimensions x="36" y="36"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)RidingStatus" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_STAT_GAMEPAD_RIDING_HEADER_TRAINING)) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Texture>
+                        <Label name="$(parent)Riding" hidden="true" font="LeoAltholicLargeFont" color="FFFFFF" verticalAlignment="CENTER" inheritAlpha="false">
+                            <Dimensions x="200" y="32" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)RidingStatus" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+                            <OnInitialized> self:SetText(GetString(SI_STAT_GAMEPAD_RIDING_HEADER_TRAINING)) </OnInitialized>
+                        </Label>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

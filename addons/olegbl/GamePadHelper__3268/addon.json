@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/olegbl/GamePadHelper__3268",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "olegbl",
+  "canonical_id": "esoui:3268",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3268",
+  "deleted": false,
+  "directories": [
+    "GamePadHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3268/",
+  "fingerprint": "69eba0603948da0eb0d5ecdfa57a7b5108718ca700c75a75462aa3efe0384359",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11112.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14553.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14573.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11114.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14572.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14571.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14574.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14575.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14550.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14552.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3268",
+  "source_url": "https://www.esoui.com/downloads/info3268-GamePadHelper.html",
+  "stats": {
+    "downloads": 12628,
+    "favorites": 26,
+    "monthly_downloads": 664
+  },
+  "title": "GamePadHelper",
+  "updated_at": 1785251562000,
+  "version": "1.06.18"
+}

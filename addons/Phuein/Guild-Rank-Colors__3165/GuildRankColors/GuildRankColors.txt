@@ -1,0 +1,11 @@
+## APIVersion: 100035
+## Title: Guild Rank Colors
+## Version: 1.02
+## AddOnVersion: 1
+## Author: Phuein, NordCarbon
+## Description: Colors players in the guild roster by rank.
+## SavedVariables: GuildRankColorsSavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+GuildRankColors.lua
+Settings.lua

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="In-Character">
+			<Action name="INCHARACTER_RETICLE_WINDOW_TOGGLE">
+				<Down>InCharacterToggleReticleWindow()</Down>
+			</Action>
+			<Action name="INCHARACTER_EDIT_WINDOW_TOGGLE">
+				<Down>InCharacterToggleEditWindow()</Down>
+			</Action>
+			<Action name="INCHARACTER_CURRENT_DESCRIPTION_TO_CHAT">
+				<Down>InCharacterWriteCurrentCharacterDescriptionToChatInput()</Down>
+			</Action>
+			<Action name="INCHARACTER_DESCRIPTION_0_TO_CHAT">
+				<Down>InCharacterWriteCharacterDescriptionToChatInput(0)</Down>
+			</Action>
+			<Action name="INCHARACTER_DESCRIPTION_1_TO_CHAT">
+				<Down>InCharacterWriteCharacterDescriptionToChatInput(1)</Down>
+			</Action>
+			<Action name="INCHARACTER_DESCRIPTION_2_TO_CHAT">
+				<Down>InCharacterWriteCharacterDescriptionToChatInput(2)</Down>
+			</Action>
+			<Action name="INCHARACTER_DESCRIPTION_3_TO_CHAT">
+				<Down>InCharacterWriteCharacterDescriptionToChatInput(3)</Down>
+			</Action>
+			<Action name="INCHARACTER_DESCRIPTION_4_TO_CHAT">
+				<Down>InCharacterWriteCharacterDescriptionToChatInput(4)</Down>
+			</Action>
+			<Action name="INCHARACTER_DESCRIPTION_5_TO_CHAT">
+				<Down>InCharacterWriteCharacterDescriptionToChatInput(5)</Down>
+			</Action>
+			<Action name="INCHARACTER_DESCRIPTION_6_TO_CHAT">
+				<Down>InCharacterWriteCharacterDescriptionToChatInput(6)</Down>
+			</Action>
+			<Action name="INCHARACTER_DESCRIPTION_7_TO_CHAT">
+				<Down>InCharacterWriteCharacterDescriptionToChatInput(7)</Down>
+			</Action>
+			<Action name="INCHARACTER_DESCRIPTION_8_TO_CHAT">
+				<Down>InCharacterWriteCharacterDescriptionToChatInput(8)</Down>
+			</Action>
+			<Action name="INCHARACTER_DESCRIPTION_9_TO_CHAT">
+				<Down>InCharacterWriteCharacterDescriptionToChatInput(9)</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

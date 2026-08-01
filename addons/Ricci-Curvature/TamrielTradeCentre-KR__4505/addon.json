@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Ricci-Curvature/TamrielTradeCentre-KR__4505",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ricci Curvature",
+  "canonical_id": "esoui:4505",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4505",
+  "deleted": false,
+  "directories": [
+    "TamrielTradeCentre-KR-Minion"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4505/",
+  "fingerprint": "1a89ddf16ea0d8886884b711775a5b5924c2714d198a5c937baa28ed62954d8c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15712.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4505",
+  "source_url": "https://www.esoui.com/downloads/info4505-TamrielTradeCentre-KR.html",
+  "stats": {
+    "downloads": 574,
+    "favorites": 0,
+    "monthly_downloads": 125
+  },
+  "title": "TamrielTradeCentre-KR",
+  "updated_at": 1775785847000,
+  "version": "1.0.0"
+}

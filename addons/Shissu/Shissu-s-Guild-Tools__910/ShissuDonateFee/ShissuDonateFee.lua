@@ -1,0 +1,1 @@
+﻿-- empty, module; -> ShissuPlayerInGuild, obsolete

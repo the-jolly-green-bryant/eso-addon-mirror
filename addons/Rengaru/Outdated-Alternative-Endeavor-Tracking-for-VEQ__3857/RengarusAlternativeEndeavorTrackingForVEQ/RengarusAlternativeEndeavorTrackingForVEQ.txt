@@ -1,0 +1,9 @@
+﻿## APIVersion: 101043
+## Title: Rengaru's Alternative Endeavor Tracking For VEQ
+## Author: Rengaru
+## Version: 1.3
+## Description: Alternative Endeavour tracking display for "Vestige's Epic Quest" by Masteroshi430.
+## DependsOn: VEQ
+
+Includes/functions.lua
+RengarusAlternativeEndeavorTrackingForVEQ.lua

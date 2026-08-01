@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Stefanoo/Featured-pledges-in-the-Dungeon-Finder__4555",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Stefanoo",
+  "canonical_id": "esoui:4555",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4555",
+  "deleted": false,
+  "directories": [
+    "PledgeHighlights"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4555/",
+  "fingerprint": "433795e4c5a556cf0aa223d373cc53cd6bc91a5e29df0b0d4deb724e734a9a10",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15938.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15936.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15937.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4555",
+  "source_url": "https://www.esoui.com/downloads/info4555-FeaturedpledgesintheDungeonFinder.html",
+  "stats": {
+    "downloads": 401,
+    "favorites": 3,
+    "monthly_downloads": 62
+  },
+  "title": "Featured pledges in the Dungeon Finder",
+  "updated_at": 1780968888000,
+  "version": "130"
+}

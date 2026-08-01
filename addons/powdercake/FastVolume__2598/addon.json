@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/powdercake/FastVolume__2598",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "powdercake",
+  "canonical_id": "esoui:2598",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2598",
+  "deleted": false,
+  "directories": [
+    "FastVolume"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2598/",
+  "fingerprint": "508abb3b589eabf534e2d646281e6fb8a44e77b7c6fac510f2c027ce02d40920",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8854.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8855.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2598",
+  "source_url": "https://www.esoui.com/downloads/info2598-FastVolume.html",
+  "stats": {
+    "downloads": 3641,
+    "favorites": 3,
+    "monthly_downloads": 12
+  },
+  "title": "FastVolume",
+  "updated_at": 1587938701000,
+  "version": "1.2"
+}

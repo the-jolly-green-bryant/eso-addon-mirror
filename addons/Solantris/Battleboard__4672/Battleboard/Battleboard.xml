@@ -1,0 +1,6 @@
+<GuiXml>
+    <Controls>
+        <!-- Real XML root control. Lua builds the dynamic children under this control. -->
+        <TopLevelControl name="BattleboardXMLMain" inherits="ZO_RightPanelFootPrint" mouseEnabled="true" hidden="true"/>
+    </Controls>
+</GuiXml>

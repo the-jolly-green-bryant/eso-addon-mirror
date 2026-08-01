@@ -1,0 +1,22 @@
+<!-- File: Member.xml -->
+<!-- Zuletzt geändert: 15. August 2015 -->
+
+<!-- Gildenmitglied in Sichtfeld -->
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="SGT_notificationsInSight" mouseEnabled="true" hidden="true" movable="true" clampedToScreen="true">
+      		<Dimensions x="155" y="25" /><Anchor point="CENTER" offsetX="100" offsetY="100"/>      
+			<Controls>
+				<Backdrop name="$(parent)_Background" inherits="ZO_DefaultBackdrop" />
+			    
+  <Texture name="$(parent)_GuildLogo" textureFile="/esoui/art/guild/guildhistory_indexicon_guild_up.dds">
+			    	<Dimensions x="48" y="48" /><Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-10" offsetY="-10" />
+				</Texture>
+				
+			   	<Label name="$(parent)_Info" font="ZoFontWindowSubtitle" color="eeeeee" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Spieler?">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="28" offsetY="0" />
+				</Label>
+			</Controls>
+		</TopLevelControl>   
+  	</Controls>    
+</GuiXml>

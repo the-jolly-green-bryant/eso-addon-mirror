@@ -1,0 +1,13 @@
+## Title: Grid Pad
+## Author: SquizzOC
+## Version: 1
+## APIVersion: 101051 101050
+## AddOnVersion: 148
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: GridPadInventory_SavedVars
+## Description: Auto-replaces ESO's gamepad backpack inventory scene with a controller-friendly modal grid popup, in-modal filters, hidden native inventory chrome, native-style filters, live junk filtering, a live Equipped Gear character panel, working gear equip, an LT item-info/character-stat panel, an RT compare popup with an "if equipped" stat-swing readout, a Bag Type switch for the Craft Bag with its own crafting tabs and vertical paging, a currency bar, an in-game settings panel, and one-press bag upgrades straight from the bag-count readout (Update 49).
+
+; ---- GridPad ----
+GridPadInventory.lua
+GridPadInventorySettings.lua
+Bindings.xml

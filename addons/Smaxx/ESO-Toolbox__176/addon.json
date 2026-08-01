@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Smaxx/ESO-Toolbox__176",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Smaxx",
+  "canonical_id": "esoui:176",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:176",
+  "deleted": false,
+  "directories": [
+    "Toolbox"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl176/",
+  "fingerprint": "3e2deafc99582d7d8543b7beb8eda58ef8b6f5f999a1ca4c545e1f5b0c80b932",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2865.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2864.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "176",
+  "source_url": "https://www.esoui.com/downloads/info176-ESOToolbox.html",
+  "stats": {
+    "downloads": 51259,
+    "favorites": 133,
+    "monthly_downloads": 57
+  },
+  "title": "ESO Toolbox",
+  "updated_at": 1622547022000,
+  "version": "3.1"
+}

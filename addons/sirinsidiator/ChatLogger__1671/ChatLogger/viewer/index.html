@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="dep/daterangepicker.css" />
+<link rel="stylesheet" href="dep/clusterize.css" />
+<link rel="stylesheet" href="style.css" />
+<title>ESO Chatlog Viewer</title>
+</head>
+<body>
+    <script src="dep/jquery.min.js"></script>
+    <script src="dep/moment.min.js"></script>
+    <script src="dep/util.js"></script>
+    <script src="dep/events.js"></script>
+    <script src="dep/daterangepicker.js"></script>
+    <script src="dep/clusterize.js"></script>
+    <script src="main.js"></script>
+    <div class="channelListContainer">
+        <h3>Channels:</h3>
+        <ul id="channelList"></ul>
+        <h3>Time Range:</h3>
+        <div id="timeRange">
+            <input type="text" name="datetimes" />
+        </div>
+    </div>
+    <div id="chatHistory">
+        <div id="scrollArea" class="clusterize-scroll">
+            <div id="contentArea" class="clusterize-content">
+                <div class="clusterize-no-data">Loading data...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="patrons" style="display: none">
+        <button id="hidePatrons">x</button>
+        <h1>Patrons</h1>
+        <div id="activeList"></div>
+        <div>Thank you for your continued support!</div>
+        <div id="formerContainer">
+            <button>Former Patrons</button>
+            <div id="formerList" style="display: none"></div>
+        </div>
+        <button id="becomePatron">
+            <img alt="Become A Patron" src="res/patron_button.png" />
+        </button>
+    </div>
+    <button id="patreon">
+        <img alt="Patreon" src="res/patreon.png" />
+    </button>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/ownedbynico/Dont-Portal-Twice-Cloudrest__2511",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ownedbynico",
+  "canonical_id": "esoui:2511",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2511",
+  "deleted": false,
+  "directories": [
+    "DontPortalTwice"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2511/",
+  "fingerprint": "3333c79d52a19ee04c2ed7757848b781820f9dc391a154639e0bba431b6888ac",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8865.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8744.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8864.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2511",
+  "source_url": "https://www.esoui.com/downloads/info2511-DontPortalTwiceCloudrest.html",
+  "stats": {
+    "downloads": 5928,
+    "favorites": 5,
+    "monthly_downloads": 61
+  },
+  "title": "Dont Portal Twice (Cloudrest)",
+  "updated_at": 1588200680000,
+  "version": "1.3"
+}

@@ -1,0 +1,22 @@
+## Title: Mythic Selector
+## Author: |CFF0000Static_Recharge|r
+## Version: 1.1.1
+## AddOnVersion: 1
+## APIVersion: 101049
+## SavedVariables: MythicSelectorVars
+## DependsOn: LibAddonMenu-2.0 LibCustomMenu
+## Description: Allows for fast switching between Mythic jewelry and regular jewelry.
+## IsLibrary: false
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+# The Elder Scrolls and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+# All rights reserved
+
+# You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+# This Add-on is not to be duplicated / replicated / borrowed / ported or redistributed without my expresss permission.
+
+Settings.lua
+MythicSelector.lua
+Bindings.xml
+MythicSelector.xml

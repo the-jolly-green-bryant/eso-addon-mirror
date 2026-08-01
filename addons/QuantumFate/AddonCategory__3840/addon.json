@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/QuantumFate/AddonCategory__3840",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "QuantumFate",
+  "canonical_id": "esoui:3840",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3840",
+  "deleted": false,
+  "directories": [
+    "AddonCategoryPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3840/",
+  "fingerprint": "a33f20ff980483a574ef825cc1775d49dc0bb8384a004c6a9d2c7a1033ecb14c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3840",
+  "source_url": "https://www.esoui.com/downloads/info3840-AddonCategory.html",
+  "stats": {
+    "downloads": 1836,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "AddonCategory",
+  "updated_at": 1724085609000,
+  "version": "1.0.1"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ShadowMau/CraftbagRunner__2758",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ShadowMau",
+  "canonical_id": "esoui:2758",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2758",
+  "deleted": false,
+  "directories": [
+    "CraftbagRunner"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2758/",
+  "fingerprint": "aac7ef4b531c294a936afd715a901d0b10a90e1993b92ebe1253aad2c219cbeb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9342.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2758",
+  "source_url": "https://www.esoui.com/downloads/info2758-CraftbagRunner.html",
+  "stats": {
+    "downloads": 2747,
+    "favorites": 1,
+    "monthly_downloads": 5
+  },
+  "title": "CraftbagRunner",
+  "updated_at": 1598620595000,
+  "version": "0.1.0"
+}

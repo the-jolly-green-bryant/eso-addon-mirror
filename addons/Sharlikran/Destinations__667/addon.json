@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Sharlikran/Destinations__667",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:667",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:667",
+  "deleted": false,
+  "directories": [
+    "Destinations"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl667/",
+  "fingerprint": "fb4ba976946ac10f566dffd668585a73bbc1bdb3de4d0faf51fd681ac8f11b32",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2901.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2902.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2903.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2895.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2896.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2897.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2898.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2899.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2900.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "667",
+  "source_url": "https://www.esoui.com/downloads/info667-Destinations.html",
+  "stats": {
+    "downloads": 8226370,
+    "favorites": 2916,
+    "monthly_downloads": 7947
+  },
+  "title": "Destinations",
+  "updated_at": 1761584113000,
+  "version": "30.06"
+}

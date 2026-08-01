@@ -1,0 +1,57 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="EZReport" tier="HIGH" mouseEnabled="false" movable="false" clampedToScreen="true" hidden="false">
+			<Dimensions x="0" y="0"/>
+			<Anchor point="BOTTOMLEFT"/>
+			<Controls>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Control name="$(parent)_Window" tier="HIGH" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="true">
+					<Dimensions x="300" y="120"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT"/>
+					<Controls>
+						<Label name="$(parent)_RAcctT" font="ZoFontWinH5" color="FFFF00" horizontalAlignment="LEFT" text="">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)_RAcctV" font="ZoFontWinH5" color="FFFFFF" horizontalAlignment="RIGHT" text="">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-8" offsetY="20"/>
+						</Label>
+						<Label name="$(parent)_RAltsT" font="ZoFontWinH5" color="FFFF00" horizontalAlignment="LEFT" text="">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="44"/>
+						</Label>
+						<Label name="$(parent)_RAltsV" font="ZoFontWinH5" color="FFFFFF" horizontalAlignment="RIGHT" text="">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-8" offsetY="64"/>
+						</Label>
+					</Controls>
+				</Control>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Button name="$(parent)_CButton" inherits="ZO_DefaultButton" text="" hidden="true">
+					<Dimensions x="200" />
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="30" />
+					<OnClicked>
+						EZReport.Clear()
+					</OnClicked>
+				</Button>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Texture name="$(parent)_RSample" textureFile="/EZReport/bin/reported.dds">
+					<Dimensions x="32" y="32"/>
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				</Texture>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Control name="$(parent)_Reported" tier="HIGH" mouseEnabled="false" movable="false" clampedToScreen="true" hidden="true">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="ZO_TargetUnitFramereticleoverCaption" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+					<Controls>
+						<Texture name="$(parent)_Mark" textureFile="/EZReport/bin/reported.dds">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+						</Texture>
+						<Label name="$(parent)_Label" font="ZoFontWinH5" color="FFFFFF" horizontalAlignment="LEFT" text="">
+							<Anchor point="LEFT" relativeTo="$(parent)_Mark" relativePoint="RIGHT" offsetX="4" offsetY="0"/>
+						</Label>
+					</Controls>
+				</Control>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

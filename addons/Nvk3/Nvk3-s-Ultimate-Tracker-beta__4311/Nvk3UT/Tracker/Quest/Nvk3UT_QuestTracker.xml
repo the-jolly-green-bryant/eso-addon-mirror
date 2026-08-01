@@ -1,0 +1,58 @@
+<GuiXml>
+    <Controls>
+        <Control name="CategoryHeader_Template" virtual="true" mouseEnabled="true">
+            <Dimensions y="26" />
+            <Controls>
+                <Control name="$(parent)IndentAnchor">
+                    <Dimensions x="1" y="1" />
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                </Control>
+                <Texture name="$(parent)Toggle"
+                         textureFile="EsoUI/Art/Buttons/tree_closed_up.dds"
+                         textureSampleProcessingWeight="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)IndentAnchor" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                    <Dimensions x="20" y="20" />
+                </Texture>
+                <Label name="$(parent)Label"
+                       font="ZoFontGameBold"
+                       horizontalAlignment="LEFT"
+                       verticalAlignment="TOP"
+                       wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Toggle" relativePoint="TOPRIGHT" offsetX="4" />
+                    <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="0" />
+                </Label>
+            </Controls>
+        </Control>
+        <Control name="QuestHeader_Template" virtual="true" mouseEnabled="true">
+            <Dimensions y="24" />
+            <Controls>
+                <Texture name="$(parent)IconSlot"
+                         textureSampleProcessingWeight="1">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                    <Dimensions x="18" y="18" />
+                </Texture>
+                <Label name="$(parent)Label"
+                       font="ZoFontGame"
+                       horizontalAlignment="LEFT"
+                       verticalAlignment="TOP"
+                       wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)IconSlot" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+                    <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+                </Label>
+            </Controls>
+        </Control>
+        <Control name="QuestCondition_Template" virtual="true">
+            <Dimensions y="20" />
+            <Controls>
+                <Label name="$(parent)Label"
+                       font="ZoFontGameSmall"
+                       horizontalAlignment="LEFT"
+                       verticalAlignment="TOP"
+                       wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                    <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="0" />
+                </Label>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

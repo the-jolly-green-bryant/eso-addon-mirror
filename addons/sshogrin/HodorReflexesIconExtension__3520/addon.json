@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/sshogrin/HodorReflexesIconExtension__3520",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sshogrin",
+  "canonical_id": "esoui:3520",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3520",
+  "deleted": false,
+  "directories": [
+    "HodorReflexesIconExtension"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3520/",
+  "fingerprint": "3ec0a64fa19ac25fe67bacdcf08763bfd4dcad4bf7261545d3a48bf4a01348b8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11965.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11967.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11966.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11969.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11970.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11975.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12441.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3520",
+  "source_url": "https://www.esoui.com/downloads/info3520-HodorReflexesIconExtension.html",
+  "stats": {
+    "downloads": 44042,
+    "favorites": 25,
+    "monthly_downloads": 207
+  },
+  "title": "HodorReflexesIconExtension",
+  "updated_at": 1754406491000,
+  "version": "1.4.1"
+}

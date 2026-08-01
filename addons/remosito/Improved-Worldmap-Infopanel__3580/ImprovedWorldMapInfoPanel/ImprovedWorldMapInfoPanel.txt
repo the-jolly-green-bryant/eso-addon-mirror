@@ -1,0 +1,18 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+; All the Scrolllist stuff is taken from Example Scroll List Addon! Awesome resource!
+
+
+## Title: Improved WorldMap InfoPanel
+## Description: Denser and bigger WorldMap InfoPanel
+## Version: 37.0
+## Author: remosito
+## APIVersion: 100037
+## SavedVariables: IWMIPVars
+## DependsOn: LibAddonMenu-2.0>=34
+
+Settings.lua
+ImprovedWorldMapInfoPanel.lua

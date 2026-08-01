@@ -1,0 +1,92 @@
+## Title: RdK Group Tool
+## APIVersion: 101049
+## SavedVariables: RdKGroupToolVars
+## Author: @s0rdrak (PC / EU)
+## Description: RdK Group Tool
+## AddOnVersion: 65
+## Version: 2.2.2
+## DependsOn: LibMapPins-1.0>=10041 LibMapPing>=1240 LibGPS>=73 LibAddonMenu-2.0>=39 Lib3D>=312 LibFoodDrinkBuff>=18 LibPotionBuff>=3 LibCustomMenu>=730 LibGroupBroadcast>=91
+
+#Lib comments removed for Baertram
+
+RdKGroupTool.lua
+
+
+UI/AI/AutoInvite.xml
+UI/Crown/Crown.xml
+UI/FTCB/Beam.xml
+
+Base/Profile/Profile.lua
+Base/Configuration/ConfigurationExportImport.lua
+Base/Util/Util.lua
+Base/Util/Math.lua
+Base/Util/Base64.lua
+Base/Util/ChatSystem.lua
+Base/Util/Roster.lua
+Base/Util/UI.lua
+Base/Util/Group.lua
+Base/Util/GroupMenu.lua
+Base/Util/Sound.lua
+Base/Util/Inventory.lua
+Base/Util/Ultimates.lua
+Base/Util/Networking.lua
+Base/Util/Versioning.lua
+Base/Util/Fonts.lua
+Base/Util/Equipment.lua
+Base/Util/ChampionPoints.lua
+Base/Util/SkillBar.lua
+Base/Util/AllianceColor.lua
+Base/Util/Cyrodiil.lua
+Base/Util/PlayerLink.lua
+Base/Util/Beams.lua
+Base/Util/Moving3DObjects.lua
+
+UI/UI.lua
+UI/Buffs/Buffs.lua
+
+Base/Group/Group.lua
+Base/Group/Crown.lua
+Base/Group/AutoInvite.lua
+Base/Group/FollowTheCrownVisual.lua
+Base/Group/FollowTheCrownWarnings.lua
+Base/Group/FollowTheCrownAudio.lua
+Base/Group/FollowTheCrownBeam.lua
+Base/Group/DebuffOverview.lua
+Base/Group/RapidTracker.lua
+Base/Group/ResourceOverview.lua
+Base/Group/HpDmgMeter.lua
+Base/Group/PotionOverview.lua
+Base/Group/DetonationTracker.lua
+Base/Group/GroupBeams.lua
+Base/Group/ISeeDeadPeople.lua
+Base/Compass/Compass.lua
+Base/Compass/YetAnotherCompass.lua
+Base/Compass/SimpleCompass.lua
+Base/Toolbox/Toolbox.lua
+Base/Toolbox/SiegeMerchant.lua
+Base/Toolbox/Recharger.lua
+Base/Toolbox/KeepClaimer.lua
+Base/Toolbox/BuffFoodTracker.lua
+Base/Toolbox/Siege.lua
+Base/Toolbox/CyrodiilLog.lua
+Base/Toolbox/CyrodiilStatus.lua
+Base/Toolbox/Enhancements.lua
+Base/Toolbox/Respawner.lua
+Base/Toolbox/CampPreview.lua
+Base/Toolbox/RoleAssignment.lua
+Base/Toolbox/SynergyPrevention.lua
+Base/Toolbox/SynergyOverview.lua
+Base/Toolbox/CampaignAutoJoin.lua
+Base/Toolbox/AvAMessages.lua
+Base/Toolbox/PushTimer.lua
+Base/ClassRole/ClassRole.lua
+Base/ClassRole/BG/TemplarHealer.lua
+Base/AddOnIntegration/AddOnIntegration.lua
+Base/AddOnIntegration/MiatPvpAlerts.lua
+Base/Admin/Admin.lua
+
+
+RdKGroupToolMenu.lua
+Lang/en.lua
+Lang/$(language).lua
+bindings.xml

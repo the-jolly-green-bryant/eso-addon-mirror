@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/sirinsidiator/LibMapPing__1302",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:1302",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:1302",
+  "deleted": false,
+  "directories": [
+    "LibMapPing"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1302/",
+  "fingerprint": "db22765e5bb4e6e4e5d95848fba90ed0edcd1eb043fa12016c99ee134e55537e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1302",
+  "source_url": "https://www.esoui.com/downloads/info1302-LibMapPing.html",
+  "stats": {
+    "downloads": 2854962,
+    "favorites": 1738,
+    "monthly_downloads": 14718
+  },
+  "title": "LibMapPing",
+  "updated_at": 1746122858000,
+  "version": "2.1.0"
+}

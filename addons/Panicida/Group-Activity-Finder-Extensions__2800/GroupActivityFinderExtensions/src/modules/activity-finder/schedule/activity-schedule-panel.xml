@@ -1,0 +1,135 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="GAFE_ActivitySchedulePanel" virtual="true" inherits="ZO_GroupMenuKeyboard_ContentAnchors" hidden="true">
+      <OnInitialized>
+        GAFE_ActivitySchedulePanel_OnInitialized(self)
+      </OnInitialized>
+      <Controls>
+        <!-- Quests schedule Window -->
+        <Control name="$(parent)QuestsWindow" inherits="ZO_GroupMenuKeyboard_ContentAnchors" hidden="true">
+          <OnInitialized>
+            GAFE_QuestsSchedule_Init(self)
+          </OnInitialized>
+          <Controls>
+            <Control name="$(parent)CharacterFilter" inherits="ZO_ComboBox">
+              <Dimensions x="300" y="33" />
+              <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="2" offsetY="-7" />
+            </Control>
+            <Control name="$(parent)ZoneFilter" inherits="ZO_ComboBox">
+              <Dimensions x="300" y="33" />
+              <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="-307" offsetY="-7" />
+            </Control>
+            <Control name="$(parent)Container">
+              <AnchorFill />
+
+              <Controls>
+                <Control name="$(parent)ListContainer">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="30"/>
+                  <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-40"/>
+                </Control>
+              </Controls>
+            </Control>
+          </Controls>
+        </Control>
+
+        <!-- Trials chest schedule Window -->
+        <Control name="$(parent)TrialsWindow" inherits="ZO_GroupMenuKeyboard_ContentAnchors" hidden="true">
+          <OnInitialized>
+            GAFE_TrialsSchedule_Init(self)
+          </OnInitialized>
+          <Controls>
+            <Control name="$(parent)Filter" inherits="ZO_ComboBox">
+              <Dimensions x="300" y="33" />
+              <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="2" offsetY="-7" />
+            </Control>
+            <Control name="$(parent)Container">
+              <AnchorFill />
+
+              <Controls>
+                <Control name="$(parent)ListContainer">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="30"/>
+                  <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-40"/>
+                </Control>
+              </Controls>
+            </Control>
+          </Controls>
+        </Control>
+
+        <!-- Pledges schedule Window -->
+        <Control name="$(parent)PledgesWindow" inherits="ZO_GroupMenuKeyboard_ContentAnchors" hidden="true">
+          <OnInitialized>
+            GAFE_PledgesSchedule_Init(self)
+          </OnInitialized>
+          <Controls>
+            <Control name="$(parent)Filter" inherits="ZO_ComboBox">
+              <Dimensions x="300" y="33" />
+              <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="2" offsetY="-7" />
+            </Control>
+            <Control name="$(parent)Today" hidden="true">
+              <AnchorFill />
+
+              <Controls>
+                <Control name="$(parent)Header" inherits="GAFE_PledgesScheduleRow">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+                  <Dimensions y="24"/>
+                </Control>
+                <Control name="$(parent)ListContainer">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="30"/>
+                  <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-40"/>
+                </Control>
+              </Controls>
+
+            </Control>
+            <Control name="$(parent)Upcoming" hidden="true">
+              <AnchorFill />
+
+              <Controls>
+                <Control name="$(parent)Header" inherits="GAFE_PledgesScheduleRow">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+                  <Dimensions y="24"/>
+                </Control>
+                <Control name="$(parent)ListContainer">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="30"/>
+                  <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-40"/>
+                </Control>
+              </Controls>
+            </Control>
+          </Controls>
+        </Control>
+
+        <!-- Dailies schedule Window -->
+        <Control name="$(parent)DailiesWindow" inherits="ZO_GroupMenuKeyboard_ContentAnchors" hidden="true">
+          <OnInitialized>
+            GAFE_DailiesSchedule_Init(self)
+          </OnInitialized>
+          <Controls>
+            <Label name="$(parent)Header" inherits="GAFE_DailiesScheduleRow">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+              <Dimensions y="24"/>
+            </Label>
+            <Control name="$(parent)ListContainer">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="30"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-40"/>
+            </Control>
+          </Controls>
+        </Control>
+
+        <!-- Menu bar -->
+        <Control name="$(parent)MenuBar" inherits="ZO_DefaultMenuBar" hidden="false">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="-120" offsetX="400"/>
+          <Controls>
+            <Label name="$(parent)Label" font="$(BOLD_FONT)|$(KB_28)|soft-shadow-thick" color="aaaa85" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-20" offsetY="10"/>
+              <Dimensions x="400" y="50"/>
+            </Label>
+
+          </Controls>
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

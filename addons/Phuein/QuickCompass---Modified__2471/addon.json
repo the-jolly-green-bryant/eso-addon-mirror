@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Phuein/QuickCompass---Modified__2471",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phuein",
+  "canonical_id": "esoui:2471",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    }
+  ],
+  "content_id": "esoui:2471",
+  "deleted": false,
+  "directories": [
+    "QuickCompass"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2471/",
+  "fingerprint": "231ed87386c892ccc0df469a9d24d1d9b0fb3a34435f802ecb329adbd8227caa",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2471",
+  "source_url": "https://www.esoui.com/downloads/info2471-QuickCompass-Modified.html",
+  "stats": {
+    "downloads": 4570,
+    "favorites": 2,
+    "monthly_downloads": 18
+  },
+  "title": "QuickCompass - Modified",
+  "updated_at": 1569783133000,
+  "version": "1.0.1.18"
+}

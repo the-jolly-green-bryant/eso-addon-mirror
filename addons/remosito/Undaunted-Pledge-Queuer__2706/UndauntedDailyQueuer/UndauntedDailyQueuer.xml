@@ -1,0 +1,102 @@
+<GuiXml>
+    <Controls>
+		<TopLevelControl name="UDQMainWindow" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="400" offsetY="400"/>
+			<Dimensions x="170" y="82" />
+			<OnResizeStop>UDQ.resizeStop(self)</OnResizeStop>
+			<OnMoveStop>UDQ.moveStop(self)</OnMoveStop>
+			<Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" edgeColor="88FFFFFF"/>
+					<Control name="UDQ_Header">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+						<Dimensions x="172" y="20" />
+						<Controls>
+								<Label name="UDQ_Queue" font="ZoFontGameSmall" color="FA5252" wrapMode="ELLIPSIS"  mouseEnabled="true" text="">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="6" offsetY="0"/>
+									<Dimensions x="130" y="20" />
+									<OnInitialized>
+										self:SetText(UDQ.LABEL_QUEUEME)
+								   </OnInitialized>
+								   <OnMouseEnter>
+										InitializeTooltip(InformationTooltip, self, BOTTOMLEFT, 0, 0)
+										InformationTooltip:AddLine(UDQ.TOOLTIP_QUEUEME)				
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnMouseUp>
+										UDQ.queueMe(self)
+									</OnMouseUp>
+								</Label>
+								<Label name="UDQ_UDn" font="ZoFontGameSmall" color="FA5252" wrapMode="ELLIPSIS"  mouseEnabled="true" text="">
+									<Anchor point="TOPLEFT" relativeTo="UDQ_Queue" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"/>
+									<Dimensions x="15" y="20" />
+									<OnInitialized>
+										self:SetText(UDQ.LABEL_NORMALDIFF)
+								   </OnInitialized>
+								   <OnMouseEnter>
+										InitializeTooltip(InformationTooltip, self, BOTTOMLEFT, 0, 0)
+										InformationTooltip:AddLine(UDQ.TOOLTIP_NORMALDIFF)				
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnMouseUp>
+										if button == MOUSE_BUTTON_INDEX_LEFT then
+											UDQ.selectAll("n")
+										else
+											UDQ.deselectAll("n")
+										end
+									</OnMouseUp>
+								</Label>
+								<Label name="UDQ_UDv" font="ZoFontGameSmall" color="FA5252" wrapMode="ELLIPSIS"  mouseEnabled="true" text="">
+									<Anchor point="TOPLEFT" relativeTo="UDQ_UDn" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"/>
+									<Dimensions x="15" y="20" />
+									<OnInitialized>
+										self:SetText(UDQ.LABEL_VETERANDIFF)
+								   </OnInitialized>
+								   <OnMouseEnter>
+										InitializeTooltip(InformationTooltip, self, BOTTOMLEFT, 0, 0)
+										InformationTooltip:AddLine(UDQ.TOOLTIP_VETERANDIFF)				
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnMouseUp>
+										if button == MOUSE_BUTTON_INDEX_LEFT then
+											UDQ.selectAll("v")
+										else
+											UDQ.deselectAll("v")
+										end
+									</OnMouseUp>
+								</Label>
+						</Controls>
+                    </Control>
+			</Controls>
+		</TopLevelControl>
+
+       <Control name="UDQLineTemplate" virtual="true">
+            <Dimensions x="172" y="20" />
+            <Controls>
+ 
+						<Label name="$(parent)D" font="ZoFontGameSmall" color="FA5252" wrapMode="ELLIPSIS"  mouseEnabled="true" text="">
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+							<Dimensions x="130" y="20" />
+						</Label>
+						<Button name="$(parent)n" inherits="ZO_RadioButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)D" relativePoint="TOPRIGHT" offsetX="0" offsetY="3"/>
+							<Dimensions x="15" y="15" />
+						</Button>
+						<Button name="$(parent)v" inherits="ZO_RadioButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)n" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+							<Dimensions x="15" y="15" />
+						</Button>									
+            </Controls>
+
+        </Control>
+
+
+
+
+	</Controls>
+</GuiXml>

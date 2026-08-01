@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/s1by0z/Stylich__4671",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "s1by0z",
+  "canonical_id": "esoui:4671",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4671",
+  "deleted": false,
+  "directories": [
+    "Stylich"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4671/",
+  "fingerprint": "dffc4b59e3416fb0dd89ffa39a0e22e5278a966a3b9d45de69549d36353b025f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16518.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16519.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16520.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16521.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4671",
+  "source_url": "https://www.esoui.com/downloads/info4671-Stylich.html",
+  "stats": {
+    "downloads": 90,
+    "favorites": 0,
+    "monthly_downloads": 89
+  },
+  "title": "Stylich",
+  "updated_at": 1783038896000,
+  "version": "1.2.2"
+}

@@ -1,0 +1,63 @@
+{
+  "archive_path": "addons/notnear/Skill-Blocker__3483",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "notnear",
+  "canonical_id": "esoui:3483",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3483",
+  "deleted": false,
+  "directories": [
+    "NearSkillBlocker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3483/",
+  "fingerprint": "b461183ef0d1a7ee8da487d0561e976eaa996983573179720baabcbddf8a2528",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3483",
+  "source_url": "https://www.esoui.com/downloads/info3483-SkillBlocker.html",
+  "stats": {
+    "downloads": 17591,
+    "favorites": 18,
+    "monthly_downloads": 161
+  },
+  "title": "Skill Blocker",
+  "updated_at": 1757042980000,
+  "version": "3.10.0"
+}

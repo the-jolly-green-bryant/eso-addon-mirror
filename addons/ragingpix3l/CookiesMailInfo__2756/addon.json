@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/ragingpix3l/CookiesMailInfo__2756",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ragingpix3l",
+  "canonical_id": "esoui:2756",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2756",
+  "deleted": false,
+  "directories": [
+    "CookiesMailInfo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2756/",
+  "fingerprint": "7f0bca663875c9a7c01916eadc9d814d809ae7c4bd20361d3fa7c77ae49af578",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9336.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9337.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2756",
+  "source_url": "https://www.esoui.com/downloads/info2756-CookiesMailInfo.html",
+  "stats": {
+    "downloads": 2608,
+    "favorites": 0,
+    "monthly_downloads": 7
+  },
+  "title": "CookiesMailInfo",
+  "updated_at": 1598438862000,
+  "version": "0.04"
+}

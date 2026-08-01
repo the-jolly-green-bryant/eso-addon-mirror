@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Saenic/Auto-Category---Revised-plugin-for-Research-Assistant__2742",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Saenic",
+  "canonical_id": "esoui:2742",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2742",
+  "deleted": false,
+  "directories": [
+    "AutoCategory_ResearchAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2742/",
+  "fingerprint": "dd5cbcaabb61f3950a7cc4a8a43028e029b1451cb4c4accaf8e34dc6304536c4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9280.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9281.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2742",
+  "source_url": "https://www.esoui.com/downloads/info2742-AutoCategory-RevisedpluginforResearchAssistant.html",
+  "stats": {
+    "downloads": 14520,
+    "favorites": 32,
+    "monthly_downloads": 79
+  },
+  "title": "Auto Category - Revised plugin for Research Assistant",
+  "updated_at": 1598275111000,
+  "version": "1.0"
+}

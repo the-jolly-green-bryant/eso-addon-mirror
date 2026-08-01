@@ -1,0 +1,18 @@
+## Title: AutoBind
+## Description: This is a simple addon designed to make it easier to bind items that are not yet unlocked in your collection. Slash commands: "/autobind", "/autobindsettings"
+## Author: ShinyBones
+## Version: 3.0.0
+## AddOnVersion: 4
+## APIVersion: 101047
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: AutoBindVariables
+
+Localization/Default.lua
+Localization/$(language).lua
+Files/Main.lua
+Files/Traits.lua
+Files/PreviewWindow.lua
+Files/Settings.lua
+Files/Bindings.lua
+Files/PreviewWindow.xml
+Files/Bindings.xml

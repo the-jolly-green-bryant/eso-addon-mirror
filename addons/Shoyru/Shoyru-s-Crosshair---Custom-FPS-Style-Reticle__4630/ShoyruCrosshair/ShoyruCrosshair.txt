@@ -1,0 +1,8 @@
+## Title: Shoyru's Crosshair
+## Author: Shoyru
+## Version: 1.0
+## APIVersion: 101050 101051
+## DependsOn: LibAddonMenu-2.0>=43
+## SavedVariables: ShoyruCrosshairSavedVariables
+
+ShoyruCrosshair.lua

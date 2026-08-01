@@ -1,0 +1,1336 @@
+-- RdKGroupTool - Language - de
+-- By @s0rdrak (PC / EU)
+
+local RdKGTool = _G['RdKGTool']
+local RdKGToolMenu = RdKGTool.menu
+local RdKGToolGroup = RdKGTool.group
+local RdKGToolCrown = RdKGToolGroup.crown
+local RdKGToolAI = RdKGToolGroup.ai
+local RdKGToolFtcv = RdKGToolGroup.ftcv
+local RdKGToolFtcw = RdKGToolGroup.ftcw
+local RdKGToolBeam = RdKGToolGroup.ftcb
+local RdKGToolOverview = RdKGToolGroup.ro
+local RdKGToolGBeam = RdKGToolGroup.gb
+local RdKGToolHdm = RdKGToolGroup.hdm
+local RdKGToolDt = RdKGToolGroup.dt
+local RdKGToolIsdp = RdKGToolGroup.isdp
+local RdKGToolCompass = RdKGTool.compass
+local RdKGToolYacs = RdKGToolCompass.yacs
+local RdKGToolSC = RdKGToolCompass.sc
+local RdKGToolUtil = RdKGTool.util
+local RdKGToolUtilUI = RdKGToolUtil.ui
+local RdKGToolUltimates = RdKGToolUtil.ultimates
+local RdKGToolNetworking = RdKGToolUtil.networking
+local RdKGToolUtilGroup = RdKGToolUtil.group
+local RdKGToolVersioning = RdKGToolUtil.versioning
+local RdKGToolGMenu = RdKGToolUtil.groupMenu
+local RdKGToolBeams = RdKGToolUtil.beams
+local RdKGToolToolbox = RdKGTool.toolbox
+local RdKGToolSm = RdKGToolToolbox.sm
+local RdKGToolRecharger = RdKGToolToolbox.recharger
+local RdKGToolBft = RdKGToolToolbox.bft
+local RdKGToolSiege = RdKGToolToolbox.siege
+local RdKGToolCL = RdKGToolToolbox.cl
+local RdKGToolEnhance = RdKGToolToolbox.enhancements
+local RdKGToolRespawner = RdKGToolToolbox.respawner
+local RdKGToolSP = RdKGToolToolbox.sp
+local RdKGToolSO = RdKGToolToolbox.so
+local RdKGToolAdmin = RdKGTool.admin
+local RdKGToolConfig = RdKGTool.cfg
+
+RdKGTool.config.constants.CMD_TEXT_MENU = RdKGTool.slashCmd .. " menu: Öffnet das Konfigurationsmenü"
+RdKGTool.config.constants.CMD_TEXT_MENU = RdKGTool.config.constants.CMD_TEXT_MENU .. "\r\n" .. RdKGTool.slashCmd .." admin: Öffnet das Admin-Interface"
+RdKGTool.config.constants.CMD_TEXT_MENU = RdKGTool.config.constants.CMD_TEXT_MENU .. "\r\n" .. RdKGTool.slashCmd .." config: Öffnet das Konfigurations-Import/Export-Interface"
+RdKGTool.config.constants.CMD_TEXT_MENU = RdKGTool.config.constants.CMD_TEXT_MENU .. "\r\n" .. RdKGTool.slashCmd .." hdm clear: Löscht den Heilung und Schaden über Zeitzähler"
+RdKGTool.config.constants.CMD_TEXT_MENU = RdKGTool.config.constants.CMD_TEXT_MENU .. "\r\n/ai: enable auto invite (e.g. /ai rdk) - turn off with /ai"
+
+--Tool
+RdKGTool.constants = RdKGTool.constants or {}
+RdKGTool.constants.MISSING_LIBRARIES = "RdK Group Tool benötigt noch folgende Bibliotheken: "
+
+--Menu Constants
+--Profile
+RdKGToolMenu.constants = RdKGToolMenu.constants or {}
+RdKGToolMenu.constants.PROFILE_HEADER = "Profileinstellungen"
+RdKGToolMenu.constants.PROFILE_SELECTED_PROFILE = "Ausgewähltes Profil"
+RdKGToolMenu.constants.PROFILE_SELECTED_PROFILE_TOOLTIP = "Wähle das zu verwendende Profil aus"
+RdKGToolMenu.constants.PROFILE_NEW_PROFILE = "Neues Profil"
+RdKGToolMenu.constants.PROFILE_ADD_PROFILE = "Hinzufügen"
+RdKGToolMenu.constants.PROFILE_CLONE_PROFILE = "Kopieren"
+RdKGToolMenu.constants.PROFILE_REMOVE_PROFILE = "Entfernen"
+RdKGToolMenu.constants.PROFILE_EXISTS = "|cFF0000Das Profil existiert bereits. Bitte verwende einen anderen Namen|r"
+RdKGToolMenu.constants.PROFILE_CANT_REMOVE_DEFAULT = "|cFF0000Dieses Profil kann nicht entfernt werden|r"
+
+--Fixed Components
+RdKGToolMenu.constants.POSITION_FIXED_SET = "Position fixieren"
+RdKGToolMenu.constants.POSITION_FIXED_UNSET = "Position freigeben"
+
+--Donate
+RdKGToolMenu.constants.FEEDBACK = "Feedback"
+RdKGToolMenu.constants.FEEDBACK_STRING = "Bitte teile mir dein Feedback via ESO Forum oder ESOUI mit. Ich werde nicht in der Lage sein auf Mails zu reagieren."
+RdKGToolMenu.constants.DONATE = "Spenden"
+RdKGToolMenu.constants.DONATE_5K = "5'000 Gold spenden"
+RdKGToolMenu.constants.DONATE_50K = "50'000 Gold spenden"
+RdKGToolMenu.constants.DONATE_SERVER_ERROR = "Danke für den Versuch etwas zu spenden. Leider spielen wir auf unterschiedlichen Servern, wodurch dies nicht möglich ist."
+RdKGToolMenu.constants.DONATE_MAIL_SUBJECT = "RdK Group Tool-Spende"
+
+--Group
+RdKGToolMenu.constants.GROUP_HEADER = "|cFF8174Gruppeneinstellungen|r"
+
+--Crown
+RdKGToolMenu.constants.CROWN_HEADER = "|c4592FFKrone|r"
+RdKGToolMenu.constants.CROWN_CHK_GROUP_CROWN_ENABLED = "Erweiterte Krone aktiviert"
+RdKGToolMenu.constants.CROWN_SELECTED_MODE = "Kronenmode"
+RdKGToolMenu.constants.CROWN_MODE = {}
+RdKGToolMenu.constants.CROWN_MODE[1] = "Pin"
+RdKGToolMenu.constants.CROWN_SELECTED_CROWN = "Ausgewählte Krone"
+RdKGToolMenu.constants.CROWN_SIZE = "Größe"
+RdKGToolMenu.constants.CROWN_WARNING = "|cFF0000Es kann nur 1 AddOn diese Funktionalität implementieren. Falls 2 Addons diese verwenden, wird das Spiel abstürzen!|r"
+RdKGToolMenu.constants.CROWN_PVP_ONLY = "PvP Only"
+
+--Auto Invite
+RdKGToolMenu.constants.AI_HEADER = "|c4592FFAuto Invite|r"
+RdKGToolMenu.constants.AI_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.AI_INVITE_TEXT = "Invite-Text"
+RdKGToolMenu.constants.AI_GROUP_SIZE = "Maximale Gruppengröße"
+RdKGToolMenu.constants.AI_PVP_CHECK = "PvP Only"
+RdKGToolMenu.constants.AI_SEND_CHAT_MESSAGES = "Sende Chatnachrichten"
+RdKGToolMenu.constants.AI_AUTO_KICK = "Auto Kick"
+RdKGToolMenu.constants.AI_AUTO_KICK_TIME = "Auto Kick-Intervall"
+RdKGToolMenu.constants.AI_CHAT = "Erlaubte Chats"
+RdKGToolMenu.constants.AI_CHAT_RESTRICTIONS = "Einschränkung der Spieler"
+RdKGToolMenu.constants.AI_CHAT_RESTRICTIONS_TOOLTIP = "Definiert die Einschränkung, anhand der Auto Invite ausgelöst wird."
+RdKGToolMenu.constants.AI_CHAT_RESTRICTIONS_GUILD = "Gilde"
+RdKGToolMenu.constants.AI_CHAT_RESTRICTIONS_GUILD_FRIEND = "Gilde und Freunde"
+RdKGToolMenu.constants.AI_CHAT_RESTRICTIONS_FRIEND = "Freunde"
+RdKGToolMenu.constants.AI_CHAT_RESTRICTIONS_SPECIFIC_GUILD = "Spezifische Gilde"
+RdKGToolMenu.constants.AI_CHAT_RESTRICTIONS_SPECIFIC_GUILD_FRIEND = "Spezifische Gilde und Freunde"
+RdKGToolMenu.constants.AI_CHAT_RESTRICTIONS_NONE = "Keine"
+RdKGToolMenu.constants.AI_SHOW_MEMBER_LEFT = "Zeige alle Verlassen-Nachrichten"
+
+--Follow The Crown Visual
+RdKGToolMenu.constants.FTCV_HEADER = "|c4592FFFollow The Crown - Pfeil|r"
+RdKGToolMenu.constants.FTCV_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.FTCV_MODE = "Modus"
+RdKGToolMenu.constants.FTCV_COLOR_MODE = "Farbmodus"
+RdKGToolMenu.constants.FTCV_COLOR_MODE_ORIENTATION = "Ausrichtung (vorne, Seite, hinten)"
+RdKGToolMenu.constants.FTCV_COLOR_MODE_DISTANCE = "Entfernung (nahe, fern)"
+RdKGToolMenu.constants.FTCV_COLOR_FRONT = "Farbe 1 (vorne / nahe)"
+RdKGToolMenu.constants.FTCV_COLOR_SIDE = "Farbe 2 (Seite)"
+RdKGToolMenu.constants.FTCV_COLOR_BACK = "Farbe 3 (hinten / fern)"
+RdKGToolMenu.constants.FTCV_OPACITY_CLOSE = "Distanzdurchsichtigkeit nahe"
+RdKGToolMenu.constants.FTCV_OPACITY_FAR = "Distanzdurchsichtigkeit fern"
+RdKGToolMenu.constants.FTCV_SIZE_CLOSE = "Größe nahe"
+RdKGToolMenu.constants.FTCV_SIZE_FAR = "Größe fern"
+RdKGToolMenu.constants.FTCV_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.FTCV_MODE_RETICLE = "Fadenkreuz"
+RdKGToolMenu.constants.FTCV_MODE_FIXED = "Fixiert"
+RdKGToolMenu.constants.FTCV_POSITION = "Position"
+RdKGToolMenu.constants.FTCV_MAX_DISTANCE = "Maximal erlaubte Distanz"
+RdKGToolMenu.constants.FTCV_MIN_DISTANCE = "Minimale Distanz"
+RdKGToolMenu.constants.FTCV_TEXTURES = "Textur"
+
+--Follow The Crown Warnings
+RdKGToolMenu.constants.FTCW_HEADER = "|c4592FFFollow The Crown - Warnungen|r"
+RdKGToolMenu.constants.FTCW_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.FTCW_WARNINGS_ENABLED = "Warnungen aktiviert"
+RdKGToolMenu.constants.FTCW_DISTANCE_ENABLED = "Distanz aktiviert"
+RdKGToolMenu.constants.FTCW_DISTANCE_BACKDROP_ENABLED = "Distanzhintergrund aktiviert"
+RdKGToolMenu.constants.FTCW_POSITION_FIXED = "Position fixiert"
+RdKGToolMenu.constants.FTCW_DISTANCE = "Maximal erlaubte Distanz"
+RdKGToolMenu.constants.FTCW_IGNORE_DISTANCE = "Distanzdeaktivierung"
+RdKGToolMenu.constants.FTCW_WARNING_COLOR = "Warnungsfarbe"
+RdKGToolMenu.constants.FTCW_DISTANCE_COLOR_NORMAL = "Distanzfarbe für Normal"
+RdKGToolMenu.constants.FTCW_DISTANCE_COLOR_ALERT = "Distanzfarbe für Alarm"
+RdKGToolMenu.constants.FTCW_PVP_ONLY = "PvP Only"
+
+--Follow The Crown Audio
+RdKGToolMenu.constants.FTCA_HEADER = "|c4592FFFollow The Crown - Audio|r"
+RdKGToolMenu.constants.FTCA_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.FTCA_DISTANCE = "Maximal erlaubte Distanz"
+RdKGToolMenu.constants.FTCA_IGNORE_DISTANCE = "Distanzdeaktivierung"
+RdKGToolMenu.constants.FTCA_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.FTCA_UNMOUNTED_ONLY = "Nur ohne Reittier"
+RdKGToolMenu.constants.FTCA_SOUND = "Audio"
+RdKGToolMenu.constants.FTCA_INTERVAL = "Intervall"
+RdKGToolMenu.constants.FTCA_THRESHOLD = "Schwellwert"
+
+--Follow The Crown Beam
+RdKGToolMenu.constants.FTCB_HEADER = "|c4592FFFollow The Crown - Strahl|r"
+RdKGToolMenu.constants.FTCB_WARNING = "|cFF0000Sub Sampling-Qualität muss auf Hoch sein. Ansonsten funktioniert dieses Modul nicht richtig.|r"
+RdKGToolMenu.constants.FTCB_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.FTCB_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.FTCB_SELECTED_BEAM = "Selektierter Strahl"
+RdKGToolMenu.constants.FTCB_COLOR = "Farbe"
+
+--Debuff Overview
+RdKGToolMenu.constants.DBO_HEADER = "|c4592FFDebuff-Übersicht|r"
+RdKGToolMenu.constants.DBO_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.DBO_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.DBO_CRITICAL_AMOUNT = "Kritische Anzahl der Debuffs"
+RdKGToolMenu.constants.DBO_COLOR_OKAY = "Farbe okay [0]"
+RdKGToolMenu.constants.DBO_COLOR_NOT_OKAY = "Farbe nicht okay [1]"
+RdKGToolMenu.constants.DBO_COLOR_CRITICAL = "Farbe kritisch"
+RdKGToolMenu.constants.DBO_POSITION_FIXED = "Position fixiert"
+RdKGToolMenu.constants.DBO_COLOR_OUT_OF_RANGE = "Farbe außer Reichweite"
+RdKGToolMenu.constants.DBO_DESCRIPTION = "Dieses Modul verwendet die Map Pins anderer Module (Ressourcenübersicht, Synergieübersicht, Heilung und Schaden über Zeit). Die besten Resultate werden mit der Resourcenübersicht erzielt."
+RdKGToolMenu.constants.DBO_SIZE = "Größe"
+
+--Rapid Tracker
+RdKGToolMenu.constants.RT_HEADER = "|c4592FFRapid-Übersicht|r"
+RdKGToolMenu.constants.RT_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.RT_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.RT_POSITION_FIXED = "Position fixiert"
+RdKGToolMenu.constants.RT_COLOR_LABEL_IN_RANGE = "Farbname in Reichweite"
+RdKGToolMenu.constants.RT_COLOR_LABEL_NOT_IN_RANGE = "Farbname wenn außer Reichweite"
+RdKGToolMenu.constants.RT_COLOR_LABEL_OUT_OF_RANGE = "Farbname wenn AFK"
+RdKGToolMenu.constants.RT_COLOR_RAPID_ON = "Farbe für Rapid aktiv"
+RdKGToolMenu.constants.RT_COLOR_RAPID_OFF = "Farbe für Rapid inaktiv"
+
+--Resource Overview
+RdKGToolMenu.constants.RO_HEADER_ULTIMATES = "|c4592FFRessourcenübersicht - Kombiniert|r"
+RdKGToolMenu.constants.RO_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.RO_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.RO_POSITION_FIXED = "Position fixiert"
+RdKGToolMenu.constants.RO_ULTIMATE_OVERVIEW_ENABLED = "Ultimate-Gruppenübersicht aktiviert"
+RdKGToolMenu.constants.RO_CLIENT_ULTIMATE_ENABLED = "Eigenes Fenster aktiviert"
+RdKGToolMenu.constants.RO_GROUP_ULTIMATES_ENABLED = "Gruppenfenster aktiviert"
+RdKGToolMenu.constants.RO_SHOW_SOFT_RESOURCES = "Zeige Stamina / Magicka an"
+RdKGToolMenu.constants.RO_DISPLAYED_ULTIMATES = "Eingeblendete Anzahl der Ultimates"
+RdKGToolMenu.constants.RO_COLOR_BACKGROUND = "Ressourcen-Hintergrundfarbe"
+RdKGToolMenu.constants.RO_COLOR_MAGICKA = "Ressourcen-Magickafarbe"
+RdKGToolMenu.constants.RO_COLOR_STAMINA = "Ressourcen-Staminafarbe"
+RdKGToolMenu.constants.RO_COLOR_OUT_OF_RANGE = "Ressourcen-Reichweitenfarbe"
+RdKGToolMenu.constants.RO_COLOR_DEAD = "Ressourcen-Todesfarbe"
+RdKGToolMenu.constants.RO_COLOR_PROGRESS_NOT_FULL = "Ressourcen-nicht-voll-Farbe"
+RdKGToolMenu.constants.RO_COLOR_PROGRESS_FULL = "Ressourcen-voll-Farbe"
+RdKGToolMenu.constants.RO_COLOR_LABEL_FULL = "Ressourcen-Beschriftungsfarbe \"voll\""
+RdKGToolMenu.constants.RO_COLOR_LABEL_NOT_FULL = "Ressourcen-Beschriftungsfarbe \"nicht voll\""
+RdKGToolMenu.constants.RO_COLOR_LABEL_GROUP = "Ressourcen-Beschriftungsfarbe \"Gruppe\""
+RdKGToolMenu.constants.RO_COLOR_LABEL_ANNOUNCEMENT = "Ankündigungsfarbe"
+RdKGToolMenu.constants.RO_ANNOUNCEMENT_SIZE = "Ankündigungsgröße"
+RdKGToolMenu.constants.RO_IN_COMBAT_ENABLED = "Kampfstatus anzeigen"
+RdKGToolMenu.constants.RO_IN_COMBAT_COLOR = "Farbe im Kampf"
+RdKGToolMenu.constants.RO_OUT_OF_COMBAT_COLOR = "Farbe außerhalb des Kampfs"
+RdKGToolMenu.constants.RO_IN_STEALTH_ENABLED = "Stealth-Status anzeigen"
+RdKGToolMenu.constants.RO_ULTIMATE_GROUPS_ENABLED = "Ultimate-Gruppen aktiviert"
+RdKGToolMenu.constants.RO_ULTIMATE_SORTING_MODE = "Sortierungsmodus"
+RdKGToolMenu.constants.RO_ULTIMATE_GROUP_SIZE_DESTRO = "Zerstörungsstab-Gruppengröße"
+RdKGToolMenu.constants.RO_ULTIMATE_GROUP_SIZE_STORM = "Sturm-Gruppengröße"
+RdKGToolMenu.constants.RO_ULTIMATE_GROUP_SIZE_NORTHERNSTORM = "Nordsturm-Gruppengröße"
+RdKGToolMenu.constants.RO_ULTIMATE_GROUP_SIZE_PERMAFROST = "Permafrost-Gruppengröße"
+RdKGToolMenu.constants.RO_ULTIMATE_GROUP_SIZE_NEGATE = "Magienegation-Gruppengröße"
+RdKGToolMenu.constants.RO_ULTIMATE_GROUP_SIZE_NEGATE_OFFENSIVE = "Magienegation-off-Gruppengröße"
+RdKGToolMenu.constants.RO_ULTIMATE_GROUP_SIZE_NEGATE_COUNTER = "Magienegation-Counter-Gruppengröße"
+RdKGToolMenu.constants.RO_ULTIMATE_GROUP_SIZE_NOVA = "Nova-Gruppengröße"
+RdKGToolMenu.constants.RO_ULTIMATE_DISPLAY_MODE = "Anzeigemodus"
+RdKGToolMenu.constants.RO_MAX_DISTANCE = "Max Distanz"
+RdKGToolMenu.constants.RO_SOUND_ENABLED = "Sound aktiviert"
+RdKGToolMenu.constants.RO_SELECTED_SOUND = "Ausgewählter Sound"
+RdKGToolMenu.constants.RO_HEADER_GROUPS = "|c4592FFRessourcenübersicht - Geteilt|r"
+RdKGToolMenu.constants.RO_GROUPS_ENABLED = "Gruppen aktiviert"
+RdKGToolMenu.constants.RO_GROUPS_MODE = "Modus"
+RdKGToolMenu.constants.RO_GROUPS_1_NAME = "Gruppe 1 Name"
+RdKGToolMenu.constants.RO_GROUPS_2_NAME = "Gruppe 2 Name"
+RdKGToolMenu.constants.RO_GROUPS_3_NAME = "Gruppe 3 Name"
+RdKGToolMenu.constants.RO_GROUPS_4_NAME = "Gruppe 4 Name"
+RdKGToolMenu.constants.RO_GROUPS_5_NAME = "Gruppe 5 Name"
+RdKGToolMenu.constants.RO_GROUPS_1_ENABLED = "Gruppe 1 aktiviert"
+RdKGToolMenu.constants.RO_GROUPS_2_ENABLED = "Gruppe 2 aktiviert"
+RdKGToolMenu.constants.RO_GROUPS_3_ENABLED = "Gruppe 3 aktiviert"
+RdKGToolMenu.constants.RO_GROUPS_4_ENABLED = "Gruppe 4 aktiviert"
+RdKGToolMenu.constants.RO_GROUPS_5_ENABLED = "Gruppe 5 aktiviert"
+RdKGToolMenu.constants.RO_GROUPS_1_DEFAULT = "Schaden"
+RdKGToolMenu.constants.RO_GROUPS_2_DEFAULT = "Unterstützung"
+RdKGToolMenu.constants.RO_GROUPS_3_DEFAULT = "Heilung"
+RdKGToolMenu.constants.RO_GROUPS_4_DEFAULT = "Synergie"
+RdKGToolMenu.constants.RO_GROUPS_5_DEFAULT = "Undefiniert"
+RdKGToolMenu.constants.RO_GROUPS_PRIORITY = "-Priorität:"
+RdKGToolMenu.constants.RO_GROUPS_GROUP = "-Gruppe:"
+RdKGToolMenu.constants.RO_COLOR_GROUPS_EDGE_OUT_OF_COMBAT = "Rand außerhalb vom Kampf"
+RdKGToolMenu.constants.RO_COLOR_GROUPS_EDGE_IN_COMBAT = "Rand innerhalb des Kampfs"
+RdKGToolMenu.constants.RO_SIZE = "Größe"
+RdKGToolMenu.constants.RO_SPACING = "Abstand"
+RdKGToolMenu.constants.RO_SHARED_SETTING = "Diese Einstellung gilt sowohl für die kombinierte als auch für geteilte Ressourcenübersicht."
+
+--HP Damage Meter
+RdKGToolMenu.constants.HDM_HEADER = "|c4592FFHeilung und Schaden über Zeit|r"
+RdKGToolMenu.constants.HDM_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.HDM_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.HDM_POSITION_FIXED = "Position fixiert"
+RdKGToolMenu.constants.HDM_WINDOW_ENABLED = "Fenster aktiviert"
+RdKGToolMenu.constants.HDM_USING_ALPHA = "Benutze Alpha"
+RdKGToolMenu.constants.HDM_USING_COLORS = "Hintergrundfarben"
+RdKGToolMenu.constants.HDM_USING_HIGHLIGHT_APPLICANT = "Hervorheben von Bewerbern"
+RdKGToolMenu.constants.HDM_AUTO_RESET = "Zähler automatisch zurücksetzen"
+RdKGToolMenu.constants.HDM_SELECTED_VIEWMODE = "Ausgewählter Modus"
+RdKGToolMenu.constants.HDM_ALIVE_COLOR = "Farbe lebend"
+RdKGToolMenu.constants.HDM_DEAD_COLOR = "Farbe tot"
+RdKGToolMenu.constants.HDM_BACKGROUND_COLOR_HEALER = "Heiler-Hintergrundfarbe"
+RdKGToolMenu.constants.HDM_BACKGROUND_COLOR_DD = "DD-Hintergrundfarbe"
+RdKGToolMenu.constants.HDM_BACKGROUND_COLOR_TANK = "Tank-Hintergrundfarbe "
+RdKGToolMenu.constants.HDM_BACKGROUND_COLOR_APPLICANT = "Bewerber-Hintergrundfarbe"
+RdKGToolMenu.constants.HDM_SIZE = "Größe"
+
+--Potion Overview
+RdKGToolMenu.constants.PO_HEADER = "|c4592FFTränkeübersicht|r"
+RdKGToolMenu.constants.PO_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.PO_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.PO_POSITION_FIXED = "Position fixiert"
+RdKGToolMenu.constants.PO_COLOR_BACKGROUND_NO_IMMOVABLE = "Beweglich-Hintergrundfarbe:"
+RdKGToolMenu.constants.PO_COLOR_BACKGROUND_IMMOVABLE_FULL = "Voll-unbeweglich-Hintergrundfarbe"
+RdKGToolMenu.constants.PO_COLOR_BACKGROUND_IMMOVABLE_LOW = "Leer-unbeweglich-Hintergrundfarbe"
+RdKGToolMenu.constants.PO_COLOR_PROGRESS_IMMOVABLE = "Unbeweglich-Fortschrittsfarbe"
+-- U30+ Change (Temporary Fix)
+--[[
+RdKGToolMenu.constants.PO_COLOR_CRAFTED_PROGRESS_POTION = "Crafted-Trank-Fortschrittsfarbe"
+RdKGToolMenu.constants.PO_COLOR_CROWN_PROGRESS_POTION = "Kronentrank-Fortschrittsfarbe"
+RdKGToolMenu.constants.PO_COLOR_NON_CRAFTED_PROGRESS_POTION = "Nicht-gecrafted-Trank-Fortschrittsfarbe"
+RdKGToolMenu.constants.PO_COLOR_ALLIANZ_PROGRESS_POTION = "Trank-Fortschrittsfarbe (Allianz)"
+]]
+RdKGToolMenu.constants.PO_COLOR_CRAFTED_PROGRESS_POTION = "Trank-Fortschrittsfarbe"
+RdKGToolMenu.constants.PO_COLOR_LABEL_IMMOVABLE = "Unbeweglich-Beschriftungsfarbe"
+RdKGToolMenu.constants.PO_COLOR_LABEL_POTION = "Trank-Beschriftungsfarbe"
+RdKGToolMenu.constants.PO_COLOR_BACKDROP_IMMOVABLE = "Unbeweglich-Hintergrundfarbe"
+RdKGToolMenu.constants.PO_COLOR_BACKDROP_POTION = "Trank-Hintergrundfarbe"
+RdKGToolMenu.constants.PO_SOUND_ENABLED = "Sound aktiviert"
+RdKGToolMenu.constants.PO_SELECTED_SOUND = "Ausgewählter Sound"
+
+--Detonation Tracker
+RdKGToolMenu.constants.DT_HEADER = "|c4592FFDetonation / Käfer Tracker|r"
+RdKGToolMenu.constants.DT_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.DT_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.DT_POSITION_FIXED = "Position fixiert"
+RdKGToolMenu.constants.DT_FONT_COLOR_DETONATION = "Detonation: Schriftfarbe"
+RdKGToolMenu.constants.DT_PROGRESS_COLOR_DETONATION = "Detonation: Hintergrundfarbe"
+RdKGToolMenu.constants.DT_FONT_COLOR_SUBTERRANEAN_ASSAULT = "Unt Ansturm: Schriftfarbe"
+RdKGToolMenu.constants.DT_PROGRESS_COLOR_SUBTERRANEAN_ASSAULT = "Unt Ansturm: Hintergrundfarbe"
+RdKGToolMenu.constants.DT_FONT_COLOR_SUBTERRANEAN_ASSAULT2 = "Unt Ansturm 2: Schriftfarbe"
+RdKGToolMenu.constants.DT_PROGRESS_COLOR_SUBTERRANEAN_ASSAULT2 = "Unt Ansturm 2: Hintergrundfarbe"
+RdKGToolMenu.constants.DT_FONT_COLOR_DEEP_FISSURE = "Tiefer Riss: Schriftfarbe"
+RdKGToolMenu.constants.DT_PROGRESS_COLOR_DEEP_FISSURE = "Tiefer Riss: Hintergrundfarbe"
+RdKGToolMenu.constants.DT_FONT_COLOR_DEEP_FISSURE2 = "Tiefer Riss 2: Schriftfarbe"
+RdKGToolMenu.constants.DT_PROGRESS_COLOR_DEEP_FISSURE2 = "Tiefer Riss 2: Hintergrundfarbe"
+RdKGToolMenu.constants.DT_FONT_COLOR_SOUL_OF_FLAME = "Soul Of Flame: Schriftfarbe"
+RdKGToolMenu.constants.DT_PROGRESS_COLOR_SOUL_OF_FLAME = "Soul Of Flame: Hintergrundfarbe"
+RdKGToolMenu.constants.DT_SOUL_OF_FLAME_PROMPT_ENABLED = "Soul of Flame: Anzeige-Timer aktiviert"
+RdKGToolMenu.constants.DT_SOUL_OF_FLAME_TEXT = "Anzeige-Timer Text"
+RdKGToolMenu.constants.DT_SIZE = "Größe"
+RdKGToolMenu.constants.DT_MODE = "Modus"
+RdKGToolMenu.constants.DT_SMOOTH_TRANSITION = "Weicher Übergang"
+RdKGToolMenu.constants.DT_SOUL_BETWEEN_DESC = "Zeige das Soul Of Flame Fenster an"
+RdKGToolMenu.constants.DT_SOUL_BETWEEN1 = "Zwischen"
+RdKGToolMenu.constants.DT_SOUL_BETWEEN2 = "Und"
+
+--Group Beams
+RdKGToolMenu.constants.GB_HEADER = "|c4592FFStrahlen - Gruppenmitglieder|r"
+RdKGToolMenu.constants.GB_DESCRIPTION = "Welcher Strahl bei einem Spieler angezeigt wird, hängt von seiner Rolle ab, die er sich entweder unter Rollenzuteilung zuweist oder ihm vom Leiter im Gruppenfenster zugewiesen wird."
+RdKGToolMenu.constants.GB_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.GB_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.GB_HIDE_WHEN_DEAD = "Verbergen wenn tot"
+RdKGToolMenu.constants.GB_SIZE = "Größe"
+RdKGToolMenu.constants.GB_SELECTED_BEAM = "Selektierter Strahl"
+RdKGToolMenu.constants.GB_ROLE_RAPID_ENABLED = "Rapid aktiviert"
+RdKGToolMenu.constants.GB_ROLE_RAPID_COLOR = "Rapid-Farbe"
+RdKGToolMenu.constants.GB_ROLE_PURGE_ENABLED = "Purge aktiviert"
+RdKGToolMenu.constants.GB_ROLE_PURGE_COLOR = "Purge-Farbe"
+RdKGToolMenu.constants.GB_ROLE_HEAL_ENABLED = "Heiler aktiviert"
+RdKGToolMenu.constants.GB_ROLE_HEAL_COLOR = "Heilerfarbe"
+RdKGToolMenu.constants.GB_ROLE_DD_ENABLED = "DD aktiviert"
+RdKGToolMenu.constants.GB_ROLE_DD_COLOR = "DD-Farbe"
+RdKGToolMenu.constants.GB_ROLE_SYNERGY_ENABLED = "Synergie aktiviert"
+RdKGToolMenu.constants.GB_ROLE_SYNERGY_COLOR = "Synergiefarbe"
+RdKGToolMenu.constants.GB_ROLE_CC_ENABLED = "CC aktiviert"
+RdKGToolMenu.constants.GB_ROLE_CC_COLOR = "CC-Farbe"
+RdKGToolMenu.constants.GB_ROLE_SUPPORT_ENABLED = "Support aktiviert"
+RdKGToolMenu.constants.GB_ROLE_SUPPORT_COLOR = "Support-Farbe"
+RdKGToolMenu.constants.GB_ROLE_PLACEHOLDER_ENABLED = "Undefiniert aktiviert"
+RdKGToolMenu.constants.GB_ROLE_PLACEHOLDER_COLOR = "Undefiniertfarbe"
+RdKGToolMenu.constants.GB_ROLE_APPLICANT_ENABLED = "Bewerber aktiviert"
+RdKGToolMenu.constants.GB_ROLE_APPLICANT_COLOR = "Bewerberfarbe"
+
+--I See Dead People
+RdKGToolMenu.constants.ISDP_HEADER = "|c4592FFIch sehe tote Menschen|r"
+RdKGToolMenu.constants.ISDP_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.ISDP_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.ISDP_SIZE = "Größe"
+RdKGToolMenu.constants.ISDP_SELECTED_BEAM = "Selektierter Strahl"
+RdKGToolMenu.constants.ISDP_COLOR_DEAD = "Farbe wenn tot"
+RdKGToolMenu.constants.ISDP_COLOR_BEING_RESURRECTED = "Farbe beim Wiederbeleben"
+RdKGToolMenu.constants.ISDP_COLOR_RESURRECTED = "Farbe wenn wiederbelebt"
+
+--Compass
+RdKGToolMenu.constants.COMPASS_HEADER = "|cFF8174Kompasseinstellungen|r"
+--YACS
+RdKGToolMenu.constants.YACS_HEADER = "|c4592FFYet Another Compass|r"
+RdKGToolMenu.constants.YACS_CHK_ADDON_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.YACS_CHK_PVP = "Aktiviert im PVP"
+RdKGToolMenu.constants.YACS_CHK_PVE = "Aktiviert im PVE"
+RdKGToolMenu.constants.YACS_CHK_COMBAT = "Aktiviert im Kampf"
+RdKGToolMenu.constants.YACS_CHK_MOVABLE = "Bewegbaren Kompass"
+RdKGToolMenu.constants.YACS_COLOR_COMPASS = "Kompassfarbe"
+RdKGToolMenu.constants.YACS_COMPASS_SIZE = "Kompassgröße"
+RdKGToolMenu.constants.YACS_COMPASS_SIZE_TOOLTIPE = "Setzt die Größe des Kompass."
+RdKGToolMenu.constants.YACS_COMPASS_STYLE = "Stil"
+RdKGToolMenu.constants.YACS_COMPASS_STYLE_TOOLTIP = "Wähle den Kompassstil aus."
+RdKGToolMenu.constants.YACS_RESTORE_DEFAULTS = "Wiederherstellen"
+
+--SC
+RdKGToolMenu.constants.COMPASS_SC_HEADER = "|c4592FFSimple Compass|r"
+RdKGToolMenu.constants.COMPASS_SC_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.COMPASS_SC_PVP = "Aktiviert im PVP"
+RdKGToolMenu.constants.COMPASS_SC_PVE = "Aktiviert im PVE"
+RdKGToolMenu.constants.COMPASS_SC_POSITION_FIXED = "Position Fixiert"
+RdKGToolMenu.constants.COMPASS_SC_COLOR_BACKDROP = "Hintergrundfarbe"
+RdKGToolMenu.constants.COMPASS_SC_COLOR_DIRECTION_NORTH = "Nordfarbe"
+RdKGToolMenu.constants.COMPASS_SC_COLOR_DIRECTION_SOUTH = "Südfarbe"
+RdKGToolMenu.constants.COMPASS_SC_COLOR_DIRECTION_WEST = "Westfarbe"
+RdKGToolMenu.constants.COMPASS_SC_COLOR_DIRECTION_EAST = "Ostfarbe"
+RdKGToolMenu.constants.COMPASS_SC_COLOR_DIRECTION_OTHERS = "Zwischenfarbe"
+RdKGToolMenu.constants.COMPASS_SC_COLOR_MARKERS = "Markierungsfarbe"
+
+--Toolbox
+RdKGToolMenu.constants.TOOLBOX_HEADER = "|cFF8174Werkzeugeinstellungen|r"
+--Siege Merchant
+RdKGToolMenu.constants.SM_HEADER = "|c4592FFBelagerungshändler|r"
+RdKGToolMenu.constants.SM_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.SM_SEND_CHAT_MESSAGES = "Sende Chatnachrichten"
+RdKGToolMenu.constants.SM_ITEM_REPAIR_WALL = "Reparaturmaterial für Mauern"
+RdKGToolMenu.constants.SM_ITEM_REPAIR_DOOR = "Reparaturmaterial für Tore"
+RdKGToolMenu.constants.SM_ITEM_REPAIR_SIEGE = "Reparaturmaterial für Belagerungswaffen"
+RdKGToolMenu.constants.SM_ITEM_BALLISTA_FIRE = "Feuerballiste"
+RdKGToolMenu.constants.SM_ITEM_BALLISTA_STONE = "Balliste"
+RdKGToolMenu.constants.SM_ITEM_BALLISTA_LIGHTNING = "Blitzschlagballiste"
+RdKGToolMenu.constants.SM_ITEM_TREBUCHET_FIRE = "Feuertopftribok"
+RdKGToolMenu.constants.SM_ITEM_TREBUCHET_STONE = "Steintribok"
+RdKGToolMenu.constants.SM_ITEM_TREBUCHET_ICE = "Eiskugeltribok"
+RdKGToolMenu.constants.SM_ITEM_CATAPULT_MEATBAG = "Fleischsackkatapult"
+RdKGToolMenu.constants.SM_ITEM_CATAPULT_OIL = "Ölkatapult"
+RdKGToolMenu.constants.SM_ITEM_CATAPULT_SCATTERSHOT = "Streuschusskatapult"
+RdKGToolMenu.constants.SM_ITEM_OIL = "Brandöl"
+RdKGToolMenu.constants.SM_ITEM_CAMP = "Feldlager"
+RdKGToolMenu.constants.SM_ITEM_RAM = "Rammbock"
+RdKGToolMenu.constants.SM_ITEM_KEEP_RECALL = "Burgrückrufstein"
+RdKGToolMenu.constants.SM_ITEM_DESTRUCTIBLE_REPAIR = "Bridge/Milegate-Reparaturmaterial"
+RdKGToolMenu.constants.SM_MIN = "Mindestens"
+RdKGToolMenu.constants.SM_MAX = "Maximal"
+RdKGToolMenu.constants.SM_PAYMENT_OPTIONS = "Zahlungsart"
+RdKGToolMenu.constants.SM_ITEM_REPAIR_ALL = "Reparaturmaterial für Cyrodiil"
+RdKGToolMenu.constants.SM_ITEM_POT_RED = "Allianz-Lebenstrunk"
+RdKGToolMenu.constants.SM_ITEM_POT_GREEN = "Allianz-Kampftrunk"
+RdKGToolMenu.constants.SM_ITEM_POT_BLUE = "Allianz-Magietrunk"
+RdKGToolMenu.constants.SM_ITEM_TRI_POT = "Gebundener Dreifach-Wiederherstellungstrank"
+RdKGToolMenu.constants.SM_ITEM_CF_TACK = "Cyrodiil-Feldschmaus"
+RdKGToolMenu.constants.SM_ITEM_CF_TREAT = "Cyrodiil-Feldhappen"
+RdKGToolMenu.constants.SM_ITEM_CF_BAR = "Cyrodiil-Feldriegel"
+RdKGToolMenu.constants.SM_ITEM_CF_BREW = "Cyrodiil-Feldsud"
+RdKGToolMenu.constants.SM_ITEM_CF_TEA = "Cyrodiil-Feldtee"
+RdKGToolMenu.constants.SM_ITEM_CF_TONIC = "Cyrodiil-Feldtonikum"
+RdKGToolMenu.constants.SM_ITEM_SOUL_GEM = "Seelenstein"
+RdKGToolMenu.constants.SM_ITEM_SOUL_GEM_EMPTY = "Leerer Seelenstein"
+
+--Recharger
+RdKGToolMenu.constants.RECHARGER_HEADER = "|c4592FFRecharger - Seelensteine|r"
+RdKGToolMenu.constants.RECHARGER_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.RECHARGER_SEND_CHAT_MESSAGES = "Sende Chatnachrichten"
+RdKGToolMenu.constants.RECHARGER_PERCENT = "Minimale Aufladung auf der Waffe in %"
+RdKGToolMenu.constants.RECHARGER_SOULGEMS_EMPTY_WARNING = "Keine-Seelensteine-Warnung"
+RdKGToolMenu.constants.RECHARGER_SOULGEMS_THRESHOLD_WARNING = "Bald-keine-Seelensteine-Warnung"
+RdKGToolMenu.constants.RECHARGER_SOULGEMS_THRESHOLD_SLIDER = "Seelenstein-Schwellwert"
+RdKGToolMenu.constants.RECHARGER_SOULGEMS_EMPTY_LOGIN_WARNING = "Seelenstein-Login-Warnung"
+RdKGToolMenu.constants.RECHARGER_INTERVAL = "Prüfintervall"
+
+--Keep Claimer
+RdKGToolMenu.constants.KC_HEADER = "|c4592FFKeep Claimer|r"
+RdKGToolMenu.constants.KC_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.KC_GUILD_1 = "Priorität 1"
+RdKGToolMenu.constants.KC_GUILD_2 = "Priorität 2"
+RdKGToolMenu.constants.KC_GUILD_3 = "Priorität 3"
+RdKGToolMenu.constants.KC_GUILD_4 = "Priorität 4"
+RdKGToolMenu.constants.KC_GUILD_5 = "Priorität 5"
+RdKGToolMenu.constants.KC_CLAIM_KEEPS = "Burgen beanspruchen"
+RdKGToolMenu.constants.KC_CLAIM_OUTPOSTS = "Außenposten beanspruchen"
+RdKGToolMenu.constants.KC_CLAIM_RESOURCES = "Ressourcen beanspruchen"
+
+--Buff Food Tracker
+RdKGToolMenu.constants.BFT_HEADER = "|c4592FFBuff Food Tracker|r"
+RdKGToolMenu.constants.BFT_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.BFT_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.BFT_POSITION_FIXED = "Position fixiert"
+RdKGToolMenu.constants.BFT_SIZE = "Warnungsgröße"
+RdKGToolMenu.constants.BFT_COLOR = "Warnungsfarbe"
+RdKGToolMenu.constants.BFT_SOUND_ENABLED = "Sound aktiviert"
+RdKGToolMenu.constants.BFT_SELECTED_SOUND = "Ausgewählter Sound"
+RdKGToolMenu.constants.BFT_WARNING_TIMER = "Timer für Warnung"
+
+--Cyrodiil Log
+RdKGToolMenu.constants.CL_HEADER = "|c4592FFCyrodiil-Log|r"
+RdKGToolMenu.constants.CL_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.CL_GUILD_CLAIM_ENABLED = "Nachrichten wenn beansprucht"
+RdKGToolMenu.constants.CL_GUILD_LOST_ENABLED = "Nachrichten wenn nicht beansprucht"
+RdKGToolMenu.constants.CL_UA_ENABLED = "Nachrichten bei Angriff"
+RdKGToolMenu.constants.CL_UA_LOST_ENABLED = "Nachrichten wenn Angriff vorbei"
+RdKGToolMenu.constants.CL_KEEP_ALLIANCE_CHANGED_ENABLED = "Allianzwechsel-Nachrichten"
+RdKGToolMenu.constants.CL_TICK_DEFENSE = "Defense-Tick-Nachrichten"
+RdKGToolMenu.constants.CL_TICK_OFFENSE = "Offense-Tick-Nachrichten"
+RdKGToolMenu.constants.CL_SCROLL_NOTIFICATIONS = "Schriftrollen-Nachrichten"
+RdKGToolMenu.constants.CL_EMPEROR_ENABLED = "Kaiser-Nachrichten"
+RdKGToolMenu.constants.CL_QUEST_ENABLED = "Quest-Nachrichten"
+RdKGToolMenu.constants.CL_BATTLEGROUND_ENABLED = "Schlachtfelder-Nachrichten"
+RdKGToolMenu.constants.CL_DAEDRIC_ARTIFACT_ENABLED = "Daedrische-Artefakt-Nachrichten"
+
+--Cyrodiil Status
+RdKGToolMenu.constants.CS_HEADER = "|c4592FFCyrodiilstatus|r"
+RdKGToolMenu.constants.CS_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.CS_POSITION_FIXED = "Position fixiert"
+RdKGToolMenu.constants.CS_HIDE_ON_WORLDMAP = "Auf Weltkarte unsichtbar"
+RdKGToolMenu.constants.CS_SHOW_FLAGS = "Zeige Flaggen"
+RdKGToolMenu.constants.CS_SHOW_SIEGES = "Zeige Belagerungen"
+RdKGToolMenu.constants.CS_SHOW_OWNER_CHANGES = "Zeige Burgendrehzeit"
+RdKGToolMenu.constants.CS_SHOW_ACTION_TIMERS = "Zeige Zeit"
+RdKGToolMenu.constants.CS_COLOR_DEFAULT = "Standardfarbe"
+RdKGToolMenu.constants.CS_COLOR_COOLDOWN = "Abklingfarbe"
+RdKGToolMenu.constants.CS_COLOR_FLIPS_POSITIVE = "Positive Flaggendrehfarbe"
+RdKGToolMenu.constants.CS_COLOR_FLIPS_NEGATIVE = "Negative Flaggendrehfarbe"
+RdKGToolMenu.constants.CS_SHOW_KEEPS = "Zeige Burgen"
+RdKGToolMenu.constants.CS_SHOW_OUTPOSTS = "Zeige Außenposten"
+RdKGToolMenu.constants.CS_SHOW_RESOURCES = "Zeige Ressourcen"
+RdKGToolMenu.constants.CS_SHOW_VILLAGES = "Zeige Dörfer"
+RdKGToolMenu.constants.CS_SHOW_TEMPLES = "Zeige Temple"
+RdKGToolMenu.constants.CS_SHOW_DESTRUCTIBLES = "Zeige Zerstörbares"
+
+--Enhancements
+RdKGToolMenu.constants.ENHANCE_HEADER = "|c4592FFDiverses|r"
+RdKGToolMenu.constants.ENHANCE_QUEST_TRACKER_ENABLED = "Quest Tracker deaktiviert"
+RdKGToolMenu.constants.ENHANCE_QUEST_TRACKER_PVP_ONLY = "Quest Tracker PvP Only"
+RdKGToolMenu.constants.ENHANCE_COMPASS_TWEAKS_ENABLED = "Kompassverbesserungen aktiviert"
+RdKGToolMenu.constants.ENHANCE_COMPASS_PVP_ONLY = "Kompass PvP Only"
+RdKGToolMenu.constants.ENHANCE_COMPASS_HIDDEN = "Kompass unsichtbar"
+RdKGToolMenu.constants.ENHANCE_COMPASS_WIDTH = "Kompasslänge"
+RdKGToolMenu.constants.ENHANCE_ALERTS_TWEAKS_ENABLED = "Alerts-Erweiterung aktiviert"
+RdKGToolMenu.constants.ENHANCE_ALERTS_PVP_ONLY = "Alerts PvP Only"
+RdKGToolMenu.constants.ENHANCE_ALERTS_HIDDEN = "Alerts unsichtbar"
+RdKGToolMenu.constants.ENHANCE_ALERTS_POSITION = "Alerts-Position"
+RdKGToolMenu.constants.ENHANCE_ALERTS_COLOR = "Alerts-Farbe"
+RdKGToolMenu.constants.ENHANCE_RESPAWN_TIMER_ENABLED = "Respawn Timer aktiviert"
+
+--Respawner
+RdKGToolMenu.constants.RESPAWNER_HEADER = "|c4592FFRespawner|r"
+RdKGToolMenu.constants.RESPAWNER_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.RESPAWNER_RESTRICTED_PORT = "Begrenzte Reichweite"
+
+--Camp Preview
+RdKGToolMenu.constants.CP_HEADER = "|c4592FFZeltvorschau|r"
+RdKGToolMenu.constants.CP_ENABLED = "Aktiviert"
+
+--Synergy Prevention
+RdKGToolMenu.constants.SP_HEADER = "|c4592FFSynergieunterdrückung|r"
+RdKGToolMenu.constants.SP_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.SP_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.SP_WINDOW_ENABLED = "Fenster aktiviert"
+RdKGToolMenu.constants.SP_POSITION_FIXED = "Position fixiert"
+RdKGToolMenu.constants.SP_MODE = "Modus"
+RdKGToolMenu.constants.SP_MAX_DISTANCE = "Maximale Distanz"
+RdKGToolMenu.constants.SP_SYNERGY_COMBUSTION_SHARD = "Verhindere Combustion / Scherben"
+RdKGToolMenu.constants.SP_SYNERGY_TALONS = "Verhindere Entzünden"
+RdKGToolMenu.constants.SP_SYNERGY_NOVA = "Verhindere Nova"
+RdKGToolMenu.constants.SP_SYNERGY_BLOOD_ALTAR = "Verhindere Altar"
+RdKGToolMenu.constants.SP_SYNERGY_STANDARD = "Verhindere Standarte"
+RdKGToolMenu.constants.SP_SYNERGY_PURGE = "Verhindere Ritual"
+RdKGToolMenu.constants.SP_SYNERGY_BONE_SHIELD = "Verhindere Knochenschild"
+RdKGToolMenu.constants.SP_SYNERGY_FLOOD_CONDUIT = "Verhindere Ableiten"
+RdKGToolMenu.constants.SP_SYNERGY_ATRONACH = "Verhindere Atronachen"
+RdKGToolMenu.constants.SP_SYNERGY_TRAPPING_WEBS = "Verhindere Spinnenbrut"
+RdKGToolMenu.constants.SP_SYNERGY_RADIATE = "Verhindere Strahlung"
+RdKGToolMenu.constants.SP_SYNERGY_CONSUMING_DARKNESS = "Verhindere Consuming Darkness"
+RdKGToolMenu.constants.SP_SYNERGY_SOUL_LEECH = "Verhindere Seelenentzug"
+RdKGToolMenu.constants.SP_SYNERGY_WARDEN_HEALING = "Verhindere Heilende Saat"
+RdKGToolMenu.constants.SP_SYNERGY_GRAVE_ROBBER = "Verhindere Grabräuber"
+RdKGToolMenu.constants.SP_SYNERGY_PURE_AGONY = "Verhindere Reine Qual"
+RdKGToolMenu.constants.SP_SYNERGY_ICY_ESCAPE = "Verhindere eisige Flucht"
+RdKGToolMenu.constants.SP_SYNERGY_SANGUINE_BURST = "Verhindere sanguine Explosion"
+RdKGToolMenu.constants.SP_SYNERGY_HEED_THE_CALL = "Verhindere Erhört den Ruf"
+RdKGToolMenu.constants.SP_SYNERGY_URSUS = "Verhindere Schild von Ursus"
+RdKGToolMenu.constants.SP_SYNERGY_GRYPHON = "Verhindere Vergeltung des Greifen"
+RdKGToolMenu.constants.SP_SYNERGY_RUNEBREAK = "Verhindere Runenbrechen"
+RdKGToolMenu.constants.SP_SYNERGY_PASSAGE = "Verhindere Übergang"
+RdKGToolMenu.constants.SP_SYNERGY_RECOVERY = "Verhindere Konvergenzauslösung"
+
+--Synergy Overview
+RdKGToolMenu.constants.SO_HEADER = "|c4592FFSynergieübersicht|r"
+RdKGToolMenu.constants.SO_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.SO_WINDOW_ENABLED = "Fenster aktiviert"
+RdKGToolMenu.constants.SO_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.SO_POSITION_FIXED = "Position fixiert"
+RdKGToolMenu.constants.SO_DISPLAY_MODE = "Anzeigemodus"
+RdKGToolMenu.constants.SO_TABLE_MODE = "Tabellenmodus"
+RdKGToolMenu.constants.SO_SIZE = "Größe"
+RdKGToolMenu.constants.SO_COLOR_SYNERGY_BACKDROP = "Synergie-Hintergrundsfarbe"
+RdKGToolMenu.constants.SO_COLOR_SYNERGY_PROGRESS = "Synergie-Fortschrittsfarbe"
+RdKGToolMenu.constants.SO_COLOR_SYNERGY = "Synergiefarbe"
+RdKGToolMenu.constants.SO_COLOR_BACKGROUND = "Hintergrundfarbe"
+RdKGToolMenu.constants.SO_COLOR_TEXT = "Textfarbe"
+RdKGToolMenu.constants.SO_SYNERGY_COMBUSTION_SHARD = "Zeige Combustion / Scherben"
+RdKGToolMenu.constants.SO_SYNERGY_TALONS = "Zeige Entzünden"
+RdKGToolMenu.constants.SO_SYNERGY_NOVA = "Zeige Nova"
+RdKGToolMenu.constants.SO_SYNERGY_BLOOD_ALTAR = "Zeige Altar"
+RdKGToolMenu.constants.SO_SYNERGY_STANDARD = "Zeige Standarte"
+RdKGToolMenu.constants.SO_SYNERGY_PURGE = "Zeige Ritual"
+RdKGToolMenu.constants.SO_SYNERGY_BONE_SHIELD = "Zeige Knochenschild"
+RdKGToolMenu.constants.SO_SYNERGY_FLOOD_CONDUIT = "Zeige Ableiten"
+RdKGToolMenu.constants.SO_SYNERGY_ATRONACH = "Zeige Atronachen"
+RdKGToolMenu.constants.SO_SYNERGY_TRAPPING_WEBS = "Zeige Spinnenbrut"
+RdKGToolMenu.constants.SO_SYNERGY_RADIATE = "Zeige Strahlung"
+RdKGToolMenu.constants.SO_SYNERGY_CONSUMING_DARKNESS = "Zeige Consuming Darkness"
+RdKGToolMenu.constants.SO_SYNERGY_SOUL_LEECH = "Zeige Seelenentzug"
+RdKGToolMenu.constants.SO_SYNERGY_WARDEN_HEALING = "Zeige Heilende Saat"
+RdKGToolMenu.constants.SO_SYNERGY_GRAVE_ROBBER = "Zeige Grabräuber"
+RdKGToolMenu.constants.SO_SYNERGY_PURE_AGONY = "Zeige Reine Qual"
+RdKGToolMenu.constants.SO_SYNERGY_ICY_ESCAPE = "Zeige eisige Flucht"
+RdKGToolMenu.constants.SO_SYNERGY_SANGUINE_BURST = "Zeige sanguine Explosion"
+RdKGToolMenu.constants.SO_SYNERGY_HEED_THE_CALL = "Zeige Erhört den Ruf"
+RdKGToolMenu.constants.SO_SYNERGY_URSUS = "Zeige Schild von Ursus"
+RdKGToolMenu.constants.SO_SYNERGY_GRYPHON = "Zeige Vergeltung des Greifen"
+RdKGToolMenu.constants.SO_SYNERGY_RUNEBREAK = "Zeige Runenbrechen"
+RdKGToolMenu.constants.SO_SYNERGY_PASSAGE = "Zeige Übergang"
+RdKGToolMenu.constants.SO_SYNERGY_RECOVERY = "Zeige Konvergenzauslösung"
+RdKGToolMenu.constants.SO_REDUCED_SPACING = "Reduziert Abstand"
+
+--Role Assignment
+RdKGToolMenu.constants.RA_HEADER = "|c4592FFRollenzuteilung|r"
+RdKGToolMenu.constants.RA_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.RA_OVERRIDE_ALLOWED = "Überschreiben erlaubt"
+RdKGToolMenu.constants.RA_ROLE = "Charakterrolle"
+
+--Campaign Joiner
+RdKGToolMenu.constants.CAJ_HEADER = "|c4592FFCampaign Auto Join|r"
+RdKGToolMenu.constants.CAJ_ENABLED = "Aktiviert"
+
+--AvA Messages
+RdKGToolMenu.constants.AM_HEADER = "|c4592FFAvA-Nachrichten|r"
+RdKGToolMenu.constants.AM_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.AM_CORONATE_EMPEROR = "Kaiser-gekrönt-Nachrichten"
+RdKGToolMenu.constants.AM_DEPOSE_EMPEROR = "Kaiser-entthront-Nachrichten"
+RdKGToolMenu.constants.AM_KEEP_GATE = "Tor-Nachrichten"
+RdKGToolMenu.constants.AM_ARTIFACT_CONTROL = "Artefakt-Nachrichten"
+RdKGToolMenu.constants.AM_REVENGE_KILL = "Revanche-Nachrichten"
+RdKGToolMenu.constants.AM_AVENGE_KILL = "Rächen-Nachrichten"
+RdKGToolMenu.constants.AM_QUEST_ADDED = "Quest-hinzugefügt-Nachrichten"
+RdKGToolMenu.constants.AM_QUEST_COMPLETE = "Quest-abgeschlossen-Nachrichten"
+RdKGToolMenu.constants.AM_QUEST_CONDITION_COUNTER_CHANGED = "Quest-Zähler-Nachrichten"
+RdKGToolMenu.constants.AM_QUEST_CONDITION_CHANGED = "Quest-Kondition-Nachrichten"
+RdKGToolMenu.constants.AM_DAEDRIC_ARTIFACT_OBJECTIVE_SPAWNED_BUT_NOT_REVEALED = "Erscheinen-Nachrichten für daedrisches Artefakt"
+RdKGToolMenu.constants.AM_DAEDRIC_ARTIFACT_OBJECTIVE_STATE_CHANGED = "Statusnachrichten für daedrisches Artefakt"
+
+--Push Timer
+RdKGToolMenu.constants.PT_HEADER = "|c4592FFPush Timer|r"
+RdKGToolMenu.constants.PT_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.PT_POSITION_FIXED = "Position fixiert"
+RdKGToolMenu.constants.PT_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.PT_FONT_COLOR = "Schriftarbe"
+RdKGToolMenu.constants.PT_LEAD_COLOR = "Lead-Farbe"
+RdKGToolMenu.constants.PT_SHALK_COLOR = "Käferfarbe"
+RdKGToolMenu.constants.PT_SOUL_COLOR = "Soul of Flame-Farbe" ---xxx
+RdKGToolMenu.constants.PT_DETO_COLOR = "Detionationsfarbe"
+RdKGToolMenu.constants.PT_SIZE = "Größe"
+RdKGToolMenu.constants.PT_SMOOTH_TRANSITION = "Weicher Übergang"
+RdKGToolMenu.constants.PT_LEAD_LINE_COLOR = "Lead-Linienfarbe"
+RdKGToolMenu.constants.PT_TIMER_ENABLED = "Timer-Fenster aktiviert"
+RdKGToolMenu.constants.PT_TIMER_TEXT_ENABLED = "Timer Text aktiviert"
+RdKGToolMenu.constants.PT_TIMER_SHOW_ALL_ENABLED = "Zeige alle an"
+RdKGToolMenu.constants.PT_OVERVIEW_ENABLED = "Übersichtsfenster aktiviert"
+RdKGToolMenu.constants.PT_OVERVIEW_SIZE = "Größe"
+RdKGToolMenu.constants.PT_OVERVIEW_COLOR = "Farbe"
+RdKGToolMenu.constants.PT_REACTION_ENABLED = "Reaktionsfenster aktiviert"
+RdKGToolMenu.constants.PT_REACTION_SIZE = "Größe"
+RdKGToolMenu.constants.PT_REACTION_COLOR = "Farbe"
+RdKGToolMenu.constants.PT_REACTION_TEXT = "Angezeigter Text"
+RdKGToolMenu.constants.PT_REACTION_TIME = "Zeit zur Textanzeige"
+
+--Util
+RdKGToolMenu.constants.UTIL_HEADER = "|cFF8174Util-Einstellungen|r"
+
+--Util Networking
+RdKGToolMenu.constants.NET_HEADER = "|c4592FFNetworking|r"
+RdKGToolMenu.constants.NET_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.NET_URGENT_MODE = "Urgent-Modus"
+RdKGToolMenu.constants.NET_INTERVAL = "Update-Intervall"
+
+--Util Group
+RdKGToolMenu.constants.UTIL_GROUP_HEADER = "|c4592FFGruppe|r"
+RdKGToolMenu.constants.UTIL_GROUP_DISPLAY_TYPE = "Anzeigeoption"
+
+--Util Alliance Color
+RdKGToolMenu.constants.AC_HEADER = "|c4592FFAllianzfarben|r"
+RdKGToolMenu.constants.AC_DC_COLOR = "DC-Farbe"
+RdKGToolMenu.constants.AC_EP_COLOR = "EP-Farbe"
+RdKGToolMenu.constants.AC_AD_COLOR = "AD-Farbe"
+RdKGToolMenu.constants.AC_NO_ALLIANCE_COLOR = "Keine Allianzfarbe"
+
+--Chat System
+RdKGToolMenu.constants.CHAT_HEADER = "|c4592FFChatsystem|r"
+RdKGToolMenu.constants.CHAT_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.CHAT_SELECTED_TAB = "Selektierter Tab"
+RdKGToolMenu.constants.CHAT_REFRESH = "Aktualisieren"
+RdKGToolMenu.constants.CHAT_WARNINGS_ONLY = "Zeige Warnungen"
+RdKGToolMenu.constants.CHAT_DEBUG_ONLY = "Zeige Debug"
+RdKGToolMenu.constants.CHAT_NORMAL_ONLY = "Zeige Normal"
+RdKGToolMenu.constants.CHAT_PREFIX_ENABLED = "Prefix aktiviert"
+RdKGToolMenu.constants.CHAT_RDK_PREFIX_ENABLED = "RdK-Prefix aktiviert"
+RdKGToolMenu.constants.CHAT_COLOR_PREFIX = "Prefixfarbe"
+RdKGToolMenu.constants.CHAT_COLOR_BODY = "Schriftfarbe"
+RdKGToolMenu.constants.CHAT_COLOR_WARNING = "Warnungsfarbe"
+RdKGToolMenu.constants.CHAT_COLOR_DEBUG = "Debugfarbe"
+RdKGToolMenu.constants.CHAT_COLOR_PLAYER = "Spielerfarbe"
+RdKGToolMenu.constants.CHAT_ADD_TIMESTAMP = "Zeitstempel hinzufügen"
+RdKGToolMenu.constants.CHAT_HIDE_SECONDS = "Zeitstempelsekunden verbergen"
+RdKGToolMenu.constants.CHAT_COLOR_TIMESTAMP = "Zeitstempelfarbe"
+
+--Class Role
+RdKGToolMenu.constants.CR_HEADER = "|cFF8174Klasse / Rolle|r"
+
+--BG Templar Heal
+RdKGToolMenu.constants.CRBG_TPHEAL_HEADER = "|c4592FFTemplerheiler (Gruppe)|r"
+RdKGToolMenu.constants.CRBG_TPHEAL_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.CRBG_TPHEAL_PVP_ONLY = "PvP Only"
+RdKGToolMenu.constants.CRBG_TPHEAL_POSITION_FIXED = "Position fixiert"
+RdKGToolMenu.constants.CRBG_TPHEAL_COLOR_PROGRESS_DAMAGE = "Schadensfortschritt"
+RdKGToolMenu.constants.CRBG_TPHEAL_COLOR_LABEL_DAMAGE = "Schadensbezeichnung"
+RdKGToolMenu.constants.CRBG_TPHEAL_COLOR_PROGRESS_HEALING = "Heilungsfortschritt"
+RdKGToolMenu.constants.CRBG_TPHEAL_COLOR_LABEL_HEALING = "Heilungsbezeichnung"
+RdKGToolMenu.constants.CRBG_TPHEAL_COLOR_PROGRESS_RECOVERY = "Regenerationsfortschritt"
+RdKGToolMenu.constants.CRBG_TPHEAL_COLOR_LABEL_RECOVERY = "Regenerationsfortschritt"
+RdKGToolMenu.constants.CRBG_TPHEAL_COLOR_LABEL_COOLDOWN = "Cooldown-Bezeichnung"
+
+--AddOn Integration
+RdKGToolMenu.constants.ADDON_INTEGRATION_HEADER = "|cFF8174AddOn Integrationseinstellungen|r"
+--Miats Pvp Alerts
+RdKGToolMenu.constants.MPAI_HEADER = "|c4592FFMiat PvP Alerts|r"
+RdKGToolMenu.constants.MPAI_ENABLED = "Löschen nach Login (aktiviert)"
+RdKGToolMenu.constants.MPAI_ONPLAYERACTIVATION = "Löschen nach Ladebildschirm"
+RdKGToolMenu.constants.MPAI_CLEAR_VARS = "Variablen löschen"
+
+--Admin
+RdKGToolMenu.constants.ADMIN_HEADER = "|cFF8174Admineinstellungen|r"
+--Group Share
+RdKGToolMenu.constants.ADMIN_GROUP_SHARE_HEADER = "|c4592FFGroup Share|r"
+RdKGToolMenu.constants.ADMIN_GROUP_SHARE_ENABLED = "Aktiviert"
+RdKGToolMenu.constants.ADMIN_GROUP_SHARE_WARNING = "|cFF0000Enabling this will allow ranks 1 to 3 of any of your guilds to query the allowed configurations|r"
+RdKGToolMenu.constants.ADMIN_GROUP_SHARE_ALLOW_CLIENT_CONFIGURATION = "Erlaube Client-Konfiguration"
+RdKGToolMenu.constants.ADMIN_GROUP_SHARE_ALLOW_ADDON_CONFIGURATION = "Erlaube AddOn-Konfiguration"
+RdKGToolMenu.constants.ADMIN_GROUP_SHARE_ALLOW_STATS = "Erlaube Stats"
+RdKGToolMenu.constants.ADMIN_GROUP_SHARE_ALLOW_SKILLS = "Erlaube Fähigkeiten"
+RdKGToolMenu.constants.ADMIN_GROUP_SHARE_ALLOW_EQUIPMENT = "Erlaube Rüstung"
+RdKGToolMenu.constants.ADMIN_GROUP_SHARE_ALLOW_CP = "Erlaube CP"
+
+--Base
+--Crown
+RdKGToolCrown.constants = RdKGToolCrown.constants or {}
+RdKGToolCrown.constants.PAPA_CROWN_DETECTED = "Papa Crown wurde detektiert. Einstellungen zur Krone werden nicht übernommen."
+RdKGToolCrown.constants.SANCTS_ULTIMATE_ORGANIZER_DETECTED = "Sancts Ultimate Organizer wurde detektiert. Einstellungen zur Krone werden nicht übernommen."
+RdKGToolCrown.constants.CROWN_OF_CYRODIIL_DETECTED = "Crown of Cyrodiil wurde detektiert. Einstellungen zur Krone werden nicht übernommen."
+RdKGToolCrown.config.crowns[1].name = "Standardkrone"
+RdKGToolCrown.config.crowns[2].name = "Weißer Pfeil"
+RdKGToolCrown.config.crowns[3].name = "Blauer Pfeil"
+RdKGToolCrown.config.crowns[4].name = "Hellblauer Pfeil"
+RdKGToolCrown.config.crowns[5].name = "Gelber Pfeil"
+RdKGToolCrown.config.crowns[6].name = "Hellgrüner Pfeil"
+RdKGToolCrown.config.crowns[7].name = "Roter Pfeil"
+RdKGToolCrown.config.crowns[8].name = "Pinker Pfeil"
+RdKGToolCrown.config.crowns[9].name = "Große weiße Krone"
+RdKGToolCrown.config.crowns[10].name = "Weißes RDK-Symbol"
+
+--Auto Invite
+RdKGToolAI.constants = RdKGToolAI.constants or {}
+RdKGToolAI.constants.AI_MENU_NAME = "Auto Invite"
+RdKGToolAI.constants.AI_ENABLED = "Aktiviert"
+RdKGToolAI.constants.AI_INVITE_TEXT = "Invite-Text"
+RdKGToolAI.constants.AI_SENT_INVITE_TO = "Einladung an|r |c%s%s |c%sgesendet.|r"
+RdKGToolAI.constants.AI_NOT_LEADER_SEND_TO = "Einladung wurde nicht an|r |c%s%s|r |c%sgesendet. Du hast nicht die Krone.|r"
+RdKGToolAI.constants.AI_FULL_GROUP = "Einladung wurde nicht gesendet. Die Gruppe ist bereits voll."
+RdKGToolAI.constants.AI_REQUIREMENTS_NOT_MET = "Einladung wurde nicht an|r |c%s%s|r |c%sgesendet. Die Anforderungen wurden nicht erfüllt.|r"
+RdKGToolAI.constants.AI_AUTO_KICK_MESSAGE = "Gruppenmitglied|r |c%s%s|r |c%swird aus der Gruppe entfernt.|r"
+RdKGToolAI.constants.TOGGLE_AI = "Auto Invite an- / ausschalten"
+RdKGToolAI.constants.AI_ENABLED_TRUE = "Auto Invite wurde aktiviert."
+RdKGToolAI.constants.AI_ENABLED_FALSE = "Auto Invite wurde deaktiviert."
+RdKGToolAI.constants.AI_MEMBER_LEFT = "Gruppenmitglied|r |c%s%s|r |c%shat die Gruppe verlassen.|r"
+
+--Follow The Crown Visual
+RdKGToolFtcv.textures[1].name = "Pfeil 1"
+RdKGToolFtcv.textures[2].name = "Pfeil 2"
+RdKGToolFtcv.textures[3].name = "Pfeil 3"
+RdKGToolFtcv.textures[4].name = "Pfeil 4"
+RdKGToolFtcv.textures[5].name = "Pfeil 5"
+RdKGToolFtcv.textures[6].name = "Pfeil 6"
+RdKGToolFtcv.textures[7].name = "Pfeil 7"
+RdKGToolFtcv.textures[8].name = "Pfeil 8"
+
+--Follow The Crown Warnings
+RdKGToolFtcw.constants = RdKGToolFtcw.constants or {}
+RdKGToolFtcw.constants.FTCW_MAX_DISTANCE ="Maximale Distanz erreicht!!!"
+
+--Resource Overview
+RdKGToolOverview.config.ultimateModes = RdKGToolOverview.config.ultimateModes or {}
+--RdKGToolOverview.config.ultimateModes[RdKGToolOverview.constants.ultimateModes.ORDER_BY_GROUP] = "Gruppezuweisung"
+RdKGToolOverview.config.ultimateModes[RdKGToolOverview.constants.ultimateModes.ORDER_BY_READINESS] = "Bereitschaft"
+RdKGToolOverview.config.ultimateModes[RdKGToolOverview.constants.ultimateModes.ORDER_BY_NAME] = "Name"
+RdKGToolOverview.constants.BOOM = "BOOM"
+RdKGToolOverview.constants.TOGGLE_BOOM = "Schicke BOOM"
+RdKGToolOverview.constants.IDENENTIFIER_DESTRUCTION = "Destro"
+RdKGToolOverview.constants.IDENENTIFIER_STORM = "Storm"
+RdKGToolOverview.constants.IDENENTIFIER_NEGATE = "Neg."
+RdKGToolOverview.constants.IDENENTIFIER_NOVA = "Nova"
+RdKGToolOverview.config.groupsModes = RdKGToolOverview.config.groupsModes or {}
+RdKGToolOverview.config.groupsModes[RdKGToolOverview.constants.groupsModes.MODE_PRIORITY_NAME] = "Priorität Name"
+RdKGToolOverview.config.groupsModes[RdKGToolOverview.constants.groupsModes.MODE_PRIORITY_PERCENT] = "Priorität Prozent"
+RdKGToolOverview.config.groupsModes[RdKGToolOverview.constants.groupsModes.MODE_PERCENT] = "Prozent"
+RdKGToolOverview.config.displayModes = RdKGToolOverview.config.displayModes or {}
+RdKGToolOverview.config.displayModes[RdKGToolOverview.constants.displayModes.CLASSIC] = "Klassisch"
+RdKGToolOverview.config.displayModes[RdKGToolOverview.constants.displayModes.SWIMLANES] = "Swimlanes"
+
+--Healing / Damage Meter
+RdKGToolHdm.constants = RdKGToolHdm.constants or {}
+RdKGToolHdm.constants.TITLE_HEALING = "Heilung"
+RdKGToolHdm.constants.TITLE_DAMAGE = "Schaden"
+RdKGToolHdm.constants.viewModes = RdKGToolHdm.constants.viewModes or {}
+RdKGToolHdm.constants.viewModes[RdKGToolHdm.constants.VIEWMODE_BOTH] = "Beides"
+RdKGToolHdm.constants.viewModes[RdKGToolHdm.constants.VIEWMODE_HEALING] = "Heilung"
+RdKGToolHdm.constants.viewModes[RdKGToolHdm.constants.VIEWMODE_DAMAGE] = "Schaden"
+RdKGToolHdm.constants.viewModes[RdKGToolHdm.constants.VIEWMODE_BOTH_ON_TOP] = "Beides (vertikal)"
+RdKGToolHdm.constants.RESET_COUNTER = "Zähler zurücksetzen"
+
+--Detonation Tracker
+RdKGToolDt.constants.modes = RdKGToolDt.constants.modes or {}
+RdKGToolDt.constants.modes[RdKGToolDt.constants.MODE_ALL] = "Alle"
+RdKGToolDt.constants.modes[RdKGToolDt.constants.MODE_DETONATION] = "Detonation"
+RdKGToolDt.constants.modes[RdKGToolDt.constants.MODE_SHALK] = "Käfer"
+RdKGToolDt.constants.modes[RdKGToolDt.constants.MODE_SOUL_OF_FLAME] = "Soul of Flame"
+RdKGToolDt.constants.DT_SOUL_OF_FLAME_TEXT = "Wirke Soul of Flame!"
+
+--I See Dead People
+RdKGToolIsdp.constants = RdKGToolIsdp.constants or {}
+RdKGToolIsdp.constants.BEAM_SKULL_USING_BUFFER = "Totenkopf"
+RdKGToolIsdp.constants.BEAM_SKULL_NOT_USING_BUFFER = "Totenkopf (o. Buffer)"
+
+--Compass
+--YACS
+RdKGToolYacs.compasses[1].name = "Standard"
+RdKGToolYacs.compasses[2].name = "Dicker Norden"
+RdKGToolYacs.compasses[3].name = "Dünne Linien"
+RdKGToolYacs.compasses[4].name = "Betont unterstrichener Norden"
+RdKGToolYacs.compasses[5].name = "Dick unterstrichener Norden"
+RdKGToolYacs.compasses[6].name = "Gekritzel"
+RdKGToolYacs.compasses[7].name = "Kreise 1"
+RdKGToolYacs.compasses[8].name = "Kreise 2"
+RdKGToolYacs.compasses[9].name = "Diamant 1"
+RdKGToolYacs.compasses[10].name = "Diamant 2"
+RdKGToolYacs.compasses[11].name = "Punkte 1"
+RdKGToolYacs.compasses[12].name = "Punkte 2"
+RdKGToolYacs.compasses[13].name = "EBuchstaben 1"
+RdKGToolYacs.compasses[14].name = "EBuchstaben 2"
+RdKGToolYacs.compasses[15].name = "Voller Pfeil 1"
+RdKGToolYacs.compasses[16].name = "Voller Pfeil 2"
+RdKGToolYacs.compasses[17].name = "Nadel 1"
+RdKGToolYacs.compasses[18].name = "Nadel 2"
+RdKGToolYacs.compasses[19].name = "Kleiner Pfeil 1"
+RdKGToolYacs.compasses[20].name = "Kleiner Pfeil 2"
+RdKGToolYacs.compasses[21].name = "Kompass Fr. 1"
+RdKGToolYacs.compasses[22].name = "Kompass Fr. 2"
+RdKGToolYacs.compasses[23].name = "Kompass Fr. 3"
+RdKGToolYacs.compasses[24].name = "Kompass Fr. 4"
+RdKGToolYacs.config.constants.TOGGLE_YACS = "Kompass umschalten"
+
+--SC
+RdKGToolSC.constants = RdKGToolSC.constants or {}
+RdKGToolSC.constants.NORTH = "N"
+RdKGToolSC.constants.NORTH_EAST = "NO"
+RdKGToolSC.constants.EAST = "O"
+RdKGToolSC.constants.SOUTH_EAST = "SO"
+RdKGToolSC.constants.SOUTH = "S"
+RdKGToolSC.constants.SOUTH_WEST = "SW"
+RdKGToolSC.constants.WEST = "W"
+RdKGToolSC.constants.NORTH_WEST = "NW"
+
+--Toolbox
+--Siege Merchant
+RdKGToolSm.paymentOptions = RdKGToolSm.paymentOptions or {}
+RdKGToolSm.paymentOptions[1] = "Nur AP"
+RdKGToolSm.paymentOptions[2] = "Nur Gold"
+RdKGToolSm.paymentOptions[3] = "Erst AP, dann Gold"
+RdKGToolSm.paymentOptions[4] = "Erst Gold, dann AP"
+RdKGToolSm.constants = RdKGToolSm.constants or {}
+RdKGToolSm.constants.ERROR_UNKNOWN = "Ein unbekannter Fehler ist aufgetreten."
+RdKGToolSm.constants.ERROR_UNKNOWN_PAYMENT_OPTION = "Unbekannte Zahlungsart wurde ausgewählt."
+RdKGToolSm.constants.ERROR_PAYMENT_NOT_ENOUGH_GOLD = "Es ist nicht genügend Gold vorhanden, um weitere Gegenstände zu kaufen."
+RdKGToolSm.constants.ERROR_PAYMENT_NOT_ENOUGH_AP = "Es sind nicht genügend AP vorhanden, um weitere Gegenstände zu kaufen."
+RdKGToolSm.constants.ERROR_PAYMENT_NOT_ENOUGH_AP_OR_GOLD = "Es sind nicht genügend AP oder Gold vorhanden, um weitere Gegenstände zu kaufen."
+RdKGToolSm.constants.ERROR_PAYMENT_NOT_ENOUGH_INVENTORY_SLOTS = "Es sind nicht genügend freie Inventarplätze vorhanden, um weitere Gegenstände zu kaufen."
+RdKGToolSm.constants.SUCCESS_MESSAGE = "Einkauf abgeschlossen."
+
+--Recharger
+RdKGToolRecharger.constants = RdKGToolRecharger.constants or {}
+RdKGToolRecharger.constants.MESSAGE_SUCCESS = "%s (%d%%) wurde wieder aufgeladen."
+RdKGToolRecharger.constants.MESSAGE_WARNING_LOW_SOULGEMS = "Weniger als %d Seelensteine sind vorhanden."
+RdKGToolRecharger.constants.MESSAGE_WARNING_NO_SOULGEMS = "Es sind keine Seelensteine mehr vorhanden."
+
+--Buff Food Tracking
+RdKGToolBft.constants = RdKGToolBft.constants or {}
+RdKGToolBft.constants.BUFF_FOOD_STRING = "Buff Food: %s"
+
+--Siege
+RdKGToolSiege.constants = RdKGToolSiege.constants or {}
+RdKGToolSiege.constants.TOGGLE_SIEGE = "|c4592FFRdK: Ansicht umschalten|r"
+
+--Cyrodiil Log
+RdKGToolCL.constants = RdKGToolCL.constants or {}
+RdKGToolCL.constants.MESSAGE_KEEP_GUILD_CLAIM = "%s|c%s beanspruchte %s|c%s für %s"
+RdKGToolCL.constants.MESSAGE_KEEP_GUILD_LOST = "%s|c%s verlor %s"
+RdKGToolCL.constants.MESSAGE_KEEP_STATUS_UA = "%s|c%s steht unter Angriff"
+RdKGToolCL.constants.MESSAGE_KEEP_STATUS_UA_LOST = "%s|c%s steht nicht mehr unter Angriff"
+RdKGToolCL.constants.MESSAGE_KEEP_OWNER_CHANGED = "%s|c%s gehört nun %s"
+RdKGToolCL.constants.MESSAGE_TICK_DEFENSE = "|c%s%s|t16:16:/esoui/art/currency/alliancepoints.dds|t|c%s erhalten für das Verteidigen von %s"
+RdKGToolCL.constants.MESSAGE_TICK_OFFENSE = "|c%s%s|t16:16:/esoui/art/currency/alliancepoints.dds|t|c%s erhalten für das Einnehmen von %s"
+RdKGToolCL.constants.MESSAGE_SCROLL_PICKED_UP = "%s|c%s hat die %s|c%s aufgehoben"
+RdKGToolCL.constants.MESSAGE_SCROLL_DROPPED = "%s|c%s hat die %s|c%s fallen lassen"
+RdKGToolCL.constants.MESSAGE_SCROLL_RETURNED = "%s|c%s hat die %s|c%s zurückgebracht"
+RdKGToolCL.constants.MESSAGE_SCROLL_RETURNED_BY_TIMER = "%s|c%s wurde zurückgesetzt"
+RdKGToolCL.constants.MESSAGE_SCROLL_CAPTURED = "%s|c%s hat die %s|c%s nach %s|c%s gebracht"
+RdKGToolCL.constants.MESSAGE_EMPEROR_CORONATED = "%s|c%s wurde zum Kaiser gekrönt"
+RdKGToolCL.constants.MESSAGE_EMPEROR_DEPOSED = "%s|c%s wurde als Kaiser abgesetzt"
+RdKGToolCL.constants.MESSAGE_QUEST_REWARD = "|c%s%s|t16:16:/esoui/art/currency/alliancepoints.dds|t|c%s erhalten für das Abschließen einer Quest"
+RdKGToolCL.constants.MESSAGE_BATTLEGROUND_REWARD = "|c%s%s|t16:16:/esoui/art/currency/alliancepoints.dds|t|c%s erhalten für das Abschließen eines Schlachtfeldes"
+RdKGToolCL.constants.MESSAGE_BATTLEGROUND_MEDAL_REWARD = "|c%s%s|t16:16:/esoui/art/currency/alliancepoints.dds|t|c%s für des Erhalten einer Medaille erhalten"
+RdKGToolCL.constants.MESSAGE_DAEDRIC_ARTIFACT_SPAWNED = "|c%s%s ist erschienen"
+RdKGToolCL.constants.MESSAGE_DAEDRIC_ARTIFACT_REVEALED = "|c%s%s wurde aufgedeckt"
+RdKGToolCL.constants.MESSAGE_DAEDRIC_ARTIFACT_DROPPED = "|c%s%s wurde von %s|c%s fallen gelassen"
+RdKGToolCL.constants.MESSAGE_DAEDRIC_ARTIFACT_TAKEN = "|c%s%s wurde von %s|c%s aufgenommen"
+RdKGToolCL.constants.MESSAGE_DAEDRIC_ARTIFACT_DESPAWNED = "|c%s%s kehrt in die Vergessenheit zurück"
+
+--Respawner
+RdKGToolRespawner.constants = RdKGToolRespawner.constants or {}
+RdKGToolRespawner.constants.KEYBINDING_RESPAWN_CAMP = "Respawn at Camp" ---xxx
+RdKGToolRespawner.constants.KEYBINDING_RESPAWN_KEEP = "Respawn at Keep" ---xxx
+RdKGToolRespawner.constants.RESPAWN_CAMP = "Zelt"
+RdKGToolRespawner.constants.RESPAWN_KEEP = "Burg"
+
+--Synergy Prevention
+RdKGToolSP.constants = RdKGToolSP.constants or {}
+RdKGToolSP.constants.ON = "AN"
+RdKGToolSP.constants.OFF = "AUS"
+RdKGToolSP.constants.KEYBINDING = "Umschalten der Synergieprävention"
+RdKGToolSP.constants.SYNERGY_COMBUSTION = "Verbrennung"
+RdKGToolSP.constants.SYNERGY_HEALING_COMBUSTION = "heilende Verbrennung"
+RdKGToolSP.constants.SYNERGY_SHARDS_BLESSED = "gesegnete Scherben"
+RdKGToolSP.constants.SYNERGY_SHARDS_HOLY = "heilige Scherben"
+RdKGToolSP.constants.SYNERGY_BLOOD_FEAST = "Blutgelage"
+RdKGToolSP.constants.SYNERGY_BLOOD_FUNNEL = "Blutfluss"
+RdKGToolSP.constants.SYNERGY_SUPERNOVA = "Supernova"
+RdKGToolSP.constants.SYNERGY_GRAVITY_CRUSH = "zertrümmernde Schwerkraft"
+RdKGToolSP.constants.SYNERGY_SHACKLE = "Fessel"
+RdKGToolSP.constants.SYNERGY_PURIFY = "Reinigen"
+RdKGToolSP.constants.SYNERGY_BONE_WALL = "Knochenwand"
+RdKGToolSP.constants.SYNERGY_SPINAL_SURGE = "Wirbelwoge"
+RdKGToolSP.constants.SYNERGY_IGNITE = "Entzünden"
+RdKGToolSP.constants.SYNERGY_RADIATE = "Strahlung"
+RdKGToolSP.constants.SYNERGY_CONDUIT = "Ableiten"
+RdKGToolSP.constants.SYNERGY_SPAWN_BROODLINGS = "Spinnenbrut"
+RdKGToolSP.constants.SYNERGY_BLACK_WIDOWS = "schwarze Witwe"
+RdKGToolSP.constants.SYNERGY_ARACHNOPHOBIA = "Arachnophobie"
+RdKGToolSP.constants.SYNERGY_HIDDEN_REFRESH = "verborgene Erholung"
+RdKGToolSP.constants.SYNERGY_SOUL_LEECH = "Seelenentzug"
+RdKGToolSP.constants.SYNERGY_HARVEST = "Einsammeln"
+RdKGToolSP.constants.SYNERGY_ATRONACH = "aufgeladener Blitz"
+RdKGToolSP.constants.SYNERGY_GRAVE_ROBBER = "Grabräuber"
+RdKGToolSP.constants.SYNERGY_PURE_AGONY = "reine Qual"
+RdKGToolSP.constants.SYNERGY_ICY_ESCAPE = "eisige Flucht"
+RdKGToolSP.constants.SYNERGY_SANGUINE_BURST = "sanguine Explosion"
+RdKGToolSP.constants.SYNERGY_HEED_THE_CALL = "Erhört den Ruf"
+RdKGToolSP.constants.SYNERGY_URSUS = "Schild von Ursus"
+--RdKGToolSP.constants.blacklist = RdKGToolSP.constants.blacklist or {}
+--RdKGToolSP.constants.blacklist[RdKGToolSP.constants.SYNERGY_COMBUSTION] = true
+--RdKGToolSP.constants.blacklist[RdKGToolSP.constants.SYNERGY_SUPERNOVA] = true
+--RdKGToolSP.constants.blacklist[RdKGToolSP.constants.SYNERGY_GRAVITY_CRUSH] = true
+--RdKGToolSP.constants.blacklist[RdKGToolSP.constants.SYNERGY_SHACKLE] = true
+--RdKGToolSP.constants.blacklist[RdKGToolSP.constants.SYNERGY_IGNITE] = true
+--RdKGToolSP.constants.blacklist[RdKGToolSP.constants.SYNERGY_RADIATE] = true
+--RdKGToolSP.constants.blacklist[RdKGToolSP.constants.SYNERGY_CONDUIT] = true
+--RdKGToolSP.constants.blacklist[RdKGToolSP.constants.SYNERGY_GRAVE_ROBBER] = true
+--RdKGToolSP.constants.blacklist[RdKGToolSP.constants.SYNERGY_PURE_AGONY] = true
+RdKGToolSP.constants.MODES = RdKGToolSP.constants.MODES or {}
+RdKGToolSP.constants.MODES[RdKGToolSP.constants.MODE_BLOCK_ALL] = "Alle"
+RdKGToolSP.constants.MODES[RdKGToolSP.constants.MODE_BLOCK_IF_SYNERGY_ROLE] = "Synergierolle"
+
+--Synergy Overview
+RdKGToolSO.constants.DISPLAY_MODES = RdKGToolSO.constants.DISPLAY_MODES or {}
+RdKGToolSO.constants.DISPLAY_MODES[RdKGToolSO.constants.DISPLAYMODE_ALL] = "Alle"
+RdKGToolSO.constants.DISPLAY_MODES[RdKGToolSO.constants.DISPLAYMODE_SYNERGY] = "Synergierolle"
+RdKGToolSO.constants.TABLE_MODES = RdKGToolSO.constants.TABLE_MODES or {}
+RdKGToolSO.constants.TABLE_MODES[RdKGToolSO.constants.MODES.TABLE_FULL] = "Voll"
+RdKGToolSO.constants.TABLE_MODES[RdKGToolSO.constants.MODES.TABLE_REDUCED] = "Reduziert"
+
+--util
+--util
+RdKGToolUtil.constants = RdKGToolUtil.constants or {}
+RdKGToolUtil.constants.G1 = "Gilde 1"
+RdKGToolUtil.constants.O1 = "Offiziere 1"
+RdKGToolUtil.constants.G2 = "Gilde 2"
+RdKGToolUtil.constants.O2 = "Offiziere 2"
+RdKGToolUtil.constants.G3 = "Gilde 3"
+RdKGToolUtil.constants.O3 = "Offiziere 3"
+RdKGToolUtil.constants.G4 = "Gilde 4"
+RdKGToolUtil.constants.O4 = "Offiziere 4"
+RdKGToolUtil.constants.G5 = "Gilde 5"
+RdKGToolUtil.constants.O5 = "Offiziere 5"
+RdKGToolUtil.constants.EMOTE = "Aktionen"
+RdKGToolUtil.constants.SAY = "Sagen"
+RdKGToolUtil.constants.YELL = "Rufen"
+RdKGToolUtil.constants.GROUP = "Gruppe"
+RdKGToolUtil.constants.TELL = "Flüstern"
+RdKGToolUtil.constants.ZONE = "Gebiet"
+RdKGToolUtil.constants.ENZONE = "Gebiet: English"
+RdKGToolUtil.constants.FRZONE = "Gebiet: French"
+RdKGToolUtil.constants.DEZONE = "Gebiet: German"
+RdKGToolUtil.constants.JPZONE = "Gebiet: Japan"
+
+--ui
+RdKGToolUtilUI.constants = RdKGToolUtilUI.constants or {}
+RdKGToolUtilUI.constants.ON = "AN"
+RdKGToolUtilUI.constants.OFF = "AUS"
+
+--Ultimates
+RdKGToolUltimates.constants = RdKGToolUltimates.constants or {}
+RdKGToolUltimates.constants.NEGATE = "Zauberer: Magienegation"
+RdKGToolUltimates.constants.NEGATE_OFFENSIVE = "Zauberer: Offensiv-Magienegation"
+RdKGToolUltimates.constants.NEGATE_COUNTER = "Zauberer: Counter-Magienegation"
+RdKGToolUltimates.constants.ATRONACH = "Zauberer: Atronach"
+RdKGToolUltimates.constants.OVERLOAD = "Zauberer: Überladung"
+RdKGToolUltimates.constants.SWEEP = "Templer: Rundumschlag"
+RdKGToolUltimates.constants.NOVA = "Templer: Nova"
+RdKGToolUltimates.constants.T_HEAL = "Templer: Heilung"
+RdKGToolUltimates.constants.STANDARD = "Drachenritter: Standarte"
+RdKGToolUltimates.constants.LEAP = "Drachenritter: Drachensprung"
+RdKGToolUltimates.constants.MAGMA = "Drachenritter:Magmarüstung"
+RdKGToolUltimates.constants.STROKE = "Nachtklinge: Todesstoss"
+RdKGToolUltimates.constants.DARKNESS = "Nachtklinge: Verschlingende Dunkelheit"
+RdKGToolUltimates.constants.SOUL = "Nachtklinge: Seelenfetzen"
+RdKGToolUltimates.constants.SOUL_SIPHON = "Nachtklinge: Seelensiphon"
+RdKGToolUltimates.constants.SOUL_TETHER = "Nachtklinge: Seelenfessel"
+RdKGToolUltimates.constants.STORM = "Hüter: Sturm"
+RdKGToolUltimates.constants.NORTHERN_STORM = "Hüter: Nordsturm"
+RdKGToolUltimates.constants.PERMAFROST = "Hüter: Permafrost"
+RdKGToolUltimates.constants.W_HEAL = "Hüter: Heilung"
+RdKGToolUltimates.constants.GUARDIAN = "Hüter: Wächter"
+RdKGToolUltimates.constants.COLOSSUS = "Nekromant: Koloss"
+RdKGToolUltimates.constants.GOLIATH = "Nekromant: Knochenhüne"
+RdKGToolUltimates.constants.REANIMATE = "Nekromant: Wiederbeleben"
+RdKGToolUltimates.constants.UNBLINKING_EYE = "Arkanist - Starrendes Auge"
+RdKGToolUltimates.constants.GIBBERING_SHIELD = "Arkanist - Schnatterschild"
+RdKGToolUltimates.constants.VITALIZING_GLYPHIC = "Arkanist - Vitalisierende Glyphik"
+RdKGToolUltimates.constants.DESTRUCTION = "Waffe: Zerstörungsstab"
+RdKGToolUltimates.constants.RESTORATION = "Waffe: Heilungsstab"
+RdKGToolUltimates.constants.TWO_HANDED = "Waffe: Zweihänder"
+RdKGToolUltimates.constants.SHIELD = "Waffe: Waffe mit Schild"
+RdKGToolUltimates.constants.DUAL_WIELD = "Waffe: Zwei Waffen"
+RdKGToolUltimates.constants.BOW = "Waffe: Bogen"
+RdKGToolUltimates.constants.SOUL_MAGIC = "Welt: Seelenschlag"
+RdKGToolUltimates.constants.WEREWOLF = "Welt: Werwolf: Werwolfverwandlung"
+RdKGToolUltimates.constants.VAMPIRE = "Welt: Vampirismus: Fledermausschwarm"
+RdKGToolUltimates.constants.MAGES = "Magiergilde: Meteor"
+RdKGToolUltimates.constants.FIGHTERS = "Kriegergilde: Dämmerbrecher"
+RdKGToolUltimates.constants.PSIJIC = "Psijikorden: Rückgängig"
+RdKGToolUltimates.constants.ALLIANCE_SUPPORT = "Allianzkrieg: Unterstützung: Barriere"
+RdKGToolUltimates.constants.ALLIANCE_ASSAULT = "Allianzkrieg: Sturmangriff: Kriegshorn"
+
+--Networking
+RdKGToolNetworking.constants.urgentSelection[RdKGToolNetworking.constants.urgentMode.DIRECT] = "Direkt"
+RdKGToolNetworking.constants.urgentSelection[RdKGToolNetworking.constants.urgentMode.CRITICAL] = "Queue (kritisch)"
+
+--Util Group
+RdKGToolUtilGroup.constants.displayTypes[RdKGToolUtilGroup.constants.BY_CHAR_NAME] = "Nach Name"
+RdKGToolUtilGroup.constants.displayTypes[RdKGToolUtilGroup.constants.BY_DISPLAY_NAME] = "Nach @Account"
+
+RdKGToolUtilGroup.constants.ROLE_RAPID = "Rapid"
+RdKGToolUtilGroup.constants.ROLE_PURGE = "Purge"
+RdKGToolUtilGroup.constants.ROLE_HEAL = "Heiler"
+RdKGToolUtilGroup.constants.ROLE_DD = "DD"
+RdKGToolUtilGroup.constants.ROLE_SYNERGY = "Synergie"
+RdKGToolUtilGroup.constants.ROLE_CC = "CC"
+RdKGToolUtilGroup.constants.ROLE_SUPPORT = "Support"
+RdKGToolUtilGroup.constants.ROLE_PLACEHOLDER = "Undefiniert"
+RdKGToolUtilGroup.constants.ROLE_APPLICANT = "Bewerber"
+
+--Util Versioning
+RdKGToolVersioning.constants = RdKGToolVersioning.constants or {}
+RdKGToolVersioning.constants.CLIENT_OUT_OF_DATE = "|cFF0000[RdK Group Tool] Die Clientversion ist nicht mehr aktuell|r"
+
+--Util Enhancements
+RdKGToolEnhance.constants = RdKGToolEnhance.constants or {}
+RdKGToolEnhance.constants.positionNames = RdKGToolEnhance.constants.positionNames or {}
+RdKGToolEnhance.constants.positionNames[RdKGToolEnhance.constants.TOPRIGHT] = "Oben rechts"
+RdKGToolEnhance.constants.positionNames[RdKGToolEnhance.constants.BOTTOMRIGHT] = "Unten rechts"
+RdKGToolEnhance.constants.positionNames[RdKGToolEnhance.constants.TOPLEFT] = "Oben links"
+RdKGToolEnhance.constants.positionNames[RdKGToolEnhance.constants.BOTTOMLEFT] = "Unten links"
+RdKGToolEnhance.constants.CAMP_RESPAWN = "Zelt : "
+
+--Util Group Menu
+RdKGToolGMenu.constants = RdKGToolGMenu.constants or {}
+RdKGToolGMenu.constants.BG_LEADER_ADD_CROWN = "Als Krone markieren"
+RdKGToolGMenu.constants.BG_LEADER_REMOVE_CROWN = "Krone entfernen"
+RdKGToolGMenu.constants.ROLE_MENU_ENTRY = "Rolle"
+RdKGToolGMenu.constants.ROLE_SUBMENU_SET = "Setze"
+RdKGToolGMenu.constants.ROLE_SUBMENU_REMOVE = "Entferne"
+RdKGToolGMenu.constants.ROLE_SUBMENU_RAPID = RdKGToolUtilGroup.constants.ROLE_RAPID
+RdKGToolGMenu.constants.ROLE_SUBMENU_PURGE = RdKGToolUtilGroup.constants.ROLE_PURGE
+RdKGToolGMenu.constants.ROLE_SUBMENU_HEAL = RdKGToolUtilGroup.constants.ROLE_HEAL
+RdKGToolGMenu.constants.ROLE_SUBMENU_DD = RdKGToolUtilGroup.constants.ROLE_DD
+RdKGToolGMenu.constants.ROLE_SUBMENU_SYNERGY = RdKGToolUtilGroup.constants.ROLE_SYNERGY
+RdKGToolGMenu.constants.ROLE_SUBMENU_CC = RdKGToolUtilGroup.constants.ROLE_CC
+RdKGToolGMenu.constants.ROLE_SUBMENU_SUPPORT = RdKGToolUtilGroup.constants.ROLE_SUPPORT
+RdKGToolGMenu.constants.ROLE_SUBMENU_PLACEHOLDER = RdKGToolUtilGroup.constants.ROLE_PLACEHOLDER
+RdKGToolGMenu.constants.ROLE_SUBMENU_APPLICANT = RdKGToolUtilGroup.constants.ROLE_APPLICANT
+
+--Util Beams
+RdKGToolBeams.constants.BEAM[RdKGToolBeams.constants.beams.BEAM_1].name = "Beam 1"
+RdKGToolBeams.constants.BEAM[RdKGToolBeams.constants.beams.BEAM_2].name = "Beam 2"
+RdKGToolBeams.constants.BEAM[RdKGToolBeams.constants.beams.BEAM_3].name = "Beam 3"
+RdKGToolBeams.constants.BEAM[RdKGToolBeams.constants.beams.BEAM_4].name = "Beam 4"
+RdKGToolBeams.constants.BEAM[RdKGToolBeams.constants.beams.BEAM_5].name = "Kreis 1"
+RdKGToolBeams.constants.BEAM[RdKGToolBeams.constants.beams.BEAM_6].name = "Kreis 1 (o. Buffer)"
+RdKGToolBeams.constants.BEAM[RdKGToolBeams.constants.beams.BEAM_7].name = "Kreis 2"
+RdKGToolBeams.constants.BEAM[RdKGToolBeams.constants.beams.BEAM_8].name = "Kreis 2 (o. Buffer)"
+RdKGToolBeams.constants.BEAM[RdKGToolBeams.constants.beams.BEAM_9].name = "Pfeil 1"
+RdKGToolBeams.constants.BEAM[RdKGToolBeams.constants.beams.BEAM_10].name = "Pfeil 2"
+
+--Admin [General]
+RdKGToolAdmin.constants = RdKGToolAdmin.constants or {}
+RdKGToolAdmin.constants.TOGGLE_ADMIN = "Admininterface umschalten"
+RdKGToolAdmin.constants.HEADER_TITLE = "Admin"
+RdKGToolAdmin.constants.PLAYERS_ALL = "Alle"
+--Admin UI [Player]
+RdKGToolAdmin.constants.player = RdKGToolAdmin.constants.player or {}
+RdKGToolAdmin.constants.player.REQUEST_ALL = "Alles abfragen"
+RdKGToolAdmin.constants.player.REQUEST_VERSION = "Version abfragen"
+RdKGToolAdmin.constants.player.REQUEST_CLIENT_CONFIGURATION = "Clientkonfiguration abfragen"
+RdKGToolAdmin.constants.player.REQUEST_ADDON_CONFIGURATION = "AddOn-Konfiguration abfragen"
+RdKGToolAdmin.constants.player.REQUEST_EQUIPMENT_INFORMATION = "Ausrüstungsinformationen abfragen"
+RdKGToolAdmin.constants.player.REQUEST_STATS_INFORMATION = "Stats-Informationen abfragen"
+RdKGToolAdmin.constants.player.REQUEST_MUNDUS_INFORMATION = "Mundus-Informationen abfragen"
+RdKGToolAdmin.constants.player.REQUEST_SKILLS_INFORMATION = "Skills abfragen"
+RdKGToolAdmin.constants.player.REQUEST_QUICKSLOTS_INFORMATION = "Schnellzugriff-Informationen abfragen"
+RdKGToolAdmin.constants.player.REQUEST_CHAMPION_INFORMATION = "CP abfragen"
+--Admin UI [Config]
+RdKGToolAdmin.constants = RdKGToolAdmin.constants or {}
+RdKGToolAdmin.constants.defaults = RdKGToolAdmin.constants.defaults or {}
+RdKGToolAdmin.constants.defaults.ENABLED = "An"
+RdKGToolAdmin.constants.defaults.DISABLED = "Aus"
+RdKGToolAdmin.constants.defaults.UNDEFINED = "N/A"
+RdKGToolAdmin.constants.defaults.UNDEFINED_LINE = "-"
+RdKGToolAdmin.constants.defaults.UNDEFINED_VERSION = "N/A (Version)"
+RdKGToolAdmin.constants.defaults.viewModes = RdKGToolAdmin.constants.defaults.viewModes or {}
+RdKGToolAdmin.constants.defaults.viewModes[0] = "Fenster"
+RdKGToolAdmin.constants.defaults.viewModes[1] = "Fenster (Vollbild)"
+RdKGToolAdmin.constants.defaults.viewModes[2] = "Vollbild"
+RdKGToolAdmin.constants.defaults.qualitySelection = RdKGToolAdmin.constants.defaults.qualitySelection or {}
+RdKGToolAdmin.constants.defaults.qualitySelection[0] = "Aus"
+RdKGToolAdmin.constants.defaults.qualitySelection[1] = "Niedrig"
+RdKGToolAdmin.constants.defaults.qualitySelection[2] = "Mittel"
+RdKGToolAdmin.constants.defaults.qualitySelection[3] = "Hoch"
+RdKGToolAdmin.constants.defaults.qualitySelection[4] = "Ultra"
+RdKGToolAdmin.constants.defaults.graphicPresets = RdKGToolAdmin.constants.defaults.graphicPresets or {}
+RdKGToolAdmin.constants.defaults.graphicPresets[0] = "Minumum"
+RdKGToolAdmin.constants.defaults.graphicPresets[1] = "Niedrig"
+RdKGToolAdmin.constants.defaults.graphicPresets[2] = "Mittel"
+RdKGToolAdmin.constants.defaults.graphicPresets[3] = "Hoch"
+RdKGToolAdmin.constants.defaults.graphicPresets[4] = "Ultra"
+RdKGToolAdmin.constants.defaults.graphicPresets[7] = "Benutzerdefiniert"
+RdKGToolAdmin.constants.config = RdKGToolAdmin.constants.config or {}
+RdKGToolAdmin.constants.config.PLAYER_TITLE = "Spielerinformationen"
+RdKGToolAdmin.constants.config.PLAYER_DISPLAYNAME_STRING = "Display-Name: |c%s%s|r"
+RdKGToolAdmin.constants.config.PLAYER_CHARNAME_STRING = "Charakter-Name: |c%s%s|r"
+RdKGToolAdmin.constants.config.PLAYER_VERSION_STRING = "Version: |c%s%s.%s.%s|r"
+RdKGToolAdmin.constants.config.CLIENT_TITLE = "Clientinformation"
+RdKGToolAdmin.constants.config.CLIENT_AOE_SUBTITLE = "AOE"
+RdKGToolAdmin.constants.config.CLIENT_AOE_TELLS_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_AOE_CUSTOM_COLOR_ENABLED_STRING = "Farben aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_AOE_CUSTOM_COLOR_FRIENDLY_BRIGHTNESS = "Freundliche Helligkeit: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_AOE_CUSTOM_COLOR_ENEMY_BRIGHTNESS = "Gegnerische Helligkeit: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_SOUND_SUBTITLE = "Sound"
+RdKGToolAdmin.constants.config.CLIENT_SOUND_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_SOUND_AUDIO_VOLUME = "Audiolautstärke: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_SFX_AUDIO_VOLUME = "SFX-Lautstärke: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_UI_AUDIO_VOLUME = "UI-Lautstärke: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_SUBTITLE = "Grafiken"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_RESOLUTION_STRING = "Auflösung: |c%s%sx%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_WINDOW_MODE_STRING = "Anzeigemodus: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_VSYNC_STRING = "Vertikale Synchronization: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_ANTI_ALIASING_STRING = "Kantenglättung: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_AMBIENT_STRING = "Umgebungsverdeckung: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_BLOOM_STRING = "Überblendeffekt: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_DEPTH_OF_FIELD_STRING = "Tiefenunschärfe: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_DISTORTION_STRING = "Verzerrungen: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_SUNLIGHT_STRING = "Lichtstrahlen: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_ALLY_EFFECTS_STRING = "Effekte von Verbündeten: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_VIEW_DISTANCE_STRING = "Sichtweite: ~|c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_PARTICLE_SUPRESSION_DISTANCE_STRING = "Partikeldistanz: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_PARTICLE_MAXIMUM_STRING = "Partikelsysteme: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_REFLECTION_QUALITY_STRING = "Reflexionsqualität: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_SHADOW_QUALITY_STRING = "Schattenqualität: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_SUBSAMPLING_QUALITY_STRING = "Subsamplingqualität: |c%s%s|r"
+RdKGToolAdmin.constants.config.CLIENT_GRAPHICS_GRAPHIC_PRESETS_STRING = "Grafikqualität: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_TITLE = "AddOn-Einstellungen"
+RdKGToolAdmin.constants.config.ADDON_CROWN_SUBTITLE = "Krone"
+RdKGToolAdmin.constants.config.ADDON_CROWN_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_CROWN_SIZE_STRING = "Kronengröße: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_CROWN_SELECTED_CROWN_STRING = "Selektierte Krone: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCV_SUBTITLE = "Follow The Crown - Anzeige"
+RdKGToolAdmin.constants.config.ADDON_FTCV_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCV_SIZE_FAR_STRING = "Größe fern: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCV_SIZE_CLOSE_STRING = "Größe nahe: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCV_MIN_DISTANCE_STRING = "Minimale Distanz: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCV_MAX_DISTANCE_STRING = "Maximale Distanz: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCV_OPACITY_FAR_STRING = "Durchsichtigkeit fern: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCV_OPACITY_CLOSE_STRING = "Durchsichtigkeit nahe: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCW_SUBTITLE = "Follow The Crown - Warnungen"
+RdKGToolAdmin.constants.config.ADDON_FTCW_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCW_DISTANCE_ENABLED_STRING = "Distanz aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCW_WARNINGS_ENABLED_STRING = "Warnungen aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCW_MAX_DISTANCE_STRING = "Maximale Distanz: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCA_SUBTITLE = "Follow The Crown - Audio"
+RdKGToolAdmin.constants.config.ADDON_FTCA_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCA_MAX_DISTANCE_STRING = "Maximale Distanz: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCA_INTERVAL_STRING = "Intervall: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCA_THRESHOLD_STRING = "Schwellwert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCB_SUBTITLE = "Follow The Crown - Strahl"
+RdKGToolAdmin.constants.config.ADDON_FTCB_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCB_SELECTED_BEAM_STRING = "Selektierter Strahl: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_FTCB_ALPHA_STRING = "Alpha: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_DBO_SUBTITLE = "Debuff-Übersicht"
+RdKGToolAdmin.constants.config.ADDON_DBO_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RT_SUBTITLE = "Rapid-Übersicht"
+RdKGToolAdmin.constants.config.ADDON_RT_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_SUBTITLE = "Ressourcenübersicht"
+RdKGToolAdmin.constants.config.ADDON_RO_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_ULTIMATE_OVERVIEW_ENABLED_STRING = "Ultimate-Gruppenübersicht aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_CLIENT_GROUP_ENABLED_STRING = "Eigenes Fenster aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_GROUP_ULTIMATE_ENABLED_STRING = "Gruppenfenster aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_SHOW_SOFT_RESOURCES_STRING = "Stamina / Magicka: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_SOUND_ENABLED_STRING = "Sound aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_MAX_DISTANCE_STRING = "Maximale Distanz: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_GROUP_SIZE_DESTRO_STRING = "Destro-Gruppengröße: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_GROUP_SIZE_STORM_STRING = "Storm-Gruppengröße: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_GROUP_SIZE_NORTHERNSTORM_STRING = "Nordsturm-Gruppengröße: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_GROUP_SIZE_STORM_PERMAFROST = "Permafrost-Gruppengröße: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_GROUP_SIZE_NEGATE_STRING = "Negate-Gruppengröße: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_GROUP_SIZE_NEGATE_OFFENSIVE_STRING = "Offensiv-Negate-Gruppengröße: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_GROUP_SIZE_NEGATE_COUNTER_STRING = "Counter-Negate-Gruppengröße: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_GROUP_SIZE_NOVA_STRING = "Nova-Gruppengröße: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RO_GROUPS_ENABLED_STRING = "Gruppen aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_HDM_SUBTITLE = "Schadenzähler für Leben"
+RdKGToolAdmin.constants.config.ADDON_HDM_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_HDM_WINDOW_ENABLED_STRING = "Fenster aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_HDM_VIEW_MODE_STRING = "Ausgewählter Modus: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_PO_SUBTITLE = "Tränke-Übersicht"
+RdKGToolAdmin.constants.config.ADDON_PO_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_PO_SOUND_ENABLED_STRING = "Sound aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_DT_SUBTITLE = "Detonation Tracker"
+RdKGToolAdmin.constants.config.ADDON_DT_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_GB_SUBTITLE = "Gruppenstrahlen"
+RdKGToolAdmin.constants.config.ADDON_GB_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_ISDP_SUBTITLE = "Ich sehe tote Menschen"
+RdKGToolAdmin.constants.config.ADDON_ISDP_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_YACS_SUBTITLE = "Yet Another Compass"
+RdKGToolAdmin.constants.config.ADDON_YACS_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_YACS_PVP_ENABLED_STRING = "Aktiviert im PVP: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_YACS_COMBAT_ENABLED_STRING = "Aktiviert im Kampf: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_SC_SUBTITLE = "Simple Compass"
+RdKGToolAdmin.constants.config.ADDON_SC_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_SM_SUBTITLE = "Belagerungshändler"
+RdKGToolAdmin.constants.config.ADDON_SM_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RECHARGER_SUBTITLE = "Recharger"
+RdKGToolAdmin.constants.config.ADDON_RECHARGER_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_KC_SUBTITLE = "Keep Claimer"
+RdKGToolAdmin.constants.config.ADDON_KC_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_BFT_SUBTITLE = "Buff Food Tracker"
+RdKGToolAdmin.constants.config.ADDON_BFT_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_BFT_SOUND_ENABLED_STRING = "Sound aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_BFT_SIZE_STRING = "Größe: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_CL_SUBTITLE = "Cyrodiillog"
+RdKGToolAdmin.constants.config.ADDON_CL_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_CS_SUBTITLE = "Cyrodiil-Status"
+RdKGToolAdmin.constants.config.ADDON_CS_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RESPAWNER_SUBTITLE = "Respawner"
+RdKGToolAdmin.constants.config.ADDON_RESPAWNER_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_CAMP_SUBTITLE = "Zeltvorschau"
+RdKGToolAdmin.constants.config.ADDON_CAMP_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_SP_SUBTITLE = "Synergieprävention"
+RdKGToolAdmin.constants.config.ADDON_SP_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_SP_MODE_STRING = "Modus: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_SP_PREVENT_STRING = "%s: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_SO_SUBTITLE = "Synergieübersicht"
+RdKGToolAdmin.constants.config.ADDON_SO_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_SO_TABLE_MODE_STRING = "Tabellenmodus: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_SO_DISPLAY_MODE_STRING = "Anzeigemodus: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RA_SUBTITLE = "Rollenzuteilung"
+RdKGToolAdmin.constants.config.ADDON_RA_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_RA_ALLOW_OVERRIDE_STRING = "Überschreiben erlaubt: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_CAJ_SUBTITLE = "Campaign Auto Join"
+RdKGToolAdmin.constants.config.ADDON_CAJ_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.ADDON_CRBGTP_SUBTITLE = "CR - BG - Templar Healer (BG)"
+RdKGToolAdmin.constants.config.ADDON_CRBGTP_ENABLED_STRING = "Aktiviert: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_TITLE = "Stats"
+RdKGToolAdmin.constants.config.STATS_MAGICKA_STRING = "Magicka: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_HEALTH_STRING = "Leben: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_STAMINA_STRING = "Ausdauer: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_MAGICKA_RECOVERY_STRING = "Magickaregeneration: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_HEALTH_RECOVERY_STRING = "Lebensregeneration: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_STAMINA_RECOVERY_STRING = "Ausdauerregeneration: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_SPELL_DAMAGE_STRING = "Magiekraft: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_WEAPON_DAMAGE_STRING = "Waffenkraft: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_SPELL_PENETRATION_STRING = "Magiedurchdringung: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_WEAPON_PENETRATION_STRING = "Waffendurchdringung: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_SPELL_CRITICAL_STRING = "Kritische Magietreffer: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_WEAPON_CRITICAL_STRING = "Kritische Waffentreffer: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_SPELL_RESISTANCE_STRING = "Magieresistenz: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_PHYSICAL_RESISTANCE_STRING = "Physische Resistenz: |c%s%s|r"
+RdKGToolAdmin.constants.config.STATS_CRITICAL_RESISTANCE_STRING = "Kritische Resistenz: |c%s%s|r"
+RdKGToolAdmin.constants.config.MUNDUS_TITLE = "Mundus"
+RdKGToolAdmin.constants.config.MUNDUS_STONE_1_STRING = "Mundusstone 1: |c%s%s|r"
+RdKGToolAdmin.constants.config.MUNDUS_STONE_2_STRING = "Mundusstone 2: |c%s%s|r"
+RdKGToolAdmin.constants.config.MUNDUS_FILTER = "Segen: "
+RdKGToolAdmin.constants.config.CHAMPION_TITLE = "Champion Points"
+RdKGToolAdmin.constants.config.SKILLS_TITLE = "Skills"
+RdKGToolAdmin.constants.config.EQUIPMENT_TITLE = "Ausrüstung"
+RdKGToolAdmin.constants.config.EQUIPMENT_CONTEXT_REQUEST = "Gegenstand abfragen"
+RdKGToolAdmin.constants.config.EQUIPMENT_CONTEXT_LINK_IN_CHAT = "In Chat einfügen"
+RdKGToolAdmin.constants.config.QUICKSLOT_TITLE = "Schnellzugriff"
+
+--Config
+RdKGToolConfig.constants = RdKGToolConfig.constants or {}
+RdKGToolConfig.constants.TOGGLE_CONFIG = "Konfigurations-Interface umschalten"
+RdKGToolConfig.constants.HEADER_TITLE = "Konfigurations-Import/Export"
+RdKGToolConfig.constants.TAB_IMPORT_TITLE = "Import"
+RdKGToolConfig.constants.TAB_EXPORT_TITLE = "Export"
+RdKGToolConfig.constants.EXPORT_SELECT_ALL = "Alles selektieren"
+RdKGToolConfig.constants.EXPORT_PROFILE = "Profil"
+RdKGToolConfig.constants.EXPORT_STRING_LENGTH_ERROR = "Der Konfigurationstext ist zu lang. Bitte melde dies!"
+RdKGToolConfig.constants.IMPORT_PROFILE = "Neuer Profilnamen"
+RdKGToolConfig.constants.IMPORT = "Importieren"
+RdKGToolConfig.constants.IMPORT_STATUS = "Status: "
+RdKGToolConfig.constants.IMPORT_ADD_ALL = "Alle Werte hinzufügen (bspw. Fensterpositionen)"
+RdKGToolConfig.constants.IMPORT_STATUS_STARTED = "Import gestartet"
+RdKGToolConfig.constants.IMPORT_STATUS_FAILED = "Import fehlgeschlagen"
+RdKGToolConfig.constants.IMPORT_STATUS_FINISHED = "Import abgeschlossen"
+RdKGToolConfig.constants.IMPORT_STATUS_FINISHED_DIFFERENT_VERSION = "Import abgeschlossen (unterschiedliche Versionen können zu Inkonsistenzen führen)"
+RdKGToolConfig.constants.IMPORT_STATUS_PROFILE_INVALID_NAME = "Import fehlgeschlagen - Ungültiger Profilname"
+RdKGToolConfig.constants.IMPORT_STATUS_PROFILE_DUPLICATE = "Import fehlgeschlagen - Profilname existiert bereits"
+RdKGToolConfig.constants.IMPORT_STATUS_NO_CONTENT = "Import fehlgeschlagen - Kein Inhalt"
+RdKGToolConfig.constants.IMPORT_CONFIG_LINE_COUNT = "Konfigurationszeilen: %s"
+RdKGToolConfig.constants.IMPORT_CONFIG_FAILED_REASON = "Import fehlgeschlagen in Zeile %s. Grund: %s"
+RdKGToolConfig.constants.IMPORT_CONFIG_FAILED_REASON_NIL = "Nil Wert"
+RdKGToolConfig.constants.IMPORT_CONFIG_FAILED_REASON_TYPE_BOOLEAN = "Boolean erwartet"
+RdKGToolConfig.constants.IMPORT_CONFIG_FAILED_REASON_TYPE_NUMBER = "Zahl erwartet"
+RdKGToolConfig.constants.IMPORT_CONFIG_FAILED_REASON_TYPE_INVALID = "Invalider Datentyp"
+RdKGToolConfig.constants.IMPORT_CONFIG_FAILED_REASON_LAYER_1_INVALID = "Layer1 ungültig"
+RdKGToolConfig.constants.IMPORT_CONFIG_FAILED_REASON_LAYER_2_INVALID = "Layer2 ungültig"
+RdKGToolConfig.constants.IMPORT_CONFIG_FAILED_REASON_LAYER_1_2_INVALID = "Layer1 oder Layer2 ungültig"
+RdKGToolConfig.constants.IMPORT_CONFIG_FAILED_REASON_LAYER_X_INVALID = "LayerX ungültig"

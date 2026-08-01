@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/silvereyes/LibLootSummary__2363",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "silvereyes",
+  "canonical_id": "esoui:2363",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:2363",
+  "deleted": false,
+  "directories": [
+    "LibLootSummary"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2363/",
+  "fingerprint": "d7bbc66b1150441ca4230c93212d9390a8c26f9125ec8bf46b1e8fe7ef6da9ec",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8553.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9892.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9893.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8534.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8535.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2363",
+  "source_url": "https://www.esoui.com/downloads/info2363-LibLootSummary.html",
+  "stats": {
+    "downloads": 579817,
+    "favorites": 166,
+    "monthly_downloads": 1953
+  },
+  "title": "LibLootSummary",
+  "updated_at": 1757128741000,
+  "version": "3.1.6"
+}

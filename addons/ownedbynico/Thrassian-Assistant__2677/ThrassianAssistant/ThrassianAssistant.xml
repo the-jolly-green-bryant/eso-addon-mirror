@@ -1,0 +1,26 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ThrassianAssistantPanel" mouseEnabled="true" movable="true" clampedToScreen="false" hidden="true">
+			<Dimensions x="64" y="64" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" />
+			<OnMoveStop>
+				TA.savedVariables.panel.left = ThrassianAssistantPanel:GetLeft()
+				TA.savedVariables.panel.top = ThrassianAssistantPanel:GetTop()
+			</OnMoveStop>
+			<Controls>
+				<Texture textureFile="/esoui/art/icons/achievement_su_karnwasten_groupevent.dds">
+					<Anchor point="CENTER" relativeTo="$(parent)" />
+					<Dimensions x="64" y="64" />
+				</Texture>
+				<Texture textureFile="/esoui/art/actionbar/abilityframe64_up.dds">
+					<Anchor point="CENTER" relativeTo="$(parent)" />
+					<Dimensions x="64" y="64" />
+				</Texture>
+				<Label name="$(parent)Label" font="/esoui/common/fonts/univers67.otf|50|soft-shadow-thick" color="FFFFFF"
+					verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

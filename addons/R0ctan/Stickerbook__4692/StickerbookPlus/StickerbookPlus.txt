@@ -1,0 +1,26 @@
+## Title: Stickerbook+
+## Author: R0ctan
+## Version: 1.0.1
+## AddOnVersion: 10001
+## APIVersion: 101050 101051
+## DependsOn: LibAddonMenu-2.0>=43
+## Description: Stickerbook+ highlights missing and new items in the Item Sets Book, Outfit Styles, Collections, Lore Library, Achievements, and Antiquities with configurable overlays, and shows completion progress in each area's category tree.
+## Credits: AI-assisted development by Auralith AI
+## SavedVariables: StickerbookPlus_Data
+
+lang/default.lua
+lang/$(language).lua
+
+StickerbookPlus.lua
+Overlay.lua
+TreeProgress.lua
+TreeProgress/Sets.lua
+TreeProgress/Collections.lua
+TreeProgress/Outfits.lua
+TreeProgress/Lore.lua
+TreeProgress/Achievements.lua
+TreeProgress/Antiquities.lua
+Hooks.lua
+MarkAll.lua
+Settings.lua
+

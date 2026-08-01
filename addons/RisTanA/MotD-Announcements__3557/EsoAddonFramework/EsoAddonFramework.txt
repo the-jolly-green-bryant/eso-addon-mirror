@@ -1,0 +1,34 @@
+## Title: ESO Addon |c00ff00Framework|r
+## APIVersion: 101031
+## Author: Martin
+## Description: Library supporting development in Visual Studio Code.
+## AddOnVersion: 1
+## Version: v101031.20210907
+## IsLibrary: true
+
+# The creation and use of Add-ons are subject to the Add-on Terms of Use,
+# available at https://account.elderscrollsonline.com/add-on-terms. 
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+# in the United States and/or other countries. All rights reserved.
+
+Eso\Event.lua
+Eso\EventManager.lua
+Eso\Pack.lua
+Eso\Type.lua
+Eso\UnitTag.lua
+Array.lua
+Color.lua
+Console.lua
+LogLevel.lua
+Map.lua
+MessageType.lua
+StorageScope.lua
+StringBuilder.lua
+String.lua
+Messenger.lua
+Bootstrapper.lua
+SettingsManager.lua
+Storage.lua
+Log.lua

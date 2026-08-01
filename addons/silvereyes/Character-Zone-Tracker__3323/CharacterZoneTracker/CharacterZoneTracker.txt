@@ -1,0 +1,31 @@
+## Title: Character Zone Tracker
+## Author: silvereyes
+## Description: Tracks zone completion for delves, world bosses and world events per-character.
+## Version: 1.3.0
+## APIVersion: 101033
+## DependsOn: LibSavedVars>=50000
+## OptionalDependsOn: LibChatMessage
+## SavedVariables: CharacterZoneTrackerData
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+## A very special thanks to the administrators and editors of https://en.uesp.net/, which provided much of the data for this addon.
+
+localization\$(language).lua
+localization\excludedMonsters\$(language).lua
+localization\multiBossDelveMonsters\$(language).lua
+
+CharacterZoneTracker.lua
+classes/BossFight.lua
+classes/Compass.lua
+classes/Data.lua
+classes/Events.lua
+classes/ExcludedMonsters.lua
+classes/MultiBossDelves.lua
+classes/SubzoneMap.lua
+classes/TargetTracker.lua
+classes/Utility.lua
+classes/WorldMap.lua
+classes/ZoneGuideTracker.lua
+
+CharacterZoneTracker.xml

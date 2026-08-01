@@ -1,0 +1,157 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ESOMRL" tier="HIGH" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="true">
+			<Anchor point="CENTER"/>
+			<Controls>
+			<!-- --------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)StationButton" movable="true">
+					<Dimensions x="32" y="32"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+					<Textures
+						normal="/MasterRecipeList/bin/textures/cookbook_up.dds"
+						pressed="/MasterRecipeList/bin/textures/cookbook_over.dds"
+						mouseOver="/MasterRecipeList/bin/textures/cookbook_over.dds"
+						disabled="/MasterRecipeList/bin/textures/cookbook_up.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(701, ESOMRLStationButton, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(701, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(501)
+					</OnClicked>
+					<OnMoveStop>
+						ESOMRL.XMLNavigation(707)
+					</OnMoveStop>
+				</Button>
+			<!-- --------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Label name="$(parent)StationTitle" font="ZoFontWinH5" color="FF9900" text="Master Recipe List" hidden="true">
+					<Anchor point="LEFT" relativeTo="$(parent)StationButton" relativePoint="RIGHT" offsetX="5" offsetY="0"/>
+				</Label>
+			<!-- --------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)StationTrackingButton">
+					<Dimensions x="40" y="40"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)StationButton" relativePoint="LEFT" offsetX="-10" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/dye/dyes_toolicon_fill_up.dds"
+						pressed="/esoui/art/dye/dyes_toolicon_fill_over.dds"
+						mouseOver="/esoui/art/dye/dyes_toolicon_fill_down.dds"
+						disabled="/esoui/art/dye/dyes_toolicon_fill_over.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(702, nil, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(702, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(702, nil, nil, 3)
+					</OnClicked>
+				</Button>
+			<!-- --------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)StationTooltipButton">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)StationTrackingButton" relativePoint="LEFT" offsetX="-2" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/cadwell/cadwell_indexicon_gold_up.dds"
+						pressed="/esoui/art/cadwell/cadwell_indexicon_gold_over.dds"
+						mouseOver="/esoui/art/cadwell/cadwell_indexicon_gold_down.dds"
+						disabled="/esoui/art/cadwell/cadwell_indexicon_gold_disabled.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(703, nil, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(703, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(703, nil, nil, 3)
+					</OnClicked>
+				</Button>
+			<!-- --------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)FindInMRLButton">
+					<Dimensions x="26" y="26"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)StationTooltipButton" relativePoint="LEFT" offsetX="-2" offsetY="-1"/>
+					<Textures
+						normal="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds"
+						pressed="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_over.dds"
+						mouseOver="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_down.dds"
+						disabled="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_over.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(704, ESOMRLStationButton, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(704, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(704, nil, nil, 3)
+					</OnClicked>
+				</Button>
+			<!-- --------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)ResetStationNavigation">
+					<Dimensions x="26" y="26"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)FindInMRLButton" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/cadwell/cadwell_indexicon_silver_up.dds"
+						pressed="/esoui/art/cadwell/cadwell_indexicon_silver_over.dds"
+						mouseOver="/esoui/art/cadwell/cadwell_indexicon_silver_down.dds"
+						disabled="/esoui/art/cadwell/cadwell_indexicon_silver_disabled.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(705, nil, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(705, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(705, nil, nil, 3)
+					</OnClicked>
+				</Button>
+			<!-- --------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)SortOrderDown" hidden="true">
+					<Dimensions x="32" y="32"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ResetStationNavigation" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/buttons/large_downarrow_up.dds"
+						pressed="/esoui/art/buttons/large_downarrow_over.dds"
+						mouseOver="/esoui/art/buttons/large_downarrow_down.dds"
+						disabled="/esoui/art/buttons/large_downarrow_disabled.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(706, nil, 1, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(706, nil, 1, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(706, nil, 1, 3)
+					</OnClicked>
+				</Button>
+			<!-- --------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)SortOrderUp" hidden="true">
+					<Dimensions x="32" y="32"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ResetStationNavigation" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/buttons/large_uparrow_up.dds"
+						pressed="/esoui/art/buttons/large_uparrow_over.dds"
+						mouseOver="/esoui/art/buttons/large_uparrow_down.dds"
+						disabled="/esoui/art/buttons/large_uparrow_disabled.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(706, nil, 2, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(706, nil, 2, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(706, nil, 2, 3)
+					</OnClicked>
+				</Button>
+			<!-- --------------------------------------------------------------------------------------------------------------------------------------- -->
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

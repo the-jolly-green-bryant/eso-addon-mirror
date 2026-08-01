@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/ownedbynico/BindAll-Sticker-Book-Collector__2825",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ownedbynico",
+  "canonical_id": "esoui:2825",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2825",
+  "deleted": false,
+  "directories": [
+    "BindAll"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2825/",
+  "fingerprint": "42e1b0016e1768aa210379bad8b508f8196165a47b787737e9c8048000c20903",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2825",
+  "source_url": "https://www.esoui.com/downloads/info2825-BindAllStickerBookCollector.html",
+  "stats": {
+    "downloads": 28312,
+    "favorites": 25,
+    "monthly_downloads": 172
+  },
+  "title": "BindAll (Sticker Book Collector)",
+  "updated_at": 1622846234000,
+  "version": "1.5"
+}

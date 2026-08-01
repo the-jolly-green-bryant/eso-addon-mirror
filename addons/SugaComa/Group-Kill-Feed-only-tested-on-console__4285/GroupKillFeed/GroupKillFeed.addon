@@ -1,0 +1,27 @@
+## Title: Group Kill Feed
+## Description: Filtered PvP kill feed for your group (console safe).
+## Author: SugaComa
+## Version: 1.3.5
+## APIVersion: 101046
+## SavedVariables: GroupKillFeedSV
+## Credits: Inspired by CustomKillFeed by Masteroshi430 thanks for the tip on stopping it printing twice
+
+; Group Kill Feed - A Custom ESO Addon
+; Copyright (c) 2025 [SugaComa / SugaComa@Rik-Sprint.co.uk]. All rights reserved.
+;
+; You are free to use and modify this addon for use.
+; If you redistribute or modify it, please give credit to [SugaComa] as the original author.
+; Do not sell this addon or claim it as your own.
+;
+; This addon is provided "as is" with no warranty.
+
+
+; DISCLAIMER:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms
+
+GroupKillFeed.lua

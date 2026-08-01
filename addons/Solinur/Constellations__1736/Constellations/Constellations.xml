@@ -1,0 +1,774 @@
+<GuiXml>
+	<Font name="Constellations_TitleFont" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thin" />
+	<Font name="Constellations_HeaderFont" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thin" />
+	<Font name="Constellations_OptionFont" font="$(MEDIUM_FONT)|$(KB_18)|soft-shadow-thin" />
+	<Font name="Constellations_ResultFont" font="$(MEDIUM_FONT)|$(KB_28)|soft-shadow-thin" />
+	<Controls>
+		<EditBox name="Constellations_InputBox" virtual="true">
+			<Controls>
+				<Backdrop name="$(parent)_Bg" centerColor="FF333333" edgeColor="00000000">
+					<AnchorFill />
+				</Backdrop>
+			</Controls>
+		</EditBox>
+
+		<Control name="Constellations_InputSlider" virtual="true" mouseEnabled="true">
+			<Dimensions x="436" y="22" />
+			<Controls>
+
+				<Label name="$(parent)Label" text="InputName" color="FFFFFFFF" font="Constellations_OptionFont" verticalAlignment="1" mouseEnabled="true">
+					<Anchor point="LEFT" relativeTo="LEFT" />
+					<Dimensions x="210" y="22" />
+				</Label>
+
+				<Slider name="$(parent)Slider" inherits="ZO_Slider" step="0.1">
+					<Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" offsetX="4" />
+					<Limits min="0" max="100" />
+					<OnValueChanged>
+						Constellations.SetSliderValue(self, value)
+					</OnValueChanged>
+				</Slider>
+
+				<EditBox name="$(parent)Value" color="FFFFFFFF" font="Constellations_OptionFont" inherits="ZO_DefaultEdit Constellations_InputBox">
+					<Anchor point="LEFT" relativeTo="$(parent)Slider" relativePoint="RIGHT" offsetX="8" />
+					<Dimensions x="60" y="22" />
+					<OnFocusLost>
+						Constellations.SetBoxValue(self)
+					</OnFocusLost>
+					<OnInitialized>
+						self:SetText(tostring(0))
+						Constellations.SetBoxValue(self)
+					</OnInitialized>
+				</EditBox>
+
+			</Controls>
+			<OnMouseWheel>
+				self:GetNamedChild("Slider"):SetValue(self:GetNamedChild("Slider"):GetValue() + delta * (shift and 10 or 1) * (ctrl and 10 or 1) *  self:GetNamedChild("Slider"):GetValueStep()) 
+			</OnMouseWheel>
+		</Control>
+
+		<Control name="Constellations_ResultRow" virtual="true">
+			<Dimensions x="436" y="22" />
+			<Controls>
+
+				<Label name="$(parent)Label" text="#" color="FFFFFFFF" font="Constellations_OptionFont" verticalAlignment="1" mouseEnabled="true">
+					<Anchor point="LEFT" relativePoint="LEFT" />
+					<Dimensions x="218" y="22" />
+				</Label>
+
+				<EditBox name="$(parent)Value" color="FFFFFFFF" font="Constellations_OptionFont" inherits="ZO_DefaultEdit Constellations_InputBox" textType="TEXT_TYPE_NUMERIC">
+					<Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" offsetX="10" />
+					<Dimensions x="32" y="22" />
+					<OnInitialized>
+						self:SetText(tostring(0))
+						self:SetMaxInputChars(3)
+					</OnInitialized>
+				</EditBox>
+
+				<Label name="$(parent)Value2" verticalAlignment="1" horizontalAlignment="2" text="0" color="FFFFFFFF" font="Constellations_OptionFont">
+					<Anchor point="LEFT" relativeTo="$(parent)Value" relativePoint="RIGHT" offsetX="6" />
+					<Dimensions x="50" y="22" />
+				</Label>
+
+				<EditBox name="$(parent)Min" inherits="ZO_DefaultEdit Constellations_InputBox" color="FFFFFFFF" font="Constellations_OptionFont" textType="TEXT_TYPE_NUMERIC">
+					<Anchor point="LEFT" relativeTo="$(parent)Value2" relativePoint="RIGHT" offsetX="30" />
+					<Dimensions x="32" y="22" />
+					<OnInitialized>
+						self:SetText(tostring(0))
+						self:SetMaxInputChars(3)
+					</OnInitialized>
+				</EditBox>
+
+				<EditBox name="$(parent)Max" inherits="ZO_DefaultEdit Constellations_InputBox" color="FFFFFFFF" font="Constellations_OptionFont" textType="TEXT_TYPE_NUMERIC">
+					<Anchor point="LEFT" relativeTo="$(parent)Min" relativePoint="RIGHT" offsetX="12" />
+					<Dimensions x="32" y="22" />
+					<OnInitialized>
+						self:SetText(tostring(100))
+						self:SetMaxInputChars(3)
+					</OnInitialized>
+				</EditBox>
+			</Controls>
+
+		</Control>
+
+		<TopLevelControl name="Constellations_TLW" resizeToFitDescendents="true" clampedToScreen="true" hidden="true" mouseEnabled="true" movable="true">
+			<Dimensions x="200" y="200" />
+			<Anchor point="TOPRIGHT" />
+			<Controls>
+
+				<Backdrop name="Constellations_Bg" inherits="ZO_DefaultBackdrop" centerColor="EE000000" edgeColor="EE000000">
+					<Center />
+					<Edge edgeSize="4" />
+					<Insets left="0" right="0" top="0" bottom="0" />
+					<AnchorFill />
+				</Backdrop>
+
+				<Control name="Constellations_Title" resizeToFitDescendents="true">
+					<Anchor point="TOPLEFT" offsetX="5" offsetY="5" relativePoint="TOPLEFT" />
+					<Anchor point="TOPRIGHT" offsetX="-6" relativePoint="TOPRIGHT" constrains="X" />
+					<Dimensions y="15" />
+					<Controls>
+
+						<Label name="$(parent)Label" text="Constellations" color="FFFFFFFF" font="Constellations_TitleFont">
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+							<Dimensions x="200" y="28" />
+						</Label>
+
+						<Line name="$(parent)Line" color="FFCCCCCC" thickness="1">
+							<Anchor point="BOTTOMLEFT" relativeTo="Constellations_Title" relativePoint="BOTTOMLEFT" offsetX="4" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="Constellations_Title" relativePoint="BOTTOMRIGHT" offsetX="-4" />
+							<Dimensions y="0" />
+						</Line>
+
+						<Button name="$(parent)Button2" mouseEnabled="true" inherits="ZO_ButtonBehaviorClickSound">
+							<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="Constellations_Title" offsetX="-8" />
+							<Dimensions x="28" y="28" />
+							<Textures normal="esoui/art/mainmenu/menubar_champion_up.dds" pressed="esoui/art/mainmenu/menubar_champion_down.dds" mouseOver="esoui/art/mainmenu/menubar_champion_over.dds" />
+							<OnInitialized>
+								self.id = 2
+								self.data = {tooltipText = GetString(SI_CONSTELLATIONS_CPBUTTON_TT)}
+							</OnInitialized>
+							<OnMouseUp>
+								Constellations.SetTab(self)
+							</OnMouseUp>
+							<OnMouseEnter>
+								ZO_Options_OnMouseEnter(self)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ZO_Options_OnMouseExit(self)
+							</OnMouseExit>
+						</Button>
+
+						<Button name="$(parent)Button1" mouseEnabled="true" inherits="ZO_ButtonBehaviorClickSound">
+							<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)Button2" offsetX="-8" />
+							<Dimensions x="28" y="28" />
+							<Textures normal="esoui/art/tradinghouse/tradinghouse_listings_tabicon_up.dds" pressed="esoui/art/tradinghouse/tradinghouse_listings_tabicon_down.dds" mouseOver="esoui/art/tradinghouse/tradinghouse_listings_tabicon_over.dds" />
+							<OnInitialized>
+								self:SetState(BSTATE_PRESSED)
+								self.id = 1
+								self.data = {tooltipText = GetString(SI_CONSTELLATIONS_RATIOBUTTON_TT)}
+							</OnInitialized>
+							<OnMouseUp>
+								Constellations.SetTab(self)
+							</OnMouseUp>
+							<OnMouseEnter>
+								ZO_Options_OnMouseEnter(self)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ZO_Options_OnMouseExit(self)
+							</OnMouseExit>
+						</Button>
+
+					</Controls>
+				</Control>
+
+				<Control name="Constellations_Tab1">
+
+					<Anchor point="TOPLEFT" relativeTo="Constellations_Title" relativePoint="BOTTOMLEFT" offsetY="8" />
+					<OnInitialized>
+						self.id = 1
+						Constellations.InitTab(self)
+					</OnInitialized>
+					<Controls>
+
+						<Control name="Constellations_InputFrameStats" resizeToFitDescendents="true">
+							<!--resizeToFitDescendents="true"!-->
+							<ResizeToFitPadding width="6" height="8" />
+							<Anchor point="TOPLEFT" relativeTo="TOPLEFT" />
+							<Dimensions x="458" y="224" />
+							<Controls>
+
+								<Label name="$(parent)Label" text="SI_CONSTELLATIONS_INPUT_STATS" color="FFFFCC99" font="Constellations_HeaderFont">
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+								</Label>
+
+								<Control name="$(parent)Input1" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_MAGICKA
+										self.minmax = {0, GetMaxSpendableChampionPointsInAttribute() + 20, 1}
+										self.id = 1
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input2" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input1" relativePoint="BOTTOMLEFT" offsetY="8" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_NEUTRAL
+										self.id = 2
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input3" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input2" relativePoint="BOTTOMLEFT" offsetY="8" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_MAGICKA
+										self.id = 3
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input4" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input3" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_MAGICKA
+										self.minmax = {50, 150, .1}
+										self.id = 4
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input5" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input4" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_MAGICKA
+										self.minmax = {0, 25000, 1}
+										self.id = 5
+										Constellations.SPenBox = self
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input6" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input5" relativePoint="BOTTOMLEFT" offsetY="8" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_STAMINA
+										self.id = 6
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input7" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input6" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_STAMINA
+										self.minmax = {50, 150, .1}
+										self.id = 7
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input8" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input7" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_STAMINA
+										self.minmax = {0, 25000, 1}
+										self.id = 8
+										Constellations.WPenBox = self
+									</OnInitialized>
+								</Control>
+
+							</Controls>
+							<OnInitialized>
+								Constellations.InitializeInputSliders(self, 1)
+							</OnInitialized>
+						</Control>
+
+						<Control name="Constellations_InputFrameRatios" resizeToFitDescendents="true">
+							<!--resizeToFitDescendents="true"!-->
+							<ResizeToFitPadding width="6" height="8" />
+							<Anchor point="TOPLEFT" relativeTo="Constellations_InputFrameStats" relativePoint="BOTTOMLEFT" offsetY="12" />
+							<Dimensions x="458" y="220" />
+							<Controls>
+
+								<Label name="$(parent)Label" text="SI_CONSTELLATIONS_INPUT_RATIOS" color="FFFFCC99" font="Constellations_HeaderFont">
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+								</Label>
+
+								<Control name="$(parent)Input1" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_MAGICKA
+										self.id = 1
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input2" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input1" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_MAGICKA
+										self.id = 2
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input3" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input2" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_MAGICKA
+										self.id = 3
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input4" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input3" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_MAGICKA
+										self.id = 4
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input11" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input4" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_MAGICKA
+										self.id = 11
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input5" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input11" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_MAGICKA
+										self.id = 5
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input6" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input5" relativePoint="BOTTOMLEFT" offsetY="12" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_STAMINA
+										self.id = 6
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input7" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input6" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_STAMINA
+										self.id = 7
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input8" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input7" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_STAMINA
+										self.id = 8
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input9" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input8" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_STAMINA
+										self.id = 9
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input10" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input9" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_STAMINA
+										self.id = 10
+									</OnInitialized>
+								</Control>
+
+							</Controls>
+							<OnInitialized>
+								Constellations.InitializeInputSliders(self, 2)
+							</OnInitialized>
+						</Control>
+
+						<Control name="Constellations_InputFrameTarget" resizeToFitDescendents="true">
+							<!--resizeToFitDescendents="true"!-->
+							<ResizeToFitPadding width="6" height="8" />
+							<Anchor point="TOPLEFT" relativeTo="Constellations_InputFrameRatios" relativePoint="BOTTOMLEFT" offsetY="12" />
+							<Dimensions x="458" y="60" />
+							<Controls>
+
+								<Label name="$(parent)Label" text="SI_CONSTELLATIONS_INPUT_OTHER" color="FFFFCC99" font="Constellations_HeaderFont">
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+								</Label>
+
+								<Control name="$(parent)Input1" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_NEUTRAL
+										self.minmax = {0, 25000, 1}
+										self.id = 1
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input2" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input1" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_NEUTRAL
+										self.minmax = {0, 200000, 1}
+										self.id = 2
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Input3" inherits="Constellations_InputSlider">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Input2" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_NEUTRAL
+										self.id = 3
+									</OnInitialized>
+								</Control>
+
+							</Controls>
+							<OnInitialized>
+								Constellations.InitializeInputSliders(self, 3)
+							</OnInitialized>
+						</Control>
+
+						<Line name="Constellations_Separator1" color="FFCCCCCC" thickness="1" pixelRoundingEnabled="true">
+							<Anchor point="BOTTOMLEFT" relativeTo="Constellations_InputFrameTarget" relativePoint="BOTTOMLEFT" offsetY="4" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="Constellations_InputFrameTarget" relativePoint="BOTTOMRIGHT" offsetY="4" offsetX="-4" constrains="X" />
+						</Line>
+
+						<Control name="Constellations_Import" resizeToFitDescendents="true">
+							<!--resizeToFitDescendents="true"!-->
+							<ResizeToFitPadding width="6" height="4" />
+							<Anchor point="TOPLEFT" relativeTo="Constellations_Separator1" relativePoint="BOTTOMLEFT" offsetY="12" />
+							<Anchor point="TOPRIGHT" relativeTo="Constellations_Separator1" relativePoint="BOTTOMRIGHT" offsetY="12" />
+
+							<Controls>
+								<Button name="$(parent)ImportButton" text="SI_CONSTELLATIONS_BUTTON_IMPORT_TEXT" verticalAlignment="CENTER" horizontalAlignment="CENTER" mouseEnabled="true" pixelRoundingEnabled="true" font="Constellations_HeaderFont" inherits="ZO_DefaultButton">
+									<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="Constellations_Separator1" offsetY="8" />
+									<Anchor point="RIGHT" relativePoint="CENTER" offsetX="-4" constrains="X" />
+									<OnMouseUp> Constellations.Import() </OnMouseUp>
+								</Button>
+
+								<Button name="$(parent)ResetButton" text="SI_CONSTELLATIONS_BUTTON_RESET_TEXT" verticalAlignment="CENTER" horizontalAlignment="CENTER" mouseEnabled="true" pixelRoundingEnabled="true" font="Constellations_HeaderFont" inherits="ZO_DefaultButton">
+									<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="Constellations_Separator1" offsetY="8" />
+									<Anchor point="LEFT" relativePoint="CENTER" offsetX="4" constrains="X" />
+									<ButtonState state="DISABLED" />
+									<OnMouseUp> Constellations.Reset(self) </OnMouseUp>
+									<OnInitialized> Constellations.ResetButton = self</OnInitialized>
+								</Button>
+
+							</Controls>
+						</Control>
+
+					</Controls>
+				</Control>
+
+				<Control name="Constellations_Tab2" hidden="true">
+					<Anchor point="TOPLEFT" relativeTo="Constellations_Title" relativePoint="BOTTOMLEFT" offsetY="8" />
+					<OnInitialized>
+						self.id = 2
+						Constellations.InitTab(self)
+					</OnInitialized>
+					<Controls>
+
+						<Control name="Constellations_Stars" resizeToFitDescendents="true">
+							<!--resizeToFitDescendents="true"!-->
+							<ResizeToFitPadding width="6" height="8" />
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+							<Controls>
+
+								<Label name="$(parent)Label0" text="SI_CONSTELLATIONS_RESULT_CP" color="FFFFCC99" font="Constellations_HeaderFont" horizontalAlignment="LEFT">
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+									<Dimensions x="200" />
+								</Label>
+
+								<Label name="$(parent)Label1" text="SI_CONSTELLATIONS_RESULT_OLD" color="FFFFFFFF" font="Constellations_HeaderFont" horizontalAlignment="RIGHT">
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="220" />
+									<Dimensions x="58" />
+								</Label>
+
+								<Label name="$(parent)Label2" text="SI_CONSTELLATIONS_RESULT_NEW" color="FFFFFFFF" font="Constellations_HeaderFont" horizontalAlignment="RIGHT">
+									<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Label1" />
+									<Dimensions x="58" />
+								</Label>
+
+								<Label name="$(parent)Label3" text="SI_CONSTELLATIONS_RESULT_MIN" color="FFFFFFFF" font="Constellations_HeaderFont" horizontalAlignment="RIGHT">
+									<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Label2" offsetX="21" />
+									<Dimensions x="40" />
+								</Label>
+
+								<Label name="$(parent)Label4" text="SI_CONSTELLATIONS_RESULT_MAX" color="FFFFFFFF" font="Constellations_HeaderFont" horizontalAlignment="RIGHT">
+									<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Label3" offsetX="8" />
+									<Dimensions x="40" />
+								</Label>
+
+								<Label name="$(parent)Label5" text="The Apprentice" color="FFFFCC99" font="Constellations_HeaderFont">
+									<Anchor point="LEFT" relativePoint="LEFT" constrains="X" />
+									<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Label1" offsetY="8" constrains="Y" />
+									<OnInitialized>
+										self.discipline = 7
+									</OnInitialized>
+								</Label>
+
+								<Control name="$(parent)Result1" inherits="Constellations_ResultRow">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label5" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_MAGICKA
+										self.discipline = 7
+										self.skillId = 1
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Result2" inherits="Constellations_ResultRow">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Result1" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_MAGICKA
+										self.discipline = 7
+										self.skillId = 2
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Result3" inherits="Constellations_ResultRow">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Result2" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_MAGICKA
+										self.discipline = 7
+										self.skillId = 3
+									</OnInitialized>
+								</Control>
+
+								<Label name="$(parent)Label6" text="The Attronach" color="FFFFCC99" font="Constellations_HeaderFont">
+									<Anchor point="LEFT" relativePoint="LEFT" constrains="X" />
+									<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Result3" offsetY="8" constrains="Y" />
+									<OnInitialized>
+										self.discipline = 6
+									</OnInitialized>
+								</Label>
+
+								<Control name="$(parent)Result4" inherits="Constellations_ResultRow">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label6" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_STAMINA
+										self.discipline = 6
+										self.skillId = 1
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Result5" inherits="Constellations_ResultRow">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Result4" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_NEUTRAL
+										self.discipline = 6
+										self.skillId = 3
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Result6" inherits="Constellations_ResultRow">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Result5" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_MAGICKA
+										self.discipline = 6
+										self.skillId = 4
+									</OnInitialized>
+								</Control>
+
+								<Label name="$(parent)Label7" text="The Ritual" color="FFFFCC99" font="Constellations_HeaderFont">
+									<Anchor point="LEFT" relativePoint="LEFT" constrains="X" />
+									<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Result6" offsetY="8" constrains="Y" />
+									<OnInitialized>
+										self.discipline = 5
+									</OnInitialized>
+								</Label>
+
+								<Control name="$(parent)Result7" inherits="Constellations_ResultRow">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label7" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_NEUTRAL
+										self.discipline = 5
+										self.skillId = 1
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Result8" inherits="Constellations_ResultRow">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Result7" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_STAMINA
+										self.discipline = 5
+										self.skillId = 2
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Result9" inherits="Constellations_ResultRow">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Result8" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_STAMINA
+										self.discipline = 5
+										self.skillId = 3
+									</OnInitialized>
+								</Control>
+
+								<Control name="$(parent)Result10" inherits="Constellations_ResultRow">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Result9" relativePoint="BOTTOMLEFT" offsetY="4" />
+									<OnInitialized>
+										self.color = SI_CONSTELLATIONS_COLOR_STAMINA
+										self.discipline = 5
+										self.skillId = 4
+									</OnInitialized>
+								</Control>
+							</Controls>
+							<OnInitialized>
+							Constellations.InitializeStarRows(self)
+						</OnInitialized>
+						</Control>
+
+						<Line name="Constellations_Separator2" color="FFCCCCCC" thickness="1">
+							<Anchor point="TOPLEFT" relativeTo="Constellations_Stars" relativePoint="BOTTOMLEFT" offsetY="4" />
+							<Anchor point="TOPRIGHT" relativeTo="Constellations_Stars" relativePoint="BOTTOMRIGHT" offsetY="4" offsetX="-8" constrains="X" />
+						</Line>
+
+						<Control name="Constellations_Calculate">
+							<!--resizeToFitDescendents="true"!-->
+							<ResizeToFitPadding width="6" height="8" />
+							<Anchor point="TOPLEFT" relativeTo="Constellations_Stars" relativePoint="BOTTOMLEFT" offsetY="12" />
+							<Dimensions x="458" y="85" />
+
+							<Controls>
+
+								<Control name="$(parent)ButtonRow" resizeToFitDescendents="true">
+
+									<Anchor point="TOP" relativePoint="TOP" relativeTo="Constellations_Calculate" offsetY="8" />
+
+									<Controls>
+
+										<Button name="$(parent)ResetCP" text="SI_CONSTELLATIONS_RESULT_RESETCP" verticalAlignment="CENTER" horizontalAlignment="CENTER" mouseEnabled="true" pixelRoundingEnabled="true" font="Constellations_HeaderFont" inherits="ZO_DefaultButton">
+											
+											<Anchor point="LEFT" relativePoint="CENTER" offsetX="40"/>
+											<OnMouseUp> Constellations.UpdateCP() </OnMouseUp>
+										
+										</Button>
+		
+										<Button name="$(parent)Calculate" text="SI_CONSTELLATIONS_BUTTON_CALCULATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" mouseEnabled="true" pixelRoundingEnabled="true" font="Constellations_HeaderFont" inherits="ZO_DefaultButton">
+											
+											<Anchor point="RIGHT" relativePoint="CENTER" offsetX="-40"/>
+											<OnMouseUp> Constellations.Calculate() </OnMouseUp>
+
+										</Button>
+									</Controls>
+								</Control>
+
+								<Control name="$(parent)ApplyCurrentStars" mouseEnabled="true" resizeToFitDescendents="true">
+
+									<Anchor point="LEFT" relativeTo="Constellations_Calculate" relativePoint="LEFT" offsetX="20" constrains="X" />
+									<Anchor point="TOP" relativeTo="$(parent)ButtonRow" relativePoint="BOTTOM" offsetY="12" constrains="Y" />
+									<Dimensions x="458" y="20" />
+
+									<Controls>
+										<Button name="$(parent)Box">
+											<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+											<Dimensions x="20" y="20" />
+
+											<Textures normal="esoui/art/buttons/swatchframe_down.dds" />
+
+											<OnMouseUp>Constellations.ApplyCurrentStarsButton(self:GetParent())</OnMouseUp>
+										</Button>
+
+										<Button name="$(parent)Checked">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)Box" />
+											<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Box" />
+
+											<OnMouseUp>Constellations.ApplyCurrentStarsButton(self:GetParent())</OnMouseUp>
+											<OnInitialized>	Constellations.ApplyCurrentStarsCheckBox = self </OnInitialized>
+
+											<Textures normal="esoui/art/buttons/decline_up.dds"/>
+										</Button>
+
+										<Label name="$(parent)Label" mouseEnabled="true" font="Constellations_OptionFont" color="FFFFFFFF" text="SI_CONSTELLATIONS_RESULT_ACCOUNTOLDCP">
+											<Anchor point="LEFT" relativeTo="$(parent)Box" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+
+											<OnMouseUp>Constellations.ApplyCurrentStarsButton(self:GetParent())</OnMouseUp>
+										</Label>
+
+									</Controls>
+								</Control>
+
+								<Control name="$(parent)EnforceExploiter" mouseEnabled="true" resizeToFitDescendents="true">
+									
+									<Anchor point="LEFT" relativeTo="Constellations_Calculate" relativePoint="LEFT" offsetX="20" constrains="X" />
+									<Anchor point="TOP" relativeTo="$(parent)ApplyCurrentStars" relativePoint="BOTTOM" offsetY="12" constrains="Y" />
+									<Dimensions x="458" y="20" />
+
+									<Controls>
+										<Button name="$(parent)Box">
+											<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+											<Dimensions x="20" y="20" />
+
+											<Textures normal="esoui/art/buttons/swatchframe_down.dds" />
+
+											<OnMouseUp>Constellations.EnforceExploiterButton(self:GetParent())</OnMouseUp>
+										</Button>
+										
+										<Button name="$(parent)Checked">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)Box" />
+											<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Box" />
+
+											<OnMouseUp>Constellations.EnforceExploiterButton(self:GetParent())</OnMouseUp>
+
+											<Textures normal="esoui/art/buttons/decline_up.dds"/>
+										</Button>
+
+										<Label name="$(parent)Label" mouseEnabled="true" font="Constellations_OptionFont" color="FFFFFFFF" text="SI_CONSTELLATIONS_RESULT_ENFORCE_EXPLOITER">
+											<Anchor point="LEFT" relativeTo="$(parent)Box" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+
+											<OnMouseUp>Constellations.EnforceExploiterButton(self:GetParent())</OnMouseUp>
+										</Label>
+
+									</Controls>
+								</Control>
+
+								<Label name="$(parent)MainResult" mouseEnabled="true" font="Constellations_ResultFont" color="FFFFFFFF" horizontalAlignment="CENTER" text="SI_CONSTELLATIONS_RESULT_LAXOUT_NEUTRAL">
+									<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)EnforceExploiter" offsetY="12" constrains="Y" />
+									<Anchor point="CENTER" relativeTo="Constellations_Calculate" relativePoint="CENTER" constrains="X" />
+									<Dimensions y="34" />
+									<OnInitialized>	Constellations.MainResult = self </OnInitialized>
+								</Label>
+
+								<Control name="$(parent)DPSRow">
+
+									<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)MainResult" offsetY="12" constrains="Y" />
+									<Anchor point="CENTER" relativePoint="CENTER" constrains="X" />
+									<Dimensions x="458" y="24" />
+									
+									<Controls>
+
+										<Label name="$(parent)LabelBefore" mouseEnabled="true" font="Constellations_OptionFont" color="FFFFFFFF" text="">
+											<Anchor point="LEFT" relativePoint="LEFT" offsetX="14" offsetY="0" />
+											<Dimensions x="200" y="24" />
+											<OnInitialized>	Constellations.OldDPS = self </OnInitialized>
+										</Label>
+
+										<Label name="$(parent)LabelNew" mouseEnabled="true" font="Constellations_OptionFont" color="FFFFFFFF" text="">
+											<Anchor point="LEFT" relativePoint="CENTER" offsetX="15" offsetY="0" />
+											<Dimensions x="200" y="24" />
+											<OnInitialized>	Constellations.NewDPS = self </OnInitialized>
+										</Label>
+
+									</Controls>
+								</Control>
+
+								<Control name="$(parent)FactorRow">
+
+									<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)DPSRow" offsetY="12" constrains="Y" />
+									<Anchor point="CENTER" relativePoint="CENTER" constrains="X" />
+									<Dimensions x="458" y="24" />
+									
+									<Controls>
+
+										<Label name="$(parent)LabelBefore" font="Constellations_OptionFont" color="FFFFFFFF" text="">
+											<Anchor point="LEFT" relativePoint="LEFT" offsetX="14" offsetY="0" />
+											<Dimensions x="200" y="24" />
+											<OnInitialized>	Constellations.OldFactor = self </OnInitialized>
+										</Label>
+
+										<Label name="$(parent)LabelNew" font="Constellations_OptionFont" color="FFFFFFFF" text="">
+											<Anchor point="LEFT" relativePoint="CENTER" offsetX="15" offsetY="0" />
+											<Dimensions x="200" y="24" />
+											<OnInitialized>	Constellations.NewFactor = self </OnInitialized>
+										</Label>
+
+									</Controls>
+								</Control>
+
+								<Label name="$(parent)UnusedCPLabel" font="Constellations_OptionFont" color="FFFFAAAA" text="" horizontalAlignment="CENTER" hidden="true">
+
+									<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)FactorRow" offsetY="12" constrains="Y" />
+									<Anchor point="CENTER" relativePoint="CENTER" constrains="X" />
+									<Dimensions x="458" y="24" />
+
+									<OnInitialized>	Constellations.UnusedCP = self </OnInitialized>
+
+								</Label>
+							</Controls>
+						</Control>
+
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

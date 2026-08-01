@@ -1,0 +1,68 @@
+<GuiXml>
+	<Controls>
+
+		<Control name="SbAutoBind_ListItemTemplate" virtual="true" >
+			<Dimensions y="25" />
+
+			<Controls>
+				<Texture name="$(parent)_IsTargetTexture" textureFile="/esoui/art/notifications/collectionsbutton_up.dds" >
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" />
+				</Texture>
+
+				<Button name="$(parent)_LinkButton" inherits="ZO_DefaultTextButton" horizontalAlignment="LEFT" >
+					<Anchor point="TOPLEFT" offsetX="30" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-25" />
+					<OnMouseEnter>
+						InitializeTooltip(ItemTooltip, SbAutoBind_PreviewWindowControl, LEFT, 10, 0)
+						ItemTooltip:SetLink(self:GetLabelControl():GetText())
+					</OnMouseEnter>
+					<OnMouseExit>
+						ClearTooltip(ItemTooltip)
+					</OnMouseExit>
+				</Button>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="SbAutoBind_PreviewWindowControl" clampedToScreen="true" tier="HIGH" mouseEnabled="true" movable="true" hidden="true" >
+			<Dimensions x="380" y="400" />
+			<Anchor point="CENTER" />
+
+			<Controls>
+				<Backdrop name="$(parent)Background" inherits="ZO_DefaultBackdrop" />
+
+				<Label name="$(parent)_HeaderLabel" font="ZoFontGame" color="FF9900" >
+					<Anchor point="TOP" offsetY="2" />
+				</Label>
+
+				<Button name="$(parent)_CancelButton" inherits="ZO_ButtonBehaviorClickSound" >
+					<Dimensions x="30" y="30" />
+					<Anchor point="TOPRIGHT" />
+					<Textures
+						normal="esoui/art/buttons/decline_up.dds"
+						mouseOver="esoui/art/buttons/decline_over.dds"
+						pressed="esoui/art/buttons/decline_down.dds"
+						disabled="esoui/art/buttons/decline_up.dds"
+					/>
+				</Button>
+
+				<Texture inherits="ZO_HorizontalDivider" >
+					<Anchor point="TOPLEFT" offsetY="32" />
+					<Anchor point="TOPRIGHT" offsetY="32" />
+				</Texture>
+
+				<Control name="$(parent)_List" inherits="ZO_ScrollList" >
+					<Anchor point="TOPLEFT" offsetY="45" />
+					<Anchor point="BOTTOMRIGHT" offsetY="-50" />
+				</Control>
+
+				<Button name="$(parent)_BindButton" text="Bind" inherits="ZO_DefaultButton" >
+					<Dimensions y="40" />
+					<Anchor point="BOTTOMLEFT" offsetX="50" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-50" />
+				</Button>
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

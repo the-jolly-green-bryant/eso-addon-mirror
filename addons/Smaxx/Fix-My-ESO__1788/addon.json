@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Smaxx/Fix-My-ESO__1788",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Smaxx",
+  "canonical_id": "esoui:1788",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    }
+  ],
+  "content_id": "esoui:1788",
+  "deleted": false,
+  "directories": [
+    "FixMyESO"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1788/",
+  "fingerprint": "c6a9317aab854e3241e56e93c7a460cdd0b89b3ac345504c8ee1eeaefa47b5cd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6022.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1788",
+  "source_url": "https://www.esoui.com/downloads/info1788-FixMyESO.html",
+  "stats": {
+    "downloads": 6111,
+    "favorites": 5,
+    "monthly_downloads": 13
+  },
+  "title": "Fix My ESO",
+  "updated_at": 1504081117000,
+  "version": "2017.08.30"
+}

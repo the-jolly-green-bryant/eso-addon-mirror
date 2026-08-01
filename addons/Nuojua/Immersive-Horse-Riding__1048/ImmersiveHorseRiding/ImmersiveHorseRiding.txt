@@ -1,0 +1,8 @@
+## Title: ImmersiveHorseRiding
+## Author: Nuojua
+## Description: Horseriding in 1st person.
+## Version: 3.0
+## APIVersion: 101039 101040
+## SavedVariables: ImmersiveHorseRiding_SavedVariables
+
+ImmersiveHorseRiding.lua

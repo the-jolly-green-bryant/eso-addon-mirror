@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/SirAndy/SousChef-Fix-For-API-100021__1856",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SirAndy",
+  "canonical_id": "esoui:1856",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:1856",
+  "deleted": false,
+  "directories": [
+    "SousChef"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1856/",
+  "fingerprint": "5b2bab00b9f0d1b5ea8df9fa1c1deda64cebefca229152f9541f85e286efa74f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6321.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1856",
+  "source_url": "https://www.esoui.com/downloads/info1856-SousChefFixForAPI100021.html",
+  "stats": {
+    "downloads": 9188,
+    "favorites": 7,
+    "monthly_downloads": 7
+  },
+  "title": "SousChef Fix For API 100021",
+  "updated_at": 1511666273000,
+  "version": "2.1"
+}

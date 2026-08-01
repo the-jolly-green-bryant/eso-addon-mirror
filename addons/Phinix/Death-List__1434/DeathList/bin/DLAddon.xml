@@ -1,0 +1,6 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="DLAddon" />
+		<TopLevelControl name="DLAddon_Toggle" tier="LOW" mouseEnabled="true" movable="true" clampedToScreen="false" hidden="true"/>
+	</Controls>
+</GuiXml>

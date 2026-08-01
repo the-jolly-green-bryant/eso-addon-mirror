@@ -1,0 +1,15 @@
+<!--
+-- Addon: ShowRepairCosts
+-- Version: 1.0
+-- Created by P A G O O K
+-->
+
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ShowRepairCosts">
+			<OnUpdate>
+				Label_RepairAllCost()
+			</OnUpdate>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

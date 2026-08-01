@@ -1,0 +1,9 @@
+## Title: Guild Invite Blocker
+## APIVersion: 101045 101046 101047 101048
+## Version: 1.0.0
+## AddOnVersion: 100
+## Author: Pyrowin
+## Description: Toggle auto-decline of incoming guild invites with /giblock.
+## SavedVariables: GuildInviteBlocker_SavedVars
+
+GuildInviteBlocker.lua

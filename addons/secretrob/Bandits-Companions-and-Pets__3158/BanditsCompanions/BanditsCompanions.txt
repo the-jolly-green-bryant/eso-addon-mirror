@@ -1,0 +1,29 @@
+## Title: Bandits |c00FFE8Companions|r
+## Author: |c32CD32secretrob|r
+## Description: Addition to Bandits User Interface. Adds companion "group" bar when solo and while in a group.
+## Version: 1.7.16
+## APIVersion: 101050
+## AddOnVersion: 46
+## SavedVariables: BanditsCompanions_SavedVars
+## DependsOn: BanditsUserInterface
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+
+BCUI_Initialize.lua
+BCUI_Vars.lua
+BCUI_Events.lua
+BCUI_Frames.lua
+BCUI_Menu.lua
+BCUI_Binds.lua
+BCUI_Panel.lua
+
+##KEYBINDS
+Bindings.xml
+
+lang\en.lua
+lang\$(language).lua

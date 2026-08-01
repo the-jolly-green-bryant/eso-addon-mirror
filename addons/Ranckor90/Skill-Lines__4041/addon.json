@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/Ranckor90/Skill-Lines__4041",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ranckor90",
+  "canonical_id": "esoui:4041",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4041",
+  "deleted": false,
+  "directories": [
+    "SkillLines"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4041/",
+  "fingerprint": "121a8ea3b5968bfd8c2f9dc4db4201d944296b4ed511a4934b6048d6e761c3fb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14044.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4041",
+  "source_url": "https://www.esoui.com/downloads/info4041-SkillLines.html",
+  "stats": {
+    "downloads": 2010,
+    "favorites": 2,
+    "monthly_downloads": 103
+  },
+  "title": "Skill Lines",
+  "updated_at": 1783900441000,
+  "version": "v2.1.2"
+}

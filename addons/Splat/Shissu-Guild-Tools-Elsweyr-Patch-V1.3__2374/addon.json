@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Splat/Shissu-Guild-Tools-Elsweyr-Patch-V1.3__2374",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Splat",
+  "canonical_id": "esoui:2374",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2374",
+  "deleted": false,
+  "directories": [
+    "ShissuAutoAFK",
+    "ShissuBlackList",
+    "ShissuChat",
+    "ShissuColor",
+    "ShissuCompareMember",
+    "ShissuContextMenu",
+    "ShissuDonateFee",
+    "ShissuFramework",
+    "ShissuGuildHome",
+    "ShissuGuildTools",
+    "ShissuHistory",
+    "ShissuHistoryScanner",
+    "ShissuMemberStatus",
+    "ShissuNotebook",
+    "ShissuNotifications",
+    "ShissuProvisionMember",
+    "ShissuRoster",
+    "ShissuSuiteManager",
+    "ShissuTeleporter",
+    "ShissuTeleporterMap",
+    "ShissuWelcome"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2374/",
+  "fingerprint": "86d8554883541036b1dcfb1065fdfeea51a6ec85e7817b558c8add2f44bbb95e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2374",
+  "source_url": "https://www.esoui.com/downloads/info2374-ShissuGuildToolsElsweyrPatchV1.3.html",
+  "stats": {
+    "downloads": 9640,
+    "favorites": 5,
+    "monthly_downloads": 8
+  },
+  "title": "Shissu Guild Tools Elsweyr Patch V1.3",
+  "updated_at": 1558725140000,
+  "version": "1.3"
+}

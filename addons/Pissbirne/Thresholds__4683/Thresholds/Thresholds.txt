@@ -1,0 +1,18 @@
+## Title: |c66CCFFThresholds|r
+## Author: Birne
+## Version: 1.4.1
+## AddOnVersion: 141
+## APIVersion: 101050
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: ThresholdsSavedVariables
+## Description: Boss HP threshold alerts, fully customizable per alert: text, color, sound, font size, duration - per zone and per boss, with a live tracker frame.
+
+THR_Global.lua
+THR_BossData.lua
+THR_Engine.lua
+THR_Alerts.lua
+THR_Display.lua
+THR_Functions.lua
+THR_Share.lua
+THR_Menu.lua
+THR_Initialize.lua

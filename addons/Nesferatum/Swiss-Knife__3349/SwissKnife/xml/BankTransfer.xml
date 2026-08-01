@@ -1,0 +1,153 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="BankTransfer" mouseEnabled="true" layer="OVERLAY" hidden="true">
+            <Anchor point="TOPLEFT" relativeTo="ZO_GuildBank" />
+            <Anchor point="BOTTOMRIGHT" relativeTo="ZO_GuildBank" />
+            <Controls>
+                <Texture name="$(parent)BG" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds">
+                    <AnchorFill />
+                    <TextureCoords left="0" right="1" top="0" bottom=".8125" />
+                </Texture>
+                <Control name="$(parent)Header">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="60" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-30" />
+                    <Dimensions y="40" />
+                    <Controls>
+                        <Texture name="$(parent)Tex" textureFile="SwissKnife/textures/gui/bank.dds" color="CFDCBD">
+                            <Dimensions x="40" y="40" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="10" />
+                        </Texture>
+                        <Label name="$(parent)Title" font="ZoFontWindowTitle" color="CFDCBD"
+                               wrapMode="ELLIPSIS" verticalAlignment="CENTER"
+                        >
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Tex" relativePoint="TOPRIGHT" />
+                            <Dimensions y="40" />
+                        </Label>
+                        <Button name="$(parent)Close" inherits="ZO_ButtonBehaviorClickSound">
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-4" offsetY="30" />
+                            <Dimensions x="40" y="40" />
+                            <Textures
+                                normal="SwissKnife/textures/dialogues/icons/cancel_up.dds"
+                                pressed="SwissKnife/textures/dialogues/icons/cancel_down.dds"
+                                mouseOver="SwissKnife/textures/dialogues/icons/cancel_over.dds"
+                                highlight="SwissKnife/textures/dialogues/icons/cancel_over.dds"
+                                disabled="SwissKnife/textures/dialogues/icons/cancel_up.dds"
+                            />
+                            <OnMouseEnter>
+                                InitializeTooltip(InformationTooltip, self, TOP, 0, 1)
+                                SetTooltipText(InformationTooltip, GetString(SI_SK_DIALOG_CLOSE))
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                SetTooltipText(InformationTooltip)
+                            </OnMouseExit>
+                            <OnMouseDown>
+                                SKBT:Close()
+                            </OnMouseDown>
+                        </Button>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Main">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetY="7" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="ZO_GuildBank" relativePoint="BOTTOMRIGHT" offsetY="0"/>
+                    <Dimensions y="450" />
+                    <Controls>
+                        <Label name="$(parent)Status" font="ZoFontWinH5" color="CFDCBD"
+                               wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontzlAlignment="CENTER"
+                               text="SI_SK_BANK_NOTHING_TODO_MESSAGE">
+                            <Anchor point="TOP" relativeTo="$(parent)Main" relativePoint="TOP" offsetY="12" />
+                            <Dimensions y="40" />
+                        </Label>
+                        <StatusBar name="$(parent)StatusBar" inherits="SK_ProgressBar" hidden="true">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Main" relativePoint="TOPLEFT" offsetX="12" offsetY="23" />
+                        </StatusBar>
+                        <Label name="$(parent)Title" font="ZoFontWinT2" color="CFDCBD"
+                               wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)StatusBar" relativePoint="BOTTOMLEFT"
+                                offsetX="-40" offsetY="7"/>
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)StatusBar" relativePoint="BOTTOMRIGHT"
+                                    offsetX="20" offsetY="47"/>
+                            <Dimensions y="40" />
+                        </Label>
+                        <Label name="$(parent)TitleDepositWithdraw" font="ZoFontWinT1" color="FFA500"
+                               wrapMode="ELLIPSIS" horizontzlAlignment="CENTER" verticalAlignment="CENTER"
+                               text="SI_SK_BANK_TRANSFER_RULES">
+                            <Anchor point="TOP" relativeTo="$(parent)Main" relativePoint="TOP" offsetY="100"/>
+                            <Dimensions y="25" />
+                        </Label>
+                        <Control name="$(parent)FirstColumn">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Main" relativePoint="TOPLEFT" offsetY="125"/>
+                            <Dimensions x="220" y="1" />
+                        </Control>
+                        <Control name="$(parent)SecondColumn">
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Main" relativePoint="TOPRIGHT" offsetX="-30" offsetY="125"/>
+                            <Dimensions x="220" y="1" />
+                        </Control>
+                        <Label name="$(parent)HelpText" font="ZoFontGame" wrapMode="ELLIPSIS" horizontzlAlignment="CENTER"
+                               verticalAlignment="CENTER" color="CFDCBD" hidden="true">
+                            <Dimensions y="16" />
+                        </Label>
+                        <Button name="$(parent)Deposit" inherits="ZO_DefaultButton" text="SI_SK_DIALOG_DEPOSIT">
+                            <Dimensions x="150" />
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Main" relativePoint="BOTTOMLEFT"
+                                offsetX="-30" offsetY="-40"/>
+                            <OnMouseEnter>
+                                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SK_DIALOG_DEPOSIT_TOOLTIP))
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                ZO_Tooltips_HideTruncatedTextTooltip()
+                            </OnMouseExit>
+                            <OnClicked>
+                                SKBT:transferToGuildBank()
+                            </OnClicked>
+                        </Button>
+                        <Button name="$(parent)Stop" inherits="ZO_DefaultButton" text="SI_SK_DIALOG_STOP" hidden="true">
+                            <Dimensions x="200" />
+                            <Anchor point="BOTTOM" relativeTo="$(parent)Main" relativePoint="BOTTOM"
+                                    offsetX="-30" offsetY="-40"
+                            />
+                            <OnMouseEnter>
+                                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SK_DIALOG_STOP_TOOLTIP))
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                ZO_Tooltips_HideTruncatedTextTooltip()
+                            </OnMouseExit>
+                            <OnClicked>
+                                SKBT:stopAll()
+                            </OnClicked>
+                        </Button>
+                        <Button name="$(parent)Compress" inherits="ZO_DefaultButton" text="SI_SK_DIALOG_COMPRESS">
+                            <Dimensions x="200" />
+                            <Anchor point="BOTTOM" relativeTo="$(parent)Main" relativePoint="BOTTOM"
+                                    offsetX="-30" offsetY="-40"
+                            />
+                            <OnMouseEnter>
+                                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SK_DIALOG_COMPRESS_TOOLTIP))
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                ZO_Tooltips_HideTruncatedTextTooltip()
+                            </OnMouseExit>
+                            <OnClicked>
+                                SKBT:compressGuildBank()
+                            </OnClicked>
+                        </Button>
+                        <Button name="$(parent)Withdraw" inherits="ZO_DefaultButton" text="SI_SK_DIALOG_WITHDRAW">
+                            <Dimensions x="150" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Main" relativePoint="BOTTOMRIGHT"
+                                    offsetX="-30" offsetY="-40"
+                            />
+                            <OnMouseEnter>
+                                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SI_SK_DIALOG_WITHDRAW_TOOLTIP))
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                ZO_Tooltips_HideTruncatedTextTooltip()
+                            </OnMouseExit>
+                            <OnClicked>
+                                SKBT:transferFromGuildBank()
+                            </OnClicked>
+                        </Button>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

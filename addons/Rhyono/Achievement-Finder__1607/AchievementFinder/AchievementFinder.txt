@@ -1,0 +1,8 @@
+﻿;All of the good addons have comments here.
+
+## Title: Achievement Finder
+## APIVersion: 101031 101032
+## Author: |c7f0000Rhyono|r
+## Description: Finds achievements by name. /afhelp for help.
+## Version: 1.23
+AchievementFinder.lua

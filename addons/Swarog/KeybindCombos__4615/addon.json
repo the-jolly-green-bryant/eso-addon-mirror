@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Swarog/KeybindCombos__4615",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Swarog",
+  "canonical_id": "esoui:4615",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4615",
+  "deleted": false,
+  "directories": [
+    "KeybindCombos"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4615/",
+  "fingerprint": "ea23037f54408b4b24d656d6302b5b2c35788d7142a65ee0bff42ce5f8151153",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16218.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4615",
+  "source_url": "https://www.esoui.com/downloads/info4615-KeybindCombos.html",
+  "stats": {
+    "downloads": 153,
+    "favorites": 1,
+    "monthly_downloads": 64
+  },
+  "title": "KeybindCombos",
+  "updated_at": 1780705066000,
+  "version": "1.0.0"
+}

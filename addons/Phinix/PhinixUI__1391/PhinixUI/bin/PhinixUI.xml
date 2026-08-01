@@ -1,0 +1,180 @@
+<GuiXml>
+	<Controls>
+<!----------------------------------------------------------------------------------------------------------------------------------------------------------
+Defines the clickable list functionality.
+----------------------------------------------------------------------------------------------------------------------------------------------------------->
+		<Control name="PUIAddon_ListItemTemplate" virtual="true">
+			<Dimensions x="940" y="18"/>
+			<OnMouseEnter>
+				ZO_ScrollList_MouseEnter(PUIAddon_MainFrameListFrameList, self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				ZO_ScrollList_MouseExit(PUIAddon_MainFrameListFrameList, self)
+			</OnMouseExit>
+			<OnMouseUp>
+				if(upInside) then
+					ZO_ScrollList_MouseClick(PUIAddon_MainFrameListFrameList, self)
+				end
+			</OnMouseUp>
+			<Controls>
+				<Label name="$(parent)Name" font="ZoFontGame" mouseEnabled="true">
+					<Dimensions x="840" y="16"/>
+					<Anchor point="TOPLEFT"/>
+					<OnMouseEnter>
+						PUIAddon.XMLNavigation(001, self, self:GetText(), 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						PUIAddon.XMLNavigation(001, self, self:GetText(), 2)
+					</OnMouseExit>
+					<OnMouseUp>
+						if(upInside) then
+							PUIAddon.XMLNavigation(002, nil, self:GetText())
+						end
+					</OnMouseUp>
+				</Label>
+			</Controls>
+		</Control>
+<!----------------------------------------------------------------------------------------------------------------------------------------------------------
+Top-level control frame, backdrop, header, close and function buttons.
+----------------------------------------------------------------------------------------------------------------------------------------------------------->
+		<TopLevelControl name="PUIAddon_MainFrame" tier="LOW" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="524" y="560"/>
+			<Anchor point="CENTER"/>
+			<OnMoveStop>
+				PUIAddon.XMLNavigation(101)
+			</OnMoveStop>
+			<OnInitialized>
+				PUIAddon.XMLNavigation(102)
+			</OnInitialized>
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.9"/>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Button name="$(parent)CloseButton">
+					<Dimensions x="40" y="40"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" offsetY="-4"/>
+					<Textures
+						normal="/esoui/art/cadwell/cadwell_indexicon_silver_up.dds"
+						pressed="/esoui/art/cadwell/cadwell_indexicon_silver_over.dds"
+						mouseOver="/esoui/art/cadwell/cadwell_indexicon_silver_down.dds"
+						disabled="/esoui/art/cadwell/cadwell_indexicon_silver_disabled.dds"
+					/>
+					<OnMouseEnter>
+						PUIAddon.XMLNavigation(103, self, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						PUIAddon.XMLNavigation(103, self, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						PUIAddon.XMLNavigation(103, self, nil, 3)
+					</OnClicked>
+				</Button>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Button name="$(parent)ClearSelected">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)CloseButton" relativePoint="LEFT" offsetX="14" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/cadwell/cadwell_indexicon_gold_up.dds"
+						pressed="/esoui/art/cadwell/cadwell_indexicon_gold_over.dds"
+						mouseOver="/esoui/art/cadwell/cadwell_indexicon_gold_down.dds"
+						disabled="/esoui/art/cadwell/cadwell_indexicon_gold_disabled.dds"
+					/>
+					<OnMouseEnter>
+						PUIAddon.XMLNavigation(104, PUIAddon_MainFrameCloseButton, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						PUIAddon.XMLNavigation(104, PUIAddon_MainFrameCloseButton, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						PUIAddon.XMLNavigation(104, PUIAddon_MainFrameCloseButton, nil, 3)
+					</OnClicked>
+				</Button>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Button name="$(parent)AddonDefaults">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-2" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/campaign/overview_indexicon_bonus_up.dds"
+						pressed="/esoui/art/campaign/overview_indexicon_bonus_over.dds"
+						mouseOver="/esoui/art/campaign/overview_indexicon_bonus_down.dds"
+						disabled="/esoui/art/campaign/overview_indexicon_bonus_over.dds"
+					/>
+					<OnMouseEnter>
+						PUIAddon.XMLNavigation(105, PUIAddon_MainFrameCloseButton, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						PUIAddon.XMLNavigation(105, PUIAddon_MainFrameCloseButton, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						PUIAddon.XMLNavigation(105, PUIAddon_MainFrameCloseButton, nil, 3)
+					</OnClicked>
+				</Button>
+				<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Control name="$(parent)Header">
+					<Dimensions x="524" y="35"/>
+					<Anchor point="TOP" relativeTo="PUIAddon_MainFrame" relativePoint="TOP" offsetY="-5"/>
+					<Controls>
+						<Label name="$(parent)Title1" inherits="ZO_WindowTitle" color="FFFFFF" text="|cFEE854Phinix|r|cFF9900UI|r">
+							<Anchor point="CENTER" relativeTo="$(parent)Header" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+						</Label>
+					</Controls>
+				</Control>
+				 <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+					<Dimensions y="4"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetY="10"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" offsetY="10"/>
+				</Texture>
+<!---------------------------------------------------------------------------------------------------------------------------------------------------------
+Displays the list of addons.
+---------------------------------------------------------------------------------------------------------------------------------------------------------->
+				<Control name="$(parent)ListFrame">
+					<Dimensions x="495" y="480"/>
+					<Anchor point="CENTER" relativeTo="PUIAddon_MainFrame" relativePoint="CENTER" offsetX="0" offsetY="20"/>
+					<Controls>
+						<Control name="$(parent)List" inherits="ZO_ScrollList">
+							<Dimensions x="495" y="480"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+							<Controls>
+							</Controls>
+						</Control>
+<!---------------------------------------------------------------------------------------------------------------------------------------------------------
+Run button and label.
+---------------------------------------------------------------------------------------------------------------------------------------------------------->
+						<Texture name="$(parent)RunTexture" textureFile="/EsoUI/Art/Buttons/blade_disabled.dds">
+							<Dimensions x="192" y="32"/>
+							<Anchor point="TOPRIGHT" relativeTo="PUIAddon_MainFrame" relativePoint="BOTTOMRIGHT" offsetX="6" offsetY="6"/>
+						</Texture>
+						
+						<Label name="$(parent)RunLabel" font="ZoFontWinH5" color="FEE854" horizontalAlignment="LEFT" alpha="0.8" text="">
+							<Anchor point="CENTER" relativeTo="$(parent)RunTexture" relativePoint="CENTER"/>
+						</Label>
+						<Button name="$(parent)RunButton">
+							<Dimensions x="192" y="32"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)RunTexture" relativePoint="TOPRIGHT"/>
+							<OnMouseDown>
+								PUIAddon_MainFrameListFrameRunTexture:SetTexture("/EsoUI/Art/Buttons/blade_closed_down.dds")
+								PUIAddon_MainFrameListFrameRunLabel:SetAlpha(0.5)
+							</OnMouseDown>
+							<OnMouseUp>
+								if(upInside) then
+									PUIAddon_MainFrameListFrameRunTexture:SetTexture("/EsoUI/Art/Buttons/blade_closed_up.dds")
+									PUIAddon_MainFrameListFrameRunLabel:SetAlpha(0.8)
+									PUIAddon.XMLNavigation(106)
+								end
+							</OnMouseUp>
+							<OnMouseEnter>
+								PUIAddon_MainFrameListFrameRunTexture:SetTexture("/EsoUI/Art/Buttons/blade_closed_up.dds")
+								PUIAddon_MainFrameListFrameRunLabel:SetAlpha(1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								PUIAddon_MainFrameListFrameRunTexture:SetTexture("/EsoUI/Art/Buttons/blade_disabled.dds")
+								PUIAddon_MainFrameListFrameRunLabel:SetAlpha(0.8)
+							</OnMouseExit>
+						</Button>
+<!-------------------------------------------------------------------------------------------------------------------------------------------------------->
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

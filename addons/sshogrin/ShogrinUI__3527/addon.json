@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/sshogrin/ShogrinUI__3527",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sshogrin",
+  "canonical_id": "esoui:3527",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3527",
+  "deleted": false,
+  "directories": [
+    "ShogrinUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3527/",
+  "fingerprint": "755f3d7feeb0cfc30fb6fd63a6a76d3158206a2ba91a858704a67a7e22d93dd4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11999.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11998.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12040.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12442.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3527",
+  "source_url": "https://www.esoui.com/downloads/info3527-ShogrinUI.html",
+  "stats": {
+    "downloads": 4706,
+    "favorites": 8,
+    "monthly_downloads": 35
+  },
+  "title": "ShogrinUI",
+  "updated_at": 1753146940000,
+  "version": "1.1.7"
+}

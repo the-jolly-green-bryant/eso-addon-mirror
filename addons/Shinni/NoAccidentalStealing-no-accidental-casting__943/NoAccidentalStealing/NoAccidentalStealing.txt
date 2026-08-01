@@ -1,0 +1,13 @@
+## Title: NoAccidentalStealing
+## Author: Shinni
+## Version 1.13
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: NAS_SavedVariables
+## AddOnVersion: 113
+## APIVersion: 101038
+
+language\en.lua
+language\$(language).lua
+NoAccidentalStealing.lua
+Abilities.lua
+Bindings.xml

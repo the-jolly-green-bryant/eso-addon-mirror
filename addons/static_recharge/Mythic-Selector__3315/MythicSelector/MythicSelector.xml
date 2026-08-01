@@ -1,0 +1,116 @@
+<GuiXml>
+  <Controls>
+
+    <!-- Virtual Definitions -->
+
+    <!-- Button Template -->
+    <Button name="MSButtonTemplate" font="ZoFontWinH3" horizontalAlignment="CENTER" verticalAlignment="CENTER" clickSound="Click" virtual="true">
+      <PressedOffset x="1" y="1" />
+      <FontColors normalColor="FF8C1A" mouseOverColor="FCD9B6" pressedColor="FCD9B6" />
+    </Button>
+
+    <!-- List Template -->
+    <Button name="MSListTemplate" font="ZoFontGame" clickSound="Click" verticalAlignment="CENTER" horizontalAlignment="LEFT" virtual="true">
+      <Dimensions x="230" y="32" />
+      <Textures name="$(parent)Highlight" mouseOver="esoui/art/buttons/selection_highlight.dds" pressed="esoui/art/buttons/selection_highlight.dds" />
+      <PressedOffset x="1" y="1" />
+      <MouseButton button="1" enabled="true" />
+      <MouseButton button="2" enabled="true" />
+    </Button>
+
+    <!-- Main Window -->
+    <TopLevelControl name="MS_Panel" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="256" y ="256" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+      <OnMoveStop> MS_ON_MOVE_STOP() </OnMoveStop>
+      <Controls>
+
+        <!-- Main Backdrop -->
+        <Backdrop name="$(parent)BG" centerColor="CC050505" edgeColor="CC050505">
+          <AnchorFill />
+        </Backdrop>
+
+        <!-- Close Button -->
+        <Button name="$(parent)CloseButton" text="X" inherits="MSButtonTemplate">
+          <Dimensions x="32" y="32" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+          <OnClicked> MS_Panel:SetHidden(true) </OnClicked>
+        </Button>
+
+        <!-- Title -->
+        <Label name="$(parent)Title" text="Mythic Selector" font="ZoFontWinH3" color="FF8C1A" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+          <Dimensions x="0" y="32" />
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+        </Label>
+
+        <Texture name="$(parent)HelpIcon" textureFile="esoui/art/buttons/info_up.dds" color="FF8C1A" mouseEnabled="true">
+          <Dimensions x="32" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+          <OnMouseEnter>
+            ZO_Tooltips_ShowTextTooltip(self, LEFT, "Add items to the Mythic Selector window from the |cFF8C1Aright click menu on jewelry|r either in your inventory or already equipped.\n\nIn the Mythic Selector window:\n -|cFF8C1ALeft clicking|r on an item in the list will move it up one spot\n -|cFF8C1ARight clicking|r on an item in the list will remove it from the list")
+          </OnMouseEnter>
+          <OnMouseExit>
+            ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Texture>
+
+        <!-- Tab Buttons -->
+        <Button name="$(parent)Necklace" text="|t32:32:esoui/art/icons/gear_breton_neck_a.dds|t Necklaces" inherits="MSButtonTemplate">
+          <Dimensions x="128" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="32" />
+          <OnClicked> MS_UPDATE_SCROLL_LIST(EQUIP_TYPE_NECK) </OnClicked>
+        </Button>
+
+        <Button name="$(parent)Ring" text="|t32:32:esoui/art/icons/gear_breton_ring_a.dds|t Rings" inherits="MSButtonTemplate">
+          <Dimensions x="128" y="32" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="32" />
+          <OnClicked> MS_UPDATE_SCROLL_LIST(EQUIP_TYPE_RING) </OnClicked>
+        </Button>
+
+        <!-- Scroll List -->
+        <Control name="$(parent)ScrollBox" inherits="ZO_ScrollContainer">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="4" offsetY="66" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="-4" />
+          <OnInitialized> ZO_Scroll_Initialize(self) </OnInitialized>
+          <Controls>
+
+            <Backdrop name="$(parent)BG" centerColor="CC222222" edgeColor="CC222222">
+              <AnchorFill />
+            </Backdrop>
+
+          </Controls>
+        </Control> 
+
+      </Controls>
+    </TopLevelControl>
+
+    <!-- Indicator Window -->
+    <TopLevelControl name="MS_Indicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false">
+      <Dimensions x="150" y="40" />
+      <Anchor point="RIGHT" relativeTo="GuiRoot" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+      <OnMoveStop> MS_IND_ON_MOVE_STOP() </OnMoveStop>
+      <Controls>
+
+        <!-- Indicator Backdrop -->
+        <Backdrop name="$(parent)BG" centerColor="050505" edgeColor="050505" alpha="0.75">
+          <AnchorFill />
+        </Backdrop>
+
+        <!-- Necklace Display Label -->
+        <Label name="$(parent)NecklaceLabel" font="ZoFontGameSmall" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="TRUNCATE" maxLineCount="1">
+          <Dimensions x="146" y ="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+        </Label>
+
+        <!-- Ring Display Label -->
+        <Label name="$(parent)RingLabel" font="ZoFontGameSmall" horizontalAlignment="LEFT" verticalAlignment="BOTTOM" wrapMode="TRUNCATE" maxLineCount="1">
+          <Dimensions x="146" y ="20" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

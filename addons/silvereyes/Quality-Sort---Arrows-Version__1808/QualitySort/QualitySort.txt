@@ -1,0 +1,23 @@
+## Title: Quality Sort
+## Author: silvereyes & Randactyl
+## Version: 2.6.0
+## APIVersion: 101033 101034
+## DependsOn: LibSavedVars>=50000 LibAddonMenu-2.0
+## OptionalDependsOn: wykkydsEquipmentLevel CraftingMaterialLevelDisplay LibSets
+## SavedVariables: QualitySort_Account
+## SavedVariables: QualitySort_Character
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the 
+## United States and/or other countries. All rights reserved.
+
+; Language files
+localization\EN.lua
+localization\$(language).lua
+localization\CreateStrings.lua
+
+; Addon
+QualitySort.lua
+
+; Settings
+Settings.lua

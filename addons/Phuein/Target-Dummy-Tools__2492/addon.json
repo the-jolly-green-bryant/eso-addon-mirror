@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Phuein/Target-Dummy-Tools__2492",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phuein",
+  "canonical_id": "esoui:2492",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:2492",
+  "deleted": false,
+  "directories": [
+    "TargetDummyTools"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2492/",
+  "fingerprint": "7e98f17289084465568ab463a846d76436fe9cf9dc700fe0444d168df9143065",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2492",
+  "source_url": "https://www.esoui.com/downloads/info2492-TargetDummyTools.html",
+  "stats": {
+    "downloads": 10496,
+    "favorites": 4,
+    "monthly_downloads": 18
+  },
+  "title": "Target Dummy Tools",
+  "updated_at": 1594579691000,
+  "version": "1.09"
+}

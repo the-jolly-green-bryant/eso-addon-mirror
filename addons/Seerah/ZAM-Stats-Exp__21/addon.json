@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/Seerah/ZAM-Stats-Exp__21",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Seerah",
+  "canonical_id": "esoui:21",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:21",
+  "deleted": false,
+  "directories": [
+    "ZAM_StatsExp"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl21/",
+  "fingerprint": "96bec0b1df410458909eecff443cacad6c09694bd2b934863fcd8b9d2b516b6d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw28.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "21",
+  "source_url": "https://www.esoui.com/downloads/info21-ZAMStatsExp.html",
+  "stats": {
+    "downloads": 14479,
+    "favorites": 13,
+    "monthly_downloads": 8
+  },
+  "title": "ZAM Stats Exp",
+  "updated_at": 1415337794000,
+  "version": "1.0.7"
+}

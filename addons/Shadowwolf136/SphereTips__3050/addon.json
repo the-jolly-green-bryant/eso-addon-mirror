@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Shadowwolf136/SphereTips__3050",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shadowwolf136",
+  "canonical_id": "esoui:3050",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3050",
+  "deleted": false,
+  "directories": [
+    "SphereTips"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3050/",
+  "fingerprint": "b65a403c096a28406c78edeaeca056653bccebe506622346b5ae86eb3098cc5b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3050",
+  "source_url": "https://www.esoui.com/downloads/info3050-SphereTips.html",
+  "stats": {
+    "downloads": 2255,
+    "favorites": 3,
+    "monthly_downloads": 10
+  },
+  "title": "SphereTips",
+  "updated_at": 1619649216000,
+  "version": "0.3"
+}

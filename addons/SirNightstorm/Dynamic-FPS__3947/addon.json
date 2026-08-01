@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/SirNightstorm/Dynamic-FPS__3947",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SirNightstorm",
+  "canonical_id": "esoui:3947",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:3947",
+  "deleted": false,
+  "directories": [
+    "DynamicFPS"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3947/",
+  "fingerprint": "de35405b0144d61ba93ad1e40a394f0fd6f4b88075bedd9fddfad9cd1961da23",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13367.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13368.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3947",
+  "source_url": "https://www.esoui.com/downloads/info3947-DynamicFPS.html",
+  "stats": {
+    "downloads": 2229,
+    "favorites": 1,
+    "monthly_downloads": 29
+  },
+  "title": "Dynamic FPS",
+  "updated_at": 1724530154000,
+  "version": "0.1.2"
+}

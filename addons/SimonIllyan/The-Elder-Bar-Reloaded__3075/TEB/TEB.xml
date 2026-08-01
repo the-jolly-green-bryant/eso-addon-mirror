@@ -1,0 +1,51 @@
+<GuiXml>
+    <Controls>
+        <Control name="TEBXMLHeader" virtual = "true">
+            <Dimensions y="22" />
+            <Controls>
+                <Label name="$(parent)Label" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" modifyTextType="UPPERCASE">
+                    <Anchor point="LEFT" />
+                </Label>
+            </Controls>
+        </Control>
+        <!-- Tooltip -->
+        <TopLevelControl name="TEBTooltip" tier="HIGH" layer="CONTROLS" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="410" y="300" />
+            <Anchor point="TOPLEFT" />
+            <Controls>
+                <Backdrop name="$(parent)BG" alpha="1" edge="0" inherits="ZO_DefaultBackdrop" />
+                <Label name="$(parent)Left" font="ZoFontChat" text="">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                </Label>
+                <Label name="$(parent)Right" font="ZoFontChat" text="" horizontalAlignment="RIGHT">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+        <!-- Bar -->
+        <TopLevelControl name="TEBTop" tier="MEDIUM" layer="CONTROLS" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Anchor point="TOP" relativePoint="TOP" relativeTo="GuiRoot" />
+            <OnMoveStart>
+                TEBTop:SetDrawLayer(3)
+            </OnMoveStart>
+            <OnMoveStop>
+                TEB.StopMovingBar(self)
+            </OnMoveStop>
+            <OnUpdate>
+                TEB.OnUpdate(self, time)
+            </OnUpdate>
+            <Controls>
+                <Backdrop name="$(parent)BG">
+                    <Anchor point="TOPLEFT" relativeTo="TEBTop" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="TEBTop" />
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+                </Backdrop>
+                <Backdrop name="$(parent)CombatBG">
+                    <Anchor point="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" />
+                    <Center file="TEB/Images/combat-center.dds" />
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+  </Controls>
+</GuiXml>

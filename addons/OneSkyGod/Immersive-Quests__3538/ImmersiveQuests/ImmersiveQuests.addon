@@ -1,0 +1,36 @@
+; See https://wiki.esoui.com/Addon_manifest_(.txt)_format for details on what these mean
+## Title: Immersive Quests
+## Author: Alianym, @OneSkyGod, Fadosch
+## Description: Immersive Quests Adds Lore Friendly Clues To the Quest Journal
+## Version: 0.0055
+## AddOnVersion: 00055
+## APIVersion: 101050
+## SavedVariables: ImmersiveQuestsVars
+## DependsOn: LibAddonMenu-2.0>=40
+
+; List of files to be included in this AddOn
+
+;Keybinds
+Bindings.xml
+
+;Language Files
+; en.lua is loaded as a fallback 'default' -> de (German), fr (French), ru (Russian), jp (Japanese)
+lang/en.lua
+lang/$(language).lua
+
+;Main
+ImmersiveQuests.lua
+Settings.lua
+
+QuestPopup.lua
+QuestPopup.xml
+
+; Mandatory Notice as Required by ZOS:
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

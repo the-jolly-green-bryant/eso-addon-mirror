@@ -1,0 +1,19 @@
+## APIVersion: 100033 100032
+## Title: FastRide
+## Author: Shadowfen
+## Version: 3.2.1
+## AddOnVersion: 33
+## Description: Help you to speed up your riding.
+## DependsOn: LibSFUtils LibAddonMenu-2.0
+## OptionalDependsOn: LibDebugLogger
+## SavedVariables: FastRideVars
+
+lang/en.lua
+lang/$(language).lua
+
+FastRide_Global.lua
+FastRide.lua
+Settings.lua
+bindings.xml
+FastRide.xml
+

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/skeeve71/Vapire-Status-Update-Greymoor__2639",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "skeeve71",
+  "canonical_id": "esoui:2639",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2639",
+  "deleted": false,
+  "directories": [
+    "VampireStatus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2639/",
+  "fingerprint": "c1b385d3955ff1483c9b7b9f2528fdff445a168e3e1b3fb2256b6603b269e0a3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8982.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2639",
+  "source_url": "https://www.esoui.com/downloads/info2639-VapireStatusUpdateGreymoor.html",
+  "stats": {
+    "downloads": 3433,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "Vapire Status Update Greymoor",
+  "updated_at": 1590660317000,
+  "version": "2.4.3"
+}

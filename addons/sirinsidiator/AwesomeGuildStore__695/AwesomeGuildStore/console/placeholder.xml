@@ -1,0 +1,9 @@
+<?xml-model href="http://sir.insidi.at/or/schema/esoui.xsd"?>
+<GuiXml>
+    <Controls>
+        <Texture name="AwesomeGuildStoreConsoleQRTemplate" textureFile="AwesomeGuildStore/images/patreon.dds" virtual="true">
+            <Dimensions x="256" y="256" />
+            <Anchor point="TOP" relativeTo="$(parent)EmptyRow" relativePoint="BOTTOM" offsetY="200" />
+        </Texture>
+    </Controls>
+</GuiXml>

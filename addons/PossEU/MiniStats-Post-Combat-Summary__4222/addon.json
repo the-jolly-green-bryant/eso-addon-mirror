@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/PossEU/MiniStats-Post-Combat-Summary__4222",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "PossEU",
+  "canonical_id": "esoui:4222",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4222",
+  "deleted": false,
+  "directories": [
+    "MiniStats"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4222/",
+  "fingerprint": "eb7bae052144028170a9ee2c365daafa1f8427e35140bf0641b6aef3dc398596",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4222",
+  "source_url": "https://www.esoui.com/downloads/info4222-MiniStatsPost-CombatSummary.html",
+  "stats": {
+    "downloads": 383,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "MiniStats \u2013 Post-Combat Summary",
+  "updated_at": 1755785807000,
+  "version": "0.1.0"
+}

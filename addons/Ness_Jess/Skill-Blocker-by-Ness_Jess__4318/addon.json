@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Ness_Jess/Skill-Blocker-by-Ness_Jess__4318",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ness_Jess",
+  "canonical_id": "esoui:4318",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4318",
+  "deleted": false,
+  "directories": [
+    "SkillBlocker_NJ"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4318/",
+  "fingerprint": "0308862db1dcd00bedddbe6b529c078f6a83f35a366814b0e8d81c3458e8322d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15065.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15066.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15067.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15068.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15064.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4318",
+  "source_url": "https://www.esoui.com/downloads/info4318-SkillBlockerbyNess_Jess.html",
+  "stats": {
+    "downloads": 743,
+    "favorites": 2,
+    "monthly_downloads": 43
+  },
+  "title": "Skill Blocker by Ness_Jess",
+  "updated_at": 1768342319000,
+  "version": "1.5"
+}

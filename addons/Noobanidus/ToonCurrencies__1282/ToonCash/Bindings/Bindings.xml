@@ -1,0 +1,18 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="ToonCash">
+      <Action name="TOON_CASH">
+        <Down>SLASH_COMMANDS["/tooncash"]()</Down>
+      </Action>
+      <Action name="TOON_CASH_AP">
+        <Down>SLASH_COMMANDS["/toonap"]()</Down>
+      </Action>
+      <Action name="TOON_CASH_TV">
+        <Down>SLASH_COMMANDS["/toontv"]()</Down>
+      </Action>
+      <Action name="TOON_CASH_WV">
+        <Down>SLASH_COMMANDS["/toonwv"]()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

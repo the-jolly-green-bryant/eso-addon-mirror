@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/NeiL978/CovetousCountess-ZH__3600",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "NeiL978",
+  "canonical_id": "esoui:3600",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3600",
+  "deleted": false,
+  "directories": [
+    "CovetousCountessZH"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3600/",
+  "fingerprint": "7a57df4cee7a5598cf4a125d8bec1b0f6a97941eb418323f87007e7d4f3e1d44",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3600",
+  "source_url": "https://www.esoui.com/downloads/info3600-CovetousCountessZH.html",
+  "stats": {
+    "downloads": 1598,
+    "favorites": 0,
+    "monthly_downloads": 14
+  },
+  "title": "CovetousCountess ZH",
+  "updated_at": 1679249250000,
+  "version": "1.0"
+}

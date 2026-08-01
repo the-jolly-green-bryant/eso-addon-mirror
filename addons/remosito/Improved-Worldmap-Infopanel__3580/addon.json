@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/remosito/Improved-Worldmap-Infopanel__3580",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "remosito",
+  "canonical_id": "esoui:3580",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3580",
+  "deleted": false,
+  "directories": [
+    "ImprovedWorldMapInfoPanel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3580/",
+  "fingerprint": "fee846dc97bb70d8bfab1d57ec88f50b78ef0080cd825ffe647818e22d30c3f6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12156.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12157.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3580",
+  "source_url": "https://www.esoui.com/downloads/info3580-ImprovedWorldmapInfopanel.html",
+  "stats": {
+    "downloads": 4172,
+    "favorites": 3,
+    "monthly_downloads": 27
+  },
+  "title": "Improved Worldmap Infopanel",
+  "updated_at": 1677508214000,
+  "version": "37.0"
+}

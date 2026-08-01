@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/StorybookTerror/Reveries-Emotes-and-Mementos__2726",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "StorybookTerror",
+  "canonical_id": "esoui:2726",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:2726",
+  "deleted": false,
+  "directories": [
+    "Reveries"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2726/",
+  "fingerprint": "7aa7131a926b48ced09562db019b35098a9e0a3a4e09653cb6b324cd71285088",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9483.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9485.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9484.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2726",
+  "source_url": "https://www.esoui.com/downloads/info2726-ReveriesEmotesandMementos.html",
+  "stats": {
+    "downloads": 8890,
+    "favorites": 10,
+    "monthly_downloads": 14
+  },
+  "title": "Reveries: Emotes and Mementos",
+  "updated_at": 1712542001000,
+  "version": "0.9"
+}

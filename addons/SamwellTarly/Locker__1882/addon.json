@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/SamwellTarly/Locker__1882",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SamwellTarly",
+  "canonical_id": "esoui:1882",
+  "category_id": "20",
+  "compatibility": [],
+  "content_id": "esoui:1882",
+  "deleted": false,
+  "directories": [
+    "Locker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1882/",
+  "fingerprint": "6c795f9822da58c8558bd024d3ed6f23d0525c264e4e0897fd0c9fe70ef996ed",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10455.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6373.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10452.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10453.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1882",
+  "source_url": "https://www.esoui.com/downloads/info1882-Locker.html",
+  "stats": {
+    "downloads": 5881,
+    "favorites": 12,
+    "monthly_downloads": 17
+  },
+  "title": "Locker",
+  "updated_at": 1623394674000,
+  "version": "3"
+}

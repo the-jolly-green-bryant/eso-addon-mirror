@@ -1,0 +1,13 @@
+## Title: Dynamic Potions
+## APIVersion: 101036
+## Author: Pur5uer
+## Version: 2.1.1
+
+
+lang/en.lua
+
+
+DynamicPotions.lua
+Functions.lua
+Hooks.lua
+TooltipHooks.lua

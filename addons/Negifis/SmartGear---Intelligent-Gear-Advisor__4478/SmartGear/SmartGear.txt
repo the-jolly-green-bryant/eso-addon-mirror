@@ -1,0 +1,20 @@
+## Title: SmartGear
+## Description: Intelligent gear recommendation system. Shows meta-set ratings, trait analysis, and equip recommendations directly in item tooltips.
+## Author: SmartGear Team
+## Version: 1.1.0
+## AddOnVersion: 110
+## APIVersion: 101042
+## SavedVariables: SmartGearSavedVars
+## OptionalDependsOn: LibAddonMenu-2.0
+
+SmartGear.lua
+PlayerProfile.lua
+Core.lua
+MetaData.lua
+SetStatMap.lua
+TooltipHook.lua
+UpgradeAlert.xml
+UpgradeAlert.lua
+Settings.lua
+Localization/en.lua
+Localization/ru.lua

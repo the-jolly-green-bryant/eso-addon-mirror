@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/Phuein/Junkee-2018__1947",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phuein",
+  "canonical_id": "esoui:1947",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1947",
+  "deleted": false,
+  "directories": [
+    "Junkee2018"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1947/",
+  "fingerprint": "fe75c295d636128a4b460f513687b5dcca3e105552a9fadc1bfabc5be3b89d9c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6572.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7969.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6667.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1947",
+  "source_url": "https://www.esoui.com/downloads/info1947-Junkee2018.html",
+  "stats": {
+    "downloads": 19014,
+    "favorites": 29,
+    "monthly_downloads": 25
+  },
+  "title": "Junkee 2018",
+  "updated_at": 1630026762000,
+  "version": "1.84"
+}

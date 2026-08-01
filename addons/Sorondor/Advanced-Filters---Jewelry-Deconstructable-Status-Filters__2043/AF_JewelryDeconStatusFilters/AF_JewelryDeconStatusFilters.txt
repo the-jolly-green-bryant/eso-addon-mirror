@@ -1,0 +1,8 @@
+## Title: Advanced Filters - Jewelry Deconstructable Status Filters
+## Author: Sorondor
+## Description: |cC5C29EJewelry|r >> |cC5C29E[ (Not) Deconstructable ]|r
+## Version: 1.0
+## APIVersion: 100023
+## DependsOn: AdvancedFilters
+
+AF_JewelryDeconStatusFilters.lua

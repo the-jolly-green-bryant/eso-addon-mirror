@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/RevenantSP1/KHC-Helmet-FOV-texture-package---REVENANTSP1-s-Light-Armour-Pack__1075",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "RevenantSP1",
+  "canonical_id": "esoui:1075",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1075",
+  "deleted": false,
+  "directories": [
+    "",
+    "fov"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1075/",
+  "fingerprint": "abd0d101e68c3aac9aaa0a6bec2fffdcd9398c83e40d0d2813446bf041ec66d0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3361.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3358.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3359.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3360.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1075",
+  "source_url": "https://www.esoui.com/downloads/info1075-KHCHelmetFOVtexturepackage-REVENANTSP1sLightArmourPack.html",
+  "stats": {
+    "downloads": 3063,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "KHC Helmet FOV texture package - REVENANTSP1's Light Armour Pack",
+  "updated_at": 1430640106000,
+  "version": "1.0.0"
+}

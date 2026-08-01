@@ -1,0 +1,116 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="GreedWindow" clampedToScreen="true" mouseEnabled="true" hidden="true" tier="HIGH">
+            <Dimensions x="820" y="620" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+
+            <Controls>
+                <Backdrop name="$(parent)Backdrop">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Control name="$(parent)TitleBar" mouseEnabled="true">
+                    <Dimensions x="820" y="48" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+
+                    <Controls>
+                        <Label name="$(parent)Title" font="ZoFontWinH2" text="GREED">
+                            <Dimensions x="74" y="34" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="18" offsetY="12" />
+                        </Label>
+
+                        <Label name="$(parent)Byline" font="ZoFontGameSmall" text="by Previsible">
+                            <Dimensions x="100" y="20" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Title" relativePoint="RIGHT" offsetX="3" offsetY="5" />
+                        </Label>
+
+                        <Button name="$(parent)Close" inherits="ZO_DefaultButton">
+                            <Dimensions x="18" y="18" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-16" offsetY="18" />
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Tabs">
+                    <Dimensions x="292" y="34" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="18" offsetY="50" />
+
+                    <Controls>
+                        <Button name="$(parent)Favorites" inherits="ZO_DefaultButton" hidden="true">
+                            <Dimensions x="84" y="30" />
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+                        </Button>
+
+                        <Button name="$(parent)Statistics" inherits="ZO_DefaultButton">
+                            <Dimensions x="84" y="30" />
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+                        </Button>
+
+                        <Button name="$(parent)Sets" inherits="ZO_DefaultButton">
+                            <Dimensions x="84" y="30" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Statistics" relativePoint="RIGHT" offsetX="8" />
+                        </Button>
+
+                        <Button name="$(parent)Options" inherits="ZO_DefaultButton">
+                            <Dimensions x="108" y="30" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Sets" relativePoint="RIGHT" offsetX="8" />
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)PageDropdown" inherits="ZO_ComboBox" mouseEnabled="true">
+                    <Dimensions x="160" y="30" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-150" offsetY="38" />
+                </Control>
+
+                <Button name="$(parent)NewPage" inherits="ZO_DefaultButton">
+                    <Dimensions x="112" y="30" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="38" />
+                </Button>
+
+                <Control name="$(parent)SlotHeader">
+                    <Dimensions x="480" y="22" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="330" offsetY="102" />
+                </Control>
+
+                <Control name="$(parent)Rows" mouseEnabled="true">
+                    <Dimensions x="790" y="426" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="128" />
+                </Control>
+
+                <Control name="$(parent)Footer">
+                    <Dimensions x="790" y="46" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="16" offsetY="-18" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="GreedLauncher" clampedToScreen="true" mouseEnabled="true" tier="HIGH">
+            <Dimensions x="72" y="72" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="80" offsetY="240" />
+
+            <Controls>
+                <Backdrop name="$(parent)Frame" mouseEnabled="true">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Texture name="$(parent)Icon" mouseEnabled="true">
+                    <Dimensions x="48" y="48" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="-6" />
+                </Texture>
+
+                <Texture name="$(parent)WeaponOverlay" mouseEnabled="true">
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Frame" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="-4" />
+                </Texture>
+
+                <Label name="$(parent)Glyph" hidden="true" mouseEnabled="false" />
+
+                <Label name="$(parent)Label" font="ZoFontGameSmall" text="GREED" horizontalAlignment="CENTER" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="64" y="16" />
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-3" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

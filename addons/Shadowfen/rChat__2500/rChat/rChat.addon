@@ -1,0 +1,39 @@
+﻿; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: rChat
+## Description: rChat overhauls the way text is displayed in the chatbox.
+      The rChat addon is based on the old pChat addon by DesertDwellers, Ayantir, and Puddy.
+      You must not have both rChat and pChat enabled for a single character.
+## Version: 2.0.5
+## AddOnVersion: 74
+## Author: Shadowfen
+## APIVersion: 101051 101050
+## SavedVariables: RCHAT_OPTS
+## DependsOn: LibSFUtils>=71 LibAddonMenu-2.0>=43 LibMediaProvider>=37
+## DependsOn: rChatData LibDebugLogger>=307
+## OptionalDependsOn: LibChatMessage>=118 LuiExtended LibSlashCommander
+
+lang/en.lua
+lang/$(language).lua
+
+fonts.lua
+
+; Global is always first!
+rChat_Global.lua
+
+ZOS_Rewrite-5.3.lua
+
+rChat_Tabs.lua
+rChat_Internals.lua
+rChat_AutomatedMsgs.lua
+settings/allSettings.lua
+rChat.lua
+rChat_Spam.lua
+rChat_Utils.lua
+rChat.xml
+copyDialog.xml
+bindings.xml

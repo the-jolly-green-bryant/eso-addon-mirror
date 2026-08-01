@@ -1,0 +1,47 @@
+<GuiXml>
+  <Animations>
+    <AnimationTimeline name="AUI_IncreasedPowerAnimation" playbackType="LOOP" loopCount="LOOP_INDEFINITELY" virtual="true">
+      <Animations>
+        <TextureAnimation cellsWide="4" cellsHigh="8" framerate="32"/>
+      </Animations>
+    </AnimationTimeline>
+    <AnimationTimeline name="AUI_LowStatWarnerAnimation_Low" playbackType="LOOP" loopCount="LOOP_INDEFINITELY" virtual="true">
+      <Animations>
+        <AlphaAnimation delay="0" duration="450" startAlpha="0" endAlpha="0.6"/>
+        <AlphaAnimation delay="450" duration="600" startAlpha="0.6" endAlpha="0"/>
+      </Animations>
+    </AnimationTimeline>	
+    <AnimationTimeline name="AUI_LowStatWarnerAnimation_Middle" playbackType="LOOP" loopCount="LOOP_INDEFINITELY" virtual="true">
+      <Animations>
+        <AlphaAnimation delay="0" duration="450" startAlpha="0" endAlpha="0.8"/>
+        <AlphaAnimation delay="450" duration="600" startAlpha="0.8" endAlpha="0"/>
+      </Animations>
+    </AnimationTimeline>
+    <AnimationTimeline name="AUI_PlayerWarnerAnimation_High" playbackType="LOOP" loopCount="LOOP_INDEFINITELY" virtual="true">
+      <Animations>
+        <AlphaAnimation delay="0" duration="450" startAlpha="0" endAlpha="0.9"/>
+        <AlphaAnimation delay="450" duration="600" startAlpha="0.9" endAlpha="0"/>
+      </Animations>
+    </AnimationTimeline>
+    <AnimationTimeline name="AUI_Fade">
+      <Animations>
+        <AlphaAnimation/>
+      </Animations>
+    </AnimationTimeline>
+  </Animations>
+  <Controls>
+    <TopLevelControl name="AUI_DebugWindow" tier="HIGH" clampedToScreen="true" mouseEnabled="true" hidden="true">
+      <Anchor point="CENTER" relativePoint="CENTER" offsetX="0" offsetY="-200" />
+      <Dimensions x="900" y="500"/>
+      <Controls>
+        <Backdrop name="$(parent)_Border" tier="MEDIUM" layer="OVERLAY">
+          <AnchorFill />
+          <Edge file="EsoUI/Art/WorldMap/worldmap_frame_edge.dds" edgeFileWidth="128" edgeFileHeight="16" />
+          <OnInitialized>
+            self:SetCenterColor(0, 0, 0, 0.5)
+          </OnInitialized>
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

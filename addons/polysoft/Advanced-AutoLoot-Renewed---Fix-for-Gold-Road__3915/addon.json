@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/polysoft/Advanced-AutoLoot-Renewed---Fix-for-Gold-Road__3915",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "polysoft",
+  "canonical_id": "esoui:3915",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3915",
+  "deleted": false,
+  "directories": [
+    "AdvancedAutoLoot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3915/",
+  "fingerprint": "8a5fe13c1cc67832b3a96c025cf174dd984252439f2e8c32ff646ba38f028307",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3915",
+  "source_url": "https://www.esoui.com/downloads/info3915-AdvancedAutoLootRenewed-FixforGoldRoad.html",
+  "stats": {
+    "downloads": 2574,
+    "favorites": 1,
+    "monthly_downloads": 29
+  },
+  "title": "Advanced AutoLoot Renewed - Fix for Gold Road",
+  "updated_at": 1719821811000,
+  "version": "1.9.9"
+}

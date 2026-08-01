@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Sven_re/Descendants-Display-Bar__3528",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sven_re",
+  "canonical_id": "esoui:3528",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3528",
+  "deleted": false,
+  "directories": [
+    "DescendantsDisplayBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3528/",
+  "fingerprint": "ee27c9c064de3f31999b2ebf89a6fac76ad90f18bc14e43bd01f36bd478db536",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12000.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3528",
+  "source_url": "https://www.esoui.com/downloads/info3528-DescendantsDisplayBar.html",
+  "stats": {
+    "downloads": 3497,
+    "favorites": 5,
+    "monthly_downloads": 19
+  },
+  "title": "Descendants Display Bar",
+  "updated_at": 1773047144000,
+  "version": "1.5.0"
+}

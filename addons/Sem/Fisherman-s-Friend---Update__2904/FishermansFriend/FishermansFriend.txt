@@ -1,0 +1,16 @@
+## Title: Fisherman's Friend
+## Description: Auto-equips the best bait at a fishing hole. |c000088Version 1.7|r
+## Author: |c0000C0Sem|r, GameDude
+## APIVersion: 101040
+## SavedVariables: FishermansFriendSavedVariables
+## Version: 1.7
+## AddOnVersion: 17
+## DependsOn: LibAddonMenu-2.0>=35
+## OptionalDependsOn: LibDebugLogger>=263
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+lang/en.lua
+lang/$(language).lua
+
+FishermansFriend.lua

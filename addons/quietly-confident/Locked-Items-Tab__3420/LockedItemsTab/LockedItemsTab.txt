@@ -1,0 +1,12 @@
+## Title: Locked Items Tab
+## Author: quietly-confident
+## Version: 1.3
+## AddOnVersion: 103
+## APIVersion: 101034
+## DependsOn: LibFilters-3.0>=335
+
+LockedItemsTab.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/ownedbynico/Simple-Llothis-Interrupt-Helper__2626",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ownedbynico",
+  "canonical_id": "esoui:2626",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2626",
+  "deleted": false,
+  "directories": [
+    "Llothis"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2626/",
+  "fingerprint": "9aa049e1b36d686c981fee8fce556469c297a0567e51d5e42fb97250dff5dde4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8948.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8949.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8950.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2626",
+  "source_url": "https://www.esoui.com/downloads/info2626-SimpleLlothisInterruptHelper.html",
+  "stats": {
+    "downloads": 12218,
+    "favorites": 8,
+    "monthly_downloads": 149
+  },
+  "title": "Simple Llothis Interrupt Helper",
+  "updated_at": 1590095334000,
+  "version": "beta"
+}

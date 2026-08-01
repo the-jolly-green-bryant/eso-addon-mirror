@@ -1,0 +1,15 @@
+## Title: Advanced Nameplates
+## Description: Provides Additional Options For Nameplates
+## Author: |cff9b15Sharlikran|r, Tierney11290 (Stratejacket), |c66ccffErian Kalil|r
+## APIVersion: 101045 101046
+## Version: 2.34
+## AddOnVersion: 234
+## SavedVariables: AdvancedNameplates_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=40 LibMediaProvider>=34
+## OptionalDependsOn: LibDebugLogger DebugLogViewer
+
+i18n\en.lua
+i18n\$(language).lua
+fontstrings_shared.xml
+backupfont_$(language).xml
+AdvancedNameplates.lua

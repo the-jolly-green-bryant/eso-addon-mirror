@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/peniku8/Auto-Message__2859",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "peniku8",
+  "canonical_id": "esoui:2859",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:2859",
+  "deleted": false,
+  "directories": [
+    "AutoMessage"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2859/",
+  "fingerprint": "7b7680514f2cda2b143124e4129411460acac596f5d67e8269106231c8563467",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10039.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2859",
+  "source_url": "https://www.esoui.com/downloads/info2859-AutoMessage.html",
+  "stats": {
+    "downloads": 6995,
+    "favorites": 7,
+    "monthly_downloads": 29
+  },
+  "title": "Auto Message",
+  "updated_at": 1719350203000,
+  "version": "1.4.12"
+}

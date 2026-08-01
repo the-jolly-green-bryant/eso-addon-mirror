@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/naxmaardur/Dialogue-Disabler__1592",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "naxmaardur",
+  "canonical_id": "esoui:1592",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1592",
+  "deleted": false,
+  "directories": [
+    "NoDialogue"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1592/",
+  "fingerprint": "d17aaa49959514268fcaef97432e4ae16fd196a1bcb6e830e1781330dd58dcc6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5205.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1592",
+  "source_url": "https://www.esoui.com/downloads/info1592-DialogueDisabler.html",
+  "stats": {
+    "downloads": 5369,
+    "favorites": 6,
+    "monthly_downloads": 16
+  },
+  "title": "Dialogue Disabler",
+  "updated_at": 1507793938000,
+  "version": "1.2"
+}

@@ -1,0 +1,8 @@
+## Title: Provisioning Watcher
+## Author: Sara
+## Version: 1.0
+## APIVersion: 101049
+## Description: Displays a countdown for your provisioning buff and warns when it expires.
+## SavedVariables: ProvisioningWatcherSavedVars
+
+ProvisioningWatcher.lua

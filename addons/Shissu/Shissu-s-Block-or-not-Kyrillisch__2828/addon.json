@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Shissu/Shissu-s-Block-or-not-Kyrillisch__2828",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shissu",
+  "canonical_id": "esoui:2828",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2828",
+  "deleted": false,
+  "directories": [
+    "ShissuBlockOrNotKyrillisch",
+    "ShissuFramework"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2828/",
+  "fingerprint": "5fb348d6855ec298d4c588afa18935193953d44a7e5f48df3f40ecbdbf3458ca",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9711.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9710.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9708.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2828",
+  "source_url": "https://www.esoui.com/downloads/info2828-ShissusBlockornotKyrillisch.html",
+  "stats": {
+    "downloads": 4202,
+    "favorites": 5,
+    "monthly_downloads": 13
+  },
+  "title": "Shissu's Block or not Kyrillisch",
+  "updated_at": 1608408719000,
+  "version": "1.1.2"
+}

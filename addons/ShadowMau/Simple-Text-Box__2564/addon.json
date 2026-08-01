@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/ShadowMau/Simple-Text-Box__2564",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ShadowMau",
+  "canonical_id": "esoui:2564",
+  "category_id": "155",
+  "compatibility": [],
+  "content_id": "esoui:2564",
+  "deleted": false,
+  "directories": [
+    "SimpleBox"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2564/",
+  "fingerprint": "b05ce803ef8da2934807d0b88e4092fd9428d8e439ce5f7683556f82a2a03991",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8758.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2564",
+  "source_url": "https://www.esoui.com/downloads/info2564-SimpleTextBox.html",
+  "stats": {
+    "downloads": 3133,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "Simple Text Box",
+  "updated_at": 1584083426000,
+  "version": "1.0"
+}

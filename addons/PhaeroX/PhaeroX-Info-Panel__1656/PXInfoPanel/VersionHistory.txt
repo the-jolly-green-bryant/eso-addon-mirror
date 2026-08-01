@@ -1,0 +1,213 @@
+V1.0.17
+- Now depends on LibPrice. Hopefully this fixes recently reported issues with Arkadius Trade Tools.
+- Improvements to survey information.
+- Took out last guild automation parts.
+
+V1.0.16
+- Added option to show current time spent in zone.
+- Fixed issues with survey time calculations.
+
+V1.0.15
+- Removed experimental guild bank automation code.
+- Added fishing stats as an option to display.
+- Fixed survey bug.
+- Color coding enlightened pool orange when above 800k and red when above 1 mill.
+
+V1.0.14
+- No longer storing items in guild bank as this was experimental code.
+- Added stats to survey count in zone to make it more interesting to do those many surveys :)
+
+V1.0.13
+- API Bump to Elsweyr
+- Added Survey counter.
+- Made LibAddonMenu-2.0 an external dependency.
+
+V1.0.12
+- API Bump to Wrathstone
+- Improvements to pricing throughout. Support for Arkadius' Trade Tools.
+
+V1.0.11
+- API Bump to Murkmire
+
+V1.0.10
+- Showing best loot notifications is now its own setting that can be switched on and off as previously intended.
+
+V1.0.9
+- Now correctly iterating quests, and as a result, writ display is now accurate on login, quest log full and upon delivery!
+
+V1.0.8
+- API Bump to Wolfhunter
+- Minor visual improvements to research indicators.
+
+V1.0.7
+- The way that Research was being updated was causing lag because of too many API calls too quickly. This has been greatly optimized. Expect more visual improvements to the research part in the coming versions.
+
+V1.0.6
+- Added a new feature to monitor your research including the new Jewelry crafting line. Look for the new Monitor Research section under settings.
+- Removed BiS loot notification as it is not current and longer accurate.
+
+V1.0.5
+- Updated LibAddonMenu to latest version.
+
+V1.0.4
+- Support for Jewelry Crafting!
+- Fixed Guildbank Automation bug.
+
+V1.0.3
+- Removed debugging information and re-enabled buying from Vendor. For some reason the code had reverted to having that line commented out.
+
+V1.0.2
+- Fixed Guild Automation bug.
+- Now marking partially completed writs yellow. Thanks to Jurreq for the request.
+
+V1.0.1
+- Guild Automation now formats the money amount transferred.
+- Fixed another bug in the part of the code that determines if writs are done or not. Hopefully that is the last of the bugs that surfaced for Provisioning bugs!
+
+V1.0.0
+- Addon now has its own GitHub repository at https://github.com/HemSoft/PXInfoPanel
+- Fixed a logic issue with Guildbank Automation.
+
+V0.0.35
+- Overhaul to the master writ tracking. The issues with sometimes thinking the provisioning writ being done when it is not, should be fixed now. Had a chance to clean up some unneeded code as well.
+
+V0.0.34
+- Fixed Vendor Automation not listening to the correct event. Also improved the debugging information to chat in order to troubleshoot if needed. Thanks Jurreq for reporting the issue.
+
+V0.0.33
+- API bump for Summerset.
+- Added a couple of specialized features:
+  - Vendor automation. This section is intended to automate the purchasing of style items such as Molybdenum, Bone, etc. and runes from the ESO ingame vendor. You set the amount you want of each in your inventory, the price per unit max, the max gold you want to spend in total per session, and the addon will take care of the rest. Let's say you want to always have 25 of each inventory. Then lets say you have 21 Molybdenum, this addon will buy 4 Molybdenum and move on to the next. It will not got above the set spending limits per visit. Use this with caution and at your own risk. This was made to avoid the tedious task of buying a couple hundred style materials manually. This feature is disabled by default.
+  - Guildbank automation. Here you can automate depositing or withdrawing money from a set guildbank. You set the money you want to have on your character, say 50k, and if you have above that on your character when you interact with the set guildbank, you will deposit the amount above 50k, and vice versa if you are below 50k, you will withdraw from the guild bank, up until you hold 50k on your character. This feature is disabled by default.
+
+V0.0.32
+- Brought back the dividerline that was taken out earlier, and made it optional to display it from the settings menu.
+
+V0.0.31
+- Now only showing achievement criterias that are not done when showing achievement progress that has multiple steps (criteria) that need to be completed.
+
+V0.0.30
+- Improved achievement tracking even more, by showing detailed progress in chat for each achievement criteria when an update occurs.
+
+V0.0.29
+- Improved the achievement tracking. When you make progress on achievements with more than one criteria, they will now be shown in the chat windows as well!
+- Removed the divider lines in the info panel window by popular request.
+
+V0.0.28
+- Dragon Bones version bump.
+- Fix for provisioning writs. Some (most) provisioning writs showed up as incomplete, although they were done.
+
+V0.0.27
+- API bump for Clockwork City.
+- Split some of the large settings functions into its own file. No effect to the end user.
+- Added some experimental chat logging when in top 100 in PVP campaign to see how much AP there is to the next and then previous player, and whether or not you are catching up.
+
+V0.0.26
+- API bump for Horns of the Reach. Note that the BiS notifications are not going to be accurate for the next DLC as some of the traits are being reworked and re-balanced. Once the DLC is released, I will work with Gilliam to come up with BiS notifications that are more accurate.
+- Moved PVP settings to top level as opposed to being embedded into notify section.
+- Fixed bug that prevented saving the setting to show achievement information to the chat window.
+- Reworked the monitoring of Ancestor Silk, Rubedite Ore, etc. As a result, there is no longer any lag when this feature is enabled.
+- Also reworked the custom monitoring
+
+V0.0.25
+- Added an option to display the last loot in the chat window. Thanks to digitalellis for the suggestion.
+- Added an option to display total gold made and gold made a minute to the chat window.
+- Added an option to display trait with last loot (both window and chat if enabled). Thanks to Daniel for the suggestion.
+- Added an option that lets you see progress you are making to any acehievement. This can be useful in a number of ways. It can help you track if you're pursuing an achievement, but it can also make you aware of an achievement you may not be aware of. For instance, you just killed a flame atronach, and the addon will tell you that you made progress on the Daedra Slayer achievement.
+
+V0.0.24
+- Cleaned up settings and created three major setting groups.
+- Added different types of PVP information to display. Like AP gained during your session and AP/minute etc.
+- Removed the LibAddonMenu-2.0.txt file that could cause problems loading the standalone version.
+
+V0.0.23
+- Added "Loot Lines" setting to display the last n number of looted items.
+- When you pick up recipes you don't know, it will be indicated on all looting information.
+- Reworked the armor BiS loot monitoring and added weapons on top of armor monitoring. Thanks to Gilliam The Rogue for helping with this.
+
+V0.0.22
+- Added stack count to loot display and notifications. Whenever you loot something you'll be able to see your total stack count of that item.
+
+V0.0.21
+- New setting to control whether or not you want to see what other people in your group are looting.
+- New setting to control whether or not you want sound, when you are being notified about loot over a certain value.
+
+V0.0.20
+- Fixed a logic bug for the 'Hide Info Panel when using Inventory etc.' setting. The logic was reversed.
+- Did some minor cleanup of the code and removed unused variables etc.
+- Fixed Level progression display for non CP players.
+
+V0.0.19
+- Now you'll be able to see if deconstructing items at a crafting station is worth it. Info Panel will now give you real time gold update when deconstructing items at a crafting station, taking into account the value of the materials you are spending, along with the materials you are gaining. That way you can follow and see whether or not you're gaining or losing gold deconstructing your hard earned materials.
+- Added a missing call to update the UI after receiving inventory updates. That means you'll be able to see the Master Merchant price add to your total gold when you take attachments from received mail. It was being updated before, it just wasn't updating until an other event updated the Total Gold Made information.
+
+V0.0.18
+- Making sure the flag to notify all writs are done is reset properly when addon is loaded.
+- Added a new feature to notify you when the correct traits are picked up on set items. Only works for armor for now. Weapons coming later.
+- Added setting to turn on or off hiding the info panel when interacting with your inventory, crafting stations, bank etc.
+
+V0.0.17
+- Fixed issue with center screen announcement on writ completion potentially going bananas if you are refining before turning writs in.
+
+V0.0.16
+- Fixed center screen announcements to be compatible with the new Morrowind API.
+
+V0.0.15
+- Custom monitoring of your inventory. You can now add up to 10 custom items to monitor from your inventory, such as Nirnroot, Heartwood, or whatever you like. The display will honor the condensed material info setting. If set, it will show all your custom inventory on one line. If not set, each custom inventory item you monitor will be on its own line. Please note that only inventory that matches your string from the beginning of the string will work. Example: 'wood' does not match 'Heartwood', but 'Heart' matches 'Heartwood'. This is to control the matching better.
+- The achievement info line will now show you the percentage of maximum available achievements you have currently earned. When a new big version of the game is released, new achievements are released as well. This will give you a good idea of where you are on the achievement front.
+- Added some logic that if you are not monitoring any inventory, it will not scan your inventory, thus improving the performance dramatically.
+
+V0.0.14
+- Added a "Show Window" button to the settings so you can rearrange the window. After hiding the window when an ingame menu is displayed, it became very difficult to move the window around.
+
+V0.0.13
+- Fixed a settings issue with Enlightened Pool not showing the correct text. Thanks to Dingodan for reporting that.
+- Also thanks to Dingodan for the new German translation!
+
+V0.0.12
+- Changed showing date and time, to just show time, and now showing it formatted.
+- The Info Panel now fades away when you are in inventory, interacting with a crafting station etc. Thanks to hagermanj for this suggestion.
+
+V0.0.11
+- Cleaned up settings to be a little more clear and divided by headers.
+- Started the work to localize all strings into separate localized files.
+- Fixed Level Progress so that it will display right away, and not wait until your first XP gain.
+- Added backdrop that you can contrlol the transparency on from the settings.
+- Fixed the scaling in the settings, which wasn't working before.
+
+V0.0.10
+- Added option to display your current level/experience progress.
+- Added option to display your "grind status" estimating how long until you level up.
+
+V0.0.9
+- You now have the option to condense the 4 material inventory lines into one, saving valuable screen real estate.
+- You also have the option to condense the 6 writ information lines into one. If you do, the line will say BCWAEP - short for Blacksmithing, Clothing, Woodworking, Alchemy, Enchanting, and Provisioning. The line will only show if you have picked up any writs, and if they are not done, they are color coded red. If they are done, they are color coded green. Once all writs are done, a notification will tell you it is time to turn them in!
+- Also shortened the loot lines, by removing the player name, if it is you looting the item, thus saving valuable horizontal line space.
+
+V0.0.8
+- Added the functionality of the PXWritStatus addon into this one, and made it optional to display the status of your writs. As always, use the settings to control what to display and not to display.
+
+V0.0.7
+- Fixed bug when MasterMerchant wasn't installed. If MasterMerchant isn't installed the vendor price is listed, which is vastly below market value. So it is definitely preferred to have MasterMerchant installed, to get a much better sense of the looted value.
+- Fixed bug that was preventing master writ vouchers to be displayed if you opted in to display that.
+
+V0.0.6
+- Added option to notify and display detailed information on the last lore book found.
+- Added option to not only display the best loot, but to include 2nd to 5th best loot. This is set to false by default, so you need to go into settings if you're interested in seeing your top 1-n loot.
+- Small bug fixes.
+
+V0.0.5
+- Fixed one more issue related to displaying best loot.
+
+V0.0.4
+- Per user request, you are now able to fully customize what information is being displayed in the info panel. Use the addon settings to customize what you like to display.
+
+V0.0.3
+- Another bug related to best loot display fixed.
+
+V0.0.2
+- Fixed a bug where the best loot was being set in error to a lower number.
+- Made it configurable as to when to notify you above loot. You can now configure it to a gold value, or disable it by setting the value to -1. Default is set to 1k gold.
+
+V0.0.1
+- Initial version.

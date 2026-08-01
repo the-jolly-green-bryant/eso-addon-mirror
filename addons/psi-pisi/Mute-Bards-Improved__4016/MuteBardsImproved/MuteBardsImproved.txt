@@ -1,0 +1,15 @@
+## Title: Mute Bards Improved
+## Description: Mute the annoying bards in the given subzones (like cities) while still keeping the Tales of Tribute sound effects on. Type /mbi to open the settings, where you can add or remove zones. 
+## APIVersion: 101046
+## SavedVariables: MuteBardsImproved_Settings
+## DependsOn: LibAddonMenu-2.0>=37
+## Author: @psi-pisi
+## Version: 1.0.5
+## AddOnVersion: 1
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the
+## United States and/or other countries. All rights reserved.
+
+MuteBardsImproved.lua
+MuteBardsOptions.lua

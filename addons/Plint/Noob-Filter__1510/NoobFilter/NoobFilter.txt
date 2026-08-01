@@ -1,0 +1,5 @@
+## Title NoobFilter by Plintkabouter
+## APIVersion 100030
+## SavedVariables: NoobFilterSavedVariables
+
+NoobFilter.lua

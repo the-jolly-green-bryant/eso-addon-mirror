@@ -1,0 +1,268 @@
+<GuiXml>
+    <Controls>
+        <Control name="SK_ComboBox" tier="HIGH" mouseEnabled="true" virtual="true">
+            <Dimensions x="210" y="32" />
+            <OnInitialized>
+                ZO_ComboBox:New(self)
+            </OnInitialized>
+            <OnMouseUp>
+                ZO_ComboBoxDropdown_Keyboard.OnClicked(self, button, upInside)
+            </OnMouseUp>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" tier="HIGH">
+                    <AnchorFill />
+                </Backdrop>
+                <Label name="$(parent)SelectedItemText" layer="1" font="ZoFontEditChat" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+                    <Anchor point="TOPLEFT" offsetX="8" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-20" />
+                </Label>
+                <Button name="$(parent)OpenDropdown" inherits="ZO_DropdownButton">
+                    <Dimensions x="16" y="16" />
+                    <Anchor point="RIGHT" offsetX="-3" />
+                    <OnClicked>
+                        ZO_ComboBoxDropdown_Keyboard.OnClicked(self:GetParent(), button, true)
+                    </OnClicked>
+                </Button>
+                <Control name="$(parent)Dropdown" mouseEnabled="true" tier="HIGH" hidden="true">
+                    <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" layer="1" inherits="ZO_DefaultBackdrop">
+                            <AnchorFill />
+                        </Backdrop>
+                        <Control name="$(parent)Scroll" layer="2" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" offsetY="ZO_SCROLLABLE_COMBO_BOX_LIST_PADDING_Y" />
+                            <Anchor point="BOTTOMRIGHT" offsetY="-ZO_SCROLLABLE_COMBO_BOX_LIST_PADDING_Y" />
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+        <Control name="SK_EditBox" tier="HIGH" mouseEnabled="true" virtual="true">
+            <Dimensions x="252" y="32"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame">
+                    <AnchorFill />
+                </Backdrop>
+                <EditBox name="$(parent)Box" font="ZoFontEditChat" mouseEnabled="true"
+                     inherits="ZO_DefaultEditForBackdrop" color="6C6C6C">
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="3"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="-34" offsetY="-2"/>
+                </EditBox>
+            </Controls>
+        </Control>
+        <Control name="SK_LabeledEditBox" tier="HIGH" mouseEnabled="true" virtual="true">
+            <Dimensions x="322" y="32"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame">
+                    <Dimensions x="70" y="32"/>
+                    <Anchor point="TOPLEFT"/>
+                </Backdrop>
+                <EditBox name="$(parent)Box" font="ZoFontEditChat" mouseEnabled="true"
+                     inherits="ZO_DefaultEditForBackdrop" color="6C6C6C">
+                    <Dimensions x="60" y="32"/>
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="4" relativeTo="$(parent)BG"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-1" relativeTo="$(parent)BG" />
+                </EditBox>
+                <Label name="$(parent)Label" horizontalAlignment="CENTER" font="ZoFontGame" mouseEnabled="true">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)BG" offsetX="8" />
+                </Label>
+            </Controls>
+        </Control>
+        <Control name="SK_SearchEditBox" tier="HIGH" inherits="SK_EditBox" mouseEnabled="true" virtual="true">
+            <Dimensions x="224" y="32"/>
+            <Controls>
+                <Label name="$(parent)Placeholder" layer="0" color="6C6C6C" text="SI_SK_DIALOG_FIND_PLACEHOLDER" font="ZoFontEditChat">
+                    <Anchor point="LEFT" relativeTo="$(parent)Box" offsetY="-1" />
+                </Label>
+                <Button name="$(parent)Clean" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+                    <Anchor point="TOPRIGHT" offsetX="32" offsetY="-3" relativeTo="$(parent)Box" relativePoint="TOPRIGHT" />
+                    <Dimensions x="32" y="32" />
+                    <Textures
+                        normal="SwissKnife/textures/dialogues/icons/disable_up.dds"
+                        pressed="SwissKnife/textures/dialogues/icons/disable_down.dds"
+                        mouseOver="SwissKnife/textures/dialogues/icons/disable_over.dds"
+                        highlight="SwissKnife/textures/dialogues/icons/disable_over.dds"
+                        disabled="SwissKnife/textures/dialogues/icons/disable_up.dds"
+                    />
+                    <OnMouseEnter>
+                        InitializeTooltip(InformationTooltip, self, LEFT, 0, 1)
+                        SetTooltipText(InformationTooltip, GetString(SI_SK_DIALOG_CLEAN_FIELD))
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        SetTooltipText(InformationTooltip)
+                    </OnMouseExit>
+                    <OnMouseDown>
+                        self:GetParent():GetNamedChild("Box"):SetText("")
+                    </OnMouseDown>
+                </Button>
+            </Controls>
+        </Control>
+        <Control name="SK_Label" tier="HIGH" mouseEnabled="true" virtual="true">
+            <Controls>
+                <Label name="$(parent)Text" horizontalAlignment="CENTER" font="ZoFontWinT2">
+                    <Dimensions x="416" />
+                    <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" />
+                </Label>
+            </Controls>
+        </Control>
+        <Control name="SK_Checkbox" tier="HIGH" mouseEnabled="true" virtual="true">
+            <Dimensions x="510" />
+            <Controls>
+                <Button name="$(parent)CheckBox" inherits="ZO_GamepadCheckButton">
+                    <Anchor point="LEFT" />
+                    <Dimensions x="32" y="32" />
+                </Button>
+                <Label name="$(parent)Label" font="ZoFontGame" verticalAlignment="TOP" horizontalAlignment="LEFT"
+                       mouseEnabled="true" wrapMode="ELLIPSIS"
+                >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)CheckBox" relativePoint="TOPRIGHT" offsetX="0" offsetY="4" />
+                </Label>
+            </Controls>
+        </Control>
+        <Control name="SK_Dropdown" mouseEnabled="true" hidden="true" virtual="true">
+            <Dimensions x="510" y="26" />
+            <OnMouseEnter>
+                ZO_Options_OnMouseEnter(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                ZO_Options_OnMouseExit(self)
+            </OnMouseExit>
+            <Controls>
+                <Control name="$(parent)Dropdown" inherits="ZO_ComboBox">
+                    <Dimensions x="200" y="26" />
+                    <Anchor point="RIGHT" />
+                </Control>
+                <Label name="$(parent)Name" font="ZoFontWinH4" wrapMode="ELLIPSIS" >
+                    <Anchor point="LEFT" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)Dropdown" relativePoint="LEFT" />
+                </Label>
+            </Controls>
+        </Control>
+        <Control name="SK_Filters" mouseEnabled="true" virtual="true">
+            <Controls>
+                <Button name="$(parent)Collapse" tier="HIGH">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-10"/>
+                    <Dimensions x="16" y="32" />
+                    <Textures
+                        normal="SwissKnife/textures/gui/collapse.dds"
+                        pressed="SwissKnife/textures/gui/collapse.dds"
+                        highlight="SwissKnife/textures/gui/collapse.dds"
+                        mouseOver="SwissKnife/textures/gui/collapse.dds"
+                    />
+                </Button>
+                <Button name="$(parent)Expand" tier="HIGH">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-22"/>
+                    <Dimensions x="16" y="32" />
+                    <Textures
+                        normal="SwissKnife/textures/gui/expand.dds"
+                        pressed="SwissKnife/textures/gui/expand.dds"
+                        highlight="SwissKnife/textures/gui/expand.dds"
+                        mouseOver="SwissKnife/textures/gui/expand.dds"
+                    />
+                </Button>
+                <Texture name="$(parent)BG" color="000000" tier="HIGH">
+                    <AnchorFill />
+                </Texture>
+                <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Windows/Gamepad/gp_nav1_horDivider.dds">
+                    <Dimensions y="2" />
+                    <Anchor point="TOPLEFT" offsetY="-1" />
+                    <Anchor point="TOPRIGHT" offsetY="-1" />
+                </Texture>
+            </Controls>
+        </Control>
+        <Control name="SK_Apparel_Slot" hidden="true" virtual="true">
+            <AnchorFill />
+            <Dimensions x="52" y="52" />
+            <Controls>
+                <Texture name="$(parent)BG" color="FFFFFF" level="1" layer="0">
+                    <AnchorFill />
+                </Texture>
+                <Label name="$(parent)Condition" font="ZoFontGameSmall" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+                    <Dimensions x="50" y="10" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="7" offsetY="-8" />
+                </Label>
+            </Controls>
+        </Control>
+        <Control name="SK_Info_Slot" hidden="true" virtual="true">
+            <Dimensions x="40" y="40" />
+            <Controls>
+                <Label name="$(parent)Text" font="ZoFontWinT2" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+                    <Dimensions x="40" y="10" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="10" />
+                </Label>
+                <Texture name="$(parent)Icon" point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" hidden="true">
+                    <Anchor point="128" />
+                    <Dimensions x="36" y="36" />
+                </Texture>
+            </Controls>
+        </Control>
+        <Control name="SK_Skill_Slot" mouseEnabled="true" hidden="true" virtual="true">
+            <Dimensions x="32" y="32" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                <Texture name="$(parent)Icon" layer="OVERLAY" mouseEnabled="true">
+                    <AnchorFill />
+                    <TextureCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+            </Controls>
+        </Control>
+        <Control name="SK_Guild_Select" mouseEnabled="true" hidden="true" virtual="true">
+            <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-180" />
+            <Controls>
+                <Control name="$(parent)Header">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+                    <Dimensions y="26" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <Label name="$(parent)Name" font="ZoFontWinH3" wrapMode="ELLIPSIS" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="TOPLEFT" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" />
+                        </Label>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)List" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="33" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <Button name="$(parent)Guild1" inherits="ZO_DefaultTextButton" text="1">
+                            <Dimensions x="240" y="24" />
+                            <Anchor point="TOP" offsetY="8" />
+                        </Button>
+                        <Button name="$(parent)Guild2" inherits="ZO_DefaultTextButton" text="1">
+                            <Dimensions x="240" y="24" />
+                            <Anchor point="TOP" offsetY="40" />
+                        </Button>
+                        <Button name="$(parent)Guild3" inherits="ZO_DefaultTextButton" text="1">
+                            <Dimensions x="240" y="24" />
+                            <Anchor point="TOP" offsetY="72" />
+                        </Button>
+                        <Button name="$(parent)Guild4" inherits="ZO_DefaultTextButton" text="1">
+                            <Dimensions x="240" y="24" />
+                            <Anchor point="TOP" offsetY="104" />
+                        </Button>
+                        <Button name="$(parent)Guild5" inherits="ZO_DefaultTextButton" text="1">
+                            <Dimensions x="240" y="24" />
+                            <Anchor point="TOP" offsetY="136" />
+                        </Button>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+        <StatusBar name="SK_ProgressBar" inherits="ZO_ArrowStatusBarWithBG" virtual="true">
+            <Controls>
+                <Label name="$(parent)Progress" font="ZoFontWinH5" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="CENTER" verticalAlignment="CENTER" tier="HIGH" layer="OVERLAY" level="1">
+                    <Anchor point="CENTER" />
+                </Label>
+            </Controls>
+        </StatusBar>
+    </Controls>
+	<Animations>
+		<AnimationTimeline name="SK_Loop" playbackType="LOOP" loopCount="LOOP_INDEFINITELY">
+			<Animations>
+				<TextureAnimation cellsWide="64" cellsHigh="1" framerate="32"/>
+			</Animations>
+		</AnimationTimeline>
+	</Animations>
+</GuiXml>

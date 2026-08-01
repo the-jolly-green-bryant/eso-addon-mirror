@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Pawkette/LibAnimation-1.0__54",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Pawkette",
+  "canonical_id": "esoui:54",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:54",
+  "deleted": false,
+  "directories": [
+    "LibAnimation-1.0"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl54/",
+  "fingerprint": "b98754dead2bef134e47befb650185ba1b4d5c96e01cddeaf9e1f9c600a780b1",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "54",
+  "source_url": "https://www.esoui.com/downloads/info54-LibAnimation-1.0.html",
+  "stats": {
+    "downloads": 96929,
+    "favorites": 68,
+    "monthly_downloads": 1156
+  },
+  "title": "LibAnimation-1.0",
+  "updated_at": 1645114382000,
+  "version": "2.3"
+}

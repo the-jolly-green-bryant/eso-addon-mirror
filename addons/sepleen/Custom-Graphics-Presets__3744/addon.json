@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/sepleen/Custom-Graphics-Presets__3744",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sepleen",
+  "canonical_id": "esoui:3744",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3744",
+  "deleted": false,
+  "directories": [
+    "CustomGraphicsPresets"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3744/",
+  "fingerprint": "db87e0173f342c545ff5ea98a5b8abe65001509e4444e09d8703683fbcc7c593",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12673.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12674.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3744",
+  "source_url": "https://www.esoui.com/downloads/info3744-CustomGraphicsPresets.html",
+  "stats": {
+    "downloads": 1755,
+    "favorites": 1,
+    "monthly_downloads": 23
+  },
+  "title": "Custom Graphics Presets",
+  "updated_at": 1759267882000,
+  "version": "1.0.2"
+}

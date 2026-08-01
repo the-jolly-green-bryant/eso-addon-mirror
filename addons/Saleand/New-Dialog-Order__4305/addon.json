@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Saleand/New-Dialog-Order__4305",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Saleand",
+  "canonical_id": "esoui:4305",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4305",
+  "deleted": false,
+  "directories": [
+    "NewDialogOrder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4305/",
+  "fingerprint": "470f97834a98cf05f713473cc82e7803c929f97150a94cada37bffe6ad87b76c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14796.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14797.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14798.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14827.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14831.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16151.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4305",
+  "source_url": "https://www.esoui.com/downloads/info4305-NewDialogOrder.html",
+  "stats": {
+    "downloads": 761,
+    "favorites": 4,
+    "monthly_downloads": 30
+  },
+  "title": "New Dialog Order",
+  "updated_at": 1780087303000,
+  "version": "0.2.5"
+}

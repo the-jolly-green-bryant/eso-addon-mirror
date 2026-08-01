@@ -1,0 +1,13 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the
+; United States and/or other countries. All rights reserved. https://account.elderscrollsonline.com/add-on-terms
+
+## Title: |cd5a8ffRandomDungeonTimerCountdown|r
+## Description: Shows whether Daily Random Dungeon reward is available
+## Author: |cd5a8ffSimpsForBreda|r
+## Version: 0.69
+## APIVersion: 101036
+## SavedVariables: RandomDungeonTimerCountdownSavedVariables RandomDungeonTimerCountdownSavedVariablesChar
+
+RandomDungeonTimerCountdown.xml
+RandomDungeonTimerCountdown.lua

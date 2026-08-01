@@ -1,0 +1,26 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Tetris">
+            <Action name="TETRISLEFT">
+				<Down></Down>
+                <Up>Tetris.keyLeft()</Up>
+            </Action>
+            <Action name="TETRISRIGHT">
+				<Down></Down>
+                <Up>Tetris.keyRight()</Up>
+            </Action>
+            <Action name="TETRISROTATE">
+				<Down></Down>
+                <Up>Tetris.keyRotate()</Up>
+            </Action>
+            <Action name="TETRISROTATECOUNTER">
+				<Down></Down>
+                <Up>Tetris.keyRotateCounter()</Up>
+            </Action>
+            <Action name="TETRISSLAM">
+				<Down></Down>
+                <Up>Tetris.keySlam()</Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

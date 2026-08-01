@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Sharlikran/Master-Merchant-3.0__2753",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:2753",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2753",
+  "deleted": false,
+  "directories": [
+    "MasterMerchant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2753/",
+  "fingerprint": "28d656f312e0d9959288653cf5fbb1e9f80e9cd3dfaae42af12dcc122393f568",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10813.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10814.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9568.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2753",
+  "source_url": "https://www.esoui.com/downloads/info2753-MasterMerchant3.0.html",
+  "stats": {
+    "downloads": 3945566,
+    "favorites": 550,
+    "monthly_downloads": 56933
+  },
+  "title": "Master Merchant 3.0",
+  "updated_at": 1784422700000,
+  "version": "3.8.33"
+}

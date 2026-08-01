@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/psi-pisi/Zone-Dailies-Achievement-Tracker__4077",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "psi-pisi",
+  "canonical_id": "esoui:4077",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4077",
+  "deleted": false,
+  "directories": [
+    "ZoneDailiesAchievementTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4077/",
+  "fingerprint": "6af1c8a8e9daddae70162961520b81bb40d4cd1a0eae24119fc6ccd117cc1cc8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13937.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13938.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13909.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13910.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13908.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4077",
+  "source_url": "https://www.esoui.com/downloads/info4077-ZoneDailiesAchievementTracker.html",
+  "stats": {
+    "downloads": 2952,
+    "favorites": 12,
+    "monthly_downloads": 59
+  },
+  "title": "Zone Dailies Achievement Tracker",
+  "updated_at": 1750007239000,
+  "version": "1.0.5"
+}

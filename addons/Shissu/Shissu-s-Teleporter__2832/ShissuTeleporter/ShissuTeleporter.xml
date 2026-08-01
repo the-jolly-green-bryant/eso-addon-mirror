@@ -1,0 +1,113 @@
+<GuiXml>
+  <Controls>
+    <Label name="ShissuTeleporterRowLabel" font="ZoFontGame" wrapMode="ELLIPSIS" virtual="true"/>
+
+    <Control name="ShissuTeleporterRow" mouseEnabled="true" virtual="true">
+      <Dimensions x="120" y="30"/>
+      <Controls>
+        <Label name="$(parent)Name" inherits="ShissuTeleporterRowLabel" hidden="false" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="true">
+          <Anchor point="LEFT" />    
+          <Dimensions x="120" y="32"/>
+          <OnMouseUp>
+            ShissuTeleporterRowName_OnMouseUp(self, button, upInside)
+          </OnMouseUp>         
+          
+          <OnMouseEnter>
+            ShissuTeleporterRowEnter(self)
+          </OnMouseEnter>       
+          <OnMouseExit>
+            ShissuTeleporterRowExit(self)
+          </OnMouseExit> 
+        </Label> 
+      </Controls>
+    </Control>    
+
+    <TopLevelControl name="ShissuTeleporterAdvertising" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="330" y="174" />
+      <Anchor point="CENTER" offsetX="100" offsetY="100" />
+
+      <Controls>
+  		  <Label name="$(parent)_Version" font="$(ANTIQUE_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="RIGHT" text="Shissu's Guild Tools">
+  			  <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-66" offsetY="-0" />
+  		  </Label>
+
+        <Label name="$(parent)_Current" font="ZoFontChat" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Aktuell:">
+  			  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="PLEFT" offsetX="10" offsetY="50" />
+          <Dimensions x="120" />
+  		  </Label>    
+        <Label name="$(parent)_CurrentX" font="ZoFontChat" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="...">
+  			  <Anchor point="TOPRIGHT" relativeTo="$(parent)_Current" offsetX="170" offsetY="0" />
+          <Dimensions x="180" />
+  		  </Label>    
+
+        <Label name="$(parent)_Next" font="ZoFontChat" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Nächste:">
+  			  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="PLEFT" offsetX="10" offsetY="80" />
+          <Dimensions x="120" />
+  		  </Label>   
+        <Label name="$(parent)_NextX" font="ZoFontChat" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="...">
+  			  <Anchor point="TOPRIGHT" relativeTo="$(parent)_Next" offsetX="170" offsetY="0" />
+          <Dimensions x="180" />
+  		  </Label>   
+
+        <Label name="$(parent)_In" font="ZoFontChat" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Teleport in:">
+  			  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="PLEFT" offsetX="10" offsetY="110" />
+          <Dimensions x="120" />
+  		  </Label>   
+        <Label name="$(parent)_InX" font="ZoFontChat" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="...">
+  			  <Anchor point="TOPRIGHT" relativeTo="$(parent)_In" offsetX="170" offsetY="0" />
+          <Dimensions x="180" />
+  		  </Label>   
+
+      </Controls>
+    </TopLevelControl>
+          
+    <TopLevelControl name="ShissuTeleporter" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="330" y="500" />
+      <Anchor point="CENTER" offsetX="100" offsetY="100" />      
+
+      <Controls>
+  		  <Label name="$(parent)_Version" font="$(ANTIQUE_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="RIGHT" text="Shissu's Guild Tools">
+  			  <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-60" offsetY="-0" />
+  		  </Label>
+  
+        <Label name="$(parent)_Position" font="SF_MINIFONT" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Eldenwurz">
+  			  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="PLEFT" offsetX="30" offsetY="2" />
+  		  </Label>    
+
+        <Backdrop name="$(parent)_Filter" inherits="ZO_EditBackdrop">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Position" offsetX="0" offsetY="18" /> 
+          <Dimensions x="140" y="30" />
+  			  <Controls>
+            <EditBox name="$(parent)Text" inherits="ZO_DefaultEditForBackdrop"></EditBox>
+  			  </Controls>
+  		  </Backdrop>  
+      
+        <Label name="$(parent)_Legends" font="SF_MINIFONT" wrapMode="ELLIPSIS" verticalAlignment="RIGHT" text="dummy\n\ndummy">
+  			  <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+  		  </Label>
+        
+        
+        <Control name="$(parent)Headers">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Line" relativePoint="TOPLEFT" offsetX="0" offsetY="30"/>
+          <Anchor point="TOPRIGHT" offsetY="140"/>      
+          <Dimensions y="32"/>
+          
+          <Controls>
+            <Control name="$(parent)Name" inherits="ZO_SortHeader">
+              <Anchor point="TOPLEFT" offsetX="8"/>
+              <Dimensions x="100" y="32" /> 
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Name", "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+              </OnInitialized>              
+            </Control>            
+          </Controls> 
+        </Control>
+                            
+        <Control name="$(parent)List" inherits="ZO_ScrollList"> 
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Filter" relativePoint="BOTTOMLEFT" offsetY="3"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-180" offsetY="-32"/>
+        </Control>                                             
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

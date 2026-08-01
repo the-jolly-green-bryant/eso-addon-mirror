@@ -1,0 +1,11 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="UndauntedDailyQueuer">
+            <Action name="TOGGLE_UNDAUNTEDDAILYQUEUER">
+                <Down>
+                  UDQ.toggleUDQ()
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

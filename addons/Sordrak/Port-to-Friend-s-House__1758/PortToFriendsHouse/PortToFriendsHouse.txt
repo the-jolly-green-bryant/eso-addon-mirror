@@ -1,0 +1,34 @@
+## Title: PortToFriendsHouse
+## APIVersion: 101047
+## AddOnVersion: 124
+## Version: 2.5.46
+## SavedVariables: PortToFriendsHouseVars
+## Author: @s0rdrak (PC / EU)
+## Description: This addon lets you port to a specific house. Thanks to: @Neltje, @Graham82
+## DependsOn: LibAddonMenu-2.0 LibCustomMenu
+
+#Lib/LibStub/LibStub.lua
+#Lib/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+#Lib/LibAddonMenu-2.0/controls/panel.lua
+#Lib/LibAddonMenu-2.0/controls/submenu.lua
+#Lib/LibAddonMenu-2.0/controls/button.lua
+#Lib/LibAddonMenu-2.0/controls/checkbox.lua
+#Lib/LibAddonMenu-2.0/controls/colorpicker.lua
+#Lib/LibAddonMenu-2.0/controls/custom.lua
+#Lib/LibAddonMenu-2.0/controls/description.lua
+#Lib/LibAddonMenu-2.0/controls/divider.lua
+#Lib/LibAddonMenu-2.0/controls/dropdown.lua
+#Lib/LibAddonMenu-2.0/controls/editbox.lua
+#Lib/LibAddonMenu-2.0/controls/header.lua
+#Lib/LibAddonMenu-2.0/controls/slider.lua
+#Lib/LibAddonMenu-2.0/controls/texture.lua
+#Lib/LibAddonMenu-2.0/controls/iconpicker.lua
+#Lib/LibCustomMenu/LibCustomMenu.lua
+
+
+PortToFriendsHouse.lua
+bindings.xml
+en.lua
+$(language).lua
+PortToFriendsHouseLibraryData.lua
+PortToFriendsHouseMenu.lua

@@ -1,0 +1,9 @@
+## APIVersion: 100018
+## Title: Writcraft
+## Description: Shows active Quest while crafting.
+## Version: 1.1.0
+## Author: haggen
+## License: CC-BY-NC-SA-4.0
+
+Writcraft.lua
+Bindings.xml

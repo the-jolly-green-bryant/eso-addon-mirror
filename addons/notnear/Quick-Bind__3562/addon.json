@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/notnear/Quick-Bind__3562",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "notnear",
+  "canonical_id": "esoui:3562",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3562",
+  "deleted": false,
+  "directories": [
+    "NearQuickBind"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3562/",
+  "fingerprint": "ab6112016f80a2a35e5f16b1c1ba2939f5f3254549991cd933ad2605232e7e7e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12084.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3562",
+  "source_url": "https://www.esoui.com/downloads/info3562-QuickBind.html",
+  "stats": {
+    "downloads": 1844,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "Quick Bind",
+  "updated_at": 1679941444000,
+  "version": "1.0.1"
+}

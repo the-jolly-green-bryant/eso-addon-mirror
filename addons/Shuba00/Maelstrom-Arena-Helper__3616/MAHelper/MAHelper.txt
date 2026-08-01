@@ -1,0 +1,20 @@
+## Title: MAHelper
+## Version: 0.1.6
+## APIVersion: 101040
+	
+## Author: |c9684B1Shuba00|r
+## AddOnVersion: 0.1.6
+## SavedVariables: MAHelperSavedVariables
+## DependsOn: OdySupportIcons LibSimpleArrowModS LibAddonMenu-2.0>=30
+MAHelper.lua
+MAHelperMenu.lua
+MAHelper.xml
+Stages/S1.lua
+Stages/S2.lua
+Stages/S3.lua
+Stages/S4.lua
+Stages/S5.lua
+Stages/S6.lua
+Stages/S7.lua
+Stages/S8.lua
+Stages/S9.lua

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/sepleen/Custom-Beam-Tracker__3705",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sepleen",
+  "canonical_id": "esoui:3705",
+  "category_id": "166",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3705",
+  "deleted": false,
+  "directories": [
+    "CustomBeamTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3705/",
+  "fingerprint": "b32a75bc68e6089c28df7df33ca3132ef6df7d4abf9f6e816531eda63969cac2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12575.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12576.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12577.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3705",
+  "source_url": "https://www.esoui.com/downloads/info3705-CustomBeamTracker.html",
+  "stats": {
+    "downloads": 3416,
+    "favorites": 2,
+    "monthly_downloads": 30
+  },
+  "title": "Custom Beam Tracker",
+  "updated_at": 1692628854000,
+  "version": "1"
+}

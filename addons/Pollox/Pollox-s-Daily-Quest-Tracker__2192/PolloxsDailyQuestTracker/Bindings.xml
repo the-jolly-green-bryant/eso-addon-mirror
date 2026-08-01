@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<Category name="Pollox's Daily Quest Tracker">
+			<Action name="DTQ_TOGGLE_DISPLAY">
+				<Up>DQT.Main.toggleDisplay()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

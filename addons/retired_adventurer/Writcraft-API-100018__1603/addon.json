@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/retired_adventurer/Writcraft-API-100018__1603",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "retired_adventurer",
+  "canonical_id": "esoui:1603",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:1603",
+  "deleted": false,
+  "directories": [
+    "Writcraft"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1603/",
+  "fingerprint": "4f1b70c9daab2be78a9de37da71379971dc2983af4f4d1aabdea98da6cc60bc4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5257.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1603",
+  "source_url": "https://www.esoui.com/downloads/info1603-WritcraftAPI100018.html",
+  "stats": {
+    "downloads": 5554,
+    "favorites": 0,
+    "monthly_downloads": 15
+  },
+  "title": "Writcraft API 100018",
+  "updated_at": 1486696337000,
+  "version": "100018"
+}

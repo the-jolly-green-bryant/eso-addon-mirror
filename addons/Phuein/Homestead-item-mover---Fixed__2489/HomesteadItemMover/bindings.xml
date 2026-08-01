@@ -1,0 +1,55 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_HOUSING_EDITOR" allowFallthrough="false">
+		<Category name="Homestead item mover">
+			<Action name="HOMESTEAD_LOC_ROT_PRECISE_SELECT">
+				<Down>HomesteadItemMover_PreciseSelect()</Down>
+			</Action>
+
+			<Action name="HOMESTEAD_LOC_ROT_NUDGE_X_POSITIVE">
+				<Down>HomesteadItemMover_NudgeXPositive()</Down>
+			</Action>
+			<Action name="HOMESTEAD_LOC_ROT_NUDGE_X_NEGATIVE">
+				<Down>HomesteadItemMover_NudgeXNegative()</Down>
+			</Action>
+
+			<Action name="HOMESTEAD_LOC_ROT_NUDGE_Y_POSITIVE">
+				<Down>HomesteadItemMover_NudgeYPositive()</Down>
+			</Action>
+			<Action name="HOMESTEAD_LOC_ROT_NUDGE_Y_NEGATIVE">
+				<Down>HomesteadItemMover_NudgeYNegative()</Down>
+			</Action>
+			<Action name="HOMESTEAD_LOC_ROT_NUDGE_Z_POSITIVE">
+				<Down>HomesteadItemMover_NudgeZPositive()</Down>
+			</Action>
+			<Action name="HOMESTEAD_LOC_ROT_NUDGE_Z_NEGATIVE">
+				<Down>HomesteadItemMover_NudgeZNegative()</Down>
+			</Action>
+			<Action name="HOMESTEAD_LOC_ROT_NUDGE_MAGNITUDE_UP">
+				<Down>HomesteadItemMover_NudgeMagnitudeUp()</Down>
+			</Action>
+			<Action name="HOMESTEAD_LOC_ROT_NUDGE_MAGNITUDE_DOWN">
+				<Down>HomesteadItemMover_NudgeMagnitudeDown()</Down>
+			</Action>
+
+			<Action name="HOMESTEAD_LOC_ROT_CHANGE_MODE">
+				<Down>HomesteadItemMover_ChangeMode()</Down>
+			</Action>
+
+			<Action name="HOMESTEAD_LOC_ROT_RESET_ROTATION">
+				<Down>HomesteadItemMover_ResetRotation()</Down>
+			</Action>
+
+			<Action name="HOMESTEAD_LOC_ROT_COPY">
+				<Down>HomesteadItemMoverCopy()</Down>
+			</Action>
+
+			<Action name="HOMESTEAD_LOC_ROT_PASTE">
+				<Down>HomesteadItemMoverPaste()</Down>
+			</Action>
+
+			<!-- <Action name="HOMESTEAD_MULTIPLE_SELECTION">
+				<Down>HomesteadItemMoverPaste()</Down>
+			</Action> -->
+		</Category>
+	</Layer>
+</Bindings>

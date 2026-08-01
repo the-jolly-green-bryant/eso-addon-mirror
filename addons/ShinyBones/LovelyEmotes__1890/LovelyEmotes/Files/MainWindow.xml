@@ -1,0 +1,104 @@
+<GuiXml>
+	<Controls>
+
+		<TopLevelControl name="LE_MainWindowControl" clampedToScreen="true" tier="HIGH" mouseEnabled="true" movable="true" >
+			<Dimensions x="LE_Const_MainWindowBaseWidth" y="LE_Const_MainWindowBaseHeight" />
+
+			<OnHide>
+				LE_EmoteSelectionWindow.HideWindow()
+			</OnHide>
+
+			<OnMouseEnter>
+				LE_MainWindowControlBackground:SetEdgeColor(LOVELYEMOTES_COLOR_MAINWINDOW_HIGHLIGHTED:UnpackRGBA())
+				LE_MainWindowControlMinimizeButtonBackground:SetEdgeColor(LOVELYEMOTES_COLOR_MAINWINDOW_HIGHLIGHTED:UnpackRGBA())
+			</OnMouseEnter>
+
+			<OnMouseExit>
+				LE_MainWindowControlBackground:SetEdgeColor(LOVELYEMOTES_COLOR_MAINWINDOW_NORMAL:UnpackRGBA())
+				LE_MainWindowControlMinimizeButtonBackground:SetEdgeColor(LOVELYEMOTES_COLOR_MAINWINDOW_NORMAL:UnpackRGBA())
+			</OnMouseExit>
+
+			<Controls>
+				<Backdrop name="$(parent)Background" inherits="ZO_DefaultBackdrop" />
+
+				<Button name="$(parent)MinimizeButton" inherits="LE_ButtonBehaviorClickSoundTemplate" >
+					<Dimensions x="34" y="34" />
+					<Anchor point="TOPLEFT" />
+					<Textures
+						normal="esoui/art/help/help_tabicon_feedback_up.dds"
+						mouseOver="esoui/art/help/help_tabicon_feedback_over.dds"
+						pressed="esoui/art/help/help_tabicon_feedback_down.dds"
+						disabled="esoui/art/help/help_tabicon_feedback_up.dds"
+					/>
+
+					<OnClicked>
+						LovelyEmotes.MainWindow.SetMinimized(true, true)
+					</OnClicked>
+
+					<Controls>
+						<Backdrop name="$(parent)Background" inherits="ZO_DefaultBackdrop" />
+					</Controls>
+				</Button>
+
+				<Button name="$(parent)LockButton" inherits="LE_ButtonBehaviorClickSoundTemplate" >
+					<Dimensions x="18" y="18" />
+					<Anchor point="TOPRIGHT" />
+					<Textures
+						normal="esoui/art/miscellaneous/unlocked_up.dds"
+						mouseOver="esoui/art/miscellaneous/unlocked_over.dds"
+						pressed="esoui/art/miscellaneous/unlocked_down.dds"
+						disabled="esoui/art/miscellaneous/unlocked_up.dds"
+					/>
+
+					<OnClicked>
+						LovelyEmotes.MainWindow.SetWindowPositionsLocked(LE_MainWindowControl:IsMouseEnabled())
+					</OnClicked>
+				</Button>
+
+				<Control name="$(parent)Content" >
+					<Anchor point="TOPLEFT" offsetY="LE_Const_MainWindowBaseHeight" />
+					<Anchor point="BOTTOMRIGHT" />
+				</Control>
+
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="LE_MinimizedWindowControl" clampedToScreen="true" mouseEnabled="true" movable="true" >
+			<Dimensions x="64" y="50" />
+
+			<OnMouseEnter>
+				LE_MinimizedWindowControlBackground:SetEdgeColor(LOVELYEMOTES_COLOR_MAINWINDOW_HIGHLIGHTED:UnpackRGBA())
+			</OnMouseEnter>
+
+			<OnMouseExit>
+				LE_MinimizedWindowControlBackground:SetEdgeColor(LOVELYEMOTES_COLOR_MAINWINDOW_NORMAL:UnpackRGBA())
+			</OnMouseExit>
+
+			<Controls>
+				<Backdrop name="$(parent)Background" inherits="ZO_DefaultBackdrop" integralWrapping="true" >
+					<Anchor point="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" />
+				</Backdrop>
+
+				<Button name="$(parent)Button" inherits="LE_ButtonBehaviorClickSoundTemplate" >
+					<Dimensions x="40" y="40" />
+					<Anchor point="CENTER" />
+					<!--GetEmoteCategoryKeyboardIcons(5)-->
+					<Textures
+						normal="esoui/art/icons/emotes/keyboard/emotecategoryicon_entertain_up.dds"
+						mouseOver="esoui/art/icons/emotes/keyboard/emotecategoryicon_entertain_over.dds"
+						pressed="esoui/art/icons/emotes/keyboard/emotecategoryicon_entertain_down.dds"
+						disabled="esoui/art/icons/emotes/keyboard/emotecategoryicon_entertain_up.dds"
+					/>
+
+					<OnClicked>
+						LovelyEmotes.MainWindow.SetMinimized(false, true)
+					</OnClicked>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="LE_Invisible" />
+
+	</Controls>
+</GuiXml>

@@ -1,0 +1,20 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="SELAddonENCUI" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="130" y="36" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="350" offsetY="350" />
+            <OnMoveStop>
+                EncounterLogUIOnMoveStop()
+            </OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)_Backdrop" centerColor="cc8d0301" edgeColor="6c6c6c">
+                    <AnchorFill />
+                    <Edge edgeSize="2" />
+                </Backdrop>
+        	<Label name="$(parent)Label" width="130" height="34" font="ZoFontWinH4" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Logging On">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="6" offsetX="0" />
+        	</Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

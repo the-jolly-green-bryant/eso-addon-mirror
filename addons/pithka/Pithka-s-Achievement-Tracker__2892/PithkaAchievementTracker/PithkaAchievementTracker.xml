@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GuiXml>
+    <Animations>
+        <AnimationTimeline name="LabelPulseAnimation" playbackType="PING_PONG" loopCount="LOOP_INDEFINITELY">
+            <Animations>
+                <AlphaAnimation duration="500" startAlpha="1" endAlpha="0.5">
+                    <EasingFunction>
+                        return ZO_EaseOutQuadratic(progress)
+                    </EasingFunction>
+                </AlphaAnimation>
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+    <Controls>
+        <TopLevelControl name="PITHKA_GUI" mouseEnabled="true" movable="true" clampedToScreen="true" tier="LOW" hidden="true">
+            <Dimensions x="550" y="665" />
+            <Anchor point="CENTER" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" mouseEnabled="false" tier="LOW"/>            
+                
+                <Label name="$(parent)WindowTitle" font="ZoFontAnnounceMedium" text="Pithka's Achievement Tracker">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+                </Label>
+
+
+                <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="5" />
+                    <Textures   normal    ="EsoUI/Art/Buttons/closebutton_up.dds"
+                                pressed   ="EsoUI/Art/Buttons/closebutton_down.dds"
+                                mouseOver ="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+                                disabled  ="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+                    <OnClicked>
+                        PITHKA.toggleUI()
+                    </OnClicked>
+                </Button>
+
+                <!-- Nav Panel Container with Backdrop -->
+                <Control name="$(parent)NavPanel">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-12" offsetY="0" />
+                    <Dimensions x="50" y="180" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" mouseEnabled="false" tier="LOW"/>            
+                    </Controls>
+                </Control>
+            
+
+                
+                <!-- QR Container-->
+                 <Control name="$(parent)QRContainer">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="6" offsetY="-8" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="6" offsetY="7" />
+                    <Dimensions x="450" y="0" />
+                    <Controls>
+                        <!-- Background with distinct left/right sections -->
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" mouseEnabled="false" tier="LOW">
+                        
+                            <Anchor point="TOPLEFT" />
+                            <Anchor point="BOTTOMRIGHT" />
+                        </Backdrop>
+                    </Controls>
+                </Control>
+
+                <!-- JoinGroupContainer removed - Group Finder is now standalone -->
+
+            </Controls>
+        </TopLevelControl>
+
+        <Control name="PGFTableRow" mouseEnabled="true" virtual="true">
+            <Dimensions x="300" y="85" />
+            <Controls>
+
+
+                <!-- Main Card Container -->
+                <Control name="$(parent)CardContainer">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)BG" offsetX="10" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)BG" offsetX="-10" offsetY="-10" />
+                    <Controls>
+
+                        <!-- Left Content Container -->
+                        <Control name="$(parent)LeftContent">
+                            <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                            <Anchor point="BOTTOMLEFT" offsetX="0" offsetY="0" />
+                            <Dimensions x="220" y="0" />
+                            <Controls>
+                                <!-- Title -->
+                                <Label name="$(parent)Category" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="TOP" mouseEnabled="true">
+                                    <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                                    <Dimensions x="230" y="23" />
+                                </Label>
+
+                                <!-- Leader and Description Container -->
+                                <Control name="$(parent)InfoContainer">
+                                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Category" offsetX="0" offsetY="2" />
+                                    <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Category" offsetX="0" offsetY="2" />
+                                    <Controls>
+                                        <!-- First Line: Leader + Title -->
+                                        <Label name="$(parent)LeaderTitle" font="ZoFontGame" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" maxLineCount="1" verticalAlignment="CENTER">
+                                            <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                                            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+                                            <Dimensions x="250" y="20" />
+                                        </Label>
+                                    </Controls>
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                        <!-- Role Buttons Container -->
+                        <Control name="$(parent)RoleButtonsContainer">
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)LeftContent" offsetX="5" offsetY="0" />
+                            <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)LeftContent" offsetX="5" offsetY="0" />
+                            <Dimensions x="130" y="40" />
+                            <Controls>
+                                <!-- Tank Button -->
+                                <Button name="$(parent)TankButton" inherits="ZO_ButtonBehaviorClickSound">
+                                    <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                                    <Dimensions x="35" y="35" />
+                                    <OnClicked>
+                                        d("Tank button clicked")
+                                    </OnClicked>
+                                    <OnMouseEnter>
+                                        InitializeTooltip(InformationTooltip, self, TOP, 0, 0, BOTTOM)
+                                        SetTooltipText(InformationTooltip, "Join group as Tank")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        ClearTooltip(InformationTooltip)
+                                    </OnMouseExit>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Border" inherits="ZO_DefaultBackdrop" edgeFile="EsoUI/Art/ChatWindow/chatBorder.dds" edgeFileWidth="16" edgeFileHeight="16">
+                                            <Anchor point="TOPLEFT" offsetX="-2" offsetY="-2" />
+                                            <Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2" />
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon" textureFile="esoui/art/lfg/lfg_icon_tank.dds">
+                                            <Anchor point="CENTER" />
+                                            <Dimensions x="35" y="35" />
+                                        </Texture>
+                                        <Label name="$(parent)Count" font="ZoFontGameSmall" horizontalAlignment="CENTER" verticalAlignment="TOP">
+                                            <Anchor point="TOP" relativePoint="BOTTOM" offsetY="2" />
+                                            <Dimensions x="35" y="20" />
+                                        </Label>
+                                    </Controls>
+                                </Button>
+
+                                <!-- Healer Button -->
+                                <Button name="$(parent)HealerButton" inherits="ZO_ButtonBehaviorClickSound">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)TankButton" offsetX="5" offsetY="0" />
+                                    <Dimensions x="35" y="35" />
+                                    <OnClicked>
+                                        d("Healer button clicked")
+                                    </OnClicked>
+                                    <OnMouseEnter>
+                                        InitializeTooltip(InformationTooltip, self, TOP, 0, 0, BOTTOM)
+                                        SetTooltipText(InformationTooltip, "Join group as Healer")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        ClearTooltip(InformationTooltip)
+                                    </OnMouseExit>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Border" inherits="ZO_DefaultBackdrop" edgeFile="EsoUI/Art/ChatWindow/chatBorder.dds" edgeFileWidth="16" edgeFileHeight="16">
+                                            <Anchor point="TOPLEFT" offsetX="-2" offsetY="-2" />
+                                            <Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2" />
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon" textureFile="esoui/art/lfg/lfg_icon_healer.dds">
+                                            <Anchor point="CENTER" />
+                                            <Dimensions x="35" y="35" />
+                                        </Texture>
+                                        <Label name="$(parent)Count" font="ZoFontGameSmall" horizontalAlignment="CENTER" verticalAlignment="TOP">
+                                            <Anchor point="TOP" relativePoint="BOTTOM" offsetY="2" />
+                                            <Dimensions x="35" y="20" />
+                                        </Label>
+                                    </Controls>
+                                </Button>
+
+                                <!-- DPS Button -->
+                                <Button name="$(parent)DPSButton" inherits="ZO_ButtonBehaviorClickSound">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)HealerButton" offsetX="5" offsetY="0" />
+                                    <Dimensions x="35" y="35" />
+                                    <OnClicked>
+                                        d("DPS button clicked")
+                                    </OnClicked>
+                                    <OnMouseEnter>
+                                        InitializeTooltip(InformationTooltip, self, TOP, 0, 0, BOTTOM)
+                                        SetTooltipText(InformationTooltip, "Join group as DPS")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        ClearTooltip(InformationTooltip)
+                                    </OnMouseExit>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Border" inherits="ZO_DefaultBackdrop" edgeFile="EsoUI/Art/ChatWindow/chatBorder.dds" edgeFileWidth="16" edgeFileHeight="16">
+                                            <Anchor point="TOPLEFT" offsetX="-2" offsetY="-2" />
+                                            <Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2" />
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon" textureFile="esoui/art/lfg/lfg_icon_dps.dds">
+                                            <Anchor point="CENTER" />
+                                            <Dimensions x="35" y="35" />
+                                        </Texture>
+                                        <Label name="$(parent)Count" font="ZoFontGameSmall" horizontalAlignment="CENTER" verticalAlignment="TOP">
+                                            <Anchor point="TOP" relativePoint="BOTTOM" offsetY="2" />
+                                            <Dimensions x="35" y="20" />
+                                        </Label>
+                                    </Controls>
+                                </Button>
+                                <!-- Group Filled Label -->
+                                <Label name="$(parent)GroupFilledLabel"
+                                       font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick"
+                                       color="FFFFFF"
+                                       horizontalAlignment="RIGHT"
+                                       verticalAlignment="CENTER"
+                                       wrapMode="ELLIPSIS"
+                                       mouseEnabled="false">
+                                    <Anchor point="LEFT" relativeTo="$(parent)DPSButton" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                                    <Dimensions x="50" y="35" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

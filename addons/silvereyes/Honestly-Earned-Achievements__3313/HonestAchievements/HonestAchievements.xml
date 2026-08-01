@@ -1,0 +1,20 @@
+<GuiXml>
+    <Controls>
+        <!-- Used to add the POINTS: # line to achievement tooltips -->
+        <Control name="HonestAchievementsTooltipPointsBase" virtual="true" resizeToFitDescendents="true">
+            <Controls>
+                <Control name="$(parent)Container" resizeToFitDescendents="true">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                    <Controls>
+                        <Label name="$(parent)Label" modifyTextType="UPPERCASE" font="ZoFontWinH5" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+                        </Label>
+                        <Label name="$(parent)Value" font="ZoFontWinH2">
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="1" />
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

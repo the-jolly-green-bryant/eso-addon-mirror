@@ -1,0 +1,10 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Toggle Group Frame">
+      <Action name="TOGGLE_GROUP_FRAME">
+        <Down>SLASH_COMMANDS["/togglegroupframe"]()</Down>
+        <DisplayName>SI_BINDING_NAME_TOGGLE_GROUP_FRAME</DisplayName>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

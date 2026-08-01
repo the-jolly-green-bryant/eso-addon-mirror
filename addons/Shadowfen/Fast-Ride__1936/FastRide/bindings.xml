@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="FastRide">
+      <Action name="FASTRIDE_FORCESWAP">
+        <Down>FastRide.SwapSkill(true)</Down>
+      </Action>
+      <Action name="FASTRIDE_FORCEBASE">
+        <Down>FastRide.SetToBase(true)</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

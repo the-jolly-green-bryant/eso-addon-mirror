@@ -1,0 +1,8 @@
+## Title: Mail Companion
+## Description: This addon is intended to help processing system mails (e.g. deliveries, purchases or sales) of the inbox more convenient without having to assign additional keys or modifying the code of the inbox. (Gamepad compatible)
+## Author: ShinyBones
+## Version: 5
+## AddOnVersion: 5
+## APIVersion: 101035
+
+Main.lua

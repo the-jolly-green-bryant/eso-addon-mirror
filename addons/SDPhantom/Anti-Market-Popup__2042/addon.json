@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/SDPhantom/Anti-Market-Popup__2042",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SDPhantom",
+  "canonical_id": "esoui:2042",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2042",
+  "deleted": false,
+  "directories": [
+    "AntiMarketPopup"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2042/",
+  "fingerprint": "a2df3d51d9adb861b19a575d569616e1b2f7c4f50e3811ecb2e50577a02b98f2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2042",
+  "source_url": "https://www.esoui.com/downloads/info2042-AntiMarketPopup.html",
+  "stats": {
+    "downloads": 3093,
+    "favorites": 9,
+    "monthly_downloads": 12
+  },
+  "title": "Anti Market Popup",
+  "updated_at": 1534376872000,
+  "version": "1.1"
+}

@@ -1,0 +1,56 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="LuckMeter" mouseEnabled="true" movable="true" clampedToScreen="true" editEnabled="true">
+			<Dimensions x="300" y="60" />
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+			
+			<OnMoveStop>
+				LMTR.SavePosition()
+			</OnMoveStop>
+	  
+			<Controls>		
+				<Backdrop name="$(parent)Bg" centerColor="55222222" edgeColor="FFCCCCCC">
+					<AnchorFill/>
+					<Edge edgeSize="1"/>
+				</Backdrop>
+				
+				<Control name="$(parent)Dps" inheritAlpha="false">
+					<Dimensions x="273" y="25" />
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER"/>
+					<Controls>
+						<Label name="$(parent)Label" font="ZoFontGame" inheritAlpha="true" color="FFFFFF"
+							wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text=" DPS: " >
+							<Dimensions x="71" y="25"/>
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+						</Label>
+						
+						<Label name="$(parent)LabelValue" font="ZoFontGameBold" inheritAlpha="true"
+						verticalAlignment="CENTER" horizontalAlignment="LEFT" text="--" color="FFFFFF">
+							<Dimensions x="200" y="25" />
+							<Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" />
+						</Label>
+					</Controls>
+				</Control>
+								
+				<Control name="$(parent)Luck" inheritAlpha="false">
+					<Dimensions x="273" y="25" />
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="30" />
+					<Controls>
+						<Label name="$(parent)Label" font="ZoFontGame" inheritAlpha="true" color="FFFFFF"
+							wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text=" Luck: " >
+							<Dimensions x="71" y="25"/>
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+						</Label>
+						
+						<Label name="$(parent)LabelValue" font="ZoFontGameBold" inheritAlpha="true"
+						verticalAlignment="CENTER" horizontalAlignment="LEFT" text="--" color="FFFFFF">
+							<Dimensions x="200" y="25" />
+							<Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" />
+						</Label>
+					</Controls>
+				</Control>
+				
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

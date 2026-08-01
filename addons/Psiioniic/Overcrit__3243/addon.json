@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Psiioniic/Overcrit__3243",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Psiioniic",
+  "canonical_id": "esoui:3243",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3243",
+  "deleted": false,
+  "directories": [
+    "Overcrit"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3243/",
+  "fingerprint": "44afd57653ba9e249dc9c7abeecf7e54fd1bbc1c443520e731b3eee48a985598",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11064.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11054.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3243",
+  "source_url": "https://www.esoui.com/downloads/info3243-Overcrit.html",
+  "stats": {
+    "downloads": 2854,
+    "favorites": 3,
+    "monthly_downloads": 22
+  },
+  "title": "Overcrit",
+  "updated_at": 1639752076000,
+  "version": "0.3.2"
+}

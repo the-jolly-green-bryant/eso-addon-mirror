@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Rhyono/Zgoo-High-Isle__1624",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rhyono",
+  "canonical_id": "esoui:1624",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:1624",
+  "deleted": false,
+  "directories": [
+    "Zgoo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1624/",
+  "fingerprint": "f932dba3b7d5ecd0530d17cc9c8ba4b414bccc667f7ad6644a0672a17c648373",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6129.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5337.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1624",
+  "source_url": "https://www.esoui.com/downloads/info1624-ZgooHighIsle.html",
+  "stats": {
+    "downloads": 28551,
+    "favorites": 15,
+    "monthly_downloads": 38
+  },
+  "title": "Zgoo High Isle",
+  "updated_at": 1747197014000,
+  "version": "1.34"
+}

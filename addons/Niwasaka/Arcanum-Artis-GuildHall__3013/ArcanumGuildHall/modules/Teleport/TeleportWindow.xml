@@ -1,0 +1,565 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ArcanumGuildHallTeleportWindow"
+                         hidden="true"
+                         movable="true"
+                         mouseEnabled="true"
+                         clampedToScreen="true">
+            <Dimensions x="640" y="580"/>
+            <Anchor point="CENTER"/>
+
+            <Controls>
+                <Backdrop name="$(parent)_Bg" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill/>
+                </Backdrop>
+
+                <Label name="$(parent)_Title"
+                       font="ZoFontWinH1"
+                       text="">
+                    <Anchor point="TOPLEFT" offsetX="14" offsetY="12"/>
+                </Label>
+
+                <Button name="$(parent)_ButtonClose" mouseEnabled="true">
+                    <Dimensions x="28" y="28"/>
+                    <Anchor point="TOPRIGHT" offsetX="-8" offsetY="8"/>
+                </Button>
+
+                <Button name="$(parent)_ButtonSettings" mouseEnabled="true">
+                    <Dimensions x="28" y="28"/>
+                    <Anchor point="RIGHT"
+                            relativeTo="$(parent)_ButtonClose"
+                            relativePoint="LEFT"
+                            offsetX="-6"
+                            offsetY="0"/>
+                    <Controls>
+                        <Texture name="$(parent)_Icon">
+                            <Dimensions x="28" y="28"/>
+                            <Anchor point="CENTER"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+
+                <Control name="$(parent)_TabsContainer">
+                    <Dimensions x="610" y="56"/>
+                    <Anchor point="TOPLEFT" offsetX="14" offsetY="44"/>
+
+                    <Controls>
+                        <Button name="$(parent)_TabNetwork" mouseEnabled="true">
+                            <Dimensions x="72" y="56"/>
+                            <Anchor point="LEFT" offsetX="0" offsetY="0"/>
+                            <Controls>
+                                <Texture name="$(parent)_Icon">
+                                    <Dimensions x="40" y="40"/>
+                                    <Anchor point="CENTER"/>
+                                </Texture>
+                                <Label name="$(parent)_Label"
+                                       font="ZoFontGameSmall"
+                                       text=""
+                                       hidden="true"
+                                       horizontalAlignment="CENTER">
+                                    <Dimensions x="1" y="1"/>
+                                    <Anchor point="CENTER"/>
+                                </Label>
+                            </Controls>
+                        </Button>
+
+                        <Button name="$(parent)_TabWayshrines" mouseEnabled="true">
+                            <Dimensions x="72" y="56"/>
+                            <Anchor point="LEFT"
+                                    relativeTo="$(parent)_TabNetwork"
+                                    relativePoint="RIGHT"
+                                    offsetX="8"/>
+                            <Controls>
+                                <Texture name="$(parent)_Icon">
+                                    <Dimensions x="40" y="40"/>
+                                    <Anchor point="CENTER"/>
+                                </Texture>
+                                <Label name="$(parent)_Label"
+                                       font="ZoFontGameSmall"
+                                       text=""
+                                       hidden="true"
+                                       horizontalAlignment="CENTER">
+                                    <Dimensions x="1" y="1"/>
+                                    <Anchor point="CENTER"/>
+                                </Label>
+                            </Controls>
+                        </Button>
+
+                        <Button name="$(parent)_TabUnknown" mouseEnabled="true">
+                            <Dimensions x="72" y="56"/>
+                            <Anchor point="LEFT"
+                                    relativeTo="$(parent)_TabWayshrines"
+                                    relativePoint="RIGHT"
+                                    offsetX="8"/>
+                            <Controls>
+                                <Texture name="$(parent)_Icon">
+                                    <Dimensions x="40" y="40"/>
+                                    <Anchor point="CENTER"/>
+                                </Texture>
+                                <Label name="$(parent)_Label"
+                                       font="ZoFontGameSmall"
+                                       text=""
+                                       hidden="true"
+                                       horizontalAlignment="CENTER">
+                                    <Dimensions x="1" y="1"/>
+                                    <Anchor point="CENTER"/>
+                                </Label>
+                            </Controls>
+                        </Button>
+
+                        <Button name="$(parent)_TabHouses" mouseEnabled="true">
+                            <Dimensions x="72" y="56"/>
+                            <Anchor point="LEFT"
+                                    relativeTo="$(parent)_TabUnknown"
+                                    relativePoint="RIGHT"
+                                    offsetX="8"/>
+                            <Controls>
+                                <Texture name="$(parent)_Icon">
+                                    <Dimensions x="40" y="40"/>
+                                    <Anchor point="CENTER"/>
+                                </Texture>
+                                <Label name="$(parent)_Label"
+                                       font="ZoFontGameSmall"
+                                       text=""
+                                       hidden="true"
+                                       horizontalAlignment="CENTER">
+                                    <Dimensions x="1" y="1"/>
+                                    <Anchor point="CENTER"/>
+                                </Label>
+                            </Controls>
+                        </Button>
+
+                        <Button name="$(parent)_TabGuildHouses" mouseEnabled="true" hidden="true">
+                            <Dimensions x="72" y="56"/>
+                            <Anchor point="LEFT"
+                                    relativeTo="$(parent)_TabHouses"
+                                    relativePoint="RIGHT"
+                                    offsetX="8"/>
+                            <Controls>
+                                <Texture name="$(parent)_Icon">
+                                    <Dimensions x="40" y="40"/>
+                                    <Anchor point="CENTER"/>
+                                </Texture>
+                                <Label name="$(parent)_Label"
+                                       font="ZoFontGameSmall"
+                                       text=""
+                                       hidden="true"
+                                       horizontalAlignment="CENTER">
+                                    <Dimensions x="1" y="1"/>
+                                    <Anchor point="CENTER"/>
+                                </Label>
+                            </Controls>
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)_SearchContainer" mouseEnabled="true">
+                    <Dimensions x="285" y="34"/>
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)_TabsContainer"
+                            relativePoint="BOTTOMLEFT"
+                            offsetX="0"
+                            offsetY="6"/>
+
+                    <Controls>
+                        <Backdrop name="$(parent)_Bg" inherits="ZO_DefaultBackdrop">
+                            <AnchorFill/>
+                        </Backdrop>
+
+                        <EditBox name="$(parent)_Box"
+                                 font="ZoFontGame"
+                                 multiLine="false"
+                                 mouseEnabled="true"
+                                 maxInputCharacters="100">
+                            <Dimensions x="255" y="22"/>
+                            <Anchor point="TOPLEFT" offsetX="10" offsetY="6"/>
+                            <OnMouseDown>
+                                self:TakeFocus()
+                            </OnMouseDown>
+                            <OnEnter>
+                                self:LoseFocus()
+                            </OnEnter>
+                            <OnEscape>
+                                self:LoseFocus()
+                            </OnEscape>
+                        </EditBox>
+
+                        <Label name="$(parent)_Placeholder"
+                               font="ZoFontGame"
+                               text=""
+                               horizontalAlignment="LEFT"
+                               verticalAlignment="CENTER">
+                            <Dimensions x="255" y="22"/>
+                            <Anchor point="TOPLEFT" offsetX="10" offsetY="6"/>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)_List" inherits="ZO_ScrollList">
+                    <Dimensions x="285" y="376"/>
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)_SearchContainer"
+                            relativePoint="BOTTOMLEFT"
+                            offsetX="0"
+                            offsetY="8"/>
+                </Control>
+
+                <Backdrop name="$(parent)_DetailsBg" inherits="ZO_DefaultBackdrop">
+                    <Dimensions x="315" y="376"/>
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)_List"
+                            relativePoint="TOPRIGHT"
+                            offsetX="12"
+                            offsetY="0"/>
+                </Backdrop>
+
+                <Control name="$(parent)_TopActions">
+                    <Dimensions x="315" y="24"/>
+                    <Anchor point="BOTTOMLEFT"
+                            relativeTo="$(parent)_DetailsBg"
+                            relativePoint="TOPLEFT"
+                            offsetX="0"
+                            offsetY="-8"/>
+
+                    <Controls>
+                        <Button name="$(parent)_ButtonRefresh" inherits="ZO_DefaultButton" text="">
+                            <Dimensions x="144" y="24"/>
+                            <Anchor point="TOPLEFT" offsetX="9" offsetY="0"/>
+                        </Button>
+
+                        <Button name="$(parent)_ButtonTeleport" inherits="ZO_DefaultButton" text="">
+                            <Dimensions x="144" y="24"/>
+                            <Anchor point="LEFT"
+                                    relativeTo="$(parent)_ButtonRefresh"
+                                    relativePoint="RIGHT"
+                                    offsetX="8"
+                                    offsetY="0"/>
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <Label name="$(parent)_DetailsTitle"
+                       font="ZoFontHeader2"
+                       text="">
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)_DetailsBg"
+                            relativePoint="TOPLEFT"
+                            offsetX="10"
+                            offsetY="8"/>
+                </Label>
+
+                <Label name="$(parent)_DetailsSubtitle"
+                       font="ZoFontGame"
+                       text="">
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)_DetailsTitle"
+                            relativePoint="BOTTOMLEFT"
+                            offsetX="0"
+                            offsetY="2"/>
+                </Label>
+
+                <Label name="$(parent)_FilterCategoryLabel"
+                       font="ZoFontGameBold"
+                       text="">
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)_DetailsSubtitle"
+                            relativePoint="BOTTOMLEFT"
+                            offsetX="0"
+                            offsetY="8"/>
+                </Label>
+
+                <Control name="$(parent)_FilterGrid">
+                    <Dimensions x="295" y="80"/>
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)_FilterCategoryLabel"
+                            relativePoint="BOTTOMLEFT"
+                            offsetX="0"
+                            offsetY="8"/>
+
+                    <Controls>
+                        <Button name="$(parent)_FilterCategoryAll" mouseEnabled="true">
+                            <Dimensions x="93" y="32"/>
+                            <Anchor point="TOPLEFT"/>
+                            <Controls>
+                                <Backdrop name="$(parent)_Bg">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)_Active" hidden="true">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)_Hover" hidden="true">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Texture name="$(parent)_Icon">
+                                    <Dimensions x="24" y="24"/>
+                                    <Anchor point="LEFT" offsetX="6"/>
+                                </Texture>
+                                <Label name="$(parent)_Label"
+                                       font="ZoFontGame"
+                                       text=""
+                                       horizontalAlignment="LEFT"
+                                       verticalAlignment="CENTER">
+                                    <Dimensions x="55" y="22"/>
+                                    <Anchor point="LEFT"
+                                            relativeTo="$(parent)_Icon"
+                                            relativePoint="RIGHT"
+                                            offsetX="5"/>
+                                </Label>
+                            </Controls>
+                        </Button>
+
+                        <Button name="$(parent)_FilterCategoryZone" mouseEnabled="true">
+                            <Dimensions x="93" y="32"/>
+                            <Anchor point="LEFT"
+                                    relativeTo="$(parent)_FilterCategoryAll"
+                                    relativePoint="RIGHT"
+                                    offsetX="8"/>
+                            <Controls>
+                                <Backdrop name="$(parent)_Bg">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)_Active" hidden="true">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)_Hover" hidden="true">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Texture name="$(parent)_Icon">
+                                    <Dimensions x="24" y="24"/>
+                                    <Anchor point="LEFT" offsetX="6"/>
+                                </Texture>
+                                <Label name="$(parent)_Label"
+                                       font="ZoFontGame"
+                                       text=""
+                                       horizontalAlignment="LEFT"
+                                       verticalAlignment="CENTER">
+                                    <Dimensions x="55" y="22"/>
+                                    <Anchor point="LEFT"
+                                            relativeTo="$(parent)_Icon"
+                                            relativePoint="RIGHT"
+                                            offsetX="5"/>
+                                </Label>
+                            </Controls>
+                        </Button>
+
+                        <Button name="$(parent)_FilterCategoryDungeon" mouseEnabled="true">
+                            <Dimensions x="93" y="32"/>
+                            <Anchor point="LEFT"
+                                    relativeTo="$(parent)_FilterCategoryZone"
+                                    relativePoint="RIGHT"
+                                    offsetX="8"/>
+                            <Controls>
+                                <Backdrop name="$(parent)_Bg">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)_Active" hidden="true">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)_Hover" hidden="true">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Texture name="$(parent)_Icon">
+                                    <Dimensions x="24" y="24"/>
+                                    <Anchor point="LEFT" offsetX="6"/>
+                                </Texture>
+                                <Label name="$(parent)_Label"
+                                       font="ZoFontGame"
+                                       text=""
+                                       horizontalAlignment="LEFT"
+                                       verticalAlignment="CENTER">
+                                    <Dimensions x="55" y="22"/>
+                                    <Anchor point="LEFT"
+                                            relativeTo="$(parent)_Icon"
+                                            relativePoint="RIGHT"
+                                            offsetX="5"/>
+                                </Label>
+                            </Controls>
+                        </Button>
+
+                        <Button name="$(parent)_FilterCategoryTrial" mouseEnabled="true">
+                            <Dimensions x="93" y="32"/>
+                            <Anchor point="TOPLEFT"
+                                    relativeTo="$(parent)_FilterCategoryAll"
+                                    relativePoint="BOTTOMLEFT"
+                                    offsetY="8"/>
+                            <Controls>
+                                <Backdrop name="$(parent)_Bg">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)_Active" hidden="true">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)_Hover" hidden="true">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Texture name="$(parent)_Icon">
+                                    <Dimensions x="24" y="24"/>
+                                    <Anchor point="LEFT" offsetX="6"/>
+                                </Texture>
+                                <Label name="$(parent)_Label"
+                                       font="ZoFontGame"
+                                       text=""
+                                       horizontalAlignment="LEFT"
+                                       verticalAlignment="CENTER">
+                                    <Dimensions x="55" y="22"/>
+                                    <Anchor point="LEFT"
+                                            relativeTo="$(parent)_Icon"
+                                            relativePoint="RIGHT"
+                                            offsetX="5"/>
+                                </Label>
+                            </Controls>
+                        </Button>
+
+                        <Button name="$(parent)_FilterCategoryArena" mouseEnabled="true">
+                            <Dimensions x="93" y="32"/>
+                            <Anchor point="LEFT"
+                                    relativeTo="$(parent)_FilterCategoryTrial"
+                                    relativePoint="RIGHT"
+                                    offsetX="8"/>
+                            <Controls>
+                                <Backdrop name="$(parent)_Bg">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)_Active" hidden="true">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)_Hover" hidden="true">
+                                    <AnchorFill/>
+                                </Backdrop>
+                                <Texture name="$(parent)_Icon">
+                                    <Dimensions x="24" y="24"/>
+                                    <Anchor point="LEFT" offsetX="6"/>
+                                </Texture>
+                                <Label name="$(parent)_Label"
+                                       font="ZoFontGame"
+                                       text=""
+                                       horizontalAlignment="LEFT"
+                                       verticalAlignment="CENTER">
+                                    <Dimensions x="55" y="22"/>
+                                    <Anchor point="LEFT"
+                                            relativeTo="$(parent)_Icon"
+                                            relativePoint="RIGHT"
+                                            offsetX="5"/>
+                                </Label>
+                            </Controls>
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <Backdrop name="$(parent)_DetailsPrimaryBg" inherits="ZO_DefaultBackdrop">
+                    <Dimensions x="295" y="70"/>
+                </Backdrop>
+
+                <Label name="$(parent)_DetailsZoneLabel"
+                       font="ZoFontGameSmall"
+                       text="">
+                </Label>
+
+                <Label name="$(parent)_DetailsZoneValue"
+                       font="ZoFontHeader2"
+                       text="">
+                    <Dimensions x="275" y="28"/>
+                </Label>
+
+                <Label name="$(parent)_DetailsAccountLabel"
+                       font="ZoFontGameSmall"
+                       text="">
+                </Label>
+
+                <Label name="$(parent)_DetailsAccountValue"
+                       font="ZoFontGame"
+                       text="">
+                    <Dimensions x="136" y="18"/>
+                </Label>
+
+                <Label name="$(parent)_DetailsSourceLabel"
+                       font="ZoFontGameSmall"
+                       text="">
+                </Label>
+
+                <Label name="$(parent)_DetailsSourceValue"
+                       font="ZoFontGame"
+                       text="">
+                    <Dimensions x="136" y="18"/>
+                </Label>
+
+                <Label name="$(parent)_DetailsCostLabel"
+                       font="ZoFontGameSmall"
+                       text="">
+                </Label>
+
+                <Label name="$(parent)_DetailsCostValue"
+                       font="ZoFontGame"
+                       text="">
+                    <Dimensions x="136" y="18"/>
+                </Label>
+
+                <Label name="$(parent)_LoadingLabel"
+                       font="ZoFontGameSmall"
+                       text=""
+                       hidden="true">
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)_DetailsBg"
+                            relativePoint="BOTTOMLEFT"
+                            offsetX="10"
+                            offsetY="10"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <Button name="ArcanumGuildHallTeleportScrollRow" virtual="true" mouseEnabled="true">
+            <Dimensions x="285" y="28"/>
+
+            <Controls>
+                <Backdrop name="$(parent)_Bg" hidden="true">
+                    <AnchorFill/>
+                </Backdrop>
+
+                <Backdrop name="$(parent)_Hover" hidden="true">
+                    <AnchorFill/>
+                </Backdrop>
+
+                <Texture name="$(parent)_FavoriteIcon" hidden="true">
+                    <Dimensions x="18" y="18"/>
+                    <Anchor point="LEFT" offsetX="6" offsetY="0"/>
+                </Texture>
+
+                <Texture name="$(parent)_LockIcon" hidden="true">
+                    <Dimensions x="24" y="24"/>
+                    <Anchor point="LEFT" offsetX="6" offsetY="0"/>
+                </Texture>
+
+                <Texture name="$(parent)_Icon" hidden="true">
+                    <Dimensions x="24" y="24"/>
+                    <Anchor point="LEFT" offsetX="6" offsetY="0"/>
+                </Texture>
+
+                <Label name="$(parent)_Text"
+                       font="ZoFontGame"
+                       text=""
+                       horizontalAlignment="LEFT"
+                       verticalAlignment="CENTER">
+                    <Anchor point="LEFT" offsetX="8" offsetY="0"/>
+                    <Anchor point="RIGHT" offsetX="-6" offsetY="0"/>
+                    <Dimensions x="1" y="28"/>
+                </Label>
+            </Controls>
+        </Button>
+
+        <Control name="ArcanumGuildHallTeleportScrollDividerRow" virtual="true" mouseEnabled="false">
+            <Dimensions x="285" y="28"/>
+
+            <Controls>
+                <Label name="$(parent)_Text"
+                       font="ZoFontGame"
+                       text=""
+                       horizontalAlignment="LEFT"
+                       verticalAlignment="CENTER">
+                    <Anchor point="LEFT" offsetX="8" offsetY="0"/>
+                    <Anchor point="RIGHT" offsetX="-6" offsetY="0"/>
+                    <Dimensions x="1" y="28"/>
+                </Label>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/redeven/Red-s-Countess-Travel__2623",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "redeven",
+  "canonical_id": "esoui:2623",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2623",
+  "deleted": false,
+  "directories": [
+    "CountessTravel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2623/",
+  "fingerprint": "bcfb774e2101643fb497869f8cc52b52e7af1bd167ec3cb32315c94efbcd19ea",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8931.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2623",
+  "source_url": "https://www.esoui.com/downloads/info2623-RedsCountessTravel.html",
+  "stats": {
+    "downloads": 3747,
+    "favorites": 7,
+    "monthly_downloads": 15
+  },
+  "title": "Red's Countess Travel",
+  "updated_at": 1590013003000,
+  "version": "1.1.0"
+}

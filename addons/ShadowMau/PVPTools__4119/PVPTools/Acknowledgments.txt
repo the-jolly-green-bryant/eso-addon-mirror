@@ -1,0 +1,62 @@
+Pawprints' PVP Tools Acknowledgements
+
+The original idea for this addon was to replace Cyrodiil Mission Share which had been no longer updated.  Along the way I decided to wrap in a number of features and ideas from other addons.  While I referenced some of the underlying concepts (ie, ZOS functions, ZOS EVENTS, lua built-in functions like string.find()) I independently developed the code to implement those ideas.
+
+Some of these elements are based around simple concepts (such as the map pins library) and as such are mentioned simply because I incorporated their idea into my own implementation.  In these cases, I did not even view their code and any duplication is purely coincidental.  I list them here because I got the basic idea for the feature from them.
+
+
+
+
+
+Existing Addons Used As Examples and Ideas
+
+Cyrodiil Mission Share
+	https://www.esoui.com/downloads/info1836-CyrodiilMissionShare.html
+		- Beginning concept
+		- Which ZOS Events to link into (EVENT stuff)
+		- How to find, share, and accept qeusts (ZOS quest journal functions)
+		-String processing lua functions (string.find, string.lower, string.len, string.sub)
+
+
+AutoInviteWholeWorld
+	https://www.esoui.com/downloads/info2251-AutoInviteWholeWord.html
+		-Basic autoinvite concept
+		-How to add your own entry into the Group Finder Menu
+		-How to use elements of LibAddonMenu2 in order to make the settings in the Group Finder Menu
+
+
+Dolgbon's Lazy Writ Crafter
+	https://www.esoui.com/downloads/info1346-DolgubonsLazyWritCrafter.html
+		-How to tell how much time remains before daily server reset
+		-How to display alerts, center screen messages, and messages in the chat window witout having to use d()
+	
+	
+TOM - Tamriel Online Messenger - Reborn
+	https://www.esoui.com/downloads/info3428-TOM-TamrielOnlineMessenger-Reborn.html
+		-How to place text into the chat window and prepare it for the user to press enter to send
+
+PVDoor
+	https://www.esoui.com/downloads/info3098-PvDoor.html
+		-Examples of how to use the LibMapPins library
+		-Placing map pins at doors
+	
+RareFishTracker
+	https://www.esoui.com/downloads/info665-RareFishTracker.html
+		-Using queuemessage for the center screen messages to prevent them from stacking on top of each other
+	
+tim99s FTSIO
+	https://www.esoui.com/downloads/info3423-tim99sFTSIO.html
+		-Basic idea of automating queues for IC and Cyrodiil
+		
+Kyzderp
+	https://kyzderp.notion.site/Add-on-Troubleshooting-2f5a9796dc154c8293ff66cb653a0788#823bb2a26f5c4bf0ba8bf0079546baf3
+		-How to test what version of a loaded addon is loaded (used to check if LibAddonMenu2 is the appropriate version)
+		
+Testers
+
+ESO Guild: 
+	Heroes of the Pact
+
+Players who provided suggestions:
+	@Elephant42
+	@Fuzzygrakk

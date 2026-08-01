@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/static_recharge/STimer__3189",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "static_recharge",
+  "canonical_id": "esoui:3189",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3189",
+  "deleted": false,
+  "directories": [
+    "STimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3189/",
+  "fingerprint": "1ea83e046909e4c9e4fbf3d9e44152b256776ef8a944f8b9c5d002ff3225d7a3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10816.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10817.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3189",
+  "source_url": "https://www.esoui.com/downloads/info3189-STimer.html",
+  "stats": {
+    "downloads": 3495,
+    "favorites": 2,
+    "monthly_downloads": 18
+  },
+  "title": "STimer",
+  "updated_at": 1647310455000,
+  "version": "2.1.1"
+}

@@ -1,0 +1,10 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Quick Menu">
+			<Action name="QUICK_MENU">
+				<Down>QuickMenu:ShowMenu()</Down>  
+				<Up>QuickMenu:HideMenu()</Up>  
+			</Action> 
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,177 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ImmersiveQuestsQuestPopup" tier="MEDIUM" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="700" y="600" />
+			<Anchor point="LEFT" relativeTo="ZO_QuestJournalNavigationContainer" relativePoint="CENTER" offsetX="-750"/>
+
+			<OnInitialized>
+				ImmersiveQuests_QuestPopup_OnInitialized(self)
+			</OnInitialized>
+
+			<OnShow>
+				ImmersiveQuests_QuestPopup_OnShow(self)
+			</OnShow>
+
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" inherits="ZO_DefaultBackdrop" tier="MEDIUM" layer="CONTROLS" >
+					<AnchorFill/>
+					<Controls>
+						<Label name="$(parent)Title" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="IMMERSIVE_QUESTS_QUEST_PANEL">
+							<Anchor point="TOP" offsetX="0" offsetY="10" />
+						</Label>
+
+						<Label name="$(parent)QuestId" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="IMMERSIVE_QUESTS_QUEST_ID" mouseEnabled="true"  >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="25" offsetY="50" />
+
+							<OnMouseEnter>
+								ImmersiveQuests_QuestIdShowTooltip(self)
+							</OnMouseEnter>
+
+							<OnMouseExit>
+								ImmersiveQuests_QuestIdHideTooltip(self)
+							</OnMouseExit>
+
+							<Controls>
+								<EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditForBackdrop" mouseEnabled="true" defaultText="[QUEST ID]">
+									<Dimensions x="150" />
+									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+
+									<OnInitialized>
+										ImmersiveQuests_OnQuestIdEditBoxInitialized(self)
+									</OnInitialized>
+								</EditBox>
+							</Controls>
+						</Label>
+
+						<Button name="$(parent)AbandonButton" inherits="ZO_DefaultButton" mouseEnabled="true" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="ELLIPSIS" maxLineCount="1" text="IMMERSIVE_QUESTS_ABANDON_WRITING_BUTTON" hidden="false">
+							<Dimensions x="250" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="13" />
+							
+
+							<OnClicked>
+								ImmersiveQuestsAbandonWritingQuest()
+							</OnClicked>
+						</Button>
+
+						<Button name="$(parent)UrlButton" inherits="ZO_DefaultButton" mouseEnabled="true" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="ELLIPSIS" maxLineCount="1" text="IMMERSIVE_QUESTS_QUEST_ID_HELP_LINK_BUTTON" hidden="false">
+							<Dimensions x="180" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="13" />
+
+							<OnClicked>
+								RequestOpenUnsafeURL(GetString(IMMERSIVE_QUESTS_QUEST_ID_HELP_LINK))
+							</OnClicked>
+						</Button>
+
+						<Label name="$(parent)QuestName" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="ELLIPSIS" maxLineCount="1">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)QuestId" relativePoint="TOPLEFT" offsetX="0" offsetY="25" />
+						</Label>
+
+						<Label name="$(parent)QuestStepText" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="ELLIPSIS" maxLineCount="6" newLineIndent="10">
+							<Dimensions x="550" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)QuestName" relativePoint="TOPLEFT" offsetX="0" offsetY="50" />
+						</Label>
+
+						<Label name="$(parent)QuestObjective" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)QuestStepText" relativePoint="TOPLEFT" offsetX="0" offsetY="180" />
+						</Label>
+
+						<Button name="$(parent)StepText" inherits="ZO_DefaultButton" text="IMMERSIVE_QUESTS_STEP_TXT_BTN">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="123" />
+							<Dimensions x="250" />
+
+							<OnClicked>
+								ImmersiveQuests_StepTxtBtn_OnClicked(self)
+							</OnClicked>
+						</Button>
+
+						<Button name="$(parent)Spellcheck" inherits="ZO_DefaultButton" text="IMMERSIVE_QUESTS_SPELLCHECK">
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-60" />
+							<Dimensions x="250" />
+
+							<OnClicked>
+								ImmersiveQuests_Spellcheck_OnClicked(self)
+							</OnClicked>
+						</Button>
+						<Button name="$(parent)CreateCode" inherits="ZO_DefaultButton" text="IMMERSIVE_QUESTS_CREATE_CODE">
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-20" />
+							<Dimensions x="250" />
+
+							<OnClicked>
+								ImmersiveQuests_CreateCode_OnClicked(self)
+							</OnClicked>
+						</Button>
+
+						<Button name="$(parent)BackStep" inherits="ZO_DefaultButton" text="IMMERSIVE_QUESTS_BACKSTEP">
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="45" offsetY="-20" />
+
+							<OnClicked>
+								ImmersiveQuests_Button_BackStep(self)
+							</OnClicked>
+						</Button>
+						<Button name="$(parent)ForwardStep" inherits="ZO_DefaultButton" text="IMMERSIVE_QUESTS_FORWARDSTEP">
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="185" offsetY="-20" />
+
+							<OnClicked>
+								ImmersiveQuests_Button_ForwardStep(self)
+							</OnClicked>
+						</Button>
+					</Controls>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+
+		<Button name="ImmQuests_ObjectivesTemplateButton" inherits="ZO_DefaultButton" virtual="true" mouseEnabled="true" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="ELLIPSIS" maxLineCount="1" hidden="true">
+			<Dimensions x="325" />
+			<Anchor point="TOPLEFT" relativeTo="ImmersiveQuestsQuestPopupBackdropQuestObjective" relativePoint="TOPRIGHT" offsetX="-65" offsetY="25" />
+					
+			<OnClicked>
+				ImmersiveQuests_Objective_OnClicked(self)
+			</OnClicked>
+		</Button>
+
+		<TopLevelControl name="ImmQuestsTooltipTopLevel" inherits="TooltipTopLevel">
+			<Controls>
+				<Tooltip name="ImmQuestsQuestIdTooltip"  inherits="ZO_BaseTooltip" mouseEnabled="true"> </Tooltip>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="ImmQuestsEditBoxes" mouseEnabled="true" hidden="true" font="ZoFontGame">
+			<Dimensions x="500" y="700" />
+			<Anchor point="LEFT" offsetX="30" offsetY="-125"/>
+
+			<OnInitialized>
+				ImmQuests_EditBoxes_OnInitialized(self)
+			</OnInitialized>
+
+			<Controls>
+				<Backdrop name="$(parent)ImmQuestsStepDesc" inherits="ZO_DefaultBackdrop">
+					<Anchor point="TOPLEFT" offsetX="20" offsetY="20" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="-20" />
+					<Controls>
+						<EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditMultiLineForBackdrop" defaultText="IMMERSIVE_QUESTS_DEFAULT_STEP_TXT"/>
+					</Controls>
+				</Backdrop>
+			</Controls>
+
+			<Controls>
+				<Backdrop name="$(parent)ImmQuestsDesc" inherits="ZO_DefaultBackdrop">
+					<Anchor point="TOPLEFT" offsetX="20" offsetY="20" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="-20" />
+					<Controls>
+						<EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditMultiLineForBackdrop" defaultText="IMMERSIVE_QUESTS_DEFAULT_OBJ_TXT"/>
+					</Controls>
+				</Backdrop>
+			</Controls>
+			
+			<Controls>
+				<Backdrop name="$(parent)Output" inherits="ZO_DefaultBackdrop">
+					<Anchor point="TOPLEFT" offsetX="20" offsetY="20" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="-20" />
+					<Controls>
+						<EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditMultiLineForBackdrop" editEnabled="false"/>
+					</Controls>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/SirAndy/SousChef-Fix-For-API-100018__1637",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SirAndy",
+  "canonical_id": "esoui:1637",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:1637",
+  "deleted": false,
+  "directories": [
+    "SousChef"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1637/",
+  "fingerprint": "6d173ace92d8877ea3b5f1c4ae7c2d0c8adb236c992049dc7f28d1a66609faf0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5365.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1637",
+  "source_url": "https://www.esoui.com/downloads/info1637-SousChefFixForAPI100018.html",
+  "stats": {
+    "downloads": 35837,
+    "favorites": 6,
+    "monthly_downloads": 10
+  },
+  "title": "SousChef Fix For API 100018",
+  "updated_at": 1489280366000,
+  "version": "2.7"
+}

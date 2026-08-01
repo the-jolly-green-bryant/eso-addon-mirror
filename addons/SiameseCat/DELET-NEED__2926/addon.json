@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/SiameseCat/DELET-NEED__2926",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SiameseCat",
+  "canonical_id": "esoui:2926",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2926",
+  "deleted": false,
+  "directories": [
+    "MirrorlandGuildHalls"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2926/",
+  "fingerprint": "bac155d94dda75881ba07f63e1d432a5a0c44cb84c4306ad6c61029a6aac497b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9886.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9887.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2926",
+  "source_url": "https://www.esoui.com/downloads/info2926-DELETNEED.html",
+  "stats": {
+    "downloads": 2778,
+    "favorites": 0,
+    "monthly_downloads": 6
+  },
+  "title": "DELET NEED",
+  "updated_at": 1613094760000,
+  "version": "0.0.1"
+}

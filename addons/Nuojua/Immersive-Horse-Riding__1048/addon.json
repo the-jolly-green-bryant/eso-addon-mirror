@@ -1,0 +1,33 @@
+{
+  "archive_path": "addons/Nuojua/Immersive-Horse-Riding__1048",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Nuojua",
+  "canonical_id": "esoui:1048",
+  "category_id": "114",
+  "compatibility": [],
+  "content_id": "esoui:1048",
+  "deleted": false,
+  "directories": [
+    "ImmersiveHorseRiding"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1048/",
+  "fingerprint": "91d5dac2fc55b0fe66bc7a2297fc36670af7270318f0a5282b043abf4a390eb3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3231.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3230.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1048",
+  "source_url": "https://www.esoui.com/downloads/info1048-ImmersiveHorseRiding.html",
+  "stats": {
+    "downloads": 59671,
+    "favorites": 93,
+    "monthly_downloads": 180
+  },
+  "title": "Immersive Horse Riding",
+  "updated_at": 1709480296000,
+  "version": "3.1"
+}

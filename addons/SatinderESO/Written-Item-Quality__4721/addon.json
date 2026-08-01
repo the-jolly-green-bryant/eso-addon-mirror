@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/SatinderESO/Written-Item-Quality__4721",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SatinderESO",
+  "canonical_id": "esoui:4721",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4721",
+  "deleted": false,
+  "directories": [
+    "WrittenItemQuality"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4721/",
+  "fingerprint": "449d77b7072e87dfbf4676f3db3fc58cce5176849c1faf920f8f97514dd30e9a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16791.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4721",
+  "source_url": "https://www.esoui.com/downloads/info4721-WrittenItemQuality.html",
+  "stats": {
+    "downloads": 52,
+    "favorites": 0,
+    "monthly_downloads": 50
+  },
+  "title": "Written Item Quality",
+  "updated_at": 1784843237000,
+  "version": "1.0.1"
+}

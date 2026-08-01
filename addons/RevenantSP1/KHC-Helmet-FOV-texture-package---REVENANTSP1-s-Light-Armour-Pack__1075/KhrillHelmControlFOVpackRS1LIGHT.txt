@@ -1,0 +1,8 @@
+## Title: |cFF6A00Khrill|r Helm Control - REVENANTSP1's Light Armour FOV package
+## Author: REVENANTSP1
+## Description: Light Armour Pack
+## Version: 1.0.0
+## APIVersion: 100011
+## OptionalDependsOn: KhrillHelmControlFOVaddin
+
+../KhrillHelmControlFOVaddin/Fov/RS1Light.lua

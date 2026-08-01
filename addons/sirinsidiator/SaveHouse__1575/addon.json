@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/sirinsidiator/SaveHouse__1575",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:1575",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:1575",
+  "deleted": false,
+  "directories": [
+    "SaveHouse"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1575/",
+  "fingerprint": "ab6b57df816b1e820ded526e77a374eab50f762b8337111d5ebedb1150f4f2f5",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1575",
+  "source_url": "https://www.esoui.com/downloads/info1575-SaveHouse.html",
+  "stats": {
+    "downloads": 6640,
+    "favorites": 12,
+    "monthly_downloads": 17
+  },
+  "title": "SaveHouse",
+  "updated_at": 1486216585000,
+  "version": "0.4"
+}

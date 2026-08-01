@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/secretrob/Dungeon-Travel__3139",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "secretrob",
+  "canonical_id": "esoui:3139",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3139",
+  "deleted": false,
+  "directories": [
+    "DungeonTravel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3139/",
+  "fingerprint": "a9995e7179696314406c5f36742d3251b94bcf054642df702ad960b11189dc74",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10668.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10669.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3139",
+  "source_url": "https://www.esoui.com/downloads/info3139-DungeonTravel.html",
+  "stats": {
+    "downloads": 16762,
+    "favorites": 20,
+    "monthly_downloads": 193
+  },
+  "title": "Dungeon Travel",
+  "updated_at": 1782162628000,
+  "version": "2.3.6"
+}

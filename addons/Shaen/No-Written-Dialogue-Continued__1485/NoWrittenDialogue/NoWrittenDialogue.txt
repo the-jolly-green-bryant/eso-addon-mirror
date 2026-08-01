@@ -1,0 +1,10 @@
+## APIVersion: 100019
+
+## Version : 1.5
+## Author: Ako, updated by Shaen
+## Title: No Written Dialogue Continued
+## Description: Lets you toggle the written dialogue of all NPCs.
+
+
+Bindings.xml
+NoWrittenDialogue.lua

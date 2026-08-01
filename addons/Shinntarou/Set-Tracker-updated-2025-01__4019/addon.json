@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Shinntarou/Set-Tracker-updated-2025-01__4019",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shinntarou",
+  "canonical_id": "esoui:4019",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4019",
+  "deleted": false,
+  "directories": [
+    "SetTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4019/",
+  "fingerprint": "f9774a122c7904092b71357ddfa114a6194ca52af4d993c915423afa54e64ac1",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4019",
+  "source_url": "https://www.esoui.com/downloads/info4019-SetTrackerupdated202501.html",
+  "stats": {
+    "downloads": 5266,
+    "favorites": 7,
+    "monthly_downloads": 51
+  },
+  "title": "Set Tracker updated 2025 01",
+  "updated_at": 1745035829000,
+  "version": "3.2.0"
+}

@@ -1,0 +1,84 @@
+[B][COLOR="DarkOrange"]Depends on the following (separately installed) libraries: [/COLOR]
+[list]
+[*][COLOR="DarkOrange"] LibSFUtils[/COLOR], 
+[*][COLOR="DarkOrange"] LibAddonMenu[/COLOR], and
+[*][COLOR="DarkOrange"] LibMediaProvider-1.0[/COLOR]
+[/list][/B]
+
+[B][COLOR="MediumSlateBlue"]New:[/COLOR] The (separately installed) library [COLOR="DarkOrange"]LibDebugLogger[/COLOR] can optionally be installed. If LibDebugLogger is installed, the internal flag to block system messages from chat can be controlled from rChat settings.
+
+[B][COLOR="MediumSlateBlue"]New:[/COLOR] [COLOR="DarkOrange"]Also depends on the following "library" which is included with rChat: [/COLOR]
+[list]
+[*][COLOR="DarkOrange"] rChatData[/COLOR], 
+[/list]
+It is already installed, but you must enable it whenever you enable the rChat addon.[/B]
+
+rChat allows you to customize the way that messages are displayed in the chat window.
+It also allows you to define and post automated messages in chat, and to copy messages from chat to the clipboard with the right-click menu. (Note: When copying a single message or line, it will copy the message into the outgoing message text box for chat where you can then Ctrl-X to copy it to clipboard.)
+
+[b]Features[/b]
+[COLOR="MediumSlateBlue"]Chat message enhancements[/COLOR]
+[list]
+[*] Redundant information like "says", "yells" (zone tags), et cetera are optionally removed, 
+[*] Character Name Rewrite - Choose to see the From names as account names, character names, or both. Customizable by guild.
+[*] Specify nicknames for players to be used instead of character or account names.
+[*] Remove Brackets on Player Names, 
+[*] [COLOR="MediumSlateBlue"]New:[/COLOR] Can now see From names in "character(@account)" format
+[*] Timestamps - Show time stamps for messages. Choose 12 hour or 24 hour format. Choose a timestamp color
+[*] Whisper Notification - Play a sound or display visual notification when you receive a whisper.
+[*] Timestamps, From Info, and Messages can be colorized
+[*] Rename your Guilds Channels - Guild Tag or Officer one, each channel can be renamed
+[*] Group (party) Leaders can have a separate color, 
+[*] Strip Colors from messages to avoid Rainbow Messages, 
+[*] Search for text (mentions) in chat messages and highlight it with a different color or play a sound when it is found. [COLOR="MediumSlateBlue"]New:[/COLOR] Mentions will NOT be searched for in system messages, emotes, whispers, or NPC chat.
+[*] [COLOR="MediumSlateBlue"]New:[/COLOR] Now allowed to specify multiple mention strings (separated by carriage returns) to search for in chat messages. Only the first one that is found will be highlighted in a different color.
+[/list]
+
+[COLOR="MediumSlateBlue"]Chat Window enhancements[/COLOR]
+[list]
+[*] [b]Prevent chat text from fading[/b] (My favorite!),
+[*] Chat history - No more chat clearing when you reloadUI. Also include a restore history when you logout, get kicked or disconnect.
+[*] [COLOR="MediumSlateBlue"]New:[/COLOR] The Chat history that is kept is now account-wide, so that when you log in and out between your characters, you don't lose your place in the chat. (This also has the effect of reducing the size of the saved variables file(s) so that logging in and reloading UI can be a little faster.)
+[*] [COLOR="MediumSlateBlue"]New:[/COLOR] Provide a "Clear chat history" button to permanently delete the contents of the chat history so that it cannot be restored. This also has the side effect of clearing out the chat window.
+[*] [COLOR="MediumSlateBlue"]New:[/COLOR] The Chat history is now saved in a separate saved variables file (rChatData.lua) from the rChat configuration settings. This way you can simply remove the rChatData.lua saved variable file if somehow your chat history becomes corrupted, without losing all of your rChat configuration settings (that were saved in the rChat.lua saved variables file).
+[*] Copy Text - You want to copy your chat ? Right click, and Ctrl+C
+[*] Set Text Fonts - 15 more fonts if you don't like the default one. You can also add fonts.
+[*] Chat window background - Can be darker or transparent
+[*] Resizing Chatbox 
+[*] Clear current tab, 
+[*] System Messages (and coincidentally, most addon messages) in the tab you have chosen, 
+[*] Set default channel & tab at login, 
+[*] Change Tab color, 
+[/list]
+
+[COLOR="MediumSlateBlue"]Other Features[/COLOR]
+[list]
+[*] [COLOR="MediumSlateBlue"]New:[/COLOR] Control the chat SYSTEM message blocking "feature" of LibDebugLogger so that you can turn it on or off. LibDebugLogger has that feature ON by default. rChat turns that feature OFF by default. You are able to change it to what you want via the rChat settings.
+[*] Anti-Spam - Optionally filter out LFG/LFM messages, WTB/WTS/WTT messages, flooding, and guild recruiting messages. (The anti-filtering necessarily works best with English language when abbreviated indicators are missing.)
+[*] Automated messages system - store messages (like teamspeak or discord info) to play into chat.
+[*] Automatic Group Switching - When you join a group, automatically enter the group channel. 
+[*] Use the mouse to change chat channels: click on a name in chat to whisper to that person, click on the guild tag to enter guild chat, click on a party/group message to enter group/party chat, or click on a zone message to enter into that zone chat.
+[*] Keybinds to switch between tabs and toggle chat window, 
+[*] Auto switch channel when using arrow keys, 
+[*] Configurable switches for channels
+[*] Automatic rChat configuration between chars, 
+[*] French / German / Russian / Spanish Translations.
+[/list]
+
+[COLOR="MediumSlateBlue"]Key Bindings Available[/COLOR]
+[list]
+[*] Switch to next tab
+[*] Toggle Chat Window
+[*] Whisper at Target - aim your mouse at a person, and hit the appropriate bound key(s) to be able to whisper to that person.
+[*] Select Chat Tab 1-12 as current
+[*] Automated messages
+[/list]
+
+[COLOR="MediumSlateBlue"]Slash Commands[/COLOR]
+[list]
+[*] /rchat - Open the rChat Settings window
+[*] /rchat.msg - Open the rChat Automated Messages window
+[*] /r /reply /respond - these base game commands are now available again to reply to the last person to whisper you you. (If noone has whispered to you, then nothing will happen.)
+[/list]
+
+[b]Based on: DesertDwellers, Ayantir, Puddys' [URL="https://www.esoui.com/downloads/info93-pChat.html"]pChat[/URL][/b]

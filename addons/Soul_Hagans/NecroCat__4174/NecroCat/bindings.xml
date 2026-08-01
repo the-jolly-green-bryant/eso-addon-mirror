@@ -1,0 +1,31 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="NecroCat">
+            <Action name="NECROCAT_MOUNT_UP">
+                <Down>NecroCat.MountRider()</Down>
+            </Action>
+            <!-- Твои кнопки сложности -->
+            <Action name="NC_DIFF_BASEGAME">
+                <Down>NecroCat.SetDiffBasegame()</Down>
+            </Action>
+            <Action name="NC_DIFF_JOURNEYMAN">
+                <Down>NecroCat.SetDiffJourneyman()</Down>
+            </Action>
+            <Action name="NC_DIFF_ADVENTURER">
+                <Down>NecroCat.SetDiffAdventurer()</Down>
+            </Action>
+            <Action name="NC_DIFF_VETERAN">
+                <Down>NecroCat.SetDiffVeteran()</Down>
+            </Action>
+            <Action name="NECROCAT_FOLLOW_SEND">
+                <Down>NecroCat.Follow.SendBeacon()</Down>
+            </Action>
+            <Action name="NECROCAT_FOLLOW_YES">
+                <Down>NecroCat.Follow.AcceptDialog()</Down>
+            </Action>
+            <Action name="NECROCAT_FOLLOW_NO">
+                <Down>NecroCat.Follow.CloseDialog()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

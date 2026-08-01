@@ -1,0 +1,215 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="CompletionistsListsWindow" mouseEnabled="true" 
+      movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="920" y="520" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetY="-20" />
+      <OnMoveStop>
+        CompletionistsLists.OnWindowMoveStop()
+      </OnMoveStop>
+      <Controls>
+				<Backdrop name="$(parent)_outerBackdrop" inherits="ZO_DefaultBackdrop" alpha="0.5"
+          edgeColor="f231f2"/>
+        <Label name="TitleLabel" font="ZoFontGame" color="ffffff"
+            text="Completionist's Lists">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        <Button name="CompletionistsListsWindowNextPageButton">
+					<Dimensions x="32" y="32"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" 
+          offsetX="4" offsetY="-8"/>
+					<Textures
+						normal="/esoui/art/buttons/large_rightarrow_up.dds"
+						pressed="/esoui/art/buttons/large_rightarrow_over.dds"
+						mouseOver="/esoui/art/buttons/large_rightarrow_down.dds"
+						disabled="/esoui/art/buttons/large_rightarrow_over.dds"
+					/>
+					<OnClicked>
+          CompletionistsLists.ChangePage(1)
+					</OnClicked>
+				</Button>
+				<Button name="CompletionistsListsWindowPrevPageButton">
+					<Dimensions x="32" y="32"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)NextPageButton" relativePoint="LEFT" 
+          offsetX="8" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/buttons/large_leftdoublearrow_up.dds"
+						pressed="/esoui/art/buttons/large_leftdoublearrow_over.dds"
+						mouseOver="/esoui/art/buttons/large_leftdoublearrow_down.dds"
+						disabled="/esoui/art/buttons/large_leftdoublearrow_over.dds"
+					/>
+					<OnClicked>
+          CompletionistsLists.ChangePage(-1)
+					</OnClicked>
+				</Button>
+        <Label name="$(parent)CopyLabel" font="ZoFontWinH5" color="ffffff" horizontalAlignment="CENTER" 
+          text="Click in results: Ctrl+A to Select, Ctrl+C to Copy">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="2"/>
+				</Label>
+        <Control name="$(parent)_ListFrame">
+					<Dimensions x="920" y="520"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="38"/>
+					<Controls>
+            <Control name="$(parent)_DataFrame" tier="LOW">
+							<Dimensions x="920" y="530"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Controls>
+								<Backdrop name="$(parent)_innerBackdrop" inherits="ZO_DefaultBackdrop" alpha="0.5" 
+                  edgeColor="fff000"/>
+                <Label name="CompletionistsListsWindowPageLabel" font="ZoFontGame" color="ffffff" 
+                horizontalAlignment="LEFT" text="Page: ">
+                  <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)_innerBackdrop" relativePoint="BOTTOMRIGHT"
+                    offsetX="-10" offsetY="-20"/>
+                </Label>
+                <EditBox name="CompletionistsListsWindowResultList" 
+                  inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText" 
+                  font="ZoFontGame" color="ffffff" editEnabled="false" maxInputCharacters="29000">
+                  <Dimensions x="900" y="470" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)_innerBackdrop" relativePoint="TOPLEFT" 
+                    offsetX="10" offsetY="20"/>
+                </EditBox>
+                <Button name="CompletionistsListsWindow_ShowAll">
+                  <Dimensions x="45" y="45"/>
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)_innerBackdrop" relativePoint="TOPLEFT" 
+                  offsetX="0" offsetY="0"/>
+                  <Textures
+                    normal="/esoui/art/treeicons/achievements_indexicon_champion_up.dds"
+                    pressed="/esoui/art/treeicons/achievements_indexicon_champion_over.dds"
+                    mouseOver="/esoui/art/treeicons/achievements_indexicon_champion_down.dds"
+                    disabled="/esoui/art/treeicons/achievements_indexicon_champion_over.dds"
+                  />
+                  <OnClicked>
+                  CompletionistsLists.ApplyFilter(0)
+                  </OnClicked>
+                </Button>
+                <Button name="CompletionistsListsWindow_ShowMotifs">
+                  <Dimensions x="45" y="45"/>
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)_innerBackdrop" relativePoint="TOPLEFT" 
+                  offsetX="0" offsetY="50"/>
+                  <Textures
+                    normal="/esoui/art/inventory/inventory_tabicon_armor_up.dds"
+                    pressed="/esoui/art/inventory/inventory_tabicon_armor_over.dds"
+                    mouseOver="/esoui/art/inventory/inventory_tabicon_armor_down.dds"
+                    disabled="/esoui/art/inventory/inventory_tabicon_armor_over.dds"
+                  />
+                  <OnClicked>
+                  CompletionistsLists.ApplyFilter(4)
+                  </OnClicked>
+                </Button>
+                <Button name="CompletionistsListsWindow_ShowFurniture">
+                  <Dimensions x="45" y="45"/>
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)_innerBackdrop" relativePoint="TOPLEFT" 
+                  offsetX="0" offsetY="100"/>
+                  <Textures
+                    normal="/esoui/art/treeicons/collection_indexicon_furnishings_up.dds"
+                    pressed="/esoui/art/treeicons/collection_indexicon_furnishings_over.dds"
+                    mouseOver="/esoui/art/treeicons/collection_indexicon_furnishings_down.dds"
+                    disabled="/esoui/art/treeicons/collection_indexicon_furnishings_up.dds"
+                  />
+                  <OnClicked>
+                  CompletionistsLists.ApplyFilter(2)
+                  </OnClicked>
+                </Button>
+                <Button name="CompletionistsListsWindow_ShowProvisioning">
+                  <Dimensions x="45" y="45"/>
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)_innerBackdrop" relativePoint="TOPLEFT" 
+                  offsetX="0" offsetY="150"/>
+                  <Textures
+                    normal="/esoui/art/treeicons/provisioner_indexicon_stew_up.dds"
+                    pressed="/esoui/art/treeicons/provisioner_indexicon_stew_over.dds"
+                    mouseOver="/esoui/art/treeicons/provisioner_indexicon_stew_down.dds"
+                    disabled="/esoui/art/treeicons/provisioner_indexicon_stew_over.dds"
+                  />
+                  <OnClicked>
+                  CompletionistsLists.ApplyFilter(3)
+                  </OnClicked>
+                </Button>
+                <Button name="CompletionistsListsWindow_ShowAntiquities">
+                  <Dimensions x="45" y="45"/>
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)_innerBackdrop" relativePoint="TOPLEFT" 
+                  offsetX="0" offsetY="200"/>
+                  <Textures
+                    normal="/esoui/art/icons/guildranks/guild_indexicon_misc10_up.dds"
+                    pressed="/esoui/art/icons/guildranks/guild_indexicon_misc10_over.dds"
+                    mouseOver="/esoui/art/icons/guildranks/guild_indexicon_misc10_down.dds"
+                    disabled="/esoui/art/icons/guildranks/guild_indexicon_misc10_over.dds"
+                  />
+                  <OnClicked>
+                  CompletionistsLists.ApplyFilter(1)
+                  </OnClicked>
+                </Button>
+                <Button name="CompletionistsListsWindow_ShowItemCollections">
+                  <Dimensions x="45" y="45"/>
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)_innerBackdrop" relativePoint="TOPLEFT" 
+                  offsetX="0" offsetY="250"/>
+                  <Textures
+                    normal="/esoui/art/treeicons/outfit_styles_up.dds"
+                    pressed="/esoui/art/treeicons/outfit_styles_over.dds"
+                    mouseOver="/esoui/art/treeicons/outfit_styles_down.dds"
+                    disabled="/esoui/art/treeicons/outfit_styles_disabled.dds"
+                  />
+                  <OnClicked>
+                  CompletionistsLists.ApplyFilter(5)
+                  </OnClicked>
+                </Button>
+                <Button name="CompletionistsListsWindow_ShowAchievements">
+                  <Dimensions x="45" y="45"/>
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)_innerBackdrop" relativePoint="TOPLEFT" 
+                  offsetX="0" offsetY="300"/>
+                  <Textures
+                    normal="/esoui/art/treeicons/achievements_indexicon_general_up.dds"
+                    pressed="/esoui/art/treeicons/achievements_indexicon_general_over.dds"
+                    mouseOver="/esoui/art/treeicons/achievements_indexicon_general_down.dds"
+                    disabled="/esoui/art/treeicons/achievements_indexicon_general_disabled.dds"
+                  />
+                  <OnClicked>
+                  CompletionistsLists.ApplyFilter(6)
+                  </OnClicked>
+                </Button>
+                <Button name="CompletionistsListsWindow_ShowBag">
+                  <Dimensions x="45" y="45"/>
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)_innerBackdrop" relativePoint="TOPLEFT" 
+                  offsetX="0" offsetY="350"/>
+                  <Textures
+                    normal="/esoui/art/inventory/inventory_all_tabicon_active.dds"
+                    pressed="/esoui/art/inventory/inventory_all_tabicon_active.dds"
+                    mouseOver="/esoui/art/inventory/inventory_all_tabicon_mouseover.dds"
+                    disabled="/esoui/art/inventory/inventory_all_tabicon_inactive.dds"
+                  />
+                  <OnClicked>
+                  CompletionistsLists.ApplyFilter(7)
+                  </OnClicked>
+                    normal="/esoui/treeicons/store_indexicon_craftingmotiff_down.dds"
+                </Button>
+                <Button name="CompletionistsListsWindow_ShowBank">
+                  <Dimensions x="45" y="45"/>
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)_innerBackdrop" relativePoint="TOPLEFT" 
+                  offsetX="0" offsetY="400"/>
+                  <Textures
+                    normal="/esoui/art/treeicons/store_indexicon_craftingmotiff_up.dds"
+                    pressed="/esoui/art/treeicons/store_indexicon_craftingmotiff_over.dds"
+                    mouseOver="/esoui/art/treeicons/store_indexicon_craftingmotiff_down.dds"
+                    disabled="/esoui/art/treeicons/store_indexicon_craftingmotiff_up.dds"
+                  />
+                  <OnClicked>
+                  CompletionistsLists.ApplyFilter(8)
+                  </OnClicked>
+                </Button>
+                <Button name="CompletionistsListsWindow_DisplayBox" inherits="ZO_CheckButton" hidden="true">
+                    <OnClicked>
+                      CompletionistsLists.ChangeDisplay()
+                    </OnClicked>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)_innerBackdrop" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="-20" />
+                </Button>
+                <Label name="CompletionistsListsWindow_DisplayLabel" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" 
+                  text="(click button to change view)" hidden="true">
+                  <Anchor point="LEFT" relativeTo="CompletionistsListsWindow_DisplayBox" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+                </Label>
+							</Controls>
+						</Control>
+          </Controls>
+				</Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

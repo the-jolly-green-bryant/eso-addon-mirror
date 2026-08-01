@@ -1,0 +1,25 @@
+﻿## Title: ThiefTools
+## Version: 3.4.3
+## APIVersion: 101050 101051
+## AddOnVersion: 54
+## DependsOn: LibAddonMenu-2.0>=41 LibSFUtils>=66 LibDebugLogger>=268
+## SavedVariables: ThiefToolsVars
+## Author: Shadowfen
+
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Localisation\en.lua
+Localisation\$(language).lua
+
+ThiefTools_Global.lua
+HotList.lua
+ItemTypeHandler.lua
+ThiefTools.lua
+Settings.lua
+bindings.xml
+

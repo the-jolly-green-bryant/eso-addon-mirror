@@ -1,0 +1,20 @@
+## Title: Traveller v0.1.0
+## Description: Traveller - Fast travel redesigned
+## Author: patrick_smyth
+## Version 0.1.0
+
+## APIVersion: 100019
+## SavedVariables: Traveller_SavedVariables
+
+Traveller.txt
+Traveller.lua
+Console.lua
+Gotos.lua
+Houses.lua
+Nodes.lua
+Order.lua
+Players.lua
+Queue.lua
+Tab.lua
+Utils.lua
+Zones.lua

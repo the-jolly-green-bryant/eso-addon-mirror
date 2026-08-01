@@ -1,0 +1,217 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CraftyStockListType" hidden="true" mouseEnabled="true" movable="false" clampedToScreen="true">
+            <Anchor point="TOPRIGHT" relativeTo="CraftyStockList" relativePoint="TOPLEFT" offsetX="-15" offsetY="0"/>
+            <Dimensions x="50" y="500" />
+            <Controls>
+            
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+				<Button name="$(parent)BlacksmithingIcon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="45" y="45" />
+					<Anchor point="TOP" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+					<Textures normal="esoui\art\inventory\inventory_tabicon_craftbag_blacksmithing_up.dds"
+						pressed="esoui\art\inventory\inventory_tabicon_craftbag_blacksmithing_down.dds"
+						mouseOver="esoui\art\inventory\inventory_tabicon_craftbag_blacksmithing_over.dds"/>
+					<OnClicked>
+						Crafty.SetTS(1)
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,LEFT,"Blacksmith")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ClothierIcon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="45" y="45" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)BlacksmithingIcon" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-10" />
+					<Textures normal="esoui\art\inventory\inventory_tabicon_craftbag_clothing_up.dds"
+						pressed="esoui\art\inventory\inventory_tabicon_craftbag_clothing_down.dds"
+						mouseOver="esoui\art\inventory\inventory_tabicon_craftbag_clothing_over.dds"/>
+					<OnClicked>
+						Crafty.SetTS(2)
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,LEFT,"Clothier")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				<Button name="$(parent)EnchantingIcon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="45" y="45" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ClothierIcon" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-10" />
+					<Textures normal="esoui\art\inventory\inventory_tabicon_craftbag_enchanting_up.dds"
+						pressed="esoui\art\inventory\inventory_tabicon_craftbag_enchanting_down.dds"
+						mouseOver="esoui\art\inventory\inventory_tabicon_craftbag_enchanting_over.dds"/>
+					<OnClicked>
+						Crafty.SetTS(3)
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,LEFT,"Enchanting")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				<Button name="$(parent)AlchemyIcon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="45" y="45" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)EnchantingIcon" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-10" />
+					<Textures normal="esoui\art\inventory\inventory_tabicon_craftbag_alchemy_up.dds"
+						pressed="esoui\art\inventory\inventory_tabicon_craftbag_alchemy_down.dds"
+						mouseOver="esoui\art\inventory\inventory_tabicon_craftbag_alchemy_over.dds"/>
+					<OnClicked>
+						Crafty.SetTS(4)
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,LEFT,"Alchemy")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ProvisioningIcon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="45" y="45" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)AlchemyIcon" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-10" />
+					<Textures normal="esoui\art\inventory\inventory_tabicon_craftbag_provisioning_up.dds"
+						pressed="esoui\art\inventory\inventory_tabicon_craftbag_provisioning_down.dds"
+						mouseOver="esoui\art\inventory\inventory_tabicon_craftbag_provisioning_over.dds"/>
+					<OnClicked>
+						Crafty.SetTS(5)
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,LEFT,"Provisioning")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				<Button name="$(parent)WoodworkingIcon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="45" y="45" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ProvisioningIcon" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-10" />
+					<Textures normal="esoui\art\inventory\inventory_tabicon_craftbag_woodworking_up.dds"
+						pressed="esoui\art\inventory\inventory_tabicon_craftbag_woodworking_down.dds"
+						mouseOver="esoui\art\inventory\inventory_tabicon_craftbag_woodworking_over.dds"/>
+					<OnClicked>
+						Crafty.SetTS(6)
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,LEFT,"Woodworking")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				<Button name="$(parent)JewelryIcon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="45" y="45" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)WoodworkingIcon" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-10" />
+					<Textures normal="esoui\art\inventory\inventory_tabicon_craftbag_jewelrycrafting_up.dds"
+						pressed="esoui\art\inventory\inventory_tabicon_craftbag_jewelrycrafting_down.dds"
+						mouseOver="esoui\art\inventory\inventory_tabicon_craftbag_jewelrycrafting_over.dds"/>
+					<OnClicked>
+						Crafty.SetTS(7)
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,LEFT,"Jewelry")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>		
+				
+				<Texture name="$(parent)Divider1" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+					<Dimensions x="50" y="4"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)JewelryIcon" relativePoint="BOTTOMLEFT" offsetY="10" />
+				</Texture>
+				
+				<Button name="$(parent)TraitIcon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="45" y="45" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Divider1" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
+					<Textures normal="esoui/art/inventory/inventory_tabicon_craftbag_itemtrait_up.dds"
+						pressed="esoui/art/inventory/inventory_tabicon_craftbag_itemtrait_down.dds"
+						mouseOver="esoui/art/inventory/inventory_tabicon_craftbag_itemtrait_over.dds"/>
+					<OnClicked>
+						Crafty.SetTS(20)
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,LEFT,"Traits")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				<Button name="$(parent)StyleIcon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="45" y="45" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TraitIcon" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-10" />
+					<Textures normal="esoui/art/inventory/inventory_tabicon_craftbag_stylematerial_up.dds"
+						pressed="esoui/art/inventory/inventory_tabicon_craftbag_stylematerial_down.dds"
+						mouseOver="esoui/art/inventory/inventory_tabicon_craftbag_stylematerial_over.dds"/>
+					<OnClicked>
+						Crafty.SetTS(30)
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,LEFT,"Styles")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				<Button name="$(parent)MatsIcon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="45" y="45" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)StyleIcon" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-10" />
+					<Textures normal="esoui\art\inventory\inventory_tabicon_crafting_up.dds"
+						pressed="esoui\art\inventory\inventory_tabicon_crafting_down.dds"
+						mouseOver="esoui\art\inventory\inventory_tabicon_crafting_over.dds"/>
+					<OnClicked>
+						Crafty.SetTS(40)
+					</OnClicked>
+					<OnMouseEnter>
+						Crafty.ShowUIToolTip(self,LEFT,"Material")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				
+				<Texture name="$(parent)Divider2" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+					<Dimensions x="50" y="4"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)MatsIcon" relativePoint="BOTTOMLEFT" offsetY="10" />
+				</Texture>
+				
+				<Button name="$(parent)ThresholdIcon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Divider2" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+					<Textures normal="/esoui/art/treeicons/tutorial_idexicon_charprogression_up.dds"
+						pressed="/esoui/art/treeicons/tutorial_idexicon_charprogression_down.dds"
+						mouseOver="/esoui/art/treeicons/tutorial_idexicon_charprogression_over.dds"/>
+					<OnClicked>
+						Crafty.SetTS(50)
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, "Threshold")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+				
+				<Button name="$(parent)AlarmIcon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ThresholdIcon" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-5" />
+					<Textures normal="esoui\art\lfg\lfg_healer_up_64.dds"
+						pressed="esoui\art\lfg\lfg_healer_down_64.dds"
+						mouseOver="esoui\art\lfg\lfg_healer_over_64.dds"/>
+					<OnClicked>
+						Crafty.SetTS(100)
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, "Lootalarm")
+					</OnMouseEnter>
+					<OnMouseExit>
+                		ZO_Tooltips_HideTextTooltip()
+            		</OnMouseExit>
+				</Button>
+            </Controls>
+        </TopLevelControl>      
+    </Controls>
+</GuiXml>

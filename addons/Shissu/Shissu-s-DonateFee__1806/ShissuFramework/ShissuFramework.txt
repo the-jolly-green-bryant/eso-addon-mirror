@@ -1,0 +1,22 @@
+## Title: |c82FA58Shissu|ceeeeee's Framework|r 0.5.3
+## APIVersion: 100022
+## Author: |c82FA58@Shissu|r [EU-SERVER]
+## SavedVariables: shissuFramework
+
+i18n\en.lua
+i18n\$(language).lua
+
+ShissuFramework.xml
+ShissuFramework.lua
+
+
+globals.lua
+functions.lua
+settings.lua
+interface.lua
+
+# Standard Add-ons
+stdModule\language.lua
+stdModule\chatcommands.lua
+stdModule\color.lua
+stdModule\bindings.xml

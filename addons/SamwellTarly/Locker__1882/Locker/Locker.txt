@@ -1,0 +1,13 @@
+## Title: Locker
+## Version 2
+## Purpose:  Set a hotkey to lock, junk, or prebank itemss
+## APIVersion: 100034 100035
+## Author:  |c66ccffSam Tarly|r
+
+
+
+Locker.txt
+Locker.lua
+Bindings/Bindings.xml   
+Bindings/Bindings.lua
+

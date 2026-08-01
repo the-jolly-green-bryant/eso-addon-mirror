@@ -1,0 +1,9 @@
+## Title: |c77aaffPvP FPS 2018
+## Author: phuein
+## APIVersion: 100035
+## Description: Reduce SubSampling quality while in PvP zones (Cyrodiil, Battlegrounds.)
+## Version: 1.22
+## SavedVariables: PVPFPSAddonSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+PvPFPS2018.lua

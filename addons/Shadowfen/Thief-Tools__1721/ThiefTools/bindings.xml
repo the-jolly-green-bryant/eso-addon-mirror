@@ -1,0 +1,24 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|cFF9900Thief Tools|r">
+      <Action name="THIEFTOOLS_TOGGLE">
+        <Down>ThiefTools:toggle()</Down>
+      </Action>
+      <Action name="THIEFTOOLS_KILL_TOGGLE">
+        <Down>ThiefTools:ToggleSafeInnocents()</Down>
+      </Action>	  
+      <Action name="THIEFTOOLS_AUTOSTEAL_TOGGLE">
+        <Down>ThiefTools:ToggleAutoSteal()</Down>
+      </Action>	  
+	  <Action name="THIEFTOOLS_AUTOJUNK_TOGGLE">
+		<Down>ThiefTools:toggleAutoJunk()</Down>
+	  </Action>
+	  <Action name="THIEFTOOLS_LOCK_TOGGLE">
+		<Down>ThiefTools:lockWindow1()</Down>
+	  </Action>
+	  <Action name="THIEFTOOLS_METER_TOGGLE">
+		<Down>ThiefTools:hideMeter()</Down>
+	  </Action>
+    </Category>
+  </Layer>
+</Bindings>

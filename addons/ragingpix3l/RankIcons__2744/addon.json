@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/ragingpix3l/RankIcons__2744",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ragingpix3l",
+  "canonical_id": "esoui:2744",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2744",
+  "deleted": false,
+  "directories": [
+    "RankIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2744/",
+  "fingerprint": "f3ccb3ac1802600132286f6d8e7ab6036f4e372c8b2b15e76b221a2c73c55ebd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9286.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9287.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2744",
+  "source_url": "https://www.esoui.com/downloads/info2744-RankIcons.html",
+  "stats": {
+    "downloads": 2776,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "RankIcons",
+  "updated_at": 1597598125000,
+  "version": "0.05"
+}

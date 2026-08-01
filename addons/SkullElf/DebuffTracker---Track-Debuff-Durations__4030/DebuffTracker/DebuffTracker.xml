@@ -1,0 +1,66 @@
+<GuiXml>
+	<Controls>
+		<Control name="DebuffTracker_Row_Template"
+		         virtual="true">
+			<ResizeToFitPadding width="5"
+			                    height="5"/>
+			<Controls>
+				<!-- TimerBar Container (used by ZO_TimerBar) -->
+				<Control name="$(parent)TimerBar">
+					<Anchor point="TOPLEFT"
+					        relativeTo="$(parent)"/>
+					<Anchor point="BOTTOMRIGHT"
+					        relativeTo="$(parent)"
+					        offsetX="-5"/>
+					<Controls>
+						<!-- The underlying animated StatusBar -->
+						<StatusBar name="$(parent)Status"
+						           color="00FF00FF">
+							<Anchor point="TOPLEFT"
+							        relativeTo="$(parent)"/>
+							<Anchor point="BOTTOMRIGHT"
+							        relativeTo="$(parent)"/>
+						</StatusBar>
+						<!-- Timer text (ZO_TimerBar uses this) -->
+						<Label name="$(parent)Time"
+						       font="ZoFontGameSmall"
+						       horizontalAlignment="RIGHT"
+						       verticalAlignment="CENTER"
+						       wrapMode="ELLIPSIS">
+							<Dimensions x="50"
+							            y="24"/>
+							<Anchor point="RIGHT"
+							        relativeTo="$(parent)Status"
+							        offsetX="-5"/>
+						</Label>
+						<!-- Unit name (on left) -->
+						<Label name="$(parent)Label"
+						       font="ZoFontGameSmall"
+						       horizontalAlignment="LEFT"
+						       verticalAlignment="CENTER"
+						       wrapMode="ELLIPSIS"
+						       maxLineCount="1">
+							<Anchor point="LEFT"
+							        offsetX="5"/>
+							<Anchor point="RIGHT"
+							        relativeTo="$(parent)Time"
+							        relativePoint="LEFT"
+							        offsetX="-5"/>
+						</Label>
+					</Controls>
+				</Control>
+				<!-- Stack (Optional, overlays TimerBar) -->
+				<Label name="$(parent)Stack"
+				       font="ZoFontGameSmall"
+				       horizontalAlignment="RIGHT"
+				       verticalAlignment="CENTER">
+					<Dimensions x="20"
+					            y="24"/>
+					<Anchor point="RIGHT"
+					        relativeTo="$(parent)TimerBar"
+					        offsetX="-5"/>
+				</Label>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

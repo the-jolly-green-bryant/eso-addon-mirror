@@ -1,0 +1,81 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="EPC_TooltipTopLevel" inherits="TooltipTopLevel">
+            <Controls>
+                <Tooltip name="EPC_Tooltip" inherits="ZO_BaseTooltip">
+                    <Controls>
+                        <Control name="$(parent)SellPrice" inherits="ZO_TooltipMoneyLine" hidden="true"/>
+                    </Controls>
+                </Tooltip>
+            </Controls>
+        </TopLevelControl>
+		
+        <TopLevelControl name="EPC_GUI" mouseEnabled="true" movable="true" clampedToScreen="true" tier="LOW" hidden="true">
+            <Dimensions x="846" y="550" />
+            <Anchor point="CENTER" offsetY="-100"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" mouseEnabled="false" tier="LOW"/>
+                
+                <Label name="$(parent)WindowTitle" font="ZoFontWindowTitle" text="EasyPenCalc">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+                </Label>
+								   
+                <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="6" />
+                    <Textures   normal    ="EsoUI/Art/Buttons/closebutton_up.dds"
+                                pressed   ="EsoUI/Art/Buttons/closebutton_down.dds"
+                                mouseOver ="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+                                disabled  ="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+                    <OnClicked>
+                        EPC.ToggleGUI()
+                    </OnClicked>
+                </Button>
+				
+				<Control name="$(parent)Summary" resizeToFitDescendents="true" hidden="false" virtual="false" movable="false" mouseEnabled="false">
+					<Dimensions x="195" y="250" />
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="12"/>
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" mouseEnabled="false" tier="LOW"/>
+						
+						<Label name="$(parent)WindowTitle" font="ZoFontWindowSubtitle" text="Pen Summary">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+						</Label>
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)Author" resizeToFitDescendents="false" hidden="false" virtual="false" movable="false" mouseEnabled="false">
+					<Dimensions x="195" y="20" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Summary" offsetY="12"/>
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" mouseEnabled="false" tier="LOW"/>
+						
+						<Label name="$(parent)MadeBy" font="EPCFontSmall" text="Made by @|cBB1111Red|rnasD">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+						</Label>
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)ColOne" resizeToFitDescendents="false" hidden="false" virtual="false" movable="false" mouseEnabled="false">
+					<Dimensions x="400" />
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="12" offsetY="50"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)" offsetX="12" offsetY="-12"/>
+				</Control>
+				
+				<Control name="$(parent)ColTwo" resizeToFitDescendents="false" hidden="false" virtual="false" movable="false" mouseEnabled="false">
+					<Dimensions x="400" />
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-12" offsetY="50"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-12" offsetY="-12"/>
+				</Control>
+				
+				<Button name="$(parent)Button_ResetToDefaults" inherits="ZO_DefaultButton" text="Reset to defaults" font="EPCFontNormalBold">
+					<Dimensions x="200" y="25" />
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)" offsetX="8" offsetY="-12"/>
+					<OnClicked>
+						EPC.PEN.ResetToDefaults()
+					</OnClicked>
+				</Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

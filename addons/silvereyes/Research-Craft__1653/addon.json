@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/silvereyes/Research-Craft__1653",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "silvereyes",
+  "canonical_id": "esoui:1653",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:1653",
+  "deleted": false,
+  "directories": [
+    "ResearchCraft"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1653/",
+  "fingerprint": "07bf9e63d14195492d07a7655469a191a35df0f53da01b9bd0d15972b8efa53e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1653",
+  "source_url": "https://www.esoui.com/downloads/info1653-ResearchCraft.html",
+  "stats": {
+    "downloads": 32526,
+    "favorites": 44,
+    "monthly_downloads": 38
+  },
+  "title": "Research Craft",
+  "updated_at": 1635610321000,
+  "version": "1.6.7"
+}

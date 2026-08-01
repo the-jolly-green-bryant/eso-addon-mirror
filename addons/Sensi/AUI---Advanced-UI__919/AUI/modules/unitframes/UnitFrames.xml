@@ -1,0 +1,50 @@
+<GuiXml>
+  <Animations>
+    <AnimationTimeline name="AUI_Attribute_ArrowAnimation">
+      <Animations>
+        <TranslateAnimation />
+        <AlphaAnimation duration="350" startAlpha="0" endAlpha="1"/>
+        <AlphaAnimation delay="350" duration="350" startAlpha="1" endAlpha="0"/>
+      </Animations>
+    </AnimationTimeline>
+  </Animations>
+  <Controls>
+    <TopLevelControl name="AUI_Attributes_Window" hidden="true" DrawLayer="4">
+      <Controls>
+        <Control name="$(parent)_Group" mouseEnabled="false" tier="HIGH" hidden="true" clampedToScreen="true">
+          <Anchor point="TOPLEFT" offsetX="35" offsetY="165"/>
+          <Controls>
+            <Control name="$(parent)_Shield" mouseEnabled="false" tier="HIGH" hidden="true" clampedToScreen="true">
+              <AnchorFill />
+            </Control>
+            <Control name="$(parent)_Companion" mouseEnabled="false" tier="HIGH" hidden="true" clampedToScreen="true">
+              <AnchorFill />
+            </Control>				
+          </Controls>
+        </Control>
+        <Control name="$(parent)_Raid" mouseEnabled="false" tier="HIGH" hidden="true" clampedToScreen="true">
+          <Anchor point="TOPLEFT" offsetX="35" offsetY="165"/>
+          <Controls>
+            <Control name="$(parent)_Shield" mouseEnabled="false" tier="HIGH" hidden="true" clampedToScreen="true">
+              <AnchorFill />
+            </Control>
+            <Control name="$(parent)_Companion" mouseEnabled="false" tier="HIGH" hidden="true" clampedToScreen="true">
+              <AnchorFill />
+            </Control>						
+          </Controls>  
+        </Control>
+        <Control name="$(parent)_Boss" mouseEnabled="false" tier="HIGH" hidden="true" clampedToScreen="true">
+          <Anchor point="TOP" offsetX="340" offsetY="130"/>
+          <Controls>
+            <Control name="$(parent)_Shield" mouseEnabled="false" tier="HIGH" hidden="true" clampedToScreen="true">
+              <AnchorFill />
+            </Control>
+            <Control name="$(parent)_Companion" mouseEnabled="false" tier="HIGH" hidden="true" clampedToScreen="true">
+              <AnchorFill />
+            </Control>				
+          </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

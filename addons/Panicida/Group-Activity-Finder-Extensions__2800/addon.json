@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Panicida/Group-Activity-Finder-Extensions__2800",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Panicida",
+  "canonical_id": "esoui:2800",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:2800",
+  "deleted": false,
+  "directories": [
+    "GroupActivityFinderExtensions"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2800/",
+  "fingerprint": "cbcb09e72953dd20ad9e1739027e6a910961457da07a11d60458a69318f2df64",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15072.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15073.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15071.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15104.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15105.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2800",
+  "source_url": "https://www.esoui.com/downloads/info2800-GroupActivityFinderExtensions.html",
+  "stats": {
+    "downloads": 42655,
+    "favorites": 50,
+    "monthly_downloads": 81
+  },
+  "title": "Group & Activity Finder Extensions",
+  "updated_at": 1768945192000,
+  "version": "6.2.0"
+}

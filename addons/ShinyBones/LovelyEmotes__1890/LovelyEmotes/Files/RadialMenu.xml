@@ -1,0 +1,31 @@
+<GuiXml>
+	<Controls>
+
+		<TopLevelControl name="LE_RadialMenu_Variant_GP_Default" inherits="ZO_RadialMenuHUDSize_Gamepad" virtual="true" >
+			<Controls>
+				<Label name="$(parent)InfoText" font="ZoFontGamepadBold34" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" alpha="0.6" >
+					<Anchor point="CENTER" offsetY="10" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+
+	<Animations>
+
+		<AnimationTimeline name="LE_RadialMenuAnimation_Default" >
+			<Animations>
+				<AlphaAnimation duration="125" startAlpha="0" endAlpha="1" />
+
+				<ScaleAnimation duration="125" startScale="0" endScale="1" />
+
+				<TranslateAnimation duration="125" >
+					<EasingFunction>
+						return ZO_EaseOutQuadratic(progress)
+					</EasingFunction>
+				</TranslateAnimation>
+			</Animations>
+		</AnimationTimeline>
+
+	</Animations>
+</GuiXml>

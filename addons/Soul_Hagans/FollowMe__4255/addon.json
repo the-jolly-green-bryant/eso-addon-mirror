@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/Soul_Hagans/FollowMe__4255",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Soul_Hagans",
+  "canonical_id": "esoui:4255",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4255",
+  "deleted": false,
+  "directories": [
+    "FollowMe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4255/",
+  "fingerprint": "57a56fb8c027351977d3379eef7d0bf24e822c4c348222a72a635ff7046e2c4c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16699.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14578.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14556.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4255",
+  "source_url": "https://www.esoui.com/downloads/info4255-FollowMe.html",
+  "stats": {
+    "downloads": 537,
+    "favorites": 0,
+    "monthly_downloads": 48
+  },
+  "title": "FollowMe",
+  "updated_at": 1784386351000,
+  "version": "2.0.1"
+}

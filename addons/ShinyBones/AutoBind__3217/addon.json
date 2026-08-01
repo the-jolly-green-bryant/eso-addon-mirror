@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ShinyBones/AutoBind__3217",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ShinyBones",
+  "canonical_id": "esoui:3217",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3217",
+  "deleted": false,
+  "directories": [
+    "AutoBind"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3217/",
+  "fingerprint": "f0e02df62d646b4641cd9cc751b3c460e352a706102ca8d0ed4e303fc47cd9eb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11053.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3217",
+  "source_url": "https://www.esoui.com/downloads/info3217-AutoBind.html",
+  "stats": {
+    "downloads": 33465,
+    "favorites": 39,
+    "monthly_downloads": 595
+  },
+  "title": "AutoBind",
+  "updated_at": 1760453893000,
+  "version": "3.0.0"
+}

@@ -1,0 +1,19 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="TimeToHealVisualIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="400" y="100" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+	  
+       <OnMoveStop>
+        TimeToHeal.OnIndicatorMoveStop()
+      </OnMoveStop>
+ 
+      <Controls>
+        <Label name="$(parent)Label" width="400" height="100" font="ZoFontWinH1" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Heal Now!">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

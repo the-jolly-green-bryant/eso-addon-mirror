@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Noobanidus/CraftBagSession-BETA-Depracated__1374",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Noobanidus",
+  "canonical_id": "esoui:1374",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:1374",
+  "deleted": false,
+  "directories": [
+    "CraftBagSession"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1374/",
+  "fingerprint": "7061af832a21ed4734ef0cd363e73c78fb4feddf5b842a167ebada9f096f181f",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1374",
+  "source_url": "https://www.esoui.com/downloads/info1374-CraftBagSession-BETADepracated.html",
+  "stats": {
+    "downloads": 3260,
+    "favorites": 2,
+    "monthly_downloads": 8
+  },
+  "title": "CraftBagSession-BETA (Depracated)",
+  "updated_at": 1464954039000,
+  "version": "1.0.0-BETA"
+}

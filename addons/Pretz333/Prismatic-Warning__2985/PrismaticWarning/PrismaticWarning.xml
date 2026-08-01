@@ -1,0 +1,28 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="PrismaticWarningWindow">
+      <Controls>
+
+        <Backdrop name="$(parent)LabelBG" alpha="0" centerColor="40FF0000" edgeColor="60FF0000" clampedToScreen="true" movable="true" mouseEnabled="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+          <Dimensions x="400" y="110"/>
+          <Edge edgeSize="1"/>
+          <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12);self:SetAlpha(1)</OnMouseEnter>
+          <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0);self:SetAlpha(0)</OnMouseExit>
+          <OnMoveStop>PrismaticWarning.savePosition()</OnMoveStop>
+        </Backdrop>
+
+        <Label name="$(parent)Label" font="ZoFontWinH1" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="CENTER" relativeTo="$(parent)LabelBG" relativePoint="CENTER" offsetX="0" offsetY="-17"/>
+          <Dimensions x="400" y="110" />
+        </Label>
+
+        <Label name="$(parent)Info" font="ZoFontWinH1" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="CENTER" relativeTo="$(parent)Label" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+          <Dimensions x="400" y="110" />
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

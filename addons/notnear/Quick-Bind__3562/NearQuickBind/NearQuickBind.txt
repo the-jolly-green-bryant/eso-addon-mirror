@@ -1,0 +1,14 @@
+## Title: Near's Quick Bind
+## APIVersion: 101037
+## Version: 1.0.1
+## AddOnVersion: 101
+## Author: |cCC99FFnotnear|r
+
+# Thank you to DrunkKittens for letting me use code from 'Quick Destroy' as a base.
+
+lang/en.lua
+lang/$(language).lua
+
+bindings.xml
+keystrip.lua
+NearQuickBind.lua

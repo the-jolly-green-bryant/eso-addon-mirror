@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/Noobanidus/Notes__1303",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Noobanidus",
+  "canonical_id": "esoui:1303",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1303",
+  "deleted": false,
+  "directories": [
+    "Notes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1303/",
+  "fingerprint": "0f589af124686752c5b8349901dadd3f8f43f622fbe7e51e16a820a23298e4c4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4241.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1303",
+  "source_url": "https://www.esoui.com/downloads/info1303-Notes.html",
+  "stats": {
+    "downloads": 6117,
+    "favorites": 9,
+    "monthly_downloads": 20
+  },
+  "title": "Notes",
+  "updated_at": 1489116716000,
+  "version": "1.0.3"
+}

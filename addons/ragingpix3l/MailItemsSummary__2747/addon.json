@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ragingpix3l/MailItemsSummary__2747",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ragingpix3l",
+  "canonical_id": "esoui:2747",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2747",
+  "deleted": false,
+  "directories": [
+    "MailItemsSummary"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2747/",
+  "fingerprint": "5650583f2676992fb46495044dcf5169cd131127e1dfc8de188be2939b4f80d5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9306.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2747",
+  "source_url": "https://www.esoui.com/downloads/info2747-MailItemsSummary.html",
+  "stats": {
+    "downloads": 3285,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "MailItemsSummary",
+  "updated_at": 1598116113000,
+  "version": "0.02"
+}

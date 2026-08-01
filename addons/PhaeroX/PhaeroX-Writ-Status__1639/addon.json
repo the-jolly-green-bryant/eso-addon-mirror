@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/PhaeroX/PhaeroX-Writ-Status__1639",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "PhaeroX",
+  "canonical_id": "esoui:1639",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:1639",
+  "deleted": false,
+  "directories": [
+    "PXWritStatus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1639/",
+  "fingerprint": "53262e952c6fdf63915db635a862564a21aec874a796f24d73e99eb78ddd1cfd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5374.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5404.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1639",
+  "source_url": "https://www.esoui.com/downloads/info1639-PhaeroXWritStatus.html",
+  "stats": {
+    "downloads": 7440,
+    "favorites": 7,
+    "monthly_downloads": 15
+  },
+  "title": "PhaeroX Writ Status",
+  "updated_at": 1558296258000,
+  "version": "1.0.5"
+}

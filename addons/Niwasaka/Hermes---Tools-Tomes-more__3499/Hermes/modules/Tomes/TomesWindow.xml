@@ -1,0 +1,369 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="HermesTomeWindow"
+                         hidden="true"
+                         movable="true"
+                         mouseEnabled="true"
+                         clampedToScreen="true">
+            <Dimensions x="716" y="352"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill/>
+                </Backdrop>
+
+                <Label name="$(parent)Title"
+                       font="ZoFontWinH2">
+                    <Anchor point="TOPLEFT" offsetX="14" offsetY="12"/>
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-8" offsetY="8"/>
+                </Button>
+
+                <Button name="$(parent)ViewMode"
+                        mouseEnabled="true">
+                    <Anchor point="TOPRIGHT"
+                            relativeTo="$(parent)Close"
+                            relativePoint="TOPLEFT"
+                            offsetX="-4"
+                            offsetY="-3"/>
+                    <Dimensions x="24" y="24"/>
+
+                    <Controls>
+                        <Texture name="$(parent)Icon" mouseEnabled="false">
+                            <Anchor point="CENTER"/>
+                            <Dimensions x="30" y="30"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+
+                <Button name="$(parent)ClaimAll"
+                        inherits="ZO_DefaultButton"
+                        mouseEnabled="true">
+                    <Anchor point="TOPRIGHT"
+                            relativeTo="$(parent)ViewMode"
+                            relativePoint="TOPLEFT"
+                            offsetX="-8"
+                            offsetY="0"/>
+                    <Dimensions x="86" y="24"/>
+                </Button>
+
+                <Label name="$(parent)PointsLabel"
+                       font="ZoFontWinT2"
+                       color="B8B8B8"
+                       horizontalAlignment="RIGHT">
+                    <Anchor point="TOPRIGHT" offsetX="-248" offsetY="40"/>
+                    <Dimensions x="120" y="20"/>
+                </Label>
+
+                <Label name="$(parent)PointsValue"
+                       font="ZoFontGameBold"
+                       horizontalAlignment="RIGHT">
+                    <Anchor point="TOPRIGHT" offsetX="-248" offsetY="56"/>
+                    <Dimensions x="120" y="20"/>
+                </Label>
+
+                <Label name="$(parent)TimeRemainingLabel"
+                       font="ZoFontWinT2"
+                       color="B8B8B8"
+                       horizontalAlignment="RIGHT">
+                    <Anchor point="TOPRIGHT" offsetX="-42" offsetY="40"/>
+                    <Dimensions x="190" y="20"/>
+                </Label>
+
+                <Label name="$(parent)TimeRemainingValue"
+                       font="ZoFontGameBold"
+                       horizontalAlignment="RIGHT">
+                    <Anchor point="TOPRIGHT" offsetX="-42" offsetY="56"/>
+                    <Dimensions x="190" y="20"/>
+                </Label>
+
+                <Button name="$(parent)WeeklyTab"
+                        mouseEnabled="true">
+                    <Dimensions x="48" y="48"/>
+                    <Anchor point="TOPLEFT" offsetX="14" offsetY="38"/>
+
+                    <Controls>
+                        <Texture name="$(parent)Icon"
+                                 textureFile="/esoui/art/tamrieltomes/timedactivitycategory_weekly_up.dds"
+                                 mouseEnabled="false">
+                            <Dimensions x="40" y="40"/>
+                            <Anchor point="CENTER"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+
+                <Button name="$(parent)SeasonalTab"
+                        mouseEnabled="true">
+                    <Dimensions x="48" y="48"/>
+                    <Anchor point="LEFT"
+                            relativeTo="$(parent)WeeklyTab"
+                            relativePoint="RIGHT"
+                            offsetX="8"/>
+
+                    <Controls>
+                        <Texture name="$(parent)Icon"
+                                 textureFile="/esoui/art/tamrieltomes/timedactivitycategory_seasonal_up.dds"
+                                 mouseEnabled="false">
+                            <Dimensions x="40" y="40"/>
+                            <Anchor point="CENTER"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+
+                <Backdrop name="$(parent)ListBG" inherits="ZO_DefaultBackdrop">
+                    <Anchor point="TOPLEFT" offsetX="14" offsetY="94"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-14"/>
+
+                    <Controls>
+                        <Label name="$(parent)HeaderName"
+                               font="ZoFontGameBold">
+                            <Anchor point="TOPLEFT" offsetX="14" offsetY="8"/>
+                            <Dimensions x="334" y="20"/>
+                        </Label>
+
+                        <Label name="$(parent)HeaderProgress"
+                               font="ZoFontGameBold"
+                               horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" offsetX="360" offsetY="8"/>
+                            <Dimensions x="118" y="20"/>
+                        </Label>
+
+                        <Label name="$(parent)HeaderReward"
+                               font="ZoFontGameBold"
+                               horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" offsetX="486" offsetY="8"/>
+                            <Dimensions x="90" y="20"/>
+                        </Label>
+
+                        <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" offsetX="6" offsetY="34"/>
+                            <Anchor point="BOTTOMRIGHT" offsetX="-6" offsetY="-10"/>
+                        </Control>
+
+                        <Control name="$(parent)CompactList"
+                                 inherits="ZO_ScrollList"
+                                 hidden="true">
+                            <Anchor point="TOPLEFT" offsetX="6" offsetY="6"/>
+                            <Anchor point="BOTTOMRIGHT" offsetX="-6" offsetY="-10"/>
+                        </Control>
+
+                        <Label name="$(parent)Empty"
+                               font="ZoFontGame">
+                            <Anchor point="TOPLEFT" offsetX="10" offsetY="10"/>
+                            <Dimensions x="656"/>
+                        </Label>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="HermesTomeIcon" topmost="true">
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="GuiRoot"/>
+            <OnInitialized>self:SetDimensions(GuiRoot:GetWidth(), GuiRoot:GetHeight())</OnInitialized>
+
+            <Controls>
+                <Backdrop name="$(parent)MoveHandle"
+                          alpha="0"
+                          clampedToScreen="true"
+                          movable="true"
+                          mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="GuiRoot" offsetX="0" offsetY="900"/>
+                    <Dimensions x="60" y="60"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+
+                <Button name="$(parent)Button" topmost="true">
+                    <Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)MoveHandle"/>
+                    <Dimensions x="40" y="40"/>
+
+                    <Controls>
+                        <Texture name="$(parent)Icon" mouseEnabled="false">
+                            <Anchor point="CENTER"/>
+                            <Dimensions x="40" y="40"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+
+        <Control name="HermesTomeRow"
+                 virtual="true"
+                 mouseEnabled="true">
+            <Dimensions x="676" y="38"/>
+
+            <Controls>
+                <Backdrop name="$(parent)BG"
+                          mouseEnabled="false">
+                    <AnchorFill/>
+                </Backdrop>
+
+                <Button name="$(parent)ActionButton"
+                        mouseEnabled="true">
+                    <Dimensions x="32" y="32"/>
+                    <Anchor point="RIGHT" offsetX="-4"/>
+
+                    <Controls>
+                        <Texture name="$(parent)Icon"
+                                 textureFile="/esoui/art/endlessdungeon/reroll_buffs.dds"
+                                 mouseEnabled="false">
+                            <Dimensions x="28" y="28"/>
+                            <Anchor point="CENTER"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+
+                <Button name="$(parent)TrackButton"
+                        mouseEnabled="true">
+                    <Dimensions x="32" y="32"/>
+                    <Anchor point="RIGHT"
+                            relativeTo="$(parent)ActionButton"
+                            relativePoint="LEFT"
+                            offsetX="-4"/>
+
+                    <Controls>
+                        <Texture name="$(parent)Icon"
+                                 textureFile="/esoui/art/journal/journal_tabicon_quest_disabled.dds"
+                                 mouseEnabled="false">
+                            <Dimensions x="28" y="28"/>
+                            <Anchor point="CENTER"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+
+                <Label name="$(parent)Reward"
+                       font="ZoFontGame"
+                       wrapMode="ELLIPSIS"
+                       horizontalAlignment="RIGHT">
+                    <Anchor point="LEFT" offsetX="482"/>
+                    <Dimensions x="90" y="20"/>
+                </Label>
+
+                <Label name="$(parent)Progress"
+                       font="ZoFontGame"
+                       horizontalAlignment="RIGHT">
+                    <Anchor point="LEFT" offsetX="356"/>
+                    <Dimensions x="118" y="20"/>
+                </Label>
+
+                <Label name="$(parent)Name"
+                       font="ZoFontGame"
+                       wrapMode="ELLIPSIS"
+                       horizontalAlignment="LEFT"
+                       mouseEnabled="true">
+                    <Anchor point="LEFT" offsetX="8"/>
+                    <Anchor point="RIGHT"
+                            relativeTo="$(parent)Progress"
+                            relativePoint="LEFT" offsetX="-8"/>
+                    <Dimensions y="20"/>
+                </Label>
+
+                <Backdrop name="$(parent)ProgressBG" mouseEnabled="false">
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)Name"
+                            relativePoint="BOTTOMLEFT"
+                            offsetX="0"
+                            offsetY="3"/>
+                    <Dimensions x="340" y="3"/>
+                    <Edge edgeSize="0"/>
+                </Backdrop>
+
+                <Backdrop name="$(parent)ProgressFill" mouseEnabled="false">
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)ProgressBG"
+                            relativePoint="TOPLEFT"/>
+                    <Dimensions x="0" y="3"/>
+                    <Edge edgeSize="0"/>
+                </Backdrop>
+            </Controls>
+        </Control>
+
+        <Control name="HermesTomeCompactEntry"
+                 virtual="true"
+                 mouseEnabled="true">
+            <Dimensions x="374" y="55"/>
+
+            <Controls>
+                <Backdrop name="$(parent)BG"
+                          mouseEnabled="false">
+                    <AnchorFill/>
+                </Backdrop>
+
+                <Button name="$(parent)ActionButton"
+                        mouseEnabled="true">
+                    <Dimensions x="28" y="28"/>
+                    <Anchor point="TOPRIGHT" offsetX="-4" offsetY="6"/>
+
+                    <Controls>
+                        <Texture name="$(parent)Icon"
+                                 textureFile="/esoui/art/endlessdungeon/reroll_buffs.dds"
+                                 mouseEnabled="false">
+                            <Dimensions x="24" y="24"/>
+                            <Anchor point="CENTER"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+
+                <Button name="$(parent)TrackButton"
+                        mouseEnabled="true">
+                    <Dimensions x="28" y="28"/>
+                    <Anchor point="TOPRIGHT"
+                            relativeTo="$(parent)ActionButton"
+                            relativePoint="TOPLEFT"
+                            offsetX="-2"
+                            offsetY="0"/>
+
+                    <Controls>
+                        <Texture name="$(parent)Icon"
+                                 textureFile="/esoui/art/journal/journal_tabicon_quest_disabled.dds"
+                                 mouseEnabled="false">
+                            <Dimensions x="24" y="24"/>
+                            <Anchor point="CENTER"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+
+                <Label name="$(parent)Name"
+                       font="ZoFontGame"
+                       wrapMode="ELLIPSIS"
+                       horizontalAlignment="LEFT"
+                       verticalAlignment="TOP"
+                       mouseEnabled="true">
+                    <DimensionConstraints minX="290" minY="20" maxX="290" maxY="20"/>
+                    <Anchor point="TOPLEFT" offsetX="8" offsetY="5"/>
+                </Label>
+
+                <Label name="$(parent)Details"
+                       font="ZoFontGameSmall"
+                       horizontalAlignment="LEFT">
+                    <DimensionConstraints minX="290" minY="16" maxX="290" maxY="16"/>
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)Name"
+                            relativePoint="BOTTOMLEFT"
+                            offsetX="0"
+                            offsetY="3"/>
+                </Label>
+
+                <Backdrop name="$(parent)ProgressBG" mouseEnabled="false">
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)Name"
+                            relativePoint="BOTTOMLEFT"
+                            offsetX="0"
+                            offsetY="0"/>
+                    <Dimensions x="290" y="3"/>
+                    <Edge edgeSize="0"/>
+                </Backdrop>
+
+                <Backdrop name="$(parent)ProgressFill" mouseEnabled="false">
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)ProgressBG"
+                            relativePoint="TOPLEFT"/>
+                    <Dimensions x="0" y="3"/>
+                    <Edge edgeSize="0"/>
+                </Backdrop>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

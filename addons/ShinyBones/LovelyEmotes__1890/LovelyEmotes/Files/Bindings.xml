@@ -1,0 +1,123 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL" >
+		<Category name="LovelyEmotes" >
+			<Action name="LOVELYEMOTES_TOGGLE_MAIN_WINDOW" >
+				<Down> LovelyEmotes.BindingFunctions.ToggleMainWindow() </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_RADIAL_MENU" >
+				<Down> LE_RadialMenu:Show() </Down>
+				<Up> LE_RadialMenu:Hide() </Up>
+			</Action>
+			<Action name="LOVELYEMOTES_NEXT_TAB" >
+				<Down> LovelyEmotes.BindingFunctions.NextTab() </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_PREVIOUS_TAB" >
+				<Down> LovelyEmotes.BindingFunctions.PreviousTab() </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_1" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(1) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_2" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(2) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_3" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(3) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_4" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(4) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_5" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(5) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_6" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(6) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_7" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(7) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_8" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(8) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_9" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(9) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_10" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(10) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_11" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(11) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_12" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(12) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_13" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(13) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_14" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(14) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_15" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(15) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_TAB_16" >
+				<Down> LovelyEmotes.BindingFunctions.TryShowTab(16) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_1" >
+				<Down> LovelyEmotes.PlaySavedEmote(1) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_2" >
+				<Down> LovelyEmotes.PlaySavedEmote(2) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_3" >
+				<Down> LovelyEmotes.PlaySavedEmote(3) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_4" >
+				<Down> LovelyEmotes.PlaySavedEmote(4) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_5" >
+				<Down> LovelyEmotes.PlaySavedEmote(5) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_6" >
+				<Down> LovelyEmotes.PlaySavedEmote(6) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_7" >
+				<Down> LovelyEmotes.PlaySavedEmote(7) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_8" >
+				<Down> LovelyEmotes.PlaySavedEmote(8) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_9" >
+				<Down> LovelyEmotes.PlaySavedEmote(9) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_10" >
+				<Down> LovelyEmotes.PlaySavedEmote(10) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_11" >
+				<Down> LovelyEmotes.PlaySavedEmote(11) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_12" >
+				<Down> LovelyEmotes.PlaySavedEmote(12) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_13" >
+				<Down> LovelyEmotes.PlaySavedEmote(13) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_14" >
+				<Down> LovelyEmotes.PlaySavedEmote(14) </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_FAVORITE_EMOTE_15" >
+				<Down> LovelyEmotes.PlaySavedEmote(15) </Down>
+			</Action>
+		</Category>
+	</Layer>
+
+	<Layer name="SI_KEYBINDINGS_LAYER_LOVELYEMOTES_RADIAL_MENU">
+		<Category>
+			<Action name="LOVELYEMOTES_RADIAL_MENU_NEXT_TAB">
+				<Down> LovelyEmotes.BindingFunctions.NextTab() </Down>
+			</Action>
+			<Action name="LOVELYEMOTES_RADIAL_MENU_PREVIOUS_TAB">
+				<Down> LovelyEmotes.BindingFunctions.PreviousTab() </Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

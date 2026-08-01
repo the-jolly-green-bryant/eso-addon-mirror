@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="SetTracker">
+			<Action name="ST_TOGGLE_DISPLAY">
+				<Up>SetTrackerToggleDisplay()</Up>
+			</Action>
+			<Action name="ST_SHOW_FREESPACE">
+				<Up>SetTrackerShowFreeSpace()</Up>
+			</Action>
+			<Action name="ST_SHOW_CHARBOUND">
+				<Up>SetTrackerShowCharBoundHoldings()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,17 @@
+## APIVersion: 100030 100031 100032
+## Title: ratpins
+## Version: 1
+## AddOnVersion: 1
+## Author: ratphinx
+## Description: Rattypins pinnyrats
+## SavedVariables: ratpinsSavedVariables
+## DependsOn: LibAddonMenu-2.0>=28
+
+Languages\en.lua
+Languages\$(language).lua
+
+Bindings.xml
+ratpins.xml
+
+ratpins.lua
+Settings.lua

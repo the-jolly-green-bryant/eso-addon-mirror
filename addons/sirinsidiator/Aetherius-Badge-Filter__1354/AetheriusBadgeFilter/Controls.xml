@@ -1,0 +1,83 @@
+<GuiXml>
+    <Controls>
+        <Control name="AetheriusBadgeFilterGroupTemplate" mouseEnabled="true" tier="MEDIUM" layer="CONTROLS" virtual="true">
+            <Dimensions y="30" />
+
+            <Controls>
+                <Label name="$(parent)Name" font="ZoFontGameShadow" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                    <Dimensions y="24" />
+                    <Anchor point="LEFT" />
+                    <Anchor point="RIGHT" />
+                </Label>
+                <Texture name="$(parent)Line" inherits="ZO_HorizontalDivider">
+                    <Dimensions x="600" y="6" />
+                    <Anchor point="BOTTOMRIGHT" />
+                </Texture>
+            </Controls>
+        </Control>
+
+        <Control name="AetheriusBadgeFilterBadgeTemplate" mouseEnabled="true" tier="MEDIUM" layer="CONTROLS" virtual="true">
+            <Dimensions y="24" />
+
+            <Controls>
+                <Texture name="$(parent)Bg" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds">
+                    <AnchorFill />
+                    <TextureCoords left="0" right="1" top="0" bottom=".8125" />
+                </Texture>
+
+                <Texture name="$(parent)Highlight" textureFile="EsoUI/Art/Miscellaneous/listItem_highlight.dds" alpha="0">
+                    <AnchorFill />
+                    <TextureCoords left="0" right="1" top="0" bottom=".625" />
+                </Texture>
+
+                <Label name="$(parent)Name" font="ZoFontGameShadow" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DEFAULT_TEXT">
+                    <Dimensions y="24" />
+                    <Anchor point="LEFT" offsetX="18" />
+                    <Anchor point="RIGHT" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="AetheriusBadgeFilterWindow" hidden="true">
+            <AnchorFill />
+            <Controls>
+                <Button name="$(parent)Button" mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="LEFT" relativeTo="ZO_GuildRosterSearchLabel" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+                    <Textures normal="EsoUI/Art/TreeIcons/store_indexicon_trophy_up.dds" pressed="EsoUI/Art/TreeIcons/store_indexicon_trophy_down.dds" mouseOver="EsoUI/Art/TreeIcons/store_indexicon_trophy_over.dds" />
+                </Button>
+
+                <Control name="$(parent)Filter" mouseEnabled="true" clampedToScreen="true">
+                    <DimensionConstraints minX="250" minY="200" />
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontWinH3" wrapMode="ELLIPSIS">
+                            <Anchor point="TOPLEFT" offsetX="25" offsetY="10" />
+                        </Label>
+
+                        <Button name="$(parent)Options" mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="32" y="32" />
+                            <Anchor point="TOPRIGHT" offsetX="-12" offsetY="7" />
+                            <Textures normal="EsoUI/Art/ChatWindow/chat_options_up.dds" pressed="EsoUI/Art/ChatWindow/chat_options_down.dds" mouseOver="EsoUI/Art/ChatWindow/chat_options_over.dds" />
+                        </Button>
+
+                        <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetY="5" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-25" offsetY="-10" />
+                        </Control>
+
+                        <Backdrop name="$(parent)Bg" integralWrapping="true">
+                            <Anchor point="TOPLEFT" offsetX="-4" offsetY="-4" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="4" offsetY="4" />
+
+                            <Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeFileWidth="256" edgeFileHeight="256" edgeSize="32" />
+                            <Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" />
+                            <Insets left="32" top="32" right="-32" bottom="-32" />
+                        </Backdrop>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+        <Label name="AetheriusBadgeFilterMemberEditorPreview" linkEnabled="true"></Label>
+    </Controls>
+</GuiXml>

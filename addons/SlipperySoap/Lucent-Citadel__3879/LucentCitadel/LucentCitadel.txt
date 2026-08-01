@@ -1,0 +1,337 @@
+## Title: Lucent Citadel
+## Description: Additional alerts for Lucent Citadel
+## Author: @SlipperySoap @AlekWithK
+## DependsOn: CombatAlerts LibAddonMenu-2.0 LibSimpleArrowSlip LibUnits2
+## OptionalDependsOn: OdySupportIcons 
+## Version: 1.4.3
+## APIVersion: 101041 101042
+## SavedVariables: LucentCitadelSavedVariables
+
+#Lib/LibStub/LibStub.lua
+#Lib/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+#Lib/LibAddonMenu-2.0/controls/panel.lua
+#Lib/LibAddonMenu-2.0/controls/submenu.lua
+#Lib/LibAddonMenu-2.0/controls/button.lua
+#Lib/LibAddonMenu-2.0/controls/checkbox.lua
+#Lib/LibAddonMenu-2.0/controls/colorpicker.lua
+#Lib/LibAddonMenu-2.0/controls/custom.lua
+#Lib/LibAddonMenu-2.0/controls/description.lua
+#Lib/LibAddonMenu-2.0/controls/divider.lua
+#Lib/LibAddonMenu-2.0/controls/dropdown.lua
+#Lib/LibAddonMenu-2.0/controls/editbox.lua
+#Lib/LibAddonMenu-2.0/controls/header.lua
+#Lib/LibAddonMenu-2.0/controls/slider.lua
+#Lib/LibAddonMenu-2.0/controls/texture.lua
+#Lib/LibAddonMenu-2.0/controls/iconpicker.lua
+
+LucentCitadelMenu.lua
+LucentCitadel.lua
+LucentCitadelData.lua
+LucentCitadelUI.lua
+LucentCitadelUtil.lua
+boss/Zilyesset.lua
+boss/Cavot.lua
+boss/Orphic.lua
+boss/Baron.lua
+boss/Xoryn.lua
+boss/Trash.lua
+boss/ArcaneKnot.lua
+boss/Common.lua
+LucentCitadel.xml
+
+; Changelog:
+;
+; Version 1.4.3 (8/10/2024)
+;	SlipperySoap
+;	* Updates:
+;		Formatting Menu
+;		Adding Button to Arcane Knot Order (Manual Entry) Core Mode @name pull
+;		Implemented a way to save 1 Arcane Knot Profile
+;
+; Version 1.4.2 (8/10/2024)
+;	SlipperySoap
+;	* Updates:
+;		Arcane Knot and Flux UI
+;	* Debugging:
+;		Arcane Knot and Flux UI
+;		Arcane Knot Order Assistant 
+;
+; Version 1.4.1 (8/8/2024)
+;	SlipperySoap
+;	* Updates:
+;		Illuminati core Arcane Knot and Fluctuating order/roster
+;	* Debugging:
+;		Orphic.lua:780
+;		Xoryn.lua:435
+;		ArcaneKnot.lua:156
+;		Commenting out some work on Xoryn's Heavy Shock because feature already handled by Lucent Citadel Helper 
+;		(Credits to Lucent Citadel Helper for some foundation code on this)
+;
+; Version 1.4.0 (8/7/2024)
+;	SlipperySoap
+;	* Debugging:
+;		Xoryn jump timer showing when it should not
+;		Tempest timer showing when it should not
+;
+; Version 1.3.9 (8/6/2024)
+;	SlipperySoap
+;	* Debugging:
+;		Fluctuating Panel/Alerts
+;	* Updating:
+;		No longer showing unused UI elements
+;		Implemented "show goes on" functionality for core Arcane Knot order with fills
+;
+; Version 1.3.8 (8/4/2024)
+;	SlipperySoap
+;	* Updating:
+;		Illuminati mode Arcane Knot Order
+;		Tempest Alert set to 10s before
+;
+; Version 1.3.7 (7/20/2024)
+;	SlipperySoap
+;	* Debugging:
+;		LC.Orphic.OrphicMirrorMechArrowUpdate toggling off if not set to show debug
+;		LC.Orphic.ThunderThrallUpdateAlert formatting
+;
+; Version 1.3.6 (7/20/2024)
+;	SlipperySoap
+;	* Debugging:
+;		LC.Orphic.OrphicMirrorMechArrowUpdate
+;		LC.Orphic.ThunderThrallUpdateAlert
+;	
+; Version 1.3.5 (7/18/2024)
+;	SlipperySoap
+;	* Debugging:
+;		Orphic.lua:19
+;		Orphic Mirror Arrows [To-Do]
+;	
+; Version 1.3.4 (7/17/2024)
+;	SlipperySoap
+;	* Features:
+;		Adding a feature to print the player's x, y, z coordinates and print 0's and 1's to system debug
+;		Xoryn jump alerts 5s beforehand
+;		Implemented a menu option that allows the marking of Orphic elite adds/Xoryn even if not group leader
+;	* Debugging:
+;		Orphic Mirror Arrows [Testing Required]
+;		Fluctuating Current Assistant with Smart Judgement based on Arcane Knot state and order [In Progress]
+;		Orphic Mirror Alert proc'ing at the wrong time. If Color Change end cast then don't show alert
+;	
+; Version 1.3.3 (7/15/2024)
+;	SlipperySoap
+;	* Features:
+;		Fluctuating Current Assistant with Smart Judgement based on Arcane Knot state and order
+;	* Debugging:
+;		Orphic Mirror Arrows [To-Do]
+;	
+; Version 1.3.2 (7/13/2024)
+;	SlipperySoap
+;	* Debugging:
+;		LucentCitadel.lua:307
+;		Orphic.lua:378
+;		
+; Version 1.3.1 (7/13/2024)
+;	SlipperySoap
+;	* Debugging:
+;		Orphic.lua:LC.Orphic.OrphicMirrorMechPanelUpdate: limited the proc conditions of the Mirror flip alerts
+;		
+; Version 1.3.0 (7/12/2024)
+;	SlipperySoap
+;	* Enabling:
+;		Baron Markers [Done]
+;		Orphic Clock: Cardinal and Numbers [Done]
+;		Hindered alert [Done]
+;	* Debugging:
+;		Orphic Color Change Mechanic Percentages Corrected (Should be 40% and 15%, not 35% and 10%, respectively)
+;		Orphic.lua:526
+;		
+; Version 1.2.9 (7/11/2024)
+;	SlipperySoap
+;	* Features:
+;		Cardinal Directions for Orphic Mirrors 
+;		(Credits to Kyzeragon and CrutchAlerts for Cardinal Direction Icons and Coordinates for center of Mirrors)
+;
+; Version 1.2.8 (7/10/2024)
+;	SlipperySoap
+;	* Debugging:
+;		Orphic.lua:495
+;		ArcaneKnot.lua:98
+;
+; Version 1.2.7 (7/9/2024)
+;	SlipperySoap
+;	* Debugging:
+;		Orphic.lua:501
+;		LucentCitadel.lua:494
+;		LucentCitadel.lua:290
+;		Orphic.lua:added Xoryn to the list of entities for marking
+;		LucentCitadel.lua:493
+;
+; Version 1.2.6 (7/4/2024)
+;	SlipperySoap
+;	* Features:
+;		The auto marking of Xoryn with an in-game marker
+;		Implemented slash commands for toggling killswitch
+;	* Updates:
+;		Making so that anyone, and not just the group lead, can mark the elite adds on Orphic
+;		Enabling Baron Rize Elm's Markers by default
+;
+; Version 1.2.5 (7/3/2024)
+;	SlipperySoap
+;	* Features:
+;		Baron markers for Gloomy Impact separation [Confirmed Functional]
+;		Saved Variable Profiles for each different character [In Progress]
+;		Marking of Elite adds on Orphic (Credits to andy.s for the foundational code for this feature) [Testing Required]
+;	* Bug Fixes:
+;		Xoryn.lua:211
+;		ArcaneKnot.lua:98
+;
+; Version 1.2.4 (7/2/2024)
+;	SlipperySoap
+;	* Features:
+;		Saved Variable Profiles for each different character [In Progress]
+;		Marking of Elite adds on Orphic (Credits to andy.s for the foundational code for this feature)
+;	* Debugging:
+;		Baron markers for Gloomy Impact separation 
+;
+; Version 1.2.3 (7/1/2024)
+;	SlipperySoap
+;	* Features:
+;		Saved Variable Profiles for each different character [In Progress]
+;	* Testing:
+;		Implementing various methods of creating an arrow
+;
+; Version 1.2.2 (7/1/2024)
+;	SlipperySoap
+;	* Debugging:
+;		Various debugs
+;		Baron markers for Gloomy Impact separation
+;
+; Version 1.2.1 (6/29/2024)
+;	SlipperySoap
+;	* Features:
+;		Adding UI arrow features [In Progress]
+;		Adding Fluctuating Current assistance [In Progress]
+;
+; Version 1.2.0 (6/25/2024)
+;	SlipperySoap
+;	* Updates:
+;		Baron markers for Gloomy Impact separation
+;	* Bug Fixes:
+;		Orphic markers will persist as long as the feature is enabled
+;
+; Version 1.1.9 (6/22/2024)
+;	SlipperySoap
+;	* Updates:
+;		Orphic clock to align with Lucent Citadel Helper's orientation
+;
+; Version 1.1.8 (6/22/2024)
+;	SlipperySoap
+;	* Bug Fixes:
+;		Orphic mirror flip alerts reformatted 
+;
+; Version 1.1.7 (6/22/2024)
+;	SlipperySoap
+;	* Features:
+;		Starting to implement cardinal direction alerts for Orphic and starting to fic that feature up
+;
+; Version 1.1.6 (6/22/2024)
+;	SlipperySoap
+;	* Features:
+;		Added a notification for healers when someone gets the Hindered effect
+;
+; Version 1.1.5 (6/16/2024)
+;	SlipperySoap
+;	* Features:
+;		Implementing features for when Arcane Knot is active
+;
+; Version 1.1.4 (6/11/2024)
+;	SlipperySoap
+;	* Structure:
+;		Adding a separate lua file for the Arcane Knot 
+;
+; Version 1.1.3 (6/7/2024)
+;	SlipperySoap
+;	* Bug fixes:
+;		Arcane Knot Order Dropdown menu [In Progress]
+;	Developmental features:
+;		Implementing SlipperySoap's method of testing addons with slash commands
+;
+; Version 1.1.2 (6/7/2024)
+;	SlipperySoap
+;	* Bug fixes:
+;		Killswitch improved
+;		Orphic.lua: UpdateTick referrencing wrong variable.
+;
+; Version 1.1.1 (6/4/2024)
+;	SlipperySoap
+;	* Features:
+;		Kill Switch
+;	* Bug fixes:
+;		Incorrectly referenced variables near end of Orphic.lua
+;
+; Version 1.1.0 (6/3/2024)
+;	SlipperySoap
+;	* Bug Fixes:
+;		LucentCitadel.lua:208
+;
+; Version 1.0.9 (6/3/2024)
+;	SlipperySoap
+;	* Adding Features:
+;		Arcane Knot Order Assistance panel and alert [Testing Required]
+;
+; Version 1.0.8 (6/3/2024)
+;	SlipperySoap
+;	* Adding Features:
+;		Xoryn Mirror Mech timer and alert
+;
+; Version 1.0.7 (6/3/2024)
+;	SlipperySoap
+;	* Adding Features:
+;		Orphic clock icons
+;
+; Version 1.0.6 (6/2/2024)
+;	SlipperySoap
+;	* Debugging:
+;		LucentCitadel.lua:109 end expected
+;
+; Version 1.0.5 (6/2/2024)
+;	SlipperySoap
+;	* Stripping Code to prevent bugs:
+;		LucentCitadel.lua:617 removed ,
+;		Zilyesset.lua removed pretty much everything
+;		Cavot.lua removed pretty much everything
+;		Orphic.lua:107 removed some unnecessary code; then added some useful code
+;		Baron.lua removed pretty much everything
+;		Xoryn.lua removed a lot of unnecessary code
+;		Initialized variables to be used LucentCitadel.lua:9
+;		LucentCitadel.lua removed a lot of unnecessary code
+;
+; Version 1.0.4 (5/31/2024)
+;	SlipperySoap
+;	* Updates:
+;		Implemented Orphic Mirror Panel and Alerts
+;		Started removing unnecessary code
+;			Orphic.lua, LucentCitadel.lua
+;		Implemented separate scaling for panel and alert UI components
+;
+; Version 1.0.3 (5/16/2024)
+;	SlipperySoap
+;	* Updates:
+;		Started on Xoryn jump tracking
+;		Started on Orphic health based mirror mechanic event tracking and notifications
+;			Orphic.lua, LucentCitadel.lua
+;
+; Version 1.0.2 (5/16/2024)
+;	SlipperySoap
+;	* Updates:
+;		Implemented Boss detection
+;
+; Version 1.0.1 (5/13/2024)
+;	SlipperySoap
+;	* Updates:
+;		Figured Out Lucent Citadel Zone ID
+;		Setting up files for Lucent Citadel
+;
+; Version 1.0.0 (5/13/2024)
+;	SlipperySoap
+;	* The Start of Lucent Citadel:
+;		Starting with Qcell's Dreadsail Reef Helper as a foundation

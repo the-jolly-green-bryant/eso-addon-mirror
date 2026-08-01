@@ -1,0 +1,1 @@
+EsoAddonFramework_Framework_Bootstrapper.Start(MotdAddon_Globals_AddonInfo)

@@ -1,0 +1,36 @@
+## Title: sidWarTools
+## Author: sirinsidiator
+## Version: 0.8
+## AddOnVersion: 0.8
+## APIVersion: 100027
+## DependsOn: LibAddonMenu-2.0 LibGPS LibCustomMenu
+## OptionalDependsOn: LibStub LibResurrection LibKillEvents LibAbilityTooltip
+## SavedVariables: sidWarTools_Data
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lib/LibStub/LibStub.lua
+lib/LibResurrection/LibResurrection.lua
+lib/LibKillEvents/LibKillEvents.lua
+lib/LibAbilityTooltip/LibAbilityTooltip.lua
+
+StartUp.lua
+Localization.lua
+Settings.lua
+notifications/Resurrection.lua
+misc/KeepNotifications.lua
+misc/KillNotifications.lua
+misc/AttributeBars.lua
+misc/CampaignBrowser.lua
+misc/KeepClaimDialog.lua
+misc/QuickslotFix.lua
+misc/StealthIndicator.lua
+misc/AbilityLinker.lua
+objectivesList/Objectives.lua
+objectivesList/Objectives.xml
+objectivesList/ObjectivesTab.lua
+objectivesList/ObjectiveLevel.lua

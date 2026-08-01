@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/SimonIllyan/Faster-Travel-Wayshrines-menu-Teleporter__1089",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SimonIllyan",
+  "canonical_id": "esoui:1089",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:1089",
+  "deleted": false,
+  "directories": [
+    "FasterTravel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1089/",
+  "fingerprint": "c3fcbd558da068cf30af1026a63758f1a70e5cb30ad548fa92bffe145c56d36c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3717.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3596.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3597.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3598.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8809.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3410.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1089",
+  "source_url": "https://www.esoui.com/downloads/info1089-FasterTravelWayshrinesmenuTeleporter.html",
+  "stats": {
+    "downloads": 374001,
+    "favorites": 261,
+    "monthly_downloads": 1651
+  },
+  "title": "Faster Travel (Wayshrines menu & Teleporter)",
+  "updated_at": 1782164042000,
+  "version": "3.3.2"
+}

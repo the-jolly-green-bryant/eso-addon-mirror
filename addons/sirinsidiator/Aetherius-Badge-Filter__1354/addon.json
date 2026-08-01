@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/sirinsidiator/Aetherius-Badge-Filter__1354",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:1354",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:1354",
+  "deleted": false,
+  "directories": [
+    "AetheriusBadgeFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1354/",
+  "fingerprint": "53774537f86e22d1abc9582be5806f71cd487034060964d42bd593d7258bce75",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4446.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4447.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4448.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4449.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5553.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5554.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1354",
+  "source_url": "https://www.esoui.com/downloads/info1354-AetheriusBadgeFilter.html",
+  "stats": {
+    "downloads": 32057,
+    "favorites": 35,
+    "monthly_downloads": 14
+  },
+  "title": "Aetherius Badge Filter",
+  "updated_at": 1656187977000,
+  "version": "1.11.0"
+}

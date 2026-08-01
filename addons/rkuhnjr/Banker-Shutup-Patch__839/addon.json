@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/rkuhnjr/Banker-Shutup-Patch__839",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "rkuhnjr",
+  "canonical_id": "esoui:839",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:839",
+  "deleted": false,
+  "directories": [
+    "BankerShutUp"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl839/",
+  "fingerprint": "6f8ec92cdce8664e035022a380e3994d8a7f44e9341de72b2232dd74d74028d0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2569.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "839",
+  "source_url": "https://www.esoui.com/downloads/info839-BankerShutupPatch.html",
+  "stats": {
+    "downloads": 4976,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "Banker Shutup Patch",
+  "updated_at": 1417035556000,
+  "version": "3.5b"
+}

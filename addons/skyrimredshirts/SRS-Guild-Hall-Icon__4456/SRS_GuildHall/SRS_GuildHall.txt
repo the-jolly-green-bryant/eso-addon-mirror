@@ -1,0 +1,6 @@
+## Title: SRS Guild Hall Shortcut v1.0
+## APIVersion: 101049
+## AddOnVersion: 1
+## Author: Mathius Mordred for Skyrim Red Shirts
+## Description: Adds the SRS Logo to the Guild page allowing guild members to quickly jump to the SRS Guild Village. This addon may be copied and adapted by other guilds for their use. Written by Mathius Mordred, Skyrim Red Shirts, the UK's Premier Guild.
+SRS_GuildHall.lua

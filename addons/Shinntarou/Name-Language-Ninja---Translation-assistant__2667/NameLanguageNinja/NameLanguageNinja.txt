@@ -1,0 +1,22 @@
+## Title: Name Language Ninja - Translation assistant
+## Author: @Shinntarou (NA, PC)
+## Version: 1.1.17
+## AddOnVersion: 10117
+## APIVersion: 101045 101046
+## SavedVariables: NameLanguageNinjaVariables
+## DependsOn: LibMultilingualName  LibAddonMenu-2.0
+## OptionalDependsOn: ItemBrowser
+## Description: This add-on outputs names of items and skills in other languages to your tooltip. also can replace some LinkInChat.
+
+# Main file
+NameLanguageNinja.lua
+
+# functions
+ConfigMenu.lua
+HookChatMessage.lua
+HookItemEvent.lua
+HookSkillEvent.lua
+SaveData.lua
+
+# for debug
+DevTool.lua

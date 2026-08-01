@@ -1,0 +1,17 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Murder Hotkey">
+      <Action name="MURDER_HOTKEY">
+        <Down>
+          if GetSetting(SETTING_TYPE_COMBAT, COMBAT_SETTING_PREVENT_ATTACKING_INNOCENTS) == "1" then
+            SetSetting(SETTING_TYPE_COMBAT, COMBAT_SETTING_PREVENT_ATTACKING_INNOCENTS, 0)
+            d("Innocents may now be murdered")
+          else
+            SetSetting(SETTING_TYPE_COMBAT, COMBAT_SETTING_PREVENT_ATTACKING_INNOCENTS, 1)
+            d("You may no longer commit wanton murder")
+          end
+        </Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

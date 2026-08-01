@@ -1,0 +1,11 @@
+<GuiXml>
+    <Controls>
+		<TopLevelControl name="QuickMenu_Keyboard" inherits="ZO_RadialMenuTemplate" hidden="true" />
+
+        <TopLevelControl name="QuickMenu_Gamepad" inherits="ZO_RadialMenuHUDSize_Gamepad" hidden="true">
+            <Controls>
+                <Label name="$(parent)Action" inherits="ZO_RadialMenuActionText_Gamepad"/>
+            </Controls>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

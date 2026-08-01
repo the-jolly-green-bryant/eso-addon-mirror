@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/PhnxZ/Werewolf-Timer-Bar-Updated__3814",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "PhnxZ",
+  "canonical_id": "esoui:3814",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3814",
+  "deleted": false,
+  "directories": [
+    "WerewolfTimerBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3814/",
+  "fingerprint": "48a042753dc6191a89ffdf7f3e50b2021a412ba69a97dd6bdf38253652f184c2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16588.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16589.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16587.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16586.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3814",
+  "source_url": "https://www.esoui.com/downloads/info3814-WerewolfTimerBarUpdated.html",
+  "stats": {
+    "downloads": 7682,
+    "favorites": 10,
+    "monthly_downloads": 918
+  },
+  "title": "Werewolf Timer Bar Updated",
+  "updated_at": 1783447653000,
+  "version": "3.04"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Sorondor/Advanced-Filters---Jewelry-Crafting-Filter__2005",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sorondor",
+  "canonical_id": "esoui:2005",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2005",
+  "deleted": false,
+  "directories": [
+    "AF_JewelryCraftingFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2005/",
+  "fingerprint": "8d9b5bf249152d7a3c82bed48830c4cdc2119128c41bbceb3fb565660b04d317",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6765.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2005",
+  "source_url": "https://www.esoui.com/downloads/info2005-AdvancedFilters-JewelryCraftingFilter.html",
+  "stats": {
+    "downloads": 18422,
+    "favorites": 16,
+    "monthly_downloads": 33
+  },
+  "title": "Advanced Filters - Jewelry Crafting Filter",
+  "updated_at": 1527054850000,
+  "version": "1.1"
+}

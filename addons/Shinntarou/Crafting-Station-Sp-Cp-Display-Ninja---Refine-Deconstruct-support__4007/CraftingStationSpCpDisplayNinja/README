@@ -1,0 +1,24 @@
+When you start to use a specific crafting station, this addon will display your skill and CP information which is related to the current crafting station.
+If you lack specific crafting skills, this addon will taunt you.
+
+Now, this addon checks & displays 4 skills below.
+
+Basic ( e.g. Metalworking )
+Extracting ( e.g. Metal Extraction )
+Improving ( e.g. Temper Expertise)
+MeticulousDisassembly(CP. checking your CP point)
+
+The check automatically starts when you interact with crafting stations below.
+
+Blacksmithing
+Clothing
+Woodworking
+Enchanting
+Jewelry Crafting
+Deconstruct Assistant
+
+[B]DependsOn:[/B]
+
+[LIST]
+[*][URL="https://www.esoui.com/downloads/info7-LibAddonMenu.html"]LibAddonMenu-2.0[/URL]
+[/LIST]

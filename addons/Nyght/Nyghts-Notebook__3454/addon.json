@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Nyght/Nyghts-Notebook__3454",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Nyght",
+  "canonical_id": "esoui:3454",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3454",
+  "deleted": false,
+  "directories": [
+    "NyghtsNotebook"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3454/",
+  "fingerprint": "3c2fc18093490adfac12b83a1e5e72fc7c6e12e8ddf79742487a90a61dd03fd2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11802.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11803.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3454",
+  "source_url": "https://www.esoui.com/downloads/info3454-NyghtsNotebook.html",
+  "stats": {
+    "downloads": 2049,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "Nyghts Notebook",
+  "updated_at": 1661806433000,
+  "version": "1.0"
+}

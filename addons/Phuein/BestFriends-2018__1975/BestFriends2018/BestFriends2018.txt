@@ -1,0 +1,9 @@
+## Title: |c9966ffBestFriends 2018|cffffff
+## Author: Aiiane & phuein
+## APIVersion: 100035
+## Description: When friends log on/off, instead of a chat message there is an alert on the top right.
+## Version: 2.16
+## SavedVariables: BestfriendsAddonSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+BestFriends.lua

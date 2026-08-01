@@ -1,0 +1,19 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="RVFrame" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOP" offsetX="-75"/>
+      <Dimensions x="300" y="45"/>
+      <Controls>
+        <Backdrop name="$(parent)Bar" edgeColor="42ABEB" centerColor="42ABEB" alpha="0.6">
+          <Dimensions x="250" y="20"/>
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="20"/>
+          <Edge edgeSize="1"/>
+        </Backdrop>
+        <Texture name="$(parent)Icon" textureFile="/esoui/art/icons/momento_antiquarianeye_01.dds">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+          <Dimensions x="45" y="45"/>
+        </Texture>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

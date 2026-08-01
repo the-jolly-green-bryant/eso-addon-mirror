@@ -1,0 +1,10 @@
+## Title: Auto Message
+## Description: Send a message to multiple players or guild members.
+## Author: |c6C00FFpeniku8|r
+## Version: 1.4.12
+## APIVersion: 101042
+## SavedVariables: AutoMessageSavedVars
+## DependsOn: LibAddonMenu-2.0>=28
+
+AutoMessage.lua
+AutoMessageMenu.lua

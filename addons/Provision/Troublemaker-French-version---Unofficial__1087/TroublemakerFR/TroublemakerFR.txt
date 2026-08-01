@@ -1,0 +1,7 @@
+﻿## Title: Troublemaker (|c00C000FR|r)
+## Author: DeanGrey |c00C000- Modifié par : Provision|r
+
+## APIVersion: 100022 
+
+TroublemakerFR.lua
+Bindings.xml

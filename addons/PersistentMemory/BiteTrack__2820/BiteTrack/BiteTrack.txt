@@ -1,0 +1,9 @@
+## Title: BiteTrack
+## Author: PersistentMemory
+## Description: Tracks times fed on NPCs, and also times you've used Blade of Woe
+## Version: 1.1.1
+## APIVersion: 101032
+## SavedVariables: BiteTrackSavedVariables
+
+BiteTrack.xml
+BiteTrack.lua

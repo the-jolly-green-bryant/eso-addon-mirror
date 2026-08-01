@@ -1,0 +1,13 @@
+## Title: |c00FFFFSkill Blocker by Ness_Jess|r
+## APIVersion: 101048
+## Author: |c00FFFF@Ness_Jess|r
+## Version: 1.5
+## Description: This is the Way
+## DependsOn: LibAddonMenu-2.0>=41 LibSkillBlocker>=110 LibCustomMenu>=730
+## SavedVariables: SkillBlockerNJ_Data
+
+bindings.xml
+Lang/Default.lua
+Lang/$(language).lua
+SkillBlocker_NJ Data.lua
+SkillBlocker_NJ.lua

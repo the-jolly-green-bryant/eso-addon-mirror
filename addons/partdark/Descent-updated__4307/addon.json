@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/partdark/Descent-updated__4307",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "partdark",
+  "canonical_id": "esoui:4307",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4307",
+  "deleted": false,
+  "directories": [
+    "Descent"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4307/",
+  "fingerprint": "4100d623b9e977d4b136ee3dd72f735709df9081af32ead8ee4b9ded413d4df9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14817.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4307",
+  "source_url": "https://www.esoui.com/downloads/info4307-Descentupdated.html",
+  "stats": {
+    "downloads": 384,
+    "favorites": 0,
+    "monthly_downloads": 6
+  },
+  "title": "Descent updated",
+  "updated_at": 1765927202000,
+  "version": "4.5"
+}

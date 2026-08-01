@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/sirinsidiator/LibGPS__601",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:601",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:601",
+  "deleted": false,
+  "directories": [
+    "LibGPS"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl601/",
+  "fingerprint": "2af5299d51816a9e5fea3bfeab0570a15b70684256508d4218b01ee4e7f174e7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2071.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "601",
+  "source_url": "https://www.esoui.com/downloads/info601-LibGPS.html",
+  "stats": {
+    "downloads": 4057165,
+    "favorites": 1995,
+    "monthly_downloads": 16136
+  },
+  "title": "LibGPS",
+  "updated_at": 1746123017000,
+  "version": "3.3.3"
+}

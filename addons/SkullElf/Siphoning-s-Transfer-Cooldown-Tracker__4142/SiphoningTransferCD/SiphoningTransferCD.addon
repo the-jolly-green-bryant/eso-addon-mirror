@@ -1,0 +1,10 @@
+## Title: SiphoningTransferCD
+## APIVersion: 101046
+## Author: SkullElf, DakJaniels
+## Version: 1.0
+## DependsOn: LibAddonMenu-2.0>=40
+## Description: Tracks the cooldown of the Transfer passive from the Siphoning skill line
+## SavedVariables: STCDSavedVariables
+
+SiphoningTransferCD.xml
+SiphoningTransferCD.lua

@@ -1,0 +1,31 @@
+## Title: AutoReadyCheck
+## Description: Automatically accept different queues across tamriel. Supports AvA Campaigns, Battlegrounds, Dungeons, Activity Finder, and Group Ready Checks.
+## Author: @L_cky
+## APIVersion: 101049 101048
+## Version: 2.4.1
+## AddOnVersion: 241
+## SavedVariables: AutoReadyCheck_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=41 LibChatMessage>=118
+## IsLibrary: false
+
+# Language
+Language/default.lua
+Language/$(language).lua
+
+# Main Files
+AutoReadyCheck.lua
+AutoReadyCheckMenu.lua
+
+# Libraries
+Functions/AvACampaign.lua
+Functions/GroupElection.lua
+Functions/LFGReadyCheck.lua
+Functions/Messages.lua
+
+# Bindings
+Bindings/Bindings.lua
+Bindings/Bindings.xml
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

@@ -1,0 +1,26 @@
+## Title: Cyrillic Chat Filter
+## Author: Xerton, Revived AddOns, Scootworks
+## Version: 5
+## AddOnVersion: 5
+## APIVersion: 100033 100034
+## SavedVariables: CyrillicChatFilterRevived_Character CyrillicChatFilterRevived_Account
+## DependsOn: LibHarvensAddonSettings>=10705 LibSavedVars>=60002 LibDebugLogger>=201
+## OptionalDependsOn: LibChatMessage pChat rChat
+## Description: Filter out chat messages, that contain cyrillic letters. It will hide the whole sentence, if any cyrillic letter is detected. You can toggle the filters in different chat channels in the settings menu.
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lang\en.lua
+lang\$(language).lua
+
+CyrillicChatFilterRevived.lua
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;; LICENSE ;;;;;;;;;;;
+; CC BY-NC-ND 4.0 Scootworks ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

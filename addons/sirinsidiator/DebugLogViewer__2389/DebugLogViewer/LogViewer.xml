@@ -1,0 +1,159 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <Control name="DebugLogViewerRow" mouseEnabled="true" virtual="true">
+            <Dimensions y="30" />
+            <OnMouseEnter>self:GetOwningWindow().OnMouseEnterRow(self)</OnMouseEnter>
+            <OnMouseExit>self:GetOwningWindow().OnMouseExitRow(self)</OnMouseExit>
+            <OnMouseUp>self:GetOwningWindow().OnMouseUpRow(self, button, upInside)</OnMouseUp>
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+                <Label name="$(parent)Time" inherits="ZO_FriendsListRowLabel" mouseEnabled="true">
+                    <Anchor point="LEFT" />
+                    <Dimensions x="100" y="30" />
+                    <OnMouseEnter>self:GetOwningWindow().OnMouseEnterRow(self)</OnMouseEnter>
+                    <OnMouseExit>self:GetOwningWindow().OnMouseExitRow(self)</OnMouseExit>
+                    <OnMouseUp>self:GetOwningWindow().OnMouseUpRow(self:GetParent(), button, upInside)</OnMouseUp>
+                </Label>
+                <Label name="$(parent)Tag" inherits="ZO_FriendsListRowLabel" mouseEnabled="true">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Time" offsetX="10" />
+                    <Dimensions x="150" y="30" />
+                    <OnMouseEnter>self:GetOwningWindow().OnMouseEnterRow(self)</OnMouseEnter>
+                    <OnMouseExit>self:GetOwningWindow().OnMouseExitRow(self)</OnMouseExit>
+                    <OnMouseUp>self:GetOwningWindow().OnMouseUpRow(self:GetParent(), button, upInside)</OnMouseUp>
+                </Label>
+                <Label name="$(parent)Message" inherits="ZO_FriendsListRowLabel" mouseEnabled="true" linkEnabled="true">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Tag" offsetX="10" />
+                    <Dimensions x="600" y="30" />
+                    <OnMouseEnter>self:GetOwningWindow().OnMouseEnterRow(self)</OnMouseEnter>
+                    <OnMouseExit>self:GetOwningWindow().OnMouseExitRow(self)</OnMouseExit>
+                    <OnMouseUp>self:GetOwningWindow().OnMouseUpRow(self:GetParent(), button, upInside)</OnMouseUp>
+                    <OnLinkClicked>self:GetOwningWindow().OnLinkClicked(...)</OnLinkClicked>
+                </Label>
+                <Texture name="$(parent)Stack" hidden="true" textureFile="EsoUI/Art/Housing/Keyboard/furniture_tabIcon_recall_down.dds" mouseEnabled="true">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Message" offsetY="-3" />
+                    <Dimensions x="30" y="30" />
+                    <OnMouseEnter>self:GetOwningWindow().OnMouseEnterRow(self)</OnMouseEnter>
+                    <OnMouseExit>self:GetOwningWindow().OnMouseExitRow(self)</OnMouseExit>
+                    <OnMouseUp>self:GetOwningWindow().OnMouseUpRow(self:GetParent(), button, upInside)</OnMouseUp>
+                </Texture>
+            </Controls>
+        </Control>
+
+        <Button name="DebugLogViewerLevelButton" mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound" virtual="true">
+            <ButtonState state="PRESSED" />
+            <Dimensions x="32" y="32" />
+            <Textures normal="DebugLogViewer/images/levelbutton_up.dds" pressed="DebugLogViewer/images/levelbutton_down.dds" mouseOver="DebugLogViewer/images/levelbutton_over.dds" />
+
+            <Controls>
+                <Texture name="$(parent)Color">
+                    <Anchor point="TOPLEFT" offsetX="9" offsetY="9" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-9" offsetY="-9" />
+                </Texture>
+            </Controls>
+
+            <OnMouseEnter>self:GetOwningWindow().OnMouseEnter(self)</OnMouseEnter>
+            <OnMouseExit>self:GetOwningWindow().OnMouseExit(self)</OnMouseExit>
+            <OnClicked>self:GetOwningWindow().ToggleLevelFilter(...)</OnClicked>
+        </Button>
+
+        <TopLevelControl name="DebugLogViewerMainWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions x="930" y="500" />
+            <DimensionConstraints minX="600" minY="300" />
+            <Anchor point="CENTER" />
+
+            <OnMoveStop>self.OnMoveStop(...)</OnMoveStop>
+
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+                <Control name="$(parent)Toolbar">
+                    <Anchor point="TOPLEFT" />
+                    <Anchor point="TOPRIGHT" />
+                    <Dimensions y="31" />
+
+                    <Controls>
+                        <Label name="$(parent)TimeFilterLabel" font="ZoFontGameBold" mouseEnabled="true">
+                            <Anchor point="LEFT" offsetX="10" />
+                            <OnMouseEnter>self:GetOwningWindow().OnMouseEnter(self)</OnMouseEnter>
+                            <OnMouseExit>self:GetOwningWindow().OnMouseExit(self)</OnMouseExit>
+                        </Label>
+
+                        <Control name="$(parent)TimeFilter" inherits="ZO_ComboBox">
+                            <Anchor point="LEFT" relativeTo="$(parent)TimeFilterLabel" relativePoint="RIGHT" offsetX="10" />
+                            <Dimensions x="180" />
+                        </Control>
+
+                        <Label name="$(parent)LevelFilterLabel" font="ZoFontGameBold" mouseEnabled="true">
+                            <Anchor point="LEFT" relativeTo="$(parent)TimeFilter" relativePoint="RIGHT" offsetX="30" />
+                            <OnMouseEnter>self:GetOwningWindow().OnMouseEnter(self)</OnMouseEnter>
+                            <OnMouseExit>self:GetOwningWindow().OnMouseExit(self)</OnMouseExit>
+                        </Label>
+
+                        <Control name="$(parent)LevelFilterButtons" resizeToFitDescendents="true">
+                            <Anchor point="LEFT" relativeTo="$(parent)LevelFilterLabel" relativePoint="RIGHT" offsetX="5" />
+                        </Control>
+
+                        <Label name="$(parent)TagFilterLabel" font="ZoFontGameBold" mouseEnabled="true">
+                            <Anchor point="LEFT" relativeTo="$(parent)LevelFilterButtons" relativePoint="RIGHT" offsetX="15" />
+                            <OnMouseEnter>self:GetOwningWindow().OnMouseEnter(self)</OnMouseEnter>
+                            <OnMouseExit>self:GetOwningWindow().OnMouseExit(self)</OnMouseExit>
+                        </Label>
+
+                        <Backdrop name="$(parent)TagFilter" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+                            <Dimensions x="250" />
+                            <Anchor point="LEFT" relativeTo="$(parent)TagFilterLabel" relativePoint="RIGHT" offsetX="10" />
+                            <Controls>
+                                <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" />
+                            </Controls>
+                        </Backdrop>
+
+                        <Button name="$(parent)TagFilterBehavior" mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+                            <ButtonState state="PRESSED" />
+                            <Dimensions x="32" y="32" />
+                            <Anchor point="LEFT" relativeTo="$(parent)TagFilter" relativePoint="RIGHT" offsetX="5" />
+                            <Textures normal="EsoUI/Art/TradingHouse/tradinghouse_listings_tabIcon_up.dds" pressed="EsoUI/Art/TradingHouse/tradinghouse_listings_tabIcon_down.dds"
+                                mouseOver="EsoUI/Art/TradingHouse/tradinghouse_listings_tabIcon_over.dds" />
+
+                            <OnMouseEnter>self:GetOwningWindow().OnMouseEnter(self)</OnMouseEnter>
+                            <OnMouseExit>self:GetOwningWindow().OnMouseExit(self)</OnMouseExit>
+                            <OnClicked>self:GetOwningWindow().ToggleTagFilterBehavior(...)</OnClicked>
+                        </Button>
+
+                        <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                            <Anchor point="RIGHT" offsetX="-10" />
+                            <OnMouseEnter>self:GetOwningWindow().OnMouseEnter(self)</OnMouseEnter>
+                            <OnMouseExit>self:GetOwningWindow().OnMouseExit(self)</OnMouseExit>
+                            <OnClicked>self:GetOwningWindow().OnCloseClicked(...)</OnClicked>
+                        </Button>
+
+                        <Button name="$(parent)Options" mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="32" y="32" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)Close" relativePoint="LEFT" offsetX="2" />
+                            <Textures normal="EsoUI/Art/SkillsAdvisor/advisor_tabIcon_settings_up.dds" pressed="EsoUI/Art/SkillsAdvisor/advisor_tabIcon_settings_down.dds" mouseOver="EsoUI/Art/SkillsAdvisor/advisor_tabIcon_settings_over.dds" />
+
+                            <OnMouseEnter>self:GetOwningWindow().OnMouseEnter(self)</OnMouseEnter>
+                            <OnMouseExit>self:GetOwningWindow().OnMouseExit(self)</OnMouseExit>
+                            <OnClicked>self:GetOwningWindow().OnOptionsClicked(...)</OnClicked>
+                        </Button>
+
+                        <Button name="$(parent)ResetFilters" mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="32" y="32" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)Options" relativePoint="LEFT" offsetX="4" />
+                            <Textures normal="EsoUI/Art/Help/help_tabIcon_feedback_up.dds" pressed="EsoUI/Art/Help/help_tabIcon_feedback_down.dds" mouseOver="EsoUI/Art/Help/help_tabIcon_feedback_over.dds" />
+
+                            <OnMouseEnter>self:GetOwningWindow().OnMouseEnter(self)</OnMouseEnter>
+                            <OnMouseExit>self:GetOwningWindow().OnMouseExit(self)</OnMouseExit>
+                            <OnClicked>self:GetOwningWindow().OnResetClicked(...)</OnClicked>
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Toolbar" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-10" />
+                    <!-- The scroll top and scroll bottom buttons are defined in the Lua code -->
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

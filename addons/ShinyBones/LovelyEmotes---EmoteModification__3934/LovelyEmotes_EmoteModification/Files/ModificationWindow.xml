@@ -1,0 +1,118 @@
+<GuiXml>
+	<Controls>
+
+		<TopLevelControl name="LE_EmoteDataModWindow" tier="HIGH" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" >
+			<Dimensions x="600" y="400" />
+			<Anchor point="CENTER" offsetY="-20" />
+
+			<Controls>
+
+				<Backdrop inherits="ZO_DefaultBackdrop_Gamepad" />
+
+				<Control name="$(parent)ListBox" >
+					<Anchor point="TOPRIGHT" offsetY="40" />
+					<Anchor point="BOTTOMRIGHT" />
+					<Dimensions x="290" />
+
+					<Controls>
+						<Backdrop inherits="ZO_DefaultBackdrop_Gamepad" alpha="0.25" />
+
+						<Button name="$(parent)CleanButton" text=":(" inherits="LE_DefaultButtonTemplate" >
+							<Dimensions y="25" />
+							<Anchor point="TOP" />
+						</Button>
+
+						<Control name="$(parent)List" inherits="ZO_ScrollList" >
+							<Anchor point="TOPLEFT" offsetY="30" />
+							<Anchor point="BOTTOMRIGHT" offsetY="-25" />
+						</Control>
+
+						<Button name="$(parent)AddButton" inherits="LE_ButtonBehaviorClickSoundTemplate" >
+							<Dimensions x="25" y="25" />
+							<Anchor point="TOPLEFT" />
+							<Textures
+								normal="esoui/art/buttons/pointsPlus_up.dds"
+								mouseOver="esoui/art/buttons/pointsPlus_over.dds"
+								pressed="esoui/art/buttons/pointsPlus_down.dds"
+								disabled="esoui/art/buttons/pointsplus_disabled.dds"
+							/>
+						</Button>
+					</Controls>
+				</Control>
+
+				<Button name="$(parent)CancelButton" inherits="LE_ButtonBehaviorClickSoundTemplate" >
+					<Dimensions x="30" y="30" />
+					<Anchor point="TOPRIGHT" />
+					<Textures
+						normal="esoui/art/buttons/decline_up.dds"
+						mouseOver="esoui/art/buttons/decline_over.dds"
+						pressed="esoui/art/buttons/decline_down.dds"
+						disabled="esoui/art/buttons/decline_up.dds"
+					/>
+				</Button>
+
+				<Button name="$(parent)ApplyButton" inherits="LE_ButtonBehaviorClickSoundTemplate" >
+					<Dimensions x="30" y="30" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)CancelButton" relativePoint="TOPLEFT" offsetX="-10" />
+					<Textures
+						normal="esoui/art/buttons/accept_up.dds"
+						mouseOver="esoui/art/buttons/accept_over.dds"
+						pressed="esoui/art/buttons/accept_down.dds"
+						disabled="esoui/art/buttons/accept_up.dds"
+					/>
+				</Button>
+
+				<Label name="$(parent)SelectedEntryLabel" text=":(" horizontalAlignment="CENTER" font="ZoFontGame" >
+					<Anchor point="TOPLEFT" offsetY="40" />
+					<Dimensions x="300" />
+				</Label>
+
+				<Control name="$(parent)EntryBox" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)SelectedEntryLabel" relativePoint="BOTTOMLEFT" offsetY="20" />
+					<Anchor point="BOTTOMLEFT" />
+					<Dimensions x="290" />
+
+					<Controls>
+						<Label name="$(parent)ReplaceNameLabel" text=":(" font="ZoFontGame" >
+							<Anchor point="TOPLEFT" />
+							<Anchor point="TOPRIGHT" />
+						</Label>
+
+						<Backdrop name="$(parent)ReplaceNameEditBox" inherits="ZO_SingleLineEditBackdrop_Keyboard" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)ReplaceNameLabel" relativePoint="BOTTOMLEFT" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)ReplaceNameLabel" relativePoint="BOTTOMRIGHT" />
+
+							<Controls>
+								<EditBox name="$(parent)Edit" inherits="ZO_DefaultEditForBackdrop" />
+							</Controls>
+						</Backdrop>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)AddOverlay" mouseEnabled="true" tier="HIGH" hidden="true" >
+					<Anchor point="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" />
+
+					<Controls>
+						<Texture color="000000" alpha="0.75" >
+							<Anchor point="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" />
+						</Texture>
+
+						<Control name="$(parent)Box" >
+							<Anchor point="TOP" />
+							<Anchor point="BOTTOM" />
+							<Dimensions x="300" />
+
+							<Controls>
+								<Backdrop inherits="ZO_DefaultBackdrop_Gamepad" />
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

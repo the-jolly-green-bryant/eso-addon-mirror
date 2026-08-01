@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Shinni/Circular-Votan-s-Mini-Map__1703",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shinni",
+  "canonical_id": "esoui:1703",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:1703",
+  "deleted": false,
+  "directories": [
+    "CircularMinimap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1703/",
+  "fingerprint": "e6e6dd7f6b51472d1ec977c04e5967144c248f6ae9fd109ebb2a7e6e6400690a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5618.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1703",
+  "source_url": "https://www.esoui.com/downloads/info1703-CircularVotansMiniMap.html",
+  "stats": {
+    "downloads": 185448,
+    "favorites": 264,
+    "monthly_downloads": 444
+  },
+  "title": "Circular Votan's Mini Map",
+  "updated_at": 1750699248000,
+  "version": "2.0.1"
+}

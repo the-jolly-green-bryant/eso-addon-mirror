@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/rockingdice/Channel-Skill-Helper__1829",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "rockingdice",
+  "canonical_id": "esoui:1829",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    }
+  ],
+  "content_id": "esoui:1829",
+  "deleted": false,
+  "directories": [
+    "ChannelSkillHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1829/",
+  "fingerprint": "6f5088a87affc00a10d4e7d2250a6fa9b66269fe809ef6a41f4f6dc345169b16",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6192.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1829",
+  "source_url": "https://www.esoui.com/downloads/info1829-ChannelSkillHelper.html",
+  "stats": {
+    "downloads": 11596,
+    "favorites": 7,
+    "monthly_downloads": 38
+  },
+  "title": "Channel Skill Helper",
+  "updated_at": 1508811419000,
+  "version": "1.01"
+}

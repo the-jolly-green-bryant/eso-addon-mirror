@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Ricci-Curvature/CrutchAlerts-KR__4517",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ricci Curvature",
+  "canonical_id": "esoui:4517",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4517",
+  "deleted": false,
+  "directories": [
+    "CrutchAlerts-KR-Minion"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4517/",
+  "fingerprint": "997114e91e5c18b4ecf003ba288207d05e716ff21130ca66ee0d671986130c7c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15756.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4517",
+  "source_url": "https://www.esoui.com/downloads/info4517-CrutchAlerts-KR.html",
+  "stats": {
+    "downloads": 857,
+    "favorites": 0,
+    "monthly_downloads": 39
+  },
+  "title": "CrutchAlerts-KR",
+  "updated_at": 1775978393000,
+  "version": "1.0.0"
+}

@@ -1,0 +1,97 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="OmniStats">
+			<OnInitialized>OmniStatsInitialize(self)</OnInitialized>
+        </TopLevelControl>
+
+        <Button name="OmniArrow" virtual="true">
+            <Textures normal="esoui\art\buttons\large_leftdoublearrow_up.dds" />
+            <PressedOffset x="2" y="2" />
+            <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self,
+                    self.tooltipDirection or LEFT,
+                    self.tooltip
+                )
+            </OnMouseEnter>
+            <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+            </OnMouseExit>
+            <OnMouseUp>
+                self.onClick()
+            </OnMouseUp>
+        </Button>
+        <Control name="OmniList"  virtual="true">
+            <Controls>
+                <Label name="$(parent)Header" font="$(ANTIQUE_FONT)|$(KB_20)|soft-shadow-thick">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+                    <Dimensions y="20" />
+                </Label>
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOP" relativeTo="$(parent)Header" relativePoint="BOTTOM" />
+                    <OnInitialized>
+                        ZO_ScrollList_Initialize(self)
+                        ZO_ScrollList_AddDataType(
+                            self,
+                            1,
+                            "OmniListElement",
+                            20,
+                            function(control, data)
+                                local textControl = control:GetNamedChild("Text")
+                                textControl:SetText(data.name)
+                                if data.dependancy then
+                                    control.tooltip = data.dependancy
+                                    textControl:SetColor(0.3,0,0)
+                                else
+                                    control.tooltip = nil
+                                    textControl:SetColor(1,1,1)
+                                end
+                            end
+                        )
+                        ZO_ScrollList_EnableSelection(self, "ZO_ThinListHighlight", function(old, new, reselectingDuringRebuild)
+                            if reselectingDuringRebuild then return end
+                            self.selectedDataId = new.id
+                        end)
+                        ZO_ScrollList_EnableHighlight(self, "ZO_ThinListHighlight")
+                        ZO_ScrollList_SetDeselectOnReselect(self, false)
+                    </OnInitialized>
+                </Control>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+                </Backdrop>
+                
+            </Controls>
+        </Control>
+        <Control name="OmniListElement" virtual="true" mouseEnabled="true">
+            <Dimensions y="20" />
+
+            <OnInitialized>
+                self.owner = self:GetParent():GetParent()
+            </OnInitialized>
+
+            <OnMouseEnter>
+                ZO_ScrollList_MouseEnter(self.owner, self)
+                if self.tooltip then
+                    ZO_Tooltips_ShowTextTooltip(self, LEFT, self.tooltip)
+                end
+            </OnMouseEnter>
+
+            <OnMouseExit>
+                ZO_ScrollList_MouseExit(self.owner, self)
+                if self.tooltip then
+                    ZO_Tooltips_HideTextTooltip()
+                end
+            </OnMouseExit>
+            
+            <OnMouseUp>
+                if(upInside) then
+                    ZO_ScrollList_MouseClick(self.owner, self)
+                end
+            </OnMouseUp>
+            <Controls>
+                <Label name="$(parent)Text" font="ZoFontGameBold">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

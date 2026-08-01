@@ -1,0 +1,24 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+; All the Scrolllist stuff is taken from Example Scroll List Addon! Awesome resource!
+
+
+## Title: Undaunted Daily Queuer
+## Description: Easy Queueing for Undaunted Dailies
+## Version: 37.0
+## Author: remosito
+## APIVersion: 100037
+## SavedVariables: UDQVars
+## DependsOn: UndauntedDaily>=7 LibSets  LibAddonMenu-2.0>=34
+
+bootstrap.lua
+locale/en.lua
+locale/$(language).lua
+orderedPairs.lua
+Settings.lua
+UndauntedDailyQueuer.lua
+UndauntedDailyQueuer.xml
+Bindings.xml

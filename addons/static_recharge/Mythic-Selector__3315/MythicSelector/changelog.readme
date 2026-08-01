@@ -1,0 +1,28 @@
+1.1.1
+  - Fixed naming conflict issue.
+  - Fixed a bug with chat messages not showing up.
+  - Updated for 49
+
+1.1.0
+  - Fixed issues with items not being found in inventory (thanks shadowcep)
+  - Fixed issues with detecting if an item was worn already (thanks shadowcep)
+  - Added the ability to change the font size of the indicator
+  - Added the option to change the alignment of the text from left to right for the indicator
+
+1.0.1
+  - The Que will now update even when an item is manually equipped
+  - Added item tooltips to the jewelry lists
+
+1.0.0
+  - Full release version
+  - Added help and tooltip information
+  - Added error checking for if the next item in the list is already equipped
+  - Fixed an issue with the display time on the notificaion panel
+
+0.1.0
+  - Second test version
+  - Added profile management
+
+0.0.1
+  - First test version
+  - Missing profile management, tooltips, other finishing touches

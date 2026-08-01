@@ -1,0 +1,60 @@
+{
+  "archive_path": "addons/Sordrak/Yet-another-Compass__1763",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sordrak",
+  "canonical_id": "esoui:1763",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1763",
+  "deleted": false,
+  "directories": [
+    "YetAnotherCompass"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1763/",
+  "fingerprint": "35982756fc91ea091e6b02a45a56509707a38ab75cec00dbd8b408065c670f42",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5848.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5849.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5850.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5859.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1763",
+  "source_url": "https://www.esoui.com/downloads/info1763-YetanotherCompass.html",
+  "stats": {
+    "downloads": 73419,
+    "favorites": 30,
+    "monthly_downloads": 70
+  },
+  "title": "Yet another Compass",
+  "updated_at": 1717752306000,
+  "version": "1.5.21"
+}

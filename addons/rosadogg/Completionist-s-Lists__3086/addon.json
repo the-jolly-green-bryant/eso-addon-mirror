@@ -1,0 +1,72 @@
+{
+  "archive_path": "addons/rosadogg/Completionist-s-Lists__3086",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "rosadogg",
+  "canonical_id": "esoui:3086",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3086",
+  "deleted": false,
+  "directories": [
+    "CompletionistsLists"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3086/",
+  "fingerprint": "8d9e9eb6e4b15cacaa838cbb898a194edd59a4ee8892324ddd5b2fcb98de9e2a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10334.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10326.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10327.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10328.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10329.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10330.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10331.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10441.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3086",
+  "source_url": "https://www.esoui.com/downloads/info3086-CompletionistsLists.html",
+  "stats": {
+    "downloads": 10148,
+    "favorites": 3,
+    "monthly_downloads": 65
+  },
+  "title": "Completionist's Lists",
+  "updated_at": 1649610168000,
+  "version": "6.0.0"
+}

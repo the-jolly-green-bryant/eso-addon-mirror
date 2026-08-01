@@ -1,0 +1,12 @@
+## Title: Near's Dual Dungeon Finder
+## Description: Adds a command to open gamepad mode activity finder, where you can queue both random dungeon modes.
+## APIVersion: 101034
+## Version: 1.0.0
+## SavedVariables: NearDualDungeonFinder_Data
+## Author: |cFF00FFnotnear|r
+## DependsOn: LibSlashCommander
+
+NearDualDungeonFinder.lua
+
+utils.lua
+slashcommands.lua

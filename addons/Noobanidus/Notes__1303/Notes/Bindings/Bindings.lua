@@ -1,0 +1,5 @@
+ZO_CreateStringId("SI_BINDING_NAME_NOTES_1", "Note 1")
+ZO_CreateStringId("SI_BINDING_NAME_NOTES_2", "Note 2")
+ZO_CreateStringId("SI_BINDING_NAME_NOTES_3", "Note 3")
+ZO_CreateStringId("SI_BINDING_NAME_NOTES_4", "Note 4")
+ZO_CreateStringId("SI_BINDING_NAME_NOTES_5", "Note 5")

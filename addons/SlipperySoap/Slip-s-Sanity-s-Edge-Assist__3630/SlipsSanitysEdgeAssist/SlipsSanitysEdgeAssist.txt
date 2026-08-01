@@ -1,0 +1,318 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Slip's Sanity's Edge Assist
+## Description: [BETA] Additional alerts for Sanity's Edge. Built upon Qcell's addons. The addon is currently only intended for hardmode.
+## Author: @SlipperySoap
+## DependsOn: CombatAlerts LibAddonMenu-2.0
+## OptionalDependsOn: OdySupportIcons 
+## Version: 3.6.2
+## APIVersion: 101032 101035 101036 101037 101038 101039 101040 101041
+## SavedVariables: SlipsSanitysEdgeAssistSavedVariables
+
+Lang/en.lua
+Lang/$(language).lua
+
+SlipsSanitysEdgeAssist.lua
+SlipsSanitysEdgeAssistMenu.lua
+SlipsSanitysEdgeAssistGroundIcons.lua
+SlipsSanitysEdgeAssist.xml
+
+; Changelog:
+;
+; Version 3.6.2 (8/27/2024)
+; * Debugging:
+;	Updating saved variable names to be consistent
+;
+; Version 3.6.1 (8/27/2024)
+; * Debugging:
+;	Adding note that the in-game marker features should be used with another addon that hides group members.
+;	Adding details about how to effectively use the in-game marker features in its current state.
+;	Clears markers on followers.
+;
+; Version 3.6.0 (8/20/2024)
+; * Features:
+;	Adding In-Game Markers for Trash: Disruptors and Ansuul: Enraged Fragments
+;
+; Version 3.5.9 (8/20/2024)
+; * Polishing:
+;	Adding a way to have 2 players adding in-game markers
+;
+; Version 3.5.8 (8/17/2024)
+; * Polishing:
+;	Yaseyla Contramagis Archer In-Game Markers
+;
+; Version 3.5.7 (8/14/2024)
+; * Features:
+;	Menu Button to clear zone of markers
+;
+; Version 3.5.6 (8/14/2024)
+; * Features:
+;	Adding Yaseyla In-game Markers for Contramagis Archers {Credits to ScarletteRed for coming up with the idea}
+;
+; Version 3.5.5 (7/29/2024)
+; * Features:
+;	Notifications for Ascendant Lion's Double Strike and Ascendant Gryphon's Peck
+;
+; Version 3.5.4 (7/14/2024)
+; * Bug Fixes:
+;	Adding an alert for Yaseyla enragement
+;
+; Version 3.5.3 (7/13/2024)
+; * Bug Fixes:
+;	Making the "Fix for wamasu charge icons persisting" functionality more effective as the problem has not been solved yet.
+;
+; Version 3.5.2 (6/10/2024)
+; * Bug Fixes:
+;	Minor bug fix SlipsSanitysEdgeAssist.lua: 683
+;
+; Version 3.5.1 (6/7/2024)
+; * Bug Fixes:
+;	Clears Yaseyla Wamasu Charge icons upon porting in
+;
+; Version 3.5.0 (6/7/2024)
+; * Bug Fixes:
+;	Yaseyla Shrapnel will now set the UI element's label
+; * Changes:
+;	Manic Phobia Alert color changed to white
+;	Next Maze UI element color changed to magenta
+;
+; Version 3.4.9 (6/2/2024)
+; * Bug Fixes:
+;	Fixing wamasu charge icons persisting through instance resets [Testing Complete]
+;	Yaseyla Portal/Archer Percentage Alert can now be disabled
+;
+; * Experiments:
+;	New Ansuul Atronach Inferno Warning and Alert with counter for how many to interrupt
+;
+; Version 3.4.8 (5/30/2024)
+; * Bug Fixes:
+;	Fixing wamasu charge icons persisting through instance resets [Testing Required]
+;	Portal + Archer alerts for Yas can now be disabled
+;
+; Version 3.4.7 (5/14/2024)
+; * Bug Fixes:
+;	Debugging Chimera Chain Circuit icon related bug and Arctic Shred Alert bug
+;
+; Version 3.4.7 (5/13/2024)
+; * Bug Fixes:
+;	Debugging Chimera Chain Circuit icon related bug
+;
+; Version 3.4.5 (5/13/2024)
+; * Bug Fixes:
+;	Debugging an ""Update Tick"" related bug
+;		Updates made in SSEA.settings and when ShowChimeraPanel
+;
+; Version 3.4.4 (5/12/2024)
+; * Bug Fixes:
+;	Debugging Chimera Chain Circuit Icon feature
+;
+; Version 3.4.3 (5/11/2024)
+; * Bug Fixes:
+;	Debugging "LoadSavedScale" related bug
+;
+; Version 3.4.2 (5/11/2024)
+; * Bug Fixes:
+;	Debugging "Deathstate" related bug
+;	Debugging Chimera Chain Lighting Icons
+;	Debugging Chimera Arcitc Shred timer
+;	Starting on "Previous Chain Lightning Tank" feature [Testing Required]
+;
+; Version 3.4.1 (5/6/2024)
+; * Bug Fixes:
+;	Adjusted Percentages for Manic Phobia Events on Ansuul
+;	Disabled a few features that are handled by Code's Combat Alerts
+;	Debugging Chimera Chain Lighting Icons
+;	Debugging Chimera Arcitc Shred timer
+;
+; Version 3.4.0 (5/6/2024)
+; * Bug Fixes:
+;	Adjusted Percentages for Manic Phobia Events on Ansuul
+;	Disabled a few features that are handled by Code's Combat Alerts
+;	Debugging Chimera Chain Lighting Icons
+;	Debugging Chimera Arcitc Shred timer
+;
+; Version 3.3.9 (5/4/2024)
+; * Features:
+;	Chimera Chain Lighting Icons [Testing Required]
+;
+; Version 3.3.8 (5/3/2024)
+; * Features:
+;	Arctic Shred timer for Chimera [Testing Required]
+;
+; Version 3.3.7 (5/2/2024)
+; * Bug Fixes:
+;	Ansuul Info Panel
+;
+; Version 3.3.6 (5/1/2024)
+; * Bug Fixes:
+;	Removed deprecated code
+;
+; Version 3.3.5 (5/1/2024)
+; * Bug Fixes:
+;	Wamasu charge targeted player icon feature 
+;
+; Version 3.3.4 (5/1/2024)
+; * Features:
+;	Ansuul Panel - Wrack tracker (Credits to HyperAlerts for cooldown data)
+;
+; Version 3.3.3 (5/1/2024)
+; * Updates:
+;	Live trackers for Manic Phobias and Mazes
+;
+; Version 3.3.2 (5/1/2024)
+; * Bug Fixes:
+;	Ansuul panel - adding another label for maze tracker
+;
+; Version 3.3.1 (5/1/2024)
+; * Bug Fixes:
+;	Ansuul panel (testing required)
+;
+; Version 3.3.0 (4/3/2024)
+; * Updates:
+;	Scaling of UI elements (testing required)
+;	Yaseyla Firebomb data collection and live updating (testing required)
+; * Bug Fixes:
+;	Wamasu charge targeted player icon feature (testing required)
+;	TODO Ansuul panel
+;
+; Version 3.2.8 (2/15/2023)
+; * Bug Fixes:
+;	Disabling sound notification of Ansuul Wrathstorms
+;
+; Version 3.2.7 (11/15/2023)
+; * Bug Fixes:
+;	Yaseyla Shrapnel Timer [In Progress]
+;	Yaseyla Fire Bomb Timer [In Progress]
+;	Yaseyla Vengeful Strike Timer Bar now only for who it is cast [In Progress]
+;
+; Version 3.2.6 (10/07/2023)
+; * Features:
+;	UI Scale Customization
+;
+; Version 3.2.5 (08/11/2023)
+; * Bug Fixes:
+;	Yaseyla Fire Bombs [In Progress]
+;
+; Version 3.2.4 (08/03/2023)
+; * Features:
+;	Yaseyla Vengeful Strike Notification
+;	Multi-language support
+:
+; Version 3.2.3 (07/17/2023)
+; * Updates:
+;	Yaseyla Fire Bomb timing (Credits Sanity's Edge Helper)
+;
+; Version 3.2.2 (07/13/2023)
+; * Bug fixing:
+;	Updating references for menu headers
+;
+; Version 3.2.1 (07/09/2023)
+; * Bug fixing:
+;	Panel on Ansuul not shown [In Progress]
+;
+; Version 3.2.0 (07/07/2023)
+; * Features:
+;	Multi-language support [In Progress]
+;
+; Version 3.1.1 (07/04/2023)
+; * Features:
+;	Counter for live Enraged Fragments [In Progress]
+; * Feature modifications:
+;	Ansuul notifications in portal only displayed if casted on self
+;	Sunburst notification color changed
+; * Bug fixes:
+;	Move UI not funcitoning [Testing In Progress]
+;	Percentage component of UI not restoring position properly
+;
+; Version 3.1.0 (07/01/2023)
+; * Features:
+;	Interrupt warnings for Yaseyla True Shot and Ansuul Inferno
+;
+; Version 3.0.0 (06/10/2023)
+; * Bug fixes:
+;	Wamasu Charge Icons [Testing In Progress]
+;	Yaseyla Panel hiding when out of combat [Testing In Progress]
+;	Frost Tomb tracking [Testing In Progress]
+; * New Features:
+;	Icons on Frost Tombs [In Progress]
+;	Manic Phobia notification will state who the Manic Phobia has been applied to [Testing In Progress]
+;	Debug Mode
+;	Wrack Tracker (A SeaUnicorn Feature) [In Progress]
+;	Sunburst Tracker [In Progress]
+;
+; Version 2.3.3 (05/16/2023)
+; * Bug fixes:
+;	Wamasu Charge Icons [In Progress]
+;
+; Version 2.3.2 (05/16/2023)
+; * Bug fixes:
+;	Wamasu Charge Icons [In Progress]
+;	Chain Lightning Icons [In Progress]
+;	Poisoned Mind Icons (A SeaUnicorn Feature) [In Progress]
+;
+; Version 2.3.1 (05/14/2023)
+; * A more polished menu
+;
+; Version 2.3.0 (05/13/2023)
+; * Added the options to disable specific features
+;
+; Version 2.2.4 (05/12/2023)
+; * Bug fixes:
+;	Implementation of OdySupportIcons
+;	Manic Phobia Percentage Notifications
+;	UI Elements always being dispalyed when they shouldn't be
+;	Maze component of Ansuul's Foresight Panel
+;
+; Version 2.2.3 (05/12/2023)
+; * Bug fixes.
+;
+; Version 2.2.1 (05/12/2023)
+; * Added notifications/trackers for Ansuul:
+;   Poisoned Mind (at the request of SeaUnicorn), 
+;   time-based tracker for Manic Phobia casts after 10% health
+; * Renaming Ansuul's "Essence Manifestation" tracker to "Manic Phobia" tracker
+; * Added player icons for Chimera:
+;   Chain Lightning Groups 1 and 2
+; * Fixed a bug where Yaseyla's Shrapnel tracker may have negative numbers
+; * Wamasus:
+;   Added player icons on those targeted with the Charge
+;   Added a notification with the name of those with the Charge
+; * Fixed a bug where some UI elements were displayed while out of combat
+;
+; Version 2.1.3 (05/07/2023)
+; * Added ability notifications for Ansuul:
+;   Wrack, Calamity, Fan of Knives
+;
+; Version 2.1.2 (05/06/2023)
+; * Bug fixes.
+;
+; Version 2.1.1 (05/06/2023)
+; * Implemented Features for Ansuul the Tormentor.
+;
+; Version 2.0.1 (05/03/2023)
+; * Minor updates to graphical elements.
+;
+; Version 2.0.0 (05/02/2023)
+; * Trackers for Boss 1 (Yaseyla) get more polished.
+; * Added trackers for "Ice Tombs" and Wamasu Cones
+;
+; Version 1.1.1 (05/02/2023)
+; * Updated UI Elements
+; 
+; Version 1.1.0 (04/30/2023) (Limited-Release Preview)
+; * Added tracking for Yaseyla: 
+; * Fire Bombs, Knife Blast, percentage based Wamasu/Archer spawns,
+;   percentage based Portal/Archer spawns, percentage based Shrapnel events
+;
+; Version 1.0.1 (04/30/2023) (Limited-Release Preview)
+; * Disabled things that are not needed for Sanity's Edge.
+; 
+; Version 1.0.0 (04/29/2023) (Limited-Release Preview)
+; * Customized for Sanity's Edge.
+;
+; Version 0.1.0 (04/29/2023) (Limited-Release Preview)
+; * Initial Version based on Qcell's Rockgrove Helper.

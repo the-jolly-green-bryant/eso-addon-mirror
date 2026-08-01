@@ -1,0 +1,75 @@
+<GuiXml>
+  <Controls>
+    <Button name="AUI_ListBox_Row" virtual="true"  tier="HIGH"/>
+    <Control name="AUI_ListBox_CellContainer" virtual="true" />
+    <Label name="AUI_ListBox_CellLabel" virtual="true" wrapMode="ELLIPSIS" tier="HIGH"/>
+    <Texture name="AUI_ListBox_CellTexture" virtual="true" tier="HIGH"/>
+    <Texture name="AUI_ListBox_CellIcon" textureFile="EsoUI/Art/ActionBar/abilityFrame64_up.dds" virtual="true" tier="HIGH">
+      <Controls>
+        <Texture name="$(parent)_Texture">
+          <Anchor point="TOPLEFT" offsetX="2" offsetY="2"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2"/>
+        </Texture>
+      </Controls>
+    </Texture>
+    <Button name="AUI_ListBox_CellButton" virtual="true" wrapMode="ELLIPSIS" tier="HIGH"/>
+    <Control name="AUI_ListBox" virtual="true">
+      <Controls>
+        <Control name="$(parent)Container">
+          <Controls>
+            <Control name="$(parent)ColumnHeader">
+              <Controls>
+                <Texture name="$(parent)ColumnLine" >
+                  <Dimensions y="2" />
+                </Texture>
+              </Controls>
+            </Control>
+            <Scroll name="$(parent)Scroll" mouseEnabled="true">
+              <Controls>
+                <Control name="$(parent)Content" />
+              </Controls>
+            </Scroll>
+          </Controls>
+        </Control>
+        <Slider name="$(parent)ScrollBar" mouseEnabled="true">
+          <ThumbTexture textureFile="EsoUI/Art/Miscellaneous/scrollbox_elevator.dds" disabledTextureFile="EsoUI/Art/Miscellaneous/scrollbox_elevator_disabled.dds" thumbWidth="16" thumbHeight="32" />
+          <Controls>
+            <Texture name="$(parent)ThumbMunge" textureFile="EsoUI/Art/Tooltips/munge_overlay.dds" addressMode="WRAP" layer="OVERLAY" alpha="0.5">
+              <OnInitialized>
+                local slider = self:GetParent()
+                local thumb = slider:GetThumbTextureControl()
+                self:SetAnchorFill(thumb)
+              </OnInitialized>
+            </Texture>
+          </Controls>
+          <BackgroundBottom textureFile="EsoUI/Art/Miscellaneous/scrollbox_track.dds" />
+          <BackgroundMiddle textureFile="EsoUI/Art/Miscellaneous/scrollbox_track.dds" />
+          <BackgroundTop textureFile="EsoUI/Art/Miscellaneous/scrollbox_track.dds" />
+          <Controls>
+            <Button name="$(parent)Up" inherits="ZO_ScrollUpButton" />
+            <Button name="$(parent)Down" inherits="ZO_ScrollDownButton" />
+          </Controls>
+        </Slider>
+        <Backdrop name="$(parent)_Border" edgeColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+          <AnchorFill />
+          <OnInitialized>
+            self:SetCenterColor(0, 0, 0, 0)
+          </OnInitialized>
+        </Backdrop>
+      </Controls>
+    </Control>
+    <Control name="AUI_ListBox_Column" hidden="true" virtual="true">
+      <Controls>
+        <Control name="$(parent)TextContainer" >
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+          <Controls>
+            <Label name="$(parent)Label" font="ZoFontGame" modifyTextType="UPPERCASE" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+              <AnchorFill />
+            </Label>
+            <Texture name="$(parent)SortArrow" inherits="ZO_SortHeaderArrow" />
+          </Controls>
+        </Control>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

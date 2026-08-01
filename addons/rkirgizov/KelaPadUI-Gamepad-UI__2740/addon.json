@@ -1,0 +1,60 @@
+{
+  "archive_path": "addons/rkirgizov/KelaPadUI-Gamepad-UI__2740",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "rkirgizov",
+  "canonical_id": "esoui:2740",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2740",
+  "deleted": false,
+  "directories": [
+    "KelaPadUI",
+    "KelaPadUIBuyingData",
+    "KelaPadUIListingData"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2740/",
+  "fingerprint": "8ecf9bb0ba5d039bf2eca3c0a3ae518efaa2bf343460d0b335392c12f454add4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9514.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9549.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9548.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9527.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9517.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9516.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9274.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9275.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9518.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9520.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2740",
+  "source_url": "https://www.esoui.com/downloads/info2740-KelaPadUIGamepadUI.html",
+  "stats": {
+    "downloads": 40945,
+    "favorites": 45,
+    "monthly_downloads": 337
+  },
+  "title": "KelaPadUI Gamepad UI",
+  "updated_at": 1616531060000,
+  "version": "1.2.1"
+}

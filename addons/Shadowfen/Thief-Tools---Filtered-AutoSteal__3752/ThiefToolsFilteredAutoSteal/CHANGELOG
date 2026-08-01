@@ -1,0 +1,67 @@
+[COLOR="DeepSkyBlue"]1.3.9 (12)[/COLOR]:
+[LIST]
+[*] API bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.3.8 (11)[/COLOR]:
+[LIST]
+[*] API and dependencies bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.3.7 (10)[/COLOR]:
+[LIST]
+[*] Convert to use LibSFUtils logger function. Debug level messages are disabled by default.
+[*] API bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.3.6 (9)[/COLOR]:
+[LIST]
+[*] Make ThiefTools an optional dependency instead of a required dependency.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.3.5 (8)[/COLOR]:
+[LIST]
+[*] Convert from .txt manifest to .addon
+[*] Update required versions for dependent libraries
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.3.4 (8)[/COLOR]:
+[LIST]
+[*] Fixed picking up of lockpicks since ZOS changed the item type from ITEMTYPE_TOOL to the long unused ITEMTYPE_LOCKPICK.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.3.3 (7)[/COLOR]:
+[LIST]
+[*] API bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.3.2 (6)[/COLOR]:
+[LIST]
+[*] API bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.3.1 (5)[/COLOR]:
+[LIST]
+[*] API bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.3 (4)[/COLOR]:
+[LIST]
+[*] Modified the TTC-based profit calculation to also deduct the guild trader fees from the price.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.2 (3)[/COLOR]:
+[LIST]
+[*] Reintroduced the disappeared TTC value slider.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1 (2)[/COLOR]:
+[LIST]
+[*] Fixed "Addon Integration" section to make it appear if you only have the Thief Tools addon to integrate with.
+[*] Revised the "Gear Filters" section to avoid a scary but mistaken LAM2 warning.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.0 (1)[/COLOR]:
+[LIST]
+[*] Initial Release.
+[/LIST]

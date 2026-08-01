@@ -1,0 +1,9 @@
+## Title: GoldPerHour
+## APIVersion: 100030
+## SavedVariables: GoldPerHourSavedVariables
+## DependsOn: LibPrice
+## OptionalDependsOn: LibAddonMenu-2.0>=28
+
+bindings.xml
+GoldPerHour.xml
+GoldPerHour.lua

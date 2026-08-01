@@ -1,0 +1,165 @@
+<GuiXml>
+	<Controls>
+		<!-- One reusable row: status accent bar | boss icon | name | timer | hover buttons. -->
+		<Control name="ICTRowTemplate" virtual="true" mouseEnabled="true">
+			<Dimensions x="230" y="26" />
+			<OnMouseEnter>
+				ICT.onRowEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				ICT.onRowExit(self)
+			</OnMouseExit>
+			<Controls>
+				<Backdrop name="$(parent)Accent">
+					<Dimensions x="4" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="2" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="2" offsetY="-2" />
+				</Backdrop>
+				<Texture name="$(parent)Icon" textureFile="EsoUI/Art/Icons/mapKey/mapKey_groupBoss.dds">
+					<Dimensions x="20" y="20" />
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="10" />
+				</Texture>
+				<Label name="$(parent)Name" font="ZoFontWinH4" verticalAlignment="CENTER" horizontalAlignment="LEFT" wrapMode="ELLIPSIS" text="">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="36" />
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-100" />
+				</Label>
+				<Label name="$(parent)Timer" font="ZoFontWinH4" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="">
+					<Dimensions x="46" y="26" />
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-52" />
+				</Label>
+				<Button name="$(parent)Start" hidden="true">
+					<Dimensions x="22" y="22" />
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-28" />
+					<Textures
+						normal="EsoUI/Art/Buttons/accept_up.dds"
+						pressed="EsoUI/Art/Buttons/accept_down.dds"
+						mouseOver="EsoUI/Art/Buttons/accept_over.dds" />
+					<OnMouseEnter>
+						ICT.onRowEnter(self:GetParent())
+					</OnMouseEnter>
+					<OnMouseExit>
+						ICT.onRowExit(self:GetParent())
+					</OnMouseExit>
+					<OnClicked>
+						ICT.onStartButton(self)
+					</OnClicked>
+				</Button>
+				<Button name="$(parent)Reset" hidden="true">
+					<Dimensions x="22" y="22" />
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-4" />
+					<Textures
+						normal="EsoUI/Art/Buttons/decline_up.dds"
+						pressed="EsoUI/Art/Buttons/decline_down.dds"
+						mouseOver="EsoUI/Art/Buttons/decline_over.dds" />
+					<OnMouseEnter>
+						ICT.onRowEnter(self:GetParent())
+					</OnMouseEnter>
+					<OnMouseExit>
+						ICT.onRowExit(self:GetParent())
+					</OnMouseExit>
+					<OnClicked>
+						ICT.onResetButton(self)
+					</OnClicked>
+				</Button>
+			</Controls>
+		</Control>
+
+		<!-- Movable HUD box. Header + rows are created/positioned in Lua. -->
+		<TopLevelControl name="ICTTimeTable" mouseEnabled="true" movable="true" clampedToScreen="true" resizeHandleSize="8">
+			<Dimensions x="230" y="214" />
+			<OnMoveStop>
+				ICT.onTableMove()
+			</OnMoveStop>
+			<OnResizeStop>
+				ICT.onResize()
+			</OnResizeStop>
+			<OnMouseEnter>
+				ICT.refreshAlpha()
+			</OnMouseEnter>
+			<OnMouseExit>
+				ICT.refreshAlpha()
+			</OnMouseExit>
+			<Controls>
+				<Backdrop name="$(parent)BG">
+					<AnchorFill />
+				</Backdrop>
+
+				<Control name="$(parent)Header" mouseEnabled="false">
+					<Dimensions y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+					<Controls>
+						<Label name="$(parent)Title" font="ZoFontWinH4" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="IC The Next Boss" color="C5C29E">
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="8" />
+						</Label>
+						<Button name="$(parent)Lock">
+							<Dimensions x="20" y="20" />
+							<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-6" />
+							<Textures normal="EsoUI/Art/Miscellaneous/locked_up.dds" />
+							<OnClicked>
+								ICT.toggleLock()
+							</OnClicked>
+						</Button>
+						<Button name="$(parent)Settings">
+							<Dimensions x="20" y="20" />
+							<Anchor point="RIGHT" relativeTo="$(parent)Lock" relativePoint="LEFT" offsetX="-4" />
+							<Textures
+								normal="EsoUI/Art/Buttons/edit_up.dds"
+								pressed="EsoUI/Art/Buttons/edit_down.dds"
+								mouseOver="EsoUI/Art/Buttons/edit_over.dds" />
+							<OnClicked>
+								ICT.openSettings()
+							</OnClicked>
+						</Button>
+						<Button name="$(parent)Collapse">
+							<Dimensions x="20" y="20" />
+							<Anchor point="RIGHT" relativeTo="$(parent)Settings" relativePoint="LEFT" offsetX="-4" />
+							<Textures
+								normal="EsoUI/Art/Buttons/scrollbox_upArrow_up.dds"
+								pressed="EsoUI/Art/Buttons/scrollbox_upArrow_down.dds"
+								mouseOver="EsoUI/Art/Buttons/scrollbox_upArrow_over.dds" />
+							<OnClicked>
+								ICT.toggleReduced()
+							</OnClicked>
+						</Button>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="ICTMapTimers" movable="false" clampedToScreen="true" hidden="true">
+			<Dimensions x="800" y="800" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" />
+			<Controls>
+				<Label name="ICTMemorialDistrictLabel" font="ZoFontWinH3" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-5" offsetY="-80" />
+				</Label>
+				<Label name="ICTArenaDistrictLabel" font="ZoFontWinH3" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="85" offsetY="-30" />
+				</Label>
+				<Label name="ICTArboretumDistrictLabel" font="ZoFontWinH3" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="80" offsetY="65" />
+				</Label>
+				<Label name="ICTTempleDistrictLabel" font="ZoFontWinH3" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-5" offsetY="115" />
+				</Label>
+				<Label name="ICTNoblesDistrictLabel" font="ZoFontWinH3" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-90" offsetY="65" />
+				</Label>
+				<Label name="ICTElvenGardensDistrictLabel" font="ZoFontWinH3" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-90" offsetY="-35" />
+				</Label>
+				<Label name="ICTCanLabel" font="ZoFontWinH3" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

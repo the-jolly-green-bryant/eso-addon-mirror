@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/romilly/Night-Market-Keys__4575",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "romilly",
+  "canonical_id": "esoui:4575",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4575",
+  "deleted": false,
+  "directories": [
+    "NightMarketKeys"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4575/",
+  "fingerprint": "ed6c483801d1e8c337b7591fa6709533b67cfd56a16f4ab8619e8483e3620229",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16039.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4575",
+  "source_url": "https://www.esoui.com/downloads/info4575-NightMarketKeys.html",
+  "stats": {
+    "downloads": 244,
+    "favorites": 1,
+    "monthly_downloads": 20
+  },
+  "title": "Night Market Keys",
+  "updated_at": 1778621983000,
+  "version": "1.0.4"
+}

@@ -1,0 +1,18 @@
+; CroZone - real-time practice feedback for the necro "bash weave" rotation.
+; Rotation cycle:  Light Attack -> Skill -> Bash -> (~100-500ms) -> Bash -> repeat
+;
+; NOTE: Light-attack and bash detection rely on EVENT_COMBAT_EVENT, which only
+; fires when a hit actually LANDS on a target. There is no event for "you pressed
+; the button and missed/hit nothing". Practice on a target dummy.
+
+## Title: CroZone
+## Author: @ObiJovi
+## Version: 1.0.0
+## AddOnVersion: 100
+## APIVersion: 101049 101050
+## SavedVariables: CroZoneSV
+## Description: Necromancer toolkit: live double-bash weave timing grader (LA -> Skill -> Bash -> Bash) plus a standalone Blast Bones availability icon. Optional: LibAddonMenu-2.0 for the in-game settings panel. Coded with AI assistance, then reviewed and tested in-game by the author. All code is original; no other addon's code was copied.
+## OptionalDependsOn: LibAddonMenu-2.0
+## IsLibrary: false
+
+CroZone.lua

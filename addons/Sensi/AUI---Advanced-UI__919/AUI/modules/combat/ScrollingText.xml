@@ -1,0 +1,47 @@
+<GuiXml>
+  <Controls>
+    <Control name="AUI_Scrolling_Text_Control" mouseEnabled="false" hidden="false" virtual="true" tier="HIGH">
+      <Controls>
+        <Texture name="$(parent)_IconContainer" textureFile="EsoUI/Art/ActionBar/abilityFrame64_up.dds" hidden="true">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+          <Controls>
+            <Texture name="$(parent)_Icon" tier="HIGH">
+              <Anchor point="TOPLEFT" offsetX="1" offsetY="1"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="-1" offsetY="-1"/>
+              <Controls>
+                <Texture name="$(parent)_BG" tier="MEDIUM">
+                  <AnchorFill />
+                  <OnInitialized>
+                    self:SetColor(0, 0, 0, 1)
+                  </OnInitialized>
+                </Texture>
+              </Controls>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Label name="$(parent)_Text">
+          <Anchor point="LEFT" relativeTo="$(parent)_IconContainer" relativePoint="RIGHT" offsetX="8" offsetY="0"/>
+        </Label>
+        <Label name="$(parent)_Suffix" wrapMode="ELLIPSIS">
+          <Anchor point="LEFT" relativeTo="$(parent)_Text" relativePoint="RIGHT" offsetX="6" offsetY="0"/>
+        </Label>
+      </Controls>
+    </Control>
+    <Control name="AUI_Scrolling_Text_Panel" mouseEnabled="false" virtual="true" tier="MEDIUM">
+      <Controls>
+        <Backdrop name="$(parent)_Container" inherits="ZO_DefaultBackdrop" alpha="0.7" hidden="true">
+          <AnchorFill />
+          <Controls>
+            <Label name="$(parent)_Text" verticalAlignment="CENTER" horizontalAlignment="CENTER" font="ZoFontWinH4" color="FFFFFF" wrapMode="ELLIPSIS">
+              <AnchorFill />
+            </Label>
+          </Controls>
+        </Backdrop>
+      </Controls>
+    </Control>
+    <TopLevelControl name="AUI_Scrolling_Text" mouseEnabled="false" clampedToScreen="true" hidden="true">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+      <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

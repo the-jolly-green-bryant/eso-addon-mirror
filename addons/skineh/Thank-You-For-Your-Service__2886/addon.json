@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/skineh/Thank-You-For-Your-Service__2886",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "skineh",
+  "canonical_id": "esoui:2886",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2886",
+  "deleted": false,
+  "directories": [
+    "ThankYouForYourService"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2886/",
+  "fingerprint": "b81356a97d5e5baa9046600e5cf9067ca7f35aeadf64e2dce030a6b9f1723dfa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9783.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9747.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2886",
+  "source_url": "https://www.esoui.com/downloads/info2886-ThankYouForYourService.html",
+  "stats": {
+    "downloads": 10201,
+    "favorites": 11,
+    "monthly_downloads": 35
+  },
+  "title": "Thank You For Your Service",
+  "updated_at": 1610339479000,
+  "version": "1.0.2"
+}

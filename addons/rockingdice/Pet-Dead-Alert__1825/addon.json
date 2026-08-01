@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/rockingdice/Pet-Dead-Alert__1825",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "rockingdice",
+  "canonical_id": "esoui:1825",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    }
+  ],
+  "content_id": "esoui:1825",
+  "deleted": false,
+  "directories": [
+    "PetDeadAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1825/",
+  "fingerprint": "6cdd73e87163a10098957f0abe1b7792de1b1c05b0ea51171ca0be59bdacc091",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6188.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1825",
+  "source_url": "https://www.esoui.com/downloads/info1825-PetDeadAlert.html",
+  "stats": {
+    "downloads": 30694,
+    "favorites": 17,
+    "monthly_downloads": 31
+  },
+  "title": "Pet Dead Alert",
+  "updated_at": 1508811348000,
+  "version": "1.01"
+}

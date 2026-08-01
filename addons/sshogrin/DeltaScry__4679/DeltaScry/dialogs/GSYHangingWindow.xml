@@ -1,0 +1,63 @@
+<GuiXml>
+		
+	<Controls>
+		<Backdrop name="GSYHangingWindow" clampedToScreen="True" movable="true" mouseEnabled="true" inherits="ZO_DefaultBackdrop" tier="HIGH" virtual="true">
+			<Dimensions x="500" y="90" />
+			<Anchor point="CENTER" relativeTo="ZO_AntiquityJournal_Keyboard_TopLevelContents" relativePoint="CENTER" offsetY="20" />
+
+			<OnMoveStop>
+            	GSY.SaveLoc()
+       		 </OnMoveStop>
+
+			<Controls>
+
+				<!-- Group type -->
+				<Label name="$(parent)GroupLabel" font="ZoFontGameBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT" text="Group By:"> 
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5" />
+					<Dimensions x="245" y="20" />
+				</Label>
+
+				<Control name="$(parent)GroupDropdown" inherits="ZO_ComboBox">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)GroupLabel" relativePoint="BOTTOMRIGHT" offsetY="-5"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)GroupLabel" relativePoint="BOTTOMLEFT" offsetY="5"/>
+					<Dimensions y="30" />
+
+				</Control>				
+
+				<!-- Sort type -->
+				<Label name="$(parent)SortLabel" font="ZoFontGameBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT" text="Sort By:"> 
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="5" />
+					<Dimensions x="245" y="20" />
+				</Label>
+
+				<Control name="$(parent)SortDropdown" inherits="ZO_ComboBox">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)SortLabel" relativePoint="BOTTOMRIGHT" offsetY="-5"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)SortLabel" relativePoint="BOTTOMLEFT" offsetY="5"/>
+					<Dimensions y="30" />	
+
+				</Control>												
+
+				<!-- Hide treasure -->
+				<Label name="$(parent)HideTreasureLabel" font="ZoFontGameBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT" text="Hide Treasure:"> 
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-8" />
+					<Dimensions x="245" y="20" />
+				</Label>
+
+				<Button name="$(parent)HideTreasure" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)HideTreasureLabel" relativePoint="RIGHT" offsetX="-20" />
+				</Button>			
+
+				<!-- Hide found3 -->
+				<Label name="$(parent)HideCompleteLabel" font="ZoFontGameBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT" text="Hide Complete:"> 
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="-8" />
+					<Dimensions x="245" y="20" />
+				</Label>
+
+				<Button name="$(parent)HideComplete" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)HideCompleteLabel" relativePoint="RIGHT" offsetX="-20" />
+				</Button>			
+
+			</Controls>
+		</Backdrop>
+	</Controls>
+</GuiXml>

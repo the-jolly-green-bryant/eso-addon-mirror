@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/RunningDuck/Omni-Stats__863",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "RunningDuck",
+  "canonical_id": "esoui:863",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:863",
+  "deleted": false,
+  "directories": [
+    "OmniStats"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl863/",
+  "fingerprint": "98846aecdb837696813d7a04461736184e9ab79050c8ea199eb9135106a12dc1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11172.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2665.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2640.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "863",
+  "source_url": "https://www.esoui.com/downloads/info863-OmniStats.html",
+  "stats": {
+    "downloads": 49307,
+    "favorites": 53,
+    "monthly_downloads": 64
+  },
+  "title": "Omni Stats",
+  "updated_at": 1653114110000,
+  "version": "4.0.0"
+}

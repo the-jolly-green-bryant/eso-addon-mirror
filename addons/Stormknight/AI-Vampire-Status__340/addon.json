@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Stormknight/AI-Vampire-Status__340",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Stormknight",
+  "canonical_id": "esoui:340",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:340",
+  "deleted": false,
+  "directories": [
+    "VampireStatus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl340/",
+  "fingerprint": "238e994605a4a2bc617f1d1978a690ef3bd7d9a2b1ca102fd5f6afe7d24bfe92",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw905.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "340",
+  "source_url": "https://www.esoui.com/downloads/info340-AIVampireStatus.html",
+  "stats": {
+    "downloads": 40108,
+    "favorites": 78,
+    "monthly_downloads": 55
+  },
+  "title": "AI Vampire Status",
+  "updated_at": 1476624740000,
+  "version": "2.4.3"
+}

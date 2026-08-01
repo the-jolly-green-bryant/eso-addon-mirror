@@ -1,0 +1,7 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+	  <Category name="|cAFD3FFShissu|ceeeeee's AddOns|r">
+	    <Action name="SSC_notebookToogle"><Down>ShissuFramework._bindings.notebookToogle()</Down></Action>
+    </Category>
+  </Layer>
+</Bindings>

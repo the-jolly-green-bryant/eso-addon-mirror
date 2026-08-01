@@ -1,0 +1,21 @@
+
+## Title: LibMultilingualName
+## Author: @Shinntarou (NA,PC)
+## IsLibrary: true
+## APIVersion: 101049 101050
+## Version: 1.2.48
+## AddOnVersion: 10248
+## Description: The Lib is a simple huge LUA table files created by dump data from EsoExtractData. Get*** methods just only to pick a value from the tables. Search*** methods have own data processing. Correctness of these results are not guaranteed.
+
+LibMultilingualName.lua
+
+Item.lua
+AbilityDescription.lua
+Quest.lua
+QuestTask.lua
+Skill.lua
+Zone.lua
+SetItemName.lua
+SetItemBonus.lua
+Raw/SetItemIdToAbilityIds.lua
+

@@ -1,0 +1,54 @@
+## Title: |c66ccffPhinixUI|r
+## Author: |c66ccffPhinix|r
+## Description: Automatically configures a standard set of addons to provide optimal user experience.
+## Version: 1.16
+## APIVersion: 101037
+## SavedVariables: PhinixUI
+## OptionalDependsOn: Azurah Srendarr ChatWindowManager LootDrop ClockTST DungeonTracker SALTI VotansMiniMap ActionDurationReminder LoreBooks SkyShards MapPins ParlezPlus rChat Postmaster HarvestMap CraftingMaterialLevelDisplay VotansFisherman Recharge NoThankYou
+
+
+bin\PUIAddon.xml
+
+language\en.lua
+language\de.lua
+language\es.lua
+language\fr.lua
+language\it.lua
+language\ja.lua
+language\ru.lua
+
+modules\ActionDurationReminder.lua
+modules\Azurah.lua
+modules\ChatWindowManager.lua
+modules\ClockTST.lua
+modules\CraftingMaterialLevelDisplay.lua
+modules\DungeonTracker.lua
+modules\HarvestMap.lua
+modules\LootDrop.lua
+modules\LoreBooks.lua
+modules\MapPins.lua
+modules\NoThankYou.lua
+modules\ParlezPlus.lua
+modules\Postmaster.lua
+modules\rChat.lua
+modules\Recharge.lua
+modules\SALTI.lua
+modules\SkyShards.lua
+modules\Srendarr.lua
+modules\VotansFisherman.lua
+modules\VotansMiniMap.lua
+
+bin\AddonDB.lua
+
+PhinixUI.lua
+bin\PhinixUI.xml
+bin\bindings.xml
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

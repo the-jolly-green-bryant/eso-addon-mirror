@@ -1,0 +1,23 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+; Author: @Shissu on EU-Server!
+ 
+## Title: |c82FA58Shissu|ceeeeee's DonateFee|r v1.1.0
+## APIVersion: 100022
+## LastUpdated: 24.03.2018
+## Author: |c82FA58@Shissu|r [EU-SERVER]
+## Description: None
+## SavedVariables: shissuDonateFee
+## DependsOn: ShissuFramework
+
+i18n\en.lua
+i18n\$(language).lua
+
+ShissuDonateFeeUI.xml
+ShissuDonateFeeUI.lua
+
+ShissuDonateFee.lua

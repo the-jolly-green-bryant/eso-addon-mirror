@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/ronnie.vd.c/Gear-overview__3340",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ronnie.vd.c",
+  "canonical_id": "esoui:3340",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:3340",
+  "deleted": false,
+  "directories": [
+    "GearOverview"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3340/",
+  "fingerprint": "b34d47259015992481f23b7ee0830a6242089bb925a93b587cb2c31f1587da93",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11454.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3340",
+  "source_url": "https://www.esoui.com/downloads/info3340-Gearoverview.html",
+  "stats": {
+    "downloads": 22750,
+    "favorites": 23,
+    "monthly_downloads": 97
+  },
+  "title": "Gear overview",
+  "updated_at": 1764188637000,
+  "version": "0.11.0"
+}

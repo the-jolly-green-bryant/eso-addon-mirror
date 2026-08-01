@@ -1,0 +1,15 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c99FF99Advanced AutoLoot|r">
+      <Action name="AAL_AUTOLOOT">      
+        <Down>SLASH_COMMANDS['/aaloot']()</Down>
+      </Action>
+      <Action name="AAL_LOOTSTOLEN">      
+        <Down>SLASH_COMMANDS['/aasteal']()</Down>
+      </Action>  
+      <Action name="AAL_SETTINGS">      
+        <Down>SLASH_COMMANDS['/aalset']()</Down>
+      </Action>   	  
+    </Category>
+  </Layer>
+</Bindings>

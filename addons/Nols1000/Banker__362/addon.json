@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Nols1000/Banker__362",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Nols1000",
+  "canonical_id": "esoui:362",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:362",
+  "deleted": false,
+  "directories": [
+    "Banker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl362/",
+  "fingerprint": "7241d55925d9740c520205d041c74da995638374331f4e2424d8a092f2454420",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw983.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3084.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "362",
+  "source_url": "https://www.esoui.com/downloads/info362-Banker.html",
+  "stats": {
+    "downloads": 25351,
+    "favorites": 58,
+    "monthly_downloads": 16
+  },
+  "title": "Banker",
+  "updated_at": 1547568426000,
+  "version": "1.6"
+}

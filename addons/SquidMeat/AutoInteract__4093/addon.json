@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/SquidMeat/AutoInteract__4093",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SquidMeat",
+  "canonical_id": "esoui:4093",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4093",
+  "deleted": false,
+  "directories": [
+    "AutoInteract"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4093/",
+  "fingerprint": "790f42131572af128174bbc78555af1d5f03d23093048e179cf1d4c1f60fab69",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14061.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13959.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13960.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13961.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14024.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14022.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14036.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14023.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14029.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4093",
+  "source_url": "https://www.esoui.com/downloads/info4093-AutoInteract.html",
+  "stats": {
+    "downloads": 3240,
+    "favorites": 7,
+    "monthly_downloads": 78
+  },
+  "title": "AutoInteract",
+  "updated_at": 1775076069000,
+  "version": "1.8.6"
+}

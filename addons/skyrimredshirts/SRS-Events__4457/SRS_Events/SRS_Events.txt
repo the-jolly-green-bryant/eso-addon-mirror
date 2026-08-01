@@ -1,0 +1,8 @@
+## Title: SRS Event Tracker
+## APIVersion: 101049
+## AddOnVersion: 55
+## Author: Ian (Skyrim Red Shirts)
+## Description: Displays status for the weekly 9pm SRS guild events. Commands: /srs and /srsguild.
+## Version: 5.5
+
+SRS_Events.lua

@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Rhyono/AT-Finisher-Finish-Him---Ascending-Tide__1979",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rhyono",
+  "canonical_id": "esoui:1979",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1979",
+  "deleted": false,
+  "directories": [
+    "AT_Finisher"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1979/",
+  "fingerprint": "20cbf979e96d397e499d79788b1619a10cef0b04e99fe7e4f67ee2504943e2e0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6670.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1979",
+  "source_url": "https://www.esoui.com/downloads/info1979-ATFinisherFinishHim-AscendingTide.html",
+  "stats": {
+    "downloads": 11986,
+    "favorites": 7,
+    "monthly_downloads": 10
+  },
+  "title": "AT Finisher (Finish Him !!!) - Ascending Tide",
+  "updated_at": 1647384668000,
+  "version": "1.1.8"
+}

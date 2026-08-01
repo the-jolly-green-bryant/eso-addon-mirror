@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/Shinni/Free-Dialog-Camera-First-and-Third-Person__1601",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shinni",
+  "canonical_id": "esoui:1601",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:1601",
+  "deleted": false,
+  "directories": [
+    "FreeDialogCamera"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1601/",
+  "fingerprint": "4fe6652269e607f08293f4f95b9cfa8970529321f524c2f26e506ad96e71075a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5245.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5244.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1601",
+  "source_url": "https://www.esoui.com/downloads/info1601-FreeDialogCameraFirstandThirdPerson.html",
+  "stats": {
+    "downloads": 15880,
+    "favorites": 30,
+    "monthly_downloads": 51
+  },
+  "title": "Free Dialog Camera (First and Third Person)",
+  "updated_at": 1512675388000,
+  "version": "1.1"
+}

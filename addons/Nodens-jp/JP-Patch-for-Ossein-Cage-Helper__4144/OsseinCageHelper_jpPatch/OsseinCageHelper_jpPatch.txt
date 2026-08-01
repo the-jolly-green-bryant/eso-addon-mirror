@@ -1,0 +1,9 @@
+## Title: JP Patch for Ossein Cage Helper
+## Description: JP Patch for Ossein Cage Helper
+## Author: @Nodens-jp
+## DependsOn: OsseinCageHelper
+## OptionalDependsOn:  
+## Version: 1.0.2
+## APIVersion: 101045
+
+Lang/$(language).lua

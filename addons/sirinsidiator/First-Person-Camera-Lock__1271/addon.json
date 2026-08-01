@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/sirinsidiator/First-Person-Camera-Lock__1271",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:1271",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    }
+  ],
+  "content_id": "esoui:1271",
+  "deleted": false,
+  "directories": [
+    "FirstPersonCameraLock"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1271/",
+  "fingerprint": "77ab2fb675e7d205ea81dc1d5e9f1f7301f0f605c8fd6be9cb06c48bdfc8cd88",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1271",
+  "source_url": "https://www.esoui.com/downloads/info1271-FirstPersonCameraLock.html",
+  "stats": {
+    "downloads": 9013,
+    "favorites": 3,
+    "monthly_downloads": 26
+  },
+  "title": "First Person Camera Lock",
+  "updated_at": 1462031939000,
+  "version": "1.3"
+}

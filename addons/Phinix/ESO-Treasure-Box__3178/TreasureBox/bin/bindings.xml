@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cFEE854ESO|r |cFF9900Treasure Box|r">
+			<Action name="TOGGLE_TREASURE_BOX_WINDOW">
+				<Up>TBoxAddon.XMLNavigation(301)</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

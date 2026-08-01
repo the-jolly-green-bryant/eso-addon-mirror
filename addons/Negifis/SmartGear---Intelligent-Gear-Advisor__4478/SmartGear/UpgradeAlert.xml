@@ -1,0 +1,103 @@
+<GuiXml>
+    <Controls>
+        <!-- Main alert frame -->
+        <TopLevelControl name="SmartGearAlertFrame" hidden="true" movable="true" clampedToScreen="true"
+                         mouseEnabled="true" layer="OVERLAY" level="100">
+            <Dimensions x="380" y="140" />
+            <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetY="80" />
+
+            <!-- Background -->
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                    <Edge edgeSize="2" />
+                </Backdrop>
+
+                <!-- Header bar -->
+                <Control name="$(parent)Header">
+                    <Dimensions x="380" y="28" />
+                    <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+
+                    <Controls>
+                        <Backdrop name="$(parent)BG">
+                            <AnchorFill />
+                            <Center r="0" g="0.15" b="0" a="0.85" />
+                        </Backdrop>
+
+                        <Label name="$(parent)Title" font="ZoFontWinH4" color="00FF00"
+                               horizontalAlignment="CENTER" verticalAlignment="CENTER"
+                               text="SmartGear">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <!-- Item icon -->
+                <Texture name="$(parent)Icon" textureFile=""
+                         mouseEnabled="true">
+                    <Dimensions x="48" y="48" />
+                    <Anchor point="TOPLEFT" offsetX="12" offsetY="36" />
+                </Texture>
+
+                <!-- Item name label -->
+                <Label name="$(parent)ItemName" font="ZoFontWinH3" color="FFFFFF"
+                       horizontalAlignment="LEFT" verticalAlignment="TOP"
+                       wrapMode="ELLIPSIS">
+                    <Dimensions x="300" y="24" />
+                    <Anchor point="TOPLEFT" offsetX="68" offsetY="36" />
+                </Label>
+
+                <!-- Description: "Replaces: ..." -->
+                <Label name="$(parent)Description" font="ZoFontGame" color="AAAAAA"
+                       horizontalAlignment="LEFT" verticalAlignment="TOP"
+                       wrapMode="ELLIPSIS">
+                    <Dimensions x="300" y="20" />
+                    <Anchor point="TOPLEFT" offsetX="68" offsetY="58" />
+                </Label>
+
+                <!-- Score diff label -->
+                <Label name="$(parent)Score" font="ZoFontGameBold" color="00FF00"
+                       horizontalAlignment="LEFT" verticalAlignment="TOP">
+                    <Dimensions x="300" y="20" />
+                    <Anchor point="TOPLEFT" offsetX="68" offsetY="78" />
+                </Label>
+
+                <!-- EQUIP button -->
+                <Button name="$(parent)EquipBtn" mouseEnabled="true">
+                    <Dimensions x="100" y="30" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-12" offsetY="-10" />
+
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                            <AnchorFill />
+                            <Center r="0" g="0.4" b="0" a="0.9" />
+                        </Backdrop>
+                        <Label name="$(parent)Label" font="ZoFontGameBold" color="FFFFFF"
+                               horizontalAlignment="CENTER" verticalAlignment="CENTER"
+                               text="EQUIP">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                </Button>
+
+                <!-- DISMISS button -->
+                <Button name="$(parent)DismissBtn" mouseEnabled="true">
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-120" offsetY="-10" />
+
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                            <AnchorFill />
+                            <Center r="0.3" g="0" b="0" a="0.9" />
+                        </Backdrop>
+                        <Label name="$(parent)Label" font="ZoFontGameBold" color="FFFFFF"
+                               horizontalAlignment="CENTER" verticalAlignment="CENTER"
+                               text="X">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,8 @@
+## APIVersion: 100010
+## Name: ZAM StatsQuests
+## Author: Seerah
+## Version: 1.0.6
+## Description: A quests module for ZAM_Stats
+## DependsOn: ZAM_Stats
+
+quests.lua

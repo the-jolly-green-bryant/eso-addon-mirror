@@ -1,0 +1,10 @@
+## Title: Title List Search Box
+## Description: Adds a search box to your title list
+## Author: @Perfiction [PC-EU]
+## Version: 1.1.0
+## APIVersion: 101033
+
+SearchBoxKB.xml
+SearchBoxGP.xml
+
+TitleListSearchBox.lua

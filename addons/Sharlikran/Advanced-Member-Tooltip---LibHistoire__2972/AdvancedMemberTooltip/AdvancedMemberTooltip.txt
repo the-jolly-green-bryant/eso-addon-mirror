@@ -1,0 +1,21 @@
+## Title: Advanced Member Tooltip (LibHistoire)
+## Author: Sharlikran, Arkadius
+## APIVersion: 101044 101045
+## Description: Adds time of membership and guild bank depositions/withdrawals (gold only) to the guild roster tooltips
+## Version: 2.38
+## AddOnVersion: 238
+## SavedVariables: AdvancedMemberTooltip
+## DependsOn: LibHistoire>=1062 LibAddonMenu-2.0>=38 LibGuildRoster>=103 LibAsync>=30000
+## OptionalDependsOn: LibDebugLogger DebugLogViewer
+
+i18n\en.lua
+i18n\$(language).lua
+AdvancedMemberTooltip.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

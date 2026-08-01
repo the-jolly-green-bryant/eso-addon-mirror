@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/ShinyBones/Mail-Companion__2483",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ShinyBones",
+  "canonical_id": "esoui:2483",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:2483",
+  "deleted": false,
+  "directories": [
+    "MailCompanion"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2483/",
+  "fingerprint": "bd944fc4a17aa36a6465eff0d80b36a2c29b64dd2ac1915cd9017fb221ad5d6e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2483",
+  "source_url": "https://www.esoui.com/downloads/info2483-MailCompanion.html",
+  "stats": {
+    "downloads": 10164,
+    "favorites": 8,
+    "monthly_downloads": 24
+  },
+  "title": "Mail Companion",
+  "updated_at": 1662725149000,
+  "version": "5"
+}

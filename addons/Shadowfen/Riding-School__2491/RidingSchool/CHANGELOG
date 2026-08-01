@@ -1,0 +1,133 @@
+[COLOR="DeepSkyBlue"]1.4.21 (25)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.20 (24)[/COLOR]:
+[LIST]
+[*] API and dependencies bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.19 (23)[/COLOR]:
+[LIST]
+[*] Added Russian strings. Translation file provided by sasha-78.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.18 (22)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.17 (21)[/COLOR]:
+[LIST]
+[*] Convert .txt manifest to .AddonVersion
+[*] Update required versions of dependent libraries
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.16 (20)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.15 (19)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.14 (18)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.13 (17)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.12 (16)[/COLOR]:
+[LIST]
+[*] API bump (Necrom).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.11 (15)[/COLOR]:
+[LIST]
+[*] API bump (Scribes of Fate).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.10 (14)[/COLOR]:
+[LIST]
+[*] API bump (Firesong).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.9 (13)[/COLOR]:
+[LIST]
+[*] API bump (High Isle).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.8 (12)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.7 (11)[/COLOR]:
+[LIST]
+[*] API bump.
+[*] Require minimum version of installed LibAddonMenu to be at least 32. Earlier versions will break the user interface.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.6 (10)[/COLOR]
+[LIST]
+[*] API bump (Waking Flame).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.5 (9)[/COLOR]
+[LIST]
+[*] API bump (Blackwood).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.4 (8)[/COLOR]
+[LIST]
+[*] API bump (Flames of Ambition).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.3 (7)[/COLOR]
+[LIST]
+[*] API bump (Markarth).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.2 (6)[/COLOR]
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4.1 (5)[/COLOR]
+[LIST]
+[*] API bump. Greymoor.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4 (4)[/COLOR]
+[LIST]
+[*] Corrected German translations courtesy of Sir Teddy the First. Thanks also to Baertram for the assist!
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.3 (3)[/COLOR]
+[LIST]
+[*] Added AddonVersion to manifest file.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.2[/COLOR]
+[LIST]
+[*] Japanese translation courtesy of Calamath.
+[*] Removed loadup debug message that was printing in chat. Reported by Calamath)
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1[/COLOR]
+[LIST]
+[*] German translations courtesy of Google. Corrections are welcome.
+[*] French translations courtesy of Google. Corrections are welcome.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.0.1[/COLOR]
+[LIST]
+[*] Fixed missing initial quote mark on RS_ACCOUNTWIDE_TT for the German strings. (reported by EinsErr0R)
+[/LIST]

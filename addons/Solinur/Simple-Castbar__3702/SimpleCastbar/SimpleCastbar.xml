@@ -1,0 +1,95 @@
+<GuiXml>
+	<Controls>	
+		
+		<TopLevelControl name="SimpleCastbar_TLW" clampedToScreen="true">
+		
+			<Dimensions x="300" y="32" />
+			<Anchor point="BOTTOM" relativePoint="BOTTOM" offsetY="-160"/>
+
+			<Controls>
+			
+				<Backdrop name="$(parent)Backdrop2" centerColor="FF222222" edgeColor="00000000">
+					
+					<Anchor point="TOPLEFT" offsetX="-4" offsetY="-4"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="100" offsetY="4"/>
+				
+				</Backdrop>
+			
+				<Backdrop name="$(parent)Backdrop" centerColor="FF222222" edgeColor="FFAAAAAA">
+					
+					<AnchorFill/>
+					
+					<Edge edgeSize="2"/>
+				
+				</Backdrop>
+			
+				<StatusBar name="$(parent)Status" color="FF1174d0" orientation="HORIZONTAL">
+				
+					<Anchor point="TOPLEFT" offsetX="2" offsetY="2"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-3"/>
+				
+				</StatusBar>
+				
+				<Label name="$(parent)Time" text="0.0s" verticalAlignment="CENTER" color="FFFFFFFF" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thin" horizontalAlignment="RIGHT">
+				
+					<Anchor point="TOPRIGHT" offsetX="-4"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="-4"/>
+					
+					<Dimensions x="50"/>
+					
+				</Label>
+			
+				<Texture name="$(parent)Icon" layer="2">
+					
+					<Anchor point="LEFT" offsetX="4"/>
+
+					<Dimensions x="24" y="24"/>
+				
+				</Texture>
+
+				<Line name="$(parent)LineDelay" color="FFd0c3b8" thickness="2.667" layer="2">
+
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Status" offsetX="150"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Status" offsetX="150"/>
+
+				</Line>
+
+				<!-- <Texture name="$(parent)IconLA" color="FFfd5d27" layer="2">
+
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Status" offsetX="100"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Status" offsetX="100"/>
+
+				</Texture> -->
+
+				<Line name="$(parent)LineLA" color="FFfd5d27" thickness="2.667" layer="2">
+
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Status" offsetX="100"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Status" offsetX="100"/>
+
+				</Line>
+
+				<!-- <Texture name="$(parent)IconSkill" color="FFfd5d27" layer="2">
+
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Status" offsetX="100"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Status" offsetX="100"/>
+
+				</Texture> -->
+
+				<Line name="$(parent)LineSkill" color="FF9eec15" thickness="2.667" layer="2">
+
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Status" offsetX="50"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Status" offsetX="50"/>
+
+				</Line>
+				
+				<Label name="$(parent)Label" text="AbilityName" verticalAlignment="CENTER" color="FFFFFFFF" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thin">
+					
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="32"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Time" offsetX="-4"/>
+					
+				</Label>
+				
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

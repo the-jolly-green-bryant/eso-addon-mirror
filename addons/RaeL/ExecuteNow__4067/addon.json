@@ -1,0 +1,54 @@
+{
+  "archive_path": "addons/RaeL/ExecuteNow__4067",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "RaeL",
+  "canonical_id": "esoui:4067",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:4067",
+  "deleted": false,
+  "directories": [
+    "ExecuteNow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4067/",
+  "fingerprint": "c0277ed3840a9a4d80aa437014f121dd1c83d0a3aca8855e3154940fd8d913fc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13849.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13865.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4067",
+  "source_url": "https://www.esoui.com/downloads/info4067-ExecuteNow.html",
+  "stats": {
+    "downloads": 1762,
+    "favorites": 4,
+    "monthly_downloads": 59
+  },
+  "title": "ExecuteNow+",
+  "updated_at": 1742319483000,
+  "version": "0.5.0"
+}

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Saint-Ange/DeconStats__3973",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Saint-Ange",
+  "canonical_id": "esoui:3973",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3973",
+  "deleted": false,
+  "directories": [
+    "DeconStats"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3973/",
+  "fingerprint": "eaa4ab101a68f775dfd76a145469644f704dd58db689829bb256fd31dfd23703",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13477.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14397.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3973",
+  "source_url": "https://www.esoui.com/downloads/info3973-DeconStats.html",
+  "stats": {
+    "downloads": 1878,
+    "favorites": 0,
+    "monthly_downloads": 6
+  },
+  "title": "DeconStats",
+  "updated_at": 1755258772000,
+  "version": "1.0.2"
+}

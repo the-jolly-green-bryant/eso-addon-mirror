@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/STUDLETON/Jump-Over-Assistants__4405",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "STUDLETON",
+  "canonical_id": "esoui:4405",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4405",
+  "deleted": false,
+  "directories": [
+    "JumpOverAssistants"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4405/",
+  "fingerprint": "3e38c544e4c8709b60586bdd59e94819f2df41489a9b2d6507f6e5e2a5fd334d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4405",
+  "source_url": "https://www.esoui.com/downloads/info4405-JumpOverAssistants.html",
+  "stats": {
+    "downloads": 132,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "Jump Over Assistants",
+  "updated_at": 1772049148000,
+  "version": "0.1.1"
+}

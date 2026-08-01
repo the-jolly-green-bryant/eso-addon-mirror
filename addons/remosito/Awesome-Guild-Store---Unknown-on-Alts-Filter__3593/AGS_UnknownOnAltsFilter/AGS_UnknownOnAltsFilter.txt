@@ -1,0 +1,21 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+; All the Scrolllist stuff is taken from Example Scroll List Addon! Awesome resource!
+
+
+## Title: AGS_UnknownOnAltsFilter
+## Description: Awesome Guildstore Extension that adds a knowledge filter "unknown on characters" and lets you select the list of characters
+## Version: 37.0
+## Author: remosito
+## APIVersion: 100037
+## SavedVariables: AGS_UOAFVars
+## DependsOn: AwesomeGuildStore LibCharacterKnowledge  LibAddonMenu-2.0>=36 
+
+bootstrap.lua
+AGS.lua
+Settings.lua
+AGS_UnknownOnAltsFilter.lua
+

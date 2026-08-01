@@ -1,0 +1,17 @@
+## Title: StowIt
+## Version: 3.2.7
+## AddOnVersion: 030207
+## Author: RunningDuck & Baertram
+## Description: Sheaths your weapon after you leave combat
+## SavedVariables: StowIt_Settings
+## APIVersion: 10105ß 101051
+## DependsOn: LibAddonMenu-2.0>=43
+
+## Translations
+lang/strings.lua
+lang/$(language).lua
+## Packages
+src/StowIt_SettingsMenu.lua
+
+##Base addon
+StowIt.lua

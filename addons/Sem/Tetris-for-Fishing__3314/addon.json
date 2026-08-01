@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/Sem/Tetris-for-Fishing__3314",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sem",
+  "canonical_id": "esoui:3314",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3314",
+  "deleted": false,
+  "directories": [
+    "Tetris"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3314/",
+  "fingerprint": "da197ee0bf7147eeea0a745ab4c581aa7d0bd8257ce3b07f5ad3b4b0da179d4c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12272.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12271.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12273.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3314",
+  "source_url": "https://www.esoui.com/downloads/info3314-TetrisforFishing.html",
+  "stats": {
+    "downloads": 4328,
+    "favorites": 5,
+    "monthly_downloads": 21
+  },
+  "title": "Tetris for Fishing",
+  "updated_at": 1705788957000,
+  "version": "1.7"
+}

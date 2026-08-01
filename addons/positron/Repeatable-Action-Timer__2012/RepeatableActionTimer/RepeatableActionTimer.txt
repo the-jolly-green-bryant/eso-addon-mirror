@@ -1,0 +1,38 @@
+## Title: Repeatable Action Timer
+## Description: This addon keeps track of when a repeatable action can be repeated.
+## APIVersion: 100025
+## Version: 0.3.0
+## SavedVariables: RepeatableActionTimerData
+## Author: |cFF4775Positron|r
+## OptionalDependsOn: LibStub, LibAddonMenu-2.0, LibAwesomeModule-1.0
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+# All rights reserved
+#
+# You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Libs/LibStub/LibStub.lua
+Libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+Libs/LibAddonMenu-2.0/controls/panel.lua
+Libs/LibAddonMenu-2.0/controls/submenu.lua
+Libs/LibAddonMenu-2.0/controls/button.lua
+Libs/LibAddonMenu-2.0/controls/checkbox.lua
+#Libs/LibAddonMenu-2.0/controls/colorpicker.lua
+#Libs/LibAddonMenu-2.0/controls/custom.lua
+Libs/LibAddonMenu-2.0/controls/description.lua
+#Libs/LibAddonMenu-2.0/controls/dropdown.lua
+#Libs/LibAddonMenu-2.0/controls/editbox.lua
+Libs/LibAddonMenu-2.0/controls/header.lua
+#Libs/LibAddonMenu-2.0/controls/slider.lua
+#Libs/LibAddonMenu-2.0/controls/texture.lua
+#Libs/LibAddonMenu-2.0/controls/iconpicker.lua
+Libs/LibAddonMenu-2.0/controls/divider.lua
+Libs/LibAwesomeModule-1.0/LibAwesomeModule-1.0.lua
+
+Language/strings.lua
+Language/$(language).lua
+
+RepeatableActionTimer.xml
+RepeatableActionTimer.lua
+Bindings.xml

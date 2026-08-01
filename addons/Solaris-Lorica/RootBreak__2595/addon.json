@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/Solaris-Lorica/RootBreak__2595",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Solaris Lorica",
+  "canonical_id": "esoui:2595",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2595",
+  "deleted": false,
+  "directories": [
+    "RootBreak"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2595/",
+  "fingerprint": "519ae141ef3037b8764c623da7a6ce368c6f395a01a6d1fc3fbe79838d01d7f2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2595",
+  "source_url": "https://www.esoui.com/downloads/info2595-RootBreak.html",
+  "stats": {
+    "downloads": 3934,
+    "favorites": 1,
+    "monthly_downloads": 23
+  },
+  "title": "RootBreak",
+  "updated_at": 1587436300000,
+  "version": "1"
+}

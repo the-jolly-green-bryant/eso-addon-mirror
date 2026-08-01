@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/sirinsidiator/MailArchive__3014",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:3014",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3014",
+  "deleted": false,
+  "directories": [
+    "MailArchive"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3014/",
+  "fingerprint": "b100de9342f3a67f0a33394c70dc6e4f762f6ea2e50ffbff45399a4050f0a843",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10130.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3014",
+  "source_url": "https://www.esoui.com/downloads/info3014-MailArchive.html",
+  "stats": {
+    "downloads": 6109,
+    "favorites": 5,
+    "monthly_downloads": 44
+  },
+  "title": "MailArchive",
+  "updated_at": 1781282884000,
+  "version": "1.1.2"
+}

@@ -1,0 +1,40 @@
+## APIVersion: 101049
+## Title: Shifty's Craft Cost Calculator
+## Description: Calculates crafting material requirements and TTC market cost for craftable gear and Master Writs. Settings and shopping lists are stored per server (NA / EU / PTS).
+## Version: 1.1.0
+## Author: CraftCostCalculator
+## DependsOn: TamrielTradeCentre LibAddonMenu-2.0>=43
+## OptionalDependsOn: LibLazyCrafting>=4041 LibCustomMenu>=730 LibCharacterKnowledge>=300070
+## SavedVariables: CraftCostCalculatorVars
+
+lang\en.lua
+
+CraftCostCalculator.lua
+Utilities.lua
+Settings.lua
+TTCIntegration.lua
+PriceProvider.lua
+CraftData.lua
+WritResolver.lua
+CraftResolver.lua
+GlyphData.lua
+GlyphResolver.lua
+MaterialResolver.lua
+OwnedMaterials.lua
+CalculationEngine.lua
+KnowledgeChecker.lua
+UpgradeCostCalculator.lua
+ShoppingList.lua
+MythicSets.lua
+BuildExport.lua
+BuildPieceResolver.lua
+BuildCostCalculator.lua
+ProfessionMaterialData.lua
+MaterialRepository.lua
+MaterialIndex.lua
+MaterialSearchService.lua
+UI.lua
+ShoppingListUI.lua
+MaterialSearchWindow.lua
+UpgradeCostUI.lua
+BuildCostUI.lua

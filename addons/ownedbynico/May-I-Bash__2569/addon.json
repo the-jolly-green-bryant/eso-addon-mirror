@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/ownedbynico/May-I-Bash__2569",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ownedbynico",
+  "canonical_id": "esoui:2569",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2569",
+  "deleted": false,
+  "directories": [
+    "MayIBash"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2569/",
+  "fingerprint": "eaf4fdfe092d1088eaabb0f25c4c9bdd912e2f350556c3c6950ed63de79f2fc7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8764.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8765.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8766.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8767.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2569",
+  "source_url": "https://www.esoui.com/downloads/info2569-MayIBash.html",
+  "stats": {
+    "downloads": 3427,
+    "favorites": 2,
+    "monthly_downloads": 11
+  },
+  "title": "May I Bash?",
+  "updated_at": 1587490406000,
+  "version": "1.1"
+}

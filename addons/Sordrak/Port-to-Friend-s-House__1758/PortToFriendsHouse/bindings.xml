@@ -1,0 +1,99 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Port to Friend's House">
+            <Action name="PORTTOFRIENDSHOUSE_OPEN">
+                <Down>PortToFriend.OpenWindowKeyBinding()</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_1">
+                <Down>PortToFriend.PortToFavoriteBinding(1)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_2">
+                <Down>PortToFriend.PortToFavoriteBinding(2)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_3">
+                <Down>PortToFriend.PortToFavoriteBinding(3)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_4">
+                <Down>PortToFriend.PortToFavoriteBinding(4)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_5">
+                <Down>PortToFriend.PortToFavoriteBinding(5)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_6">
+                <Down>PortToFriend.PortToFavoriteBinding(6)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_7">
+                <Down>PortToFriend.PortToFavoriteBinding(7)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_8">
+                <Down>PortToFriend.PortToFavoriteBinding(8)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_9">
+                <Down>PortToFriend.PortToFavoriteBinding(9)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_10">
+                <Down>PortToFriend.PortToFavoriteBinding(10)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_INSIDE_1">
+                <Down>PortToFriend.PortToMyHouseBinding(1, 1)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_INSIDE_2">
+                <Down>PortToFriend.PortToMyHouseBinding(2, 1)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_INSIDE_3">
+                <Down>PortToFriend.PortToMyHouseBinding(3, 1)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_INSIDE_4">
+                <Down>PortToFriend.PortToMyHouseBinding(4, 1)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_INSIDE_5">
+                <Down>PortToFriend.PortToMyHouseBinding(5, 1)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_INSIDE_6">
+                <Down>PortToFriend.PortToMyHouseBinding(6, 1)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_INSIDE_7">
+                <Down>PortToFriend.PortToMyHouseBinding(7, 1)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_INSIDE_8">
+                <Down>PortToFriend.PortToMyHouseBinding(8, 1)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_INSIDE_9">
+                <Down>PortToFriend.PortToMyHouseBinding(9, 1)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_INSIDE_10">
+                <Down>PortToFriend.PortToMyHouseBinding(10, 1)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_OUTSIDE_1">
+                <Down>PortToFriend.PortToMyHouseBinding(1, 2)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_OUTSIDE_2">
+                <Down>PortToFriend.PortToMyHouseBinding(2, 2)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_OUTSIDE_3">
+                <Down>PortToFriend.PortToMyHouseBinding(3, 2)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_OUTSIDE_4">
+                <Down>PortToFriend.PortToMyHouseBinding(4, 2)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_OUTSIDE_5">
+                <Down>PortToFriend.PortToMyHouseBinding(5, 2)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_OUTSIDE_6">
+                <Down>PortToFriend.PortToMyHouseBinding(6, 2)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_OUTSIDE_7">
+                <Down>PortToFriend.PortToMyHouseBinding(7, 2)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_OUTSIDE_8">
+                <Down>PortToFriend.PortToMyHouseBinding(8, 2)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_OUTSIDE_9">
+                <Down>PortToFriend.PortToMyHouseBinding(9, 2)</Down>
+            </Action>
+			<Action name="PORTTOFRIENDSHOUSE_FAV_MYHOUSE_OUTSIDE_10">
+                <Down>PortToFriend.PortToMyHouseBinding(10, 2)</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

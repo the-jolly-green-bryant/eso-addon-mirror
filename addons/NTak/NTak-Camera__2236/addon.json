@@ -1,0 +1,67 @@
+{
+  "archive_path": "addons/NTak/NTak-Camera__2236",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "NTak",
+  "canonical_id": "esoui:2236",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2236",
+  "deleted": false,
+  "directories": [
+    "NTakCamera"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2236/",
+  "fingerprint": "087094ddd3321c6b689afe1d42f49241536748a9b51aa25ca402433a64d42c83",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7664.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7671.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7978.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7979.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7980.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7981.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7907.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2236",
+  "source_url": "https://www.esoui.com/downloads/info2236-NTakCamera.html",
+  "stats": {
+    "downloads": 68946,
+    "favorites": 107,
+    "monthly_downloads": 497
+  },
+  "title": "NTak Camera",
+  "updated_at": 1662641816000,
+  "version": "2.5.6"
+}

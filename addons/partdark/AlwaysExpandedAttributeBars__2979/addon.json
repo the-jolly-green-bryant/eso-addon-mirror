@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/partdark/AlwaysExpandedAttributeBars__2979",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "partdark",
+  "canonical_id": "esoui:2979",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:2979",
+  "deleted": false,
+  "directories": [
+    "AlwaysExpandedAttributeBars"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2979/",
+  "fingerprint": "000fef178b48dfc04c6cc0f6931e029ecfa5f09dd84f22647735f1ee9fe012f4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10063.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14075.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2979",
+  "source_url": "https://www.esoui.com/downloads/info2979-AlwaysExpandedAttributeBars.html",
+  "stats": {
+    "downloads": 19313,
+    "favorites": 11,
+    "monthly_downloads": 95
+  },
+  "title": "AlwaysExpandedAttributeBars",
+  "updated_at": 1751276589000,
+  "version": "2.6a"
+}

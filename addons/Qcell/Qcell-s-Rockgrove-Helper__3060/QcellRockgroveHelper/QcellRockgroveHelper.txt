@@ -1,0 +1,13 @@
+## Title: Qcell's Rockgrove Helper
+## Description: Additional alerts for Rockgrove
+## Author: |cFF4500Q|r|cFF6200c|r|cFF7F00e|r|cFF9C00l|r|cFFB900l|r
+## DependsOn: CombatAlerts LibAddonMenu-2.0
+## OptionalDependsOn: OdySupportIcons 
+## Version: 6.8.2
+## APIVersion: 101041
+## SavedVariables: QcellRockgroveHelperSavedVariables
+
+QcellRockgroveHelper.lua
+QcellRockgroveHelperMenu.lua
+QcellRockgroveHelperGroundIcons.lua
+QcellRockgroveHelper.xml

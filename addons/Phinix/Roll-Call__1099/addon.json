@@ -1,0 +1,34 @@
+{
+  "archive_path": "addons/Phinix/Roll-Call__1099",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phinix",
+  "canonical_id": "esoui:1099",
+  "category_id": "114",
+  "compatibility": [],
+  "content_id": "esoui:1099",
+  "deleted": false,
+  "directories": [
+    "RollCall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1099/",
+  "fingerprint": "3bf5bbc0b84afc842123d529303ca5c96ec2eece1e7e5bd8f334be78b02113b2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3443.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3444.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7804.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1099",
+  "source_url": "https://www.esoui.com/downloads/info1099-RollCall.html",
+  "stats": {
+    "downloads": 28017,
+    "favorites": 29,
+    "monthly_downloads": 18
+  },
+  "title": "Roll Call",
+  "updated_at": 1585298938000,
+  "version": "1.07"
+}

@@ -1,0 +1,49 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="TTGAddonIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false">
+      <Dimensions x="305" y="34" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="100" offsetY="100"/>
+      <OnMoveStop>
+        TTGAddon.SaveLoc()
+      </OnMoveStop>
+      <Controls>
+        <Texture name="$(parent)Bg" excludeFromResizeToFitExtents="true" color="000000" alpha="0.4">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="0" />
+          <Dimensions x="305" y="205"/>
+        </Texture>
+        <Label name="$(parent)Label" width="305" height="34" font="ZoFontWinH4" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Trial Commands">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="6" offsetX="0" />
+        </Label>
+        <Control name="$(parent)Container" inherits="ZO_ScrollContainer">
+          <OnInitialized>
+                ZO_Scroll_Initialize(self)
+          </OnInitialized>
+          <Dimensions x="300" y="168"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Bg" relativePoint="TOPLEFT" offsetY="34" offsetX="5"/>
+        </Control>
+        <Label name="$(parent)Data" width="0" height="0" font="ZoFontWinH5" lineSpacing="2" inheritAlpha="true" color="FF7A00" verticalAlignment="TOP" horizontalAlignment="LEFT">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Bg" relativePoint="TOPLEFT" offsetY="0" offsetX="0"/>
+          <OnInitialized>
+                self:SetParent(GetControl("TTGAddonIndicatorContainerScrollChild"))
+                self:SetAnchor(TOPLEFT, TTGAddonIndicatorContainerScrollChild, TOPLEFT, 3, 0)
+          </OnInitialized>
+        </Label>
+        <Label name="$(parent)Data2" width="0" height="0" font="ZoFontWinH5" lineSpacing="2" inheritAlpha="true" color="77ff7a" verticalAlignment="TOP" horizontalAlignment="LEFT">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Bg" relativePoint="TOPLEFT" offsetY="0" offsetX="0"/>
+          <OnInitialized>
+                self:SetParent(GetControl("TTGAddonIndicatorContainerScrollChild"))
+                self:SetAnchor(TOPLEFT, TTGAddonIndicatorContainerScrollChild, TOPLEFT, 55, 0)
+          </OnInitialized>
+        </Label>
+        <Button name="$(parent)ButtonCloseCommand" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="30" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Bg" relativePoint="TOPRIGHT" offsetX="5" offsetY="5" />
+          <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds" pressed="EsoUI/Art/Buttons/closebutton_down.dds" mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds" disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+          <OnClicked>
+			TTGAddon.ToggleWindow()
+          </OnClicked>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

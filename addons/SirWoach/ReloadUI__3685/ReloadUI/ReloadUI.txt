@@ -1,0 +1,12 @@
+## Title: ReloadUI
+## APIVersion: 101049 101048
+## Version: 0.1.2
+## AddOnVersion: 012
+## Description: Adds a quick command and key bind for UI reloads.
+## Author: @L_cky
+## IsLibrary: False
+
+ReloadUI.lua
+
+Bindings/Bindings.lua
+Bindings/Bindings.xml

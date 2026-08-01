@@ -1,0 +1,8 @@
+## Title: Dolgubon's Lazy Writ Crafter RU Patch
+## Description: Русификатор для модификации Dolgubon's Lazy Writ Crafter, обеспечивает совместимость и работу этой модификации в русской версии игры.
+## APIVersion: 100031
+## Author: KiriX
+## Version: 2.9.1ru31
+## DependsOn: DolgubonsLazyWritCreator
+
+$(language).lua

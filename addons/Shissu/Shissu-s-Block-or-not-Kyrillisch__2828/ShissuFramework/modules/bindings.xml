@@ -1,0 +1,8 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+	  <Category name="|cAFD3FFShissu|ceeeeee's AddOns|r">
+	    <Action name="SSC_offlineToogle"><Down>ShissuFramework._bindings.offlineToogle()</Down></Action>
+      <Action name="SSC_reload"><Down>ShissuFramework._bindings.reload()</Down></Action>
+    </Category>
+  </Layer>
+</Bindings>

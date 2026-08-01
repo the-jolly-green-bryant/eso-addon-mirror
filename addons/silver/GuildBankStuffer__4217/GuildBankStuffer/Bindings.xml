@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">
+        <Category name="GuildBankStuffer">
+            <Action name="GUILDBANKSTUFFER_MARK_DEPOSIT">
+                <Down>GuildBankStuffer:MarkDeposit()</Down>
+            </Action>
+            <Action name="GUILDBANKSTUFFER_UNMARK_DEPOSIT">
+                <Down>GuildBankStuffer:UnmarkDeposit()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

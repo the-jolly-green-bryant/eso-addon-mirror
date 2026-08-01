@@ -1,0 +1,52 @@
+{
+  "archive_path": "addons/Shibui/ShibUI__4171",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shibui",
+  "canonical_id": "esoui:4171",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4171",
+  "deleted": false,
+  "directories": [
+    "ShibUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4171/",
+  "fingerprint": "07a9bd1930f15868ea80120c6e1df28e7c36a485a08fb099e1923000061d0863",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14248.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14249.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14250.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14251.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14252.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14253.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14254.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14255.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4171",
+  "source_url": "https://www.esoui.com/downloads/info4171-ShibUI.html",
+  "stats": {
+    "downloads": 1181,
+    "favorites": 4,
+    "monthly_downloads": 32
+  },
+  "title": "ShibUI",
+  "updated_at": 1766503358000,
+  "version": "1.10.48"
+}

@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/PhaeroX/PhaeroX-Vendor-Magic__2000",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "PhaeroX",
+  "canonical_id": "esoui:2000",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2000",
+  "deleted": false,
+  "directories": [
+    "PXVendorMagic"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2000/",
+  "fingerprint": "e23619cce7b06d9c9de3488d7ad193798659673a64a5f65818b1c2e0f8bd6851",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6742.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6743.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2000",
+  "source_url": "https://www.esoui.com/downloads/info2000-PhaeroXVendorMagic.html",
+  "stats": {
+    "downloads": 3738,
+    "favorites": 8,
+    "monthly_downloads": 6
+  },
+  "title": "PhaeroX Vendor Magic",
+  "updated_at": 1558295941000,
+  "version": "1.0.5"
+}

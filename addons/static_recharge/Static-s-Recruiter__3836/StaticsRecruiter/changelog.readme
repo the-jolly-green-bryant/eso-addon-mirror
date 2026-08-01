@@ -1,0 +1,46 @@
+3.0.3
+ - Added Solstice and Night Market
+ - Updated game version to Update 49
+
+3.0.0
+  - Added all other major zones to the options
+  - Added a progress tracker for auto recruiting
+  - Zones are now listed in alphabetical order
+  - Added an option to turn all zones on or off at once
+  - Added zone profile management
+  - Updated the game version to Update 45
+  - Zone and profile management are locked during auto recruiting now
+
+2.0.5
+  - Added West Weald to the options
+  - Added a message about custom recall animations
+
+2.0.4
+  - The add-on now auto updates the internal list of owned houses
+  - Added more code comments
+
+2.0.3
+  - Fixed an issue with the keybindings not showing
+
+2.0.2
+  - Added support for creating a guild
+  - Added defaults to the settings menu
+
+2.0.1
+  - Minor bug fixes to catch incorrect settings and whatnot.
+
+2.0.0
+  - Rewrote the code to use ZOS object format and split into multiple files for easy management.
+  - Added checks for if the player successfully traveled to the correct zone. If not auto traveling disables itself so as not to intefere.
+  - Simplified the menu so that the user only has to select which zones they wish to travel to and the add-on will search for houses, freinds, guild mates and known wayshrines to travel to. In that order.
+  - Internal list of known wayshrines updates every time the travel function is used so even newly acquired wayshrines will work without a reloadui.
+  - Guild info updates automatically when the user joins or leaves a guild.
+
+1.1.0
+  - Added auto posting recruiting messages to chat edit box.
+  - Added auto traveling to next zone when message is posted.
+  - Added ability to reset auto travel progess.
+
+1.0.0
+  - First Version.
+  - Able to teleport to houses or zones and use hotkey to assist with message posting.

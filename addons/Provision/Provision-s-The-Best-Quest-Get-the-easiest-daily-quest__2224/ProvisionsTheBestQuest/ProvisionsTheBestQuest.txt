@@ -1,0 +1,12 @@
+## Title: |c00C000Prov|r's The Best Quest 1.0.0
+## Description: Give you the best daily quest.
+## Author: |c00C000Provision|r
+## APIVersion: 100025, 100026
+## Version: 1.0.0
+
+; Trawler
+header.lua
+
+TheBestQuest.lua
+
+Bindings.xml

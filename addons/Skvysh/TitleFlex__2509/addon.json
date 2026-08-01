@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Skvysh/TitleFlex__2509",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Skvysh",
+  "canonical_id": "esoui:2509",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:2509",
+  "deleted": false,
+  "directories": [
+    "TitleFlex"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2509/",
+  "fingerprint": "2ca4b075a6ec383643eff26edbe2bf841af01aea049dba999c678fc808e2de3f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9042.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2509",
+  "source_url": "https://www.esoui.com/downloads/info2509-TitleFlex.html",
+  "stats": {
+    "downloads": 17689,
+    "favorites": 17,
+    "monthly_downloads": 76
+  },
+  "title": "TitleFlex",
+  "updated_at": 1631272836000,
+  "version": "1.8"
+}

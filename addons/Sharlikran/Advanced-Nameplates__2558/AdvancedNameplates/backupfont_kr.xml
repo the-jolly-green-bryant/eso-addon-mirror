@@ -1,0 +1,18 @@
+<GuiXml>
+    <BackupFont originalFont="$(AN_ADVENTURE_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_ARIAL_NARROW_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_BLACK_CHANCERY_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_CENTURY_GOTHIC_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_CRIMSON_REGULAR_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_ESO_CARTOGRAPHER_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_FITZGERALD_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_FUTURA_STD_CON_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_FUTURA_STD_CON_BOLD_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_FUTURA_STD_CON_LT_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_GENTIUM_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_ALL_HOOKED_UP_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_MAGIC_CARDS_NORMAL_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_PATRICK_HAND_SC_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_PERMANENT_MARKER_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+    <BackupFont originalFont="$(AN_SKURRI_FONT)" backupFont="EsoKR/fonts/ftn47.slug"/>
+</GuiXml>

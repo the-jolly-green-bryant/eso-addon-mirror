@@ -1,0 +1,293 @@
+<GuiXml>
+	<Font name="SQPFontEdit" font="$(MEDIUM_FONT)|$(KB_18)|shadow"/>
+
+	<Controls>
+
+		<Control name="SQPComboBoxTemplate" virtual="true" inherits="ZO_ComboBox">
+			<OnInitialized>
+				ZO_ComboBox:New(self)
+			</OnInitialized>
+		</Control>
+
+		<Control name="SQPProfilePreviewTemplate" virtual="true">
+			
+		</Control>
+
+		<TopLevelControl name="SQP_Panel" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="200" y="255" />
+			<Anchor point="TOP" relativeTo="ZO_QuickSlotCircle" relativePoint="CENTER" offsetY="225" />
+
+			<OnMoveStop>
+				SQP_ON_MOVE_STOP()
+			</OnMoveStop>
+
+			<Controls>
+
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+				<Label name="$(parent)WindowTitle" font="ZoFontWinH5" text="|cB759FFStatic's Quickslot Profiles|r">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+
+				<Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+					<Dimensions x="200" y="5" />
+					<Anchor point="TOP" relativeTo="$(parent)WindowTitle" relativePoint="BOTTOM" offsetY="5" />
+				</Texture>
+
+				<Backdrop name="$(parent)EditBoxBG" inherits="ZO_EditBackdrop" hidden="true">
+					<Dimensions x="200" y="30" />
+					<Anchor point="TOP" relativeTo="$(parent)TopDivider" relativePoint="BOTTOM" />
+				</Backdrop>
+				<EditBox name="$(parent)EditBoxControl" inherits="ZO_DefaultEditForBackdrop" font="SQPFontEdit" multiline="false" mouseEnabled="true" editEnabled="true" maxInputCharacters="50" verticalAlignment="CENTER" hidden="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)EditBoxBG" relativePoint="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+
+					<OnEnter>
+						SQP_NEW_PROFILE()
+					</OnEnter>
+
+					<OnEscape>
+						SQP_ESCAPE_PRESSED()
+					</OnEscape>
+				</EditBox>
+
+				<Button name="$(parent)NewButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)EditBoxBG" relativePoint="BOTTOM" offsetY="5" offsetX="-63" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/buttons/pointsplus_up.dds"
+						mouseOver="esoui/art/buttons/pointsplus_over.dds"
+						pressed="esoui/art/buttons/pointsplus_down.dds"
+					/>
+					<OnClicked>
+						SQP_NEW_BUTTON()
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)ClearButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)NewButton" relativePoint="TOPLEFT" offsetX="50" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/buttons/pointsminus_up.dds"
+						mouseOver="esoui/art/buttons/pointsminus_over.dds"
+						pressed="esoui/art/buttons/pointsminus_down.dds"
+					/>
+					<OnClicked>
+						SQP_CLEAR_BUTTON()
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)SaveButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)NewButton" relativePoint="TOPLEFT" offsetX="100" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/buttons/edit_save_up.dds"
+						mouseOver="esoui/art/buttons/edit_save_over.dds"
+						pressed="esoui/art/buttons/edit_save_down.dds"
+					/>
+					<OnClicked>
+						SQP_SAVE_BUTTON()
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)LoadButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)NewButton" relativePoint="TOPLEFT" offsetX="150" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/buttons/accept_up.dds"
+						mouseOver="esoui/art/buttons/accept_over.dds"
+						pressed="esoui/art/buttons/accept_down.dds"
+					/>
+					<OnClicked>
+						SQP_LOAD_BUTTON()
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)OKButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)EditBoxBG" relativePoint="BOTTOM" offsetY="5" offsetX="-25" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/buttons/accept_up.dds"
+						mouseOver="esoui/art/buttons/accept_over.dds"
+						pressed="esoui/art/buttons/accept_down.dds"
+					/>
+					<OnClicked>
+						SQP_OK_BUTTON()
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)CancelButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)OKButton" relativePoint="TOPRIGHT" offsetX="50" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/buttons/edit_cancel_up.dds"
+						mouseOver="esoui/art/buttons/edit_cancel_over.dds"
+						pressed="esoui/art/buttons/edit_cancel_down.dds"
+					/>
+					<OnClicked>
+						SQP_CANCEL_BUTTON()
+					</OnClicked>
+				</Button>
+
+				<Texture name="$(parent)BottomDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+					<Dimensions x="200" y="5" />
+					<Anchor point="TOP" relativeTo="$(parent)EditBoxBG" relativePoint="BOTTOM" offsetY="35" />
+				</Texture>
+
+				<Button name="$(parent)Profile1SetButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)BottomDivider" relativePoint="BOTTOMLEFT" offsetY="5" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/chatwindow/chat_overflowarrow_up.dds"
+						mouseOver="esoui/art/chatwindow/chat_overflowarrow_over.dds"
+						pressed="esoui/art/chatwindow/chat_overflowarrow_down.dds"
+					/>
+					<OnClicked>
+						SQP_PROFILE_1_SET()
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Profile1ClearButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Profile1SetButton" relativePoint="TOPRIGHT" offsetX="5" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/buttons/decline_up.dds"
+						mouseOver="esoui/art/buttons/decline_over.dds"
+						pressed="esoui/art/buttons/decline_down.dds"
+					/>			
+					<OnClicked>
+						SQP_PROFILE_1_CLEAR()
+					</OnClicked>
+				</Button>
+
+				<Label name="$(parent)Profile1Label" font="SQPFontEdit">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Profile1ClearButton" relativePoint="TOPRIGHT" offsetX="5" />
+				</Label>
+
+				<Button name="$(parent)Profile2SetButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Profile1SetButton" relativePoint="BOTTOMLEFT" offsetY="5" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/chatwindow/chat_overflowarrow_up.dds"
+						mouseOver="esoui/art/chatwindow/chat_overflowarrow_over.dds"
+						pressed="esoui/art/chatwindow/chat_overflowarrow_down.dds"
+					/>
+					<OnClicked>
+						SQP_PROFILE_2_SET()
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Profile2ClearButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Profile2SetButton" relativePoint="TOPRIGHT" offsetX="5" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/buttons/decline_up.dds"
+						mouseOver="esoui/art/buttons/decline_over.dds"
+						pressed="esoui/art/buttons/decline_down.dds"
+					/>			
+					<OnClicked>
+						SQP_PROFILE_2_CLEAR()
+					</OnClicked>
+				</Button>
+
+				<Label name="$(parent)Profile2Label" font="SQPFontEdit">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Profile2ClearButton" relativePoint="TOPRIGHT" offsetX="5" />
+				</Label>
+
+				<Button name="$(parent)Profile3SetButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Profile2SetButton" relativePoint="BOTTOMLEFT" offsetY="5" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/chatwindow/chat_overflowarrow_up.dds"
+						mouseOver="esoui/art/chatwindow/chat_overflowarrow_over.dds"
+						pressed="esoui/art/chatwindow/chat_overflowarrow_down.dds"
+					/>
+					<OnClicked>
+						SQP_PROFILE_3_SET()
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Profile3ClearButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Profile3SetButton" relativePoint="TOPRIGHT" offsetX="5" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/buttons/decline_up.dds"
+						mouseOver="esoui/art/buttons/decline_over.dds"
+						pressed="esoui/art/buttons/decline_down.dds"
+					/>			
+					<OnClicked>
+						SQP_PROFILE_3_CLEAR()
+					</OnClicked>
+				</Button>
+
+				<Label name="$(parent)Profile3Label" font="SQPFontEdit">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Profile3ClearButton" relativePoint="TOPRIGHT" offsetX="5" />
+				</Label>
+
+				<Button name="$(parent)Profile4SetButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Profile3SetButton" relativePoint="BOTTOMLEFT" offsetY="5" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/chatwindow/chat_overflowarrow_up.dds"
+						mouseOver="esoui/art/chatwindow/chat_overflowarrow_over.dds"
+						pressed="esoui/art/chatwindow/chat_overflowarrow_down.dds"
+					/>
+					<OnClicked>
+						SQP_PROFILE_4_SET()
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Profile4ClearButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Profile4SetButton" relativePoint="TOPRIGHT" offsetX="5" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/buttons/decline_up.dds"
+						mouseOver="esoui/art/buttons/decline_over.dds"
+						pressed="esoui/art/buttons/decline_down.dds"
+					/>			
+					<OnClicked>
+						SQP_PROFILE_4_CLEAR()
+					</OnClicked>
+				</Button>
+
+				<Label name="$(parent)Profile4Label" font="SQPFontEdit">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Profile4ClearButton" relativePoint="TOPRIGHT" offsetX="5" />
+				</Label>
+
+				<Button name="$(parent)Profile5SetButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Profile4SetButton" relativePoint="BOTTOMLEFT" offsetY="5" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/chatwindow/chat_overflowarrow_up.dds"
+						mouseOver="esoui/art/chatwindow/chat_overflowarrow_over.dds"
+						pressed="esoui/art/chatwindow/chat_overflowarrow_down.dds"
+					/>
+					<OnClicked>
+						SQP_PROFILE_5_SET()
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Profile5ClearButton" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Profile5SetButton" relativePoint="TOPRIGHT" offsetX="5" />
+					<Textures name="$(parent)Texture"
+						normal="esoui/art/buttons/decline_up.dds"
+						mouseOver="esoui/art/buttons/decline_over.dds"
+						pressed="esoui/art/buttons/decline_down.dds"
+					/>			
+					<OnClicked>
+						SQP_PROFILE_5_CLEAR()
+					</OnClicked>
+				</Button>
+
+				<Label name="$(parent)Profile5Label" font="SQPFontEdit">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Profile5ClearButton" relativePoint="TOPRIGHT" offsetX="5" />
+				</Label>
+
+			</Controls>
+
+		</TopLevelControl>
+
+	</Controls>
+
+</GuiXml>

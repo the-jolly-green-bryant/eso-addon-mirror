@@ -1,0 +1,19 @@
+## Title: UnstableUnicornGuildGrabber
+## Author: ragingpix3l
+## APIVersion: 100032 100033
+## Description: UnstableUnicornGuildGrabber
+## Version: 0.02
+## AddOnVersion: 000002
+## IsLibrary: false
+## OptionalDependsOn: FCONotes>=013 MailR
+
+
+#main
+UnstableUnicornGuildGrabber.lua
+
+; Disclaimer
+;
+; Terms:
+; https://account.elderscrollsonline.com/add-on-terms
+
+

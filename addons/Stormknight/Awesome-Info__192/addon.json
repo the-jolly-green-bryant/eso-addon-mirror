@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Stormknight/Awesome-Info__192",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Stormknight",
+  "canonical_id": "esoui:192",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:192",
+  "deleted": false,
+  "directories": [
+    "AwesomeInfo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl192/",
+  "fingerprint": "7c6bc44285800dadaebe3cdf8817e74058999ee15a8b3674361e1b258350dcd2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw522.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw635.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw489.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "192",
+  "source_url": "https://www.esoui.com/downloads/info192-AwesomeInfo.html",
+  "stats": {
+    "downloads": 136897,
+    "favorites": 344,
+    "monthly_downloads": 79
+  },
+  "title": "Awesome Info",
+  "updated_at": 1476624691000,
+  "version": "2.13"
+}

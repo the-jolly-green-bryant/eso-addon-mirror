@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/SirNightstorm/Navigator---Fast-Travel-Search__4026",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SirNightstorm",
+  "canonical_id": "esoui:4026",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4026",
+  "deleted": false,
+  "directories": [
+    "Navigator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4026/",
+  "fingerprint": "2ed511e18b4da9785310d34ef4db10436888a0ea82b3ace20fbedd18fc1146c8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13710.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13711.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13712.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13713.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13714.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4026",
+  "source_url": "https://www.esoui.com/downloads/info4026-Navigator-FastTravelSearch.html",
+  "stats": {
+    "downloads": 12028,
+    "favorites": 21,
+    "monthly_downloads": 531
+  },
+  "title": "Navigator - Fast Travel & Search",
+  "updated_at": 1782653788000,
+  "version": "1.3.0"
+}

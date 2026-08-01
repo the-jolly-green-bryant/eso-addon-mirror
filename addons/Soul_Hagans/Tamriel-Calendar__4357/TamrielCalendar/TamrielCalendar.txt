@@ -1,0 +1,11 @@
+## Title: |c66f2ffTamriel Calendar|r
+## Author: |cff6401Soul_Hagans|r
+## Version: 18.07.2026
+## AddOnVersion: 20301
+## APIVersion: 101050
+## SavedVariables: TamrielCalendarVars
+## Description: Tamriel Calendar
+
+TamrielCalendar.xml
+TamrielCalendar.lua
+bindings.xml

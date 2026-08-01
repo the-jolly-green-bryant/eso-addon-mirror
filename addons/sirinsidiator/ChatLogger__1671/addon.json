@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/sirinsidiator/ChatLogger__1671",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:1671",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:1671",
+  "deleted": false,
+  "directories": [
+    "ChatLogger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1671/",
+  "fingerprint": "d6787602069513f54a16371982a85a1aff60750b2e183ded69015aa8cd45bae8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5501.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5500.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8856.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1671",
+  "source_url": "https://www.esoui.com/downloads/info1671-ChatLogger.html",
+  "stats": {
+    "downloads": 9221,
+    "favorites": 19,
+    "monthly_downloads": 17
+  },
+  "title": "ChatLogger",
+  "updated_at": 1655995167000,
+  "version": "1.1.3"
+}

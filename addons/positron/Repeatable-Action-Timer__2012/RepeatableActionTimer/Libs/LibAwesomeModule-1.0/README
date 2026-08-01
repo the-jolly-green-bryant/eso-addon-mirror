@@ -1,0 +1,97 @@
+--------------------------
+--    AwesomeEvents     --
+--------------------------
+
+--[ EN ]--
+
+This AddOn was made by Ze_Mi <zemi@unive.de>.
+Updates at: http://www.esoui.com/downloads/info1739-AwesomeEvents.html
+
+This AddOn is a modularzied, event-based, better configurable reinvention of AwesomeInfo addon from CrazyDutchGuy.
+My goal was to minimize timed refreshs and try to use as many event callbacks as possible, as well as split up the different notifications into seperate module files.
+Besides the look and feel, under the hood, there aren't many codelines left from AwesomeInfo.
+
+--[ DE ]--
+
+Dieses AddOn wurde erstellt von Ze_Mi <zemi@unive.de>.
+Updates unter: http://www.esoui.com/downloads/info1739-AwesomeEvents.html
+
+Dieses AddOn ist eine modularizierte, eventbasierte und noch besser prsonalisierbare Neuentwicklung des AwesomeInfo Addons von CrazyDutchGuy.
+Mein Ziel dabei war es, weniger inertval basierte Aktualisierungen auszuführen und stattdessen auf Events zu reagieren. Außerdem wurden die verschiedenen Benachrichtigungen in
+eigene Module ausgelagert, was die Entwicklung von Modulen übersichtlicher und einfacher macht.
+Abgesehen von dem ursprünglichen look and feel hat sich unter der Haube so viel verändert, dass nicht mehr viele Codezeilen aus AwesoneInfo übrig geblieben sind.
+
+
+--------------------------
+--   LibAwesomeModule   --
+--------------------------
+
+--[ EN ]--
+
+This Library was made by Ze_Mi <zemi@unive.de>.
+
+Hereby I introduce LibAwesomeModule-1.0, a library that allows you to easily add new modules and notifications to AwesomeEvents.
+If you are interested in writing new modules, please have a look inside the Module folder of this addon.
+You don't have to care about layout and settings stuff, just write the minimal necessary code with maximum useability.
+
+--[ DE ]--
+
+Diese Bibliothek wurde erstellt von Ze_Mi <zemi@unive.de>.
+
+Hiermit stelle ich die neue Bibliothek LibAwesomeModule vor, eine Bibliothek mit deren Hilfe man super schnell und ohne viel Aufwand neue Benachrichtigungen in AwesomeEvents hinzufügen kann.
+Wenn du wissen möchtest, wie du neue Module hinzufügst, schau dir die Dateien im Ordner Modules an.
+Du musst dich nicht um lästige Label-Erstellungen/-Positionierung oder Einstellungen kümmern, schreibe einfach den minimal nötigen Code mit maximalem Nutzen.
+
+
+--------------------------
+--      CREDITS         --
+--------------------------
+
+--[ EN ]--
+
+Thanks to CrazyDutchGuy, Stormknight and RibbedStoic for their great AwesomeInfo AddOn!
+(http://www.esoui.com/downloads/info192-AwesomeInfo.html)
+
+Thanks to @MissMarsupial for beta testing my AddOn.
+
+Thanks to esoui.com and all authors for maintaining the wiki and doing the job ZeniMax Media Inc is suposed to do ;)
+
+--[ DE ]--
+
+Mein Dank geht an CrazyDutchGuy, Stormknight und RibbedStoic für ihr großartiges AwesomeInfo AddOn!
+(http://www.esoui.com/downloads/info192-AwesomeInfo.html)
+
+Danke an @MissMarsupial für das testen der Beta-Versionen meines AddOns.
+
+Danke an esoui.com und allen Authoren die an der Wiki arbeiten und diese aktuell halten und damit einen Dienst übernehmen für den sich ZeniMax Media Inc zu schön ist ;)
+
+--------------------------
+--      LICENSE         --
+--------------------------
+
+This software is under : CreativeCommons CC BY-NC-SA 4.0
+Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+
+You are free to:
+
+    Share — copy and redistribute the material in any medium or format
+    Adapt — remix, transform, and build upon the material
+    The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+
+Under the following terms:
+
+    Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+    NonCommercial — You may not use the material for commercial purposes.
+    ShareAlike — If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
+    No additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
+
+
+Please read full licence at :
+http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+
+This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+All rights reserved.
+
+You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

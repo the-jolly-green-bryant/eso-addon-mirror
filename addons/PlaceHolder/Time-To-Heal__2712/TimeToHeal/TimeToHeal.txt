@@ -1,0 +1,38 @@
+## Title: Time To Heal
+## Description: Evade death by setting a reminder to "Heal Now!" based on your remaining health percentage.
+## Why: I often forget to keep an eye on my health when tired. I figure I can't be the only one.
+## Author: PlaceHolder
+## APIVersion: 101034
+## AddOnVersion: 1.0.8
+## Version: 1.0.8
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: TimeToHealSavedVariables
+
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+; see http://www.esoui.com/downloads/info44-LibStub.html
+libs/LibStub/LibStub.lua
+
+; see http://www.esoui.com/downloads/info7-LibAddonMenu.html
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+libs/LibAddonMenu-2.0/controls/panel.lua
+libs/LibAddonMenu-2.0/controls/submenu.lua
+libs/LibAddonMenu-2.0/controls/button.lua
+libs/LibAddonMenu-2.0/controls/checkbox.lua
+libs/LibAddonMenu-2.0/controls/colorpicker.lua
+libs/LibAddonMenu-2.0/controls/custom.lua
+libs/LibAddonMenu-2.0/controls/description.lua
+libs/LibAddonMenu-2.0/controls/dropdown.lua
+libs/LibAddonMenu-2.0/controls/editbox.lua
+libs/LibAddonMenu-2.0/controls/header.lua
+libs/LibAddonMenu-2.0/controls/slider.lua
+libs/LibAddonMenu-2.0/controls/texture.lua
+libs/LibAddonMenu-2.0/controls/iconpicker.lua
+
+TimeToHeal.xml
+TimeToHeal.lua

@@ -1,0 +1,9 @@
+﻿;All of the good addons have comments here.
+
+## Title: Mail Inventory Space
+## APIVersion: 101033
+## Author: |c7f0000Rhyono|r
+## Description: Shows your current inventory space usage while viewing mail.
+## Version: 1.20
+
+MailInventorySpace.lua

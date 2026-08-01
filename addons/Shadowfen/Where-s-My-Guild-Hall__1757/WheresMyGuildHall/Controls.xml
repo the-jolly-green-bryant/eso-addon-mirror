@@ -1,0 +1,30 @@
+<GuiXml>
+    <Controls>
+        <Label name="WheresMyGuildHallContainerRowTemplate" horizontalAlignment="CENTER" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" virtual="true">
+            <Controls>
+                <Button name="$(parent)Button" mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="RIGHT" relativeTo="LEFT" offsetX="3" />
+                    <Textures normal="EsoUI/Art/Housing/Keyboard/furniture_tabicon_place_up.dds" 
+							  pressed="EsoUI/Art/Housing/Keyboard/furniture_tabicon_place_down.dds" mouseOver="EsoUI/Art/Housing/Keyboard/furniture_tabicon_place_over.dds" />
+                </Button>
+            </Controls>
+        </Label>
+        <Control name="WheresMyGuildHallContainer">
+            <Dimensions x="200" />
+            <Anchor point="TOP" relativeTo="ZO_GuildHomeTraderViewWeeklyBids" relativePoint="BOTTOM" offsetY="10" />
+            <Controls>
+            
+                <Label name="$(parent)Header" horizontalAlignment="CENTER" font="ZoFontHeader2" modifyTextType="UPPERCASE" text="Guild Hall">
+                    <Anchor point="TOPLEFT" />
+                    <Anchor point="TOPRIGHT" />
+                </Label>
+                
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" offsetY="200"/>
+                </Control>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

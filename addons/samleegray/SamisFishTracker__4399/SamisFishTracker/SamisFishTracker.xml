@@ -1,0 +1,63 @@
+<GuiXml>
+  <Controls>
+  
+    <TopLevelControl name="SamisFishTrackerControl" mouseEnabled="true" movable="true" hidden="false" clampedToScreen="true" tier="LOW" resizeHandleSize="5">
+      <Dimensions x="200" y="105" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+ 
+      <Controls>
+        
+        <Label name="$(parent)LabelFish" width="100" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+          wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t16:16:esoui/art/icons/crafting_fishing_perch.dds|t : 0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="12" offsetY="4"/>
+        </Label>
+        <Label name="$(parent)LabelRoe" width="100" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="RIGHT" text="Est. |t16:16:/esoui/art/icons/crafting_heavy_armor_vendor_component_002.dds|t : 0">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15" offsetY="4"/>
+        </Label>
+        
+        <Label name="$(parent)LabelBagFish" width="100" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t16:16:esoui/art/tooltips/icon_bag.dds|t : 0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="26" />
+        </Label>
+        <Label name="$(parent)LabelBagRoe" width="100" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="RIGHT" text="Est. |t16:16:/esoui/art/icons/crafting_heavy_armor_vendor_component_002.dds|t : 0">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15" offsetY="26" />
+        </Label>
+        
+        <Label name="$(parent)LabelBankFish" width="100" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t16:16:esoui/art/tooltips/icon_bank.dds|t : 0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="52" />
+        </Label>
+        <Label name="$(parent)LabelBankRoe" width="100" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="RIGHT" text="Est. |t16:16:/esoui/art/icons/crafting_heavy_armor_vendor_component_002.dds|t : 0">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15" offsetY="52" />
+        </Label>
+
+        <Label name="$(parent)LabelAverage" width="180" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Avg/hr: 0.0">
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-4" />
+        </Label>
+        
+      </Controls>
+      
+    </TopLevelControl>
+
+    <TopLevelControl name="SamisFilletTrackerControl" mouseEnabled="true" movable="true" hidden="false" clampedToScreen="true" tier="LOW" resizeHandleSize="5">
+      <Dimensions x="300" y="35" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="120" />
+ 
+      <Controls>
+
+        <Label name="$(parent)LabelFilletStats" width="280" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Fillets since Roe: 0 (Last: 0, 0.00%)">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10" />
+        </Label>
+        
+      </Controls>
+      
+    </TopLevelControl>
+    
+  </Controls>
+  
+</GuiXml>

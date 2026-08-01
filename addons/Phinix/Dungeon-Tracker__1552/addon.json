@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Phinix/Dungeon-Tracker__1552",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phinix",
+  "canonical_id": "esoui:1552",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:1552",
+  "deleted": false,
+  "directories": [
+    "DungeonTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1552/",
+  "fingerprint": "96bdd5e3c242434d699581f17f2986a41138f065141d31d16e1bea288241c610",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13944.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11317.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11315.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11316.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1552",
+  "source_url": "https://www.esoui.com/downloads/info1552-DungeonTracker.html",
+  "stats": {
+    "downloads": 1027211,
+    "favorites": 551,
+    "monthly_downloads": 1770
+  },
+  "title": "Dungeon Tracker",
+  "updated_at": 1744986713000,
+  "version": "1.48"
+}

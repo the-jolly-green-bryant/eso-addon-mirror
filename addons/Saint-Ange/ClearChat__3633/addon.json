@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Saint-Ange/ClearChat__3633",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Saint-Ange",
+  "canonical_id": "esoui:3633",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3633",
+  "deleted": false,
+  "directories": [
+    "ClearChat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3633/",
+  "fingerprint": "67fa354ee48b67ab8455c55a8f5ab0db7f237d9fcc24b8fe253e5525b05795f6",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3633",
+  "source_url": "https://www.esoui.com/downloads/info3633-ClearChat.html",
+  "stats": {
+    "downloads": 2480,
+    "favorites": 1,
+    "monthly_downloads": 20
+  },
+  "title": "ClearChat",
+  "updated_at": 1754755570000,
+  "version": "1.1.2"
+}

@@ -1,0 +1,25 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="SALTI" tier="HIGH" mouseEnabled="false" movable="false" clampedToScreen="true" hidden="false">
+			<Dimensions x="0" y="0"/>
+			<Anchor point="BOTTOMLEFT"/>
+			<Controls>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+				<Control name="$(parent)_Gold" tier="HIGH" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT"/>
+					<OnMoveStop>
+						SALTI:CheckTracking(11)
+					</OnMoveStop>
+					<Controls>
+						<Texture name="$(parent)BGF" textureFile="/SALTI/bin/bg.dds">
+							<Anchor point="TOPLEFT" offsetX="-9" offsetY="-9" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="7" offsetY="7" />
+						</Texture>
+						<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="1"/>
+					</Controls>
+				</Control>
+			<!--------------------------------------------------------------------------------------------------------------------------------------------->
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

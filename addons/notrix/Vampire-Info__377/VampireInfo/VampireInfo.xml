@@ -1,0 +1,42 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <TopLevelControl name="VampireInfoTLC" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="500" y="23" />
+			<DimensionConstraints maxX="800" />
+			<DimensionConstraints maxY="200" />
+
+
+			<OnMoveStop>
+				VampireInfo.DragEnd()
+			</OnMoveStop>
+
+            <Controls>
+
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
+
+				<Cooldown name="$(parent)StatusBar" >
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="22" y="22" />
+				</Cooldown>
+
+				<Texture name="$(parent)Icon" inheritAlpha="true" >
+					<Dimensions x="20" y="20" />
+					<Anchor point="TOPLEFT" />
+				</Texture>
+								
+				<Label name="$(parent)LabelValue" font="ZoFontWinH5" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="CENTER" text="" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetX="8" offsetY="1" />
+				</Label>
+				
+				<Label name="$(parent)LabelDuration" font="ZoFontWinH5" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="CENTER" text="" >
+					<Anchor point="LEFT" relativeTo="$(parent)LabelValue" relativePoint="RIGHT" offsetX="1" offsetY="0" />
+				</Label>
+
+				<Label name="$(parent)LabelXP" font="ZoFontWinH5" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="CENTER" text="" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)LabelValue" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="1" />
+				</Label>
+
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

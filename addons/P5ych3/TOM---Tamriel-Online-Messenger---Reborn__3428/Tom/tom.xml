@@ -1,0 +1,1011 @@
+﻿<GuiXml>
+    <Controls>
+		<!--	Der Alerter	 -->
+		<!--	The Alerts	 -->
+		<TopLevelControl name="tomAlerter" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="60" y="60" /><Anchor point="CENTER" />
+			<OnUpdate>tomUI.AlerterUpdate()</OnUpdate>
+			
+			<!-- Removed by P5YCH3 - Broken with update 34. None of this is required and it does not function appropriately. Commented out..	 -->
+			<!--<Controls>
+				<Texture name="$(parent)Bubble" alpha="1" mouseEnabled="true" movable="true"><Dimensions x="60" y="60"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.AlerterClick()</OnMouseUp>
+					<OnMouseDown>tomUI.AlerterClick()</OnMouseDown>
+					<OnMoveStop>tomUI.AlerterMoveStop()</OnMoveStop> 
+				</Texture>
+				<Button name="$(parent)Bubble2" font="ZoFontChat" horizontalAlignment="CENTER" verticalAlignment="CENTER" movable="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="0" />
+					<Dimensions x="60" y="60" />
+					<FontColors normalColor="FFFFFF" />
+					<Textures normal="/esoui/art/chatwindow/chat_notification_echo2.dds" />
+					<OnClicked>tomUI.AlerterClick()</OnClicked>
+					<OnMoveStop>tomUI.AlerterMoveStop()</OnMoveStop> 
+				</Button>
+			</Controls>-->
+
+			<!-- P5YCH3 - Original texture control was restored in order to fix issues with the main alerter icon.	 -->
+			<Controls>
+				<Texture name="$(parent)Bubble" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="true"><Dimensions x="60" y="60"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>if button == MOUSE_BUTTON_INDEX_LEFT then tomUI.AlerterClick() end</OnMouseUp><!-- Only activate the interface if left mouse button is used.-->
+					<OnMoveStop>tomUI.AlerterMoveStop()</OnMoveStop> 
+				</Texture>
+			</Controls>
+        </TopLevelControl>
+			<!--	Das Hauptfenster	 -->
+       <TopLevelControl name="tomWindow01" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="600" y="310" /><Anchor point="CENTER" />
+			<OnMoveStop>tomUI.WindowMoveStop(self)</OnMoveStop>
+			<OnMouseWheel>tomUI.OnGOMScroll(delta)</OnMouseWheel>
+            <Controls>
+				<Backdrop name="$(parent)Background" integralWrapping="true">
+					<Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeSize="4" />
+					<Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" />
+					<Insets left="4" top="4" right="-4" bottom="-4" />
+					<AnchorFill /></Backdrop>
+
+				<!--<Texture name="$(parent)Bubble" mouseEnabled="true" movable="false"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>-->
+
+				<!--P5YCH3 - Adds a function for the main window that opens the addon settings panel when clicking on the main window's bubble icon.-->
+				<!--Also restores the message count tooltips.-->
+				<Texture name="$(parent)Bubble" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false">
+					<Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.ShowAddonSettingsMenu()</OnMouseUp>
+				</Texture>
+
+				<Label name="$(parent)Header" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Tamriel Online Messenger (TOM)">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"></Anchor>
+				</Label>
+
+				<!-- Removed by P5YCH3 - Broken with update 34-->
+				<!--<Texture name="$(parent)OnlineStatus" mouseEnabled="true" movable="false"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="TOPRIGHT" offsetX="5" offsetY="-3"></Anchor>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Player Online Status' indicator -->
+				<Texture name="$(parent)OnlineStatus" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false">
+					<Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="TOPRIGHT" offsetX="5" offsetY="-3"></Anchor>
+					<OnMouseUp>tomUI.magicClick()</OnMouseUp>
+				</Texture>
+
+				<Button name="$(parent)Closer" mouseEnabled="true">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="5"></Anchor>
+					<Dimensions x="30" y="30"></Dimensions>
+					<Textures normal="/esoui/art/buttons/cancel_up.dds" />
+					<OnClicked>tomUI.AlerterClick()</OnClicked>
+				</Button>
+
+				<!-- P5YCH3 - New button/function to open the addon settings menu directly from the TOM window for convenience. -->
+				<Button name="$(parent)Settings" mouseEnabled="true">
+					<!--P5YCH3 - New anchor point and offsets for the new settings button-->
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2"></Anchor>
+					<Dimensions x="18" y="18"></Dimensions>
+					<Textures normal="/esoui/art/chatwindow/chat_options_up.dds" />
+					<OnMouseUp>tomUI.ShowAddonSettingsMenu()</OnMouseUp>
+				</Button>
+
+				<Label name="$(parent)Gom" font="ZoFontWinH4" color="E0E0A0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="---">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Closer" relativePoint="TOPLEFT" offsetX="-10" offsetY="5"></Anchor>
+				</Label>
+				<Texture name="$(parent)Line1" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="580" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Line2" hidden="false" mouseEnabled="false" textureFile="/esoui/art/interaction/conversation_verticalborder.dds"><Dimensions x="2" y="260"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="155" offsetY="36"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Line3" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="580" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="60"></Anchor>
+				</Texture>
+
+				<!-- Removed by P5YCH3 - Broken with update 34-->
+				<!--<Button name="$(parent)Answer" mouseEnabled="true">
+					<Anchor relativeTo="$(parent)" point="BOTTOMLEFT" offsetX="10" offsetY="-10"></Anchor>
+					<Dimensions x="25" y="25"></Dimensions>
+					<Textures normal="/esoui/art/buttons/edit_up.dds" />
+					<OnClicked>tomUI.executeGOMclick(1,button)</OnClicked>
+				</Button>-->
+
+				<!-- P5YCH3 - Fix for the 'Answer/Copy to Clipboard' button -->
+				<!-- left click=answer the current group, right clock=last messages into clipboard. -->
+				<Button name="$(parent)Answer" mouseEnabled="true">
+					<Anchor relativeTo="$(parent)" point="BOTTOMLEFT" offsetX="10" offsetY="-10"></Anchor>
+					<Dimensions x="25" y="25"></Dimensions>
+					<Textures normal="/esoui/art/buttons/edit_up.dds" />
+					<OnMouseUp>tomUI.executeGOMclick(1,button)</OnMouseUp>
+				</Button>
+
+				<!-- Removed by P5YCH3 - Broken with update 34-->
+				<!--<Button name="$(parent)Undock" mouseEnabled="true">
+					<Anchor relativeTo="$(parent)Answer" point="BOTTOMLEFT" offsetX="25" offsetY="0"></Anchor>
+					<Dimensions x="25" y="25"></Dimensions>
+					<Textures normal="/esoui/art/vendor/vendor_tabicon_buyback_up.dds" />
+					<OnClicked>tomUI.executeGOMclick(2,button)</OnClicked>
+				</Button>-->
+
+				<!-- P5YCH3 - Fix for the 'Undock' button -->
+				<!-- undock the current group, does not do tomUI.undockCloseClick(self) -->
+				<Button name="$(parent)Undock" mouseEnabled="true">
+					<Anchor relativeTo="$(parent)Answer" point="BOTTOMLEFT" offsetX="25" offsetY="0"></Anchor>
+					<Dimensions x="25" y="25"></Dimensions>
+					<Textures normal="/esoui/art/vendor/vendor_tabicon_buyback_up.dds" />
+					<OnMouseUp>tomUI.executeGOMclick(2,button)</OnMouseUp>
+				</Button>
+
+				<!-- Removed by P5YCH3 - Broken with update 34-->
+				<!--<Button name="$(parent)Kill"  mouseEnabled="true" >
+					<Anchor relativeTo="$(parent)Undock" point="TOPRIGHT" offsetX="25" offsetY="0"></Anchor>
+					<Dimensions x="25" y="25"></Dimensions>
+					<FontColors normalColor="FFFFFF" />
+					<Textures normal="/esoui/art/buttons/edit_cancel_up.dds" />
+					<OnClicked>
+						tomUI.executeGOMclick(3,button)
+					</OnClicked>
+				</Button>-->
+
+				<!-- P5YCH3 - Fix for the 'Delete/Toggle Alert Override' button -->
+				<!-- left click=delete messages from the current group, right click=toggle alert popup override-->
+				<Button name="$(parent)Kill"  mouseEnabled="true" >
+					<Anchor relativeTo="$(parent)Undock" point="TOPRIGHT" offsetX="25" offsetY="0"></Anchor>
+					<Dimensions x="25" y="25"></Dimensions>
+					<FontColors normalColor="FFFFFF" />
+					<Textures normal="/esoui/art/buttons/edit_cancel_up.dds" />
+					<OnMouseUp>tomUI.executeGOMclick(3,button)</OnMouseUp>
+				</Button>
+
+				<Button name="$(parent)Catacomb"  mouseEnabled="true">
+					<!-- P5YCH3 - Adjust the verticle position of the 'Catacomb' button to make it align better with the other icons -->
+					<!--<Anchor relativeTo="$(parent)Kill" point="TOPRIGHT" offsetX="42" offsetY="0"></Anchor>-->
+					<Anchor relativeTo="$(parent)Kill" point="TOPRIGHT" offsetX="42" offsetY="1"></Anchor>
+					<Dimensions x="25" y="25"></Dimensions>
+					<FontColors normalColor="FFFFFF" />
+					<Textures normal="/esoui/art/guild/tabicon_roster_up.dds" />
+					<OnClicked>tomUI.catacombClick()</OnClicked>
+				</Button>
+				<Button name="$(parent)Guild" mouseEnabled="true">
+					<!-- P5YCH3 - Adjust the verticle position of the 'Guild Functions' button because it is anchored relative to the Catacomb button.. -->
+					<!--<Anchor relativeTo="$(parent)Catacomb" point="TOPRIGHT" offsetX="28" offsetY="3"></Anchor>-->
+					<Anchor relativeTo="$(parent)Catacomb" point="TOPRIGHT" offsetX="28" offsetY="-3"></Anchor>
+					<Dimensions x="30" y="30"></Dimensions>
+					<Textures normal="/esoui/art/guild/guildheraldry_indexicon_crest_up.dds" />
+					<OnClicked>tomUI.guildClick()</OnClicked>
+				</Button>
+				<Button name="$(parent)Magic" mouseEnabled="true">
+					<Anchor relativeTo="$(parent)Guild" point="TOPRIGHT" offsetX="28" offsetY="0"></Anchor>
+					<Dimensions x="30" y="30"></Dimensions>
+					<Textures normal="/esoui/art/icons/guildranks/guild_indexicon_misc11_up.dds" />
+					<OnMouseUp>tomUI.magicClick()</OnMouseUp>
+				</Button>
+				<TextBuffer name="$(parent)Rolle" linkEnabled="true" mouseEnabled="true" font="ZoFontChat" hidden="false" linefade="0,0" inheritalpha="true">  
+					<Dimensions x="410" y="240"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="165" offsetY="45"></Anchor>
+				</TextBuffer>
+				<Label name="$(parent)Clock" font="ZoFontWinH5" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="00:00">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-10"></Anchor>
+				</Label>
+
+				<!-- P5YCH3 - New TOM Reborn button to toggle the main window language display between Common & TOMish -->
+				<Label name="$(parent)Coding" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" mouseEnabled="true" verticalAlignment="CENTER" horizontalAlignment="CENTER"><Dimensions x="60" y="20"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Line2" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="-10"></Anchor>
+					<Controls><Backdrop name="$(parent)TargetBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+					<OnMouseUp>tomUI.MainWindowToggleCoding(self)</OnMouseUp>
+				</Label>
+
+				<!-- P5YCH3 - New TOM Reborn button to quickly change the chat channel -->
+				<Label name="$(parent)ChangeChannel" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" mouseEnabled="true" verticalAlignment="CENTER" horizontalAlignment="CENTER"><Dimensions x="25" y="20"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Coding" relativePoint="BOTTOMRIGHT" offsetX="1" offsetY="0"></Anchor>
+					<Controls><Backdrop name="$(parent)TargetBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+					<OnMouseUp>tomUI.MainWindowChangeChannel(self)</OnMouseUp>
+				</Label>
+
+				<!--<Label name="$(parent)CryptLbl" font="ZoFontGameSmall" color="A0A090" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="TOMish:">
+					<Dimensions x="50" y="20"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Line2" relativePoint="BOTTOMRIGHT" offsetX="10" offsetY="-10"></Anchor>
+				</Label>-->
+
+				<!--<EditBox name="$(parent)Crypt" inherit="ZO_DefaultTextEdit" font="ZoFontChat" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" keyboardEnabled="false" mouseEnabled="true">
+					<Dimensions x="330" y="20"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)CryptLbl" relativePoint="BOTTOMRIGHT" offsetX="3" offsetY="0"></Anchor>
+					<OnMouseDown>self:SetKeyboardEnabled(true) self:TakeFocus()</OnMouseDown>
+					<OnEnter>tomUI.cryptEditEnde(self,true)</OnEnter>
+					<OnEscape>tomUI.cryptEditEnde(self,false)</OnEscape>
+					<OnFocusLost>tomUI.cryptEditEnde(self,false)</OnFocusLost>
+					<Controls><Backdrop name="$(parent)CryptBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+				</EditBox>-->
+
+				<!-- P5YCH3 - New design of the encryption edit field. -->
+				<EditBox name="$(parent)Crypt" inherit="ZO_DefaultTextEdit" font="ZoFontChat" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" keyboardEnabled="false" mouseEnabled="true">
+					<Dimensions x="330" y="20"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Coding" relativePoint="BOTTOMRIGHT" offsetX="27" offsetY="0"></Anchor>
+					<OnMouseDown>self:SetKeyboardEnabled(true) self:TakeFocus()</OnMouseDown>
+					<OnEnter>tomUI.cryptEditEnde(self,true)</OnEnter>
+					<OnEscape>tomUI.cryptEditEnde(self,false)</OnEscape>
+					<OnFocusLost>tomUI.cryptEditEnde(self,false)</OnFocusLost>
+					<Controls><Backdrop name="$(parent)CryptBG" alpha="0.2" centerColor="ff8686" edgeColor="ff3a3a"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+				</EditBox>
+
+				<!-- P5YCH3 - New TOM Reborn edit field for the 'Common' chat type. -->
+				<EditBox name="$(parent)Common" inherit="ZO_DefaultTextEdit" font="ZoFontChat" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" keyboardEnabled="false" mouseEnabled="true">
+					<Dimensions x="330" y="20"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Coding" relativePoint="BOTTOMRIGHT" offsetX="27" offsetY="0"></Anchor>
+					<OnMouseDown>self:SetKeyboardEnabled(true) self:TakeFocus()</OnMouseDown>
+					<OnEnter>tomUI.commonEditEnde(self,true)</OnEnter>
+					<OnEscape>tomUI.commonEditEnde(self,false)</OnEscape>
+					<OnFocusLost>tomUI.commonEditEnde(self,false)</OnFocusLost>
+					<Controls><Backdrop name="$(parent)CryptBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+				</EditBox>
+			</Controls>
+		</TopLevelControl>
+		<!--	Das Magiefenster	 -->
+        <TopLevelControl name="tomMagic" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="500" y="300" /><Anchor point="CENTER" />
+			<OnMoveStop>tomUI.MagicMoveStop(self)</OnMoveStop>
+            <Controls>
+				<Backdrop name="$(parent)Background" integralWrapping="true">
+					<Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeSize="4" />
+					<Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" />
+					<Insets left="4" top="4" right="-4" bottom="-4" />
+					<AnchorFill /></Backdrop>
+				<Texture name="$(parent)Bubble" mouseEnabled="true" movable="false"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>
+				<Label name="$(parent)Header" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Tamriel Online Messenger (TOM)">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"></Anchor>
+				</Label>
+
+				<!-- Removed by P5YCH3 - Broken with update 34-->
+				<!--<Texture name="$(parent)Closer" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="5"></Anchor>
+					<OnMouseUp>tomUI.magicClick()</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Magic Messages - Close' button -->
+				<Texture name="$(parent)Closer" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false">
+					<Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.magicClick()</OnMouseUp>
+				</Texture>
+
+				<Texture name="$(parent)Line1" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="580" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Line2" hidden="false" mouseEnabled="false" textureFile="/esoui/art/interaction/conversation_verticalborder.dds"><Dimensions x="2" y="260"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="155" offsetY="36"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Line3" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="580" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="60"></Anchor>
+				</Texture>
+
+				<!-- Removed by P5YCH3 - Broken with update 34-->
+				<!--<Texture name="$(parent)New" mouseEnabled="true" textureFile="/esoui/art/buttons/edit_up.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)" point="BOTTOMLEFT" offsetX="10" offsetY="-10"></Anchor>
+					<OnMouseUp>tomUI.executeLOMclick(1)</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Magic Messages - New' button -->
+				<Texture name="$(parent)New" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false" textureFile="/esoui/art/buttons/edit_up.dds">
+					<Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="BOTTOMLEFT" offsetX="10" offsetY="-10"></Anchor>
+					<OnMouseUp>tomUI.executeLOMclick(1)</OnMouseUp>
+				</Texture>
+
+				<!-- Removed by P5YCH3 - Broken with update 34-->
+				<!--<Texture name="$(parent)Kill" mouseEnabled="true" textureFile="/esoui/art/buttons/edit_cancel_up.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)New" point="TOPRIGHT" offsetX="30" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.executeLOMclick(2)</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Magic Messages - Kill' button -->
+				<Texture name="$(parent)Kill" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false" textureFile="/esoui/art/buttons/edit_cancel_up.dds">
+					<Dimensions x="25" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)New" point="TOPRIGHT" offsetX="30" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.executeLOMclick(2)</OnMouseUp>
+				</Texture>
+
+				<Label name="$(parent)Desc" font="ZoFontGameSmall" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Beschreibung"><Dimensions x="350" y="160"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+				</Label>
+				<EditBox name="$(parent)Name" inherit="ZO_DefaultTextEdit" font="ZoFontChat" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" keyboardEnabled="false" mouseEnabled="true">
+					<Dimensions x="100" y="20"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Line2" relativePoint="TOPLEFT" offsetX="110" offsetY="100"></Anchor>
+					<OnMouseDown>self:SetKeyboardEnabled(true) self:TakeFocus()</OnMouseDown>
+					<OnEnter>tomUI.magicStoreBack(self)</OnEnter>
+					<OnEscape>tomUI.magicStoreBack(self)</OnEscape>
+					<OnFocusLost>tomUI.magicStoreBack(self)</OnFocusLost>
+					<Controls><Backdrop name="$(parent)NameBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+				</EditBox>
+				<EditBox name="$(parent)Status" inherit="ZO_DefaultTextEdit" font="ZoFontChat" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" keyboardEnabled="false" mouseEnabled="true">
+					<Dimensions x="80" y="20"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPLEFT" offsetX="110" offsetY="0"></Anchor>
+					<OnMouseDown>tomUI.lomStatusClick(self)</OnMouseDown>
+					<Controls><Backdrop name="$(parent)NameBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+				</EditBox>
+				<EditBox name="$(parent)Titel" inherit="ZO_DefaultTextEdit" font="ZoFontChat" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" keyboardEnabled="false" mouseEnabled="true">
+					<Dimensions x="250" y="20"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPLEFT" offsetX="0" offsetY="30"></Anchor>
+					<OnMouseDown>self:SetKeyboardEnabled(true) self:TakeFocus()</OnMouseDown>
+					<OnEnter>tomUI.magicStoreBack(self)</OnEnter>
+					<OnEscape>tomUI.magicStoreBack(self)</OnEscape>
+					<OnFocusLost>tomUI.magicStoreBack(self)</OnFocusLost>
+					<Controls><Backdrop name="$(parent)TitelBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+				</EditBox>
+				<Label name="$(parent)NameLbl" font="ZoFontWinH5" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Name">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Name" relativePoint="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+				</Label>
+				<Label name="$(parent)TitelLbl" font="ZoFontWinH5" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Titel">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Titel" relativePoint="TOPLEFT" offsetX="-90" offsetY="0"></Anchor>
+				</Label>
+				<Label name="$(parent)SelectLbl" font="ZoFontWinH5" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Select">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)TitelLbl" relativePoint="TOPLEFT" offsetX="0" offsetY="30"></Anchor>
+				</Label>
+				<Label name="$(parent)OmitLbl" font="ZoFontWinH5" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Omit">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)TitelLbl" relativePoint="TOPLEFT" offsetX="0" offsetY="90"></Anchor>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+		<!--	Die Katakomben	 -->
+        <TopLevelControl name="tomCatacomb" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="450" y="660" /><Anchor point="CENTER" />
+			<OnMoveStop>tomUI.CatacombMoveStop(self)</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)Background" integralWrapping="true">
+					<Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeSize="4" />
+					<Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" />
+					<Insets left="4" top="4" right="-4" bottom="-4" />
+					<AnchorFill /></Backdrop>
+				<Texture name="$(parent)Bubble"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>
+				<Label name="$(parent)Head1" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Katakomben">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"></Anchor>
+				</Label>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)Closer" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.catacombClick()</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Catacombs - Close' button -->
+				<Texture name="$(parent)Closer" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false">
+					<Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.catacombClick()</OnMouseUp>
+				</Texture>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)Scan" mouseEnabled="true" textureFile="/esoui/art/campaign/overview_indexicon_scoring_up.dds"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Closer" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"></Anchor>
+					<OnMouseUp>tomUI.scanClick()</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Catacombs - Scan' button -->
+				<Texture name="$(parent)Scan" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false" textureFile="/esoui/art/campaign/overview_indexicon_scoring_up.dds">
+					<Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Closer" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.scanClick()</OnMouseUp>
+				</Texture>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)Help" mouseEnabled="true" textureFile="/esoui/art/buttons/info_down.dds"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Scan" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"></Anchor>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Catacombs - Help/Info' button -->
+				<Texture name="$(parent)Help" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false" textureFile="/esoui/art/buttons/info_down.dds">
+					<Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Scan" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"></Anchor>
+				</Texture>
+
+				<Label name="$(parent)NameText" font="ZoFontWinH4" color="E0E0A0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" mouseEnabled="true">
+					<Dimensions x="150" y="20"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Help" relativePoint="BOTTOMLEFT" offsetX="-10" offsetY="-5"></Anchor>
+					<OnMouseDown>tomUI.catacombNameClick(self)</OnMouseDown>
+				</Label>
+				<EditBox name="$(parent)NameEdit" inherit="ZO_DefaultTextEdit" font="ZoFontChat" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" keyboardEnabled="false" mouseEnabled="true">
+					<Dimensions x="150" y="20"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Help" relativePoint="BOTTOMLEFT" offsetX="-5" offsetY="-3"></Anchor>
+					<OnEnter>tomUI.catacombNameEnde(self)</OnEnter>
+					<OnEscape>tomUI.catacombNameEnde(self)</OnEscape>
+					<OnFocusLost>tomUI.catacombNameEnde(self)</OnFocusLost>
+					<Controls><Backdrop name="$(parent)CryptBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+				</EditBox>
+				<Texture name="$(parent)Line1" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="430" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40"></Anchor>
+				</Texture>
+				<Label name="$(parent)Gom" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="#chat#"><Dimensions x="50" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPLEFT" offsetX="240" offsetY="55"></Anchor>
+					<Controls><Backdrop name="$(parent)BG" alpha="0.8" centerColor="0F0F0F" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)TargetTxt" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Target:"><Dimensions x="275" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="55"></Anchor>
+				</Label>
+				<Label name="$(parent)Target" inherit="ZO_DefaultTextEdit" keyboardEnabled="false" mouseEnabled="true" verticalAlignment="CENTER" horizontalAlignment="CENTER"><Dimensions x="150" y="24"></Dimensions>
+					<Anchor relativeTo="$(parent)TargetTxt" point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor>
+					<Controls><Backdrop name="$(parent)TargetBG" alpha="0.8" centerColor="0F0F0F" edgeColor="808080"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+				</Label>
+				<EditBox name="$(parent)Edit" inherit="ZO_DefaultTextEdit" keyboardEnabled="false" linkEnabled="true" mouseEnabled="true"><Dimensions x="430" y="100"></Dimensions>
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="10" offsetY="90"></Anchor>
+					<OnEscape>tomUI.CatacombEditEnde()</OnEscape>
+					<OnFocusLost>tomUI.CatacombEditEnde()</OnFocusLost>
+					<Controls><Backdrop name="$(parent)EditBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+				</EditBox>
+				<Texture name="$(parent)Line2" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="430" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="205"></Anchor>
+				</Texture>
+				<Label name="$(parent)ScrollsTxt2" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Page:"><Dimensions x="45" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="215"></Anchor>
+				</Label>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)ScrollsMin" mouseEnabled="true" textureFile="/esoui/art/charactercreate/charactercreate_leftarrow_up.dds"><Dimensions x="24" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ScrollsTxt2" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.CatacombScrollPageClick(false)</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Catacombs - Left' button -->
+				<Texture name="$(parent)ScrollsMin" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false" textureFile="/esoui/art/charactercreate/charactercreate_leftarrow_up.dds">
+					<Dimensions x="24" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ScrollsTxt2" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.CatacombScrollPageClick(false)</OnMouseUp>
+				</Texture>
+
+				<Label name="$(parent)ScrollsPage" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="50"><Dimensions x="30" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ScrollsMin" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor>
+					<Controls><Backdrop name="$(parent)BG" alpha="0.8" centerColor="0F0F0F" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)ScrollsMor" mouseEnabled="true" textureFile="/esoui/art/charactercreate/charactercreate_rightarrow_up.dds"><Dimensions x="24" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ScrollsPage" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.CatacombScrollPageClick(true)</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Catacombs - Right' button -->
+				<Texture name="$(parent)ScrollsMor" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false" textureFile="/esoui/art/charactercreate/charactercreate_rightarrow_up.dds">
+					<Dimensions x="24" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ScrollsPage" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.CatacombScrollPageClick(true)</OnMouseUp>
+				</Texture>
+
+				<!-- The 'Catacombs - Common/TOMish' button -->
+				<Label name="$(parent)Coding" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" mouseEnabled="true" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Scrolls:"><Dimensions x="70" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ScrollsMor" relativePoint="TOPRIGHT" offsetX="225" offsetY="0"></Anchor>
+					<Controls><Backdrop name="$(parent)TargetBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+					<OnMouseUp>tomUI.CatacombToggleCoding(self)</OnMouseUp> 
+				</Label>
+			</Controls>
+        </TopLevelControl>
+		<!--	Das Gildenfenster	 -->
+        <TopLevelControl name="tomGuild" alpha="1" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="600" y="725" /><Anchor point="CENTER" />
+			<OnMoveStop>tomUI.GuildMoveStop(self)</OnMoveStop>
+			<OnMouseWheel>tomUI.slider3MouseWheel(self,delta)</OnMouseWheel>
+			<Controls>
+				<Backdrop name="$(parent)Background" integralWrapping="true">
+					<Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeSize="4" />
+					<Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" />
+					<Insets left="4" top="4" right="-4" bottom="-4" />
+					<AnchorFill /></Backdrop>
+				<Texture name="$(parent)Bubble"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>
+				<Label name="$(parent)Head1" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="TIM - Guild functions">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"></Anchor>
+				</Label>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)Closer" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.guildClick()</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Guild Functions - Close' button -->
+				<Texture name="$(parent)Closer" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false">
+					<Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.guildClick()</OnMouseUp>
+				</Texture>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)Failed" mouseEnabled="true"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Closer" relativePoint="TOPLEFT" offsetX="0" offsetY="5"></Anchor>
+					<OnMouseUp>tomUI.failMailClick()</OnMouseUp>  
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Guild Functions - Failed Mail' button -->
+				<Texture name="$(parent)Failed" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false">
+					<Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="TOPRIGHT" offsetX="-30" offsetY="1"></Anchor>
+					<OnMouseUp>tomUI.failMailClick()</OnMouseUp>
+				</Texture>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)Next" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Failed" relativePoint="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.NextGuildClick()</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Guild Functions - Next Guild' button -->
+				<Texture name="$(parent)Next" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false">
+					<Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" offsetX="-55" offsetY="1"></Anchor>
+					<OnMouseUp>tomUI.NextGuildClick()</OnMouseUp>
+				</Texture>
+
+				<Label name="$(parent)Gilde" font="ZoFontGameBold" color="E0E0A0" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT" verticalAlignment="CENTER" text="-Gilde-">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Next" relativePoint="TOPLEFT" offsetX="-5" offsetY="5"></Anchor>
+				</Label>
+				<Texture name="$(parent)Line1" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="580" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Switch" hidden="false" mouseEnabled="true" textureFile="/esoui/art/contacts/tabicon_friends_up.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPLEFT" offsetX="8" offsetY="50"></Anchor>
+					<OnMouseUp>tomUI.toggleAcountClick()</OnMouseUp>
+				</Texture>
+				<Label name="$(parent)qrySuche" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="xSuche"><Dimensions x="70" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="50"></Anchor>
+				</Label>
+				<Label name="$(parent)qryAuswahl" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="xOFFLINE"><Dimensions x="80" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)qrySuche" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.queryAuswahlClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)qryZusatz" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="xwobei"><Dimensions x="130" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)qryAuswahl" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"></Anchor>
+				</Label>
+				<Label name="$(parent)qryGtlt" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="="><Dimensions x="13" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)qryZusatz" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.queryGtltClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)qryAnzahl" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="24"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)qryGtlt" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.queryAnzahlClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)qryEinheit" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="xStunden"><Dimensions x="75" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)qryAnzahl" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.queryEinheitClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)qryMode" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="xberuecksichtigt"><Dimensions x="150" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)qryEinheit" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.queryModeClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)qryBisGRank" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="10"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)qryMode" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5"></Anchor>
+					<OnMouseUp>tomUI.queryBisGRankClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)qryGVonBis" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="-"><Dimensions x="15" y="25"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)qryBisGRank" relativePoint="TOPLEFT" offsetX="-3" offsetY="0"></Anchor>
+				</Label>
+				<Label name="$(parent)qryVonGRank" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="1"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)qryGVonBis" relativePoint="TOPLEFT" offsetX="-3" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.queryVonGRankClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)qryZusatz2" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="xwobei"><Dimensions x="185" y="25"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)qryVonGRank" relativePoint="TOPLEFT" offsetX="-8" offsetY="0"></Anchor>
+				</Label>
+				<Label name="$(parent)qryBisRank" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="66"><Dimensions x="45" y="25"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)qryZusatz2" relativePoint="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.queryBisRankClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)qryVonBis" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="-"><Dimensions x="15" y="25"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)qryBisRank" relativePoint="TOPLEFT" offsetX="-3" offsetY="0"></Anchor>
+				</Label>
+				<Label name="$(parent)qryVonRank" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="1"><Dimensions x="45" y="25"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)qryVonBis" relativePoint="TOPLEFT" offsetX="-3" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.queryVonRankClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)qryZusatz3" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="xwobei"><Dimensions x="330" y="25"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)qryVonRank" relativePoint="TOPLEFT" offsetX="-8" offsetY="0"></Anchor>
+				</Label>
+				<Texture name="$(parent)Line2" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="580" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="50" offsetY="110"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Line3" hidden="false" mouseEnabled="false" textureFile="/esoui/art/interaction/conversation_verticalborder.dds"><Dimensions x="2" y="620"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="200" offsetY="80"></Anchor>
+				</Texture>
+				<Label name="$(parent)BetreffLBL" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="xBetreff:"><Dimensions x="80" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="210" offsetY="670"></Anchor>
+				</Label>
+				<EditBox name="$(parent)Betreff" inherit="ZO_DefaultTextEdit" keyboardEnabled="false" mouseEnabled="true"><Dimensions x="270" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="220" offsetY="50"></Anchor>
+					<Controls><Backdrop name="$(parent)BetreffBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+					<OnMouseDown>tomUI.BetreffStart()</OnMouseDown>
+					<OnEnter>tomUI.BetreffEnde(false)</OnEnter>
+					<OnEscape>tomUI.BetreffEnde(false)</OnEscape>
+					<OnTab>tomUI.BetreffEnde(true)</OnTab>
+					<OnFocusLost>tomUI.BetreffEnde(false)</OnFocusLost>
+				</EditBox>
+				<EditBox name="$(parent)Nachricht" inherit="ZO_DefaultTextEdit" linkEnabled="true" keyboardEnabled="false" mouseEnabled="true"><Dimensions x="360" y="470"></Dimensions>
+					<Anchor relativeTo="$(parent)BetreffLBL" point="TOPLEFT" offsetX="0" offsetY="60"></Anchor>
+					<Controls><Backdrop name="$(parent)NachrichtBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+					<OnMouseDown>tomUI.NachrichtStart()</OnMouseDown>
+					<OnEscape>tomUI.NachrichtEnde(false)</OnEscape>
+					<OnTab>tomUI.NachrichtEnde(true)</OnTab>
+					<OnFocusLost>tomUI.NachrichtEnde(false)</OnFocusLost>
+					<OnTextChanged>tomUI.GuildMessageTextChanged(self:GetText())</OnTextChanged>
+				</EditBox>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)NachrichtCancel" hidden="false" mouseEnabled="true" textureFile="/esoui/art/buttons/decline_down.dds"><Dimensions x="20" y="20"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Nachricht" relativePoint="TOPRIGHT" offsetX="0" offsetY="-7"></Anchor>
+					<OnMouseUp>tomGuildNachricht:Clear()</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Guild Functions - Clear Guild News Field' button -->
+				<Texture name="$(parent)NachrichtCancel" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false" textureFile="/esoui/art/buttons/decline_down.dds">
+					<Dimensions x="20" y="20"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Nachricht" relativePoint="TOPRIGHT" offsetX="0" offsetY="-7"></Anchor>
+					<OnMouseUp>tomGuildNachricht:Clear()</OnMouseUp>
+				</Texture>
+
+				<Label name="$(parent)NachrichtLen" font="ZoFontGameBold" color="808080" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="(0/0)"><Dimensions x="80" y="25"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)NachrichtCancel" relativePoint="BOTTOMLEFT" offsetX="-10" offsetY="5"></Anchor>
+				</Label>
+				<Texture name="$(parent)Line4" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="400" y="2"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-45"></Anchor>
+				</Texture>
+				<Texture name="$(parent)FooterLMT" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/icon_lmb.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="210" offsetY="-10"></Anchor>
+				</Texture>
+				<Label name="$(parent)FooterLMTAction" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="LMTaction"><Dimensions x="150" y="25"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)FooterLMT" relativePoint="BOTTOMRIGHT" offsetX="10" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.queryLMTClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Texture name="$(parent)FooterRMT" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/icon_rmb.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-10"></Anchor>
+				</Texture>
+				<Label name="$(parent)FooterRMTAction" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="RMTaction"><Dimensions x="150" y="25"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FooterRMT" relativePoint="BOTTOMLEFT" offsetX="-10" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.queryRMTClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)FooterDisplayed" mouseEnabled="false" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="summe"><Dimensions x="155" y="25"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="-10"></Anchor>
+				</Label>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)Refresh" hidden="false" mouseEnabled="true" textureFile="/esoui/art/ava/ava_resourcestatus_tabicon_production.dds"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)FooterDisplayed" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.RefreshGuildClick()</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Guild Functions - Refresh' button -->
+				<Texture name="$(parent)Refresh" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false" textureFile="/esoui/art/ava/ava_resourcestatus_tabicon_production.dds">
+					<Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)FooterDisplayed" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.RefreshGuildClick()</OnMouseUp>
+				</Texture>
+
+			</Controls>
+        </TopLevelControl>
+		<!--	tomScan	 -->
+        <TopLevelControl name="tomScan" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="250" y="560" /><Anchor point="CENTER" />
+			<OnMoveStop>tomUI.ScanMoveStop(self)</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)Background" integralWrapping="true">
+					<Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeSize="4" />
+					<Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" />
+					<Insets left="4" top="4" right="-4" bottom="-4" />
+					<AnchorFill /></Backdrop>
+				<Texture name="$(parent)Bubble"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>
+				<Label name="$(parent)Head1" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="#Scan">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"></Anchor>
+				</Label>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)Closer" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.scanClick()</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Catacombs - Scanner - Close' button -->
+				<Texture name="$(parent)Closer" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false">
+					<Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.scanClick()</OnMouseUp>
+				</Texture>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)Clear" mouseEnabled="true" textureFile="/esoui/art/buttons/edit_cancel_up.dds"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Closer" relativePoint="TOPLEFT" offsetX="0" offsetY="5"></Anchor>
+					<OnMouseUp>tomUI.scanClearClick()</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Catacombs - Scanner - Clear' button -->
+				<Texture name="$(parent)Clear" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false" textureFile="/esoui/art/buttons/edit_cancel_up.dds">
+					<Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Closer" relativePoint="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.scanClearClick()</OnMouseUp>
+				</Texture>
+
+				<Texture name="$(parent)Line1" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="230" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40"></Anchor>
+				</Texture>
+				<Texture name="$(parent)FooterLMT" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/icon_lmb.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"></Anchor>
+				</Texture>
+				<Label name="$(parent)FooterLMTAction" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="RMTaction"><Dimensions x="100" y="25"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)FooterLMT" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"></Anchor>
+				</Label>
+				<Texture name="$(parent)FooterRMT" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/icon_rmb.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Line2" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="230" y="2"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="-25"></Anchor>
+				</Texture>
+				<Label name="$(parent)FooterRMTAction" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="RMTaction"><Dimensions x="100" y="25"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FooterRMT" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"></Anchor>
+				</Label>
+			</Controls>
+        </TopLevelControl>
+		<!--	tomClipboard	 -->
+        <TopLevelControl name="tomClipboard" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="450" y="560" /><Anchor point="CENTER" />
+			<OnMoveStop>tomUI.ClipMoveStop(self)</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)Background" integralWrapping="true">
+					<Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeSize="4" />
+					<Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" />
+					<Insets left="4" top="4" right="-4" bottom="-4" />
+					<AnchorFill /></Backdrop>
+				<Texture name="$(parent)Bubble"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>
+				<Label name="$(parent)Head1" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="TOM Clipboard">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"></Anchor>
+				</Label>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)Closer" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.clipClick()</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Clipboard - Close' button -->
+				<Texture name="$(parent)Closer" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false">
+					<Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tomUI.clipClick()</OnMouseUp>
+				</Texture>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)Clear" mouseEnabled="true" textureFile="/esoui/art/buttons/edit_cancel_up.dds"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Closer" relativePoint="TOPLEFT" offsetX="0" offsetY="5"></Anchor>
+					<OnMouseUp>tomUI.clipClearClick()</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Clipboard - Clear' button -->
+				<Texture name="$(parent)Clear" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false" textureFile="/esoui/art/buttons/edit_cancel_up.dds">
+					<Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Closer" relativePoint="TOPLEFT" offsetX="0" offsetY="-1"></Anchor>
+					<OnMouseUp>tomUI.clipClearClick()</OnMouseUp>
+				</Texture>
+
+				<Label name="$(parent)Head2" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Kapazität">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Clear" relativePoint="BOTTOMLEFT" offsetX="-5" offsetY="-7"></Anchor>
+				</Label>
+				<Texture name="$(parent)Line1" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="430" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40"></Anchor>
+				</Texture>
+				<EditBox name="$(parent)Edit" inherit="ZO_DefaultTextEdit" keyboardEnabled="false" linkEnabled="true" mouseEnabled="true"><Dimensions x="430" y="490"></Dimensions>
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="10" offsetY="50"></Anchor>
+					<OnMouseUp>tomUI.clipEditStart(self)</OnMouseUp>
+					<OnEscape>tomUI.ClipboardEditEnde(self)</OnEscape>
+					<OnFocusLost>tomUI.ClipboardEditEnde(self)</OnFocusLost>
+					<Controls><Backdrop name="$(parent)EditBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+				</EditBox>
+				<Texture name="$(parent)Line2" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="430" y="2"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="-10"></Anchor>
+				</Texture>
+			</Controls>
+        </TopLevelControl>
+		<!-- ungesendete Nachrichten -->
+        <TopLevelControl name="tomfailMail" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="600" y="310" /><Anchor point="CENTER" />
+			<OnMoveStop>tomUI.failMailMoveStop(self)</OnMoveStop>
+			<OnMouseWheel>tomUI.OnFMScroll(delta)</OnMouseWheel>
+            <Controls>
+				<Backdrop name="$(parent)Background" integralWrapping="true">
+					<Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeSize="4" />
+					<Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" />
+					<Insets left="4" top="4" right="-4" bottom="-4" />
+					<AnchorFill /></Backdrop>
+				<Texture name="$(parent)Bubble" mouseEnabled="true" movable="false"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>
+				<Label name="$(parent)Header" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="TOM - failMail">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"></Anchor>
+				</Label>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)Closer" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="5"></Anchor>
+					<OnMouseUp>tomUI.failMailClick()</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Guild Functions - Failed Mail - Close' button -->
+				<Texture name="$(parent)Closer" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false">
+					<Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" offsetX="-5" offsetY="5"></Anchor>
+					<OnMouseUp>tomUI.failMailClick()</OnMouseUp>
+				</Texture>
+
+				<Texture name="$(parent)Line1" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="580" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Line3" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="580" y="2"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="-10"></Anchor>
+				</Texture>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+	<!-- Virtuelle Controls	-->
+	<Controls>
+		<Label name="gomButton" virtual="true" font="ZoFontWinT2" mouseEnabled="true" movable="false" hidden="false" text="gom" verticalAlignment="TOP" horizontalAlignment="CENTER">
+			<Dimensions x="128" y="24" />
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+			<Controls>
+				<Backdrop name="$(parent)BG" alpha="0" centerColor="FFFFFF" edgeColor="808080">
+					<AnchorFill /><Edge edgeSize="1" />
+				</Backdrop>
+			</Controls>
+		</Label>
+		<Label name="lomButton" virtual="true" font="ZoFontWinT2" mouseEnabled="true" movable="false" hidden="false" text="gom" verticalAlignment="TOP" horizontalAlignment="CENTER">
+			<Dimensions x="128" y="24" />
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+			<Controls>
+				<Backdrop name="$(parent)BG" alpha="0" centerColor="FFFFFF" edgeColor="808080">
+					<AnchorFill /><Edge edgeSize="1" />
+				</Backdrop>
+			</Controls>
+		</Label>
+		
+		<!-- Removed by P5YCH3 - Broken with update 34 -->
+		<!--<Button name="tomInsKill" virtual="true" mouseEnabled="true">
+			<Textures normal="/esoui/art/inventory/inventory_tabicon_quickslot_up.dds" />
+			<Dimensions x="25" y="25"></Dimensions>
+			<Anchor relativeTo="$(parent)Kill" point="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+			<OnClicked>tomUI.CatacombButtonHandler(self,button)</OnClicked>
+		</Button>-->
+
+		<!-- P5YCH3 - Fix for the 'Catacombs - Insert/Delete' button -->
+		<Button name="tomInsKill" virtual="true" mouseEnabled="true">
+			<Textures normal="/esoui/art/inventory/inventory_tabicon_quickslot_up.dds" />
+			<Dimensions x="25" y="25"></Dimensions>
+			<Anchor relativeTo="$(parent)Kill" point="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+			<OnMouseUp>tomUI.CatacombButtonHandler(self,button)</OnMouseUp>
+		</Button>
+
+		<Label name="tomCataText" virtual="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" mouseEnabled="true" text="CataText"><Dimensions x="370" y="24"></Dimensions>
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+			<OnMouseUp>tomUI.CatacombButtonHandler(self,button)</OnMouseUp>
+			<Controls><Backdrop name="$(parent)BG" alpha="0.4" centerColor="0F0F0F" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+		</Label>
+
+		<!-- Removed by P5YCH3 - Broken with update 34 -->
+		<!--<Button name="tomSndEdt" virtual="true" mouseEnabled="true">
+			<Textures normal="/esoui/art/buttons/edit_up.dds" />
+			<Dimensions x="30" y="30"></Dimensions>
+			<Anchor relativeTo="$(parent)Kill" point="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+			<OnClicked>tomUI.CatacombButtonHandler(self,button)</OnClicked>
+		</Button>-->
+
+		<!-- P5YCH3 - Fix for the 'Catacombs - Send To' button -->
+		<Button name="tomSndEdt" virtual="true" mouseEnabled="true">
+			<Textures normal="/esoui/art/buttons/edit_up.dds" />
+			<Dimensions x="30" y="30"></Dimensions>
+			<Anchor relativeTo="$(parent)Kill" point="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+			<OnMouseUp>tomUI.CatacombButtonHandler(self,button)</OnMouseUp>
+		</Button>
+
+		<Label name="tomGuildButton" virtual="true" mouseEnabled="true" text="guild" verticalAlignment="TOP" horizontalAlignment="LEFT">
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+			<Controls>
+				<Backdrop name="$(parent)BG" alpha="0" centerColor="FFFFFF" edgeColor="808080">
+					<AnchorFill /><Edge edgeSize="1" />
+				</Backdrop>
+			</Controls>
+		</Label>
+
+		<!-- Removed by P5YCH3 - Broken with update 34 -->
+		<!--<Texture name="tomGuildStatusButton" virtual="true" mouseEnabled="true">
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+		</Texture>-->
+
+		<!-- P5YCH3 - Fix for the 'Guild Functions - Guild Status' button -->
+		<Texture name="tomGuildStatusButton" virtual="true" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false">
+			<Dimensions x="30" y="30"></Dimensions>
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+		</Texture>
+
+		<Texture name="tomMagicBack" virtual="true" mouseEnabled="false" textureFile="/esoui/art/actionbar/quickslotbg.dds"><Dimensions x="75" y="24"></Dimensions>
+			<Anchor relativeTo="$(parent)" point="BOTTOMLEFT" offsetX="0" offsetY="0"></Anchor>
+		</Texture>
+		<Label name="tomScanButton" virtual="true" mouseEnabled="true" verticalAlignment="TOP" horizontalAlignment="LEFT">
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+			<Controls>
+				<Backdrop name="$(parent)BG" alpha="0" centerColor="FFFFFF" edgeColor="808080">
+					<AnchorFill /><Edge edgeSize="1" />
+				</Backdrop>
+			</Controls>
+		</Label>
+
+		<!-- Removed by P5YCH3 - Broken with update 34 -->
+		<!--<Texture name="tomfailMailButton" virtual="true" mouseEnabled="true" textureFile="/esoui/art/chatwindow/chat_mail_up.dds"><Dimensions x="24" y="24"></Dimensions>
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+		</Texture>-->
+
+		<!-- P5YCH3 - Fix for the 'Guild Functions - Failed Mail Button' button -->
+		<Texture name="tomfailMailButton" virtual="true" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false" textureFile="/esoui/art/chatwindow/chat_mail_up.dds">
+			<Dimensions x="24" y="24"></Dimensions>
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+		</Texture>
+
+		<Label name="tomfailMailText" virtual="true" mouseEnabled="true" font="ZoFontWinT2" text="00" verticalAlignment="CENTER" horizontalAlignment="LEFT"><Dimensions x="240" y="24"></Dimensions>
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+		</Label>
+        <TopLevelControl name="tomWindowVM" virtual="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="600" y="310" /><Anchor point="CENTER" />
+			<OnMoveStop>tomUI.WindowMoveStop(self)</OnMoveStop>
+            <Controls>
+				<Backdrop name="$(parent)Background" integralWrapping="true">
+					<Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeSize="4" />
+					<Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" />
+					<Insets left="4" top="4" right="-4" bottom="-4" />
+					<AnchorFill /></Backdrop>
+				<!--P5YCH3 - FIX THIS SHIT--><Texture name="$(parent)Bubble" mouseEnabled="true" movable="false"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)Closer" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="5"></Anchor>
+					<OnMouseUp>tomUI.undockCloseClick(self)</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Undock Group - Close' button -->
+				<Texture name="$(parent)Closer" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false">
+					<Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="5"></Anchor>
+					<OnMouseUp>tomUI.undockCloseClick(self)</OnMouseUp>
+				</Texture>
+
+				<!-- Removed by P5YCH3 - Broken with update 34 -->
+				<!--<Texture name="$(parent)Answer" mouseEnabled="true" textureFile="/esoui/art/buttons/edit_up.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)Closer" point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="-30" offsetY="-7"></Anchor>
+					<OnMouseUp>tomUI.answerDockedWindow(self)</OnMouseUp>
+				</Texture>-->
+
+				<!-- P5YCH3 - Fix for the 'Undock Group - Answer Group' button -->
+				<Texture name="$(parent)Answer" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="false" textureFile="/esoui/art/buttons/edit_up.dds">
+					<Dimensions x="25" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)Closer" point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="-30" offsetY="-5"></Anchor>
+					<OnMouseUp>tomUI.answerDockedWindow(self)</OnMouseUp>
+				</Texture>
+
+				<Label name="$(parent)Gom" font="ZoFontWinH4" color="E0E0A0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="---">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPRIGHT" offsetX="10" offsetY="7"></Anchor>
+				</Label>
+				<Texture name="$(parent)Line1" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="580" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="44"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Line3" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="580" y="2"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="-10"></Anchor>
+				</Texture>
+				<TextBuffer name="$(parent)Rolle" linkEnabled="true" mouseEnabled="true" font="ZoFontChat" hidden="false" linefade="0,0" inheritalpha="true">  
+					<Dimensions x="410" y="240"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="45"></Anchor>
+				</TextBuffer>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

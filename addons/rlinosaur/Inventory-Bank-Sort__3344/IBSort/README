@@ -1,0 +1,13 @@
+Inventory Bank Sort addon readme.
+
+The addon helps to track which items in your inventory are already stored in the bank. For me it seems convenient to store common used items (style materials, potions etc) in the bank. The purpose is saving inventory space. For example, if could have 20 pieces of Molybdenum in inventories of three characters (takes 3 slots for an inventory) or 60 pieces in the bank (takes 1 slot in the bank) and save 2 slots in inventories. For such scheme all the characters should upload convenient items to the bank. And the addon is a simple way to know which items they need to put in the bank. Made for myself.
+
+Features:
+- adds a bank icon for an item if it is present in the bank when the inventory is shown.
+- adds sorting by presence in the bank when the inventory is shown.
+
+
+It's my first (and maybe the last) addon. For develop the addon I used code from GearSetsSort by @megawriter and DeconJunkMarker by @code65536.
+
+
+

@@ -1,0 +1,16 @@
+## Title: Reload UI Timer
+## APIVersion: 101049 101050
+## Author: Swarog
+## Version: 1.0.5
+## Description: Measures actual ReloadUI duration and prints it to chat.
+## SavedVariables: ReloadUITimer_SavedVariables
+
+lang/en.lua
+lang/de.lua
+lang/es.lua
+lang/fr.lua
+lang/ja.lua
+lang/ru.lua
+lang/zh.lua
+
+ReloadUITimer.lua

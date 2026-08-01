@@ -1,0 +1,141 @@
+<GuiXml>
+    <Controls>
+	
+	    <Control name="FasterTravel_WorldMapWayshrineCategoryRow" virtual="true">
+			<OnInitialized>
+				self.offsetX = 20
+				self.label = self:GetNamedChild("Label")
+				self.icon = self:GetNamedChild("Icon")
+				self.icon:SetDrawLayer(self.label:GetDrawLayer() + 1)
+				self.label.GetTextColor = function() return GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_SELECTED) end
+			</OnInitialized>
+            <Dimensions x="285" y="23"/>
+            <Controls>
+				<Texture name="$(parent)Icon" textureFile="EsoUI/Art/Quest/questJournal_trackedQuest_icon.dds" hidden="true" mouseEnabled="true">
+					<Dimensions x="24" y="23"/>
+					<Anchor point="TOPLEFT" offsetX="-6" offsetY="-2" />
+					<TextureCoords top="0" bottom="1" left="0" right="1"/>
+				</Texture>
+				<Label name="$(parent)Label" inherits="ZO_SelectableLabel" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" modifyTextType="UPPERCASE">
+					<Anchor point="TOPLEFT" offsetX="20"/>
+					<OnMouseDown>
+						self:GetParent():RowMouseDown(button)
+					</OnMouseDown>
+					<OnMouseUp>
+						self:GetParent():RowMouseUp(button, upInside)
+					</OnMouseUp>
+				</Label>
+            </Controls>
+        </Control>
+		
+        <Control name="FasterTravel_WorldMapWayshrineRow" virtual="true">
+			<OnInitialized>
+				self.offsetX = 20
+				self.label = self:GetNamedChild("Label")
+				self.icon = self:GetNamedChild("Icon")
+				self.icon:SetDrawLayer(self.label:GetDrawLayer() + 1)
+			</OnInitialized>
+            <Dimensions x="285" y="23"/>
+            <Controls>
+				<Texture name="$(parent)Icon" textureFile="EsoUI/Art/Quest/questJournal_trackedQuest_icon.dds" hidden="true" mouseEnabled="true">
+					<Dimensions x="24" y="23"/>
+					<Anchor point="TOPLEFT" offsetX="-6" offsetY="-2" />
+					<TextureCoords top="0" bottom="1" left="0" right="1"/>
+					<OnMouseEnter>
+						self:GetParent():IconMouseEnter(self)
+					</OnMouseEnter>
+                    <OnMouseExit>
+						self:GetParent():IconMouseExit(self)
+					</OnMouseExit>
+					<OnMouseDown>
+						self:GetParent():IconMouseDown(self,button)
+					</OnMouseDown>
+					<OnMouseUp>
+						self:GetParent():IconMouseUp(self,button, upInside)
+					</OnMouseUp>
+				</Texture>
+				<Label name="$(parent)Label" inherits="ZO_SelectableLabel" font="ZoFontHeader" newLineIndent="8">
+					<Anchor point="TOPLEFT" offsetX="20" />
+					<OnMouseEnter>
+						self:GetParent():RowMouseEnter(self)
+					</OnMouseEnter>
+                    <OnMouseExit>
+						self:GetParent():RowMouseExit(self)
+					</OnMouseExit>
+					<OnMouseDown>
+						self:GetParent():RowMouseDown(button)
+					</OnMouseDown>
+					<OnMouseUp>
+						self:GetParent():RowMouseUp(button, upInside)
+					</OnMouseUp>
+				</Label>
+
+            </Controls>
+        </Control>
+        
+        <TopLevelControl name="FasterTravel_WorldMapWayshrines" inherits="ZO_WorldMapInfoContent">
+            <OnInitialized>
+				self.sortOrderDropDown = ZO_ComboBox_ObjectFromContainer(self:GetNamedChild("SortOrder"))
+				self.sortAllOrderDropDown = ZO_ComboBox_ObjectFromContainer(self:GetNamedChild("SortAllOrder"))
+                self.list = self:GetNamedChild("List")	
+				self.fragment = ZO_FadeSceneFragment:New(self)
+				self.fragment.duration = 100
+				ZO_ScrollList_AddDataType(self.list,0,"FasterTravel_WorldMapWayshrineCategoryRow", 23, function(control, data) self:RefreshRow(control,data) end)
+				ZO_ScrollList_AddDataType(self.list,1,"FasterTravel_WorldMapWayshrineRow", 23, function(control, data) self:RefreshRow(control,data) end)
+	        </OnInitialized>
+            <Controls>
+				<Control name="$(parent)SortAllOrder" inherits="ZO_ComboBox">
+					<Dimensions x="120" y="25" />
+                    <Anchor point="TOPRIGHT" offsetX="-25" offsetY="-35" />
+                </Control>
+
+				<Control name="$(parent)SortOrder" inherits="ZO_ComboBox">
+					<Dimensions x="120" y="25" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)SortAllOrder" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                </Control>
+				
+			    <Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Dimensions x="285" y="400" />
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="20" />
+                    <Anchor point="BOTTOMRIGHT"/>
+                </Control>
+
+				<Backdrop name="$(parent)Search" tier="HIGH" edgeColor="000000" inherits="ZO_SingleLineEditBackdrop_Keyboard" maxHeight="25" mouseEnabled="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="5"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)SortOrder" relativePoint="TOPLEFT" offsetX="-5"/>
+					<Controls>
+						<EditBox name="$(parent)Edit" maxInputCharacters="30" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+							<OnInitialized>
+								FasterTravel.MapTabWayshrines.ResetFilter(self, FasterTravel_WorldMapWayshrinesList, true)
+							</OnInitialized>
+							<OnEscape>
+								FasterTravel.MapTabWayshrines.ResetFilter(self, FasterTravel_WorldMapWayshrinesList, false)
+							</OnEscape>
+							<OnEffectivelyShown>
+								FasterTravel.MapTabWayshrines.ChangeFilter(self, FasterTravel_WorldMapWayshrinesList)
+							</OnEffectivelyShown>
+							<OnTextChanged>
+								FasterTravel.MapTabWayshrines.ChangeFilter(self, FasterTravel_WorldMapWayshrinesList)
+							</OnTextChanged>
+							<OnMouseDown>
+								self:TakeFocus()
+								ZO_EditDefaultText_Disable(self)
+							</OnMouseDown>
+						</EditBox>
+						<Button name="$(parent)Clear" tier="HIGH">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="5"/>
+							<OnMouseUp>FasterTravel.MapTabWayshrines.ResetFilter(FasterTravel_WorldMapWayshrinesSearchEdit, FasterTravel_WorldMapWayshrinesList, false)</OnMouseUp>
+							<Dimensions x="23" y="23" />
+							<Textures 	normal="EsoUI/art/buttons/decline_up.dds"
+										pressed="EsoUI/art/buttons/decline_down.dds"
+										mouseOver="EsoUI/art/buttons/decline_over.dds"
+							/>
+						</Button>
+						
+					</Controls>
+				</Backdrop>
+
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

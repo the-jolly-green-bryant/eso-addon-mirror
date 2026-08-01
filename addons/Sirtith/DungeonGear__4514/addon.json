@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Sirtith/DungeonGear__4514",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sirtith",
+  "canonical_id": "esoui:4514",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4514",
+  "deleted": false,
+  "directories": [
+    "DungeonGear"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4514/",
+  "fingerprint": "96af9e93988392a1fa60d324a1a5423666b6820ac6e6f074c8dd08ffaf7cba18",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15745.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15746.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15747.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4514",
+  "source_url": "https://www.esoui.com/downloads/info4514-DungeonGear.html",
+  "stats": {
+    "downloads": 430,
+    "favorites": 1,
+    "monthly_downloads": 32
+  },
+  "title": "DungeonGear",
+  "updated_at": 1777271869000,
+  "version": "0.16.1"
+}

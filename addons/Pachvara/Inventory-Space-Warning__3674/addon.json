@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Pachvara/Inventory-Space-Warning__3674",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Pachvara",
+  "canonical_id": "esoui:3674",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3674",
+  "deleted": false,
+  "directories": [
+    "InventorySpaceWarning"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3674/",
+  "fingerprint": "24b3539798e506bd2708e9b501b8c48eff164cb4cde6f7860ff8b67228d7ef72",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12564.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12563.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3674",
+  "source_url": "https://www.esoui.com/downloads/info3674-InventorySpaceWarning.html",
+  "stats": {
+    "downloads": 2928,
+    "favorites": 5,
+    "monthly_downloads": 12
+  },
+  "title": "Inventory Space Warning",
+  "updated_at": 1699152777000,
+  "version": "0.4"
+}

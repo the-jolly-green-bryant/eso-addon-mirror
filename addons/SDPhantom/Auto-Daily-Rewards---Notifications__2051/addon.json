@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/SDPhantom/Auto-Daily-Rewards---Notifications__2051",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SDPhantom",
+  "canonical_id": "esoui:2051",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2051",
+  "deleted": false,
+  "directories": [
+    "AutoDailyRewards_Notifications"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2051/",
+  "fingerprint": "5003b9712010ca9cbcf0b03262e29bbe7b4c35ad297500d5f0d31b63745e1b40",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6921.gif"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2051",
+  "source_url": "https://www.esoui.com/downloads/info2051-AutoDailyRewards-Notifications.html",
+  "stats": {
+    "downloads": 5701,
+    "favorites": 3,
+    "monthly_downloads": 17
+  },
+  "title": "Auto Daily Rewards - Notifications",
+  "updated_at": 1529845985000,
+  "version": "1.0"
+}

@@ -1,0 +1,74 @@
+{
+  "archive_path": "addons/Qcell/Qcell-s-Rockgrove-Helper__3060",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Qcell",
+  "canonical_id": "esoui:3060",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3060",
+  "deleted": false,
+  "directories": [
+    "QcellRockgroveHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3060/",
+  "fingerprint": "cc6cf7703f808fce5a8ce904707674dbb8db75535c352f2edca3f110301ce9f4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10275.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10265.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10808.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10284.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10260.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10261.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10262.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10263.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10264.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10266.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3060",
+  "source_url": "https://www.esoui.com/downloads/info3060-QcellsRockgroveHelper.html",
+  "stats": {
+    "downloads": 323223,
+    "favorites": 121,
+    "monthly_downloads": 636
+  },
+  "title": "Qcell's Rockgrove Helper",
+  "updated_at": 1710292562000,
+  "version": "6.8.2"
+}

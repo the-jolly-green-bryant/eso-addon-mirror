@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/reishi_spores/TheElderSporesOnline__4386",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "reishi_spores",
+  "canonical_id": "esoui:4386",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4386",
+  "deleted": false,
+  "directories": [
+    "TheElderSporesOnline"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4386/",
+  "fingerprint": "1bb7ebce107e006126a7e7a21895beab8e9de0e1f489d464d31dddbe0b9d7995",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15203.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15204.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15205.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15206.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4386",
+  "source_url": "https://www.esoui.com/downloads/info4386-TheElderSporesOnline.html",
+  "stats": {
+    "downloads": 367,
+    "favorites": 4,
+    "monthly_downloads": 64
+  },
+  "title": "TheElderSporesOnline",
+  "updated_at": 1783390251000,
+  "version": "2.2.1"
+}

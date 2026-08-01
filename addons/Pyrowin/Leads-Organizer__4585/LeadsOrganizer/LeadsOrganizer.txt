@@ -1,0 +1,17 @@
+## Title: Leads Organizer
+## Description: Filter and sort scrying leads. Dedicated panel (/leadsorg) + keybind. Travel to Zone via Beam Me Up.
+## Version: 1.4.0
+## APIVersion: 101049 101050
+## AddOnVersion: 102040
+## Author: Pyrowin
+## SavedVariables: LeadsOrganizer_SavedVariables
+
+LeadsOrganizer.xml
+Bindings.xml
+LeadsOrganizer.lua
+
+## OptionalDependsOn: LibAddonMenu-2.0 BeamMeUp
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc.

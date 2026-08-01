@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Seerah/LMP-MediaStash__497",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Seerah",
+  "canonical_id": "esoui:497",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Live",
+      "version": "1.0"
+    }
+  ],
+  "content_id": "esoui:497",
+  "deleted": false,
+  "directories": [
+    "LMP_MediaStash"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl497/",
+  "fingerprint": "23a12901b85e6c5fc21120ed7d86a5afdb12d77466f8a660ee4b9b186d9c97e5",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "497",
+  "source_url": "https://www.esoui.com/downloads/info497-LMPMediaStash.html",
+  "stats": {
+    "downloads": 4303,
+    "favorites": 8,
+    "monthly_downloads": 10
+  },
+  "title": "LMP MediaStash",
+  "updated_at": 1415337522000,
+  "version": "1.1"
+}

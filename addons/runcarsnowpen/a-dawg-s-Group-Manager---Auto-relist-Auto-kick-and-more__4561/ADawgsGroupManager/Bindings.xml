@@ -1,0 +1,9 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="a dawg's Group Manager">
+            <Action name="ADGM_MANUAL_RELIST">
+                <Down>SLASH_COMMANDS["/adgm"]("gfrelist")</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

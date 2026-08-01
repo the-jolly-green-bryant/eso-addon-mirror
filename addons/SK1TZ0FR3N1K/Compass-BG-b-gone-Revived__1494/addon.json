@@ -1,0 +1,66 @@
+{
+  "archive_path": "addons/SK1TZ0FR3N1K/Compass-BG-b-gone-Revived__1494",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SK1TZ0FR3N1K",
+  "canonical_id": "esoui:1494",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1494",
+  "deleted": false,
+  "directories": [
+    "CompassBG-b-gone_Revived"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1494/",
+  "fingerprint": "0034b4aac0cd6b15924b125059290c20f1091d4cab1a851aa52a1373f8dbfc1f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4855.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4856.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1494",
+  "source_url": "https://www.esoui.com/downloads/info1494-CompassBG-b-goneRevived.html",
+  "stats": {
+    "downloads": 17610,
+    "favorites": 16,
+    "monthly_downloads": 27
+  },
+  "title": "Compass BG-b-gone (Revived)",
+  "updated_at": 1647429251000,
+  "version": "2.4"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/NOGARUKA/Zadrot-FPS__3091",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "NOGARUKA",
+  "canonical_id": "esoui:3091",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3091",
+  "deleted": false,
+  "directories": [
+    "Zadrot_FPS"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3091/",
+  "fingerprint": "67d15b248851c56849bc201b39ace38d3f4324228cb7df53d17fd08ea16458bd",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3091",
+  "source_url": "https://www.esoui.com/downloads/info3091-ZadrotFPS.html",
+  "stats": {
+    "downloads": 3592,
+    "favorites": 3,
+    "monthly_downloads": 17
+  },
+  "title": "Zadrot FPS",
+  "updated_at": 1622829846000,
+  "version": "2"
+}

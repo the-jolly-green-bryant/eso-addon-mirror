@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Petomatick/AutoTrans__2919",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Petomatick",
+  "canonical_id": "esoui:2919",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2919",
+  "deleted": false,
+  "directories": [
+    "AutoTrans"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2919/",
+  "fingerprint": "5fbdf33c15f969e19f07768f2753576660c1baf1280c4ae890588540201bd28b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9854.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2919",
+  "source_url": "https://www.esoui.com/downloads/info2919-AutoTrans.html",
+  "stats": {
+    "downloads": 5846,
+    "favorites": 4,
+    "monthly_downloads": 21
+  },
+  "title": "AutoTrans",
+  "updated_at": 1613131638000,
+  "version": "0.3.3"
+}

@@ -1,0 +1,29 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="AUI_Minimeter" tier="HIGH" clampedToScreen="true" mouseEnabled="true" hidden="true">
+      <Controls>
+        <Backdrop name="$(parent)_BG" tier="MEDIUM">
+          <AnchorFill />
+        </Backdrop>
+        <Texture name="$(parent)_Icon_DPS_Out" mouseEnabled="true" textureFile="esoui/art/icons/alchemy/crafting_alchemy_trait_increaseweaponpower_conflict.dds" tier="HIGH" />
+        <Label name="$(parent)_Label_DPS_Out" mouseEnabled="true" tier="HIGH" />
+        <Texture name="$(parent)_Icon_Total_Damage_Out" mouseEnabled="true" textureFile="esoui/art/icons/alchemy/crafting_alchemy_trait_weaponcrit_conflict.dds" tier="HIGH" />
+        <Label name="$(parent)_Label_Total_Damage_Out" mouseEnabled="true" tier="HIGH" />
+        <Texture name="$(parent)_Icon_HPS_Out" mouseEnabled="true" textureFile="esoui/art/icons/alchemy/crafting_alchemy_trait_heroism_match.dds" tier="HIGH" />
+        <Label name="$(parent)_Label_HPS_Out" mouseEnabled="true" tier="HIGH" />
+        <Texture name="$(parent)_Icon_Total_Heal_Out" mouseEnabled="true" textureFile="esoui/art/icons/alchemy/crafting_alchemy_trait_restorehealth_match.dds" tier="HIGH" />
+        <Label name="$(parent)_Label_Total_Heal_Out" mouseEnabled="true" tier="HIGH" />
+        <Texture name="$(parent)_Icon_DPS_In" mouseEnabled="true" textureFile="esoui/art/icons/alchemy/crafting_poison_trait_protection_conflict.dds" tier="HIGH" />
+        <Label name="$(parent)_Label_DPS_In" mouseEnabled="true" tier="HIGH" />
+        <Texture name="$(parent)_Icon_Total_Damage_In" mouseEnabled="true" textureFile="esoui/art/icons/alchemy/crafting_alchemy_trait_unstoppable_conflict.dds" tier="HIGH" />
+        <Label name="$(parent)_Label_Total_Damage_In" mouseEnabled="true" tier="HIGH" />
+        <Texture name="$(parent)_Icon_HPS_In" mouseEnabled="true" textureFile="esoui/art/icons/alchemy/crafting_alchemy_trait_spellcrit_match.dds" tier="HIGH" />
+        <Label name="$(parent)_Label_HPS_In" mouseEnabled="true" tier="HIGH" />
+        <Texture name="$(parent)_Icon_Total_Heal_In" mouseEnabled="true" textureFile="esoui/art/icons/alchemy/crafting_poison_trait_increasehealing_match.dds" tier="HIGH" />
+        <Label name="$(parent)_Label_Total_Heal_In" mouseEnabled="true" tier="HIGH" />
+        <Texture name="$(parent)_Icon_Time" mouseEnabled="true" textureFile="esoui/art/icons/alchemy/crafting_poison_trait_hot.dds" tier="HIGH" />
+        <Label name="$(parent)_Label_Time" mouseEnabled="true" tier="HIGH" />
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

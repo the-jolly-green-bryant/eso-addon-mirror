@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Sylirana/Sylirana-s-New-Life-Travel__2868",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sylirana",
+  "canonical_id": "esoui:2868",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2868",
+  "deleted": false,
+  "directories": [
+    "SyliranasNewLifeTravel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2868/",
+  "fingerprint": "bdc739a5dd569972aadb4cc74e79f11d1f5e6ad6cf37047b7864b930934b9fe2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9713.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2868",
+  "source_url": "https://www.esoui.com/downloads/info2868-SyliranasNewLifeTravel.html",
+  "stats": {
+    "downloads": 4660,
+    "favorites": 7,
+    "monthly_downloads": 8
+  },
+  "title": "Sylirana's New Life Travel",
+  "updated_at": 1640394163000,
+  "version": "1.1.3"
+}

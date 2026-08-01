@@ -1,0 +1,64 @@
+{
+  "archive_path": "addons/Rhyono/Item-Finder__1541",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rhyono",
+  "canonical_id": "esoui:1541",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1541",
+  "deleted": false,
+  "directories": [
+    "ItemFinder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1541/",
+  "fingerprint": "81480f33524668bebb67c5e71df5b690323dc4d210919e2c693515e49de889af",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5247.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5039.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5042.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5180.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1541",
+  "source_url": "https://www.esoui.com/downloads/info1541-ItemFinder.html",
+  "stats": {
+    "downloads": 24984,
+    "favorites": 33,
+    "monthly_downloads": 37
+  },
+  "title": "Item Finder",
+  "updated_at": 1632610478000,
+  "version": "1.31"
+}

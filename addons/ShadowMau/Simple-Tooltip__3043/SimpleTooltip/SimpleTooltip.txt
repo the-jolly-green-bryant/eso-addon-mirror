@@ -1,0 +1,28 @@
+#Manifest File
+
+## Title: |c00E600SimpleTooltip|r
+## Description: An example of how to create and use custom tooltips  -  Version: 1.0.3
+## Author: |c787878ShadowMau|r
+## IsLibrary: false
+
+## Version: 1.0.3
+## APIVersion: 101036
+## AddOnVersion: 20230225
+
+
+# List of lua and xml files associated with your addon - they are loaded in the order listed
+
+SimpleTooltip.lua
+
+
+# This Addon is not created by, affiliated with, or sponsored by
+# ZeniMax Media Inc. or its affiliates
+# The Elder Scrolls (c) and related logos are registered trademarks
+# or trademarks of ZeniMax Media Inc. in the United States and/or
+# other countries.  All rights reserved
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+# Make sure the name of the folder containing the addon and the name
+# of the .txt manifest file are EXACTLY the same, including Caps.
+# The string that is passed to the handler for EVENT_ADD_ON_LOADED
+# should also match.  

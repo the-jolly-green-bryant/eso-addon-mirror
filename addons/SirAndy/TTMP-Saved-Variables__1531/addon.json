@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/SirAndy/TTMP-Saved-Variables__1531",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SirAndy",
+  "canonical_id": "esoui:1531",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1531",
+  "deleted": false,
+  "directories": [
+    "SavedVariables"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1531/",
+  "fingerprint": "83004cfb7976c4c01911307c6abb3208741e4f1c0332df72f2b501b41f05ab63",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4989.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1531",
+  "source_url": "https://www.esoui.com/downloads/info1531-TTMPSavedVariables.html",
+  "stats": {
+    "downloads": 27342,
+    "favorites": 17,
+    "monthly_downloads": 47
+  },
+  "title": "TTMP: Saved Variables",
+  "updated_at": 1623018703000,
+  "version": "3.5.0"
+}

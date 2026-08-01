@@ -1,0 +1,14 @@
+## Title: SPAULDER
+## Author: STUDLETON
+## Version: 1.0.2
+## Description: Yells at you when in an instance and you don't have spaulder active, goes away if it's active.
+## SavedVariables: SPAULDERVars
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+SPAULDER.lua
+SPAULDER.xml

@@ -1,0 +1,127 @@
+<GuiXml>
+	<Controls>
+
+		<Control name="LE_FavoriteCommandTemplate" virtual="true" >
+			<Dimensions y="25" />
+			<Controls>
+
+				<Button name="$(parent)DeleteButton" inherits="LE_ButtonBehaviorClickSoundTemplate" >
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" />
+					<Textures
+						normal="esoui/art/buttons/edit_cancel_up.dds"
+						mouseOver="esoui/art/buttons/edit_cancel_over.dds"
+						pressed="esoui/art/buttons/edit_cancel_down.dds"
+						disabled="esoui/art/buttons/edit_cancel_up.dds"
+					/>
+				</Button>
+
+				<Button name="$(parent)CommandButton" inherits="LE_EmoteTextButtonTemplate" horizontalAlignment="LEFT" >
+					<Anchor point="TOPLEFT" offsetX="35" />
+					<Anchor point="BOTTOMRIGHT" />
+				</Button>
+
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="LE_FavoriteCommandsWindow" tier="HIGH" mouseEnabled="true" hidden="true" >
+			<Dimensions x="530" y="370" />
+			<Anchor point="CENTER" offsetY="-20" />
+
+			<Controls>
+
+				<Backdrop name="$(parent)Background" inherits="ZO_DefaultBackdrop_Gamepad" />
+
+				<Button name="$(parent)CloseButton" inherits="LE_ButtonBehaviorClickSoundTemplate" >
+					<Dimensions x="30" y="30" />
+					<Anchor point="TOPRIGHT" />
+					<Textures
+						normal="esoui/art/buttons/decline_up.dds"
+						mouseOver="esoui/art/buttons/decline_over.dds"
+						pressed="esoui/art/buttons/decline_down.dds"
+						disabled="esoui/art/buttons/decline_up.dds"
+					/>
+				</Button>
+
+				<Backdrop name="$(parent)CommandEditBox" inherits="ZO_SingleLineEditBackdrop_Keyboard" >
+					<Anchor point="BOTTOMLEFT" />
+					<Anchor point="BOTTOMRIGHT" />
+
+					<Controls>
+						<EditBox name="$(parent)Edit" inherits="ZO_DefaultEditForBackdrop" />
+					</Controls>
+				</Backdrop>
+
+				<Label name="$(parent)CommandLabel" text=":(" font="ZoFontGame" >
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)CommandEditBox" relativePoint="TOPLEFT" />
+				</Label>
+
+				<Backdrop name="$(parent)DisplayNameEditBox" inherits="ZO_SingleLineEditBackdrop_Keyboard" >
+					<Dimensions x="200" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)CommandLabel" relativePoint="TOPLEFT" offsetY="-20" />
+
+					<Controls>
+						<EditBox name="$(parent)Edit" inherits="ZO_DefaultEditForBackdrop" maxInputCharacters="22" />
+
+						<Label name="$(parent)OptionalLabel" text=":(" font="ZoFontGame" alpha="0.33" >
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="5" />
+						</Label>
+					</Controls>
+				</Backdrop>
+
+				<Label name="$(parent)DisplayNameLabel" text=":(" font="ZoFontGame" >
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)DisplayNameEditBox" relativePoint="TOPLEFT" />
+				</Label>
+
+				<Control name="$(parent)ListBox" >
+					<Anchor point="TOPRIGHT" offsetY="40" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)DisplayNameEditBox" relativePoint="BOTTOMRIGHT" offsetX="20" offsetY="-5" />
+
+					<Controls>
+						<Backdrop name="$(parent)Background" inherits="ZO_DefaultBackdrop_Gamepad" alpha="0.25" />
+
+						<Control name="$(parent)List" inherits="ZO_ScrollList" >
+							<Anchor point="TOPLEFT" offsetY="25" />
+							<Anchor point="BOTTOMRIGHT" offsetY="-25" />
+						</Control>
+
+						<Button name="$(parent)AddButton" inherits="LE_ButtonBehaviorClickSoundTemplate" >
+							<Dimensions x="25" y="25" />
+							<Anchor point="TOPLEFT" />
+
+							<Textures
+								normal="esoui/art/buttons/pointsPlus_up.dds"
+								mouseOver="esoui/art/buttons/pointsPlus_over.dds"
+								pressed="esoui/art/buttons/pointsPlus_down.dds"
+								disabled="esoui/art/buttons/pointsplus_disabled.dds"
+							/>
+						</Button>
+
+						<Button name="$(parent)ForceDisplayNameCheckboxButton" inherits="LE_ButtonBehaviorClickSoundTemplate" >
+							<Dimensions x="20" y="20" />
+							<Anchor point="BOTTOMRIGHT" />
+
+							<Textures
+								normal="esoui/art/buttons/checkbox_unchecked.dds"
+								mouseOver="esoui/art/buttons/checkbox_mouseover.dds"
+								pressed="esoui/art/buttons/checkbox_indeterminate.dds"
+								disabled="esoui/art/buttons/checkbox_disabled.dds"
+							/>
+						</Button>
+
+						<Label name="$(parent)ForceDisplayNameLabel" text="Force Display Name" font="ZoFontGameSmall" >
+							<Anchor point="RIGHT" relativeTo="$(parent)ForceDisplayNameCheckboxButton" relativePoint="LEFT" offsetX="-5" />
+						</Label>
+					</Controls>
+				</Control>
+
+				<Label name="$(parent)SlotIndexLabel" font="ZoFontGame" color="FF9900" >
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)ListBox" relativePoint="TOPLEFT" offsetX="-20" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)DisplayNameLabel" relativePoint="TOPLEFT" offsetY="-20" />
+				</Label>
+
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

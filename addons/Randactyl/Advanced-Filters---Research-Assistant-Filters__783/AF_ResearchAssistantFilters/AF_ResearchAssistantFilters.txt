@@ -1,0 +1,7 @@
+## Title: Advanced Filters - Research Assistant Filters
+## Author: Randactyl & Baertram
+## Version: 1.1.0.5
+## APIVersion: 100023 100024 100025
+## DependsOn: AdvancedFilters ResearchAssistant
+
+AF_ResearchAssistantFilters.lua

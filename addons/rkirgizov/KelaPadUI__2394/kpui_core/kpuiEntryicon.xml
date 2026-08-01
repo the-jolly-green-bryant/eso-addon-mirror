@@ -1,0 +1,24 @@
+<GuiXml>
+	<Controls>
+		<Control name="kpuiEntryIcon" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Locked" textureFile="EsoUI/Art/Miscellaneous/Gamepad/gp_icon_locked32.dds" hidden="true">
+					<AnchorFill/>
+				</Texture>
+				<Texture name="$(parent)Research" textureFile="ESOUI/art/miscellaneous/search_icon.dds" hidden="true">
+					<AnchorFill/>
+				</Texture>
+				<Texture name="$(parent)Intricate" textureFile="/esoui/art/tutorial/inventory_trait_intricate_icon.dds" hidden="true">
+					<AnchorFill/>
+				</Texture>
+				<Texture name="$(parent)Ornate" textureFile="/esoui/art/tutorial/inventory_trait_ornate_icon.dds" hidden="true">
+					<AnchorFill/>
+				</Texture>
+				<Texture name="$(parent)TCCQuest" textureFile="esoui/art/inventory/gamepad/gp_inventory_icon_quest.dds" hidden="true">
+					<AnchorFill/>
+				</Texture>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>
+

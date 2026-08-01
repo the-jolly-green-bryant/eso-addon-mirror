@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/sirinsidiator/LibAddonMenu-2.0__7",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:7",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:7",
+  "deleted": false,
+  "directories": [
+    "LibAddonMenu-2.0"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl7/",
+  "fingerprint": "3535f49ee0f911e1b5a1d4542cc1dcb34c221ab610b050612548ec488cda9265",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3588.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "7",
+  "source_url": "https://www.esoui.com/downloads/info7-LibAddonMenu-2.0.html",
+  "stats": {
+    "downloads": 6251793,
+    "favorites": 3076,
+    "monthly_downloads": 35849
+  },
+  "title": "LibAddonMenu-2.0",
+  "updated_at": 1778599485000,
+  "version": "2.0 r43"
+}

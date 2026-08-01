@@ -1,0 +1,11 @@
+## Title: |c8b4dffEmpower|r
+## Description: Gives a timer after the last time YOU procced Empower
+## Author: Own|c50cddcLight|
+## Version: 1.2
+## APIVersion: 100034
+## SavedVariables: EmpowerSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+Empower.lua
+EmpowerMenu.lua
+Empower.xml

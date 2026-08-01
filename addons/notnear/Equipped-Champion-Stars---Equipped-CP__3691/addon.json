@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/notnear/Equipped-Champion-Stars---Equipped-CP__3691",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "notnear",
+  "canonical_id": "esoui:3691",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3691",
+  "deleted": false,
+  "directories": [
+    "NearEquippedCp"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3691/",
+  "fingerprint": "31203338fed074970515ab5d625aa40f3606851149616e5b812b02f10ace71f1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12531.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12532.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3691",
+  "source_url": "https://www.esoui.com/downloads/info3691-EquippedChampionStars-EquippedCP.html",
+  "stats": {
+    "downloads": 2288,
+    "favorites": 1,
+    "monthly_downloads": 28
+  },
+  "title": "Equipped Champion Stars - Equipped CP",
+  "updated_at": 1709859042000,
+  "version": "1.1.1"
+}

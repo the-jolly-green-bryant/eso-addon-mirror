@@ -1,0 +1,54 @@
+{
+  "archive_path": "addons/SSM24/Restock-Bank-Materials__3545",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SSM24",
+  "canonical_id": "esoui:3545",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3545",
+  "deleted": false,
+  "directories": [
+    "RestockBankMaterials"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3545/",
+  "fingerprint": "047025d80a538ec2c4004b3e932c8ce9130a0b62aee2f5ddcbab5dc1e7df959a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12045.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12044.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3545",
+  "source_url": "https://www.esoui.com/downloads/info3545-RestockBankMaterials.html",
+  "stats": {
+    "downloads": 3815,
+    "favorites": 7,
+    "monthly_downloads": 27
+  },
+  "title": "Restock Bank Materials",
+  "updated_at": 1714270204000,
+  "version": "1.0.1"
+}

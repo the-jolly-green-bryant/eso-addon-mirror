@@ -1,0 +1,40 @@
+{
+	"folders": [
+        {
+            "name": "AutoCategory",
+            "path": "."
+        },
+        {
+            "name": "LibSFUtils",
+            "path": "../LibSFUtils"
+        },
+        {
+            "name": "ItemMarker",
+            "path": "../ItemMarker"
+        },
+        {
+            "name": "LibAddonMenu-2.0",
+            "path": "../LibAddonMenu-2.0"
+        },
+        {
+            "name": "LibCharacterKnowledge",
+            "path": "../LibCharacterKnowledge"
+        },
+        {
+            "name": "LibCustomMenu",
+            "path": "../LibCustomMenu"
+        },
+        {
+            "name": "LibDebugLogger",
+            "path": "../LibDebugLogger"
+        },
+        {
+            "name": "LibMediaProvider",
+            "path": "../LibMediaProvider"
+        },
+        {
+            "path": "../../../../eso src/esoui-live-101049"
+        }
+    ],
+	"settings": {}
+}

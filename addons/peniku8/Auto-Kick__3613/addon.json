@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/peniku8/Auto-Kick__3613",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "peniku8",
+  "canonical_id": "esoui:3613",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3613",
+  "deleted": false,
+  "directories": [
+    "AutoKick"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3613/",
+  "fingerprint": "821f89e0aa4d097731a8ef257921ec35415c07cc9fc69ca0eb215cc99d582a2b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12310.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12311.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12312.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3613",
+  "source_url": "https://www.esoui.com/downloads/info3613-AutoKick.html",
+  "stats": {
+    "downloads": 4985,
+    "favorites": 2,
+    "monthly_downloads": 18
+  },
+  "title": "Auto Kick",
+  "updated_at": 1719350114000,
+  "version": "2.2.4"
+}

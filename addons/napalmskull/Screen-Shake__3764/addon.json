@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/napalmskull/Screen-Shake__3764",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "napalmskull",
+  "canonical_id": "esoui:3764",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3764",
+  "deleted": false,
+  "directories": [
+    "ScreenShake"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3764/",
+  "fingerprint": "e3a457107b45b1d280322f0154d625cf01d58ec00db82a16d771f6123cb33b62",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12758.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3764",
+  "source_url": "https://www.esoui.com/downloads/info3764-ScreenShake.html",
+  "stats": {
+    "downloads": 1115,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "Screen Shake",
+  "updated_at": 1701777631000,
+  "version": "1.0.0"
+}

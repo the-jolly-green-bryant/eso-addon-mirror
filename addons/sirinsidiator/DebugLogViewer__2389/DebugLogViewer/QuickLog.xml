@@ -1,0 +1,84 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <TopLevelControl name="DebugLogWindow" resizeHandleSize="5" mouseEnabled="true" clampedToScreen="true" movable="true" alpha="0">
+            <Dimensions x="350" y="155" />
+
+            <OnResizeStop>self.OnResizeStop(...)</OnResizeStop>
+            <OnMoveStop>self.OnMoveStop(...)</OnMoveStop>
+            <OnMouseWheel>self.OnMouseWheel(...)</OnMouseWheel>
+            <OnMouseEnter>self.OnMouseEnter(...)</OnMouseEnter>
+
+            <Controls>
+                <TextBuffer name="$(parent)Buffer" font="ZoFontChat" maxHistoryLines="200" mouseEnabled="true" linkEnabled="true">
+                    <LineFade fadeBegin="10" fadeDuration="1" />
+
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="15" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-25" offsetY="-10" />
+
+                    <OnMouseEnter>self:GetOwningWindow().OnMouseEnter(...)</OnMouseEnter>
+                    <OnLinkMouseUp>self:GetOwningWindow().OnLinkMouseUp(...)</OnLinkMouseUp>
+                </TextBuffer>
+
+                <Backdrop name="$(parent)Bg" integralWrapping="true">
+                    <Anchor point="TOPLEFT" offsetX="-4" offsetY="-4" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="4" offsetY="4" />
+
+                    <Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeFileWidth="256" edgeFileHeight="256" edgeSize="32" />
+                    <Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" />
+                    <Insets left="32" top="32" right="-32" bottom="-32" />
+                </Backdrop>
+
+                <Slider name="$(parent)Scrollbar" mouseEnabled="true">
+                    <Dimensions x="8" y="32" />
+                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="40" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-40" />
+
+                    <ThumbTexture textureFile="EsoUI/Art/ChatWindow/chat_thumb.dds" disabledTextureFile="EsoUI/Art/ChatWindow/chat_thumb_disabled.dds" thumbWidth="8" thumbHeight="22" bottom="0.6875" />
+
+                    <BackgroundMiddle textureFile="EsoUI/Art/ChatWindow/chat_scrollbar_track.dds" />
+                    <BackgroundBottom textureFile="" />
+                    <BackgroundTop textureFile="" />
+
+                    <OnMouseWheel>self:GetOwningWindow().OnMouseWheel(...)</OnMouseWheel>
+                    <OnValueChanged>self:GetOwningWindow().OnScrollBarChanged(...)</OnValueChanged>
+                    <OnMouseEnter>self:GetOwningWindow().OnMouseEnter(...)</OnMouseEnter>
+
+                    <Controls>
+                        <Button name="$(parent)ScrollUp" inherits="ZO_ScrollUpButton">
+                            <Anchor point="BOTTOM" relativePoint="TOP" offsetX="-1" />
+                            <Textures normal="EsoUI/Art/ChatWindow/chat_scrollbar_upArrow_up.dds" pressed="EsoUI/Art/ChatWindow/chat_scrollbar_upArrow_down.dds" mouseOver="EsoUI/Art/ChatWindow/chat_scrollbar_upArrow_over.dds"
+                                disabled="EsoUI/Art/ChatWindow/chat_scrollbar_upArrow_disabled.dds" />
+
+                            <OnMouseDown>self:GetOwningWindow().ScrollByOffset(self:GetParent(), -1)</OnMouseDown>
+                        </Button>
+
+                        <Button name="$(parent)ScrollDown" inherits="ZO_ScrollDownButton">
+                            <Anchor point="TOP" relativePoint="BOTTOM" offsetX="-1" />
+                            <Textures normal="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_up.dds" pressed="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_down.dds" mouseOver="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_over.dds"
+                                disabled="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_disabled.dds" />
+
+                            <OnMouseDown>self:GetOwningWindow().ScrollByOffset(self:GetParent(), 1)</OnMouseDown>
+                        </Button>
+
+                        <Button name="$(parent)ScrollEnd" inherits="ZO_ScrollEndButton">
+                            <Dimensions x="16" y="16" />
+                            <Anchor point="TOP" relativeTo="$(parent)ScrollDown" relativePoint="BOTTOM" />
+
+                            <OnMouseDown>self:GetOwningWindow().ScrollToBottom(self:GetParent())</OnMouseDown>
+                        </Button>
+                    </Controls>
+                </Slider>
+
+                <Control name="$(parent)WindowContainer" />
+
+                <Button name="$(parent)Options" mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="24" y="24" />
+                    <Anchor point="TOPRIGHT" offsetX="-3" offsetY="4" />
+                    <Textures normal="EsoUI/Art/ChatWindow/chat_options_up.dds" pressed="EsoUI/Art/ChatWindow/chat_options_down.dds" mouseOver="EsoUI/Art/ChatWindow/chat_options_over.dds" />
+
+                    <OnClicked>self:GetOwningWindow().ShowMenu()</OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

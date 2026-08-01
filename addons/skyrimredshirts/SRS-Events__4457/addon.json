@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/skyrimredshirts/SRS-Events__4457",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "skyrimredshirts",
+  "canonical_id": "esoui:4457",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4457",
+  "deleted": false,
+  "directories": [
+    "SRS_Events"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4457/",
+  "fingerprint": "3368a336814d47a74a6c0669a24bc6188b2a17e44259a922b3ceac248dbd75d1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15512.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15513.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4457",
+  "source_url": "https://www.esoui.com/downloads/info4457-SRSEvents.html",
+  "stats": {
+    "downloads": 174,
+    "favorites": 0,
+    "monthly_downloads": 27
+  },
+  "title": "SRS Events",
+  "updated_at": 1773828247000,
+  "version": "5.52"
+}

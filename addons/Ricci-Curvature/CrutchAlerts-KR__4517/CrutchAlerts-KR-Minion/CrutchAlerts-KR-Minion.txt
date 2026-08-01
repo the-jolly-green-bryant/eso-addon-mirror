@@ -1,0 +1,11 @@
+## Title: CrutchAlerts - Korean Patch
+## Description: Standalone Korean patch for CrutchAlerts.
+## Version: 1.0.0
+## AddOnVersion: 10000
+## Author: TamrielKR
+## APIVersion: 101049
+## DependsOn: CrutchAlerts
+## OptionalDependsOn: TamrielKR
+
+CrutchAlerts/lang/kr_details.lua
+CrutchAlerts/lang/kr.lua

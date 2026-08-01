@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/rkuhnjr/Borrower-And-Lender-Patch__840",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "rkuhnjr",
+  "canonical_id": "esoui:840",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:840",
+  "deleted": false,
+  "directories": [
+    "BorrowerAndLender"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl840/",
+  "fingerprint": "00f7cf371ceeb3c7cbf8e4c37dd0aa2e36c84781f63c3e75ef0c6ef9020a5691",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2570.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "840",
+  "source_url": "https://www.esoui.com/downloads/info840-BorrowerAndLenderPatch.html",
+  "stats": {
+    "downloads": 4091,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "Borrower And Lender Patch ",
+  "updated_at": 1417036794000,
+  "version": "3.4c"
+}

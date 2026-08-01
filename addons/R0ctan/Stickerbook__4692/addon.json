@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/R0ctan/Stickerbook__4692",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "R0ctan",
+  "canonical_id": "esoui:4692",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4692",
+  "deleted": false,
+  "directories": [
+    "StickerbookPlus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4692/",
+  "fingerprint": "d9c975ba0c8199115582465a6f9f572ee97502476a3593dfc6b2c0697fbad44d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16622.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16623.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16621.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16626.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16627.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16624.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16625.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4692",
+  "source_url": "https://www.esoui.com/downloads/info4692-Stickerbook.html",
+  "stats": {
+    "downloads": 202,
+    "favorites": 4,
+    "monthly_downloads": 202
+  },
+  "title": "Stickerbook+",
+  "updated_at": 1783637544000,
+  "version": "1.0.1"
+}

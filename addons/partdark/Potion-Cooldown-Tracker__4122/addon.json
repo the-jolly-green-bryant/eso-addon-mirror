@@ -1,0 +1,58 @@
+{
+  "archive_path": "addons/partdark/Potion-Cooldown-Tracker__4122",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "partdark",
+  "canonical_id": "esoui:4122",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4122",
+  "deleted": false,
+  "directories": [
+    "PotionCooldownTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4122/",
+  "fingerprint": "b82bc268b31bc2d5a83829593191d18a8b378d769225f39f7d9c70dc6029a88a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14073.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14074.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4122",
+  "source_url": "https://www.esoui.com/downloads/info4122-PotionCooldownTracker.html",
+  "stats": {
+    "downloads": 1811,
+    "favorites": 6,
+    "monthly_downloads": 52
+  },
+  "title": "Potion Cooldown Tracker",
+  "updated_at": 1776792542000,
+  "version": "1.3.3"
+}

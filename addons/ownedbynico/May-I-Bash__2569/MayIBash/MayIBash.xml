@@ -1,0 +1,22 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="MIBTracker" mouseEnabled="true" movable="true" clampedToScreen="false">
+			<Dimensions x="110" y="100" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" />
+			<OnMoveStop>
+				MIB.savedVariables.trackerTop = MIBTracker:GetTop()
+				MIB.savedVariables.trackerLeft = MIBTracker:GetLeft()
+			</OnMoveStop>
+			<Controls>
+				<Label name="MIBTrackerCounter" font="EsoUI/Common/Fonts/univers67.otf|75|soft-shadow-thick" color="FFA500"
+					verticalAlignment="TOP" horizontalAlignment="CENTER" text="~">
+					<Anchor point="TOP" relativeTo="$(parent)" />
+				</Label>
+				<Label name="MIBTrackerLabel" font="ZoFontWinH3" color="FFFFFF"
+					verticalAlignment="BOTTOM" horizontalAlignment="CENTER" text="May I Bash?">
+					<Anchor point="BOTTOM" relativeTo="$(parent)" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

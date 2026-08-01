@@ -1,0 +1,7 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+	  <Category name="|cAFD3FFShissu|ceeeeee's AddOns|r">
+	    <Action name="SBK_Toogle"><Down>ShissuFramework._bindings.sbkToogle()</Down></Action>
+    </Category>
+  </Layer>
+</Bindings>

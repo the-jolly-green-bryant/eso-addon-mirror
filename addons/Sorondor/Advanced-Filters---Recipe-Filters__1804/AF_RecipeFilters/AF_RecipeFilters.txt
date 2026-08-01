@@ -1,0 +1,8 @@
+## Title: Advanced Filters - Recipe Filters
+## Author: Sorondor
+## Description: |cC5C29EConsumable|r >> |cC5C29ERecipe|r >> |cC5C29E[|r dropdown |cC5C29E]|r
+## Version: 1.5
+## APIVersion: 100023
+## DependsOn: AdvancedFilters
+
+AF_RecipeFilters.lua

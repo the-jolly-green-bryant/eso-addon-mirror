@@ -1,0 +1,8 @@
+## Title: Advanced Filters - Furnishing Material Filter
+## Author: Sorondor
+## Description: |cC5C29EMaterials|r >> |cC5C29EAll|r >> |cC5C29E[ Furnishing Material ]|r
+## Version: 1.0
+## APIVersion: 100020
+## DependsOn: AdvancedFilters
+
+AF_FurnishingMaterialFilter.lua

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Rhyono/Item-Finder-PTS__1980",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rhyono",
+  "canonical_id": "esoui:1980",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:1980",
+  "deleted": false,
+  "directories": [
+    "ItemFinder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1980/",
+  "fingerprint": "21d5fd1ab5c755fa31c33c22424ba015e3dd0cf3889607d6a9e71eabfbf93744",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6671.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1980",
+  "source_url": "https://www.esoui.com/downloads/info1980-ItemFinderPTS.html",
+  "stats": {
+    "downloads": 6300,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "Item Finder (PTS)",
+  "updated_at": 1632610409000,
+  "version": "1.31"
+}

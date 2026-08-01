@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/notnear/Skill-Blocker-Extension---Banner-Bearer__4066",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "notnear",
+  "canonical_id": "esoui:4066",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4066",
+  "deleted": false,
+  "directories": [
+    "NearSkillBlockerBanner"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4066/",
+  "fingerprint": "01b09de24c6653e942e193d9e96c7889fe5ac66fc0bcbca1078f3fc3b5f11f0c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4066",
+  "source_url": "https://www.esoui.com/downloads/info4066-SkillBlockerExtension-BannerBearer.html",
+  "stats": {
+    "downloads": 1419,
+    "favorites": 1,
+    "monthly_downloads": 62
+  },
+  "title": "Skill Blocker Extension - Banner Bearer",
+  "updated_at": 1748992707000,
+  "version": "1.0.2"
+}

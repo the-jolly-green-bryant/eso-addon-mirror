@@ -1,0 +1,25 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls� and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+; /script SetCVar("language.2", "en")
+
+## Title: |cb7ff00Scorps|r AdBlock Plus
+## Version: 1.7
+## Author: |cb7ff00Scorp|r
+## APIVersion: 101035
+## DependsOn: LibAddonMenu-2.0>=32
+## OptionalDependsOn: pChat rChat
+## SavedVariables: AdBlockPlusSavedVars
+## Description: Block advertisement messages/spam. Use |c00ff00/abp|r command to see blocked history.
+
+lang/en.lua
+lang/$(language).lua
+
+AdBlockPlusVars.lua
+AdBlockPlusSettings.lua
+AdBlockPlusFunctions.lua
+AdBlockPlusHistory.lua
+AdBlockPlusHistory.xml
+AdBlockPlus.lua

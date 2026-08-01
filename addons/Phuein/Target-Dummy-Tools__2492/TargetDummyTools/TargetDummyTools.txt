@@ -1,0 +1,12 @@
+## APIVersion: 100031
+## Title: TargetDummyTools
+## Version: 1.09
+## Author: Written by @Phuein - Concept by @NordCarbon
+## Description: A variety of tools for your house's target dummy.
+## SavedVariables: TargetDummyToolsSavedVariables
+
+Languages\en.lua
+
+Bindings.xml
+
+TargetDummyTools.lua

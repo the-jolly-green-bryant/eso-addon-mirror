@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Soleya/Timing-Bars__2770",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Soleya",
+  "canonical_id": "esoui:2770",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2770",
+  "deleted": false,
+  "directories": [
+    "TimingBars"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2770/",
+  "fingerprint": "5a6c9d45633d2925be99a4016b668259538c71571f512f2551c4e6eaeab0ed12",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9371.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2770",
+  "source_url": "https://www.esoui.com/downloads/info2770-TimingBars.html",
+  "stats": {
+    "downloads": 6447,
+    "favorites": 10,
+    "monthly_downloads": 18
+  },
+  "title": "Timing Bars",
+  "updated_at": 1604371615000,
+  "version": "1.1.0.0"
+}

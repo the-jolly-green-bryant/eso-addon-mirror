@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Rengaru/Outdated-Alternative-Endeavor-Tracking-for-VEQ__3857",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rengaru",
+  "canonical_id": "esoui:3857",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3857",
+  "deleted": false,
+  "directories": [
+    "RengarusAlternativeEndeavorTrackingForVEQ"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3857/",
+  "fingerprint": "41f68c8d2006d0d49975b6d72f968c38103741ba1313d4c31a4390712beb74ba",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13095.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3857",
+  "source_url": "https://www.esoui.com/downloads/info3857-OutdatedAlternativeEndeavorTrackingforVEQ.html",
+  "stats": {
+    "downloads": 3417,
+    "favorites": 5,
+    "monthly_downloads": 11
+  },
+  "title": "[Outdated] Alternative Endeavor Tracking for VEQ",
+  "updated_at": 1727784730000,
+  "version": "1.3"
+}

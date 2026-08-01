@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Shaen/No-Written-Dialogue-Continued__1485",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shaen",
+  "canonical_id": "esoui:1485",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:1485",
+  "deleted": false,
+  "directories": [
+    "NoWrittenDialogue"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1485/",
+  "fingerprint": "fcfac3eed16cd15f45e09c1b2f603142a7f931273b1c9a5209b24ae666af42f1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4818.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4819.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1485",
+  "source_url": "https://www.esoui.com/downloads/info1485-NoWrittenDialogueContinued.html",
+  "stats": {
+    "downloads": 6233,
+    "favorites": 7,
+    "monthly_downloads": 14
+  },
+  "title": "No Written Dialogue Continued",
+  "updated_at": 1510347335000,
+  "version": "1.5"
+}

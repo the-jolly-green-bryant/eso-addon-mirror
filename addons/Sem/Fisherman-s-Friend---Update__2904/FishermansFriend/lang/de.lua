@@ -1,0 +1,12 @@
+SafeAddString(FISHERMANSFRIEND_LAKE_FISHING_HOLE, "Fischgrund (Seewasser)",	0)
+SafeAddString(FISHERMANSFRIEND_SALT_FISHING_HOLE, "Fischgrund (Salzwasser)", 	0)
+SafeAddString(FISHERMANSFRIEND_MYST_FISHING_HOLE, "Fischgrund (Mythenwasser)",0)
+SafeAddString(FISHERMANSFRIEND_FOUL_FISHING_HOLE, "Fischgrund (Brackwasser)", 0)
+SafeAddString(FISHERMANSFRIEND_OILY_FISHING_HOLE, "Fischgrund (Ölwasser)", 	0)
+SafeAddString(FISHERMANSFRIEND_RIVR_FISHING_HOLE, "Fischgrund (Flusswasser)", 0)
+
+SafeAddString(FISHERMANSFRIEND_CNF_DESCRIPTION, "Hier kannst du einstellen ob zuerst die einfachen (Innereien, Insektenstücke, Krabbler, Würmer) oder die alternativen Köder (Bitterfisch, Blaubarsch, Döbel, Fischrogen) verwendet werden sollen.", 0)
+SafeAddString(FISHERMANSFRIEND_CNF_SET, "Zuerst alternativen Köder verwenden:", 0)
+SafeAddString(FISHERMANSFRIEND_CNF_MSG, "Benachrichtigung wenn geeigneter Köder fehlt:")
+SafeAddString(FISHERMANSFRIEND_NO_BAIT, "Kein geeigneter Köder verfügbar!", 0)
+SafeAddString(FISHERMANSFRIEND_NO_BAIT_RST, "Gedrückt halten, um einen Köder zu wählen.", 1)

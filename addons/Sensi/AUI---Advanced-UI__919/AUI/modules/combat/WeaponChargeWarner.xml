@@ -1,0 +1,32 @@
+<GuiXml>
+  <Controls>
+    <Control name="AUI_WeaponChargeWarnerControl" hidden="true" virtual="true" tier="HIGH">
+      <Controls>
+        <Texture name="$(parent)_IconContainer" textureFile="EsoUI/Art/ActionBar/abilityFrame64_up.dds" hidden="false">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+          <Controls>
+            <Texture name="$(parent)_Icon" tier="MEDIUM">
+              <Anchor point="TOPLEFT" offsetX="1" offsetY="1"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="-1" offsetY="-1"/>
+              <Controls>
+                <Texture name="$(parent)_BG" tier="LOW">
+                  <AnchorFill />
+                  <OnInitialized>
+                    self:SetColor(0, 0, 0, 1)
+                  </OnInitialized>
+                </Texture>
+                <Label name="$(parent)_Text" tier="MEDIUM">
+                  <Anchor point="BOTTOM" relativeTo="$(parent)_Icon" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                </Label>
+              </Controls>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Label name="$(parent)_Text" tier="MEDIUM">
+          <Anchor point="LEFT" relativeTo="$(parent)_IconContainer" relativePoint="RIGHT" offsetX="8" offsetY="0"/>
+        </Label>
+      </Controls>
+    </Control>
+    <TopLevelControl name="AUI_WeaponChargeWarner" tier="HIGH" level="1000" clampedToScreen="true" mouseEnabled="true" hidden="true" />
+  </Controls>
+</GuiXml>

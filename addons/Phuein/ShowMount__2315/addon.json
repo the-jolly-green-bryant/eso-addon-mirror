@@ -1,0 +1,58 @@
+{
+  "archive_path": "addons/Phuein/ShowMount__2315",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phuein",
+  "canonical_id": "esoui:2315",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2315",
+  "deleted": false,
+  "directories": [
+    "ShowMount"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2315/",
+  "fingerprint": "58dc8a92e365a4ab59313a4e93a576dd2312df73c511bba65ee0864947d6f88c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7882.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7881.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2315",
+  "source_url": "https://www.esoui.com/downloads/info2315-ShowMount.html",
+  "stats": {
+    "downloads": 7159,
+    "favorites": 10,
+    "monthly_downloads": 14
+  },
+  "title": "ShowMount",
+  "updated_at": 1627755207000,
+  "version": "1.28"
+}

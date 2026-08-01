@@ -1,0 +1,36 @@
+{
+  "archive_path": "addons/phil7/Undaunted-Auto-Queue__4664",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "phil7",
+  "canonical_id": "esoui:4664",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4664",
+  "deleted": false,
+  "directories": [
+    "UndauntedAutoQueue",
+    "__MACOSX"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4664/",
+  "fingerprint": "bee4484c0b68c3154e4fa57d46c0df6fc4cb13e7e10c4b47bf06fd3199def5d0",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4664",
+  "source_url": "https://www.esoui.com/downloads/info4664-UndauntedAutoQueue.html",
+  "stats": {
+    "downloads": 123,
+    "favorites": 0,
+    "monthly_downloads": 108
+  },
+  "title": "Undaunted Auto Queue",
+  "updated_at": 1783082414000,
+  "version": "1.1.2"
+}

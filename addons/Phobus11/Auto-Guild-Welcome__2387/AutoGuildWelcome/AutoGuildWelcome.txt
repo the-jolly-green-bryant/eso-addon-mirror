@@ -1,0 +1,13 @@
+## Title: |c00FF90Auto Guild Welcome|r
+## Author: Phobus11
+## Version: 0.1
+## APIVersion: 100026 100027
+## Description: Welcome any new guild members with a custom message
+## SavedVariables: AutoGuildWelcome_Settings
+## DependsOn: LibAddonMenu-2.0 LibSavedVars LibStub
+
+AutoGuildWelcome.lua
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates.

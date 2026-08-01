@@ -1,0 +1,25 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="TLSB_GP_Container" clampedToScreen="true"  movable="false" mouseEnabled="true" hidden="true" resizeHandleSize="0">
+            <Dimensions x="321" y="56"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" edgeColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+                    <AnchorFill/>
+                    <Edge file="/esoui/art/miscellaneous/gamepad/edgeframegamepadborder.dds" edgeFileWidth="32" edgeFileHeight="8" edgeSize="3"/>
+                    <Center file="/esoui/art/miscellaneous/gamepad/gp_edgefill.dds" />
+                    <Insets left="3" top="3" right="-3" bottom="-3" />
+                </Backdrop>
+
+                <Texture name="$(parent)SearchIcon" textureFile="/esoui/art/miscellaneous/gamepad/gp_icon_search_64.dds">
+                    <Dimensions x="48" y="48"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+                </Texture>
+
+                <EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditForBackdrop_Gamepad ZO_EditDefaultText_Gamepad" textType="TEXT_TYPE_ALPHABETIC" allowMarkupType="ALLOW_MARKUP_TYPE_NONE" verticalAlignment="TEXT_ALIGN_CENTER" font="ZoFontGamepad34">
+                    <Dimensions x="275" y="48"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)SearchIcon" relativePoint="RIGHT" offsetY="3"/>
+                </EditBox>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

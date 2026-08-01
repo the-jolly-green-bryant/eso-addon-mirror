@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Ricci-Curvature/Azurah-KR__4501",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ricci Curvature",
+  "canonical_id": "esoui:4501",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4501",
+  "deleted": false,
+  "directories": [
+    "Azurah"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4501/",
+  "fingerprint": "53d84e998e2f4db9dbf559d11418d4841ec473373032bc668f7ff67b60d166f7",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4501",
+  "source_url": "https://www.esoui.com/downloads/info4501-Azurah-KR.html",
+  "stats": {
+    "downloads": 900,
+    "favorites": 0,
+    "monthly_downloads": 178
+  },
+  "title": "Azurah-KR",
+  "updated_at": 1775821995000,
+  "version": "1.0.1"
+}

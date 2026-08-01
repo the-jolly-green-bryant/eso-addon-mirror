@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Sharlikran/TurkishScrollsOnline-T\u00fcrk\u00e7e__3689",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:3689",
+  "category_id": "163",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3689",
+  "deleted": false,
+  "directories": [
+    "EsoUI",
+    "gamedata",
+    "TurkishScrollsOnline"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3689/",
+  "fingerprint": "6c78ee8ed96e078c1aaaa9d44ca470f2c7f641ee2e705f9514eacf55bfab9512",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12824.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3689",
+  "source_url": "https://www.esoui.com/downloads/info3689-TurkishScrollsOnlineTrke.html",
+  "stats": {
+    "downloads": 38779,
+    "favorites": 14,
+    "monthly_downloads": 549
+  },
+  "title": "TurkishScrollsOnline (T\u00fcrk\u00e7e)",
+  "updated_at": 1752521787000,
+  "version": "v1.23"
+}

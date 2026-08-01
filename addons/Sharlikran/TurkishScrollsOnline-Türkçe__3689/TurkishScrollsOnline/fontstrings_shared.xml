@@ -1,0 +1,8 @@
+<GuiXml>
+    <String name="ESOTR_CENTURY_GOTHIC_FONT" value="TurkishScrollsOnline/fonts/CenturyGothic.slug" />
+    <String name="ESOTR_CRIMSON_REGULAR_FONT" value="TurkishScrollsOnline/fonts/CrimsonText-Regular.slug" />
+    <String name="ESOTR_GENTIUM_FONT" value="TurkishScrollsOnline/fonts/Gentium.slug" />
+    <String name="ESOTR_METAMORPHOUS_REGULAR_FONT" value="TurkishScrollsOnline/fonts/Metamorphous-Regular.slug" />
+    <String name="ESOTR_PATRICK_HAND_SC_FONT" value="TurkishScrollsOnline/fonts/PatrickHandSC-Regular.slug" />
+    <String name="ESOTR_PROSEANTIQUE_FONT" value="TurkishScrollsOnline/fonts/ProseAntique.slug" />
+</GuiXml>

@@ -1,0 +1,283 @@
+
+local zo_min = _G["zo_min"]
+local zo_max = _G["zo_max"]
+local zo_ceil = _G["zo_ceil"]
+local zo_floor = _G["zo_floor"]
+local pairs = _G["pairs"]
+local ipairs = _G["ipairs"]
+
+--[[
+Each MapCache stores deserialized nodes for the given map.
+--]]
+local MapCache = ZO_Object:Subclass()
+Harvest.MapCache = MapCache
+
+MapCache.DivisionWidthInMeters = 100
+MapCache.numDivisions = 40
+MapCache.TotalNumDivisions = MapCache.numDivisions * MapCache.numDivisions
+MapCache.MergeDistanceInMeters = 7
+MapCache.SurveyMergeDistanceInMeters = 0.5
+
+function MapCache:New(...)
+	local obj = ZO_Object.New(self)
+	obj:Initialize(...)
+	return obj
+end
+
+function MapCache:Initialize(mapMetaData)
+	self.time = GetFrameTimeSeconds()
+	self.accessed = 0
+	
+	self.map = mapMetaData.map
+	self.lastNodeId = 0
+	self.mapMetaData = mapMetaData
+	
+	self.pinTypeId = {}
+	
+	self.worldX = {}
+	self.worldY = {}
+	self.worldZ = {}
+	
+	self.hasCompassPin = {}
+	--[[ removed because unknown-type nodes break when switching maps in blackreach
+	if mapMetaData.zoneId == 1161 then -- blackreach
+		-- claim that every node is spawned
+		-- because the spawn filter in blackreach doesnt work
+		setmetatable(self.hasCompassPin, {
+			__index = function() return true end,
+			__newindex = function() end
+			})
+	end]]
+	
+	self.nodesOfPinType = {}
+	self.nodesOfPinTypeSize = {}
+	
+	self:RefreshNearestNeighborLookupTable()
+	
+end
+
+function MapCache:RegisterAccess(accessor)
+	self.accessed = self.accessed + 1
+end
+
+function MapCache:UnregisterAccess(accessor)
+	self.accessed = self.accessed - 1
+end
+
+local GetNormalizedWorldPosition = GetNormalizedWorldPosition
+function MapCache:GetLocal(nodeId)
+	local zoneId = self.mapMetaData.zoneId
+	return GetNormalizedWorldPosition(zoneId, self.worldX[nodeId] * 100, (self.worldZ[nodeId] or 0) * 100, self.worldY[nodeId] * 100)
+end
+
+function MapCache:RefreshNearestNeighborLookupTable()
+	
+	self.mergeDistanceSquared = self.MergeDistanceInMeters * self.MergeDistanceInMeters
+	
+	self.divisions = {}
+	for _, pinTypeId in pairs(Harvest.PINTYPES) do
+		self.divisions[pinTypeId] = {}
+	end
+	
+	for nodeId, pinTypeId in pairs(self.pinTypeId) do
+		self:InsertNodeIntoDivision(nodeId)
+	end
+	
+end
+
+function MapCache:Dispose()
+	assert(self.accessed == 0, "attempted to dispose of map cache, but something is still accessing it")
+	ZO_ClearTable(self.pinTypeId)
+	ZO_ClearTable(self.worldX)
+	ZO_ClearTable(self.worldY)
+	ZO_ClearTable(self.worldZ)
+	ZO_ClearTable(self.hasCompassPin)
+	ZO_ClearTable(self.nodesOfPinTypeSize)
+	for pinTypeId, list in pairs(self.nodesOfPinType) do
+		ZO_ClearTable(list)
+	end
+	
+	self.pinTypeId = nil
+	self.worldX = nil
+	self.worldY = nil
+	self.worldZ = nil
+	self.hasCompassPin = nil
+	self.nodesOfPinType = nil
+	self.nodesOfPinTypeSize = nil
+	
+	for pinTypeId, divisions in pairs(self.divisions) do
+		ZO_ClearTable(divisions)
+		self.divisions[pinTypeId] = nil
+	end
+	self.divisions = nil
+end
+
+function MapCache:InsertNodeIntoDivision(nodeId)
+	local pinTypeId = self.pinTypeId[nodeId]
+	local worldX, worldY = self.worldX[nodeId], self.worldY[nodeId]
+		
+	local index = (zo_floor(worldX / self.DivisionWidthInMeters) + zo_floor(worldY / self.DivisionWidthInMeters) * self.numDivisions) % self.TotalNumDivisions
+	local division = self.divisions[pinTypeId][index] or {}
+	self.divisions[pinTypeId][index] = division
+	division[#division+1] = nodeId
+end
+
+function MapCache:RemoveNodeFromDivision(nodeId)
+	local pinTypeId = self.pinTypeId[nodeId]
+	local worldX, worldY = self.worldX[nodeId], self.worldY[nodeId]
+		
+	local index = (zo_floor(worldX / self.DivisionWidthInMeters) + zo_floor(worldY / self.DivisionWidthInMeters) * self.numDivisions) % self.TotalNumDivisions
+	local division = self.divisions[pinTypeId][index]
+	
+	local wasNodeRemoved = false
+	for i, nId in pairs(division) do
+		if nId == nodeId then
+			local lastIndex = #division
+			division[i] = division[lastIndex]
+			division[#division] = nil
+			wasNodeRemoved = true
+			break
+		end
+	end
+	assert(wasNodeRemoved)
+end
+
+function MapCache:InitializePinType(pinTypeId)
+	self.nodesOfPinTypeSize[pinTypeId] = self.nodesOfPinTypeSize[pinTypeId] or 0
+	self.nodesOfPinType[pinTypeId] = self.nodesOfPinType[pinTypeId] or {}
+end
+
+function MapCache:HasAnyNodesOfPinType(pinTypeId)
+	return ((self.nodesOfPinTypeSize[pinTypeId] or 0) > 0)
+end
+
+-----------------------------------------------------------
+-- Methods to add, delete and update data in the cache
+-----------------------------------------------------------
+
+function MapCache:Add(pinTypeId, worldX, worldY, worldZ)
+	
+	self.lastNodeId = self.lastNodeId + 1
+	local nodeId = self.lastNodeId
+
+	local pinTypeSize = self.nodesOfPinTypeSize[pinTypeId] + 1
+	self.nodesOfPinTypeSize[pinTypeId] = pinTypeSize
+	self.nodesOfPinType[pinTypeId][pinTypeSize] = nodeId
+	
+	self.pinTypeId[nodeId] = pinTypeId
+	self.worldX[nodeId] = worldX
+	self.worldY[nodeId] = worldY
+	self.worldZ[nodeId] = worldZ
+	
+	self:InsertNodeIntoDivision(nodeId)
+
+	return nodeId
+end
+
+function MapCache:Delete(nodeId)
+	assert(self.pinTypeId[nodeId])
+	local pinTypeId = self.pinTypeId[nodeId]
+	if not pinTypeId then
+		return false
+	end
+	local nodesOfPinType = self.nodesOfPinType[pinTypeId]
+	local nodesOfPinTypeSize = self.nodesOfPinTypeSize[pinTypeId]
+	for i = 1, nodesOfPinTypeSize do
+		if nodesOfPinType[i] == nodeId then
+			-- move last node to deleted position
+			-- this way we don't get any "holes"
+			nodesOfPinType[i] = nodesOfPinType[nodesOfPinTypeSize]
+			nodesOfPinType[nodesOfPinTypeSize] = nil
+			self.nodesOfPinTypeSize[pinTypeId] = nodesOfPinTypeSize - 1
+			break
+		end
+	end
+
+	self:RemoveNodeFromDivision(nodeId)
+
+	self.pinTypeId[nodeId] = nil
+	self.worldX[nodeId] = nil
+	self.worldY[nodeId] = nil
+	self.worldZ[nodeId] = nil
+	self.hasCompassPin[nodeId] = nil
+	
+	return true
+end
+
+-- merges the node corresponding to the nodeId with the given data
+-- returns the nodes data after merging
+-- the returned data may be the original data, if the given input data is too old or invalid
+function MapCache:Move(nodeId, worldX, worldY, worldZ)
+	local oldWorldX, oldWorldY = self.worldX[nodeId], self.worldY[nodeId]
+	local oldDivisionIndex = zo_floor(oldWorldX / self.DivisionWidthInMeters)
+	oldDivisionIndex = oldDivisionIndex + zo_floor(oldWorldY / self.DivisionWidthInMeters) * self.numDivisions
+	oldDivisionIndex = oldDivisionIndex % self.TotalNumDivisions
+	local newDivisionIndex = zo_floor(worldX / self.DivisionWidthInMeters)
+	newDivisionIndex = newDivisionIndex + zo_floor(worldY / self.DivisionWidthInMeters) * self.numDivisions
+	newDivisionIndex = newDivisionIndex % self.TotalNumDivisions
+	local didDvisionChange = (oldDivisionIndex ~= newDivisionIndex)
+	
+	if didDvisionChange then
+		self:RemoveNodeFromDivision(nodeId)
+	end
+		
+	self.worldX[nodeId] = worldX
+	self.worldY[nodeId] = worldY
+	self.worldZ[nodeId] = worldZ
+		
+	if didDvisionChange then
+		self:InsertNodeIntoDivision(nodeId)
+	end
+	
+end
+
+function MapCache:GetMergeableNode(pinTypeId, worldX, worldY, worldZ, bestDistance)
+	self.time = GetFrameTimeSeconds()
+	
+	local useWorldZ = 1
+	if not worldZ then
+		worldZ = 0
+		useWorldZ = 0
+	end
+	
+	local divisionX = zo_floor(worldX / self.DivisionWidthInMeters)
+	local divisionY = zo_floor(worldY / self.DivisionWidthInMeters)
+	local divisions = self.divisions[pinTypeId]
+	if not divisions then return end
+	
+	local division, dx, dy, dz, distance
+	local startJ = divisionY - 1
+	local endJ = divisionY + 1
+	
+	local bestDistance = bestDistance or math.huge
+	local bestNodeId = nil
+	
+	for i = divisionX - 1, divisionX + 1 do
+		for j = startJ, endJ do
+			division = divisions[(i + j * self.numDivisions) % self.TotalNumDivisions]
+			if division then
+				for _, nodeId in pairs(division) do
+					dx = self.worldX[nodeId] - worldX
+					dy = self.worldY[nodeId] - worldY
+					dz = self.worldZ[nodeId] - worldZ
+					distance = dx * dx + dy * dy + dz * dz * useWorldZ
+					--d(distance)
+					--if distance < self.mergeDistanceInLocalSquared then
+						if distance < bestDistance then
+							bestNodeId = nodeId
+							bestDistance = distance
+						end
+						--return nodeId
+					--end
+				end
+			end
+		end
+	end
+	
+	--d(bestDistance)
+	if bestDistance < self.mergeDistanceSquared then
+		return bestNodeId, bestDistance
+	end
+	
+	return nil--bestNodeId
+end

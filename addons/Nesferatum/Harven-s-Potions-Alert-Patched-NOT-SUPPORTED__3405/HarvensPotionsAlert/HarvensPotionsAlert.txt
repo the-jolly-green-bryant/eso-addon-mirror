@@ -1,0 +1,19 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+
+## Title: Harven's Potions Alert
+## APIVersion: 101034
+## Version: 1.11
+## AddOnVersion: 111
+## DependsOn: LibHarvensAddonSettings
+## SavedVariables: HarvensPotionsAlert_SavedVariables
+## Description: This addon will show a reminder to use a potion when one of your attributes drop below given value.
+
+lang\en.lua
+lang\$(language).lua
+
+HarvensPotionsAlert.lua
+HarvensPotionsAlert.xml

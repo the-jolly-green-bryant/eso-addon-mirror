@@ -1,0 +1,16 @@
+## APIVersion: 100035
+## Title: |c4B8BBCBandits|r User Interface Patcher
+## Version: 1.02
+## Author: phuein
+## Description: Patch BanditsUserInterface to modify its default functionality.
+## SavedVariables: BUIPatcherSavedVariables
+## DependsOn: BanditsUserInterface
+
+Languages\en.lua
+Languages\$(language).lua
+
+## Bindings.xml
+## BanditsUserInterfacePatcher.xml
+
+BanditsUserInterfacePatcher.lua
+## Settings.lua

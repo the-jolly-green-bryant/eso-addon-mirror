@@ -1,0 +1,17 @@
+## Title: |c00BBFFSticky Weapons|r
+## Description: When out of combat, toggles the weapon to be sheathed. 
+## APIVersion: 101040
+## Author: |cFEF7DCNo|cFDE281ro|cFCCB1Amd|cB08A03ro|c342B09l|r
+## Version: 1.1.1
+## AddOnVersion: 111
+## DependsOn: LibAddonMenu-2.0>=32
+## SavedVariables: StickyWeaponsSavedVars
+
+bindings.xml
+StickyWeapons.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

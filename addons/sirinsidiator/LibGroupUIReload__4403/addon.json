@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/sirinsidiator/LibGroupUIReload__4403",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:4403",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4403",
+  "deleted": false,
+  "directories": [
+    "LibGroupUIReload"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4403/",
+  "fingerprint": "7a8b772716c5aa8ad05ea1b46fd70bd5185882a2329c3c05adc42d6c588ca0e2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4403",
+  "source_url": "https://www.esoui.com/downloads/info4403-LibGroupUIReload.html",
+  "stats": {
+    "downloads": 4060,
+    "favorites": 2,
+    "monthly_downloads": 520
+  },
+  "title": "LibGroupUIReload",
+  "updated_at": 1771694314000,
+  "version": "2.0.0"
+}

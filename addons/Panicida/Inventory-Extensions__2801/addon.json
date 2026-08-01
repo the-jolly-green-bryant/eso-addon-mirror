@@ -1,0 +1,36 @@
+{
+  "archive_path": "addons/Panicida/Inventory-Extensions__2801",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Panicida",
+  "canonical_id": "esoui:2801",
+  "category_id": "20",
+  "compatibility": [],
+  "content_id": "esoui:2801",
+  "deleted": false,
+  "directories": [
+    "InventoryExtensions"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2801/",
+  "fingerprint": "0ecac21ba92871935d5849247414a6aa82bfb76c51eb0f82bd9a5784a09e1ed7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9476.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9477.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9478.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9479.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9480.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2801",
+  "source_url": "https://www.esoui.com/downloads/info2801-InventoryExtensions.html",
+  "stats": {
+    "downloads": 3074,
+    "favorites": 1,
+    "monthly_downloads": 26
+  },
+  "title": "Inventory Extensions",
+  "updated_at": 1602175681000,
+  "version": "1.0.0"
+}

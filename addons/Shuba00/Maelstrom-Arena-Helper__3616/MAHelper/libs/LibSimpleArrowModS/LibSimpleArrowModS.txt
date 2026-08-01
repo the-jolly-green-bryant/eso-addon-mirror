@@ -1,0 +1,7 @@
+﻿## Title: LibSimpleArrowModS
+## APIVersion: 100030
+## Author: andy.s Shuba00
+## AddOnVersion: 100
+## IsLibrary: true
+
+LibSimpleArrowModS.lua

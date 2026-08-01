@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/Seerah/ZAM-Stats-Quests__22",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Seerah",
+  "canonical_id": "esoui:22",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:22",
+  "deleted": false,
+  "directories": [
+    "ZAM_StatsQuests"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl22/",
+  "fingerprint": "2281ed50c90270d72c07ae29ffaedf8697bdf58b4b1724c904680a29dde709c2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw29.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "22",
+  "source_url": "https://www.esoui.com/downloads/info22-ZAMStatsQuests.html",
+  "stats": {
+    "downloads": 14713,
+    "favorites": 8,
+    "monthly_downloads": 10
+  },
+  "title": "ZAM Stats Quests",
+  "updated_at": 1415337832000,
+  "version": "1.0.6"
+}

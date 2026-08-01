@@ -1,0 +1,79 @@
+{
+  "archive_path": "addons/SilentShanx/Ultimate-UI-Hider__820",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SilentShanx",
+  "canonical_id": "esoui:820",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    },
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:820",
+  "deleted": false,
+  "directories": [
+    "UltimateUIHider"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl820/",
+  "fingerprint": "51e97675c1a4872d494c17d0909846bdd6c4dc5ef65b9db72ddc6d9e71644220",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2528.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2523.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2521.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "820",
+  "source_url": "https://www.esoui.com/downloads/info820-UltimateUIHider.html",
+  "stats": {
+    "downloads": 24556,
+    "favorites": 44,
+    "monthly_downloads": 41
+  },
+  "title": "Ultimate UI Hider",
+  "updated_at": 1528127798000,
+  "version": "v1.75"
+}

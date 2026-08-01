@@ -1,0 +1,9 @@
+## Title: BetterSynergy
+## Author: SkullElf
+## Version: 1.0
+## APIVersion: 101044
+
+## Description: Hides the synergy activation text / icon / key based on the user's settings.
+## SavedVariables: BetterSynergySavedVars
+
+BetterSynergy.lua

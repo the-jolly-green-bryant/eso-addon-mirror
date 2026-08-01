@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Pyrowin/Leads-Organizer__4585",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Pyrowin",
+  "canonical_id": "esoui:4585",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4585",
+  "deleted": false,
+  "directories": [
+    "LeadsOrganizer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4585/",
+  "fingerprint": "c75343fb1bc3b21dbfe45e4dbe1420a855e449a513a2db9845663fcb30e72004",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16094.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4585",
+  "source_url": "https://www.esoui.com/downloads/info4585-LeadsOrganizer.html",
+  "stats": {
+    "downloads": 166,
+    "favorites": 1,
+    "monthly_downloads": 59
+  },
+  "title": "Leads Organizer",
+  "updated_at": 1785077066000,
+  "version": "1.4.0"
+}

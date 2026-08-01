@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="SI_BINDING_NAME_NVK3UT_CATEGORY">
+            <Action name="NVK3UT_TOGGLE_TRACKER_COLLAPSE">
+                <Down>Nvk3UT_ToggleTrackerCollapse()</Down>
+            </Action>
+            <Action name="NVK3UT_TOGGLE_QUEST_SELECTION">
+                <Down>Nvk3UT_ToggleQuestSelectionBinding()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

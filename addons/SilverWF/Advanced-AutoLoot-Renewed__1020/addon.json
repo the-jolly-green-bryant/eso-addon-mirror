@@ -1,0 +1,89 @@
+{
+  "archive_path": "addons/SilverWF/Advanced-AutoLoot-Renewed__1020",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SilverWF",
+  "canonical_id": "esoui:1020",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    },
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1020",
+  "deleted": false,
+  "directories": [
+    "AdvancedAutoLoot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1020/",
+  "fingerprint": "a9bea189f01e80d73f5a86e89e35d8aaa32c9e48cde16f24b50883afec12f3bf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7211.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7212.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7213.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7214.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6953.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1020",
+  "source_url": "https://www.esoui.com/downloads/info1020-AdvancedAutoLootRenewed.html",
+  "stats": {
+    "downloads": 62725,
+    "favorites": 90,
+    "monthly_downloads": 50
+  },
+  "title": "Advanced AutoLoot Renewed",
+  "updated_at": 1536188310000,
+  "version": "1.9.8"
+}

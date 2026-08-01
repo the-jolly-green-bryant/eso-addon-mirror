@@ -1,0 +1,8 @@
+## APIVersion: 100010
+## Name: ZAM StatsExp
+## Author: Seerah
+## Version: 1.0.7
+## Description: An experience module for ZAM_Stats
+## DependsOn: ZAM_Stats
+
+exp.lua

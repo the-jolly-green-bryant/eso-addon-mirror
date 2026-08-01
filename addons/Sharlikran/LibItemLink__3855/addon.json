@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Sharlikran/LibItemLink__3855",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:3855",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3855",
+  "deleted": false,
+  "directories": [
+    "LibItemLink"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3855/",
+  "fingerprint": "d63b2299eb35e309405dd658f55f4c3b5d370c80c31ed9c77f3cb0ca326933cb",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3855",
+  "source_url": "https://www.esoui.com/downloads/info3855-LibItemLink.html",
+  "stats": {
+    "downloads": 77915,
+    "favorites": 71,
+    "monthly_downloads": 1307
+  },
+  "title": "LibItemLink",
+  "updated_at": 1766198001000,
+  "version": "9.4.0"
+}

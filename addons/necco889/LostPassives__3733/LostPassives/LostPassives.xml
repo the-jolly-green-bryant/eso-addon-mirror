@@ -1,0 +1,88 @@
+<GuiXml>
+	<Controls>
+		
+		<Control name="LostPassivesRowTemplate" virtual="true" resizeToFitDescendents="true" >
+            <Controls>
+				<Button name="$(parent)CheckBox" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="10"/>
+					<Dimensions x="24" y="24" />
+					<MouseButton enabled="true" />
+				</Button>    
+                
+                <Label name="$(parent)AbilityId" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thick" text="888888" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)CheckBox" offsetX="10"/>
+                    <Dimensions x="90" y="24"/>
+                </Label>
+
+                <Label name="$(parent)AbilityName" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thick" text="jaskfjksadjkfsdajk asdjkf kjasd" horizontalAlignment="Left" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)AbilityId" offsetX="10"/>
+                </Label>
+            </Controls>
+        </Control>
+
+		<TopLevelControl name="LostPassivesWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true"  resizeHandleSize="6" >
+            <Dimensions x="600" y="700" />
+            <DimensionConstraints minX="600" maxX="1000" minY="500" maxY="1000"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <Controls>
+                <Backdrop name="$(parent)Bg" centerColor="FF000000" edgeColor="FFFFFFFF" >
+                    <Anchor point="TOPLEFT"/>
+                    <Anchor point="BOTTOMRIGHT"/>
+                    <Edge edgeSize="2" />
+                    <Controls>
+                        <Backdrop name="$(parent)TopRow" centerColor="FF000000" edgeColor="FFFFFFFF">
+                            <Dimensions y="48" />
+                            <Anchor point="TOPLEFT"/>
+                            <Anchor point="TOPRIGHT"/>
+                            <Edge edgeSize="2" />
+                            <Controls>
+                                <Button name="$(parent)BtnSelectAll" text="Select All" inherits="ZO_DefaultButton" font="ZoFontWinH4">
+                                    <Anchor point="TOPLEFT" offsetX="5" offsetY="10" />
+                                    <OnClicked>
+                                        LostPassives.SelectAll()
+                                    </OnClicked>
+                                </Button>
+                                <Button name="$(parent)BtnSelectNone" text="Select None" inherits="ZO_DefaultButton" font="ZoFontWinH4">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)BtnSelectAll" offsetX="10"/>
+                                    <OnClicked>
+                                        LostPassives.SelectNone()
+                                    </OnClicked>
+                                </Button>
+								<Button name="$(parent)BtnClear" text="Clear data" inherits="ZO_DefaultButton" font="ZoFontWinH4">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)BtnSelectNone" offsetX="10"/>
+                                    <OnClicked>
+                                        LostPassives.ClearData()
+                                    </OnClicked>
+                                </Button>
+								<Button name="$(parent)BtnSave" text="Save selection" inherits="ZO_DefaultButton" font="ZoFontWinH4">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)BtnClear" offsetX="10"/>
+                                    <OnClicked>
+                                        LostPassives.Save()
+                                    </OnClicked>
+                                </Button>
+
+                                <Button name="$(parent)CloseButton" text="" inherits="ZO_DefaultButton" font="ZoFontWinH4">
+                                <Dimensions x="30" y="30" />
+                                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="5" />
+                                    <OnClicked>
+                                        LostPassivesWindow:SetHidden(true)
+                                    </OnClicked>
+                                    <Textures 
+                                        normal        ="esoui/art/buttons/decline_up.dds"
+                                        pressed        ="esoui/art/buttons/decline_down.dds"
+                                        mouseOver    ="esoui/art/buttons/decline_over.dds"
+                                    />
+                                </Button>
+                            </Controls>
+                        </Backdrop>
+
+                        <Control name="$(parent)Panel" inherits="ZO_ScrollContainer">
+                            <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)TopRow"/>
+                            <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-20"/>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,7 @@
+## Title: ClicksHouse
+## APIVersion: 100034
+## SavedVariables: ClicksHouseSavedVariables
+
+
+ClicksHouse.lua
+ClicksHouse.xml

@@ -1,0 +1,485 @@
+[COLOR="DeepSkyBlue"]2.48 (78)[/COLOR]:
+[LIST]
+[*] Added [COLOR="MediumSeaGreen"]/apiversion[/COLOR] that will print the current ESO API version number into chat. (Useful for developers)
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.47 (77)[/COLOR]:
+[LIST]
+[*] Added Portius Remus, Lupine Scavenger to the list of selectable deconstructors in the default deconstructor settings and as the chat command [COLOR="MediumSeaGreen"]/por[/COLOR].
+[*] Added Cambio Zammes, Rooster in Exile to the list of selectable fences in the default fence settings and as the chat command [COLOR="MediumSeaGreen"]/cam[/COLOR].
+[*] Added Voko, Carnival WeaponMaster to the list of selectable armorers in the default armorer settings and as the chat command [COLOR="MediumSeaGreen"]/vok[/COLOR].
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.46 (76)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.45 (75)[/COLOR]:
+[LIST]
+[*] Added the 2026 Jubilee cake.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.44 (74)[/COLOR]:
+[LIST]
+[*] API and dependencies update.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.43 (73)[/COLOR]:
+[LIST]
+[*] Added Celia Tyde, the Lost Fleet Bursar to the list of selectable bankers in the default banker settings.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.42 (72)[/COLOR]:
+[LIST]
+[*] Fixed the settings default armorer selection so that [COLOR="MediumSeaGreen"]/arm[/COLOR] will try to bring out the armorer you specified. (Error reported by Lady Hyde)
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.41 (71)[/COLOR]:
+[LIST]
+[*] Added Eri, the Barking Banker to the list of selectable bankers in the default banker settings. He was previously only available with the /eri command.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.40 (70)[/COLOR]:
+[LIST]
+[*] Added dropdown settings to allow you to chose your favorite deconstructor, armorer, and fence (yes, there is only one of those).
+[*] Added keybindings for the favorite banker, merchant, fence, deconstructor, and armorer as specified in your setting.
+[*] Fixed keybindings so that they work again.
+[*] Removed individual keybindings for each of the individual banker, merchant, and deconstructors to simply and reduce the keybinding section. In order for you to have a keybind to your favorite khajiit merchant, set "Fezez" as your favorite in the settings and create a keybind to Favorite Merchant.
+[*] Removed the old "Resummon Companion" choice in the settings because it is obsolete and the game now handles that.
+[*] Note that the slash commands for the individual assistants, such as Celia, still exist and are supported.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.39 (69)[/COLOR]:
+[LIST]
+[*] Added a [COLOR="MediumSeaGreen"]/hoa[/COLOR] command to bring out/put away Hoarfrost, the Takubar  Trader. The old slash command /mm is still available for Hoarfrost.
+[*] Added a [COLOR="MediumSeaGreen"]/cel[/COLOR] command to bring out/put away  Celia Tyde, Lost Fleet Bursar.
+[*] Added a [COLOR="MediumSeaGreen"]/of[/COLOR] (original fence) to use if some other addon overrides the /f command.
+[*] Added a [COLOR="MediumSeaGreen"]/ocm[/COLOR] (original crow merchant) if some other addon (like Combat Metronome) overrides the /cm command.
+[*] Rewrote/refactored code to make it easier to add new companions and assistants.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.38 (68)[/COLOR]:
+[LIST]
+[*] Added a [COLOR="MediumSeaGreen"]/vok[/COLOR] command to bring out/put away Voko, Carnaval Weapondancer (another armorer).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.37 (67)[/COLOR]:
+[LIST]
+[*] Update the [COLOR="MediumSeaGreen"]/cake[/COLOR] to bring out the Jubilee Cake 2025 (if you have it).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.36 (66)[/COLOR]:
+[LIST]
+[*] API bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.35 (65)[/COLOR]:
+[LIST]
+[*] Added a [COLOR="MediumSeaGreen"]/sil[/COLOR] command to bring out/put away Siluruz, Realm Craftmaster.
+[*] Added a [COLOR="MediumSeaGreen"]/ter[/COLOR] command to bring out/put away  Terilorne, Dibellan Free Trader.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.34 (64)[/COLOR]:
+[LIST]
+[*] Added a [COLOR="MediumSeaGreen"]/zer[/COLOR] command to bring out/put away Zerith-var companion.
+[*] Added a [COLOR="MediumSeaGreen"]/tan[/COLOR] command to bring out/put away  Tanlorin companion.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.33 (63)[/COLOR]:
+[LIST]
+[*] Added a [COLOR="MediumSeaGreen"]/tzo[/COLOR] command to bring out/put away Tzozabrar, Dwarven Deconstructor.
+[*] Added a [COLOR="MediumSeaGreen"]/eri[/COLOR] command to bring out/put away  Eri, Barking Banker.
+[*] Added a [COLOR="MediumSeaGreen"]/dri[/COLOR] command to bring out/put away  Drinweth, Valenwood Armorer.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.32 (62)[/COLOR]:
+[LIST]
+[*] Added a [COLOR="MediumSeaGreen"]/xyn[/COLOR] command to bring out/put away Xyn, Planar Purveyor.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.31 (61)[/COLOR]:
+[LIST]
+[*] Removed the [COLOR="MediumSeaGreen"]/xp[/COLOR] command and settings for it, since the experience bonuses are now automatic during events.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.30 (60)[/COLOR]:
+[LIST]
+[*] Add the 2024 Jubilee cake to the cakes you can call with "/cake (year)".
+[*] Updated [COLOR="MediumSeaGreen"]/cake[/COLOR] to call the 2024 Jubilee cake once you have earned it.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.29 (59)[/COLOR]:
+[LIST]
+[*] Removed duplicated addon identifier tag from new messages.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.28 (58)[/COLOR]:
+[LIST]
+[*] Added a [COLOR="MediumSeaGreen"]/mem <id number>[/COLOR] to allow you to use mementos that you have already unlocked by their id number. (Feature requested by kn1ne.)
+You can use the existing [COLOR="MediumSeaGreen"]/getmemento[/COLOR] command to get a full list of mementos and their id numbers printed in chat but it will include mementos that you have not yet unlocked and therefore cannot use.
+Note that memento effects will last however long they are programmed (by ZOS) to last. For instance Booknado seems to last forever but does eventually end. Memento effects cannot be cancelled, you just have to wait them out.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.27 (57)[/COLOR]:
+[LIST]
+[*] Fixed a dyslexic typo for summoning Zuqoth. (Reported by Athra) The chat command [COLOR="MediumSeaGreen"]/zuq[/COLOR] now works properly.
+[*] API bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.26 (56)[/COLOR]:
+[LIST]
+[*] Fixed typo.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.24 (54)[/COLOR]:
+[LIST]
+[*] Fixed the [COLOR="MediumSeaGreen"]/disband[/COLOR] command so that it works again. (ZOS removed the isLeader() function that I relied on so I had to find an alternative.)
+[*] Add an error message for attempting to /disband a battleground or group-finder group.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.23 (53)[/COLOR]:
+[LIST]
+[*] API bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.22 (52)[/COLOR]:
+[LIST]
+[*] I have not yet removed the auto respawn of companions after your assistant is dismissed, but you can turn off auto-respawn of companions in the Slasher settings.
+[*] API bump for Update 39.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.21 (51)[/COLOR]:
+[LIST]
+[*] Added /mm to call the Hoarfrost, Tabular Trader (monster merchant).
+[*] Added /mb to call the Pyroclast, Infernance Conservator (monster banker).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.20 (50)[/COLOR]:
+[LIST]
+[*] Added /sharp and /sha to call the Sharp-as-Night companion.
+[*] Added /azandar and /aza to call the Azandar al-Cybiades companion.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.19.2 (49)[/COLOR]:
+[LIST]
+[*] API bump for Necrom
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.19.1 (48)[/COLOR]:
+[LIST]
+[*] Added the ability to set a keybind for /pet (dismiss pet) as Dismiss Combat Pet.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.19 (47)[/COLOR]:
+[LIST]
+[*] Added the following commands to dismiss combat pets (such as twilights, familiars, and bears):  /pet, /pets, /dismisspet.
+[*] Added new group commands /disband (disband the group if you are leader), and /check (send a ready check to the group) to go with the already existing /leave (leave the group) command. This new commands are currently "/"-only, without the option for setting a key binding.
+[/LIST]
+
+
+[COLOR="DeepSkyBlue"]2.18.1 (46)[/COLOR]:
+[LIST]
+[*] Added the latest cake (2023) to the choices for the /xp command in settings.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.18 (45)[/COLOR]:
+[LIST]
+[*] Added 2023 the /cake command to allow you to specify the year of the cake that you want (older than this year if you have that one as well) - for example "/cake 2018". Plain /cake will always call the latest year of cake that you possess. We currently can call the cakes from 2016 to 2023 as long as you did the Jubilee quest for those years. The older cakes will still give you the experience boost from the Jubilee holiday, but only the 2023 cake will give you event tickets.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.17 (44)[/COLOR]:
+[LIST]
+[*] Added /aderene. /ade. /fd for Aderene, the Fargrave Dregs Dealer
+[*] Added a choice to settings for which of the deconstruction assistants (Giladil or Aderene) should be used for the /d option.
+[*] Added a /rd (ragpicker decon) to summon Giladil even if /d is set to Aderene.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.16 (43)[/COLOR]:
+[LIST]
+[*] API bump (Scribes of Fate)
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.15 (42)[/COLOR]:
+[LIST]
+[*] API bump (Scribes of Fate)
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.14 (41)[/COLOR]:
+[LIST]
+[*] Added /zuq, /zuqoth, or /aadv for Zuqoth, the Armory Advisor.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.13 (40)[/COLOR]:
+[LIST]
+[*] API bump (Firesong)
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.12 (39)[/COLOR]:
+[LIST]
+[*] Fixed Isobel and Ember so that if you have them out and you call an assistant using a Slasher command or keybind, and put them away also using Slasher, then your previously active companion (now including Isobel and Ember) are resummoned.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.11 (38)[/COLOR]:
+[LIST]
+[*] Added /ember and /emb commands to call out the companion Ember the Sorceress.
+[*] Added /isobel and /iso commands to call out the companion Isobel Veloise.
+
+Note: Zenimax has put in place a  cool-down time on calling out companions, so they might not come right when you call them. If they do not appear, wait a few seconds (maybe 10?) and then try again.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.10 (37)[/COLOR]:
+[LIST]
+[*] API bump (High Isle).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.9 (36)[/COLOR]:
+[LIST]
+[*] Added /decon and /d commands to call out Giladil The Rag Picker.
+[*] Fixed Giladil so that if you call her when you have a companion out and the game dismisses your companion (as always); when you dismiss Giladil, your companion that had previously been out will be resummoned automatically.
+[*] Some code cleanup.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.8 (35)[/COLOR]:
+[LIST]
+[*] Fixed the /cake to allow you to specify the year of the cake that you want (older than this year if you have that one as well) - for example "/cake 2018". Plain /cake will always call the latest year of cake that you possess. We currently can call the cakes from 2016 to 2022 as long as you did the Jubilee quest for those years. The older cakes will still give you the experience boost from the Jubilee holiday, but only the 2022 cake will give you event tickets.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.7 (34)[/COLOR]:
+[LIST]
+[*] Added the 2022 Jubilee cake and modified /cake to use the newest unless otherwise set in the addon settings.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.6 (33)[/COLOR]:
+[LIST]
+[*] Added '/gil' and '/giladil' to call out Giladil the Rag Picker assistant. If you have one of the companions out when you call her, the companions will (of course) be dismissed by the game - but when you dismiss Giladil, it will attempt to re-summon the companion that you previously had out.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.5 (32)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.4 (31)[/COLOR]:
+[LIST]
+[*] Added '/clm' for the Clockwork Merchant, and '/clb' for the Clockwork Banker.
+[*] Added the Factotum Commerce Delegate (clm) and the Factotum Property Steward (clb) as choices for the selections for default banker and merchant.
+[*] Added '/eye' by request to toggle the Antiquarian Eye tool.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.3 (30)[/COLOR]:
+[LIST]
+[*] Update color functions
+[*] Require minimum version of installed LibSFUtils to be at least 38. Earlier versions will probably break the user interface.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.2 (29)[/COLOR]:
+[LIST]
+[*] Added new slash commands (/arm, /ghr, /ghrasharog) for Ghrasharog, the armorer assistant.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.1 (28)[/COLOR]:
+[LIST]
+[*] API bump.
+[*] Added a new slash command (/xp) along with an option on the settings page to specify which of the Holiday Event-related experience point enhancers will be tied to the command: Jubilee Cake, Pie of Misrule, Witchmother's Whistle, or Breda's Mead Cup.
+[*] Added control bindings for default merchant and default banker.
+[*] Added control binding for /xp command.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.0 (27)[/COLOR]:
+[LIST]
+[*] Added a settings page for Slasher to allow you to choose which banker and which merchant you want as your default /b and /m assistants.
+[*] Nuzhimeh and Tythus Andromos now have their own dedicated slash commands "/om" and "/ob" (for "original" merchant and banker) so that you can call them specifically even if someone else is set as the default.
+[*] Added the option (which can be turned on or off in the settings) of "resummoning" the companion that you previously had out before you called for your banker or merchant. (Note: This does NOT work with the fence /f.)
+[*] Because we now have options, we also now have saved variables.
+[*] Added a new required dependency on the library LibAddonMenu-2.0 to support the new settings page.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.18.2 (26)[/COLOR]:
+[LIST]
+[*] Require minimum version of installed LibAddonMenu to be at least 32. Earlier versions will break the user interface.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.18.1 (25)[/COLOR]
+[LIST]
+[*] API bump. Waking Flame.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.18 (24)[/COLOR]
+[LIST]
+[*] Add ability to define keybinds for Mirri and Bastian (requested by Imendil).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.17.1 (23)[/COLOR]
+[LIST]
+[*] Fixed /bastian again to summon/dismiss Bastian Hallix. Don't know why he's pouting. I apologized for the name thing.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.17 (23)[/COLOR]
+[LIST]
+[*] Added slash command /cb  (crow banker) to summon/dismiss Baron Jangleplume.
+[*] Added slash command /cm (crow merchant) to summon/dismiss Peddler of Prizes.
+[*] Changed slash command from /bastien to /bastian to summon/dismiss Bastian Hallix and apologize to him for misspelling his name.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.16 (22)[/COLOR]
+[LIST]
+[*] Added slash commands /bas (and /bastien) to summon/dismiss Bastien Hallix.
+[*] Added slash commands /mir (and /mirri) to summon/dismiss Mirri Elandis.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.15 (21)[/COLOR]
+[LIST]
+[*] API bump. Blackwood
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.14 (20)[/COLOR]
+[LIST]
+[*] Added the ability to invoke a specific year of the Jubilee cake (because they all look different). Instead of the plain /cake command you type in /cake followed by the year of the cake you want (between 2016 and 2021). For example, if you want 2016's version, type in /cake 2016. If you do not have that specific cake unlocked, then the command will do nothing.
+[*] Modified the /cake so that it will use the most recent Jubilee cake that you have unlocked.
+[*] Upgrade /cake to use the new 2021 Jubilee Cake.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.13.3 (19)[/COLOR]
+[LIST]
+[*] API bump. Flames of Ambition
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.13.2 (18[/COLOR]
+[LIST]
+[*] API bump. Markarth
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.13.1 (17)[/COLOR]
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.13 (16)[/COLOR]
+[LIST]
+[*] Added slash command /shutup to interrupt the stuck roaring dragon audio track.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.12 (15)[/COLOR]
+[LIST]
+[*] Who knew that ZOS would change how grass worked? So, fixed the new grass-related commands to work with the new grass settings. When you turn grass on with these commands, it will set it to Medium quality.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.11 (14)[/COLOR]
+[LIST]
+[*] Added three new slash commands relating to the display (or not) of grass: /mow to turn off grass display, /grow to turn on grass display, and /grass to toggle between the states.
+[*] Removed the temporary fix that overrode LuiExtended's version of the /cake command.
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.10.1 (13)[/COLOR]
+[LIST]
+[*] API bump. Preparing for Greymoor.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.10 (12)[/COLOR]
+[LIST]
+[*]  Implemented a temporary fix to override the LuiExtended addon's version of the /cake command because LuiExtended was still using last year's (2019) cake - which does not give event tickets. Unfortunately, trying to turn off LuiExtended's handling of /cake from the addon settings would explicitly TURN OFF ANY implementation of /cake, not just LuiE's. You would only be affected by this conflict if you are also running with LuiExtended.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.9 (11)[/COLOR]
+[LIST]
+[*]  Upgrade the /cake command to use the Jubilee Cake 2020 memento instead of the older one.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.8.3 (10)[/COLOR]
+[LIST]
+[*] Fix the /d command to work again after the ZOS chat system change.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.8.2 (9)[/COLOR]
+[LIST]
+[*] Set AddonVersion in manifest file.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.8.1[/COLOR]
+[LIST]
+[*] Fixed typo in manifest refering to the Localization directory (Thanks Fosterwerks!).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.8[/COLOR]
+[LIST]
+[*] Added key bindings for the Alfiq merchant and Alfiq banker.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.7.1[/COLOR]
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.7[/COLOR]
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.6[/COLOR]
+[LIST]
+[*] Simple upgrade to add support for the Alfiq banker and Alfiq merchant with the /kb (khajiit banker) and /km (khajiit merchant).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.5[/COLOR]
+[LIST]
+[*] Upgrade the /cake command to use the Jubilee Cake 2019 memento instead of the older one.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4[/COLOR]
+[LIST]
+[*] Fix the keyboard binding for the Pie of Misrule.
+[*] Requires LibSFUtils addon library to be installed separately.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.3[/COLOR]
+[LIST]
+[*] API Bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.2.1[/COLOR]
+[LIST]
+[*] API Bump
+[/LIST]
+The /witch command still works for this latest Witches Festival.
+
+[COLOR="DeepSkyBlue"]1.2[/COLOR]
+[LIST]
+[*] Added the slash command (and keybind for) "go to primary home" - which is /home. When you use the command /home it will announce in the chat window which home you are transporting to. (Here you go, Fonkin!)
+[*] Added checking and error messages for trying to use collectibles (or a house) that you do not own.
+[*] Upgraded LibSFUtils to version 10.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.4[/COLOR]
+[LIST]
+[*]API Bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.3[/COLOR]
+[LIST]
+[*]API Bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.2[/COLOR][LIST]
+[*]Upgraded /cake to the Jubilee Cake 3. This means you must do the cake quest for the Anniversary Event this year in order to get the collectible that /cake will now be using. (Thank you Lady Hyde for finding the new cake id for me!)
+[*]Upgraded LibSFUtils to version 8.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.1[/COLOR]
+[LIST]
+[*]API bump.
+[*]Upgraded LibSFUtils to version 7.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1[/COLOR]
+[LIST]
+[*]API bump.
+[*]Upgraded LibSFUtils to version 6.
+[*]Created a changelog for Slasher instead of having a copy of PocketChange's changelog.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.0[/COLOR]
+[LIST]
+[*]Released by Shadowfen
+[/LIST]

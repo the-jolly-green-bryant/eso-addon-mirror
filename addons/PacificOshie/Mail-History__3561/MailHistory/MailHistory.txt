@@ -1,0 +1,17 @@
+; MailHistory by @PacificOshie.  Have fun!
+
+## Title: Mail History
+## Author: PacificOshie
+## Description: Mail History saves a copy of your mail when sending, taking, returning, and deleting mail to provide a history of your mail activity.
+## AddOnVersion: 14
+## SavedVariables: MailHistoryDataV7 MailHistoryData MailHistorySettings
+## APIVersion: 101041
+## DependsOn: LibAddonMenu-2.0>=34 LibAsync>=20302 LibCustomMenu>=721
+
+lang\en.lua
+lang\$(language).lua
+
+MailHistory.lua
+MailHistorySettings.lua
+
+bindings.xml

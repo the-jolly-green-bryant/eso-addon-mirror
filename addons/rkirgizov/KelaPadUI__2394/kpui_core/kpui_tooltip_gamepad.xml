@@ -1,0 +1,453 @@
+<!-- Tooltip Templates -->
+<GuiXml>
+    <Controls>
+        <Label name="KPUI_Tooltip_StatusLabelTemplate" verticalAlignment="TOP" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_CONTEXT_HIGHLIGHT" hidden="true" virtual="true">  
+			<Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" />
+            <OnInitialized>
+                local fonts =
+                {
+                    {
+                        font = "ZoFontGamepad27",
+                        lineLimit = 1,
+                    },
+                    {
+                        font = "ZoFontGamepad22",
+                        lineLimit = 1,
+                    },
+                    {
+                        font = "ZoFontGamepad18",
+                        lineLimit = 1,
+                    },
+                }
+                ZO_FontAdjustingWrapLabel_OnInitialized(self, fonts, TEXT_WRAP_MODE_ELLIPSIS)
+            </OnInitialized>
+        </Label>
+ 
+        <Control name="KPUI_GamepadTooltipTemplate" virtual="true" hidden="true">
+            <Controls>
+                <Control name="$(parent)Container" inherits="ZO_GamepadGrid_NavQuadrant_ContainerAnchors" >
+					<!-- <Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" TextAlignment="TEXT_ALIGN_CENTER"/> -->
+                    <Controls>
+                       <Label name="$(parent)StatusLabelVisualLayer" font="ZoFontGamepad25" verticalAlignment="TOP" maxLineCount="3" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_CONTEXT_HIGHLIGHT" hidden="true" >
+							<!-- <Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" /> -->
+                            <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" offsetY="80" />
+                        </Label>
+                        
+                        <Label name="$(parent)StatusLabel" font="ZoFontGamepad27" verticalAlignment="TOP" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" hidden="true" >
+							<!-- <Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" /> -->
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)StatusLabelVisualLayer" relativePoint="TOPLEFT" />
+                        </Label>
+						
+                        <Label name="$(parent)StatusLabelValueForVisualLayer" font="ZoFontGamepad18" modifyTextType="UPPERCASE">
+							<!-- <Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" /> -->
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)StatusLabel" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="35" />
+                        </Label>
+						
+                        <Label name="$(parent)StatusLabelValue" font="ZoFontGamepad25" >
+							<!-- <Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" /> -->
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)StatusLabelValueForVisualLayer" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+                        </Label>
+
+                        <Control name="$(parent)BottomRail" inherits="ZO_GamepadHeaderHorizontalDividerSimple" tier="HIGH">    <!--   -->
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)StatusLabel" relativePoint="BOTTOMLEFT" />
+                            <Anchor point="TOPRIGHT" offsetY="ZO_GAMEPAD_CONTENT_HEADER_DIVIDER_OFFSET_Y" />
+                        </Control>
+
+                        <Control name="$(parent)Tip" inherits="ZO_ScrollTooltip_Gamepad" tier="MEDIUM">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)BottomRail" relativePoint="BOTTOMLEFT" />
+                            <Anchor point="BOTTOMRIGHT" />
+                        </Control>
+                        <Control name="$(parent)TipTop" inherits="ZO_ScrollTooltip_Gamepad" tier="MEDIUM">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)BottomRail" relativePoint="BOTTOMLEFT"  offsetX="5" offsetY="-5" />
+							<Anchor point="BOTTOMRIGHT" />
+						</Control>
+                        <Control name="$(parent)TipLeft" inherits="ZO_ScrollTooltip_Gamepad" tier="MEDIUM">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)BottomRail" relativePoint="BOTTOMLEFT"  offsetX="5" offsetY="-5" />
+							<Anchor point="BOTTOMRIGHT" />
+                        </Control>
+                        <Control name="$(parent)TipRight" inherits="ZO_ScrollTooltip_Gamepad" tier="MEDIUM">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)BottomRail" relativePoint="CENTER"  offsetX="20" offsetY="12.5" />
+							<Anchor point="BOTTOMRIGHT" />
+                        </Control>
+                        <Control name="$(parent)TipBottom" inherits="ZO_ScrollTooltip_Gamepad" tier="MEDIUM">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)BottomRail" relativePoint="BOTTOMLEFT"  offsetX="5" offsetY="-5" />
+							<Anchor point="BOTTOMRIGHT" />
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+		
+
+		<Label name="KPUI_DescLabel" horizontalAlignment="LEFT"  font="ZoFontGamepad22" verticalAlignment="TOP" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" virtual="true">
+		</Label>
+		<Label name="KPUI_TraitLabel" modifyTextType="UPPERCASE" horizontalAlignment="RIGHT"  font="ZoFontGamepad18" verticalAlignment="CENTER" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" virtual="true">
+		</Label>
+		<Backdrop name="KPUI_TraitLabelHighlight" inherits="ZO_GamepadWhiteOutlineHighlight" hidden="true" virtual="true">
+		</Backdrop>
+
+		<Control name="KPUI_Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" virtual="true">
+		</Control>
+
+		<Texture name="KPUI_ResearchPanel_Icon" level="2" layer="CONTROLS" inherits="ZO_MultiIcon" virtual="true" excludeFromResizeToFitExtents="true">
+			<Dimensions x="45" y="45" />
+		</Texture>	
+
+		<Control name="KPUI_ResearchPanel_Entry" virtual="true">
+			<Controls>
+				<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+				</Control>
+				<Control name="$(parent)DividerBottom" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+				</Control>
+				<Label name="$(parent)DividerPippedHeader" modifyTextType="UPPERCASE" horizontalAlignment="CENTER"  font="ZoFontGamepad25" verticalAlignment="TOP" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+				</Label>				
+                <Control name="$(parent)DividerPipped" override="true" inherits="ZO_GamepadHeaderHorizontalDividerWithTabs ZO_TabBarScrollListTemplate" >
+                </Control>
+				<Control name="$(parent)ResearchPanel1" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPipped" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>
+				<Control name="$(parent)ResearchPanel2" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPipped" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>
+				<Control name="$(parent)ResearchPanel3" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPipped" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>
+				<Control name="$(parent)ResearchPanel4" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPipped" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>
+				<Control name="$(parent)ResearchPanel5" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPipped" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>
+				<Control name="$(parent)ResearchPanel6" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPipped" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>
+				<Control name="$(parent)ResearchPanel7" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPipped" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>							
+				<Label name="$(parent)PanelHeader" font="ZoFontGamepad25" verticalAlignment="TOP" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" offsetX="3" offsetY="6" />
+				</Label>
+				<Label name="$(parent)PanelHeaderValue" font="ZoFontGamepad25" verticalAlignment="TOP" >
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Divider" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="6" />
+				</Label>
+				<Control name="$(parent)1RowItem">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)PanelHeader" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+					<Dimensions x="60" y="60" />
+					<Controls>
+						<Texture name="$(parent)Icon" inherits="KPUI_ResearchPanel_Icon">
+							<Anchor point="CENTER" />
+						</Texture>
+						<Backdrop name="$(parent)Frame" inherits="ZO_GamepadAbilityIconFrame" tier="LOW" />
+					</Controls>
+				</Control>
+				<Label name="$(parent)1RowHeader" modifyTextType="UPPERCASE" font="ZoFontGamepad18" verticalAlignment="TOP" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)1RowItem" relativePoint="TOPRIGHT" offsetX="3" offsetY="0" />
+				</Label>
+				<Label name="$(parent)1RowHeaderValue" font="ZoFontGamepad18" verticalAlignment="TOP" >
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)1RowItem" relativePoint="BOTTOMRIGHT" offsetX="3" offsetY="0" />
+				</Label>
+				<Control name="$(parent)2RowItem">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)1RowItem" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+					<Dimensions x="60" y="60" />
+					<Controls>
+						<Texture name="$(parent)Icon" inherits="KPUI_ResearchPanel_Icon">
+							<Anchor point="CENTER" />
+						</Texture>
+						<Backdrop name="$(parent)Frame" inherits="ZO_GamepadAbilityIconFrame" tier="LOW" />
+					</Controls>
+				</Control>
+				<Label name="$(parent)2RowHeader" modifyTextType="UPPERCASE" font="ZoFontGamepad18" verticalAlignment="TOP" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)2RowItem" relativePoint="TOPRIGHT" offsetX="3" offsetY="0" />
+				</Label>
+				<Label name="$(parent)2RowHeaderValue" font="ZoFontGamepad18" verticalAlignment="TOP" >
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)2RowItem" relativePoint="BOTTOMRIGHT" offsetX="3" offsetY="0" />
+				</Label>
+				<Control name="$(parent)3RowItem">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)2RowItem" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+					<Dimensions x="60" y="60" />
+					<Controls>
+						<Texture name="$(parent)Icon" inherits="KPUI_ResearchPanel_Icon">
+							<Anchor point="CENTER" />
+						</Texture>
+						<Backdrop name="$(parent)Frame" inherits="ZO_GamepadAbilityIconFrame" tier="LOW" />
+					</Controls>
+				</Control>
+				<Label name="$(parent)3RowHeader" modifyTextType="UPPERCASE" font="ZoFontGamepad18" verticalAlignment="TOP" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)3RowItem" relativePoint="TOPRIGHT" offsetX="3" offsetY="0" />
+				</Label>
+				<Label name="$(parent)3RowHeaderValue" font="ZoFontGamepad18" verticalAlignment="TOP" >
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)3RowItem" relativePoint="BOTTOMRIGHT" offsetX="3" offsetY="0" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Texture name="KPUI_ResearchLine_Icon" level="2" layer="CONTROLS" inherits="ZO_MultiIcon" virtual="true" excludeFromResizeToFitExtents="true" tier="HIGH">
+			<Dimensions x="50" y="50" />
+		</Texture>
+		<Control name="KPUI_ResearchLine_Entry" virtual="true">
+			<Dimensions x="58" y="58" />
+			<Controls>
+				<Texture name="$(parent)Icon" inherits="KPUI_ResearchLine_Icon" tier="MEDIUM">
+					<Anchor point="CENTER" />
+				</Texture>
+				<Backdrop name="$(parent)Frame" inherits="ZO_GamepadAbilityIconFrame" tier="LOW" />
+			</Controls>
+		</Control>
+		<Texture name="KPUI_Trait_Icon" level="2" layer="CONTROLS" inherits="ZO_MultiIcon" virtual="true" excludeFromResizeToFitExtents="true">
+			<Dimensions x="40" y="40" />
+		</Texture>
+		<Control name="KPUI_Trait_Entry" virtual="true">
+			<Dimensions x="55" y="55" />
+			<Controls>
+				<Texture name="$(parent)Icon" inherits="KPUI_Trait_Icon">
+					<Anchor point="CENTER" />
+				</Texture>
+				<Backdrop name="$(parent)Frame" inherits="ZO_GamepadAbilityIconFrame" hidden="true" tier="LOW" />
+			</Controls>
+		</Control>
+
+		<Texture name="KPUI_WidePanel_Icon" level="2" layer="CONTROLS" inherits="ZO_MultiIcon" virtual="true" excludeFromResizeToFitExtents="true">
+			<Dimensions x="45" y="45" />
+		</Texture>	
+		<Control name="KPUI_WidePanel_Entry" virtual="true">
+			<Controls>
+				<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" hidden="true" tier="HIGH" >
+				</Control>
+				<Control name="$(parent)DividerBottom" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+				</Control>
+				<Label name="$(parent)DividerPippedHeader" modifyTextType="UPPERCASE" horizontalAlignment="CENTER"  font="ZoFontGamepad25" verticalAlignment="TOP" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+				</Label>				
+                <Control name="$(parent)DividerPipped" override="true" horizontalAlignment="CENTER"  font="ZoFontGamepad25" verticalAlignment="TOP" inherits="ZO_GamepadHeaderHorizontalDividerWithTabs ZO_TabBarScrollListTemplate" >
+
+                </Control>
+				<Control name="$(parent)PipPanel1" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPippedHeader" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>
+				<Control name="$(parent)PipPanel2" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPippedHeader" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>
+				<Control name="$(parent)PipPanel3" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPippedHeader" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>
+				<Control name="$(parent)PipPanel4" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPippedHeader" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>
+				<Control name="$(parent)PipPanel5" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPippedHeader" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>
+				<Control name="$(parent)PipPanel6" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPippedHeader" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>
+				<Control name="$(parent)PipPanel7" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPippedHeader" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>		
+				<Control name="$(parent)PipPanel8" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPippedHeader" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>		
+				<Control name="$(parent)PipPanel9" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPippedHeader" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>		
+				<Control name="$(parent)PipPanel10" resizeToFitDescendents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)DividerPippedHeader" relativePoint="CENTER" offsetX="0" offsetY="3" />
+				</Control>			
+				<Control name="$(parent)RowIcon">
+					<Dimensions x="60" y="60" />
+					<Controls>
+						<Texture name="$(parent)Icon" inherits="KPUI_WidePanel_Icon">
+							<Anchor point="CENTER" />
+						</Texture>
+						<Backdrop name="$(parent)Frame" inherits="ZO_GamepadAbilityIconFrame" hidden="true" tier="LOW" />
+					</Controls>
+				</Control>
+				<Label name="$(parent)RowHeader" modifyTextType="UPPERCASE" font="ZoFontGamepad25" horizontalAlignment="CENTER" verticalAlignment="TOP" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+				</Label>
+				<Label name="$(parent)RowHeaderLeft" modifyTextType="UPPERCASE" font="ZoFontGamepad25" horizontalAlignment="LEFT" verticalAlignment="TOP" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+				</Label>
+				<Label name="$(parent)RowHeaderValue" font="ZoFontGamepad25" verticalAlignment="TOP" >
+				</Label>
+			</Controls>
+		</Control>
+
+        <TopLevelControl name="KPUI_GamepadDialogTooltipTopLevel" tier="HIGH">
+            <AnchorFill/>
+            <Controls>
+                <Control name="$(parent)LeftTooltip" inherits="KPUI_GamepadTooltipTemplate ZO_GamepadGrid_NavQuadrant_2_Anchors" hidden="true"/>
+
+                <Control name="$(parent)LeftHeaderContainer" inherits="ZO_GamepadGrid_NavQuadrant_2_Anchors" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)ContentContainer" inherits="ZO_GamepadScreenHeaderContainer ZO_GamepadGrid_NavQuadrant_ContainerAnchors" />
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)LeftTooltipBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)LeftTooltipDarkBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                        <Control name="$(parent)Darkener" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                    </Controls>
+                </Control>
+
+				<Control name="$(parent)RightPane" hidden="true" inherits="ZO_GamepadGrid_NavQuadrant_2_3_Anchors">
+					<Dimensions x="1000" />
+                    <Controls>
+						<Control name="$(parent)HeaderContainer" inherits="ZO_GamepadContentHeaderContainer ZO_GamepadGrid_NavQuadrant_ContainerAnchors" />
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="KPUI_GamepadTooltipTopLevel" tier="MEDIUM">
+            <AnchorFill/>
+            <OnInitialized>
+                KPUI_GamepadTooltip_OnInitialized(self, KPUI_GamepadDialogTooltipTopLevel)
+            </OnInitialized>
+            <Controls>
+                
+				<Control name="$(parent)LeftTooltip" inherits="KPUI_GamepadTooltipTemplate ZO_GamepadGrid_NavQuadrant_2_Anchors" hidden="true" />
+
+                <Control name="$(parent)LeftTooltipBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                    </Controls>
+                </Control>
+                
+                <Control name="$(parent)LeftTooltipDarkBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                        <Control name="$(parent)Darkener" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)RightTooltip" inherits="KPUI_GamepadTooltipTemplate ZO_GamepadGrid_NavQuadrant_4_Anchors" hidden="true"/>
+
+                <Control name="$(parent)RightTooltipBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_4_Background_Template" />
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)RightHeaderContainer" inherits="ZO_GamepadGrid_NavQuadrant_4_Anchors" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)ContentContainer" inherits="ZO_GamepadScreenHeaderContainer ZO_GamepadGrid_NavQuadrant_ContainerAnchors" />
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)RightTooltipDarkBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_4_Background_Template" />
+                        <Control name="$(parent)Darkener" inherits="ZO_SharedGamepadNavQuadrant_4_Background_Template" />
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)MovableTooltip" inherits="KPUI_GamepadTooltipTemplate ZO_GamepadGrid_NavQuadrant_4_Anchors" hidden="true"/>
+
+                <Control name="$(parent)MovableTooltipBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_4_Background_Template" />
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)MovableTooltipDarkBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_4_Background_Template" />
+                        <Control name="$(parent)Darkener" inherits="ZO_SharedGamepadNavQuadrant_4_Background_Template" />
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Quadrant3Tooltip" inherits="KPUI_GamepadTooltipTemplate ZO_GamepadGrid_NavQuadrant_3_Anchors" hidden="true"/>
+
+                <Control name="$(parent)Quadrant3TooltipBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_RightArrowGamepadNavQuadrant_3_Background_Template" />
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Quadrant3HeaderContainer" inherits="ZO_GamepadGrid_NavQuadrant_3_Anchors" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)ContentContainer" inherits="ZO_GamepadScreenHeaderContainer ZO_GamepadGrid_NavQuadrant_ContainerAnchors" />
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Quadrant3TooltipDarkBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_RightArrowGamepadNavQuadrant_3_Background_Template" />
+                        <Control name="$(parent)Darkener" inherits="ZO_RightArrowGamepadNavQuadrant_3_Background_Template" />
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Quadrant1Tooltip" inherits="KPUI_GamepadTooltipTemplate ZO_GamepadGrid_NavQuadrant_1_Anchors" hidden="true"/>
+
+                <Control name="$(parent)Quadrant1TooltipBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_1_Background_Template" />
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Quadrant1TooltipDarkBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_1_Background_Template" />
+                        <Control name="$(parent)Darkener" inherits="ZO_SharedGamepadNavQuadrant_1_Background_Template" />
+                    </Controls>
+                </Control>
+				
+				<Control name="$(parent)WideResearchTooltip" inherits="KPUI_GamepadTooltipTemplate ZO_GamepadGrid_NavQuadrant_2_Anchors" hidden="true" />
+
+                <Control name="$(parent)WideResearchTooltipBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                    </Controls>
+                </Control>
+                
+                <Control name="$(parent)WideResearchTooltipDarkBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                        <Control name="$(parent)Darkener" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                    </Controls>
+                </Control>
+				
+				<Control name="$(parent)WideCraftingTooltip" inherits="KPUI_GamepadTooltipTemplate ZO_GamepadGrid_NavQuadrant_2_Anchors" hidden="true" />
+
+                <Control name="$(parent)WideCraftingTooltipBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                    </Controls>
+                </Control>
+                
+                <Control name="$(parent)WideCraftingTooltipDarkBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                        <Control name="$(parent)Darkener" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                    </Controls>
+                </Control>
+				
+				<Control name="$(parent)WideSetsTooltip" inherits="KPUI_GamepadTooltipTemplate ZO_GamepadGrid_NavQuadrant_2_Anchors" hidden="true" />
+
+                <Control name="$(parent)WideSetsTooltipBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                    </Controls>
+                </Control>
+                
+                <Control name="$(parent)WideSetsTooltipDarkBg" hidden="true">
+                    <Controls>
+                        <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                        <Control name="$(parent)Darkener" inherits="ZO_SharedGamepadNavQuadrant_2_Background_Template" />
+                    </Controls>
+                </Control>
+				
+				<Control name="$(parent)RightPane" hidden="true" inherits="ZO_GamepadGrid_NavQuadrant_2_3_Anchors">
+				    <Controls>
+						<Control name="$(parent)HeaderContainer" inherits="ZO_GamepadContentHeaderContainer ZO_GamepadGrid_NavQuadrant_ContainerAnchors" />
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+		
+ 
+    </Controls>
+</GuiXml>

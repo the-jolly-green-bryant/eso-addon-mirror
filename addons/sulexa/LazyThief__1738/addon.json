@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/sulexa/LazyThief__1738",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sulexa",
+  "canonical_id": "esoui:1738",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:1738",
+  "deleted": false,
+  "directories": [
+    "LazyThief"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1738/",
+  "fingerprint": "7001fd7fbb9776a5a2dd8a7992e0e089d13e54ba728a7c695da6cb1d948b7db8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5819.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1738",
+  "source_url": "https://www.esoui.com/downloads/info1738-LazyThief.html",
+  "stats": {
+    "downloads": 15653,
+    "favorites": 14,
+    "monthly_downloads": 36
+  },
+  "title": "LazyThief",
+  "updated_at": 1499833073000,
+  "version": "0.3.1"
+}

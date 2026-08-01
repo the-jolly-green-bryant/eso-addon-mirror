@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Noobanidus/AutoWrit-MasterSaver__1584",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Noobanidus",
+  "canonical_id": "esoui:1584",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1584",
+  "deleted": false,
+  "directories": [
+    "AutoWrit"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1584/",
+  "fingerprint": "76625b7cff5f392dea0188f68076f22f85c86127883ed04e02ee25c3c297c49d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5177.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5178.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1584",
+  "source_url": "https://www.esoui.com/downloads/info1584-AutoWritMasterSaver.html",
+  "stats": {
+    "downloads": 9698,
+    "favorites": 9,
+    "monthly_downloads": 22
+  },
+  "title": "AutoWrit & MasterSaver",
+  "updated_at": 1488368693000,
+  "version": "3.0.0"
+}

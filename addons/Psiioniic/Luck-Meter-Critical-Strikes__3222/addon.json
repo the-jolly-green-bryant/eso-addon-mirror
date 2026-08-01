@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Psiioniic/Luck-Meter-Critical-Strikes__3222",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Psiioniic",
+  "canonical_id": "esoui:3222",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3222",
+  "deleted": false,
+  "directories": [
+    "LuckMeter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3222/",
+  "fingerprint": "c2e8f021623d408f797e3f7f79d3d454e08276dc19d1f16595a2c7223bb619b8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10988.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10989.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3222",
+  "source_url": "https://www.esoui.com/downloads/info3222-LuckMeterCriticalStrikes.html",
+  "stats": {
+    "downloads": 4286,
+    "favorites": 1,
+    "monthly_downloads": 16
+  },
+  "title": "Luck Meter: Critical Strikes",
+  "updated_at": 1638207692000,
+  "version": "0.3.1"
+}

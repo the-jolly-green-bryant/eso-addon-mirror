@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/silvereyes/Quality-Sort---Arrows-Version__1808",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "silvereyes",
+  "canonical_id": "esoui:1808",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:1808",
+  "deleted": false,
+  "directories": [
+    "QualitySort"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1808/",
+  "fingerprint": "54286492ad8757738bc67178416170228bbfad3748aa83d9d0032987f563f601",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6130.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1808",
+  "source_url": "https://www.esoui.com/downloads/info1808-QualitySort-ArrowsVersion.html",
+  "stats": {
+    "downloads": 13950,
+    "favorites": 9,
+    "monthly_downloads": 13
+  },
+  "title": "Quality Sort - Arrows Version",
+  "updated_at": 1650513475000,
+  "version": "2.6.0"
+}

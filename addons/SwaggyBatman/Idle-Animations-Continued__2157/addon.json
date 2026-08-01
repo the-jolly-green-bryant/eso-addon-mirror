@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/SwaggyBatman/Idle-Animations-Continued__2157",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SwaggyBatman",
+  "canonical_id": "esoui:2157",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2157",
+  "deleted": false,
+  "directories": [
+    "IdleAnimations"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2157/",
+  "fingerprint": "2f75f84182582dace996fd70dc262fc4a2c9d64b6e38ca761bba462d99330e23",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2157",
+  "source_url": "https://www.esoui.com/downloads/info2157-IdleAnimationsContinued.html",
+  "stats": {
+    "downloads": 30054,
+    "favorites": 45,
+    "monthly_downloads": 81
+  },
+  "title": "Idle Animations Continued",
+  "updated_at": 1598128832000,
+  "version": "3"
+}

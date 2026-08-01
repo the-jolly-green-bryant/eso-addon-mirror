@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Odylon/CleverOdymist---Clever-Alchemist-Potion-Blocker__3118",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Odylon",
+  "canonical_id": "esoui:3118",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3118",
+  "deleted": false,
+  "directories": [
+    "CleverOdymist"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3118/",
+  "fingerprint": "02b1817a3f2ce11ba64b40d7334b9094e357b85755e952d79eaf31367f367c9f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10501.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3118",
+  "source_url": "https://www.esoui.com/downloads/info3118-CleverOdymist-CleverAlchemistPotionBlocker.html",
+  "stats": {
+    "downloads": 4987,
+    "favorites": 4,
+    "monthly_downloads": 23
+  },
+  "title": "CleverOdymist - Clever Alchemist Potion Blocker",
+  "updated_at": 1624095917000,
+  "version": "1.0.1"
+}

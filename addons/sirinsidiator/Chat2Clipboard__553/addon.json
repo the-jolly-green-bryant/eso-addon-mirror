@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/sirinsidiator/Chat2Clipboard__553",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:553",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:553",
+  "deleted": false,
+  "directories": [
+    "Chat2Clipboard"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl553/",
+  "fingerprint": "f9469b2b6910181935996304439ca707d77e29e16561218f74842d04c0814d80",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1668.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2490.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2623.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "553",
+  "source_url": "https://www.esoui.com/downloads/info553-Chat2Clipboard.html",
+  "stats": {
+    "downloads": 100221,
+    "favorites": 113,
+    "monthly_downloads": 184
+  },
+  "title": "Chat2Clipboard",
+  "updated_at": 1711138702000,
+  "version": "1.12.2"
+}

@@ -1,0 +1,29 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Tamriel Trade Centre Companion
+## APIVersion: 101046 101047
+## Description: Tools from Master Merchant to assist with Tamriel Trade Centre users
+## Authors: Sharlikran
+## Version: 1.11
+## AddOnVersion: 111
+## SavedVariables: TTCCompanion_SavedVars
+## DependsOn: TamrielTradeCentre LibAddonMenu-2.0>=40 LibMediaProvider>=35
+## OptionalDependsOn: DebugLogViewer AwesomeGuildStore MasterWritInventoryMarker
+
+i18n\en.lua
+i18n\$(language).lua
+TTCCompanion_Misc.xml
+Init.lua
+Crafting\TTCCompanion_RecipeData.lua
+Crafting\TTCCompanion_PricingData.lua
+AGS_Integration\AGS_Setup.lua
+AGS_Integration\DealFilter.lua
+AGS_Integration\DealFilterFragment.lua
+AGS_Integration\SortOrderDealPercent.lua
+TTCCompanion_Writs.lua
+TTCCompanion_Inventory.lua
+TTCCompanion_Main.lua

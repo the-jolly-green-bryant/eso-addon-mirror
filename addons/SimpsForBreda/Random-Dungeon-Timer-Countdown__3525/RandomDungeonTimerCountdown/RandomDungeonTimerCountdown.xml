@@ -1,0 +1,22 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="RandomDungeonTimerCountdownUI" mouseEnabled="true" movable="true" clampedToScreen="true" >
+      <Dimensions x="512" y="20" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="200" />
+      <OnInitialized>
+      </OnInitialized>
+      <OnMoveStop>
+        RandomDungeonTimerCountdown.OnMoveStopUI()
+      </OnMoveStop>
+ 
+      <Controls>
+        <Backdrop name="$(parent)_Bg" inherits="ZO_DefaultBackdrop" alpha="0.1"/>
+
+
+        <Label name="$(parent)Label" width="200" height="20" font="ZoFontWinT1" inheritAlpha="true" color="000000" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Daily Random Dungeon Timer">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="2"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

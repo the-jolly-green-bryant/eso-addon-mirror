@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/scobster007/Cyro-Quest-Manager__4208",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "scobster007",
+  "canonical_id": "esoui:4208",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4208",
+  "deleted": false,
+  "directories": [
+    "CyroQuestManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4208/",
+  "fingerprint": "ce9d7d1b290baee307fb13a5990a5158420c71f849c18e421e37da1efff4f832",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14398.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14399.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14407.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4208",
+  "source_url": "https://www.esoui.com/downloads/info4208-CyroQuestManager.html",
+  "stats": {
+    "downloads": 428,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "Cyro Quest Manager",
+  "updated_at": 1755471964000,
+  "version": "2.1"
+}

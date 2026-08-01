@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Skotharr-do/Sit-On-Bench-Continued__2250",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Skotharr-do",
+  "canonical_id": "esoui:2250",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2250",
+  "deleted": false,
+  "directories": [
+    "SitOnBench"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2250/",
+  "fingerprint": "224c27aa588273e0efd6fe4cf80dbda674ef1cab2be17ec1637832b92178c2ad",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7709.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2250",
+  "source_url": "https://www.esoui.com/downloads/info2250-SitOnBenchContinued.html",
+  "stats": {
+    "downloads": 6427,
+    "favorites": 8,
+    "monthly_downloads": 14
+  },
+  "title": "Sit On Bench (Continued)",
+  "updated_at": 1549223083000,
+  "version": "1.0.2"
+}

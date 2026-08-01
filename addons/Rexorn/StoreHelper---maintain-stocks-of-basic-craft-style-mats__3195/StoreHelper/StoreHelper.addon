@@ -1,0 +1,15 @@
+## Title: Store Helper
+## Author: Rexorn
+## Description: At store buy Style Mats if below stock level in settings.
+## APIVersion: 101049 101050
+## Version: 0.25
+## AddOnVersion: 25
+## SavedVariables: StoreHelperAcct StoreHelperToon
+## DependsOn: LibAddonMenu-2.0>=43
+## OptionalDependsOn: PersonalAssistantJunk PersonalAssistantRepair
+; PA addons not needed to run but if used they NEED to be loaded first so SH will wait for them on store open
+
+StoreHelper.lua
+SH_default_lang.lua
+SH_$(language).lua
+

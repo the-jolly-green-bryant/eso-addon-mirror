@@ -1,0 +1,68 @@
+<Bindings>
+	
+	<!--<Layer name="|cFF8174RdK Group Tool">-->
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c4592FFRdK Group Tool: Auto Invite">
+			<Action name="RDKGTOOL_TOGGLE_AI">
+                <Down>RdKGTool.group.ai.OnKeyBinding()</Down>
+            </Action>
+		</Category>
+		<Category name="|c4592FFRdK Group Tool: Resource Overview">
+            <Action name="RDKGTOOL_RESOURCEOVERVIEW_BOOM">
+                <Down>RdKGTool.group.ro.OnBoomKeyBinding()</Down>
+            </Action>
+        </Category>
+		<Category name="|c4592FFRdK Group Tool: Yet another Compass">
+            <Action name="RDKGTOOL_YETANOTHERCOMPASS_OPEN">
+                <Down>RdKGTool.compass.yacs.OnKeyBinding()</Down>
+            </Action>
+        </Category>
+		<Category name="|c4592FFRdK Group Tool: Synergy Prevention">
+            <Action name="RDKGTOOL_SP_TOGGLE">
+                <Down>RdKGTool.toolbox.sp.OnKeyBinding()</Down>
+            </Action>
+        </Category>
+		<Category name="|c4592FFRdK Group Tool: Admin">
+            <Action name="RDKGTOOL_ADMIN_OPEN">
+                <Down>RdKGTool.admin.OnKeyBinding()</Down>
+            </Action>
+        </Category>
+		<Category name="|c4592FFRdK Group Tool: Configuration Ex / Im">
+            <Action name="RDKGTOOL_CONFIG_OPEN">
+                <Down>RdKGTool.cfg.OnKeyBinding()</Down>
+            </Action>
+        </Category>
+		<Category name="|c4592FFRdK Group Tool: Healing Damage Meter">
+            <Action name="RDKGTOOL_HDM_RESET_METER">
+                <Down>RdKGTool.group.hdm.OnKeyBinding()</Down>
+            </Action>
+        </Category>
+	</Layer>
+	<Layer name="|c4592FFRdK Group Tool: Death">
+		<Category name="">
+			<Action name="RDKGTOOL_DEATH_CAMP">
+				<Down>RdKGTool.toolbox.respawner.KeybindingPlaceholder()</Down>
+			</Action>
+			<Action name="RDKGTOOL_DEATH_KEEP">
+				<Down>RdKGTool.toolbox.respawner.KeybindingPlaceholder()</Down>
+			</Action>
+		</Category>
+	</Layer>
+	<Layer name="SI_KEYBINDINGS_LAYER_SIEGE">
+		<Category name="">
+			<Action name="RDKGTOOL_TOGGLE_SIEGE_CAMERA">
+				<Down>RdKGTool.toolbox.siege.ToggleCamera()</Down>
+			</Action>
+		</Category>
+	</Layer>
+	<Layer name="Death">
+		<Category>
+			<Action name="RDKGTOOL_DEATH_RESPAWN_CAMP" hideAction="true" inheritsBindFrom="RDKGTOOL_DEATH_CAMP" rebindable="false">
+                <Down>RdKGTool.toolbox.respawner.RespawnAtCamp()</Down>
+            </Action>
+			<Action name="RDKGTOOL_DEATH_RESPAWN_KEEP" hideAction="true" inheritsBindFrom="RDKGTOOL_DEATH_KEEP" rebindable="false">
+                <Down>RdKGTool.toolbox.respawner.RespawnAtKeep()</Down>
+            </Action>
+		</Category>
+	</Layer>
+</Bindings>

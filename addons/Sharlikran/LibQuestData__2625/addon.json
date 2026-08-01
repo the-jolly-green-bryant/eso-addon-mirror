@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Sharlikran/LibQuestData__2625",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:2625",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2625",
+  "deleted": false,
+  "directories": [
+    "LibQuestData"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2625/",
+  "fingerprint": "431810d8927b9486d838eb17048bcdbbbe4c3f992969d838330593c9ae4187fa",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2625",
+  "source_url": "https://www.esoui.com/downloads/info2625-LibQuestData.html",
+  "stats": {
+    "downloads": 4944868,
+    "favorites": 990,
+    "monthly_downloads": 14322
+  },
+  "title": "LibQuestData",
+  "updated_at": 1779839940000,
+  "version": "2.79"
+}

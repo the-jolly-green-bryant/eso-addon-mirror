@@ -1,0 +1,7 @@
+/export*/*
+!/export*/.gitkeep
+/Raw/*.temp
+/Raw/*.csv
+/*.log
+/*.bak
+/*#

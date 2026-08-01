@@ -1,0 +1,65 @@
+<GuiXml>
+  <Controls>
+    <Texture name="AUI_MapTile" pixelRoundingEnabled="false" virtual="true">
+      <Dimensions x="230" y="230" />
+    </Texture>
+    <Texture name="AUI_FrameMunge" textureFile="EsoUI/Art/Tooltips/munge_overlay.dds" addressMode="WRAP" layer="OVERLAY" virtual="true"/>
+    <TopLevelControl name="AUI_Minimap_MainWindow" DrawLayer="4" clampedToScreen="true" mouseEnabled="true" hidden="true">
+      <Controls>
+        <Control name="$(parent)_Map">
+          <Anchor point="TOPLEFT" relativeTo="AUI_Minimap_MainWindow" />
+          <Controls>
+            <Texture name="$(parent)_Background" layer="1" textureFile="AUI/images/minimap/background.dds" >
+              <AnchorFill />
+            </Texture>
+            <Texture name="$(parent)_Overlay" layer="3">
+              <AnchorFill />
+            </Texture>
+            <Texture name="$(parent)_Rotate" layer="3">
+              <AnchorFill />
+            </Texture>
+            <Scroll name="$(parent)_Scroll" layer="1">
+              <AnchorFill />
+              <Controls>
+                <Control name="AUI_MapContainer"></Control>
+              </Controls>
+            </Scroll>
+            <Backdrop name="$(parent)Frame" tier="MEDIUM" layer="OVERLAY">
+              <Edge file="EsoUI/Art/WorldMap/worldmap_frame_edge.dds" edgeFileWidth="128" edgeFileHeight="16" />
+              <Insets left="16" top="16" right="-16" bottom="-16" />
+              <OnInitialized>
+                self:SetCenterColor(0, 0, 0, 0)
+              </OnInitialized>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Scroll"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Scroll"/>
+              <Controls>
+                <Texture name="$(parent)TopMunge" inherits="AUI_FrameMunge">
+                  <Dimensions y="2"/>
+                  <Anchor point="TOPLEFT" offsetX="4"/>
+                  <Anchor point="TOPRIGHT" offsetX="-4"/>
+                </Texture>
+                <Texture name="$(parent)LeftMunge" inherits="AUI_FrameMunge">
+                  <Dimensions x="2"/>
+                  <Anchor point="TOPLEFT" offsetY="4"/>
+                  <Anchor point="BOTTOMLEFT" offsetY="-4"/>
+                </Texture>
+                <Texture name="$(parent)RightMunge" inherits="AUI_FrameMunge">
+                  <Dimensions x="2"/>
+                  <Anchor point="TOPRIGHT" offsetY="4"/>
+                  <Anchor point="BOTTOMRIGHT" offsetY="-4"/>
+                </Texture>
+                <Texture name="$(parent)BottomMunge" inherits="AUI_FrameMunge">
+                  <Dimensions y="2"/>
+                  <Anchor point="BOTTOMLEFT" offsetX="4"/>
+                  <Anchor point="BOTTOMRIGHT" offsetX="-4"/>
+                </Texture>
+              </Controls>
+            </Backdrop>
+          </Controls>
+        </Control>
+        <Label name="AUI_Location_Name"></Label>
+        <Label name="AUI_Coords"></Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

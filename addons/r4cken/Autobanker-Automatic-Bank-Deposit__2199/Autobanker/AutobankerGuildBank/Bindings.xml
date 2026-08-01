@@ -1,0 +1,14 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Autobanker Guild Bank">
+			<Action name="AUTO_DEPOSIT">
+				<Down>AutobankerGuildBank.TriggerAutobankerGuildBank()</Down>
+			</Action>
+		</Category>
+	</Layer>
+	 <Layer name="GamepadUIMode" allowFallthrough="false">
+        <Category>
+            <AllowAction name="AUTO_DEPOSIT"/>
+		</Category>
+	</Layer>
+</Bindings>

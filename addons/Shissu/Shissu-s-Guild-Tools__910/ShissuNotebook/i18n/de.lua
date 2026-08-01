@@ -1,0 +1,62 @@
+ShissuLocalization = ShissuLocalization or {}
+
+ShissuLocalization["ShissuNotebook"] = {       
+  TITLE             = "Notizbuch",
+
+  YOURTEXT          = "DEINTEXT",
+  MAIL              = GetString(SI_CUSTOMERSERVICESUBMITFEEDBACKSUBCATEGORIES209),
+  Chat              = GetString(SI_CHAT_TAB_GENERAL),
+
+  SLASH             = "Chat Befehl:",
+  NOSLASH           = "Keinen passenden Text gefunden (siehe Notizbuch)",
+  DELETE_TT         = "Notiz löschen",
+  NEW_TT            = "Neue Notiz",
+  UNDO_TT           = "Änderungen Rückgängig machen",
+  SENDTO_TT         = "Linke Maustaste - Im Chat posten\nMittlere Maustaste - Als E-Mail(Post)\nRechte Maustaste - Notiz abspeichern",
+}
+
+ShissuLocalization["ShissuNotebookMail"] = {  
+  TITLE               = "Mailempfänger",
+  FRIENDS             = GetString(SI_MAIN_MENU_CONTACTS),
+  DAYS                = "Tage",      
+  DAYS_2              = "Anzahl der Tage",
+  SEND                = GetString(SI_MAIL_SEND_SEND),
+  SEND2               = "Ausführen",
+  PROGRESS_KICK       = "Spieler entfernen",
+  PROGRESS_DEMOTE     = "Spieler degradieren",
+  PROGRESS_SEND       = "E-Mail senden",
+  PROGRESS_WAITING    = "Bitte warten...",
+  PROGRESS_DONE       = "FERTIG",
+  ALL                 = "Alle",
+  MEMBER              = "Mitglied",
+  OFFLINE             = "Offline",
+  CHOICE              = "Auswahl",
+  PLAYER_ADD          = "Spieler hinzufügen",
+  PLAYER_REMOVE       = "Spieler entfernen",
+  PLAYER_INVITE       = "Spieler einladen",
+  FILTER              = "Filter",
+  ACTION              = "Aktion",
+  NO_MAIL             = "Keine Nachricht",
+  RANK                = GetString(SI_STAT_GAMEPAD_RANK_LABEL),
+  LIST                = "Liste",
+  LIST_NEW            = "Neue Liste",
+  LIST_NAME           = "Listenname?",
+  LIST_INFO           = "Linke Maustaste - Liste hinzufügen\nRechte Maustaste - Liste löschen",
+  ALLIANCE            = GetString(SI_LEADERBOARDS_HEADER_ALLIANCE),
+  SINCE_GOLD          = "vor min. Tage",
+  CONFIRM_KICK        = "Sollen die Spieler in der Liste, bzw. Ihre Auswahl aus der Gilde entfernt werden?",
+  CONFIRM_DEMOTE      = "Sollen die Spieler in der Liste, bzw. Ihre Auswahl aus der Gilde degradiert werden?",
+  MAIL_NEW            = GetString(SI_SOCIAL_MENU_SEND_MAIL),
+  SPLASH_SUBJECT      = "Betreff",
+  SPLASH_PROGRESS     = "Fortschritt",
+  BLANK_MAIL          = "Nachricht unvollständig",
+  PROTOCOL            = "E-Mail Protokoll",
+  PROTOCOL_FULL       = "Postkasten voll",
+  PROTOCOL_INVITE     = "Ignoriert",
+  PROTOCOL_INFO       = "Zeigt die Spieler an, die einen vollen Briefkasten haben, bzw. dich ignorieren.",
+  GROUP               = "Spieler in Gruppe einladen",
+  ONLINE              = "Online, BRB, AFK",
+  MAIL_CONTIN         = "Sollte der Versand aus irgendwelchen Gründen nicht voranschreiten, dann klicke auf diesem Button. Der aktuelle Empfänger wird i.d.F. ignoriert.",
+}
+
+ZO_CreateStringId("SI_BINDING_NAME_SSC_notebookToogle", "Notizbuch")

@@ -1,0 +1,10 @@
+## Title: IGOR
+## Version: 0.1a
+## Title: |cFFFFB0IGOR|r
+## APIVersion: 100010
+## Author: Rkuhnjr
+## Description: A long description of what your addon does.
+## SavedVariables: IGOR_ResearchTimers
+
+IGOR.lua
+

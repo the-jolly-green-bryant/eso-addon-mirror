@@ -1,0 +1,9 @@
+## Title: |cff0096Asylum Tracker RU Patch|r
+## Description: Патч совместимости русского языка для Asylum Tracker
+## APIVersion: 100028
+## Author: qulilalti
+## Version: 2.0.5
+## AddOnVersion: 20005
+## DependsOn: AsylumTracker
+
+locales/ru.lua

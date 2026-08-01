@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/notnear/Advanced-Filters---Arena-sets-filter__3607",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "notnear",
+  "canonical_id": "esoui:3607",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3607",
+  "deleted": false,
+  "directories": [
+    "AF_ArenaSetFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3607/",
+  "fingerprint": "4cb2fc85bc09fc43cdb8d842f71e20f9025d7ebbc55212a5d4c7e22849c98f28",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12291.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3607",
+  "source_url": "https://www.esoui.com/downloads/info3607-AdvancedFilters-Arenasetsfilter.html",
+  "stats": {
+    "downloads": 9430,
+    "favorites": 5,
+    "monthly_downloads": 35
+  },
+  "title": "Advanced Filters - Arena sets filter",
+  "updated_at": 1685857758000,
+  "version": "1.1.1"
+}

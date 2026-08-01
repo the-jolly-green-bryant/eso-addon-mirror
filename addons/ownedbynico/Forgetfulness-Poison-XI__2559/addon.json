@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/ownedbynico/Forgetfulness-Poison-XI__2559",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ownedbynico",
+  "canonical_id": "esoui:2559",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2559",
+  "deleted": false,
+  "directories": [
+    "ForgetfulnessPoisonXI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2559/",
+  "fingerprint": "27185604a2d9c0c92c1c5d2585cff0ffcee6d0a96081fa5480f166fdaea81012",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8749.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8748.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2559",
+  "source_url": "https://www.esoui.com/downloads/info2559-ForgetfulnessPoisonXI.html",
+  "stats": {
+    "downloads": 4274,
+    "favorites": 3,
+    "monthly_downloads": 10
+  },
+  "title": "Forgetfulness Poison XI",
+  "updated_at": 1607225848000,
+  "version": "1.2"
+}

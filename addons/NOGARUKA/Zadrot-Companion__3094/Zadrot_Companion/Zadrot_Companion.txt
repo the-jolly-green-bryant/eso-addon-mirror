@@ -1,0 +1,9 @@
+## Title: |cFFFFFFZadrot |c0099FFCompanion|r
+## Author: |c5EFFF5NOGARUKA|r
+## APIVersion: 101033
+## Description: Auto summon companion after assistant (banker or trader) unsummoned. Toggle: /zc
+## Version: 2
+## SavedVariables: Zadrot_Companion_Saved
+
+bindings.xml
+Zadrot_Companion.lua

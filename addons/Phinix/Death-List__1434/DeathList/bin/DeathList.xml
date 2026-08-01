@@ -1,0 +1,17 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="DLAddon_MainFrame" tier="HIGH" mouseEnabled="false" movable="false" clampedToScreen="true" hidden="true">
+			<Dimensions x="32" y="32"/>
+			<Anchor point="TOP" relativeTo="ZO_TargetUnitFramereticleoverCaption" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+			<Controls>
+				<Texture name="$(parent)_Mark" textureFile="/DeathList/bin/brotherhood.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+				</Texture>
+				<Label name="$(parent)_Label" font="ZoFontWinH5" color="FF0000" horizontalAlignment="CENTER" text="">
+					<Anchor point="TOP" relativeTo="$(parent)_Mark" relativePoint="BOTTOM" offsetX="0" offsetY="4"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

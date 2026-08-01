@@ -1,0 +1,11 @@
+## Title: SlowDialogs
+## Author: Shinni
+## Version: 1.13
+## APIVersion: 100028
+## SavedVariables: SlowDialogs_SavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+SlowDialogs.lua
+Localization_en.lua
+Localization_$(language).lua
+SlowDialogsOptions.lua

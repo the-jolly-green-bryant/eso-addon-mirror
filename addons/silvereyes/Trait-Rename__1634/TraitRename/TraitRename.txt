@@ -1,0 +1,21 @@
+## Title: Trait Rename
+## Author: silvereyes
+## Description: Replaces weapon, armor and jewelry trait names with configurable custom names, including colored ones.
+## Version: 1.5.11
+## APIVersion: 101031 101032
+## DependsOn: LibSavedVars>=50000 LibAddonMenu-2.0
+## OptionalDependsOn: DolgubonsLazyWritCreator
+## SavedVariables: Preposterous_Account
+## SavedVariables: Preposterous_Character
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the 
+## United States and/or other countries. All rights reserved.
+
+; Language files
+localization\en.lua
+localization\$(language).lua
+localization\CreateStrings.lua
+
+; Addon
+TraitRename.lua

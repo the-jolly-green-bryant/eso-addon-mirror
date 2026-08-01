@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/qhil/Neat-Experience-Info__1581",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "qhil",
+  "canonical_id": "esoui:1581",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:1581",
+  "deleted": false,
+  "directories": [
+    "NeatExperienceInfo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1581/",
+  "fingerprint": "08a32210e58b1fa6a0131b39ad63e2c74678fb2ceeff8457a2681e3d00fe969f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5165.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5166.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5168.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5169.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5167.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1581",
+  "source_url": "https://www.esoui.com/downloads/info1581-NeatExperienceInfo.html",
+  "stats": {
+    "downloads": 14707,
+    "favorites": 35,
+    "monthly_downloads": 18
+  },
+  "title": "Neat Experience Info",
+  "updated_at": 1743767014000,
+  "version": "1.15.1"
+}

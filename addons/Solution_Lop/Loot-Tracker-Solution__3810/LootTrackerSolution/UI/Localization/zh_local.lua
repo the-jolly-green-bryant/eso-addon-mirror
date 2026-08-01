@@ -1,0 +1,53 @@
+local translations = {
+    ["DisplayTime"] = "显示时间",
+    ["ItemStacking"] = "启用物品堆叠",
+    ["PriceDataSource"] = "价格数据源",
+    ["PriceCalculationMethod"] = "价格计算方法",
+    ["NotifyOnNirncrux"] = "通知尼恩晶",
+    ["NotifyOnLegendary"] = "通知传奇物品",
+    ["TextNotify"] = "文本通知",
+    ["NotificationSound"] = "通知声音",
+    ["AutoLootAfterStart"] = "开始后自动拾取",
+    ["InventorySpaceType"] = "库存空间类型",
+    ["SortListParametr"] = "列表排序参数",
+    ["SortListDirection"] = "列表排序方向",
+    ["SortListDirectionAsc"] = "升序",
+    ["SortListDirectionDesc"] = "降序",
+    ["SetLootWindowAlpha"] = "战利品窗口透明度",
+    ["PriceTypeAvarage"] = "平均",
+    ["PriceTypeMin"] = "最低",
+    ["PriceTypeMax"] = "最高",
+    ["PriceTypeSuggested"] = "建议",
+    ["CategoryNames"] = {
+        ["All"] = "全部",
+        ["Alchemy"] = "炼金术",
+        ["Blacksmithing"] = "锻造",
+        ["Clothing"] =  "裁缝",
+        ["Enchanting"] = "附魔",
+        ["JewelryCrafting"] = "珠宝加工",
+        ["Provisioning"] = "补给",
+        ["Woodworking"] = "木工",
+        ["Other"] = "其他"
+    },
+    ["Name"] = "名称",
+    ["Category"] = "类别",
+    ["Amount"] = "数量",
+    ["Time"] = "时间",
+    ["Price"] = "价格",
+    ["Price/Item"] = "价格/物品",
+    ["TotalGold"] = "总金币",
+    ["CategoryGold"] = "类别金币",
+    ["ShowMaterials"] = "仅显示材料",
+    ["Vendor"] = "供应商",
+    ["Looted"] = "战利品",
+    ["AutoLootEnabled"] = "启用自动拾取",
+    ["AutoLootDisabled"] = "停用自动拾取",
+    ["Donate"] = "捐赠",
+    ["Author"] = "作者",
+    ["Session"] = "会话",
+
+}
+
+function LocalizationLoadZh()
+    LootTrackerSolution.Localization.translation = translations
+end

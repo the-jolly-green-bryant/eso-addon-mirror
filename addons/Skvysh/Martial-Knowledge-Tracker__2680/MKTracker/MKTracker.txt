@@ -1,0 +1,10 @@
+## Title: MKTracker
+## Version: 1.7.1
+## APIVersion: 101033
+## IsLibrary: false
+## SavedVariables: MKTSettings
+## DependsOn: LibAddonMenu-2.0>=28
+
+MKTracker.lua
+MKTrackerMenu.lua
+Panel.xml

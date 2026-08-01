@@ -1,0 +1,48 @@
+{
+  "archive_path": "addons/Sensi/AUI---Advanced-UI__919",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sensi",
+  "canonical_id": "esoui:919",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:919",
+  "deleted": false,
+  "directories": [
+    "AUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl919/",
+  "fingerprint": "9011dcdcf863578ed869130bf3bb471d507bd98d23084fbba9bbf9be7e13054b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5540.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2773.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12433.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4362.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4358.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4356.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4360.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4361.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4374.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12432.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4377.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4376.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "919",
+  "source_url": "https://www.esoui.com/downloads/info919-AUI-AdvancedUI.html",
+  "stats": {
+    "downloads": 5417516,
+    "favorites": 2641,
+    "monthly_downloads": 6136
+  },
+  "title": "AUI - Advanced UI",
+  "updated_at": 1774451220000,
+  "version": "3.992"
+}

@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Rhyono/Enchanted-Quality__1635",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rhyono",
+  "canonical_id": "esoui:1635",
+  "category_id": "98",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:1635",
+  "deleted": false,
+  "directories": [
+    "EnchantedQuality"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1635/",
+  "fingerprint": "05eda4b82da20652fa1f740b6bd0a207690ba2e8a024be06e81020a96482029c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5992.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5991.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5990.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5993.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1635",
+  "source_url": "https://www.esoui.com/downloads/info1635-EnchantedQuality.html",
+  "stats": {
+    "downloads": 72458,
+    "favorites": 124,
+    "monthly_downloads": 109
+  },
+  "title": "Enchanted Quality",
+  "updated_at": 1772357708000,
+  "version": "1.35.1"
+}

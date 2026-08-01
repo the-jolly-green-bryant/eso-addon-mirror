@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/pills/Guild-Tools-En-Fr-Classic__884",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "pills",
+  "canonical_id": "esoui:884",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:884",
+  "deleted": false,
+  "directories": [
+    "guildtools"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl884/",
+  "fingerprint": "10749529f8c66e77dec07521ec51496e9c0cd9498329adce1dac2ae84eacad4b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2695.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "884",
+  "source_url": "https://www.esoui.com/downloads/info884-GuildToolsEnFrClassic.html",
+  "stats": {
+    "downloads": 3397,
+    "favorites": 2,
+    "monthly_downloads": 14
+  },
+  "title": "Guild Tools [En/Fr] Classic",
+  "updated_at": 1425433648000,
+  "version": "0.4.0"
+}

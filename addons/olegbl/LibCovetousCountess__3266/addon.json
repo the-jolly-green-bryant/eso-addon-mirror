@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/olegbl/LibCovetousCountess__3266",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "olegbl",
+  "canonical_id": "esoui:3266",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3266",
+  "deleted": false,
+  "directories": [
+    "LibCovetousCountess"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3266/",
+  "fingerprint": "e889c27ef54c8870036bde6d8325f8456b86b10ba16698ad68c5f38ef612e5a8",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3266",
+  "source_url": "https://www.esoui.com/downloads/info3266-LibCovetousCountess.html",
+  "stats": {
+    "downloads": 69279,
+    "favorites": 11,
+    "monthly_downloads": 1051
+  },
+  "title": "LibCovetousCountess",
+  "updated_at": 1780852266000,
+  "version": "1.03"
+}

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/necco889/CombatState__3725",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "necco889",
+  "canonical_id": "esoui:3725",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3725",
+  "deleted": false,
+  "directories": [
+    "CombatState"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3725/",
+  "fingerprint": "b1b2e097032a1dc6cfcef83ce8b557c908e75a5c87615b7207a1ceb0f652295e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12617.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12618.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12619.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3725",
+  "source_url": "https://www.esoui.com/downloads/info3725-CombatState.html",
+  "stats": {
+    "downloads": 1352,
+    "favorites": 1,
+    "monthly_downloads": 16
+  },
+  "title": "CombatState",
+  "updated_at": 1695628399000,
+  "version": "1.1.0"
+}

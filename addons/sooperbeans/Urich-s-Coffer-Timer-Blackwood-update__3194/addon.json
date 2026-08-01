@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/sooperbeans/Urich-s-Coffer-Timer-Blackwood-update__3194",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sooperbeans",
+  "canonical_id": "esoui:3194",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:3194",
+  "deleted": false,
+  "directories": [
+    "UCT"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3194/",
+  "fingerprint": "874e478f32f537b83df4190f6a479d41f5df665f345aa6e59d88e986e3afeb6a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3194",
+  "source_url": "https://www.esoui.com/downloads/info3194-UrichsCofferTimerBlackwoodupdate.html",
+  "stats": {
+    "downloads": 3483,
+    "favorites": 3,
+    "monthly_downloads": 18
+  },
+  "title": "Urich's Coffer Timer (Blackwood update)",
+  "updated_at": 1631248318000,
+  "version": "3.2.0"
+}

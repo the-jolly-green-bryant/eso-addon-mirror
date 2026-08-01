@@ -1,0 +1,89 @@
+## Title: |cE81B00S|cFFFFFFwiss |cE81B00K|cFFFFFFnife|r |c483D8Bv1.06.7|r
+## Version: 1.06.7
+## AddOnVersion: 1067
+## Author: |c556B2F@Nesferatum|r [EU]
+## Description: Swiss Knife this is a set of automated tools and various interface changes designed to simplify process of game
+## SavedVariables: SwissKnifeSavedVariables
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0>=37 LibCustomMenu>=682
+## OptionalDependsOn: FCOItemSaver LibChatMessage
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+;
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+;
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+
+; DISCLAIMER:
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms
+
+lang\en.lua
+lang\$(language).lua
+
+xml\Bindings.xml
+xml\Controls.xml
+xml\BankTransfer.xml
+xml\EditAbility.xml
+xml\EditUnwSet.xml
+xml\Equipment.xml
+xml\MainWindow.xml
+
+Globals.lua
+
+modules\data\Common.lua
+modules\data\Abilities.lua
+modules\data\Equipment.lua
+modules\data\Items.lua
+modules\data\Scenes.lua
+modules\data\Sets.lua
+modules\data\Traits.lua
+
+modules\helpers\Compress.lua
+modules\helpers\Common.lua
+modules\helpers\UserSettings.lua
+modules\helpers\Items.lua
+modules\helpers\Abilities.lua
+modules\helpers\Interaction.lua
+modules\helpers\Collectables.lua
+modules\helpers\Interface.lua
+modules\helpers\Mailer.lua
+modules\helpers\Tables.lua
+modules\helpers\TrackedItems.lua
+modules\helpers\Unwanted.lua
+
+menu\Bindings.lua
+
+modules\Collectables.lua
+modules\Craft.lua
+modules\Automation.lua
+modules\CustomDialogs.lua
+modules\Equipment.lua
+modules\Interface.lua
+modules\Interaction.lua
+modules\Mailer.lua
+modules\Scenes.lua
+modules\Variables.lua
+
+menu\ContextMenu.lua
+menu\Settings.lua
+menu\SlashCommands.lua
+
+SwissKnife.lua

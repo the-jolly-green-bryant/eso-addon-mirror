@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/NTak/NTak-Dialog__2290",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "NTak",
+  "canonical_id": "esoui:2290",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2290",
+  "deleted": false,
+  "directories": [
+    "NTakDialog"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2290/",
+  "fingerprint": "a6aa7ec7b836addfe4239045628faedc8a0f44608a5e98933cad281b99e15e99",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10803.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9396.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8172.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8089.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8168.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8169.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8170.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8171.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7861.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7798.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2290",
+  "source_url": "https://www.esoui.com/downloads/info2290-NTakDialog.html",
+  "stats": {
+    "downloads": 84554,
+    "favorites": 110,
+    "monthly_downloads": 305
+  },
+  "title": "NTak Dialog",
+  "updated_at": 1714312752000,
+  "version": "1.12.5"
+}

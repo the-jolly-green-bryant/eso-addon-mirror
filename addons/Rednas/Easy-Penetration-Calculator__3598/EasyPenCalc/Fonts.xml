@@ -1,0 +1,7 @@
+<GuiXml>
+	<Font name="EPCFontHeader" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" />
+	
+	<Font name="EPCFontNormal" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" />
+	<Font name="EPCFontNormalBold" font="$(BOLD_FONT)|$(KB_16)|soft-shadow-thin" />
+	<Font name="EPCFontSmall" font="$(MEDIUM_FONT)|$(KB_12)|soft-shadow-thin" />
+</GuiXml>

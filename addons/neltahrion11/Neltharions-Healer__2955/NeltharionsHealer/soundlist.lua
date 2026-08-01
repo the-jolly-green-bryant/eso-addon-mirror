@@ -1,0 +1,315 @@
+soundlist =   {
+  "Ability_MorphPurchased",
+  "Ability_SkillPurchased",
+  "Ability_Ultimate_Ready_Sound",
+  "Ability_UpgradePurchased",
+  "AvA_Gate_Closed",
+  "AvA_Gate_Opened",
+  "AvA_KeepCaptured",
+  "BG_CA_AreaCaptured_OtherTeam",
+  "BG_CA_AreaCaptured_OwnTeam",
+  "BG_CA_AreaCaptured_Moved",
+  "BG_CA_AreaCaptured_Spawned",
+  "BG_CTF_FlagCaptured",
+  "BG_CTF_TeamFlagCapture",
+  "BG_CTF_FlagReturned",
+  "BG_Countdown_Finish",
+  "BG_MedalReceived",
+  "BG_MB_BallReturned",
+  "BG_VictoryNear",
+  "BG_One_Minute_Warning",
+  "Countdown_Tick",
+  "Countdown_Warning",
+  "Duel_Accepted",
+  "Duel_Boundary_Warning",
+  "Duel_Forfeit",
+  "Duel_InviteReceived",
+  "Duel_Start",
+  "Duel_Won",
+  "ElderScroll_Captured_Aldmeri",
+  "ElderScroll_Captured_Daggerfall",
+  "ElderScroll_Captured_Ebonheart",
+  "Emperor_Abdicated",
+  "Emperor_Coronated_Aldmeri",
+  "Emperor_Coronated_Daggerfall",
+  "Emperor_Coronated_Ebonheart",
+  "Emperor_Deposed_Aldmeri",
+  "Emperor_Deposed_Daggerfall",
+  "Emperor_Deposed_Ebonheart",
+  "General_Alert_Error",
+  "General_FailedRequirements",
+  "Group_Disband",
+  "GroupElection_Requested",
+  "GroupElection_ResultLost",
+  "GroupElection_ResultWon",
+  "GroupElection_VotedSubmitted",
+  "Group_Invite",
+  "Group_Join",
+  "Group_Kick",
+  "Group_Leave",
+  "Group_Promote",
+  "LevelUp",
+  "New_Notification",
+  "New_NotificationTimed",
+  "Quest_Abandon",
+  "Quest_Complete",
+    "Raid_Trial_Completed",
+  "Skill_Gained",
+  "SkillLine_Leveled",
+  "SkillXP_DarkAnchorClosed",
+  "SkillXP_DarkFissureClosed",
+  "Stats_Purchase",
+  "Telvar_Gained",
+  "Telvar_Lost",
+  "Telvar_MultiplierMax",
+  "Telvar_MultiplierUp",
+  "Telvar_Transact",
+  "Voice_Chat_Alert_Channel_Made_Active",
+  "Voice_Chat_Menu_Channel_Joined",
+  "Voice_Chat_Menu_Channel_Left",
+  "Voice_Chat_Menu_Channel_Made_Active",
+  "Woodworker_Create_Tooltip_Glow",
+  "Woodworker_Extract_Start_Anim",
+  "Woodworker_Extracted_Booster",
+  "Woodworker_Failed_Extraction",
+  "Woodworker_Improve_Tooltip_Glow_Fail",
+  "Woodworker_Improve_Tooltip_Glow_Success",
+  "WritVoucher_Transact",
+}
+
+
+soundlistALL =   {
+  "Notifications_Open",
+  "Notifications_Close",
+  -- Dialog sounds
+  "Dialog_Show",
+  "Dialog_Accept",
+  "Dialog_Decline",
+  -- Login sounds
+  "Console_Game_Enter",
+  --character create sounds
+  "Click_CC_Selector",
+  "Click_ClassButton",
+  "Lock_Value",
+  "Unlock_Value",
+  "Preview_Gear",
+  "Console_Character_Click",
+  -- General Failed Requirement
+  "General_Alert_Error",
+  -- Notification sounds
+  "New_Notification",
+  "QuestShare_Accepted",
+  "QuestShare_Declined",
+  "Defer_Notification",
+  "New_NotificationTimed",
+  -- Scripted World Event sounds
+  "Quest_Shared",
+  "QuestShare_Accepted",
+  "QuestShare_Declined",
+  -- Mail Sounds
+  "New_Mail",
+  "Mail_Sent",
+  -- Achievement sounds
+  "Achievement_Awarded",
+  --Quest sounds
+  "Quest_Accept",
+  "Quest_Abandon",
+  "Quest_Complete",
+  "Quest_StepFailed",
+  "Quest_Shared",
+  "Objective_Accept",
+  "Objective_Complete",
+  "Objective_Discovered",
+  --Inventory sounds
+  "InventoryItem_ApplyCharge",
+  "InventoryItem_ApplyEnchant",
+  "InventoryItem_Repair",
+  "InventoryItem_MarkAsJunk",
+  "InventoryItem_NotJunk",
+  "Lock_Value",
+  "Unlock_Value",
+  --Collection sounds
+  "Collectible_Unlocked",
+  "Collectible_On_Cooldown",
+  --Item sounds
+  "Money_Transact",
+  --Alliance Point sounds
+  "AlliancePoint_Transact",
+  --Tel Var sounds
+  "Telvar_Gained",
+  "Telvar_Lost",
+  "Telvar_MultiplierUp",
+  "Telvar_MultiplierMax",
+  "Telvar_Transact",
+  -- Undaunted key sounds
+  "Undaunted_Transact",
+  --Justice sounds
+  "Justice_StateChanged",
+  "Justice_NowKOS",
+  "Justice_NoLongerKOS",
+  "Justice_GoldRemoved",
+  "Justice_ItemRemoved",
+  "Justice_PickpocketBonus",
+  "Justice_PickpocketFailed",
+  --Stealth sounds
+  "Stealth_Hidden",
+  "Stealth_Detected",
+  --Grouping sounds
+  "Group_Invite",
+  "Group_Join",
+  "Group_Leave",
+  "Group_Kick",
+  "Group_Disband",
+  --LFG sounds
+  "LFG_Search_Started",
+  "LFG_Search_Finished",
+  "LFG_Find_Replacement",
+  --Group election sounds
+  "GroupElection_Requested",
+  "GroupElection_VotedSubmitted",
+  "GroupElection_ResultWon",
+  "GroupElection_ResultLost",
+  --Battleground sounds
+  "BG_MedalReceived",
+  "BG_VictoryNear",
+  "BG_Countdown_Finish",
+  "BG_MatchWon",
+  "BG_MatchLost",
+  "BG_One_Minute_Warning",
+  -- Battleground capture flag objective sounds
+  "BG_CTF_FlagTaken_OwnTeam",
+  "BG_CTF_FlagCaptured",
+  "BG_CTF_TeamFlagCapture",
+  -- Battleground murderball objective sounds
+  "BG_MB_BallTaken_OwnTeam",
+  "BG_MB_BallTaken_OtherTeam",
+  -- Battleground capture area sounds
+  "BG_CA_AreaCaptured_OwnTeam",
+  "BG_CA_AreaCaptured_OtherTeam",
+  "BG_CA_AreaCaptured_Spawned",
+  "BG_CA_AreaCaptured_Moved",
+  -- AVA sounds
+  "ElderScroll_Captured_Aldmeri",
+  "ElderScroll_Captured_Ebonheart",
+  "ElderScroll_Captured_Daggerfall",
+  "AvA_Gate_Opened",
+  "AvA_Gate_Closed",
+  "Emperor_Coronated_Aldmeri",
+  "Emperor_Coronated_Ebonheart",
+  "Emperor_Coronated_Daggerfall",
+  "Emperor_Abdicated",
+  --Level sounds
+  "LevelUp",
+  "Skill_Gained",
+  "SkillLine_Added",
+  "SkillLine_Leveled",
+  "EnlightenedState_Gained",
+  "EnlightenedState_Lost",
+  -- Guild
+  "GuildRoster_Added",
+  "GuildRoster_Removed",
+  "Guild_Self_Joined",
+  "Guild_Self_Left",
+  --Ability slotting sounds
+  "Ability_Ultimate_Ready_Sound",
+  "Ability_Companion_Ultimate_Ready_Sound",
+  "Ability_Synergy_Ready_Sound",
+  --Skill point allocation
+  "Ability_SkillPurchased",
+  "Ability_Respec_MorphPurchased",
+  --Lore Library sounds
+  "Book_Acquired",
+  "Book_Collection_Completed",
+  --Lock/lockpick sounds
+  "Lockpicking_success",
+  "Lockpicking_unlocked",
+  "Lockpicking_lockpick_broke",
+  --Quickslot Sounds
+  "Quickslot_Use_Empty",
+  --Skill XP Sounds
+  "SkillXP_DarkAnchorClosed",
+  "SkillXP_DarkFissureClosed",
+  --Stats Sounds
+  "Stats_Purchase",
+  "Console_Stats_Single_Purchase",
+  --Player Action Result Sounds
+  "PlayerAction_NotEnoughMoney",
+  -- Trade Sounds
+  "Trade_InviteReceived",
+  "Trade_ParticipantReady",
+  "Trade_ParticipantReconsider",
+  -- Provisioning
+  "Provisioning_Opened",
+  "Provisioning_Closed",
+  "Recipe_Learned",
+  "Default_Recipe_Crafted",
+  -- Enchanting
+  "Enchanting_Create_Tooltip_Glow",
+  "Enchanting_Extract_Start_Anim",
+  -- Content Announcements
+  "Display_Announcement",
+  --Countdown Sounds
+  "Countdown_Warning",
+  --Death Recap Sounds
+  "DeathRecap_AttackShown",
+  "DeathRecap_KillingBlowShown",
+  -- Champion Sounds
+  "Champion_PointsCommitted",
+  "Champion_StarUnlocked",
+  "Champion_ZoomIn",
+  "Champion_ZoomOut",
+  "Champion_StarStageUp",
+  "Champion_PointGained",
+  "Champion_SystemUnlocked",
+  "Champion_RespecToggled",
+  "Champion_PendingPointsCleared",
+  -- Market Sounds
+  "Market_CrownsSpent",
+  -- Gamepad Player Menu Sounds
+  "PlayerMenu_EntryDisabled",
+  -- Voice Chat Sounds
+  "Voice_Chat_Menu_Channel_Joined",
+  "Voice_Chat_Menu_Channel_Left",
+  "Voice_Chat_Menu_Channel_Made_Active",
+  -- HUD Sounds
+  "HUD_ArmorBroken",
+  "HUD_WeaponDepleted",
+  -- Duel Sounds
+  "Duel_InviteReceived",
+  "Duel_Accepted",
+  "Duel_Start",
+  "Duel_Won",
+  "Duel_Forfeit",
+  "Duel_Boundary_Warning",
+  -- Crown Crates
+  "CrownCrates_Deal_Primary",
+  "CrownCrates_Deal_Bonus",
+  "CrownCrates_Gain_Gems",
+  "CrownCrates_Purchased_With_Gems",
+  "CrownCrates_Manifest_In",
+  "CrownCrates_Card_Flipping",
+  "CrownCrates_Gem_Item",
+  -- CSA Countdown
+  "Countdown_Tick",
+  --Level Up Reward
+  "LevelUpReward_Claim",
+  --Daily Login Rewards
+  "DailyLoginRewards_ClaimAnnouncement",
+  "DailyLoginRewards_ClaimFanfare",
+  --Gifting
+  "GiftInventoryView_FanfareBlast",
+  "GiftInventoryView_FanfareSparks",
+  "GiftInventory_ActionClaim",
+  --Daedric Artifacts
+  "DaedricArtifact_Spawned",
+  "DaedricArtifact_Revealed",
+  "DaedricArtifact_Despawned",
+  --Code Redemption
+  "CodeRedemption_Success",
+  --Digging
+  "Antiquities_Digging_Dig_Power_Refund",
+  "Antiquities_Digging_Antiquity_Completed",
+  "Antiquities_Digging_Failure",
+  -- Endeavors
+  "Endeavor_Complete",
+}

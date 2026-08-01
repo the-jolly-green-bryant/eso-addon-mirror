@@ -1,0 +1,15 @@
+## Title: Gear Overview
+## APIVersion: 101047
+## Version: 0.11.0
+## Description: A tool to track gear sets for submitting for discord roles
+## Author: @ronnievdc
+## DependsOn: LibScroll
+## OptionalDependsOn: LibDebugLogger LibAddonMenu-2.0 IIfA
+
+GearOverview.lua
+GearOverviewPresets.lua
+GearOverviewUtils.lua
+GearOverviewControls.lua
+GearOverviewUI.lua
+GearOverview.xml
+bindings.xml

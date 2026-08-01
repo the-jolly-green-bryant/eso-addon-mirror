@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Phinix/SALTI---Currency-Totals__1579",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phinix",
+  "canonical_id": "esoui:1579",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:1579",
+  "deleted": false,
+  "directories": [
+    "SALTI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1579/",
+  "fingerprint": "eba56e01134d1bcc7226785968b31cfbd53b61be0721916a5509a465ec0f3fa6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13571.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13570.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1579",
+  "source_url": "https://www.esoui.com/downloads/info1579-SALTI-CurrencyTotals.html",
+  "stats": {
+    "downloads": 43932,
+    "favorites": 61,
+    "monthly_downloads": 41
+  },
+  "title": "SALTI - Currency Totals",
+  "updated_at": 1733646100000,
+  "version": "1.47"
+}

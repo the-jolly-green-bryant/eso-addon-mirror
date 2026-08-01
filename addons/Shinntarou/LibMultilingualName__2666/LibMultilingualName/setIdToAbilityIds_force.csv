@@ -1,0 +1,84 @@
+deleted,setId,abilityIds,setName,dumpedAbilityIds,devTag,comment
+,19,57162,Vestments of the Warlock,,,Not match any skills
+,23,29103,Archer's�?Mind ,"29103,57167",,
+,27,29104,Fiord's�?Legacy ,"29104,57168 ",,
+,34,29107,Night�?Mother's�?Embrace ,"57169,29107 ",,
+,36,29118,Armor�?of�?the�?Veiled�?Heritance ,"29118,141769,127273 ",,
+,41,29109,Whitestrake's�?Retribution ,"49236,29109",,
+,49,29111,Shadow�?of�?the�?Red�?Mountain ,"34383,29111 ",,
+,75,32759,Torug's�?Pact ,"32759,57187 ",,
+,84,32801,Orgnum's�?Scales ,"137154,32801 ",,
+,86,32803,Queen's�?Elegance ,"135940,32803 ",,
+,102,32825,Duneripper's Scales,"32825,134930",,
+,109,32833,Light of Cyrodiil,"111551,32833",,same name
+1,112,"19165,32836",Night Terror,"19165,32836",No Necessary,
+,126,,Grace of the Ancients,47355,,same name
+1,131,"47350,47348",Bastion of the Heartland,"47350,47348",No Necessary,
+,139,81520,Wise�?Mage ,"81520,51432 ",,
+,145,52710,Way�?of�?Fire ,"52710,52711 ",,
+,169,59595,Valkyn�?Skoria ,"59596,59595 ",,
+1,180,61763,Powerful Assault,,,Not match any skills → 20220823 modified
+,206,,Agility ,"45572,149166 ",,
+,207,,Law�?of�?Julianos ,"71017,79639 ",,
+,209,71073,Armor�?of�?the�?Code ,"71073,71075 ",Not Yet Implemented,20211101updated: 71075deleted
+,211,71101,Permafrost ,"50556,86117,71101 ",,
+,227,75673,Bahraha's�?Curse ,"77888,75673 ",,
+,228,75717,Syvarra's�?Scales ,"76573,75717 ",,
+,237,76940,Leki's Focus,,,Not match any skills
+,238,76946,Fasalla's Guile,"76946,146041",,same name
+,243,79110,Hide�?of�?Morihaus ,"79110,79123 ",,
+,245,79192,Sithis'�?Touch ,"79192,79200 ",,
+,281,,Armor of the Trainee,85541,,same name
+,285,85567,Vampire�?Lord ,"85567,129375 ",,
+,305,,Treasure�?Hunter ,"142218,60566 ",,
+,315,99762,Stinging�?Slashes ,"100070,99762 ",Perfected,
+,316,99766,Caustic�?Arrow ,"99766,100105 ",Perfected,
+,348,102008,Curse�?of�?Doylemish ,"102023,102008 ",,
+,358,99896,Perfected�?Defensive�?Position ,100461,Perfected,todo fix unmatch bug
+,364,99896,Defensive�?Position ,100461,Perfected,todo fix unmatch bug
+,369,99787,Merciless�?Charge ,"99787,72813 ",Perfected,
+,372,99851,Thunderous�?Volley ,"99852,99851,75240,72470 ",Perfected,
+,373,99875,Crushing Wall,"99875,100155",Perfected,
+,374,99886,Precise�?Regeneration ,"99886,100161 ",Perfected,
+,389,107202,Arms�?of�?Relequen ,"109085,107202 ",Perfected,
+,393,107202,Perfected�?Arms�?of�?Relequen ,"109085,107202 ",Perfected,
+,402,111200,Moon�?Hunter ,"111200,111204 ",,
+,411,113574,Gallant�?Charge ,"113574,113609 ",Perfected,
+,413,113616,Spectral�?Cloak ,"113617,113616 ",Perfected,
+,415,113687,Wild�?Impulse ,"113687,115061,115003 ",Perfected,
+,423,113574,Perfected�?Gallant�?Charge ,"113574,113609 ",Perfected,
+,425,113616,Perfected�?Spectral�?Cloak ,"113617,113616 ",Perfected,
+,427,113687,Perfected�?Wild�?Impulse ,"113687,115061,115003 ",Perfected,
+,433,117059,Frozen�?Watcher ,"117059,117082 ",,
+,446,121875,Perfected�?Claw�?of�?Yolnahkriin ,,Perfected,typo
+,451,121875,Claw of Yolnahkriin,,Perfected,typo
+,472,133281,Titanborn�?Strength ,"134273,133287,133281 ",,
+,476,133430,Grave Guardian,"135554,133430",,
+,489,135736,Eternal�?Vigor ,"135739,135736 ",,
+,490,135874,Stuhn's�?Favor ,"141916,135874 ",,
+,492,136045,Kyne's Wind,"136045,137992",Perfected,20211101
+,493,136045,Perfected Kyne's Wind,"136045,137992",Perfected,20211101
+,498,138012,Yandir's�?Might ,"138012,135952,135944 ",Perfected,
+,499,138012,Perfected�?Yandir's�?Might ,"138012,135952,135944 ",Perfected,
+,501,136116,Thrassian�?Stranglers ,"136116,146209 ",,
+,520,136347,Malacath's�?Band�?of�?Brutality ,"139583,136347 ",,
+,522,99787,Perfected�?Merciless�?Charge ,"99787,72813 ",Perfected,
+,525,99851,Perfected�?Thunderous�?Volley ,"99852,99851,75240,72470 ",Perfected,
+,526,99875,Perfected Crushing Wall,"99875,100155",Perfected,
+,527,99886,Perfected�?Precise�?Regeneration ,"99886,100161 ",Perfected,
+,530,99762,Perfected�?Stinging�?Slashes ,"100070,99762 ",Perfected,
+,531,99766,Perfected�?Caustic�?Arrow ,"99766,100105 ",Perfected,
+,539,"147307, 147300",Red Eagle's Fury,"147307,147300 ",Not Yet Implemented,
+,560,147786,Point-Blank�?Snipe ,"147792,147786 ",Perfected,
+1,561,147828,Wrath�?of�?Elements ,147828,Perfected,
+,566,147786,Perfected�?Point-Blank�?Snipe ,"147792,147786 ",Perfected,
+1,567,147828,Perfected�?Wrath�?of�?Elements ,147828,Perfected,
+,569,150703,True-Sworn�?Fury ,"150705,150703,150707 ",,
+,579,154272,Frostbite ,"50568,154272 ",,
+,586,154716,Sul-Xan's Torment,"154716,157054",Perfected,20211101
+,590,154716,Perfected Sul-Xan's Torment,"154716,157054",Perfected,20211101
+,626,163095,Belharza's Band,"163095,163524",,20211101
+,311,85623,Rattlecage,,,None match
+,648,171900,Pearlescent Ward,"171900,172621",Perfected,20220606
+,651,171900,Pearlescent Ward,"171900,172621",Perfected,20220606
+,658,172721,Oakensoul Ring,,,None match

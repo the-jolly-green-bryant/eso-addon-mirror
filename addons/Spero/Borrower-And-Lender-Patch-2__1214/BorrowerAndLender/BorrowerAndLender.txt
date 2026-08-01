@@ -1,0 +1,24 @@
+## Title: Borrower And Lender
+## Author: Wobin and CrazyDutchGuy
+## Version: 3.4d
+## APIVersion: 100012
+## SavedVariables: BorrowerAndLender_Settings
+
+libs\LibStub\LibStub.lua
+libs\AceTimer-3.0\AceTimer-3.0.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\controls\submenu.lua
+libs\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\controls\colorpicker.lua
+libs\LibAddonMenu-2.0\controls\custom.lua
+libs\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\controls\dropdown.lua
+libs\LibAddonMenu-2.0\controls\editbox.lua
+libs\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\controls\slider.lua
+libs\LibAddonMenu-2.0\controls\texture.lua
+
+BorrowerAndLender.lua
+Bindings.xml

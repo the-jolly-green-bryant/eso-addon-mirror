@@ -1,0 +1,9 @@
+2026.07.31
+- Added audio feedback to clickable things.
+
+** POSSIBLE FUTURE OPTIONS **
+- Save default guild list sorting
+- Add ability to accept guild invites.
+
+
+

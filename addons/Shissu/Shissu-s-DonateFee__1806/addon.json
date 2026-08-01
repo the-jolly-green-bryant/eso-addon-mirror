@@ -1,0 +1,36 @@
+{
+  "archive_path": "addons/Shissu/Shissu-s-DonateFee__1806",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shissu",
+  "canonical_id": "esoui:1806",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    }
+  ],
+  "content_id": "esoui:1806",
+  "deleted": false,
+  "directories": [
+    "ShissuDonateFee",
+    "ShissuFramework"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1806/",
+  "fingerprint": "156ae1a84311f62a1c5316a171640f7ce10d1798af84daa2b9a9fa1306c60441",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1806",
+  "source_url": "https://www.esoui.com/downloads/info1806-ShissusDonateFee.html",
+  "stats": {
+    "downloads": 8483,
+    "favorites": 7,
+    "monthly_downloads": 7
+  },
+  "title": "Shissu's DonateFee",
+  "updated_at": 1521921775000,
+  "version": "1.1.0"
+}

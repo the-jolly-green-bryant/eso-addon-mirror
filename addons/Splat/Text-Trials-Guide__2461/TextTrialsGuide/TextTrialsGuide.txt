@@ -1,0 +1,20 @@
+## Title: |cEFEBBEText Trials Guide 1.2.8|r
+## Description: Provides text based trial guides.
+## Author: |c009ad6Splat|r
+## Version: 1.2.8
+## APIVersion: 101031
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: TTGSavedVariables
+
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+TextTrialsGuide.lua
+TextTrialsGuide.xml
+bindings.xml
+lang/en.lua
+lang/$(language).lua

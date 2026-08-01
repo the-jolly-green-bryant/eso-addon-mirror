@@ -1,0 +1,43 @@
+VCAP2 2.2.0-test2
+==================
+
+TEST BUILD - based on 2.2.0-test1 and the working VCAP2 2.1.6 source.
+
+Purpose
+-------
+Restore VCAP2's original intended addon-filter model now that spoken tag stripping works:
+addon/local narration is opt-in, while addon tags remain visible in the chat window.
+
+Changes from test1
+------------------
+- Added automatic discovery of leading [AddonTag] text on CHAT_ROUTER:AddSystemMessage traffic.
+- Newly detected tags are stored automatically in VCAP2_SV. No manual /vcap2reg step is required.
+- Every newly detected or previously registered tag defaults to narration OFF in this test build.
+- Each detected tag automatically receives its own narration ON/OFF checkbox in settings.
+- Replaced the OFF / ALL / REGISTERED ONLY dropdown with a simpler opt-in model.
+- Added "Narrate Untagged Addon / Local Messages". It defaults OFF.
+- Untagged AddSystemMessage traffic is therefore silent by default.
+- "Read Addon Tags" now affects narration only:
+    ON  -> narrator speaks the leading [Tag].
+    OFF -> narrator strips the leading [Tag] before speech.
+  In both cases the original tagged line remains unchanged and visible in the ESO chat window.
+- Existing tag records use a new `narrate` field rather than rewriting the legacy `muted` field.
+  This reduces the chance of the test build changing behaviour if the user returns to a backup build.
+- Manual tag add/remove controls remain as a fallback, but manually added tags also start OFF.
+- /vcap2clients now reports narration ON/OFF state.
+- /vcap2filtest now emits [VCAP2Test] so the automatic discovery flow can be tested directly.
+
+Expected test flow
+------------------
+1. Run /vcap2filtest. The tagged message should remain visible in chat but should NOT be spoken.
+2. Open VCAP2 settings. [VCAP2Test] should now appear automatically under Detected Addon Tags, OFF.
+3. Turn [VCAP2Test] ON and run /vcap2filtest again. The message should now be narrated.
+4. Toggle "Read Addon Tags" to confirm only the spoken tag changes; the chat line must remain unchanged.
+5. Leave "Narrate Untagged Addon / Local Messages" OFF and confirm anonymous addon chatter is silent.
+
+Safety
+------
+- SavedVariables version remains 7.
+- Existing normal chat-category settings are retained.
+- ESO event-driven system narration remains controlled by the separate ESO System category toggle.
+- VCAP2 filters SCREEN_NARRATION_MANAGER output only; it does not rewrite or remove chat lines.

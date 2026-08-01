@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/ownedbynico/Shalk-Tracker-Warden-Subterranean-Assault-Tracker__2897",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ownedbynico",
+  "canonical_id": "esoui:2897",
+  "category_id": "149",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2897",
+  "deleted": false,
+  "directories": [
+    "ShalkTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2897/",
+  "fingerprint": "8e5cc6f957e6be54705039aac978f28223cebb2bab2d33b9166f4420746febd4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9784.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9785.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2897",
+  "source_url": "https://www.esoui.com/downloads/info2897-ShalkTrackerWardenSubterraneanAssaultTracker.html",
+  "stats": {
+    "downloads": 12108,
+    "favorites": 3,
+    "monthly_downloads": 60
+  },
+  "title": "Shalk Tracker (Warden Subterranean Assault Tracker)",
+  "updated_at": 1610371374000,
+  "version": "1.0"
+}

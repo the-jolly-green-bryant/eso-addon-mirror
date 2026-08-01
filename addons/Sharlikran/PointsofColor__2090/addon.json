@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Sharlikran/PointsofColor__2090",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:2090",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2090",
+  "deleted": false,
+  "directories": [
+    "PointsofColor"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2090/",
+  "fingerprint": "89cc870a8a3e40c8ae280d12fb527b300e965aa9467b393e328f44815eeb8839",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7413.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7272.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7414.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7415.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7111.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2090",
+  "source_url": "https://www.esoui.com/downloads/info2090-PointsofColor.html",
+  "stats": {
+    "downloads": 99599,
+    "favorites": 198,
+    "monthly_downloads": 295
+  },
+  "title": "PointsofColor",
+  "updated_at": 1762912318000,
+  "version": "2.65"
+}

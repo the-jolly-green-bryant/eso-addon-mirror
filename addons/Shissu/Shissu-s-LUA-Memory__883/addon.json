@@ -1,0 +1,36 @@
+{
+  "archive_path": "addons/Shissu/Shissu-s-LUA-Memory__883",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shissu",
+  "canonical_id": "esoui:883",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:883",
+  "deleted": false,
+  "directories": [
+    "ShissuFramework",
+    "ShissuLUAMemory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl883/",
+  "fingerprint": "b1b520b24c791904c97922d40cca3c8b69319a5b0eb1edf947423ec77aa1a035",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "883",
+  "source_url": "https://www.esoui.com/downloads/info883-ShissusLUAMemory.html",
+  "stats": {
+    "downloads": 337096,
+    "favorites": 251,
+    "monthly_downloads": 149
+  },
+  "title": "Shissu's LUA Memory",
+  "updated_at": 1608408742000,
+  "version": "2.0.1.9"
+}

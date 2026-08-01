@@ -1,0 +1,8 @@
+## APIVersion: 100023
+## Title: Auto Daily Rewards - Notifications
+## Version: 1.0
+## AddOnVersion: 1
+## Author: SDPhantom
+## DependsOn: AutoDailyRewards
+
+AutoDailyRewards_Notifications.lua

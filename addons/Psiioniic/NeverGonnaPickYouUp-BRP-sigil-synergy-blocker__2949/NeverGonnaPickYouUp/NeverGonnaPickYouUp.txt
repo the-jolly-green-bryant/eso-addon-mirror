@@ -1,0 +1,10 @@
+## Title: NeverGonnaPickYouUp (sigil blocker)
+## Author: Psiioniic
+## Version: 0.0.3
+## AddOnVersion: 003
+## IsLibrary: false
+## APIVersion: 100033
+## DependsOn: LibAddonMenu-2.0
+
+NeverGonnaPickYouUp.lua
+

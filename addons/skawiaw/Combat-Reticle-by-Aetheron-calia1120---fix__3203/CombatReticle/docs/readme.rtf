@@ -1,0 +1,138 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033\deflangfe1033{\fonttbl{\f0\fmodern\fprq1\fcharset0 Courier New;}{\f1\fnil\fcharset2 Symbol;}}
+{\*\generator Riched20 10.0.14393}{\*\mmathPr\mdispDef1\mwrapIndent1440 }\viewkind4\uc1 
+\pard\widctlpar\b\f0\fs24 COMBAT RETICLE\par
+\b0\fs21 Author: Aetheron, updated by Calia1120\par
+Version 2.1.1\par
+\par
+Combat Reticle is a graphical add-on that greatly enhances the visibility and utility of the on-screen reticle used for targeting and interacting with items, NPCs, and other players in the game world. The primary goal is to make the reticle more visible during combat to improve targeting accuracy. This is accomplished by allowing the user to customize the reticle image, color, opacity, scale, rotation, and animation mode. A customized reticle can either use a single image or include an addition overlay image with its own independent visual settings. Considering the large number of included reticle images (73 and counting), and the fact that there are ten distinct reticle modes that can be used and configured, the result is a nearly infinite number of reticle configuration possibilities! (for the math geeks, it's over 1e300 combinations!)\par
+\par
+\ul\b\fs22 FEATURES\par
+\ulnone\b0\fs21 * Twelve configurable reticle modes (including four stealth/disguised modes)\par
+* Customize reticle image, color, opacity, scale, rotation, and animation\par
+* Overlay mode for composite reticles\par
+* 78 available reticle images to choose from\par
+* Rotation includes plain and pendulum modes\par
+* Animation can modulate opacity, saturation, or scale\par
+* Combat-mode reticle can indicate on-target for enemies and/or friendlies with distinct reticle configuration\par
+* Interaction mode can indicate empty/blocked items and owned items (stealing)\par
+* A variety of pre-made themes for easy and fast configuration\par
+* Ten quick slots to store and retrieve configuration sets\par
+* Reticle brightness control (with hot-key mapping)\par
+* Allows on-screen interaction and/or stealth text to be hidden or shown\par
+* Anti-flicker reticle mode filter\par
+* High-performance implementation, CPU-intensive features can be disabled\par
+* Comprehensive configuration panel with "live" reticle preview\par
+* Compatible with some reticle addons that display target information, such as Rainbow Reticle.\par
+\par
+Note: Combat Reticle does not acquire or display any target data. This is partly due to performance considerations in large PvP battles, and partly due to a preference for a minimal UI. If you would like to have target data, it's possible that Combat Reticle could coexist with another reticle add-on, if it only adds target-data text.\par
+\par
+\ul\b\fs22 RETICLE MODES\par
+\ulnone\b0\fs21 Combat Reticle supports nine specific reticle modes. Each mode can be customized, disabled, or set to game default (i.e. show standard ESO reticle). Stealth modes utilize the default ESO "stealth eye" as the base reticle, but an overlay image can be used with full customization options. The reticle modes are:\par
+\par
+
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li360\b Interactive\b0  - An interactive item or friendly NPC/player character is targeted.\par
+{\pntext\f1\'B7\tab}\b Target Hostile\b0  - An enemy (hostile) mob, NPC, or player character is targeted and range is close enough to activate skill bar. Like the skill bar, this does not always mean that the target is close enough to attack.\par
+{\pntext\f1\'B7\tab}\b Target Neutral\b0  - An attackable neutral mob is targeted and range is similar to "target hostile" mode (skill bar is not shown until unit is attacked).\par
+{\pntext\f1\'B7\tab}\b Combat\b0  - Player is engaged in combat.\par
+{\pntext\f1\'B7\tab}\b Combat Hostile\b0  - Player is engaged in combat, reticle is over a hostile unit.\par
+{\pntext\f1\'B7\tab}\b Combat Friendly\b0  - Player is engaged in combat, reticle is over a friendly unit.\par
+{\pntext\f1\'B7\tab}\b Normal\b0  - Default reticle mode (i.e. none of the above modes and not stealthed or disguised).\par
+{\pntext\f1\'B7\tab}\b Stealth Normal\b0  - Player is hidden and no other reticle modes apply.\par
+{\pntext\f1\'B7\tab}\b Stealth Interactive\b0  - Player is hidden and an item or friendly NPC/player character is targeted and can be interacted with.\par
+{\pntext\f1\'B7\tab}\b Stealth Target Neutral\b0  - Player is hidden and an attackable neutral mob is targeted.\par
+{\pntext\f1\'B7\tab}\b Stealth Target Hostile\b0  - Player is hidden and an enemy (hostile) mob, NPC, or player character is targeted.\par
+{\pntext\f1\'B7\tab}\b Stealth Combat\b0  - Player is hidden and engaged in combat.\par
+
+\pard\widctlpar\par
+\ul\b INSTALLATION\par
+\ulnone\b0 Install by unzipping the downloaded into your "Elder Scrolls Online/live/AddOns" directory. (It should create a "Combat Reticle" directory there.) You may need to enable the add-on from the ESO client add-on menu.\par
+\par
+\ul\b SLASH COMMANDS\par
+\ulnone\b0 Combat Reticle uses a single slash command, "/cr", with optional parameters:\par
+\par
+
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li450 If no parameters are given, the Combat Reticle configuration panel is shown.\par
+{\pntext\f1\'B7\tab}If a number between 0 and 9 is given, that quick slot is loaded (if not empty)\par
+{\pntext\f1\'B7\tab}If one or more "+" characters are specified ("+++"), brightness is increased proportionately\par
+{\pntext\f1\'B7\tab}If one or more "-" characters are specified ("---"), brightness is decreased proportionately\par
+{\pntext\f1\'B7\tab}Any other text is treated as a theme name, and that theme is loaded if it exists\par
+
+\pard\widctlpar\par
+\ul\b\fs22 HOT-KEYS\par
+\ulnone\b0\fs21 Hot-keys can be assigned to increase and decrease reticle brightness. These hot-key mappings are shown under the "UI" section of the main controls menu.\par
+\par
+\ul\b\fs22 CONFIGURATION\par
+\ulnone\b0\fs21 Combat Reticle uses LibAddOnMenu 2.0 for configuration settings, so all settings can be found under the "Addon Settings" menu of the main menu. Selecting "Combat Reticle" from the add-on menu will show the Combat Reticle settings panel which contains settings for themes, textures, colors, and scale for all reticle modes. You can also use "/cr" to open the settings panel directly. Any changes settings made are automatically reflected in the current reticle (no need to /reloadui).\par
+\par
+\b Notes on Reticle Brightness\par
+\b0 Reticle brightness is a dynamic setting that can only be adjusted by slash commands or hot-keys. Whenever the Combat Reticle configuration panel is displayed, reticle brightness is reset to maximum. Also, reticle brightness only affects custom reticles - any reticle modes set to "default" type will continue to display at default brightness.\par
+\par
+\b Themes\par
+\b0 If you don't want to spend a lot of time tweaking reticle settings, you can just select and load a theme. You can also load a theme as a starting point for customization. Note that when loading a theme, all current setting will be overwritten (you can save settings to quick slots for later - see below).\par
+\par
+\ul\b\fs22 Reticle Settings (Basic)\par
+\ulnone\b0\fs21 All reticle settings except rotation and animation will be reflected in the "live" reticle preview shown under each mode sub-menu. (The left-hand preview backdrop is a typical Cyrodiil landscape.) When an overlay is enabled, it is always drawn on top of the base image (keep this in mind when attempting background/foreground effects).\par
+\par
+\b Reticle type\par
+\b0 A reticle type of "None" will result in no reticle being shown in that mode (useful for better immersion). Selecting "Default" type causes the default Zenimax reticle to be shown for the given reticle. Choosing the "Custom" type enables selection of custom image, color, scale, and other advanced options. The "Disabled" type differs from "None" in that the associated reticle mode is ignored (i.e. reverts to normal mode).\par
+\par
+\b Image Category\par
+\b0 This options just filters the number of choices presented in the "Image" list box below it.\par
+\par
+\b Image\b0\par
+This setting selects a custom image (base or overlay) to use for a reticle.\par
+\par
+\b Color\b0\par
+This option sets the color and opacity for the base or overlay image.\par
+\par
+\b Scale\b0\par
+This option sets the size for the base or overlay image (100%=full size).\par
+\par
+\b Enable overlay image\b0\par
+This option allows an overlay image to be configured (same options as base image).\par
+\par
+\ul\b\fs22 Reticle Settings (Advanced)\par
+\ulnone\b0\fs21 The "Advanced" options for each reticle mode contain settings for rotation and animation (or modulation). Rotation and animation can be selected independently and both can be active at once on a reticle. Each can also apply to the base and overlay reticle images independently.\par
+\par
+Rotation can be either disabled (None), clockwise (CW), counter clockwise (CCW), or one of three pendulum motions (Swing30 through Swing 90). The number in the "swing" settings is the maximum tilt in degrees. Rotation speed sets angular velocity (1 = slow, 100 = fast).\par
+\par
+Animation involves a signal that modulates a reticle property (much like an old analog synthesizer). The signal can be a sine wave, square wave, ramp-up, or ramp-down. The properties that can be modulated are transparency, color saturation, and image scale. The speed slider affects... animation speed (1 = slow, 100 = fast).\par
+\par
+The "modulation level" slider adjusts how "deep" the modulation effect is. When set to 0, the effect is minimal (off actually); whereas, at 100, the effect is maximized.\par
+\par
+\b Stealth Reticle Settings\par
+\b0 The only difference with stealth reticle configuration compared to other reticle settings is that only scale and color can be configured for the base reticle (which is hard-coded to the built-in stealth eye). The overlay image is fully configurable. Note that there is no "stealth combat" mode because once combat begins, stealth mode is cancelled.\par
+\par
+\b Note\b0 : If a non-stealth reticle mode is set to "disabled", then the corresponding stealth reticle mode will be disabled as well. Other than that, stealth reticle modes are independent of "regular" reticle modes.\par
+\par
+\ul\b\fs22\par
+Miscellaneous\par
+\ulnone\fs21 Show stealth and disguised text\b0\par
+This option shows or hides the text shown under the ZOS default stealth and disguised reticles (thanks go to "facit" on esoui for showing me the calls to do this!).\par
+\par
+\b Show interaction text\b0\par
+This option shows or hides the text that is normally shown when targeting an interactive item - usually says something like "(E) to use".\par
+\par
+\b Anti-flicker Filter\b0\par
+You may also enable or disable the reticle anti-flicker filter. Disabling this filter will cause the reticle mode to switch instantly for targeting and interaction modes (other modes always react instantly). This can cause distracting mode flicker when exploring due to the many roaming creatures that inhabit Tamriel. Note: the anti-flicker filter does not apply to stealth modes.\par
+\par
+\b Empty/blocked items\b0\par
+This setting configures how interact mode functions when targeting empty containers or blocked doors. "Normal" causes interact mode to display without any indication that the item/door is blocked. "Ignore" prevent interact mode from being triggered when an item is blocked, and "Show Disabled" shows the configured interact mode reticle, but in a disabled state (no rotation or animation, color greyed out).\par
+\par
+\b Copy-Paste\par
+\b0 The copy-paste feature makes it easier to apply common settings to multiple reticle modes. Selecting a mode to "copy from" and "paste to", then click the "duplicate" button. The settings from the the source will be applied to (overwrite) the destination settings.\par
+\par
+\b Quick Slots\par
+\b0 Settings can be saved/loaded to/from a numbered slot by first selecting the slot number in the drop-down list, then clicking load or save. If no settings have been saved in a slot yet, loading from that slot will have no effect. Current settings are overwritten when loading from a slot, so make sure they're saved if you want to keep them!\par
+\par
+\b User Reticles\par
+\b0 Several place-holder reticle images are available (User1 through User5) for anyone to modify as they see fit. The images may be edited with any tool that can read and write dds image files. It is recommended that a white foreground over transparency be used to ensure color settings work properly in-game.\par
+\par
+\b DEPENDENCIES\par
+\b0 LibStub 1.0 by Seerah (embedded)\par
+LibAddOnMenu 2.0 by Seerah (embedded)\par
+\par
+\ul\b\fs22 KNOWN ISSUES\par
+\ulnone\b0\fs21 - When a normal reticle mode is disabled, associated stealth mode configuration options or not disabled\par
+}
+ 

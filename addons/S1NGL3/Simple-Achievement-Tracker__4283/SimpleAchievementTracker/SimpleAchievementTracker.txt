@@ -1,0 +1,12 @@
+## Title: SimpleAchievementTracker
+## APIVersion: 101048
+## Version: 1.0.5
+## Author: @S1NGL3
+## Description: Shows hidden trial and dungeon achievements and their completion status for the group.
+## SavedVariables: SimpleAchievementTrackerSaved
+
+SimpleAchievementTracker.xml
+AchievementData.lua
+SimpleAchievementTracker.lua
+NodeID.lua
+Bindings.xml

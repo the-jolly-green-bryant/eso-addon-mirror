@@ -1,0 +1,4 @@
+SubmittedCharacterNames = {
+    '',
+    ''
+}

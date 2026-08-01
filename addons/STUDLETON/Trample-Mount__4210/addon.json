@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/STUDLETON/Trample-Mount__4210",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "STUDLETON",
+  "canonical_id": "esoui:4210",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4210",
+  "deleted": false,
+  "directories": [
+    "TrampleMount"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4210/",
+  "fingerprint": "319824ef9b4d6a78f077393db7bde666d46891cdfbda547e415bf6f5cd2687fb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14386.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4210",
+  "source_url": "https://www.esoui.com/downloads/info4210-TrampleMount.html",
+  "stats": {
+    "downloads": 294,
+    "favorites": 1,
+    "monthly_downloads": 7
+  },
+  "title": "Trample Mount",
+  "updated_at": 1755033691000,
+  "version": "1.0"
+}

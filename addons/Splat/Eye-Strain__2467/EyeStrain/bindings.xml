@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Eye Strain">
+			<Action name="EYE_STRAIN_TOGGLE_WINDOW">
+				<Up>ESAddon.ToggleWindow()</Up>
+			</Action>
+			<Action name="EYE_STRAIN_SETTINGS_MENU">
+				<Up>SLASH_COMMANDS["/ess"]()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

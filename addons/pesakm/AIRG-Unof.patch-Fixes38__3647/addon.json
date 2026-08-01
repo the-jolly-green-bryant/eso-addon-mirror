@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/pesakm/AIRG-Unof.patch-Fixes38__3647",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "pesakm",
+  "canonical_id": "esoui:3647",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3647",
+  "deleted": false,
+  "directories": [
+    "AIResearchGrid"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3647/",
+  "fingerprint": "f5d226af3756fa9de334b893399d33a60815a3dfe49856d2b1d2052683766f45",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3647",
+  "source_url": "https://www.esoui.com/downloads/info3647-AIRG-Unof.patch-Fixes38.html",
+  "stats": {
+    "downloads": 6149,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": " AIRG-Unof.patch-Fixes38",
+  "updated_at": 1685990764000,
+  "version": "11.5.04"
+}

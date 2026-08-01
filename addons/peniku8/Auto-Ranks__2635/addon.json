@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/peniku8/Auto-Ranks__2635",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "peniku8",
+  "canonical_id": "esoui:2635",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:2635",
+  "deleted": false,
+  "directories": [
+    "AutoRanks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2635/",
+  "fingerprint": "45751510cd4e7dd9ddd955712c3efa18cbec7821767b10aed78abd9701526395",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9612.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9605.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9611.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9610.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9606.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2635",
+  "source_url": "https://www.esoui.com/downloads/info2635-AutoRanks.html",
+  "stats": {
+    "downloads": 15859,
+    "favorites": 9,
+    "monthly_downloads": 36
+  },
+  "title": "Auto Ranks",
+  "updated_at": 1719350480000,
+  "version": "3.4.2"
+}

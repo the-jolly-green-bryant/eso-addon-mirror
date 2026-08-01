@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/sinnereso/Guild-Trader-Activity-GTA__4590",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sinnereso",
+  "canonical_id": "esoui:4590",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4590",
+  "deleted": false,
+  "directories": [
+    "GTA"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4590/",
+  "fingerprint": "0f3e7aa7c5101c6fc1823a446f1876e0fc4a6b9e3145ea18758d73ed9a8cb085",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16309.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16319.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16346.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4590",
+  "source_url": "https://www.esoui.com/downloads/info4590-GuildTraderActivityGTA.html",
+  "stats": {
+    "downloads": 708,
+    "favorites": 1,
+    "monthly_downloads": 325
+  },
+  "title": "Guild Trader Activity (GTA)",
+  "updated_at": 1785494854000,
+  "version": "2026.07.31"
+}

@@ -1,0 +1,7 @@
+## Title: SmartCast
+## Author: Shinni
+## Version: 1.3
+## APIVersion: 100030
+## SavedVariables: SmartCast_SavedVariables
+
+smartcast.lua

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/PatientX_81/Provisioning-Watcher__4448",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "PatientX_81",
+  "canonical_id": "esoui:4448",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4448",
+  "deleted": false,
+  "directories": [
+    "ProvisioningWatcher",
+    "__MACOSX"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4448/",
+  "fingerprint": "8a573d986660ee29ba7923f8c3479f14eb4a7e3d4538f6b47cbcb3311d1712d8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15480.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15481.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4448",
+  "source_url": "https://www.esoui.com/downloads/info4448-ProvisioningWatcher.html",
+  "stats": {
+    "downloads": 156,
+    "favorites": 0,
+    "monthly_downloads": 17
+  },
+  "title": "Provisioning Watcher",
+  "updated_at": 1773437619000,
+  "version": "1"
+}

@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/rufusredbeard/Auto-Category---Revised-plugin-for-CraftStore-FoA__2535",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "rufusredbeard",
+  "canonical_id": "esoui:2535",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2535",
+  "deleted": false,
+  "directories": [
+    "AutoCategory_CraftStoreFAI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2535/",
+  "fingerprint": "263b9b04d4870c5fd98c4b159731a6701d1df50c562fbe051cde3401f9233911",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8681.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2535",
+  "source_url": "https://www.esoui.com/downloads/info2535-AutoCategory-RevisedpluginforCraftStoreFoA.html",
+  "stats": {
+    "downloads": 28006,
+    "favorites": 33,
+    "monthly_downloads": 91
+  },
+  "title": "Auto Category - Revised plugin for CraftStore FoA",
+  "updated_at": 1619898720000,
+  "version": "2.17"
+}

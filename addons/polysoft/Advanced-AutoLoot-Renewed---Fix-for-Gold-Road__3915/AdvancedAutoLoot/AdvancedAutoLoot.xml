@@ -1,0 +1,19 @@
+
+<GuiXml>
+    <Controls>
+		<Button name="SendAllMailsBtn" virtual="true">
+            <Dimensions x="64" y="64" />
+            <Controls>
+                <Texture name="$(parent)_BG" textureFile="/esoui/art/icons/item_generic_coinbag.dds" virtual="false" >
+				<AnchorFill/>
+				<Dimensions x="64" y="64" />
+                </Texture>
+            </Controls>
+        </Button>
+        <TopLevelControl name="AdvancedAutoLoot">
+            <OnInitialized>
+                AdvancedAutoLoot_Initialized(self)
+            </OnInitialized> 
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,9 @@
+## Title: Camera Alter
+## Description: Prevents inventory/character UI camera flip and keeps your normal camera framing where possible.
+## Author: rob82
+## Version: 0.1.0
+## APIVersion: 101046 101047
+## SavedVariables: CameraAlterSavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+
+CameraAlter.lua

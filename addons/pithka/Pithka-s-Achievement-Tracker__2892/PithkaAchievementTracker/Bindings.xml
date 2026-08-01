@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c8080FFPithka's Achievement Tracker|r">
+			<Action name="TOGGLE_PITHKA">
+				<Down>PITHKA.toggleUI()</Down>
+			</Action>
+			<Action name="TOGGLE_PITHKA_GROUP_FINDER">
+				<Down>PITHKA.toggleGroupFinderUI()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

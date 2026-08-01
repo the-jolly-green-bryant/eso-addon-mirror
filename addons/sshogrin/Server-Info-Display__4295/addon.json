@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/sshogrin/Server-Info-Display__4295",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sshogrin",
+  "canonical_id": "esoui:4295",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4295",
+  "deleted": false,
+  "directories": [
+    "ServerInfoDisplay"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4295/",
+  "fingerprint": "2712c858f1c400e17eb3074d90c451e9ace437398abd0d0b9e802e38b56c9723",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14758.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14759.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14760.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14761.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14762.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14818.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14819.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14820.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14824.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14825.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4295",
+  "source_url": "https://www.esoui.com/downloads/info4295-ServerInfoDisplay.html",
+  "stats": {
+    "downloads": 394,
+    "favorites": 0,
+    "monthly_downloads": 15
+  },
+  "title": "Server Info Display",
+  "updated_at": 1764351232000,
+  "version": "1.21"
+}

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/probo11/Mundus__2698",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "probo11",
+  "canonical_id": "esoui:2698",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2698",
+  "deleted": false,
+  "directories": [
+    "Mundus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2698/",
+  "fingerprint": "74488677ec8d908a0befd0d3bae8bced6c26091e70c30fe5d59e8023025b326b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9148.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9146.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2698",
+  "source_url": "https://www.esoui.com/downloads/info2698-Mundus.html",
+  "stats": {
+    "downloads": 5713,
+    "favorites": 4,
+    "monthly_downloads": 24
+  },
+  "title": "Mundus",
+  "updated_at": 1655371849000,
+  "version": "5.0"
+}

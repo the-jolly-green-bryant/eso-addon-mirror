@@ -1,0 +1,28 @@
+﻿; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+; /script SetCVar("language.2", "en")
+;
+; This addon contains modified code from 'Bandits User Interface' by Hoft, secretrob
+; https://www.esoui.com/downloads/info1643-BanditsUserInterface.html
+
+## Title: |cb7ff00Scorps|r Group Synergizer
+## Version: 4.1
+## Author: |cb7ff00Scorp|r
+## DependsOn: LibAddonMenu-2.0>=34
+## APIVersion: 101038 101039
+## SavedVariables: GroupSynergizerSavedVars
+## Description: Enhanced Group-Based Activities, Notifications, and Features
+
+lang/en.lua
+lang/$(language).lua
+
+GroupSynergizerVars.lua
+GroupSynergizerSettings.lua
+GroupSynergizerFunctions.lua
+GroupSynergizerActivityFinder.lua
+GroupSynergizerBattlegrounds.lua
+GroupSynergizerPledges.lua
+GroupSynergizer.lua

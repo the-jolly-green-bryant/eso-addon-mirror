@@ -1,0 +1,70 @@
+<GuiXml>
+    <Controls>
+        <!-- ПЛАШКА (Strip) -->
+        <TopLevelControl name="TamrielCalendarControl" mouseEnabled="true" movable="true" hidden="false">
+            <Dimensions x="650" y="30" />
+            <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="60" />
+            <OnMoveStop> TamrielCalendar.OnMoveStop(self) </OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.8"><AnchorFill /></Backdrop>
+                <Label name="TamrielCalendarLabel" font="ZoFontGameShadow" color="E6D080" horizontalAlignment="CENTER" verticalAlignment="CENTER"><AnchorFill /></Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- ОКНО КАЛЕНДАРЯ (Window) -->
+        <TopLevelControl name="TamrielCalendarWindow" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions x="520" y="650" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <OnMoveStop> TamrielCalendar.OnMoveStop(self) </OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.95"><AnchorFill /></Backdrop>
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="10" />
+                    <OnClicked> TamrielCalendar.ToggleWindow() </OnClicked>
+                </Button>
+
+                <Label name="$(parent)Year" font="ZoFontWinH1" color="FFD700" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" offsetY="30" />
+                </Label>
+
+                <Control name="$(parent)MonthContainer">
+                    <Dimensions x="500" y="60" />
+                    <Anchor point="TOP" relativeTo="$(parent)Year" relativePoint="BOTTOM" offsetY="5" />
+                    <Controls>
+                        <Button name="TamrielCalendarPrevBtn" inherits="ZO_DefaultButton">
+                            <Dimensions x="100" y="30" /><Anchor point="LEFT" offsetX="20" />
+                            <OnClicked> TamrielCalendar.ChangeMonth(-1) </OnClicked>
+                        </Button>
+                        <Label name="TamrielCalendarWindowMonth" font="ZoFontWinH2" color="FFFFFF" horizontalAlignment="CENTER">
+                            <Anchor point="CENTER" offsetY="-10" />
+                        </Label>
+                        <Label name="TamrielCalendarWindowRealMonth" font="ZoFontGameSmall" color="BBBBBB" horizontalAlignment="CENTER">
+                            <Anchor point="TOP" relativeTo="TamrielCalendarWindowMonth" relativePoint="BOTTOM" offsetY="0" />
+                        </Label>
+                        <Button name="TamrielCalendarNextBtn" inherits="ZO_DefaultButton">
+                            <Dimensions x="100" y="30" /><Anchor point="RIGHT" offsetX="-20" />
+                            <OnClicked> TamrielCalendar.ChangeMonth(1) </OnClicked>
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <Label name="$(parent)SignInfo" font="ZoFontGameMedium" color="E6D080" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)MonthContainer" relativePoint="BOTTOM" offsetY="5" />
+                </Label>
+                <Label name="TamrielCalendarMoonText" font="ZoFontGameSmall" color="ADD8E6" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)SignInfo" relativePoint="BOTTOM" offsetY="12" />
+                </Label>
+
+                <Control name="$(parent)Grid">
+                    <Dimensions x="455" y="400" />
+                    <Anchor point="TOP" relativeTo="TamrielCalendarMoonText" relativePoint="BOTTOM" offsetY="25" />
+                    <Controls>
+                        <Texture name="TamrielCalendarWindowSignArt" alpha="0.3">
+                            <Dimensions x="350" y="350" /><Anchor point="CENTER" relativeTo="$(parent)" />
+                        </Texture>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

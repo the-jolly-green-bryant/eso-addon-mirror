@@ -1,0 +1,9 @@
+; SortByQuantity by @PacificOshie.  Have fun!
+
+## Title: Sort By Quantity
+## Author: PacificOshie
+## Description: Adds the ability to sort inventory by item quantity.
+## AddOnVersion: 21
+## APIVersion: 101040
+
+SortByQuantity.lua

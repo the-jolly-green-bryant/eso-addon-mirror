@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/quelron/GamePadHelper-11.1.0__4253",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "quelron",
+  "canonical_id": "esoui:4253",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:4253",
+  "deleted": false,
+  "directories": [
+    "GamePadHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4253/",
+  "fingerprint": "5218c70cfbc49147d28287e8aeca349709171c0bd59619e669fc98f8faceaa43",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4253",
+  "source_url": "https://www.esoui.com/downloads/info4253-GamePadHelper11.1.0.html",
+  "stats": {
+    "downloads": 423,
+    "favorites": 0,
+    "monthly_downloads": 37
+  },
+  "title": "GamePadHelper (11.1.0)",
+  "updated_at": 1757959308000,
+  "version": "1.03"
+}

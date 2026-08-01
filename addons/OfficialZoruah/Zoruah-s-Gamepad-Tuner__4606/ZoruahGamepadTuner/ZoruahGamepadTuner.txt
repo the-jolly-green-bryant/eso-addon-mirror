@@ -1,0 +1,11 @@
+## Title: Zoruah's Gamepad Tuner
+## Author: Official Zoruah
+## Version: 2.0.0
+## APIVersion: 101049 101050
+## AddOnVersion: 200
+## DependsOn: LibAddonMenu-2.0>=43
+## OptionalDependsOn: LibGamepadOptions
+## SavedVariables: ZoruahGamepadTunerSavedVariables
+## Description: Native gamepad tuning for aim-assist, camera sensitivity, stick deadzones, trigger response, socials, and extended controller customization. Created by Official Zoruah with AI Assistance.
+
+ZoruahGamepadTuner.lua

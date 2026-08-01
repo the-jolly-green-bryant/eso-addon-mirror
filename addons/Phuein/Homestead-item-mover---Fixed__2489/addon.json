@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Phuein/Homestead-item-mover---Fixed__2489",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phuein",
+  "canonical_id": "esoui:2489",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2489",
+  "deleted": false,
+  "directories": [
+    "HomesteadItemMover"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2489/",
+  "fingerprint": "e9c82e42b20df64403e15ae112dc80d26cc900f3b34d0e5eefcc9e1d44e00b15",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2489",
+  "source_url": "https://www.esoui.com/downloads/info2489-Homesteaditemmover-Fixed.html",
+  "stats": {
+    "downloads": 4082,
+    "favorites": 4,
+    "monthly_downloads": 11
+  },
+  "title": "Homestead item mover - Fixed",
+  "updated_at": 1627756833000,
+  "version": "1.05"
+}

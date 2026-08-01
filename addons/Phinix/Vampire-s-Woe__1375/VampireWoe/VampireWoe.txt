@@ -1,0 +1,29 @@
+## Title: |c66ccffVampire's Woe|r
+## Author: |c66ccffPhinix|r
+## Description: Provides various options for blocking Vampire Feed & Blade of Woe synergies triggering, attacking innocents, or casting 'Criminal Act' abilities.
+## Version: 1.28
+## APIVersion: 101046 101047
+## SavedVariables: VampireWoe
+## DependsOn: LibAddonMenu-2.0>=30
+
+
+language\en.lua
+language\de.lua
+language\fr.lua
+language\es.lua
+language\it.lua
+language\ru.lua
+language\ja.lua
+
+CriminalDB.lua
+VampireWoe.lua
+bindings.xml
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

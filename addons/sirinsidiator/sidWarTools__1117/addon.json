@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/sirinsidiator/sidWarTools__1117",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:1117",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1117",
+  "deleted": false,
+  "directories": [
+    "sidWarTools"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1117/",
+  "fingerprint": "1ca33ec39891da7c3507ff5264d73d8db1dce479a6002f427b27a6baf4490081",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3575.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3574.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1117",
+  "source_url": "https://www.esoui.com/downloads/info1117-sidWarTools.html",
+  "stats": {
+    "downloads": 12183,
+    "favorites": 12,
+    "monthly_downloads": 18
+  },
+  "title": "sidWarTools",
+  "updated_at": 1558469617000,
+  "version": "0.8"
+}

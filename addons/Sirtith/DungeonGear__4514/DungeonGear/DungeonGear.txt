@@ -1,0 +1,14 @@
+## Title: DungeonGear
+## Author: smitf
+## Version: 0.1.0
+## AddOnVersion: 1
+## APIVersion: 101049 101050
+## Description: Recommends dungeons to grind for role-specific gear sets.
+## OptionalDependsOn: LibSets>=008008 LibMapPins-1.0
+## SavedVariables: DungeonGearSavedVars
+
+bindings.xml
+DungeonGearData.lua
+DungeonGearBuildText.lua
+DungeonGearUI.xml
+DungeonGear.lua

@@ -1,0 +1,147 @@
+## Title: Character Markdown
+## Author: solaegis
+## Version: 2.2.8
+## AddOnVersion: 20260730
+## APIVersion: 101050 101049
+## SavedVariables: CharacterMarkdownSettings
+## OptionalDependsOn: LibAddonMenu-2.0>=40 LibDebugLogger>=250 LibSets>=86 LibSlashCommander>=4
+## Description: Exports comprehensive character data in enhanced markdown format. Generate copyable profiles with clickable UESP links for abilities, sets, races, classes, zones, campaigns, and more. Includes ESO Plus, DLC access, currencies, progression, riding skills, inventory, PvP, collectibles, and crafting knowledge. Use /markdown (or /cm) to generate.
+## This file is AddOnVersion: 20250121
+## Directive above to support LibAddonMenu version sorting
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+## Core namespace and constants
+src/Core.lua
+
+## Utility functions (no dependencies)
+src/utils/Formatters.lua
+src/utils/Quality.lua
+src/utils/Stats.lua
+src/utils/Constants.lua
+src/utils/Platform.lua
+src/utils/AdvancedMarkdown.lua
+src/utils/TableAnalyzer.lua
+src/utils/LayoutCalculator.lua
+src/utils/LayoutCalculatorTests.lua
+src/utils/ChunkingHelpers.lua
+src/utils/Chunking.lua
+src/utils/TestValidation.lua
+src/utils/SectionPresenceTests.lua
+src/utils/SkillsSlotTests.lua
+src/utils/EquipmentSetCountTests.lua
+src/utils/LibSetsIntegration.lua
+
+## API Layer (depends on Core, utils)
+src/api/Character.lua
+src/api/Guilds.lua
+src/api/Combat.lua
+src/api/Equipment.lua
+src/api/Skills.lua
+src/api/Champion.lua
+src/api/PvP.lua
+src/api/Quests.lua
+src/api/Achievements.lua
+src/api/Crafting.lua
+src/api/Inventory.lua
+src/api/Collectibles.lua
+src/api/Progression.lua
+src/api/Time.lua
+src/api/System.lua
+src/api/Companion.lua
+src/api/Antiquities.lua
+src/api/Titles.lua
+src/api/Lore.lua
+src/api/ArmoryBuilds.lua
+src/api/UndauntedPledges.lua
+src/api/Mail.lua
+
+## Link generators (depend on utils)
+src/links/Abilities.lua
+src/links/Equipment.lua
+src/links/World.lua
+src/links/Systems.lua
+src/links/Companions.lua
+
+## Data collectors (depend on utils + links)
+src/collectors/Achievements.lua
+src/collectors/Antiquities.lua
+src/collectors/Character.lua
+src/collectors/Champion.lua
+src/collectors/PvP.lua
+src/collectors/Collectibles.lua
+src/collectors/Inventory.lua
+src/collectors/Progression.lua
+src/collectors/Quests.lua
+src/collectors/Skills.lua
+src/collectors/Equipment.lua
+-- src/collectors/EquipmentEnhancement.lua  -- DISABLED: moved to DISABLED/
+src/collectors/Combat.lua
+src/collectors/Economy.lua
+src/collectors/Social.lua
+src/collectors/ArmoryBuilds.lua
+src/collectors/Companion.lua
+src/collectors/Crafting.lua
+src/collectors/Styles.lua
+src/collectors/System.lua
+
+## Markdown generator (depends on collectors + links)
+## Helper utilities for generators
+src/generators/helpers/Utilities.lua
+
+## Section generators (modular markdown generation)
+src/generators/sections/Achievements.lua
+src/generators/sections/Antiquities.lua
+src/generators/sections/Economy.lua
+src/generators/sections/Character.lua
+src/generators/sections/Overview.lua
+
+## Equipment & Skills (Refactored)
+src/generators/sections/equipment/Helpers.lua
+src/generators/sections/equipment/SkillBars.lua
+src/generators/sections/equipment/SkillMorphs.lua
+src/generators/sections/equipment/GearTable.lua
+src/generators/sections/equipment/Skills.lua
+src/generators/sections/Equipment.lua
+
+src/generators/sections/Combat.lua
+src/generators/sections/Crafting.lua
+src/generators/sections/Styles.lua
+src/generators/sections/DLCAndMundus.lua
+src/generators/sections/ChampionPoints.lua
+src/generators/sections/ChampionDiagram.lua
+src/generators/sections/Quests.lua
+src/generators/sections/World.lua
+src/generators/sections/TitlesHousing.lua
+src/generators/sections/PvPStats.lua
+src/generators/sections/ArmoryBuilds.lua
+src/generators/sections/UndauntedPledges.lua
+src/generators/sections/Guilds.lua
+src/generators/sections/Mail.lua
+src/generators/sections/Companion.lua
+src/generators/sections/Footer.lua
+
+## Main Generator (orchestrates sections)
+src/generators/Markdown.lua
+
+## Formatters (output formatters)
+src/formatters/Markdown.lua
+
+## Command system (refactored into modular components)
+src/commands/Debug.lua
+src/commands/Settings.lua
+src/commands/Test.lua
+src/Commands.lua
+src/Events.lua
+
+## Settings (refactored into modular components)
+src/settings/Defaults.lua
+src/settings/Initializer.lua
+src/settings/Panel.lua
+
+## UI components
+src/ui/CharacterMarkdown.xml
+src/ui/Window.lua
+
+## Final initialization
+src/Init.lua

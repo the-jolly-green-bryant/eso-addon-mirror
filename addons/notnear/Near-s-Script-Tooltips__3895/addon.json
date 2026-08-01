@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/notnear/Near-s-Script-Tooltips__3895",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "notnear",
+  "canonical_id": "esoui:3895",
+  "category_id": "98",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3895",
+  "deleted": false,
+  "directories": [
+    "NearScriptTooltips"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3895/",
+  "fingerprint": "41a5c11d2804b2b77ed16327c4ad7d58a54dc60f5bd868fb012acd3e27ada85c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13205.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3895",
+  "source_url": "https://www.esoui.com/downloads/info3895-NearsScriptTooltips.html",
+  "stats": {
+    "downloads": 1335,
+    "favorites": 4,
+    "monthly_downloads": 15
+  },
+  "title": "Near's Script Tooltips",
+  "updated_at": 1718239487000,
+  "version": "1.0.1"
+}

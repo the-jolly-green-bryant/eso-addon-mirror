@@ -1,0 +1,24 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL" allowFallthrough="false">
+        <Category name="SI_KEYBINDINGS_SK_CATEGORY_MENU">
+            <Action name="SK_TOGGLE_MAIN_WINDOW">
+                <Down>SKMD:Toggle()</Down>
+            </Action>
+            <Action name="SK_TOGGLE_COMPANIONS_INTERACTION">
+                <Down>SKToggleCompanionsInteraction()</Down>
+            </Action>
+            <Action name="SK_TOGGLE_DANGER_INTERACTION">
+                <Down>SKToggleDangerInteraction()</Down>
+            </Action>
+            <Action name="SK_STEAL_ANYWAY">
+                <Down>LOOT_SHARED:LootAllItems()</Down>
+            </Action>
+            <Action name="SK_RECEIPT_MAIL">
+                <Down>mailerSK:ReceiptAllMails()</Down>
+            </Action>
+            <Action name="SK_BANK">
+                <Down>SKBT:Toggle()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

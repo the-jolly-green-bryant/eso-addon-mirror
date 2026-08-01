@@ -1,0 +1,214 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ArcanumGuildHallChallengesWindow"
+                         hidden="true"
+                         movable="true"
+                         mouseEnabled="true"
+                         clampedToScreen="true">
+            <Dimensions x="650" y="305"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill/>
+                </Backdrop>
+
+                <Label name="$(parent)Title"
+                       font="ZoFontWinH2">
+                    <Anchor point="TOPLEFT" offsetX="14" offsetY="12"/>
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-8" offsetY="8"/>
+                </Button>
+
+                <Button name="$(parent)PledgesTab"
+                        mouseEnabled="true">
+                    <Dimensions x="140" y="30"/>
+                    <Anchor point="TOPLEFT" offsetX="14" offsetY="44"/>
+
+                    <Controls>
+                        <Backdrop name="$(parent)BG">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+
+                        <Label name="$(parent)Label"
+                               font="ZoFontGameBold"
+                               horizontalAlignment="CENTER">
+                            <Anchor point="CENTER"/>
+                            <Dimensions x="120" y="20"/>
+                        </Label>
+                    </Controls>
+                </Button>
+
+                <Button name="$(parent)WeekliesTab"
+                        mouseEnabled="true">
+                    <Dimensions x="210" y="30"/>
+                    <Anchor point="LEFT"
+                            relativeTo="$(parent)PledgesTab"
+                            relativePoint="RIGHT"
+                            offsetX="6"/>
+
+                    <Controls>
+                        <Backdrop name="$(parent)BG">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+
+                        <Label name="$(parent)Label"
+                               font="ZoFontGameBold"
+                               horizontalAlignment="CENTER">
+                            <Anchor point="CENTER"/>
+                            <Dimensions x="190" y="20"/>
+                        </Label>
+                    </Controls>
+                </Button>
+
+                <Backdrop name="$(parent)ContentBG" inherits="ZO_DefaultBackdrop">
+                    <Anchor point="TOPLEFT" offsetX="14" offsetY="80"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-14"/>
+
+                    <Controls>
+                        <Control name="$(parent)PledgesPane">
+                            <AnchorFill/>
+
+                            <Controls>
+                                <Label name="$(parent)DateLabel"
+                                       font="ZoFontGameBold">
+                                    <Anchor point="TOPLEFT" offsetX="16" offsetY="18"/>
+                                    <Dimensions x="150" y="22"/>
+                                </Label>
+
+                                <Label name="$(parent)DateValue"
+                                       font="ZoFontGame"
+                                       horizontalAlignment="LEFT"
+                                       wrapMode="ELLIPSIS">
+                                    <Anchor point="TOPLEFT" offsetX="178" offsetY="18"/>
+                                    <Dimensions x="430" y="22"/>
+                                </Label>
+
+                                <Label name="$(parent)Npc1Label"
+                                       font="ZoFontGameBold">
+                                    <Anchor point="TOPLEFT" offsetX="16" offsetY="56"/>
+                                    <Dimensions x="150" y="22"/>
+                                </Label>
+
+                                <Label name="$(parent)Npc1Value"
+                                       font="ZoFontGame"
+                                       horizontalAlignment="LEFT"
+                                       wrapMode="ELLIPSIS">
+                                    <Anchor point="TOPLEFT" offsetX="178" offsetY="56"/>
+                                    <Dimensions x="430" y="22"/>
+                                </Label>
+
+                                <Label name="$(parent)Npc2Label"
+                                       font="ZoFontGameBold">
+                                    <Anchor point="TOPLEFT" offsetX="16" offsetY="88"/>
+                                    <Dimensions x="150" y="22"/>
+                                </Label>
+
+                                <Label name="$(parent)Npc2Value"
+                                       font="ZoFontGame"
+                                       horizontalAlignment="LEFT"
+                                       wrapMode="ELLIPSIS">
+                                    <Anchor point="TOPLEFT" offsetX="178" offsetY="88"/>
+                                    <Dimensions x="430" y="22"/>
+                                </Label>
+
+                                <Label name="$(parent)Npc3Label"
+                                       font="ZoFontGameBold">
+                                    <Anchor point="TOPLEFT" offsetX="16" offsetY="120"/>
+                                    <Dimensions x="150" y="22"/>
+                                </Label>
+
+                                <Label name="$(parent)Npc3Value"
+                                       font="ZoFontGame"
+                                       horizontalAlignment="LEFT"
+                                       wrapMode="ELLIPSIS">
+                                    <Anchor point="TOPLEFT" offsetX="178" offsetY="120"/>
+                                    <Dimensions x="430" y="22"/>
+                                </Label>
+
+                                <Button name="$(parent)SendButton"
+                                        mouseEnabled="true">
+                                    <Dimensions x="180" y="30"/>
+                                    <Anchor point="BOTTOMRIGHT" offsetX="-16" offsetY="-14"/>
+
+                                    <Controls>
+                                        <Backdrop name="$(parent)BG">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="1"/>
+                                        </Backdrop>
+
+                                        <Label name="$(parent)Label"
+                                               font="ZoFontGameBold"
+                                               horizontalAlignment="CENTER">
+                                            <Anchor point="CENTER"/>
+                                            <Dimensions x="160" y="20"/>
+                                        </Label>
+                                    </Controls>
+                                </Button>
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)WeekliesPane" hidden="true">
+                            <AnchorFill/>
+                            <Controls>
+                                <Label name="$(parent)PeriodLabel"
+                                       font="ZoFontGameBold">
+                                    <Anchor point="TOPLEFT" offsetX="16" offsetY="18"/>
+                                    <Dimensions x="150" y="22"/>
+                                </Label>
+
+                                <Label name="$(parent)PeriodValue"
+                                       font="ZoFontGame"
+                                       horizontalAlignment="LEFT"
+                                       wrapMode="ELLIPSIS">
+                                    <Anchor point="TOPLEFT" offsetX="178" offsetY="18"/>
+                                    <Dimensions x="430" y="22"/>
+                                </Label>
+
+                                <Label name="$(parent)TrialLabel"
+                                       font="ZoFontGameBold">
+                                    <Anchor point="TOPLEFT" offsetX="16" offsetY="56"/>
+                                    <Dimensions x="110" y="22"/>
+                                </Label>
+
+                                <Label name="$(parent)TrialValue"
+                                       font="ZoFontGame"
+                                       horizontalAlignment="LEFT"
+                                       wrapMode="ELLIPSIS">
+                                    <Anchor point="TOPLEFT" offsetX="178" offsetY="56"/>
+                                    <Dimensions x="470" y="22"/>
+                                </Label>
+
+                                <Label name="$(parent)SoloLabel"
+                                       font="ZoFontGameBold">
+                                    <Anchor point="TOPLEFT" offsetX="16" offsetY="88"/>
+                                    <Dimensions x="110" y="22"/>
+                                </Label>
+
+                                <Label name="$(parent)SoloValue"
+                                       font="ZoFontGame"
+                                       horizontalAlignment="LEFT"
+                                       wrapMode="ELLIPSIS">
+                                    <Anchor point="TOPLEFT" offsetX="178" offsetY="88"/>
+                                    <Dimensions x="470" y="22"/>
+                                </Label>
+                            </Controls>
+                        </Control>
+
+                        <Label name="$(parent)Info"
+                               font="ZoFontGameSmall"
+                               horizontalAlignment="LEFT"
+                               wrapMode="ELLIPSIS">
+                            <Anchor point="BOTTOMLEFT" offsetX="16" offsetY="-14"/>
+                            <Dimensions x="420" y="20"/>
+                        </Label>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

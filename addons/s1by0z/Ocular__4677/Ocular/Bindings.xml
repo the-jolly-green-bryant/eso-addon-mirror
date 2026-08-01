@@ -1,0 +1,8 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Ocular">
+            <Action name="OCULAR_ZOOM"><Down>Ocular.Toggle()</Down></Action>
+            <Action name="OCULAR_CYCLE_SIZE"><Down>Ocular.CycleSize()</Down></Action>
+        </Category>
+    </Layer>
+</Bindings>

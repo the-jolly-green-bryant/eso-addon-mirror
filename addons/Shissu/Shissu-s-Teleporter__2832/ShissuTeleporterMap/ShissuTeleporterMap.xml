@@ -1,0 +1,37 @@
+<GuiXml>
+  <Controls>
+    <Control name="ShissuMapLocationsRow" virtual="true">
+      <Dimensions x="200" y="23"/>
+      <Controls>
+        <Label name="$(parent)Location" inherits="ZO_SelectableLabel" font="ZoFontHeader">
+          <Anchor point="TOPLEFT"/>
+          <OnMouseDown>
+            ShissuTeleporterMapRowLocation_OnMouseDown(self, button)
+          </OnMouseDown>
+          <OnMouseUp>
+            ShissuTeleporterMapRowLocation_OnMouseUp(self, button, upInside)
+          </OnMouseUp>
+          <OnMouseEnter>
+            ShissuTeleporterMapRowLocation_OnMouseEnter(self)
+          </OnMouseEnter>
+          <OnMouseExit>
+            ShissuTeleporterMapRowLocation_OnMouseExit()
+          </OnMouseExit>                        
+        </Label>
+      </Controls>
+    </Control>
+
+    <TopLevelControl name="ShissuMapLocations" inherits="ZO_WorldMapInfoContent">
+      <Controls>
+       	<Label name="$(parent)Version" font="$(ANTIQUE_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="RIGHT" text="Shissu's Guild Tools">
+      		<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-60" offsetY="-0" />
+      	</Label>
+          
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT" offsetX="20"/>
+          <Anchor point="BOTTOMRIGHT"/>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

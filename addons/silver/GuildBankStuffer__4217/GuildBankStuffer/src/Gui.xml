@@ -1,0 +1,29 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="GuildBankStufferWindowControl" movable="true" clampedToScreen="true" mouseEnabled="true" hidden="true">
+            <Dimensions x="700" y="600"/>
+            <Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" />
+            <Controls>
+                <Backdrop inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+                <Label font="ZoFontHeader4" text="GuildBankStuffer">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="10" />
+                </Label>
+                <Button>
+                    <OnClicked>GuildBankStufferWindowControl.DoFadeOut()</OnClicked>
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15" offsetY="17" />
+                    <Textures normal="/esoui/art/buttons/decline_up.dds" pressed="/esoui/art/buttons/decline_down.dds" mouseOver="/esoui/art/buttons/decline_over.dds" />
+                </Button>
+            </Controls>
+        </TopLevelControl>
+        <Label name="GuildBankStufferLabelControlTemplate" font="ZoFontGame" virtual="true">
+            <Controls>
+                <Button name="$(parent)Button" inherits="ZO_DefaultButton">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="180" />
+                </Button>
+            </Controls>
+        </Label>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,7 @@
+## Title: SHIM: Show Helm In coMbat
+## Author: |cFFA500Sunookitsune|r
+## Version: 1.1
+## Description: Shows helm when in combat, hides it otherwise
+## APIVersion: 100012
+
+ShowHelmInCombat.lua

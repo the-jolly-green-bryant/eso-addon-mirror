@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="AutoReadyCheck">
+    <Action name="ARC_OPEN_MENU">
+      <Down>AutoReadyCheck.OpenPanel()</Down>
+    </Action>
+    <Action name="ARC_GROUP_TOGGLE">
+        <Down>AutoReadyCheck.GroupElectionToggle()</Down>
+    </Action>
+  </Category>
+  </Layer>
+</Bindings>

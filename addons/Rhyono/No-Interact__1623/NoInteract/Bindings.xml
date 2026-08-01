@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="No Interact">
+			<Action name="BLACKLIST_TARGET">
+				<Down>NIBlacklisting()</Down>
+			</Action>
+			<Action name="BLACKLIST_TOGGLE">
+				<Down>NIBlacklistToggle()</Down>
+			</Action>		
+			<Action name="EMPTY_TOGGLE">
+				<Down>NIEmptyContainerToggle()</Down>
+			</Action>		
+		</Category>
+	</Layer>
+</Bindings>

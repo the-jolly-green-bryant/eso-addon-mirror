@@ -1,0 +1,32 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="AUI_LoadWindow" tier="HIGH" clampedToScreen="true" mouseEnabled="true" virtual="true" hidden="true" layer="OVERLAY">
+      <Dimensions x="300" y="200"/>
+      <Controls>
+        <Backdrop name="$(parent)_Border" tier="HIGH">
+          <AnchorFill />
+          <Edge file="EsoUI/Art/WorldMap/worldmap_frame_edge.dds" edgeFileWidth="128" edgeFileHeight="16" />
+          <OnInitialized>
+            self:SetCenterColor(0, 0, 0, 1)
+          </OnInitialized>
+        </Backdrop>
+        <Label name="$(parent)_HeaderText" font="ZoFontWinH3" tier="HIGH">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="8" offsetY="7" />
+        </Label>
+        <Button name="$(parent)_CloseButton" tier="HIGH">
+          <Dimensions x="24" y="24" />
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-8" offsetY="8" />
+        </Button>
+        <Button name="$(parent)_OpenDataButton" inherits="ZO_DefaultButton" tier="HIGH">
+          <Dimensions x="160" y="30"/>
+          <Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="0" offsetY="-14" />
+          <Controls>
+            <Label name="$(parent)_Text">
+              <Anchor point="CENTER" />
+            </Label>
+          </Controls>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

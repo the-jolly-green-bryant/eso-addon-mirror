@@ -1,0 +1,13 @@
+## Title: |cFFD700Tamriel Tomes Map Pins|r
+## Author: runcarsnowpen
+## Description: Map Pins for Tamriel Tomes Challenges
+## APIVersion: 101049 101050
+## Version: 1.2.1
+## AddOnVersion: 39
+## DependsOn: LibMapPins-1.0>=10041
+## OptionalDependsOn: CustomCompassPins>=138
+## SavedVariables: TamrielTomesMapPins_SV
+
+TamrielTomes_MapPins.lua
+ChallengeData.lua
+

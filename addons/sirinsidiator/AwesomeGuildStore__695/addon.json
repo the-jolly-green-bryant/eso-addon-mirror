@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/sirinsidiator/AwesomeGuildStore__695",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:695",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:695",
+  "deleted": false,
+  "directories": [
+    "AwesomeGuildStore"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl695/",
+  "fingerprint": "4ce201ab72a8f838171fa9a12da962983f99597d862c50217417a30220b87ac6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4507.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4504.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4505.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4506.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3183.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3188.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4508.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4509.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3624.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "695",
+  "source_url": "https://www.esoui.com/downloads/info695-AwesomeGuildStore.html",
+  "stats": {
+    "downloads": 4740554,
+    "favorites": 2167,
+    "monthly_downloads": 8181
+  },
+  "title": "AwesomeGuildStore",
+  "updated_at": 1780948137000,
+  "version": "1.7.8"
+}

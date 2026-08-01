@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Psiioniic/NeverGonnaPickYouUp-BRP-sigil-synergy-blocker__2949",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Psiioniic",
+  "canonical_id": "esoui:2949",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2949",
+  "deleted": false,
+  "directories": [
+    "NeverGonnaPickYouUp"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2949/",
+  "fingerprint": "c9be5aebfc1a5eeb2fc3490726e97ecf09a0936f8cc201351017be20f455cbfd",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2949",
+  "source_url": "https://www.esoui.com/downloads/info2949-NeverGonnaPickYouUpBRPsigilsynergyblocker.html",
+  "stats": {
+    "downloads": 7241,
+    "favorites": 3,
+    "monthly_downloads": 71
+  },
+  "title": "NeverGonnaPickYouUp (BRP sigil synergy blocker)",
+  "updated_at": 1614883380000,
+  "version": "0.0.3"
+}

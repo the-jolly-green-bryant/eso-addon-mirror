@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Rednas/New-Crown__3097",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rednas",
+  "canonical_id": "esoui:3097",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3097",
+  "deleted": false,
+  "directories": [
+    "NewCrown"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3097/",
+  "fingerprint": "40e8d8fc3fc42046ed5139430a7e5f8dc00aac5fb0ec6ca6bed3069daad80b79",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10417.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10430.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10415.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10418.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10414.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10413.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10437.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3097",
+  "source_url": "https://www.esoui.com/downloads/info3097-NewCrown.html",
+  "stats": {
+    "downloads": 4290,
+    "favorites": 4,
+    "monthly_downloads": 19
+  },
+  "title": "New Crown",
+  "updated_at": 1686056787000,
+  "version": "1.0.3"
+}

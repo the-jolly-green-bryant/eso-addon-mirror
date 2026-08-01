@@ -1,0 +1,84 @@
+<GuiXml> 
+   <Controls>
+   <TopLevelControl name="imperialTrackerAddonContainer" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">	
+  
+       <Dimensions x="429" y="74" />      
+       <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="0" offsetY="-10"/>
+       <Controls>
+          
+           <!-- Background -->
+           <Texture name="$(parent)Background" textureFile="esoui/art/windows/gamepad/gp_grunge_scalable.dds">
+               <Dimensions x="429" y="125" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY=-25/>
+           </Texture>           
+           
+           <!-- Claw -->
+           <Texture name="$(parent)ClawIcon" textureFile="/esoui/art/icons/quest_tinyclaw.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="5"/>
+               <Dimensions x="64" y="64"/>
+           </Texture>
+
+           <Label name="$(parent)ClawLabel" font="ZoFontWinH1" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="64" y="64" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="15"/>
+           </Label>       
+           
+           <!-- Armor -->
+           <Texture name="$(parent)ArmorIcon" textureFile="/esoui/art/icons/quest_planararmor.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-79" offsetY="5"/>
+               <Dimensions x="64" y="64"/>
+           </Texture>
+
+           <Label name="$(parent)ArmorLabel" font="ZoFontWinH1" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="64" y="64" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-69" offsetY="15"/>
+           </Label>              
+           
+           <!-- Bones -->
+           <Texture name="$(parent)BonesIcon" textureFile="/esoui/art/icons/quest_boneshard.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-143" offsetY="5"/>
+               <Dimensions x="64" y="64"/>
+           </Texture>           
+           
+           <Label name="$(parent)BonesLabel" font="ZoFontWinH1" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="64" y="64" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-133" offsetY="15"/>
+           </Label>   
+           
+           <!-- Ether -->
+           <Texture name="$(parent)EtherIcon" textureFile="/esoui/art/icons/quest_darkether.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-217" offsetY="5"/>
+               <Dimensions x="64" y="64"/>
+           </Texture>                 
+ 
+            <Label name="$(parent)EtherLabel" font="ZoFontWinH1" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="64" y="64" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-207" offsetY="15"/>
+           </Label>             
+           
+           <!-- Mark -->
+           <Texture name="$(parent)LegionIcon" textureFile="/esoui/art/icons/quest_markofthelegion.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-281" offsetY="5"/>
+               <Dimensions x="64" y="64"/>
+           </Texture>   
+
+            <Label name="$(parent)LegionLabel" font="ZoFontWinH1" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="64" y="64" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-271" offsetY="15"/>
+           </Label>             
+                      
+           <!-- Tooth -->
+           <Texture name="$(parent)ToothIcon" textureFile="/esoui/art/icons/quest_tooth.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-350" offsetY="5"/>
+               <Dimensions x="64" y="64"/>
+           </Texture>           
+           
+           <Label name="$(parent)ToothLabel" font="ZoFontWinH1" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="64" y="64" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-340" offsetY="15"/>
+           </Label>           
+              
+      </Controls>
+   </TopLevelControl>
+   </Controls>
+</GuiXml>

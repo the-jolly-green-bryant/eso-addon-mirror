@@ -1,0 +1,18 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Foundry Tactical Combat">
+			<Action name="TOGGLE_COMBAT_LOG">
+				<Down>FTC.Log:Toggle()</Down>
+			</Action>
+			<Action name="DISPLAY_DAMAGE_REPORT">
+				<Down>FTC.Stats:Toggle()</Down>
+			</Action>
+			<Action name="POST_DAMAGE_RESULTS">
+				<Down>FTC.Stats:Post()</Down>
+			</Action>
+			<Action name="REFRESH_FRAMES">
+				<Down>FTC.Frames:Initialize()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

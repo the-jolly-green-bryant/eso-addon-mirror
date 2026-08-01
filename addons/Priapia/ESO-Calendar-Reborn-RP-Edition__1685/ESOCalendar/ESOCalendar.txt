@@ -1,0 +1,11 @@
+## Title: ESO Calendar Reborn - RP Edition
+## Author: Shurta (adapted by Priapia)
+## Description: Displays real-world analogue to Tamrielic date in the bottom left corner of the UI and also in-lore holidays on the map interface. Original coding from Shurta, translated and adapted by Priapia.
+## APIVersion: 100018
+
+ESOCalendar.lua
+ESOCalendarScreen.lua
+ESOCalendarWorldMap.lua
+ESOCalendar.xml
+ESOCalendarScreen.xml
+ESOCalendarWorldMap.xml

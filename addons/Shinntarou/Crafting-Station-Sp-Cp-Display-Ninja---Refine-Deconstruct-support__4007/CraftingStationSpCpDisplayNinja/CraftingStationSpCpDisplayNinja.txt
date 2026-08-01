@@ -1,0 +1,26 @@
+; 
+; Display Skill and Champion Point information related at current crafting station.
+; 
+## Title: Crafting Station Sp Cp Display Ninja
+## Author: @Shinntarou (NA, PC)
+## Version: 2.0
+## AddOnVersion: 2025031100
+## APIVersion: 101044 101045
+## SavedVariables: CraftingStationSpCpDisplayNinjaVariables
+## DependsOn: LibAddonMenu-2.0
+
+# Main file
+CraftingStationSpCpDisplayNinja.lua
+
+# functions
+ConfigMenu.lua
+SaveData.lua
+
+# const
+
+# for debug
+DevTool.lua
+
+# UI
+Controls.lua
+Controls.xml

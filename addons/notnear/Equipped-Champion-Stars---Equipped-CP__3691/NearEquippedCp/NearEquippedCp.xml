@@ -1,0 +1,44 @@
+<GuiXml>
+	<Font name="NEC_FontMedium" font="$(MEDIUM_FONT)|$(KB_17)|soft-shadow-thick" />
+	<Font name="NEC_FontLarge" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thick" />
+
+	<Controls>
+		<Label name="NEC_Name" virtual="true" font="NEC_FontMedium" horizontalAlignment="LEFT" verticalAlignment="BOTTOM">
+			<Dimensions y="20" />
+		</Label>
+
+		<Control name="NEC_Type" virtual="true" resizeToFitDescendents="true">
+			<DimensionConstraints minY="20" />
+			<Controls>
+			
+				<Label name="$(parent)_Name1" inherits="NEC_Name" />
+				<Label name="$(parent)_Name2" inherits="NEC_Name" />
+				<Label name="$(parent)_Name3" inherits="NEC_Name" />
+				<Label name="$(parent)_Name4" inherits="NEC_Name" />
+			
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="NEC_GUI" resizeToFitDescendents="true" mouseEnabled="true" clampedToScreen="true" hidden="false">
+			<Dimensions y="110" />
+			<OnShow>
+				NEAR_EC.UpdateControl()
+			</OnShow>
+			<OnMoveStop>
+				NEAR_EC.SavePos()
+			</OnMoveStop>
+			
+			<Controls>
+
+				<Label name="$(parent)_Title" text="Equipped CP" font="NEC_FontLarge" horizontalAlignment="LEFT" verticalAlignment="BOTTOM" />
+
+				<Control name="$(parent)_Craft" inherits="NEC_Type" />
+
+				<Control name="$(parent)_Warfare" inherits="NEC_Type" />
+
+				<Control name="$(parent)_Fitness" inherits="NEC_Type" />
+
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

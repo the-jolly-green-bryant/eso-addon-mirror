@@ -1,0 +1,58 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: ArcanumGuildHall
+## APIVersion: 101050
+## Author: Niwasaka
+## Description: A guild add-on for the Arcanum Artis guild with several useful features. Required libraries: LibAddonMenu-2.0, LibCustomMenu, LibNotification, LibMediaProvider.
+## Version: 1.22.0
+
+## DependsOn: LibAddonMenu-2.0>=43 LibCustomMenu>=730 LibNotification>=15 LibMediaProvider>=37
+## SavedVariables: ArcanumArtisSavedVars
+
+data/media.lua
+
+modules/Clock/Clock.xml
+modules/Changelog/Changelog.xml
+modules/Teleport/TeleportWindow.xml
+modules/Tomes/TomesWindow.xml
+modules/Challenges/ChallengesWindow.xml
+
+ArcanumGuildHall.lua
+Localization.lua
+Utils.lua
+Settings.lua
+
+data/pledges.lua
+
+modules/Clock/Clock.lua
+modules/Clock/Timezone.lua
+
+modules/Teleport/GuildHouses.lua
+modules/Teleport/TeleportUtils.lua
+modules/Teleport/TeleportDataProvider.lua
+modules/Teleport/TeleportWindow.lua
+modules/Teleport/TeleportDetails.lua
+modules/Teleport/TeleportList.lua
+
+modules/Tomes/TomesChat.lua
+modules/Tomes/TomesWindow.lua
+
+modules/Chat/ChatIcon.lua
+modules/Chat/ChatTools.lua
+modules/Chat/ChatWelcome.lua
+
+modules/Changelog/Changelog.lua
+
+modules/Challenges/Quests.lua
+modules/Challenges/ChallengesWindow.lua
+
+modules/NoGuildLeave.lua
+modules/Names.lua
+modules/Notifications.lua
+modules/Repair.lua
+
+Bindings.xml

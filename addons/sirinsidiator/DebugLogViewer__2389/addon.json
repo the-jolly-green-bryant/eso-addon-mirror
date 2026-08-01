@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/sirinsidiator/DebugLogViewer__2389",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:2389",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2389",
+  "deleted": false,
+  "directories": [
+    "DebugLogViewer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2389/",
+  "fingerprint": "146d580b9790d521f3445f12f2cd8670b315d07b96e2435bdc3cc7c6f369d6c9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8130.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8131.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8132.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8133.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2389",
+  "source_url": "https://www.esoui.com/downloads/info2389-DebugLogViewer.html",
+  "stats": {
+    "downloads": 23964,
+    "favorites": 67,
+    "monthly_downloads": 163
+  },
+  "title": "DebugLogViewer",
+  "updated_at": 1681771936000,
+  "version": "1.2.0"
+}

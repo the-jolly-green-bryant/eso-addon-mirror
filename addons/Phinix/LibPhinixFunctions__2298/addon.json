@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/Phinix/LibPhinixFunctions__2298",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phinix",
+  "canonical_id": "esoui:2298",
+  "category_id": "53",
+  "compatibility": [],
+  "content_id": "esoui:2298",
+  "deleted": false,
+  "directories": [
+    "LibPhinixFunctions"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2298/",
+  "fingerprint": "310f3066cdfc0b488c16da3d7ba1eeaac1a0ac9195bf26a693747cb4c8b489be",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7814.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2298",
+  "source_url": "https://www.esoui.com/downloads/info2298-LibPhinixFunctions.html",
+  "stats": {
+    "downloads": 974954,
+    "favorites": 428,
+    "monthly_downloads": 1541
+  },
+  "title": "LibPhinixFunctions",
+  "updated_at": 1629727988000,
+  "version": "16"
+}

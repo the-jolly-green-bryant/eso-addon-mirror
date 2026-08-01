@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/NPViral/TTCPrice__4539",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "NPViral",
+  "canonical_id": "esoui:4539",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4539",
+  "deleted": false,
+  "directories": [
+    "TTCPrice"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4539/",
+  "fingerprint": "d042153c31ad8f172126bd5d8c496e29942f3c720a57a1f4d1a0608720b82a30",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15865.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15859.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15866.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4539",
+  "source_url": "https://www.esoui.com/downloads/info4539-TTCPrice.html",
+  "stats": {
+    "downloads": 713,
+    "favorites": 5,
+    "monthly_downloads": 136
+  },
+  "title": "TTCPrice",
+  "updated_at": 1776630444000,
+  "version": "1.1"
+}

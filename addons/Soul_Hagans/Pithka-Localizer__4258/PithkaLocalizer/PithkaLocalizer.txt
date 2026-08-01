@@ -1,0 +1,10 @@
+## Title: Pithka Localizer
+## Description: Multi-language localization for PithkaAchievementTracker
+## APIVersion: 101050
+## Author: |cff6401Soul_Hagans|r
+## Version: 11.06.2026
+## AddOnVersion: 40002
+## DependsOn: PithkaAchievementTracker
+
+PithkaLocalizer.lua
+ZoneIdMap.lua

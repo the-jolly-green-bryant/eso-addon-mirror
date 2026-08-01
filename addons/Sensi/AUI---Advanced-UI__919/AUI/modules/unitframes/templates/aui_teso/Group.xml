@@ -1,0 +1,395 @@
+<GuiXml>
+  <Controls>
+    <Control name="TESO_GroupFrame" tier="HIGH" mouseEnabled="true" clampedToScreen="true" level="1000" virtual="true" hidden="true">
+      <Dimensions x="237" y="23" />
+      <Controls>
+        <Texture name="$(parent)_ChampionIcon" tier="HIGH" hidden="true" textureFile="EsoUI/Art/champion/champion_icon.dds">
+          <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" offsetX="2" offsetY="-2"/>
+          <OnInitialized>
+            self.scaleToFont = true
+          </OnInitialized>
+        </Texture>
+        <Texture name="$(parent)_ClassIcon" tier="HIGH" hidden="true">
+          <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="-14" offsetY="2" />
+          <OnInitialized>
+            self.color = "#ffffff"
+            self.scaleToFont = true
+          </OnInitialized>
+        </Texture>
+        <Texture name="$(parent)_LeaderIcon" hidden="true" textureFile="/esoui/art/lfg/lfg_leader_icon.dds" tier="HIGH" >
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)_ClassIcon" relativePoint="TOPLEFT" offsetX="-3" offsetY="-1"/>
+          <OnInitialized>
+            self.scaleToFont = true
+          </OnInitialized>
+        </Texture>
+        <Label name="$(parent)_Text_Level">
+          <Anchor point="LEFT" relativeTo="$(parent)_ChampionIcon" relativePoint="RIGHT" offsetX="2" offsetY="0"/>
+          <OnInitialized>
+            self.font = "$(MEDIUM_FONT)|"
+            self.fontSizeMultipler = 1.4
+          </OnInitialized>
+        </Label>
+        <Label name="$(parent)_Text_Name" wrapMode="ELLIPSIS">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Text_Level" relativePoint="TOPRIGHT" offsetX="4"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)_LeaderIcon" relativePoint="BOTTOMLEFT" offsetX="-3" />
+          <OnInitialized>
+            self.font = "$(MEDIUM_FONT)|"
+            self.fontSizeMultipler = 1.4
+          </OnInitialized>
+        </Label>
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER" offsetY="2"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Offline" tier="HIGH">
+              <Anchor point="CENTER" />
+            </Label>
+            <Label name="$(parent)_DeadInfo" tier="HIGH">
+              <Anchor point="CENTER" />
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill.dds" tier="MEDIUM" level="500">
+          <Dimensions y="18" />
+          <Anchor point="LEFT" offsetX="2" />
+          <Anchor point="RIGHT" offsetX="-2" />
+          <TextureCoords left="0" right="1" top="0" bottom="0.53125"/>
+          <LeadingEdge textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_leadingEdge.dds" width="11" height="17" />
+          <LeadingEdgeTextureCoords left="0" right="0.6875" top="0" bottom="0.53125" />
+          <Controls>
+            <Texture name="$(parent)_IncreaseRegLeft" textureFile="AUI/images/attributes/aui_teso/other/arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <TextureCoords left="1" right="0" top="0" bottom="1" />
+              <Dimensions x="16" y="16" />
+              <Anchor point="LEFT" />
+              <OnInitialized>
+                self.fixedDimensions = true
+                self.endX = -4
+              </OnInitialized>
+            </Texture>
+            <Texture name="$(parent)_DecreaseRegLeft" textureFile="AUI/images/attributes/aui_teso/other/arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <Dimensions x="16" y="16" />
+              <Anchor point="RIGHT" />
+              <OnInitialized>
+                self.fixedDimensions = true
+                self.endX = -4
+              </OnInitialized>
+            </Texture>
+            <StatusBar name="$(parent)Gloss" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill_gloss.dds" tier="MEDIUM" level="550">
+              <AnchorFill />
+              <TextureCoords left="0" right="1" top="0" bottom="0.53125"/>
+              <LeadingEdge textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_leadingEdge_gloss.dds" width="11" height="17" />
+              <LeadingEdgeTextureCoords left="0" right="0.6875" top="0" bottom="0.53125" />
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)FrameLeft" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_frame.dds" level="1000" tier="HIGH">
+          <Dimensions x="4" y="23" />
+          <TextureCoords left="0.6171875" right="0.5859375" top="0.328125" bottom="0.6875"/>
+          <Anchor point="LEFT"/>
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_bg.dds" tier="MEDIUM" layer="BACKGROUND">
+              <AnchorFill />
+              <TextureCoords left="0.6171875" right="0.5859375" top="0.328125" bottom="0.6875"/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameRight" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_frame.dds" level="1000" tier="HIGH">
+          <Dimensions x="13" y="23" />
+          <TextureCoords left="0.46875" right="0.3671875" top="0.328125" bottom="0.6875"/>
+          <Anchor point="RIGHT"/>
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_bg.dds" tier="MEDIUM" layer="BACKGROUND">
+              <AnchorFill />
+              <TextureCoords left="0.46875" right="0.3671875" top="0.328125" bottom="0.6875"/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameCenter" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_frame.dds" level="1000" tier="HIGH" >
+          <TextureCoords left="0.4921875" right="0.5546875" top="0.328125" bottom="0.6875"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeft" relativePoint="TOPRIGHT"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRight" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_bg.dds" tier="MEDIUM" layer="BACKGROUND">
+              <AnchorFill />
+              <TextureCoords left="0.4921875" right="0.5546875" top="0.328125" bottom="0.6875"/>
+            </Texture>
+            <Texture name="$(parent)TopMunge" inherits="ZO_RandomizedMunge" tier="HIGH" level="1100" >
+              <Anchor point="TOPLEFT" offsetX="-4" />
+              <Anchor point="TOPRIGHT" offsetX="4" />
+              <Dimensions y="4" />
+            </Texture>
+            <Texture name="$(parent)BottomMunge" inherits="ZO_RandomizedMunge" tier="HIGH" level="1100" >
+              <Anchor point="BOTTOMLEFT" offsetX="-4" />
+              <Anchor point="BOTTOMRIGHT" offsetX="4" />
+              <Dimensions y="4" />
+            </Texture>
+          </Controls>
+        </Texture>
+        <Control name="$(parent)Warner" tier="LOW" hidden="false">
+          <OnInitialized>
+            self.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual("AUI_PlayerWarnerAnimation_High", self)
+          </OnInitialized>
+          <Dimensions y="64" />
+          <Anchor point="LEFT" offsetX="-18" />
+          <Anchor point="RIGHT" offsetX="18"/>
+          <Controls>
+            <Texture name="$(parent)FrameLeftWarner" textureFile="AUI/images/attributes/aui_teso/player/glow.dds" level="1000" layer="OVERLAY" blendMode="ADD">
+              <Dimensions x="30" y="64" />
+              <TextureCoords left="0.7578125" right="0.5234375" top="0" bottom="1"/>
+              <Anchor point="LEFT" />
+            </Texture>
+            <Texture name="$(parent)FrameRightWarner" textureFile="AUI/images/attributes/aui_teso/player/glow.dds" level="1000" layer="OVERLAY" blendMode="ADD">
+              <Dimensions x="37" y="64" />
+              <TextureCoords left="0.515625" right="0.2265625" top="0" bottom="1"/>
+              <Anchor point="RIGHT" />
+            </Texture>
+            <Texture name="$(parent)FrameCenterWarner" textureFile="AUI/images/attributes/aui_teso/player/glow.dds" level="1000" layer="OVERLAY" blendMode="ADD">
+              <TextureCoords left="0.515625" right="0.5234375" top="0" bottom="1"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeftWarner" relativePoint="TOPRIGHT"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRightWarner" relativePoint="BOTTOMLEFT"/>
+            </Texture>
+          </Controls>
+        </Control>
+        <Texture name="$(parent)DecreasedArmorOverlay" textureFile="AUI/images/attributes/aui_teso/other/decrease.dds" tier="HIGH">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeft" relativePoint="TOPRIGHT"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRight" relativePoint="BOTTOMLEFT"/>
+        </Texture>
+        <Texture name="$(parent)IncreasedPowerOverlay" tier="LOW"  textureFile="EsoUI/Art/UnitAttributeVisualizer/increasedpower_animatedhalo_32fr.dds" level="150" alpha="0.5">
+          <OnInitialized>
+            self.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual("AUI_IncreasedPowerAnimation", self)
+            self.offsetLeft = 34
+            self.offsetTop = -24
+            self.offsetRight = -28
+            self.offsetBottom = 28
+          </OnInitialized>
+        </Texture>
+        <Texture name="$(parent)DecreasedPowerOverlay" tier="LOW" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_decreasedPower_halo.dds" level="150">
+          <OnInitialized>
+            self.offsetLeft = -20
+            self.offsetTop = -16
+            self.offsetRight = 20
+            self.offsetBottom = 12
+          </OnInitialized>
+        </Texture>
+      </Controls>
+    </Control>
+    <Control name="TESO_GroupFrame_Shield" tier="MEDIUM" mouseEnabled="false" clampedToScreen="true" virtual="true" hidden="true">
+      <Anchor point="LEFT" offsetX="3" />
+      <Anchor point="RIGHT" offsetX="-3"/>
+      <OnInitialized>
+        self.owns = true
+      </OnInitialized>
+      <Controls>
+        <StatusBar name="$(parent)_Bar" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill.dds" tier="MEDIUM" level="400">
+          <Dimensions y="18" />
+          <Anchor point="LEFT" />
+          <Anchor point="RIGHT" />
+          <TextureCoords left="0" right="1" top="0" bottom="0.53125"/>
+          <LeadingEdge textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_leadingEdge.dds" width="11" height="17" />
+          <LeadingEdgeTextureCoords left="0" right="0.6875" top="0" bottom="0.53125" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill_gloss.dds" tier="MEDIUM" level="450">
+              <AnchorFill />
+              <TextureCoords left="0" right="1" top="0" bottom="0.53125"/>
+              <LeadingEdge textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_leadingEdge_gloss.dds" width="11" height="17" />
+              <LeadingEdgeTextureCoords left="0" right="0.6875" top="0" bottom="0.53125" />
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+      </Controls>
+    </Control>
+    <Control name="TESO_GroupFrame_Companion" tier="HIGH" mouseEnabled="true" clampedToScreen="true" level="1000" virtual="true" hidden="true">
+      <Dimensions x="197" y="15" />
+      <OnInitialized>
+		self.offsetX = 40
+		self.offsetY = 20
+      </OnInitialized>		  
+      <Controls>
+        <Texture name="$(parent)_ChampionIcon" tier="HIGH" hidden="true" textureFile="EsoUI/Art/champion/champion_icon.dds">
+          <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" offsetX="2" offsetY="-2"/>
+          <OnInitialized>
+            self.scaleToFont = true
+          </OnInitialized>
+        </Texture>
+        <Texture name="$(parent)_ClassIcon" tier="HIGH" hidden="true">
+          <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="-14" offsetY="2" />
+          <OnInitialized>
+            self.color = "#ffffff"
+            self.scaleToFont = true
+          </OnInitialized>
+        </Texture>
+        <Texture name="$(parent)_LeaderIcon" hidden="true" textureFile="/esoui/art/lfg/lfg_leader_icon.dds" tier="HIGH" >
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)_ClassIcon" relativePoint="TOPLEFT" offsetX="-3" offsetY="-1"/>
+          <OnInitialized>
+            self.scaleToFont = true
+          </OnInitialized>
+        </Texture>
+        <Label name="$(parent)_Text_Level">
+          <Anchor point="LEFT" relativeTo="$(parent)_ChampionIcon" relativePoint="RIGHT" offsetX="2" offsetY="0"/>
+          <OnInitialized>
+            self.font = "$(MEDIUM_FONT)|"
+            self.fontSizeMultipler = 1.4
+          </OnInitialized>
+        </Label>
+        <Label name="$(parent)_Text_Name" wrapMode="ELLIPSIS">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Text_Level" relativePoint="TOPRIGHT" offsetX="4"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)_LeaderIcon" relativePoint="BOTTOMLEFT" offsetX="-3" />
+          <OnInitialized>
+            self.font = "$(MEDIUM_FONT)|"
+            self.fontSizeMultipler = 1.4
+          </OnInitialized>
+        </Label>
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER" offsetY="2"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Offline" tier="HIGH">
+              <Anchor point="CENTER" />
+            </Label>
+            <Label name="$(parent)_DeadInfo" tier="HIGH">
+              <Anchor point="CENTER" />
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill.dds" tier="MEDIUM" level="500">
+          <Dimensions y="12" />
+          <Anchor point="LEFT" offsetX="2" />
+          <Anchor point="RIGHT" offsetX="-2" />
+          <TextureCoords left="0" right="1" top="0" bottom="0.53125"/>
+          <LeadingEdge textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_leadingEdge.dds" width="11" height="17" />
+          <LeadingEdgeTextureCoords left="0" right="0.6875" top="0" bottom="0.53125" />
+          <Controls>
+            <Texture name="$(parent)_IncreaseRegLeft" textureFile="AUI/images/attributes/aui_teso/other/arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <TextureCoords left="1" right="0" top="0" bottom="1" />
+              <Dimensions x="16" y="10" />
+              <Anchor point="LEFT" />
+              <OnInitialized>
+                self.fixedDimensions = true
+                self.endX = -4
+              </OnInitialized>
+            </Texture>
+            <Texture name="$(parent)_DecreaseRegLeft" textureFile="AUI/images/attributes/aui_teso/other/arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <Dimensions x="16" y="10" />
+              <Anchor point="RIGHT" />
+              <OnInitialized>
+                self.fixedDimensions = true
+                self.endX = -4
+              </OnInitialized>
+            </Texture>
+            <StatusBar name="$(parent)Gloss" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill_gloss.dds" tier="MEDIUM" level="550">
+              <AnchorFill />
+              <TextureCoords left="0" right="1" top="0" bottom="0.53125"/>
+              <LeadingEdge textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_leadingEdge_gloss.dds" width="11" height="17" />
+              <LeadingEdgeTextureCoords left="0" right="0.6875" top="0" bottom="0.53125" />
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)FrameLeft" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_frame.dds" level="1000" tier="HIGH">
+          <Dimensions x="4" y="15" />
+          <TextureCoords left="0.6171875" right="0.5859375" top="0.328125" bottom="0.6875"/>
+          <Anchor point="LEFT"/>
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_bg.dds" tier="MEDIUM" layer="BACKGROUND">
+              <AnchorFill />
+              <TextureCoords left="0.6171875" right="0.5859375" top="0.328125" bottom="0.6875"/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameRight" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_frame.dds" level="1000" tier="HIGH">
+          <Dimensions x="13" y="15" />
+          <TextureCoords left="0.46875" right="0.3671875" top="0.328125" bottom="0.6875"/>
+          <Anchor point="RIGHT"/>
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_bg.dds" tier="MEDIUM" layer="BACKGROUND">
+              <AnchorFill />
+              <TextureCoords left="0.46875" right="0.3671875" top="0.328125" bottom="0.6875"/>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Texture name="$(parent)FrameCenter" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_frame.dds" level="1000" tier="HIGH" >
+          <TextureCoords left="0.4921875" right="0.5546875" top="0.328125" bottom="0.6875"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeft" relativePoint="TOPRIGHT"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRight" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+            <Texture name="$(parent)BG" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_bg.dds" tier="MEDIUM" layer="BACKGROUND">
+              <AnchorFill />
+              <TextureCoords left="0.4921875" right="0.5546875" top="0.328125" bottom="0.6875"/>
+            </Texture>
+            <Texture name="$(parent)TopMunge" inherits="ZO_RandomizedMunge" tier="HIGH" level="1100" >
+              <Anchor point="TOPLEFT" offsetX="-4" />
+              <Anchor point="TOPRIGHT" offsetX="4" />
+              <Dimensions y="4" />
+            </Texture>
+            <Texture name="$(parent)BottomMunge" inherits="ZO_RandomizedMunge" tier="HIGH" level="1100" >
+              <Anchor point="BOTTOMLEFT" offsetX="-4" />
+              <Anchor point="BOTTOMRIGHT" offsetX="4" />
+              <Dimensions y="4" />
+            </Texture>
+          </Controls>
+        </Texture>
+        <Control name="$(parent)Warner" tier="LOW" hidden="false">
+          <OnInitialized>
+            self.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual("AUI_PlayerWarnerAnimation_High", self)
+          </OnInitialized>
+          <Dimensions y="64" />
+          <Anchor point="LEFT" offsetX="-18" />
+          <Anchor point="RIGHT" offsetX="18"/>
+          <Controls>
+            <Texture name="$(parent)FrameLeftWarner" textureFile="AUI/images/attributes/aui_teso/player/glow.dds" level="1000" layer="OVERLAY" blendMode="ADD">
+              <Dimensions x="30" y="64" />
+              <TextureCoords left="0.7578125" right="0.5234375" top="0" bottom="1"/>
+              <Anchor point="LEFT" />
+            </Texture>
+            <Texture name="$(parent)FrameRightWarner" textureFile="AUI/images/attributes/aui_teso/player/glow.dds" level="1000" layer="OVERLAY" blendMode="ADD">
+              <Dimensions x="37" y="64" />
+              <TextureCoords left="0.515625" right="0.2265625" top="0" bottom="1"/>
+              <Anchor point="RIGHT" />
+            </Texture>
+            <Texture name="$(parent)FrameCenterWarner" textureFile="AUI/images/attributes/aui_teso/player/glow.dds" level="1000" layer="OVERLAY" blendMode="ADD">
+              <TextureCoords left="0.515625" right="0.5234375" top="0" bottom="1"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeftWarner" relativePoint="TOPRIGHT"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRightWarner" relativePoint="BOTTOMLEFT"/>
+            </Texture>
+          </Controls>
+        </Control>
+        <Texture name="$(parent)DecreasedArmorOverlay" textureFile="AUI/images/attributes/aui_teso/other/decrease.dds" tier="HIGH">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)FrameLeft" relativePoint="TOPRIGHT"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FrameRight" relativePoint="BOTTOMLEFT"/>
+        </Texture>
+        <Texture name="$(parent)IncreasedPowerOverlay" tier="LOW"  textureFile="EsoUI/Art/UnitAttributeVisualizer/increasedpower_animatedhalo_32fr.dds" level="150" alpha="0.5">
+          <OnInitialized>
+            self.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual("AUI_IncreasedPowerAnimation", self)
+            self.offsetLeft = 34
+            self.offsetTop = -24
+            self.offsetRight = -28
+            self.offsetBottom = 28
+          </OnInitialized>
+        </Texture>
+        <Texture name="$(parent)DecreasedPowerOverlay" tier="LOW" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_decreasedPower_halo.dds" level="150">
+          <OnInitialized>
+            self.offsetLeft = -20
+            self.offsetTop = -16
+            self.offsetRight = 20
+            self.offsetBottom = 12
+          </OnInitialized>
+        </Texture>
+      </Controls>
+    </Control>	
+  </Controls>
+</GuiXml>

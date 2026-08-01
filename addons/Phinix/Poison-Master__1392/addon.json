@@ -1,0 +1,36 @@
+{
+  "archive_path": "addons/Phinix/Poison-Master__1392",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phinix",
+  "canonical_id": "esoui:1392",
+  "category_id": "159",
+  "compatibility": [],
+  "content_id": "esoui:1392",
+  "deleted": false,
+  "directories": [
+    "PoisonMaster"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1392/",
+  "fingerprint": "fa66e284507069319af142fd2e44bfc3683cbc2073e4e017068dbd57600ad422",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4538.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4542.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4541.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4532.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4535.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1392",
+  "source_url": "https://www.esoui.com/downloads/info1392-PoisonMaster.html",
+  "stats": {
+    "downloads": 33279,
+    "favorites": 62,
+    "monthly_downloads": 84
+  },
+  "title": "Poison Master",
+  "updated_at": 1629728085000,
+  "version": "1.16"
+}

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/PersistentMemory/BiteTrack__2820",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "PersistentMemory",
+  "canonical_id": "esoui:2820",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2820",
+  "deleted": false,
+  "directories": [
+    "BiteTrack"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2820/",
+  "fingerprint": "408c01df17d037e2b04674eaf04989597341fb295559f3f3440d88464ed0fd5e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9534.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2820",
+  "source_url": "https://www.esoui.com/downloads/info2820-BiteTrack.html",
+  "stats": {
+    "downloads": 3938,
+    "favorites": 2,
+    "monthly_downloads": 14
+  },
+  "title": "BiteTrack",
+  "updated_at": 1644533796000,
+  "version": "1.1.1"
+}

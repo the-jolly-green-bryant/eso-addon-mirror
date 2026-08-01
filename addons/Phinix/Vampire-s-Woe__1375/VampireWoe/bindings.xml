@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c66ccffVampire's Woe|r">
+			<Action name="VW_TOGGLE_SUPPRESSION">
+				<Up>VWoeAddon.Swap()</Up>
+			</Action>
+			<Action name="VW_TOGGLE_INNOCENTS">
+				<Up>VWoeAddon.Innocents()</Up>
+			</Action>
+			<Action name="VW_TOGGLE_CRIMINAL">
+				<Up>VWoeAddon.Criminal()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

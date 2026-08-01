@@ -1,0 +1,48 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="TimesFedIndicator" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="200" y="25" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="0" />
+ 
+      <Controls>
+	    <Label name="$(parent)SezLabel" width="200" height="25" font="$(BOLD_FONT)|$(KB_16)|soft-shadow-thick" fontSize="12" inheritAlpha="true" color="FFFF00"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Times Fed:" mouseEnabled="true" movable="true" clampedToScreen="true">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-500" />
+		  <OnMoveStop>
+			BiteTrack.OnIndicatorMoveStop("timesFedLabel")
+		  </OnMoveStop>
+        </Label>
+        <Label name="$(parent)Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" fontSize="16" inheritAlpha="true" color="FFFF00"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="" mouseEnabled="true" movable="true" clampedToScreen="true">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-470" />
+		  <OnMoveStop>
+			BiteTrack.OnIndicatorMoveStop("timesFedNumber")
+		  </OnMoveStop>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+	
+	<TopLevelControl name="BladeOfWoeIndicator" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="200" y="25" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="150" />
+ 
+      <Controls>
+	    <Label name="$(parent)SezLabel" width="200" height="25" font="$(BOLD_FONT)|$(KB_16)|soft-shadow-thick" fontSize="12" inheritAlpha="true" color="FFFF00"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Blades of Woe:" mouseEnabled="true" movable="true" clampedToScreen="true">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-500" />
+		  <OnMoveStop>
+			BiteTrack.OnIndicatorMoveStop("bladeOfWoeLabel")
+		  </OnMoveStop>
+        </Label>
+        <Label name="$(parent)Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" fontSize="16" inheritAlpha="true" color="FFFF00"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="" mouseEnabled="true" movable="true" clampedToScreen="true">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-470" />
+		  <OnMoveStop>
+			BiteTrack.OnIndicatorMoveStop("bladeOfWoeNumber")
+		  </OnMoveStop>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+	
+  </Controls>
+</GuiXml>

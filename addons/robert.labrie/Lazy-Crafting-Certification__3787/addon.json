@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/robert.labrie/Lazy-Crafting-Certification__3787",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "robert.labrie",
+  "canonical_id": "esoui:3787",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3787",
+  "deleted": false,
+  "directories": [
+    "LazyCraftingCertification"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3787/",
+  "fingerprint": "bfd5c59569afe05a6f2f7b5bc83e5fb86aa70e97b51b4e3edead7aecacafddbf",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3787",
+  "source_url": "https://www.esoui.com/downloads/info3787-LazyCraftingCertification.html",
+  "stats": {
+    "downloads": 3567,
+    "favorites": 7,
+    "monthly_downloads": 60
+  },
+  "title": "Lazy Crafting Certification",
+  "updated_at": 1705543040000,
+  "version": "1.0.0"
+}

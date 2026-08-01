@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/ShadowMau/Favorite-Pet__2917",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ShadowMau",
+  "canonical_id": "esoui:2917",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:2917",
+  "deleted": false,
+  "directories": [
+    "FavoritePet"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2917/",
+  "fingerprint": "133a32d43092124af990d62092589ad005e677f9dcf80f8f4a92fa6550925642",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10016.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10017.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10015.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2917",
+  "source_url": "https://www.esoui.com/downloads/info2917-FavoritePet.html",
+  "stats": {
+    "downloads": 4587,
+    "favorites": 7,
+    "monthly_downloads": 20
+  },
+  "title": "Favorite Pet",
+  "updated_at": 1751765945000,
+  "version": "2.02"
+}

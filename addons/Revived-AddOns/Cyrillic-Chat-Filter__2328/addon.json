@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Revived-AddOns/Cyrillic-Chat-Filter__2328",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Revived AddOns",
+  "canonical_id": "esoui:2328",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2328",
+  "deleted": false,
+  "directories": [
+    "CyrillicChatFilterRevived"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2328/",
+  "fingerprint": "5dc78ac53d3cd5a5df3a049fedc6f41258d1a400472fa449600e10b9ac1e4c63",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8876.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2328",
+  "source_url": "https://www.esoui.com/downloads/info2328-CyrillicChatFilter.html",
+  "stats": {
+    "downloads": 9721,
+    "favorites": 18,
+    "monthly_downloads": 15
+  },
+  "title": "Cyrillic Chat Filter",
+  "updated_at": 1605898535000,
+  "version": "5"
+}

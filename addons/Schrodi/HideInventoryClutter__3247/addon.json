@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Schrodi/HideInventoryClutter__3247",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Schrodi",
+  "canonical_id": "esoui:3247",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3247",
+  "deleted": false,
+  "directories": [
+    "HideInventoryClutter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3247/",
+  "fingerprint": "67a3f896071a67373e0959f5cec3e52ef10c732cea529b68f6d887a423d4147a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3247",
+  "source_url": "https://www.esoui.com/downloads/info3247-HideInventoryClutter.html",
+  "stats": {
+    "downloads": 3755,
+    "favorites": 2,
+    "monthly_downloads": 24
+  },
+  "title": "HideInventoryClutter",
+  "updated_at": 1678701472000,
+  "version": "2.0"
+}

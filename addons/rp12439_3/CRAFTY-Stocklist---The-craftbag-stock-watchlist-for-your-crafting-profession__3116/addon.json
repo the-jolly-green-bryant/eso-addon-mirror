@@ -1,0 +1,52 @@
+{
+  "archive_path": "addons/rp12439_3/CRAFTY-Stocklist---The-craftbag-stock-watchlist-for-your-crafting-profession__3116",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "rp12439_3",
+  "canonical_id": "esoui:3116",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3116",
+  "deleted": false,
+  "directories": [
+    "Crafty"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3116/",
+  "fingerprint": "6be4ada99974d2a7213b8a7739a9177091ef19a9554b96c3fb5e031c423e29da",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11869.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11870.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11871.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11872.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11873.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11886.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11888.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11875.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3116",
+  "source_url": "https://www.esoui.com/downloads/info3116-CRAFTYStocklist-Thecraftbagstockwatchlistforyourcraftingprofession.html",
+  "stats": {
+    "downloads": 11713,
+    "favorites": 27,
+    "monthly_downloads": 19
+  },
+  "title": "CRAFTY Stocklist - The craftbag stock watchlist for your crafting profession",
+  "updated_at": 1748257918000,
+  "version": "V2.65"
+}

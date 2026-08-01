@@ -1,0 +1,48 @@
+{
+  "archive_path": "addons/Rednas/LockpickNotifier__3085",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rednas",
+  "canonical_id": "esoui:3085",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3085",
+  "deleted": false,
+  "directories": [
+    "LockpickNotifier"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3085/",
+  "fingerprint": "033db2ea1001c6cb40d07cfe4c612c004b63af7ae8694f8c3b76e7169167dec6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10325.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10393.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10323.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10324.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3085",
+  "source_url": "https://www.esoui.com/downloads/info3085-LockpickNotifier.html",
+  "stats": {
+    "downloads": 35730,
+    "favorites": 49,
+    "monthly_downloads": 163
+  },
+  "title": "LockpickNotifier",
+  "updated_at": 1688993809000,
+  "version": "1.6"
+}

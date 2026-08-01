@@ -1,0 +1,1342 @@
+<!-- Tooltip Templates -->
+<GuiXml>
+    <Controls>
+
+		<!-- Селектор периода анализа АТТ -->
+		<Control name="KPUI_SelectorContainer" virtual="true">
+			<Controls>
+				<Control name="$(parent)Selector" inherits="ZO_GamepadCurrencySelectorTemplate" hidden="true" horizontalAlignment="RIGHT">
+					<Anchor point="TOP" relativePoint="TOP" offsetX="-20" offsetY="20"/>
+				</Control>
+			</Controls>
+		</Control>
+
+		<Control name="KPUI_CraftingTooltip" inherits="ZO_CraftingTooltip_Gamepad" virtual="true">
+			<OnInitialized>
+				ZO_GamepadCraftingUtils_CraftingTooltip_Gamepad_Initialize(self, ZO_GamepadSmithingImprovement_TooltipScreenResizeHandler)
+			</OnInitialized>
+		</Control>
+		
+		<!-- <Control name="KPUI_ProfitLabel" virtual="true"> -->
+			<!-- <Controls> -->
+                <!-- <Label name="$(parent)label" font="ZoFontGamepad27" horizontalAlignment="LEFT" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="UPPERCASE" > -->
+                    <!-- <Anchor point="LEFT" /> -->
+                <!-- </Label> -->
+			<!-- </Controls> -->
+		<!-- </Control> -->
+
+
+		<Control name="KPUI_LabelValue" virtual="true" >
+			<Controls>
+				<Label name="$(parent)Label" horizontalAlignment="LEFT" modifyTextType="UPPERCASE" font="ZoFontGamepad27" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >	
+					<Anchor point="LEFT" />
+				</Label>								
+				<Label name="$(parent)Value" horizontalAlignment="RIGHT"  font="ZoFontGamepad42" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Anchor point="RIGHT" />
+				</Label>		
+			</Controls>
+		</Control>
+
+
+
+		<!-- СТАТИСТИКА ПРОДАЖ ГИЛЬДИЙ ПО ТИПАМ ТОВАРА -->
+		<Control name="KPUI_ItemTypeGuildStatRow" virtual="true">
+			<Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" />
+			<Dimensions y="25" />
+			<Controls>		
+				<Label name="$(parent)StatGuild" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+					<Anchor point="LEFT" />
+				</Label>				
+				<Label name="$(parent)ValueGuild" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+                    <Dimensions x="60" />
+					<Anchor point="RIGHT" />
+				</Label>						
+				<Label name="$(parent)PriceGuild" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="100" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)ValueGuild" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>						
+				<Label name="$(parent)QuantityGuild" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="100" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)PriceGuild" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>		
+			</Controls>
+		</Control>
+		<Control name="KPUI_ItemTypeGuildStat" virtual="true">
+			<Dimensions y="150" />
+			<OnInitialized>
+				local rows = {}
+				self.SetItemTypeGuildStat = function(itemLink, itemTradeCategory, lastControl)
+					
+	 				self:GetNamedChild("Header"):SetHidden(false)
+				 	self:GetNamedChild("Header"):ClearAnchors()
+				 	self:GetNamedChild("Header"):SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT, 0, -10)
+					self:GetNamedChild("Header"):SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT, 0, -10)
+					self:GetNamedChild("Header"):GetNamedChild("StatGuild"):SetText(GetString(KELA_TRADING_TRADING_GUILD))
+					self:GetNamedChild("Header"):GetNamedChild("QuantityGuild"):SetText(GetString(KELA_TRADING_TRADING_QUANTITY))
+					self:GetNamedChild("Header"):GetNamedChild("PriceGuild"):SetText(GetString(KELA_TRADING_PRICE_TITLE))
+					self:GetNamedChild("Header"):GetNamedChild("ValueGuild"):SetText(GetString(KELA_TRADING_TRADING_PROFIT_COEF))
+					lastControl = self:GetNamedChild("Header")
+					lastControl = lastControl:GetNamedChild("Divider")
+					local tblItemCategorySales = {}
+					
+					-- spairs(listingItemsTable, function (t, a, b) return (a > b) end) do
+					
+					for guildName, value in pairs (KELA_ATT_GUILD_STAT[itemTradeCategory]) do
+						local K = 1 - (100/(value["price"]/value["quantity"]))
+						KelaSetValueIfNil(tblItemCategorySales, K, {})
+						KelaSetValueIfNil(tblItemCategorySales[K], "guildName", guildName)
+						KelaSetValueIfNil(tblItemCategorySales[K], "price", value["price"])
+						KelaSetValueIfNil(tblItemCategorySales[K], "quantity", value["quantity"])
+					end
+
+					for _, row in pairs(rows) do
+						row:SetHidden(true)
+					end
+
+					local count = 0
+					for K, value in spairs (tblItemCategorySales, function (t, a, b) return (a > b) end) do
+						K = KelaLocalizedFormatNumber(K, 3)
+						count = count + 1
+						local color = ArkadiusTradeTools:GetGuildColor(value["guildName"])
+						local row = GetControl(self:GetName().."row"..count)
+						if not row then row = CreateControlFromVirtual("$(parent)row", self, "KPUI_ItemTypeGuildStatRow", count) end	
+						rows[#rows + 1] = row
+						row:ClearAnchors()
+						row:SetHidden(false)
+						row:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+						row:SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+						row:GetNamedChild("StatGuild"):SetText(color:Colorize(value["guildName"]))
+						row:GetNamedChild("QuantityGuild"):SetText(value["quantity"])
+						row:GetNamedChild("PriceGuild"):SetText(value["price"])
+						row:GetNamedChild("ValueGuild"):SetText(K)
+						lastControl = row
+					end					
+					self:GetNamedChild("Footer"):ClearAnchors()
+					self:GetNamedChild("Footer"):SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					self:GetNamedChild("Footer"):SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+					return self:GetNamedChild("Footer")
+				end
+			</OnInitialized>
+
+			<Controls>
+				<Control name="$(parent)Header">
+					<Dimensions y="47" />
+					<Controls>
+						<Label name="$(parent)StatGuild" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Anchor point="LEFT"/>
+						</Label>				
+						<Label name="$(parent)ValueGuild" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="60" />
+							<Anchor point="RIGHT" />
+						</Label>						
+						<Label name="$(parent)PriceGuild" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="100" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)ValueGuild" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+						</Label>								
+						<Label name="$(parent)QuantityGuild" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="100" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)PriceGuild" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Label>	
+						<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)StatGuild" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)ValueGuild" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Control>
+					</Controls>
+				</Control>				
+				<Control name="$(parent)Footer">
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Dimensions y="10" />
+					<Controls>
+						<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+							<Anchor point="LEFT" offsetY="0"/>
+							<Anchor point="RIGHT" offsetY="0"/>
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+		<!-- СТАТИСТИКА ПРОДАЖ ГИЛЬДИЙ ПО ТИПАМ ТОВАРА -->
+ 
+		<!-- ОСНОВНАЯ ТАБЛИЦА ТОВАРА -->
+		<Control name="KPUI_MainRow" virtual="true">
+			<Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" />
+			<Dimensions y="25" />
+			<Controls>
+				<Label name="$(parent)TTC" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="80" />
+					<Anchor point="RIGHT"/>
+				</Label>				
+				<Label name="$(parent)ATT" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="80" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)TTC" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>				
+				<Label name="$(parent)Stat" horizontalAlignment="LEFT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+					<Anchor point="LEFT"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)ATT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>					
+			</Controls>
+		</Control>
+        <Control name="KPUI_MainInfo" virtual="true">
+			<Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" />
+			<OnInitialized>
+				self.SetItemInfo = function(priceInfoTTC, priceInfoATT, currentScene, selectedData, stackCount)
+					local colors = kpuiConst.Colors
+					
+					if not stackCount then
+						stackCount = 1
+						if selectedData then stackCount = selectedData.stackCount end
+					end
+										
+					local lastControl
+					local strAmountCount = GetString(KELA_TRADING_AMOUNTCOUNT)
+					local strAvgPrice = GetString(KELA_TRADING_AVGPRICE)
+					local multiplier = 1
+					local IsMasterWrit = false
+					
+					self:GetNamedChild("Header"):GetNamedChild("Stat"):SetText(GetString(KELA_TRADING_INDICATOR_SALES_OFFERS))
+					self:GetNamedChild("Header"):GetNamedChild("ATT"):SetText(colors.COLOR_ATT:Colorize("ATT"))
+					self:GetNamedChild("Header"):GetNamedChild("TTC"):SetText(colors.COLOR_TTC:Colorize("TTC"))
+					lastControl = self:GetNamedChild("Header")
+
+					IsMasterWrit = (priceInfoATT.Vouchers ~= 0)
+					
+					if stackCount > 1 or IsMasterWrit then
+						rowEntryCount = GetControl(self:GetName().."rowEntryCount")
+						if not rowEntryCount then rowEntryCount = CreateControlFromVirtual("$(parent)rowEntryCount", self, "KPUI_MainRow") end
+						rowEntryCount:ClearAnchors()
+						rowEntryCount:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+						rowEntryCount:GetNamedChild("Stat"):SetText(GetString(KELA_TRADING_ENTRYCOUNT))
+						rowEntryCount:GetNamedChild("ATT"):SetText(KelaLocalizedFormatNumber(priceInfoATT.EntryCount))
+						rowEntryCount:GetNamedChild("TTC"):SetText(KelaLocalizedFormatNumber(priceInfoTTC.EntryCount))	
+						rowEntryCount:SetHidden(false)
+						lastControl = rowEntryCount
+					else
+						if rowEntryCount then rowEntryCount:SetHidden(true) end
+					end
+
+					if IsMasterWrit then
+						multiplier = priceInfoATT.Vouchers
+						strAmountCount = GetString(KELA_TRADING_VOUCHERSCOUNT)
+						strAvgPrice = GetString(KELA_TRADING_AVGPRICE_MASTERWRIT)
+					else
+						multiplier = 1					
+						strAmountCount = GetString(KELA_TRADING_AMOUNTCOUNT)
+						strAvgPrice = GetString(KELA_TRADING_AVGPRICE)
+					end
+					local rowAmountCount = GetControl(self:GetName().."rowAmountCount")
+					if not rowAmountCount then rowAmountCount = CreateControlFromVirtual("$(parent)rowAmountCount", self, "KPUI_MainRow") end
+					rowAmountCount:ClearAnchors()
+					rowAmountCount:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					rowAmountCount:GetNamedChild("Stat"):SetText(strAmountCount)
+					rowAmountCount:GetNamedChild("ATT"):SetText(KelaLocalizedFormatNumber(priceInfoATT.AmountCount))
+					rowAmountCount:GetNamedChild("TTC"):SetText(KelaLocalizedFormatNumber(priceInfoTTC.AmountCount))	
+					lastControl = rowAmountCount
+					
+					local rowMin = GetControl(self:GetName().."rowMin")
+					if not rowMin then rowMin = CreateControlFromVirtual("$(parent)rowMin", self, "KPUI_MainRow") end
+					rowMin:ClearAnchors()
+					rowMin:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					rowMin:GetNamedChild("Stat"):SetText(GetString(KELA_TRADING_MINPRICE))
+					rowMin:GetNamedChild("ATT"):SetText(KelaLocalizedFormatNumber(priceInfoATT.Min))
+					rowMin:GetNamedChild("TTC"):SetText(KelaLocalizedFormatNumber(priceInfoTTC.Min))	
+					lastControl = rowMin
+					
+					local rowMax = GetControl(self:GetName().."rowMax")
+					if not rowMax then rowMax = CreateControlFromVirtual("$(parent)rowMax", self, "KPUI_MainRow") end
+					rowMax:ClearAnchors()
+					rowMax:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					rowMax:GetNamedChild("Stat"):SetText(GetString(KELA_TRADING_MAXPRICE))
+					rowMax:GetNamedChild("ATT"):SetText(KelaLocalizedFormatNumber(priceInfoATT.Max))
+					rowMax:GetNamedChild("TTC"):SetText(KelaLocalizedFormatNumber(priceInfoTTC.Max))	
+					lastControl = rowMax
+					
+					if IsMasterWrit then
+						rowVoucherPrice = GetControl(self:GetName().."rowVoucherPrice")
+						if not rowVoucherPrice then rowVoucherPrice = CreateControlFromVirtual("$(parent)rowVoucherPrice", self, "KPUI_MainRow") end
+						rowVoucherPrice:ClearAnchors()
+						rowVoucherPrice:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+						rowVoucherPrice:GetNamedChild("Stat"):SetText(GetString(KELA_TRADING_VOUCHERPRICE))
+						rowVoucherPrice:GetNamedChild("ATT"):SetText(KelaLocalizedFormatNumber(priceInfoATT.Avg))
+						rowVoucherPrice:GetNamedChild("TTC"):SetText(KelaLocalizedFormatNumber(0))
+						rowVoucherPrice:SetHidden(false)
+						lastControl = rowVoucherPrice
+					else
+						if rowVoucherPrice then rowVoucherPrice:SetHidden(true) end
+					end
+
+					local rowAvg = GetControl(self:GetName().."rowAvg")
+					if not rowAvg then rowAvg = CreateControlFromVirtual("$(parent)rowAvg", self, "KPUI_MainRow") end
+					rowAvg:ClearAnchors()
+					rowAvg:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					rowAvg:GetNamedChild("Stat"):SetText(strAvgPrice)
+					rowAvg:GetNamedChild("ATT"):SetText(KelaLocalizedFormatNumber(priceInfoATT.Avg * multiplier))
+					rowAvg:GetNamedChild("TTC"):SetText(KelaLocalizedFormatNumber(priceInfoTTC.Avg))
+					lastControl = rowAvg
+
+					local valueEffectDeal, effectOfDeal, colorEffectDeal, suggestedTTC, suggestedATT, suggestedAVG, suggestedTTCStack, suggestedATTStack, suggestedAVGStack, suggestedTTCWrit, suggestedATTWrit, suggestedAVGWrit 
+					
+					if selectedData and (currentScene == "GAMEPAD_TRADING_HOUSE_BROWSE_RESULTS" or currentScene == "GAMEPAD_TRADING_HOUSE_LISTINGS") then
+						valueEffectDeal, effectOfDeal, colorEffectDeal, suggestedTTC, suggestedATT, suggestedAVG, suggestedTTCStack, suggestedATTStack, suggestedAVGStack, suggestedTTCWrit, suggestedATTWrit, suggestedAVGWrit = KelaGetEffectOfDeal (priceInfoTTC, priceInfoATT, selectedData, currentScene, stackCount)
+						if not effectOfDeal then effectOfDeal = "" end
+					else
+						_, _, _, suggestedTTC, suggestedATT, suggestedAVG, suggestedTTCStack, suggestedATTStack, suggestedAVGStack, suggestedTTCWrit, suggestedATTWrit, suggestedAVGWrit = KelaGetEffectOfDeal (priceInfoTTC, priceInfoATT, selectedData, nil, stackCount)
+					end
+					
+					self:GetNamedChild("Footer"):ClearAnchors()
+					self:GetNamedChild("Footer"):SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					self:GetNamedChild("Footer"):SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+					if valueEffectDeal then
+						self:GetNamedChild("Footer"):GetNamedChild("EffectOfDeal"):SetText(colorEffectDeal:Colorize(tostring(valueEffectDeal)))
+						self:GetNamedChild("Footer"):GetNamedChild("EffectOfDeal"):SetHidden(false)
+					else
+						self:GetNamedChild("Footer"):GetNamedChild("EffectOfDeal"):SetText("")
+						self:GetNamedChild("Footer"):GetNamedChild("EffectOfDeal"):SetHidden(true)
+					end
+					self:GetNamedChild("Footer"):GetNamedChild("Recomend"):SetText(GetString(KELA_TRADING_RECOMENDEDPRICE_SYSTEM))
+					self:GetNamedChild("Footer"):GetNamedChild("ATT"):SetText(colors.COLOR_ATT:Colorize(KelaLocalizedFormatNumber(suggestedATT))) 
+					self:GetNamedChild("Footer"):GetNamedChild("TTC"):SetText(colors.COLOR_TTC:Colorize(KelaLocalizedFormatNumber(suggestedTTC))) 
+					self:GetNamedChild("Footer"):GetNamedChild("AVG"):SetText(KelaLocalizedFormatNumber(suggestedAVG).." ~")
+					if IsMasterWrit then
+						self:GetNamedChild("Footer"):GetNamedChild("RecomendStack"):SetHidden(false)
+						self:GetNamedChild("Footer"):GetNamedChild("ATTStack"):SetHidden(false)
+						self:GetNamedChild("Footer"):GetNamedChild("TTCStack"):SetHidden(false)
+						self:GetNamedChild("Footer"):GetNamedChild("AVGStack"):SetHidden(false)
+						self:GetNamedChild("Footer"):GetNamedChild("RecomendStack"):SetText(GetString(KELA_TRADING_TRADING_FORWRIT).."("..multiplier..")")
+						self:GetNamedChild("Footer"):GetNamedChild("ATTStack"):SetText(colors.COLOR_ATT:Colorize(KelaLocalizedFormatNumber(suggestedATTWrit))) 
+						self:GetNamedChild("Footer"):GetNamedChild("TTCStack"):SetText(colors.COLOR_TTC:Colorize(KelaLocalizedFormatNumber(suggestedTTCWrit))) 
+						self:GetNamedChild("Footer"):GetNamedChild("AVGStack"):SetText(KelaLocalizedFormatNumber(suggestedAVGWrit).." ~") 
+					elseif stackCount > 1 then
+						self:GetNamedChild("Footer"):GetNamedChild("RecomendStack"):SetHidden(false)
+						self:GetNamedChild("Footer"):GetNamedChild("ATTStack"):SetHidden(false)
+						self:GetNamedChild("Footer"):GetNamedChild("TTCStack"):SetHidden(false)
+						self:GetNamedChild("Footer"):GetNamedChild("AVGStack"):SetHidden(false)
+						self:GetNamedChild("Footer"):GetNamedChild("RecomendStack"):SetText(GetString(KELA_TRADING_TRADING_FORLOT).."("..stackCount..")")
+						self:GetNamedChild("Footer"):GetNamedChild("ATTStack"):SetText(colors.COLOR_ATT:Colorize(KelaLocalizedFormatNumber(suggestedATTStack))) 
+						self:GetNamedChild("Footer"):GetNamedChild("TTCStack"):SetText(colors.COLOR_TTC:Colorize(KelaLocalizedFormatNumber(suggestedTTCStack))) 
+						self:GetNamedChild("Footer"):GetNamedChild("AVGStack"):SetText(KelaLocalizedFormatNumber(suggestedAVGStack).." ~") 
+					else 
+						self:GetNamedChild("Footer"):GetNamedChild("RecomendStack"):SetHidden(true)
+						self:GetNamedChild("Footer"):GetNamedChild("ATTStack"):SetHidden(true)
+						self:GetNamedChild("Footer"):GetNamedChild("TTCStack"):SetHidden(true)
+						self:GetNamedChild("Footer"):GetNamedChild("AVGStack"):SetHidden(true)
+						self:GetNamedChild("Footer"):GetNamedChild("RecomendStack"):SetText("")
+						self:GetNamedChild("Footer"):GetNamedChild("ATTStack"):SetText("")
+						self:GetNamedChild("Footer"):GetNamedChild("TTCStack"):SetText("")
+						self:GetNamedChild("Footer"):GetNamedChild("AVGStack"):SetText("")
+					end	
+					return self:GetNamedChild("Footer"), effectOfDeal, (stackCount > 1 or IsMasterWrit or valueEffectDeal)
+				end
+            </OnInitialized>
+            <Controls>
+				<Control name="$(parent)Header">
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Dimensions y="37" />
+					<Controls>
+						<Label name="$(parent)TTC" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+							<Dimensions x="80" />
+							<Anchor point="RIGHT"/>
+						</Label>				
+						<Label name="$(parent)ATT" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+							<Dimensions x="80" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)TTC" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Label>				
+						<Label name="$(parent)Stat" horizontalAlignment="LEFT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Anchor point="LEFT"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)ATT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Label>							
+						<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Stat" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)TTC" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Control>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Footer">
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Dimensions y="10" />
+					<Controls>
+						<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+							<Anchor point="LEFT" offsetX="0" />
+							<Anchor point="RIGHT" offsetX="0" />
+						</Control>
+						<Label name="$(parent)EffectOfDeal" horizontalAlignment="CENTER"  font="ZoFontGamepadBold48" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="30" y="30" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+						</Label>
+						<Label name="$(parent)Recomend" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="100" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)EffectOfDeal" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+						</Label>
+						<Label name="$(parent)TTC" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="80" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Divider" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Label>
+						<Label name="$(parent)ATT" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="80" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)TTC" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Label>
+						<Label name="$(parent)AVG" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+							<Dimensions x="100" />	
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)ATT" relativePoint="TOPLEFT" offsetX="-10" offsetY="0" />
+						</Label>					
+						<Label name="$(parent)RecomendStack" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="100" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Recomend" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+						</Label>
+						<Label name="$(parent)TTCStack" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="80" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)TTC" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+						</Label>
+						<Label name="$(parent)ATTStack" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="80" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)ATT" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+						</Label>
+						<Label name="$(parent)AVGStack" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1">
+							<Dimensions x="100" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)AVG" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"  />
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>		
+		<!-- ОСНОВНАЯ ТАБЛИЦА ТОВАРА -->
+ 		<!-- ГРАФИК АТТ -->		
+		<Control name="KPUI_GraphRow" virtual="true">
+			<Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" />
+			<Dimensions y="25" />
+			<Controls>		
+				<Label name="$(parent)Stat" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+					<Anchor point="LEFT" />
+				</Label>				
+				<Label name="$(parent)Value" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+                    <Dimensions x="70" />
+					<Anchor point="RIGHT" />
+				</Label>						
+				<Label name="$(parent)AVG" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="80" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Value" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>						
+				<Label name="$(parent)AVGStack" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="90" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)AVG" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>		
+			</Controls>
+		</Control>
+		<Control name="KPUI_Graph" inherits="ArkadiusTradeToolsSalesGraph" override="true" tier="HIGH" virtual="true">
+			<Dimensions y="150" />
+			<OnInitialized>
+				local rows = {}
+				local rowFake
+				ArkadiusTradeToolsSalesGraph:New(self)
+				self.SetGuildSalesInfo = function(GuildsInfo, GuildsPrice, stackCount, lastControl)
+					if not stackCount then stackCount = 1 end
+					stackCount = math.floor(stackCount)
+					
+					self:GetNamedChild("Header"):SetHidden(false)
+					self:GetNamedChild("Header"):ClearAnchors()
+					self:GetNamedChild("Header"):SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT, -10)
+					self:GetNamedChild("Header"):SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT, 10)
+					self:GetNamedChild("Header"):GetNamedChild("Stat"):SetText(GetString(KELA_TRADING_TRADING_GUILD))
+					if stackCount > 1 then
+						self:GetNamedChild("Header"):GetNamedChild("AVGStack"):SetHidden(false)
+						self:GetNamedChild("Header"):GetNamedChild("AVGStack"):SetText(GetString(KELA_TRADING_AVGPRICE_SHORT).." ("..stackCount..")")
+					else
+						self:GetNamedChild("Header"):GetNamedChild("AVGStack"):SetHidden(true)
+						self:GetNamedChild("Header"):GetNamedChild("AVGStack"):SetText(GetString(KELA_TRADING_AVGPRICE_SHORT))
+					end
+					self:GetNamedChild("Header"):GetNamedChild("AVG"):SetText(GetString(KELA_TRADING_AVGPRICE_SHORT))
+					self:GetNamedChild("Header"):GetNamedChild("Value"):SetText(GetString(KELA_TRADING_SOLD))
+					lastControl = self:GetNamedChild("Header")
+					
+					if next(GuildsInfo) ~= nil then
+						if rowFake then rowFake:SetHidden(true) end
+						for _, row in pairs(rows) do
+							row:SetHidden(true)
+						end
+						for guildName, countSales in spairs(GuildsInfo, function(t, a, b) return t[a] > t[b]  end) do
+							local color = ArkadiusTradeTools:GetGuildColor(guildName)
+							local guildRow = string.gsub(guildName, "%s+", "")
+							if string.len(guildRow) > 15 then guildRow = string.sub(guildRow, 1, 15) end
+							local row = GetControl(self:GetName().."row"..guildRow)
+							if not row then row = CreateControlFromVirtual("$(parent)row", self, "KPUI_GraphRow", guildRow) end
+							rows[#rows + 1] = row
+							row:ClearAnchors()
+							row:SetHidden(false)
+							row:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+							row:SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+							row:GetNamedChild("Stat"):SetText(color:Colorize(guildName))
+							
+							local guildPrice = math.floor(GuildsPrice[guildName])
+							
+							if stackCount > 1 then
+								row:GetNamedChild("AVGStack"):SetHidden(false)
+								row:GetNamedChild("AVGStack"):SetText(KelaLocalizedFormatNumber(guildPrice*stackCount))
+							else
+								row:GetNamedChild("AVGStack"):SetHidden(true)
+								row:GetNamedChild("AVGStack"):SetText("-")
+							end
+							row:GetNamedChild("AVG"):SetText(KelaLocalizedFormatNumber(guildPrice))
+							row:GetNamedChild("Value"):SetText(countSales)
+							lastControl = row
+						end
+					else
+						for _, row in pairs(rows) do
+							row:SetHidden(true)
+						end
+						self:GetNamedChild("Header"):GetNamedChild("AVGStack"):SetText(GetString(KELA_TRADING_AVGPRICE_SHORT).." (".."-"..")")
+						rowFake = GetControl(self:GetName().."rowFake")
+						if not rowFake then rowFake = CreateControlFromVirtual("$(parent)rowFake", self, "KPUI_GraphRow") end	
+						rowFake:ClearAnchors()
+						rowFake:SetHidden(false)
+						rowFake:SetAnchor(TOPLEFT, self:GetNamedChild("Header"), BOTTOMLEFT)
+						rowFake:SetAnchor(TOPRIGHT, self:GetNamedChild("Header"), BOTTOMRIGHT)
+						rowFake:GetNamedChild("Stat"):SetText("-")
+						if stackCount > 1 then
+							rowFake:GetNamedChild("AVGStack"):SetText("-")
+						else
+							rowFake:GetNamedChild("AVGStack"):SetText("")
+						end
+						rowFake:GetNamedChild("AVG"):SetText("-")	
+						rowFake:GetNamedChild("Value"):SetText("-")
+						lastControl = rowFake											
+					end
+
+					self:GetNamedChild("Footer"):SetHidden(false)
+					self:GetNamedChild("Footer"):ClearAnchors()
+					self:GetNamedChild("Footer"):SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					self:GetNamedChild("Footer"):SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+
+					return self:GetNamedChild("Footer")
+				end
+			</OnInitialized>
+
+			<Controls>
+				<Control name="$(parent)Header">
+					<Dimensions y="47" />
+					<Controls>
+						<Label name="$(parent)Stat" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Anchor point="LEFT"/>
+						</Label>				
+						<Label name="$(parent)Value" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="70" />
+							<Anchor point="RIGHT"/>
+						</Label>					
+						<Label name="$(parent)AVG" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="80" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Value" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+						</Label>								
+				<Label name="$(parent)AVGStack" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+					<Dimensions x="90" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)AVG" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>	
+						<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Stat" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Control>
+					</Controls>
+				</Control>				
+				<Control name="$(parent)Footer">
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Dimensions y="10" />
+					<Controls>
+						<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+							<Anchor point="LEFT" offsetY="0"/>
+							<Anchor point="RIGHT" offsetY="0"/>
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+ 		<!-- ГРАФИК АТТ -->		
+		<!-- ПРЕДЫДУЩИЕ ПОПЫТКИ -->
+		<Control name="KPUI_PreviousListingsRow" virtual="true">
+			<Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" />
+			<Dimensions y="25" />
+			<Controls>		
+				<Label name="$(parent)Guild" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Anchor point="LEFT" />
+				</Label>				
+				<Label name="$(parent)Result" horizontalAlignment="CENTER"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+                    <Dimensions x="33" />
+					<Anchor point="RIGHT" />
+				</Label>						
+				<Label name="$(parent)Period" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="110" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Result" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>						
+				<Label name="$(parent)PriceForOne" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="65" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Period" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>						
+				<Label name="$(parent)PriceForLot" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="92" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)PriceForOne" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>		
+			</Controls>
+		</Control>
+		<Control name="KPUI_PreviousListings" virtual="true">
+			<Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" />
+			<OnInitialized>
+
+				self.SetPreviousListings = function(listingItemsTable, lastControl)
+					
+					--local kelaPlayerAccountName = GetUnitDisplayName('player')
+					
+					
+					for i = 1, 5 do
+						local row = GetControl(self:GetName().."row"..i)
+						if row then row:SetHidden(true) end
+					end
+
+					self:GetNamedChild("Header"):GetNamedChild("Title"):SetText(GetString(KELA_SETTING_TRADE_TOOLTIP_LISTINGS))	
+					self:GetNamedChild("Header"):GetNamedChild("TitleValue"):SetText(" ")		
+					self:GetNamedChild("Header"):GetNamedChild("Guild"):SetText(GetString(KELA_TRADING_TRADING_GUILD))
+					self:GetNamedChild("Header"):GetNamedChild("Result"):SetText(" ")
+					self:GetNamedChild("Header"):GetNamedChild("Period"):SetText(GetString(KELA_TRADING_PERIOD))
+					self:GetNamedChild("Header"):GetNamedChild("PriceForOne"):SetText(GetString(KELA_TRADING_PRICE_TITLE))
+					self:GetNamedChild("Header"):GetNamedChild("PriceForLot"):SetText(GetString(KELA_TRADING_PRICEFORLOT))
+					self:GetNamedChild("Header"):ClearAnchors()
+					self:GetNamedChild("Header"):SetHidden(false)
+					self:GetNamedChild("Header"):SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					self:GetNamedChild("Header"):SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+					lastControl = self:GetNamedChild("Header")
+
+					local count = 0
+					local isStack
+					for listingTime, listingItem in spairs(listingItemsTable, function (t, a, b) return (a > b) end) do
+						
+						count = count + 1
+						
+						local color = ArkadiusTradeTools:GetGuildColor(listingItem["guildName"])
+						
+						local periodValue
+						if listingItem["period"] then
+							local timeString 
+							if listingItem["period"] == 0 then 
+								timeString = "-"
+							else
+								timeString = zo_strformat(SI_TRADING_HOUSE_BROWSE_ITEM_REMAINING_TIME, ZO_FormatTime(listingItem["period"], TIME_FORMAT_STYLE_SHOW_LARGEST_UNIT, TIME_FORMAT_PRECISION_SECONDS, TIME_FORMAT_DIRECTION_DESCENDING))
+							end
+							periodValue = KelaTimeStampToDateTimeString(listingTime).." ("..timeString..")"
+						else
+							local timeString = zo_strformat(SI_TRADING_HOUSE_BROWSE_ITEM_REMAINING_TIME, ZO_FormatTime(GetTimeStamp() - listingTime, TIME_FORMAT_STYLE_SHOW_LARGEST_UNIT, TIME_FORMAT_PRECISION_SECONDS, TIME_FORMAT_DIRECTION_DESCENDING))							
+							periodValue = KelaTimeStampToDateTimeString(listingTime).." ("..timeString..")"
+						end
+
+						local row = GetControl(self:GetName().."row"..count)
+						if not row then row = CreateControlFromVirtual("$(parent)row", self, "KPUI_PreviousListingsRow", count) end	
+						
+					
+						row:GetNamedChild("Guild"):SetText(color:Colorize(listingItem["guildName"]))
+						row:GetNamedChild("Result"):SetText(listingItem["result"])
+						row:GetNamedChild("Period"):SetText(periodValue)
+						row:GetNamedChild("PriceForOne"):SetText(KelaLocalizedFormatNumber(listingItem["desiredPrice"]/listingItem["stackCount"]))
+						
+						if listingItem["stackCount"] > 1 then
+							row:GetNamedChild("PriceForLot"):SetText(KelaLocalizedFormatNumber(listingItem["desiredPrice"]).." ("..listingItem["stackCount"]..")")
+							isStack = true
+						else
+							row:GetNamedChild("PriceForLot"):SetText("")
+							isStack = false
+						end
+						
+						row:ClearAnchors()
+						row:SetHidden(false)
+						row:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+						row:SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)						
+						
+						lastControl = row						
+						
+						if count >= 5 then break end
+
+					end	
+					
+					if not isStack then 
+						self:GetNamedChild("Header"):GetNamedChild("PriceForLot"):SetText("")
+					end
+
+					
+					
+					self:GetNamedChild("Footer"):ClearAnchors()
+					self:GetNamedChild("Footer"):SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					self:GetNamedChild("Footer"):SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+					return self:GetNamedChild("Footer")
+				end
+			</OnInitialized>
+			<Controls>
+				<Control name="$(parent)Header">
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Dimensions y="97" />
+					<Controls>
+						<Label name="$(parent)Title" modifyTextType="UPPERCASE" horizontalAlignment="LEFT"  font="ZoFontGamepad20" verticalAlignment="BOTTOM" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+							<Anchor point="LEFT" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)TitleValue" modifyTextType="UPPERCASE" horizontalAlignment="LEFT"  font="ZoFontGamepadCondensed20" verticalAlignment="BOTTOM" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+							<Anchor point="RIGHT" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)Guild" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+						</Label>				
+						<Label name="$(parent)Result" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="33" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)TitleValue" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Label>					
+						<Label name="$(parent)Period" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="110" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Result" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+						</Label>	
+						<Label name="$(parent)PriceForOne" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="65" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Period" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Label>						
+						<Label name="$(parent)PriceForLot" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="92" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)PriceForOne" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Label>	
+						<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Guild" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Result" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Control>
+					</Controls>
+				</Control>				
+				<Control name="$(parent)Footer">
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Dimensions y="10" />
+					<Controls>
+						<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+							<Anchor point="LEFT" offsetY="0"/>
+							<Anchor point="RIGHT" offsetY="0"/>
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+		<!-- ПРЕДЫДУЩИЕ ПОПЫТКИ -->
+		<!-- ТОВАР В ИНОМ КАЧЕСТВЕ -->
+		<Control name="KPUI_OtherQualityInfoRow" virtual="true">
+			<Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" />
+			<Dimensions y="25" />
+			<Controls>		
+				<Label name="$(parent)TradeSystem" horizontalAlignment="LEFT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Anchor point="LEFT" />
+				</Label>			
+				<Label name="$(parent)PriceRec" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="70" />
+					<Anchor point="RIGHT" />
+				</Label>			
+				<Label name="$(parent)PriceAvg" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="65" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)PriceRec" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+				</Label>
+				<Label name="$(parent)AmountCount" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="70" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)PriceAvg" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+				</Label>	
+				<Label name="$(parent)EntryCount" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)AmountCount" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+				</Label>
+			</Controls>
+		</Control>
+        <Control name="KPUI_OtherQualityInfo" virtual="true">
+			<Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" />
+            <OnInitialized>
+				self.SetOtherQualityPrices = function(itemLink, normalItemLink, fineItemLink, superiorItemLink, epicItemLink, legendaryItemLink, lastControl)
+
+					local titleSubTitle = " "
+					local transmutted = GetItemTraitInformationFromItemLink(itemLink) and GetItemTraitInformationFromItemLink(itemLink) == 4
+					local notCurrentName = GetItemLinkName(itemLink) ~= GetItemLinkName(normalItemLink)
+
+					if transmutted then
+						local traitType = GetItemLinkTraitInfo(normalItemLink)
+						local traitName = GetString("SI_ITEMTRAITTYPE", traitType)
+						titleSubTitle = kpuiConst.Colors.COLOR_POISON:Colorize(GetString(KELA_TRADING_BEFORETRANSMUTE)..traitName)
+					elseif notCurrentName then
+						local name = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(normalItemLink))
+						titleSubTitle = kpuiConst.Colors.COLOR_POISON:Colorize(name)
+					end		
+
+
+
+					
+					
+					self:GetNamedChild("Header"):GetNamedChild("Title"):SetText(GetString(KELA_TRADING_INANOTHERQUALITY))
+					self:GetNamedChild("Header"):GetNamedChild("TitleValue"):SetText(kpuiConst.Colors.COLOR_POISON:Colorize(titleSubTitle))
+					self:GetNamedChild("Header"):ClearAnchors()
+					self:GetNamedChild("Header"):SetHidden(false)
+					self:GetNamedChild("Header"):SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					self:GetNamedChild("Header"):SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+					lastControl = self:GetNamedChild("Header")					
+					
+					
+					
+					self:GetNamedChild("ColumnTitle"):GetNamedChild("TradeSystem"):SetText(GetString(KELA_TRADING_TRADESYSTEM))
+					self:GetNamedChild("ColumnTitle"):GetNamedChild("PriceRec"):SetText(GetString(KELA_TRADING_PRICEREC))
+					self:GetNamedChild("ColumnTitle"):GetNamedChild("PriceAvg"):SetText(GetString(KELA_TRADING_PRICEAVG))
+					self:GetNamedChild("ColumnTitle"):GetNamedChild("AmountCount"):SetText(GetString(KELA_TRADING_GOODUNIT))
+					self:GetNamedChild("ColumnTitle"):GetNamedChild("EntryCount"):SetText(GetString(KELA_TRADING_LOTS))
+					self:GetNamedChild("ColumnTitle"):ClearAnchors()
+					self:GetNamedChild("ColumnTitle"):SetHidden(false)
+					self:GetNamedChild("ColumnTitle"):SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					self:GetNamedChild("ColumnTitle"):SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+					lastControl = self:GetNamedChild("ColumnTitle")
+
+					local lastControlATT, lastControlTTC
+					local isStack
+					local function addATTRow(sufText, itemLink, priceInfoATT)
+						local rowATT
+						local qualityColor = GetItemQualityColor(GetItemLinkDisplayQuality(itemLink))
+					
+						rowATT = GetControl(self:GetName().."rowATT"..sufText)
+						if not rowATT then rowATT = CreateControlFromVirtual("$(parent)rowATT", self, "KPUI_OtherQualityInfoRow", sufText) end
+						local isFirst
+						if lastControlATT then 
+							lastControl = lastControlATT
+						else
+							isFirst = true
+						end
+						rowATT:ClearAnchors()
+						rowATT:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+						if priceInfoATT.Avg ~= 0 then 
+							rowATT:SetHidden(false)
+							if isFirst then 
+								rowATT:GetNamedChild("TradeSystem"):SetText(kpuiConst.Colors.COLOR_ATT:Colorize("Arkadius Trade Tools"))
+							else
+								rowATT:GetNamedChild("TradeSystem"):SetText(" ")
+							end
+							rowATT:GetNamedChild("PriceRec"):SetText(qualityColor:Colorize(KelaLocalizedFormatNumber(priceInfoATT.SuggestedPrice)))
+							rowATT:GetNamedChild("PriceAvg"):SetText(qualityColor:Colorize(KelaLocalizedFormatNumber(priceInfoATT.Avg)))
+							rowATT:GetNamedChild("AmountCount"):SetText(qualityColor:Colorize(KelaLocalizedFormatNumber(priceInfoATT.AmountCount)))
+							if not isStack and priceInfoATT.AmountCount ~= priceInfoATT.EntryCount then isStack = true end
+							if isStack then
+								rowATT:GetNamedChild("EntryCount"):SetText(qualityColor:Colorize(KelaLocalizedFormatNumber(priceInfoATT.EntryCount)))
+							else
+								rowATT:GetNamedChild("EntryCount"):SetText("")
+							end
+							lastControlATT = rowATT
+						else
+							if rowATT then rowATT:SetHidden(true) end
+							--if isFirst then lastControlATT = nil end
+						end
+					end
+					local function addTTCRow(sufText, itemLink, priceInfoTTC)
+						local rowTTC
+						local qualityColor = GetItemQualityColor(GetItemLinkDisplayQuality(itemLink))
+
+						rowTTC = GetControl(self:GetName().."rowTTC"..sufText)
+						if not rowTTC then rowTTC = CreateControlFromVirtual("$(parent)rowTTC", self, "KPUI_OtherQualityInfoRow", sufText) end
+						
+						local isFirst
+						if lastControlTTC then 
+							lastControl = lastControlTTC
+						else
+							lastControl = lastControlATT or lastControl
+							isFirst = true
+						end
+						
+						rowTTC:ClearAnchors()
+						rowTTC:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)		
+						if priceInfoTTC.Avg ~= 0 then
+							rowTTC:SetHidden(false)
+							if isFirst then 
+								rowTTC:GetNamedChild("TradeSystem"):SetText(kpuiConst.Colors.COLOR_TTC:Colorize("Tamriel Trade Centre"))
+							else
+								rowTTC:GetNamedChild("TradeSystem"):SetText(" ")
+							end
+							rowTTC:GetNamedChild("PriceRec"):SetText(qualityColor:Colorize(KelaLocalizedFormatNumber(priceInfoTTC.SuggestedPrice)))
+							rowTTC:GetNamedChild("PriceAvg"):SetText(qualityColor:Colorize(KelaLocalizedFormatNumber(priceInfoTTC.Avg)))
+							rowTTC:GetNamedChild("AmountCount"):SetText(qualityColor:Colorize(KelaLocalizedFormatNumber(priceInfoTTC.AmountCount)))
+							if not isStack and priceInfoTTC.AmountCount ~= priceInfoTTC.EntryCount then isStack = true end
+							if isStack then
+								rowTTC:GetNamedChild("EntryCount"):SetText(qualityColor:Colorize(KelaLocalizedFormatNumber(priceInfoTTC.EntryCount)))
+							else
+								rowTTC:GetNamedChild("EntryCount"):SetText("")
+							end
+							lastControlTTC = rowTTC
+						else
+							if rowTTC then rowTTC:SetHidden(true) end
+							--if isFirst then lastControlTTC = nil end
+						end
+					end			
+
+					local trueTTCNormal, trueATTNormal, priceInfoTTCNormal, priceInfoATTNormal
+					local trueTTCFine, trueATTFine, priceInfoTTCFine, priceInfoATTFine
+					local trueTTCSuperior, trueATTSuperior, priceInfoTTCSuperior, priceInfoATTSuperior
+					local trueTTCEpic, trueATTEpic, priceInfoTTCEpic, priceInfoATTEpic
+					local trueTTCLegendary, trueATTLegendary, priceInfoTTCLegendary, priceInfoATTLegendary
+
+					if normalItemLink then trueTTCNormal, trueATTNormal, priceInfoTTCNormal, priceInfoATTNormal = KelaGetPriceInfoTTCATT(normalItemLink) end
+					if fineItemLink then trueTTCFine, trueATTFine, priceInfoTTCFine, priceInfoATTFine = KelaGetPriceInfoTTCATT(fineItemLink) end
+					if superiorItemLink then trueTTCSuperior, trueATTSuperior, priceInfoTTCSuperior, priceInfoATTSuperior = KelaGetPriceInfoTTCATT(superiorItemLink) end
+					if epicItemLink then trueTTCEpic, trueATTEpic, priceInfoTTCEpic, priceInfoATTEpic = KelaGetPriceInfoTTCATT(epicItemLink) end
+					if legendaryItemLink then trueTTCLegendary, trueATTLegendary, priceInfoTTCLegendary, priceInfoATTLegendary = KelaGetPriceInfoTTCATT(legendaryItemLink) end
+
+
+					if trueATTNormal then
+						addATTRow("normal", normalItemLink, priceInfoATTNormal)
+					else 
+						if GetControl(self:GetName().."rowATT".."normal") then GetControl(self:GetName().."rowATT".."normal"):SetHidden(true) end
+					end
+					if trueATTFine then
+						addATTRow("fine", fineItemLink, priceInfoATTFine)
+					else 
+						if GetControl(self:GetName().."rowATT".."fine") then GetControl(self:GetName().."rowATT".."fine"):SetHidden(true) end
+					end					
+					if trueATTSuperior then
+						addATTRow("superior", superiorItemLink, priceInfoATTSuperior)
+					else 
+						if GetControl(self:GetName().."rowATT".."superior") then GetControl(self:GetName().."rowATT".."superior"):SetHidden(true) end
+					end					
+					if trueATTEpic then
+						addATTRow("epic", epicItemLink, priceInfoATTEpic)
+					else 
+						if GetControl(self:GetName().."rowATT".."epic") then GetControl(self:GetName().."rowATT".."epic"):SetHidden(true) end
+					end					
+					if trueATTLegendary then
+						addATTRow("legendary", legendaryItemLink, priceInfoATTLegendary)
+					else 
+						if GetControl(self:GetName().."rowATT".."legendary") then GetControl(self:GetName().."rowATT".."legendary"):SetHidden(true) end
+					end					
+					
+					if trueTTCNormal then
+						addTTCRow("normal", normalItemLink, priceInfoTTCNormal)
+					else 
+						if GetControl(self:GetName().."rowTTC".."normal") then GetControl(self:GetName().."rowTTC".."normal"):SetHidden(true) end
+					end
+					if trueTTCFine then
+						addTTCRow("fine", fineItemLink, priceInfoTTCFine)
+					else 
+						if GetControl(self:GetName().."rowTTC".."fine") then GetControl(self:GetName().."rowTTC".."fine"):SetHidden(true) end
+					end	
+					if trueTTCSuperior then
+						addTTCRow("superior", superiorItemLink, priceInfoTTCSuperior)
+					else 
+						if GetControl(self:GetName().."rowTTC".."superior") then GetControl(self:GetName().."rowTTC".."superior"):SetHidden(true) end
+					end		
+					if trueTTCEpic then
+						addTTCRow("epic", epicItemLink, priceInfoTTCEpic)
+					else 
+						if GetControl(self:GetName().."rowTTC".."epic") then GetControl(self:GetName().."rowTTC".."epic"):SetHidden(true) end
+					end		
+					if trueTTCLegendary then
+						addTTCRow("legendary", legendaryItemLink, priceInfoTTCLegendary)
+					else 
+						if GetControl(self:GetName().."rowTTC".."legendary") then GetControl(self:GetName().."rowTTC".."legendary"):SetHidden(true) end
+					end									
+
+					if not isStack then
+						self:GetNamedChild("ColumnTitle"):GetNamedChild("EntryCount"):SetText("")
+					end
+					
+
+					local notSuccess
+					if lastControlTTC then
+						lastControl = lastControlTTC
+					elseif lastControlATT then
+						lastControl = lastControlATT
+					else
+						notSuccess = true
+					end
+
+
+					self:GetNamedChild("Footer"):ClearAnchors()
+					self:GetNamedChild("Footer"):SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					self:GetNamedChild("Footer"):SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+					
+					return self:GetNamedChild("Footer"), notSuccess
+				
+
+				end
+            </OnInitialized>
+            <Controls>
+				<Control name="$(parent)Header">
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Dimensions y="10" />
+					<Controls>
+						<Label name="$(parent)Title" modifyTextType="UPPERCASE" horizontalAlignment="LEFT"  font="ZoFontGamepad20" verticalAlignment="BOTTOM" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+							<Anchor point="LEFT" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)TitleValue" modifyTextType="UPPERCASE" horizontalAlignment="LEFT"  font="ZoFontGamepadCondensed20" verticalAlignment="BOTTOM" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+							<Anchor point="RIGHT" offsetY="0"/>
+						</Label>			
+					</Controls>
+				</Control>
+				<Control name="$(parent)ColumnTitle">
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Dimensions y="43" />
+					<Controls>
+						<Label name="$(parent)TradeSystem" horizontalAlignment="LEFT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Anchor point="LEFT" offsetY="0"/>
+						</Label>				
+						<Label name="$(parent)PriceRec" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="70" />
+							<Anchor point="RIGHT" offsetY="0"/>
+						</Label>			
+						<Label name="$(parent)PriceAvg" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="65" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)PriceRec" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+						</Label>
+						<Label name="$(parent)AmountCount" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="70" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)PriceAvg" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+						</Label>	
+						<Label name="$(parent)EntryCount" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="40" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)AmountCount" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+						</Label>					
+						<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)TradeSystem" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)PriceRec" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Control>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Footer">
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Dimensions y="10" />
+					<Controls>
+						<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+							<Dimensions x="2"/>
+							<Anchor point="LEFT" offsetY="0"/>
+							<Anchor point="RIGHT" offsetY="0"/>
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+		<!-- ТОВАР В ИНОМ КАЧЕСТВЕ -->
+
+		<!-- ТАБЛИЦА ДЛЯ ТОВАРА (ПРОДУКЦИЯ, РЕСУРСЫ) -->
+		<Control name="KPUI_ProductMaterialInfoRow" virtual="true">
+			<Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" />
+			<Dimensions y="25" />
+			<Controls>		
+				<Label name="$(parent)TradeSystem" horizontalAlignment="LEFT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Anchor point="LEFT" />
+				</Label>			
+				<Label name="$(parent)PriceRec" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="70" />
+					<Anchor point="RIGHT" />
+				</Label>			
+				<Label name="$(parent)PriceAvg" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="65" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)PriceRec" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+				</Label>
+				<Label name="$(parent)EntryCount" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)PriceAvg" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+				</Label>	
+				<Label name="$(parent)AmountCount" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="70" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)EntryCount" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+				</Label>
+			</Controls>
+		</Control>
+        <Control name="KPUI_ProductMaterialInfo" virtual="true">
+			<Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" />
+            <OnInitialized>
+				self.SetRawProductPrices = function(resultItemLink, priceInfoTTC, priceInfoATT, lastControl)
+					
+					local rowTTC, rowATT
+					local name = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(resultItemLink))
+					local nameColor = GetItemQualityColor(GetItemLinkDisplayQuality(resultItemLink))
+					local colorizedItemName = nameColor:Colorize(name)
+					local itemType = GetItemLinkItemType(resultItemLink)
+					
+					if itemType == ITEMTYPE_ARMOR or itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY or itemType == ITEMTYPE_GLYPH_WEAPON or itemType == ITEMTYPE_WEAPON then
+						self:GetNamedChild("Header"):GetNamedChild("Title"):SetText(" ")	
+					else
+						self:GetNamedChild("Header"):GetNamedChild("Title"):SetText(GetString(KELA_PRODUCT))	
+					end
+					self:GetNamedChild("Header"):GetNamedChild("TitleValue"):SetText(colorizedItemName)
+					self:GetNamedChild("Header"):GetNamedChild("TradeSystem"):SetText(GetString(KELA_TRADING_TRADESYSTEM))
+					self:GetNamedChild("Header"):GetNamedChild("PriceRec"):SetText(GetString(KELA_TRADING_PRICEREC))
+					self:GetNamedChild("Header"):GetNamedChild("PriceAvg"):SetText(GetString(KELA_TRADING_PRICEAVG))
+					self:GetNamedChild("Header"):GetNamedChild("AmountCount"):SetText(GetString(KELA_TRADING_GOODUNIT))
+					self:GetNamedChild("Header"):GetNamedChild("EntryCount"):SetText(GetString(KELA_TRADING_LOTS))
+
+					self:GetNamedChild("Header"):ClearAnchors()
+					self:GetNamedChild("Header"):SetHidden(false)
+					self:GetNamedChild("Header"):SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					self:GetNamedChild("Header"):SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+
+					lastControl = self:GetNamedChild("Header")
+
+					rowATT = GetControl(self:GetName().."rowATT")
+					if not rowATT then rowATT = CreateControlFromVirtual("$(parent)rowATT", self, "KPUI_ProductMaterialInfoRow") end
+					rowATT:ClearAnchors()
+					rowATT:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					if priceInfoATT.Avg ~= 0 then 
+						rowATT:SetHidden(false)
+						rowATT:GetNamedChild("TradeSystem"):SetText(kpuiConst.Colors.COLOR_ATT:Colorize("Arkadius Trade Tools"))
+						rowATT:GetNamedChild("PriceRec"):SetText(KelaLocalizedFormatNumber(priceInfoATT.SuggestedPrice))
+						rowATT:GetNamedChild("PriceAvg"):SetText(KelaLocalizedFormatNumber(priceInfoATT.Avg))
+						rowATT:GetNamedChild("AmountCount"):SetText(KelaLocalizedFormatNumber(priceInfoATT.AmountCount))
+						rowATT:GetNamedChild("EntryCount"):SetText(KelaLocalizedFormatNumber(priceInfoATT.EntryCount))
+						lastControl = rowATT
+					else
+						if rowATT then rowATT:SetHidden(true) end
+					end
+				
+					rowTTC = GetControl(self:GetName().."rowTTC")
+					if not rowTTC then rowTTC = CreateControlFromVirtual("$(parent)rowTTC", self, "KPUI_ProductMaterialInfoRow") end
+					rowTTC:ClearAnchors()
+					rowTTC:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)				
+					if priceInfoTTC.Avg ~= 0 then
+						rowTTC:SetHidden(false)
+						rowTTC:GetNamedChild("TradeSystem"):SetText(kpuiConst.Colors.COLOR_TTC:Colorize("Tamriel Trade Centre"))
+						rowTTC:GetNamedChild("PriceRec"):SetText(KelaLocalizedFormatNumber(priceInfoTTC.SuggestedPrice))
+						rowTTC:GetNamedChild("PriceAvg"):SetText(KelaLocalizedFormatNumber(priceInfoTTC.Avg))
+						rowTTC:GetNamedChild("AmountCount"):SetText(KelaLocalizedFormatNumber(priceInfoTTC.AmountCount))
+						rowTTC:GetNamedChild("EntryCount"):SetText(KelaLocalizedFormatNumber(priceInfoTTC.EntryCount))
+						lastControl = rowTTC
+					else
+						if rowTTC then rowTTC:SetHidden(true) end
+					end
+
+					self:GetNamedChild("Footer"):ClearAnchors()
+					self:GetNamedChild("Footer"):SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+					self:GetNamedChild("Footer"):SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+					return self:GetNamedChild("Footer")
+				end
+            </OnInitialized>
+            <Controls>
+				<Control name="$(parent)Header">
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Dimensions y="97" />
+					<Controls>
+						<Label name="$(parent)Title" modifyTextType="UPPERCASE" horizontalAlignment="LEFT"  font="ZoFontGamepad20" verticalAlignment="BOTTOM" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+							<Anchor point="LEFT" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)TitleValue" modifyTextType="UPPERCASE" horizontalAlignment="LEFT"  font="ZoFontGamepadCondensed20" verticalAlignment="BOTTOM" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+							<Anchor point="RIGHT" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)TradeSystem" horizontalAlignment="LEFT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+						</Label>				
+						<Label name="$(parent)PriceRec" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="70" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)TitleValue" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Label>			
+						<Label name="$(parent)PriceAvg" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="65" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)PriceRec" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+						</Label>
+						<Label name="$(parent)EntryCount" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="40" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)PriceAvg" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+						</Label>	
+						<Label name="$(parent)AmountCount" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="70" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)EntryCount" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+						</Label>					
+						<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)TradeSystem" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)PriceRec" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Control>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Footer">
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Dimensions y="10" />
+					<Controls>
+						<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+							<Dimensions x="2"/>
+							<Anchor point="LEFT" offsetY="0"/>
+							<Anchor point="RIGHT" offsetY="0"/>
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+		<!-- ТАБЛИЦА ДЛЯ ТОВАРА (ПРОДУКЦИЯ, РЕСУРСЫ) -->
+
+		<!-- КРАФТОВАЯ ТАБЛИЦА ДЛЯ МАСТЕРСКИХ ЗАКАЗОВ -->
+		<Control name="KPUI_CraftingInfoRow" virtual="true">
+			<Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" />
+			<Dimensions y="25" />
+			<Controls>
+				<Label name="$(parent)Quantity" horizontalAlignment="LEFT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+					<Dimensions x="40" />
+					<Anchor point="LEFT"/>
+				</Label>				
+				<Label name="$(parent)CurrencyTTC" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="75" />
+					<Anchor point="RIGHT"/>
+				</Label>
+				<Label name="$(parent)CurrencyATT" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+					<Dimensions x="70" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)CurrencyTTC" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>
+
+				<Label name="$(parent)ItemName" horizontalAlignment="LEFT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Quantity" relativePoint="TOPRIGHT" offsetX="3" offsetY="0" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)CurrencyATT" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+				</Label>
+			</Controls>
+		</Control>
+        <Control name="KPUI_CraftingInfo" virtual="true">
+			<Dimensions x="KELA_TOOLTIPS_CONTENT_WIDTH" />
+            <OnInitialized>
+				self.SetItemPrices = function(craftingComponentPrices, lastControl)
+					if next(craftingComponentPrices) ~= nil then
+					
+						local iconsHave = zo_iconFormatInheritColor("EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_inventory.dds", 15, 15)
+						iconsHave = iconsHave..zo_iconFormatInheritColor("esoui/art/icons/servicemappins/servicepin_bank.dds", 15, 15)
+						self:GetNamedChild("Header"):GetNamedChild("Title"):SetText(GetString(SI_PROVISIONER_INGREDIENTS_HEADER))
+						self:GetNamedChild("Header"):GetNamedChild("Quantity"):SetText(iconsHave)
+						self:GetNamedChild("Header"):GetNamedChild("ItemName"):SetText(GetString(KELA_TRADING_ITEM))
+						self:GetNamedChild("Header"):GetNamedChild("CurrencyTTC"):SetText(GetString(KELA_TRADING_ITEM).."|cf23d8eTTC|r")
+						self:GetNamedChild("Header"):GetNamedChild("CurrencyATT"):SetText(GetString(KELA_TRADING_ITEM).."|cf58585ATT|r")
+						
+						self:GetNamedChild("Header"):ClearAnchors()
+						self:GetNamedChild("Header"):SetHidden(false)
+						self:GetNamedChild("Header"):SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+						self:GetNamedChild("Header"):SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+
+						lastControl = self:GetNamedChild("Header")
+
+						local totalPriceATT = 0
+						local totalPriceTTC = 0
+						for i = 1, 7 do
+							local rowOld = GetControl(self:GetName().."row"..i)
+							if rowOld then
+								row = rowOld
+							else
+								row = CreateControlFromVirtual("$(parent)row", self, "KPUI_CraftingInfoRow", i)
+							end					
+							row:ClearAnchors()
+							if craftingComponentPrices[i] == nil then
+								row:SetHidden(true)
+							else
+								row:SetHidden(false)
+								if i == 1 then
+									row:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+								else
+									row:SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+									row:SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+								end
+								local bagCount, bankCount, craftBagCount = GetItemLinkStacks(craftingComponentPrices[i].itemLink)
+								local stackCount = bagCount + bankCount + craftBagCount							
+								if craftingComponentPrices[i].quantity > stackCount then 
+									stackCount = "|cDC8122"..tostring(stackCount).."|r"
+									row:GetNamedChild("Quantity"):SetFont("ZoFontGamepad22")								
+								else
+									stackCount = "|cFFFFFF"..tostring(stackCount).."|r" 
+									row:GetNamedChild("Quantity"):SetFont("ZoFontGamepadCondensed20")
+								end
+								row:GetNamedChild("Quantity"):SetText(stackCount) 
+								row:GetNamedChild("ItemName"):SetText(craftingComponentPrices[i].itemLink.." *"..craftingComponentPrices[i].quantity)
+
+								local priceInfoTTC = TamrielTradeCentrePrice:GetPriceInfo(craftingComponentPrices[i].itemLink)
+
+								if priceInfoTTC then 
+									row:GetNamedChild("CurrencyTTC"):SetText(KelaLocalizedFormatNumber(priceInfoTTC.Avg * craftingComponentPrices[i].quantity)) 
+									totalPriceTTC = totalPriceTTC + (priceInfoTTC.Avg * craftingComponentPrices[i].quantity)	
+								end	
+
+								local priceInfoATT
+								if craftingComponentPrices[i].price and	craftingComponentPrices[i].quantity then
+
+
+									priceInfoATT = craftingComponentPrices[i].price * craftingComponentPrices[i].quantity
+
+
+								end
+								
+								if priceInfoATT then 
+
+
+									row:GetNamedChild("CurrencyATT"):SetText(KelaLocalizedFormatNumber(priceInfoATT)) 
+
+
+									totalPriceATT = totalPriceATT + priceInfoATT
+
+
+								end
+
+
+								lastControl = row
+							end
+						end
+						self:GetNamedChild("Footer"):ClearAnchors()
+						self:GetNamedChild("Footer"):SetAnchor(TOPLEFT, lastControl, BOTTOMLEFT)
+						self:GetNamedChild("Footer"):SetAnchor(TOPRIGHT, lastControl, BOTTOMRIGHT)
+						self:GetNamedChild("Footer"):GetNamedChild("SummaryLabel"):SetText(GetString(KELA_TRADING_SUMMARY)..":")
+						self:GetNamedChild("Footer"):GetNamedChild("SummaryValueTTC"):SetText("|cf23d8e"..KelaLocalizedFormatNumber(totalPriceTTC).."|r") 
+						self:GetNamedChild("Footer"):GetNamedChild("SummaryValueATT"):SetText("|cf58585"..KelaLocalizedFormatNumber(totalPriceATT).."|r") 
+						return self:GetNamedChild("Footer")
+					end
+				end
+            </OnInitialized>
+            <Controls>
+				<Control name="$(parent)Header">
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Dimensions y="97" />
+					<Controls>
+						<Label name="$(parent)Title" modifyTextType="UPPERCASE" horizontalAlignment="LEFT"  font="ZoFontGamepad20" verticalAlignment="BOTTOM" color="GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_1" >
+							<Anchor point="LEFT" offsetY="0"/>
+							<Anchor point="RIGHT" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)Quantity" horizontalAlignment="LEFT"  font="ZoFontGamepadCondensed20" verticalAlignment="BOTTOM" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="40" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+						</Label>
+						<Label name="$(parent)CurrencyTTC" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="BOTTOM" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="75" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Title" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Label>
+						<Label name="$(parent)CurrencyATT" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="BOTTOM" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="70" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)CurrencyTTC" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Label>						
+						
+						<Label name="$(parent)ItemName" horizontalAlignment="LEFT"  font="ZoFontGamepadCondensed20" verticalAlignment="BOTTOM" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Quantity" relativePoint="TOPRIGHT" offsetX="3" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)CurrencyATT" relativePoint="TOPLEFT" offsetX="-3" offsetY="0" />
+						</Label>
+						<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Quantity" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)CurrencyTTC" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Control>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Footer">
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Dimensions y="10" />
+					<Controls>
+						<Control name="$(parent)Divider" inherits="ZO_GamepadHeaderHorizontalDivider" tier="HIGH" >
+							<Anchor point="LEFT" offsetX="0" />
+							<Anchor point="RIGHT" offsetX="0" />
+						</Control>
+						<Label name="$(parent)SummaryLabel" horizontalAlignment="LEFT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" offsetX="42" offsetY="0" />
+						</Label>
+						<Label name="$(parent)SummaryValueTTC" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="75" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Divider" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Label>
+						<Label name="$(parent)SummaryValueATT" horizontalAlignment="RIGHT"  font="ZoFontGamepadCondensed20" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Dimensions x="70" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)SummaryValueTTC" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+		<!-- КРАФТОВАЯ ТАБЛИЦА ДЛЯ МАСТЕРСКИХ ЗАКАЗОВ -->
+
+		
+    </Controls>
+</GuiXml>

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/samleegray/SamisFishTracker__4399",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "samleegray",
+  "canonical_id": "esoui:4399",
+  "category_id": "20",
+  "compatibility": [],
+  "content_id": "esoui:4399",
+  "deleted": false,
+  "directories": [
+    "SamisFishTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4399/",
+  "fingerprint": "5dd6d7854e38deaeb7aeeaf747f42b84e08a251f97cfbab1535aba019565a9a6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15261.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15262.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15263.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15287.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4399",
+  "source_url": "https://www.esoui.com/downloads/info4399-SamisFishTracker.html",
+  "stats": {
+    "downloads": 279,
+    "favorites": 1,
+    "monthly_downloads": 35
+  },
+  "title": "SamisFishTracker",
+  "updated_at": 1779975000000,
+  "version": "1.1.0"
+}

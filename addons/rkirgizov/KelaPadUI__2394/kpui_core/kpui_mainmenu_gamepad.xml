@@ -1,0 +1,18 @@
+<GuiXml>
+    <Controls>
+        <Label name="Kela_Gamepad_WebsiteTemplate" font="ZoFontGamepad34" horizontalAlignment="CENTER" color="C5C29E" text="KELA_MAINMENU_WEBSITE" virtual="true"/>
+
+<!--         <Control name="ZO_Gamepad_Help_EditLockedEntry_MultiLine" inherits="ZO_Gamepad_TextEditLockedEntry_FullWidth" virtual="true">
+            <Dimensions y="135"/>
+        </Control>
+
+        <Control name="ZO_Gamepad_Help_Dropdown_Item" inherits="ZO_Gamepad_Dropdown_Item_FullWidth" virtual="true"/>
+         -->
+		 
+        <TopLevelControl name="Kela_Gamepad_Root" inherits="ZO_Gamepad_ParametricList_Screen">
+            <OnInitialized>
+                Kela_Gamepad_Root_OnInitialize(self)
+            </OnInitialized>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

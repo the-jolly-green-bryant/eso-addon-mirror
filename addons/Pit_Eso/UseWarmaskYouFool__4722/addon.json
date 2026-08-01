@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Pit_Eso/UseWarmaskYouFool__4722",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Pit_Eso",
+  "canonical_id": "esoui:4722",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4722",
+  "deleted": false,
+  "directories": [
+    "UseWarmaskYouFool"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4722/",
+  "fingerprint": "1fc9779853ff9061b428a7ab6a347778dfed49195f8fa8852e4cb482fe6f8d1f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16792.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4722",
+  "source_url": "https://www.esoui.com/downloads/info4722-UseWarmaskYouFool.html",
+  "stats": {
+    "downloads": 30,
+    "favorites": 0,
+    "monthly_downloads": 28
+  },
+  "title": "UseWarmaskYouFool",
+  "updated_at": 1784803149000,
+  "version": "1.0.0"
+}

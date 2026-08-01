@@ -1,0 +1,22 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="LlothisTracker" mouseEnabled="true" movable="true" clampedToScreen="false">
+			<Dimensions x="110" y="100" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" />
+			<OnMoveStop>
+				LH.savedVariables.trackerTop = LlothisTracker:GetTop()
+				LH.savedVariables.trackerLeft = LlothisTracker:GetLeft()
+			</OnMoveStop>
+			<Controls>
+				<Label name="$(parent)Counter" font="EsoUI/Common/Fonts/univers67.otf|65|soft-shadow-thick" color="E6FC44"
+					verticalAlignment="TOP" horizontalAlignment="CENTER" text="~">
+					<Anchor point="CENTER" relativeTo="$(parent)" />
+				</Label>
+				<Label name="$(parent)Label" font="ZoFontWinH2" color="FFFFFF"
+					verticalAlignment="BOTTOM" horizontalAlignment="CENTER" text="Llothis">
+					<Anchor point="BOTTOM" relativeTo="$(parent)" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

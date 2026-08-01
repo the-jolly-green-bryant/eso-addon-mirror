@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/skawiaw/Combat-Reticle-by-Aetheron-calia1120---fix__3203",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "skawiaw",
+  "canonical_id": "esoui:3203",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:3203",
+  "deleted": false,
+  "directories": [
+    "CombatReticle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3203/",
+  "fingerprint": "43b853152e97957e8455b02d65a935d875b594da1d5e8f3a164cb87b34135551",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3203",
+  "source_url": "https://www.esoui.com/downloads/info3203-CombatReticlebyAetheroncalia1120-fix.html",
+  "stats": {
+    "downloads": 15002,
+    "favorites": 23,
+    "monthly_downloads": 144
+  },
+  "title": "Combat Reticle (by Aetheron, calia1120) - fix",
+  "updated_at": 1632248575000,
+  "version": "2.1.1.1"
+}

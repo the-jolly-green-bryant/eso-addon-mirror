@@ -1,0 +1,105 @@
+<GuiXml>
+	<Controls>
+		<Control name="SocialIndicatorsPlayerDetailDivider" virtual="true">
+			<Dimensions x="600" y="34" />
+			<OnInitialized>
+				self.text = self:GetNamedChild("Text")
+			</OnInitialized>
+
+			<Controls>
+				<Texture name="$(parent)Line" inherits="ZO_HorizontalDivider">
+					<Dimensions x="600" y="6" />
+					<Anchor point="TOP" offsetY="6" />
+				</Texture>
+				<Label name="$(parent)Text" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" modifyTextType="UPPERCASE">
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="7" />
+				</Label>
+			</Controls>
+		</Control>
+		<Control name="SocialIndicatorsPlayerDetailSection" resizeToFitDescendents="true" virtual="true">
+			<Dimensions x="600" />
+			<Controls>
+				<Control name="$(parent)Divider" inherits="SocialIndicatorsPlayerDetailDivider">
+					<Anchor point="TOPLEFT" offsetY="5" />
+				</Control>
+			</Controls>
+		</Control>
+		<Control name="SocialIndicatorsPlayerDetailEntry" virtual="true">
+			<Dimensions x="275" y="20" />
+			<OnInitialized>
+				self.label = self:GetNamedChild("Label")
+				self.value = self:GetNamedChild("Value")
+				self.noteIcon = self:GetNamedChild("NoteIcon")
+			</OnInitialized>
+			<Controls>
+				<Label name="$(parent)Label" font="ZoFontHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="LEFT" />
+				</Label>
+				<Label name="$(parent)Value" font="ZoFontHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+					<Anchor point="RIGHT" />
+				</Label>
+				<Texture name="$(parent)NoteIcon" textureFile="EsoUI/Art/Contacts/social_note_up.dds" hidden="true">
+					<Dimensions x="28" y="28" />
+					<Anchor point="RIGHT" offsetX="-10" />
+				</Texture>
+			</Controls>
+		</Control>
+		<Control name="SocialIndicatorsPlayerDetailCharacterEntry" virtual="true">
+			<Dimensions x="275" y="20" />
+			<OnInitialized>
+				self.name = self:GetNamedChild("Name")
+				self.class = self:GetNamedChild("ClassIcon")
+				self.avaRank = self:GetNamedChild("AvaRankIcon")
+			</OnInitialized>
+			<OnMouseEnter>
+				SocialIndicators.PlayerDetail_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SocialIndicators.PlayerDetail_OnMouseExit(self)
+			</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)ClassIcon">
+					<Dimensions x="20" y="20" />
+					<Anchor point="LEFT" />
+				</Texture>
+				<Texture name="$(parent)AvaRankIcon">
+					<Dimensions x="20" y="20" />
+					<Anchor point="LEFT" relativeTo="$(parent)ClassIcon" relativePoint="RIGHT" offsetX="0" />
+				</Texture>
+				<Label name="$(parent)Name" font="ZoFontHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="LEFT" relativeTo="$(parent)AvaRankIcon" relativePoint="RIGHT" offsetX="3" />
+				</Label>
+			</Controls>
+		</Control>
+		<TopLevelControl name="SocialIndicatorsPlayerDetailScreen" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<Controls>
+				<Control name="$(parent)PlayerDetails" resizeToFitDescendents="true">
+					<Anchor point="TOPLEFT" offsetX="300" offsetY="20" />
+					<Controls>
+						<Label name="$(parent)Name" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor point="TOPLEFT" />
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)CharacterDetails">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)PlayerDetails" relativePoint="BOTTOMLEFT" offsetY="10" />
+					<Controls>
+						<Label name="$(parent)Name" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor point="TOPLEFT" />
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)CharacterList">
+					<Anchor point="TOPLEFT" offsetX="20" offsetY="20" />
+					<Controls>
+						<Label name="$(parent)Label" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+							<Anchor point="LEFT" />
+						</Label>
+						<Control name="$(parent)Container">
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

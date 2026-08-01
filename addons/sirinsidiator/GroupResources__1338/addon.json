@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/sirinsidiator/GroupResources__1338",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:1338",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:1338",
+  "deleted": false,
+  "directories": [
+    "GroupResources"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1338/",
+  "fingerprint": "e3a3e46666f5fb2c9e451895d01c974227f43a16de378238f59857205ecea51a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15273.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15274.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15271.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15272.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1338",
+  "source_url": "https://www.esoui.com/downloads/info1338-GroupResources.html",
+  "stats": {
+    "downloads": 9115,
+    "favorites": 12,
+    "monthly_downloads": 46
+  },
+  "title": "GroupResources",
+  "updated_at": 1771695019000,
+  "version": "0.10.0"
+}

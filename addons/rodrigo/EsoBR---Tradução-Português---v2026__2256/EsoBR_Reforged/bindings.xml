@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="EsoBR">
+      <Action name="ESOBR_REFORGED_EN">
+        <Down>EsoBR.UI.HUD.setLanguage("en")</Down>
+      </Action>
+      <Action name="ESOBR_REFORGED_BR">
+        <Down>EsoBR.UI.HUD.setLanguage("br")</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

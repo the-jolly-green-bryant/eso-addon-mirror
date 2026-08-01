@@ -1,0 +1,143 @@
+<GuiXml>
+<Controls>
+
+
+<!-- ----------------------------------------------------
+  (Static) Attribute Bars
+  ingame / playerattributebars / playerattributebars.xml
+  ingame / playerattributebars / playerattributebartemplates.xml
+----------------------------------------------------- -->
+
+<StatusBar name="ALT_PlayerAttributeStatusBar" virtual="true">
+  <Dimensions y="25"/>
+  <LeadingEdge textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_leadingEdge.dds" width="9" height="23"/>
+  <Controls>
+    <StatusBar name="$(parent)Gloss" alpha="0"/>
+  </Controls>
+</StatusBar>
+
+<Control name="ALT_PlayerAttributeContainer" virtual="true">
+  <Dimensions y="25" x="323"/>
+  <DimensionConstraints minX="323" maxX="323"/>
+  <Controls>
+
+    <Texture name="$(parent)FrameCenter" alpha="1" desaturation="1">
+      <Controls>
+        <Texture name="$(parent)TopMunge" hidden="true"/>
+        <Texture name="$(parent)BottomMunge" hidden="true"/>
+      </Controls>
+    </Texture>
+
+    <Texture name="$(parent)FrameLeft" alpha="1" desaturation="1">
+      <Dimensions y="25"/>
+      <Anchor point="LEFT" offsetX="-3"/>
+    </Texture>
+    
+    <Texture name="$(parent)FrameRight" alpha="1" desaturation="1">
+      <Dimensions y="25"/>
+      <Anchor point="RIGHT" offsetX="3"/>
+    </Texture>
+
+    <Control name="$(parent)BgContainer" alpha="0.9">
+      <DimensionConstraints minX="323" maxX="323" maxY="27"/>
+      <Controls>
+
+        <Texture name="$(parent)BgLeft">
+          <Anchor point="TOPLEFT"/>
+          <Anchor point="BOTTOMLEFT"/>
+        </Texture>
+
+        <Texture name="$(parent)BgRight">
+          <Anchor point="TOPRIGHT"/>
+          <Anchor point="BOTTOMRIGHT"/>
+        </Texture>
+
+      </Controls>
+    </Control>
+
+    <Control name="$(parent)Warner">
+      <AnchorFill/>
+      <Controls>
+
+        <Texture name="$(parent)Left">
+          <Dimensions x="33" y="60"/>
+          <Anchor point="LEFT" offsetX="-20"/>
+        </Texture>
+
+        <Texture name="$(parent)Right">
+          <Dimensions x="33" y="60"/>
+          <Anchor point="RIGHT" offsetX="20"/>
+        </Texture>
+
+      </Controls>
+    </Control>
+
+    <Label name="$(parent)ResourceNumbers" font="AltFontMedium">
+      <Anchor point="CENTER" offsetY="0"/>
+    </Label>
+
+  </Controls>
+</Control> 
+
+<TopLevelControl name="ALT_PlayerAttribute" virtual="true">
+  <Controls>
+
+    <Control name="$(parent)Magicka" inherits="ALT_PlayerAttributeContainer">
+      <Anchor point="RIGHT" relativePoint="CENTER" offsetX="-273"/>
+      <Controls>
+        <StatusBar name="$(parent)Bar" inherits="ALT_PlayerAttributeStatusBar"/>
+      </Controls>
+    </Control>
+
+    <Control name="$(parent)Health" inherits="ALT_PlayerAttributeContainer">
+      <Anchor point="CENTER"/>
+      <Controls>
+        <StatusBar name="$(parent)BarLeft" inherits="ALT_PlayerAttributeStatusBar"/>
+        <StatusBar name="$(parent)BarRight" inherits="ALT_PlayerAttributeStatusBar"/>
+      </Controls>
+    </Control>
+
+    <Control name="$(parent)Stamina" inherits="ALT_PlayerAttributeContainer">
+      <Anchor point="LEFT" relativePoint="CENTER" offsetX="273"/>
+      <Controls>
+        <StatusBar name="$(parent)Bar" inherits="ALT_PlayerAttributeStatusBar"/>
+      </Controls>
+    </Control>  
+
+    <Control name="$(parent)SiegeHealth">
+      <Controls>
+        <Texture name="$(parent)Frame" hidden="true"/>
+      </Controls>
+    </Control>
+
+  </Controls>
+</TopLevelControl>
+
+<!-- ----------------------------------------------------
+  (Dynamic) Sheild Bars
+  ingame / unitattributevisualizer / modules / powershield.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_PowerShieldBar" virtual="true">
+  <Dimensions y="25"/>
+  <Controls>
+
+    <StatusBar name="$(parent)Gloss" alpha="0.1"/>
+    <StatusBar name="$(parent)Trauma" alpha="0.1"/>
+
+    <StatusBar name="$(parent)FakeHealth">
+      <Dimensions y="25"/>
+      <DimensionConstraints maxX="161"/>
+      <Controls>
+        <StatusBar name="$(parent)Gloss" alpha="0"/>
+      </Controls>
+    </StatusBar>
+
+  </Controls>
+</Control>
+
+
+
+
+</Controls>
+</GuiXml>

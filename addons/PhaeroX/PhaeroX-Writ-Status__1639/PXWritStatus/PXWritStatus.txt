@@ -1,0 +1,12 @@
+## Title: PhaeroX Writ Status
+## APIVersion: 100026 100027
+## Description: Show the status of your writs in a window when you have any active.
+## Version: 1.0.5
+## Author: |c33BBCCPhaeroX|r
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: PXWritStatusSavedVariables
+
+Language\$(language).lua
+PXWritStatus.xml
+PXWritStatus.lua
+PXWritStatusSettings.lua

@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/Shinni/PinKiller__190",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shinni",
+  "canonical_id": "esoui:190",
+  "category_id": "24",
+  "compatibility": [],
+  "content_id": "esoui:190",
+  "deleted": false,
+  "directories": [
+    "PinKiller"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl190/",
+  "fingerprint": "63858b648979247c10d25e288954c5ca13a76bf9f348a831abb641fba6b6bf80",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw486.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "190",
+  "source_url": "https://www.esoui.com/downloads/info190-PinKiller.html",
+  "stats": {
+    "downloads": 36924,
+    "favorites": 86,
+    "monthly_downloads": 126
+  },
+  "title": "PinKiller",
+  "updated_at": 1651728655000,
+  "version": "2.3"
+}

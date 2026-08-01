@@ -1,0 +1,11 @@
+## Title: Timing Bars
+## Aurthor: Soleya
+## APIVersion: 100033 100034
+## SavedVariables: TimingBarsSavedVariables TimingBarsSavedAccountVar
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: LibAddonMenu-2.0
+## Version: 1.1.0.0
+
+
+TimingBarsSettings.lua
+TimingBars.lua

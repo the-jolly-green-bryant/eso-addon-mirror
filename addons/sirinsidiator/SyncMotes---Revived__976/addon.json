@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/sirinsidiator/SyncMotes---Revived__976",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:976",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:976",
+  "deleted": false,
+  "directories": [
+    "SyncMotes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl976/",
+  "fingerprint": "f2ce0a4c4d7a6179b6f814f5453a5bc25fd4aa0d31b4b733a3e26a15db4dfe59",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2978.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "976",
+  "source_url": "https://www.esoui.com/downloads/info976-SyncMotes-Revived.html",
+  "stats": {
+    "downloads": 6022,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "SyncMotes - Revived",
+  "updated_at": 1426621109000,
+  "version": "1.1.3sid"
+}

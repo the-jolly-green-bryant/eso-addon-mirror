@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/pesakm/AIRG-Unof.patch-Fixes46__4126",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "pesakm",
+  "canonical_id": "esoui:4126",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4126",
+  "deleted": false,
+  "directories": [
+    "AIResearchGrid"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4126/",
+  "fingerprint": "a86d58cfc6e2a3c27fc3e9eaa7ff47cff8e887762b6d09e78750889c9effc15a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4126",
+  "source_url": "https://www.esoui.com/downloads/info4126-AIRG-Unof.patch-Fixes46.html",
+  "stats": {
+    "downloads": 416,
+    "favorites": 0,
+    "monthly_downloads": 13
+  },
+  "title": "AIRG-Unof.patch-Fixes46",
+  "updated_at": 1748885937000,
+  "version": "11.5.04"
+}

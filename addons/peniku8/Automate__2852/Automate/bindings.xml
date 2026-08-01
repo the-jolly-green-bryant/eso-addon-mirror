@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c6C00FFAutomate">
+			<Action name="AUTOMATE_START">
+				<Up>AutomateKeybind.start()</Up>
+			</Action>
+			<Action name="AUTOMATE_STOP">
+				<Up>AutomateKeybind.stop()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,68 @@
+## ExecuteNow
+## Author: mooNylo
+## Patch Author: PlaceHolder
+## Sub-Author: Sound System, new adjustments and new features: RaeL_N1
+## Version: 0.5.0
+
+03-18-2025
+         -ReloadUI is no longer required for any changes to take effect.
+	 -Added an intuitive ON/OFF option, allowing full control of addon activation without having to ReloadUI.
+	 -Added the ability to customize the Execute Indicator's color dynamically using a color picker.
+	 -Several minor adjustments and optimizations.
+	 -Redesigned interface for a cleaner and more user-friendly experience.
+	 -Improved event registration and handling to ensure performance and reliability.
+	 -Enhanced internal logic.
+	 -Addressed minor UI positioning issues for the visual indicator.
+	 -Updated to version 0.5.0
+
+03-17-2025
+        -Updated API version to remove the "Out Of Date" warning
+        -Updated to version 0.4.2
+
+03-15-2025
+        -Added Restore Default Settings option
+        -Added more sound options for customization
+        -Sound preview now available before applying changes
+        -Various minor adjustments
+        -Updated to version 0.4.1
+
+03-14-2025
+        -Execute Sound functionality added by RaeL_N1 (new sounds integrated, user-defined sound options)
+        -Updated version to 0.4.0
+
+25-05-2022
+	-Updated API version to remove the "Out Of Date" warning
+
+26-03-2022
+	-Updated API version to remove the "Out Of Date" warning
+
+21-11-2021
+	-Updated API version to remove the "Out Of Date" warning
+
+16-09-2021
+	-Updated calls to LibAddonMenu2 (Thank you sMuggle ^_^ )
+
+09-09-2021
+	-Updated API version to remove the "Out Of Date" warning
+
+30-07-2021
+	-Updated API version to remove the "Out Of Date" warning
+
+01-09-2020
+	-Updated API version to remove the "Out Of Date" warning
+
+16-07-2020
+	-Updated API version to remove the "Out Of Date" warning
+	-Updated Version to 0.3.0 to make more sense
+
+12-07-2020
+Took Jan/mooNylo's original ExecuteNow v0.2 Add-on as the base - ALL credit belongs to them except for the following:
+	-Removed the use of class dependent Execute values as some weapon skills have an Execute (Such as Two Handed)
+	-Added a manual slider & text box for Execute percentage input
+	-Added Confirm button to ReloadUI + setting warning (ReloadUI is needed for value changes to take effect)
+	-Made it character independent (not account based)
+	-Set default value to 25%
+	-Set default health to 100,000
+	-Set max health to 5,000,000
+	-Added description
+	-Created ChangeLog.txt

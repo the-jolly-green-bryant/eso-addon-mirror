@@ -1,0 +1,58 @@
+{
+  "archive_path": "addons/Phuein/PvP-FPS-2018__2011",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phuein",
+  "canonical_id": "esoui:2011",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2011",
+  "deleted": false,
+  "directories": [
+    "PvPFPS2018"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2011/",
+  "fingerprint": "6fb25752534330ebb117d311bf825999d849c200da35f891fda7cea641b4db4d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6772.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6773.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2011",
+  "source_url": "https://www.esoui.com/downloads/info2011-PvPFPS2018.html",
+  "stats": {
+    "downloads": 9704,
+    "favorites": 8,
+    "monthly_downloads": 16
+  },
+  "title": "PvP FPS 2018",
+  "updated_at": 1627757041000,
+  "version": "1.22"
+}

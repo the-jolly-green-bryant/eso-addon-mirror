@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Rhyono/No-Interact__1623",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rhyono",
+  "canonical_id": "esoui:1623",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:1623",
+  "deleted": false,
+  "directories": [
+    "NoInteract"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1623/",
+  "fingerprint": "4e9307ac323bcf2e7a49c6134a69fd6595c3f36c1df24017b947d60fa65c9901",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5336.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5335.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1623",
+  "source_url": "https://www.esoui.com/downloads/info1623-NoInteract.html",
+  "stats": {
+    "downloads": 36859,
+    "favorites": 109,
+    "monthly_downloads": 49
+  },
+  "title": "No Interact",
+  "updated_at": 1686353820000,
+  "version": "1.36"
+}

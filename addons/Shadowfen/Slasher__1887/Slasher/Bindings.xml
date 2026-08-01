@@ -1,0 +1,25 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|cFF9900Slasher|r">
+	  <Action name="SLASHER_FAV_BANKER_TOGGLE"><Down>Slasher.summon_banker()</Down></Action>
+	  <Action name="SLASHER_FAV_MERCHANT_TOGGLE"><Down>Slasher.summon_merchant()</Down></Action>	  
+    <Action name="SLASHER_FAV_FENCE_TOGGLE"><Down>Slasher.summon_fence()</Down></Action>
+    <Action name="SLASHER_FAV_DECON_TOGGLE"><Down>Slasher.summon_decon()</Down></Action> 
+	  <Action name="SLASHER_FAV_ARMORER_TOGGLE"><Down>Slasher.summon_armorer()</Down></Action>	  
+
+	  <Action name="SLASHER_MIRRI_TOGGLE"><Down>Slasher.mirri()</Down></Action>
+    <Action name="SLASHER_BASTIAN_TOGGLE"><Down>Slasher.bastian()</Down></Action>	  
+    <Action name="SLASHER_ISOBEL_TOGGLE"><Down>Slasher.isobel()</Down></Action>	  
+    <Action name="SLASHER_EMBER_TOGGLE"><Down>Slasher.ember()</Down></Action>	  
+    <Action name="SLASHER_SHARP_TOGGLE"><Down>Slasher.sharp()</Down></Action>	  
+    <Action name="SLASHER_AZANDAR_TOGGLE"><Down>Slasher.azandar()</Down></Action>	  
+    <Action name="SLASHER_TANLORIN_TOGGLE"><Down>Slasher.tanlorin()</Down></Action>	  
+    <Action name="SLASHER_ZERITH_TOGGLE"><Down>Slasher.zerith()</Down></Action>	
+
+	  <Action name="SLASHER_CAKE"><Down>Slasher.cake()</Down></Action>
+	  <Action name="SLASHER_WITCH_WHISTLE"><Down>Slasher.whistle()</Down></Action>
+	  <Action name="SLASHER_GOHOME"><Down>Slasher.gohome()</Down></Action>
+	  <Action name="SLASHER_DISMISS_PET"><Down>Slasher.dismissPets()</Down></Action>
+    </Category>		
+  </Layer>
+</Bindings>

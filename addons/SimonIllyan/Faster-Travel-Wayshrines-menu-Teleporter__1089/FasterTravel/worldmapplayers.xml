@@ -1,0 +1,61 @@
+<GuiXml>
+    <Controls>
+	    <Control name="FasterTravel_WorldMapPlayersCategoryRow" virtual="true">
+			<OnInitialized>
+				self.label = self:GetNamedChild("Label")
+				self.label.GetTextColor = function() return GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_SELECTED) end
+			</OnInitialized>
+            <Dimensions x="200" y="23"/>
+            <Controls>
+                <Label name="$(parent)Label" inherits="ZO_SelectableLabel" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" modifyTextType="UPPERCASE">
+                    <Anchor point="TOPLEFT"/>
+                    <OnMouseDown>
+                        self:GetParent():RowMouseDown(button)
+                    </OnMouseDown>
+                    <OnMouseUp>
+                        self:GetParent():RowMouseUp(button, upInside)
+                    </OnMouseUp>
+                </Label>
+            </Controls>
+        </Control>
+		
+        <Control name="FasterTravel_WorldMapPlayersRow" virtual="true">
+			<OnInitialized>
+				self.label = self:GetNamedChild("Label")
+			</OnInitialized>
+            <Dimensions x="200" y="23"/>
+            <Controls>
+                <Label name="$(parent)Label" inherits="ZO_SelectableLabel" font="ZoFontHeader">
+                    <Anchor point="TOPLEFT"/>
+                    <OnMouseDown>
+                        self:GetParent():RowMouseDown(button)
+                    </OnMouseDown>
+                    <OnMouseUp>
+                        self:GetParent():RowMouseUp(button, upInside)
+                    </OnMouseUp>
+                </Label>
+            </Controls>
+        </Control>
+        
+        <TopLevelControl name="FasterTravel_WorldMapPlayers" inherits="ZO_WorldMapInfoContent">
+            <OnInitialized>
+                self.list = self:GetNamedChild("List")
+				self.fragment = ZO_FadeSceneFragment:New(self)
+				self.fragment.duration = 100
+				ZO_ScrollList_AddDataType(self.list,0,"FasterTravel_WorldMapPlayersCategoryRow", 23, function(control, data) self:RefreshRow(control,data) end)
+				ZO_ScrollList_AddDataType(self.list,1,"FasterTravel_WorldMapPlayersRow", 23, function(control, data) self:RefreshRow(control,data) end)
+	        </OnInitialized>
+            <Controls>
+				
+			    <Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Dimensions x="200" y="400" />
+                    <Anchor point="TOPLEFT" offsetX="20" />
+                    <Anchor point="BOTTOMRIGHT"/>
+                </Control>
+				
+
+
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

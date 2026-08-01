@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Phinix/Group-Food-Drink-Buffs__1560",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phinix",
+  "canonical_id": "esoui:1560",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1560",
+  "deleted": false,
+  "directories": [
+    "GroupFDBuffs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1560/",
+  "fingerprint": "479d2c1420acdb098009a922f89162b0f06bef29f70cc5caaa4747b4b4982d3c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5074.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5094.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7803.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1560",
+  "source_url": "https://www.esoui.com/downloads/info1560-GroupFoodDrinkBuffs.html",
+  "stats": {
+    "downloads": 18717,
+    "favorites": 29,
+    "monthly_downloads": 29
+  },
+  "title": "Group Food & Drink Buffs",
+  "updated_at": 1679164674000,
+  "version": "1.22"
+}

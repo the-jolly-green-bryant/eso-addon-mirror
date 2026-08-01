@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|cAA0000Ultimate UI|r Addon">
+      <Action name="ULTIMATE_UI_HIDER">
+        <Down>SLASH_COMMANDS["/hideui"]()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

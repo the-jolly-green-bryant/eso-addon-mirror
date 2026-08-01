@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/rlinosaur/Inventory-Bank-Sort__3344",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "rlinosaur",
+  "canonical_id": "esoui:3344",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3344",
+  "deleted": false,
+  "directories": [
+    "IBSort"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3344/",
+  "fingerprint": "6d437c43334b8c4b44024200a65c9906b0874f744e48cad99afce0db73056048",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11358.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3344",
+  "source_url": "https://www.esoui.com/downloads/info3344-InventoryBankSort.html",
+  "stats": {
+    "downloads": 3735,
+    "favorites": 7,
+    "monthly_downloads": 25
+  },
+  "title": "Inventory Bank Sort",
+  "updated_at": 1654630833000,
+  "version": "1.2"
+}

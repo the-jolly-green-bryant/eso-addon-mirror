@@ -1,0 +1,7 @@
+## Title: Loot Reader
+## Version: 0.3
+## APIVersion: 101049
+## Author: vexaiv
+## Description: Read the quest notes you loot from enemies.
+
+LootReader.lua

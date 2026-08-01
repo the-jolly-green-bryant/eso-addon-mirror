@@ -1,0 +1,17 @@
+## APIVersion: 101049 101050
+## Title: |cFFC814Gold Ledger|r
+## Description: Track your money across sessions. View a convenient overview detailing how your gold is collected or spent. (v2.3.0)
+## Version: 2.3.0
+## SavedVariables: GoldLedgerSavedVars
+## Author: |c4779ceP5YCH3|r
+## DependsOn: LibAddonMenu-2.0>=40
+
+GoldLedgerFunctions.lua
+
+Lang/EN.lua
+Lang/$(language).lua
+
+GoldLedger.lua
+GoldLedger.xml
+
+Bindings.xml

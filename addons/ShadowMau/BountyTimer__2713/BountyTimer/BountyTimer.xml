@@ -1,0 +1,43 @@
+<!-- Sometimes to get the XML to load properly, exit out of game and reload client -->
+<!-- More information on controls: https://wiki.esoui.com/Controls#Control -->
+<GuiXml> <!-- Wrappter tag for any XML files used for constructing ESO UI elements -->
+	<Controls> <!-- Holds any definitions of controls -->
+		
+		<TopLevelControl name="BountyIndicator" mouseEnabled="true" movable="true" clampToScreen="true" hidden="true"
+			resizeToFitDecendents = "true" drawLayer = "DL_BACKGROUND" drawTier = "DT_LOW">
+			
+			<!-- -------------------------------------------------- -->
+			<!-- Specify the size of the control -->
+			<!-- -------------------------------------------------- -->
+			<Dimensions x="150" y="150" /> 
+			
+			<!-- -------------------------------------------------- -->
+			<!-- Defines how various controls should be positioned relative to one another -->
+			<!-- -------------------------------------------------- -->
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+			
+			<!-- -------------------------------------------------- -->
+			<!-- Function to call when triggered -->
+			<!-- -------------------------------------------------- -->
+			<OnMoveStop>
+				BountyTimer.OnIndicatorMoveStop()
+			</OnMoveStop>
+			
+			
+			<Controls>
+				<Backdrop name="$(parent)BG" >
+					<AnchorFill />
+				</Backdrop>
+				<Label 	name="$(parent)Label" width="150" height="150"
+						wrapMode="ELLIPSIS" verticalAlignment="CENTER"
+						horizontalAlignment="CENTER" color="FF0000" text="Bounty">
+				<!-- A label is a piece of text that will be rendered as part of a UI element -->
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+					<!-- This anchor makes the label line up with its parent control -->
+				</Label>
+			</Controls>
+			
+		</TopLevelControl>	
+		
+	</Controls>
+</GuiXml>

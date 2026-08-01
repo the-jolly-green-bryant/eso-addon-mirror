@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/sshogrin/Leo-s-Altholic-Fix__3596",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sshogrin",
+  "canonical_id": "esoui:3596",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3596",
+  "deleted": false,
+  "directories": [
+    "LeoAltholic"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3596/",
+  "fingerprint": "98efd07d3d4b6106b323033c39682c2a384f106ceb1b8fd4f9e1c229ca1d9305",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12351.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12352.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12353.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12354.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12355.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12356.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12357.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12358.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12359.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3596",
+  "source_url": "https://www.esoui.com/downloads/info3596-LeosAltholicFix.html",
+  "stats": {
+    "downloads": 12031,
+    "favorites": 21,
+    "monthly_downloads": 222
+  },
+  "title": "Leo's Altholic (Fix)",
+  "updated_at": 1753147128000,
+  "version": "1.9.4"
+}

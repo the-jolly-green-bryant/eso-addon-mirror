@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/sora0v0/Sora-Ultimate-Pair__4583",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sora0v0",
+  "canonical_id": "esoui:4583",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4583",
+  "deleted": false,
+  "directories": [
+    "SoraUltimatePair"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4583/",
+  "fingerprint": "d58e85e4ad703de7971335e716c7db51f46f47969e009b66a8462f2ff0f1e9a7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16096.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16095.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16097.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4583",
+  "source_url": "https://www.esoui.com/downloads/info4583-SoraUltimatePair.html",
+  "stats": {
+    "downloads": 218,
+    "favorites": 2,
+    "monthly_downloads": 57
+  },
+  "title": "Sora Ultimate Pair",
+  "updated_at": 1783148281000,
+  "version": "1.0.61"
+}

@@ -1,0 +1,7 @@
+## Title: Targets
+## Author: @Slimwaffle
+## APIVersion: 101045 
+## SavedVariables: TargetsSavedVariables
+
+Targets.lua
+Targets.xml

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Nickxon/Rhythmos---ESO-Combat-Overhaul__4586",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Nickxon",
+  "canonical_id": "esoui:4586",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4586",
+  "deleted": false,
+  "directories": [
+    "Rhythmos"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4586/",
+  "fingerprint": "224f91140796aad27e9906d251acbe636bb41416daf120e6b60edb5f9ddd2847",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16100.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16099.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4586",
+  "source_url": "https://www.esoui.com/downloads/info4586-Rhythmos-ESOCombatOverhaul.html",
+  "stats": {
+    "downloads": 141,
+    "favorites": 0,
+    "monthly_downloads": 24
+  },
+  "title": "Rhythmos - ESO Combat Overhaul",
+  "updated_at": 1779300607000,
+  "version": "1.0"
+}

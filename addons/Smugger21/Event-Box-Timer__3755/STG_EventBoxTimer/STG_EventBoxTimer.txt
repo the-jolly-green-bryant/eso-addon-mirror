@@ -1,0 +1,17 @@
+## Title: Event Box Timer
+## Author: {|c0033cc@Smugger21|r |cff9900\|r |c000099STAG|r }
+## Description: Shows time elapsed since last event box looted
+## Version: 2023.11.23-1.1a
+## AddOnVersion: 2023.11.23-1.1a
+## APIVersion: 101040
+## FastAPI : 101040
+## SavedVariables: STG_EBT_Settings
+
+
+STG_EventBoxTimer.lua
+STG_EventBoxTimer.xml
+
+
+; This Addon was inspired by Plunder Skull Timer by code65536.
+; Even though the code has been refactored and re-written, there may still be left over code form the original Addon.
+; Thank you code65536!

@@ -1,0 +1,48 @@
+{
+  "archive_path": "addons/Splat/TOM-Guild-s-Addon__3703",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Splat",
+  "canonical_id": "esoui:3703",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3703",
+  "deleted": false,
+  "directories": [
+    "TOMGuildsAddon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3703/",
+  "fingerprint": "4e8726d50411f8a2515cdceb9122745daf6a3f0f7d85f4e5a12051632461a59b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12571.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12570.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12572.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12573.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3703",
+  "source_url": "https://www.esoui.com/downloads/info3703-TOMGuildsAddon.html",
+  "stats": {
+    "downloads": 5329,
+    "favorites": 2,
+    "monthly_downloads": 59
+  },
+  "title": "TOM Guild's Addon",
+  "updated_at": 1749994910000,
+  "version": "2.70"
+}

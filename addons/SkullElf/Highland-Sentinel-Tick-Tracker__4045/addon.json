@@ -1,0 +1,69 @@
+{
+  "archive_path": "addons/SkullElf/Highland-Sentinel-Tick-Tracker__4045",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SkullElf",
+  "canonical_id": "esoui:4045",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:4045",
+  "deleted": false,
+  "directories": [
+    "HighlandTickTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4045/",
+  "fingerprint": "de048fa1ad24aa177bcadad94c14339e9a53b38f6d5e9a67b5f64ac6dfb7350a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13765.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4045",
+  "source_url": "https://www.esoui.com/downloads/info4045-HighlandSentinelTickTracker.html",
+  "stats": {
+    "downloads": 980,
+    "favorites": 2,
+    "monthly_downloads": 20
+  },
+  "title": "Highland Sentinel Tick Tracker",
+  "updated_at": 1742220507000,
+  "version": "1.2"
+}

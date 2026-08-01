@@ -1,0 +1,45 @@
+## APIVersion: 100028
+## Title: Quick Compass |c886600 v1.0.1.18 |r
+## Description: |ca0a0a0Quick Compass.|r
+## Author: |cFF2222Zen & phuein|r
+## OptionalDependsOn: wykkyd_core_libraries LibWykkydFactory4 LibStub LibAddonMenu2.0
+## SavedVariables: QuickCompassData
+
+e/LibStub/LibStub.lua
+e/LAM/LibAddonMenu2.0.lua
+e/LAM/controls/panel.lua
+e/LAM/controls/submenu.lua
+e/LAM/controls/button.lua
+e/LAM/controls/checkbox.lua
+e/LAM/controls/colorpicker.lua
+e/LAM/controls/custom.lua
+e/LAM/controls/description.lua
+e/LAM/controls/dropdown.lua
+e/LAM/controls/editbox.lua
+e/LAM/controls/header.lua
+e/LAM/controls/slider.lua
+e/LAM/controls/texture.lua
+e/LWF/LibWykkydFactory4.lua
+
+QuickCompass.xml
+QuickCompass.lua
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls? and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+; AUTHOR NOTE:
+; Zenimax does not properly support Addon development nor do they properly
+; document, or advertise, their API changes and patches. I can only work with the tools
+; that I am given. If something breaks it is likely due to something ZOS did that I need
+; to adjust my code in response to. Give me time and I'll do it. I appologize for the
+; inconvenience that this will cause you but ultimately it's out of my hands.
+
+; From version 1.0.0.14 onwards, this addon allows members of Pride of the Pact to
+; capture toon data, and adds features for displaying MoTD and TS3 info for Pride
+
+; Copyright Zen @ The crimson Order
+; http://thecrimsonorder.com

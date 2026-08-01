@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/stacy5419/Screenshot-Mode__3301",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "stacy5419",
+  "canonical_id": "esoui:3301",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3301",
+  "deleted": false,
+  "directories": [
+    "ScreenshotMode"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3301/",
+  "fingerprint": "6fc46909f97ca741c521b70d239f41e7f06247d46cfb9025c892caea421d6606",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11223.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11222.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3301",
+  "source_url": "https://www.esoui.com/downloads/info3301-ScreenshotMode.html",
+  "stats": {
+    "downloads": 9518,
+    "favorites": 14,
+    "monthly_downloads": 58
+  },
+  "title": "Screenshot Mode",
+  "updated_at": 1661261902000,
+  "version": "1.08"
+}

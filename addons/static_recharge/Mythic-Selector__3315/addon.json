@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/static_recharge/Mythic-Selector__3315",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "static_recharge",
+  "canonical_id": "esoui:3315",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3315",
+  "deleted": false,
+  "directories": [
+    "MythicSelector"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3315/",
+  "fingerprint": "19b0065d2e05bb6d705cbe3c35f937898fb67fcf0c8a71496cbb53a8a9e8c4df",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11265.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11266.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11267.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3315",
+  "source_url": "https://www.esoui.com/downloads/info3315-MythicSelector.html",
+  "stats": {
+    "downloads": 3148,
+    "favorites": 6,
+    "monthly_downloads": 10
+  },
+  "title": "Mythic Selector",
+  "updated_at": 1773369198000,
+  "version": "1.1.1"
+}

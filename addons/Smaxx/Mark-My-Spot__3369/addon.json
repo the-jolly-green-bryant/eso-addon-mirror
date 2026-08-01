@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Smaxx/Mark-My-Spot__3369",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Smaxx",
+  "canonical_id": "esoui:3369",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3369",
+  "deleted": false,
+  "directories": [
+    "MarkMySpot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3369/",
+  "fingerprint": "ebc1a4c9c7762d7373d32d8e4acd46477464d9124a41711fd919318ff21e25f1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11487.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3369",
+  "source_url": "https://www.esoui.com/downloads/info3369-MarkMySpot.html",
+  "stats": {
+    "downloads": 14831,
+    "favorites": 2,
+    "monthly_downloads": 397
+  },
+  "title": "Mark My Spot",
+  "updated_at": 1652961518000,
+  "version": "1.0.1"
+}

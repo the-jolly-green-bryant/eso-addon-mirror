@@ -1,0 +1,29 @@
+## Title: |c0cf236NeltharionsCamControl|r v1.14
+## APIVersion: 101046
+## SavedVariables: NeltharionsCamC_Account NeltharionsCamC_Character
+## Version: 1.14
+## AddOnVersion: 15
+## Author: |cf21000@Neltharion1|r
+## Description: Allows control of camera positions and offsets in live view.
+## DependsOn: LibAddonMenu-2.0>=40 LibSavedVars>=60007
+##
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+
+lang/en.lua
+lang/$(language).lua
+
+
+
+StartUp.lua
+NeltharionsCamControl.lua
+NeltharionsCamMove.lua
+NeltharionsCamSettings.lua
+NeltharionsCamZoom.lua
+
+Bindings.xml

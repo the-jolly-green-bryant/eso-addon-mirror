@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/sirinsidiator/LibTextFilter__1311",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:1311",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:1311",
+  "deleted": false,
+  "directories": [
+    "LibTextFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1311/",
+  "fingerprint": "512cc931aeae74ffb5ab72695f6e511259464c841f4c5a062bee55b8a15215a1",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1311",
+  "source_url": "https://www.esoui.com/downloads/info1311-LibTextFilter.html",
+  "stats": {
+    "downloads": 781299,
+    "favorites": 532,
+    "monthly_downloads": 4670
+  },
+  "title": "LibTextFilter",
+  "updated_at": 1746123092000,
+  "version": "1.0.7"
+}

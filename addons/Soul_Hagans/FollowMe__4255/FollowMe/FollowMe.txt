@@ -1,0 +1,11 @@
+## Title: |c00FF00Follow|rMe
+## APIVersion: 101050
+## Author: |cff6401Soul_Hagans|r
+## Version: 2.0.1
+## AddOnVersion: 20001
+## SavedVariables: FollowMe_SavedSettings
+## DependsOn: LibAddonMenu-2.0>=43
+
+FollowMeLocalization.lua
+FollowMe.lua
+Bindings.xml

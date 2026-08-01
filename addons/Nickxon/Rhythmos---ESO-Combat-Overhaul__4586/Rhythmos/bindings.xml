@@ -1,0 +1,10 @@
+<Bindings>
+    <Layer name="No_Roll_Dodge">
+        <Category>
+            <BlockAction name="ROLL_DODGE"/>
+            <BlockAction name="SPECIAL_MOVE_WEAPON_SWAP"/>
+            <BlockAction name="SPECIAL_MOVE_WEAPON_SWAP_TO_SET_1"/>
+            <BlockAction name="SPECIAL_MOVE_WEAPON_SWAP_TO_SET_2"/>
+        </Category>
+    </Layer>
+</Bindings>

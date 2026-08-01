@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Priapia/ESO-Calendar-Reborn-RP-Edition__1685",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Priapia",
+  "canonical_id": "esoui:1685",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:1685",
+  "deleted": false,
+  "directories": [
+    "ESOCalendar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1685/",
+  "fingerprint": "333f3347bd84904d1b7cac08d668a3b1120be8a3ab3ce04f10981f26fe070c98",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5572.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5573.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1685",
+  "source_url": "https://www.esoui.com/downloads/info1685-ESOCalendarRebornRPEdition.html",
+  "stats": {
+    "downloads": 7951,
+    "favorites": 8,
+    "monthly_downloads": 15
+  },
+  "title": "ESO Calendar Reborn: RP Edition",
+  "updated_at": 1494381760000,
+  "version": "1.0"
+}

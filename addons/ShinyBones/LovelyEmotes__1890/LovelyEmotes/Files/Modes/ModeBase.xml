@@ -1,0 +1,9 @@
+<GuiXml>
+	<Controls>
+
+		<Button name="LE_ModeButtonTemplate" inherits="LE_ButtonBehaviorClickSoundTemplate" virtual="true" >
+			<Dimensions x="30" y="30" />
+		</Button>
+
+	</Controls>
+</GuiXml>

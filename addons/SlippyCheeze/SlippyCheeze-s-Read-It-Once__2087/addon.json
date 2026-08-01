@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/SlippyCheeze/SlippyCheeze-s-Read-It-Once__2087",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SlippyCheeze",
+  "canonical_id": "esoui:2087",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2087",
+  "deleted": false,
+  "directories": [
+    "SlippyCheezeReadItOnce"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2087/",
+  "fingerprint": "ed24c93f9ea1d337d7ebb2cea3b8585c3dce7b6541f1f03d6a9ea8af9c3eea21",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7143.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2087",
+  "source_url": "https://www.esoui.com/downloads/info2087-SlippyCheezesReadItOnce.html",
+  "stats": {
+    "downloads": 4217,
+    "favorites": 11,
+    "monthly_downloads": 12
+  },
+  "title": "SlippyCheeze's Read It Once",
+  "updated_at": 1535299679000,
+  "version": "4"
+}

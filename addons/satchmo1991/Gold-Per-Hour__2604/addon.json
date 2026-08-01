@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/satchmo1991/Gold-Per-Hour__2604",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "satchmo1991",
+  "canonical_id": "esoui:2604",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2604",
+  "deleted": false,
+  "directories": [
+    "GoldPerHour"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2604/",
+  "fingerprint": "8a56198201995ae8a1a392b418b9406a0d5c9fe2df48f8238f42308330837b15",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8873.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2604",
+  "source_url": "https://www.esoui.com/downloads/info2604-GoldPerHour.html",
+  "stats": {
+    "downloads": 8023,
+    "favorites": 6,
+    "monthly_downloads": 39
+  },
+  "title": "Gold Per Hour",
+  "updated_at": 1589320671000,
+  "version": "1.2"
+}

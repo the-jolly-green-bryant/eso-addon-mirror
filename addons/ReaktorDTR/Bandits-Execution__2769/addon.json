@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/ReaktorDTR/Bandits-Execution__2769",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ReaktorDTR",
+  "canonical_id": "esoui:2769",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2769",
+  "deleted": false,
+  "directories": [
+    "BanditsExecution"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2769/",
+  "fingerprint": "5b01628fb8674fae3372e82a77eb156ba36c5b94684a6bb0e0ef0ac61cb6ceb3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9366.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9367.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9368.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9369.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2769",
+  "source_url": "https://www.esoui.com/downloads/info2769-BanditsExecution.html",
+  "stats": {
+    "downloads": 20085,
+    "favorites": 12,
+    "monthly_downloads": 118
+  },
+  "title": "Bandits Execution",
+  "updated_at": 1599319510000,
+  "version": "1.0"
+}

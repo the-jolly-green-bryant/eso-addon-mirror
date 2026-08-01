@@ -1,0 +1,8 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+	  <Category name="|cAFD3FFShissu|ceeeeee's AddOns|r">
+	    <Action name="SSC_teleportToogle"><Down>ShissuFramework._bindings.teleportToogle()</Down></Action>
+      <Action name="SSC_teleportStandard"><Down>ShissuFramework._bindings.standardTeleport()</Down></Action>
+    </Category>
+  </Layer>
+</Bindings>

@@ -1,0 +1,70 @@
+{
+  "archive_path": "addons/Scott123/Dungeon-Champions__2023",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Scott123",
+  "canonical_id": "esoui:2023",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2023",
+  "deleted": false,
+  "directories": [
+    "DungeonChampions"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2023/",
+  "fingerprint": "c0fd49122e4148f8f622166895d348a19d97c7c037beafe93babb57eadaa9e76",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6816.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6815.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2023",
+  "source_url": "https://www.esoui.com/downloads/info2023-DungeonChampions.html",
+  "stats": {
+    "downloads": 230309,
+    "favorites": 184,
+    "monthly_downloads": 555
+  },
+  "title": "Dungeon Champions",
+  "updated_at": 1655446688000,
+  "version": "1.0.16"
+}

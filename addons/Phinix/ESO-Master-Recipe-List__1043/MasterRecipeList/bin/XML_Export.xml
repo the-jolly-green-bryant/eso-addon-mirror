@@ -1,0 +1,195 @@
+<GuiXml>
+	<Controls>
+<!-- ---------------------------------------------------------------------------------------------------------------------------------------------------- -->
+		<Control name="ESOMRL_ExportTemplate" virtual="true">
+			<Dimensions x="920" y="50"/>
+			<OnMouseEnter>
+				ZO_ScrollList_MouseEnter(ESOMRL_MainFrame_ListFrame_EditBox, self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				ZO_ScrollList_MouseExit(ESOMRL_MainFrame_ListFrame_EditBox, self)
+			</OnMouseExit>
+			<Controls>
+			</Controls>
+		</Control>
+<!-- ---------------------------------------------------------------------------------------------------------------------------------------------------- -->
+		<TopLevelControl name="ESOMRL_ExportFrame" tier="LOW" mouseEnabled="true" movable="true" clampedToScreen="false" hidden="true">
+			<Dimensions x="920" y="568"/>
+			<Anchor point="CENTER"/>
+			<OnMoveStop>
+				ESOMRL.XMLExport(101)
+			</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.9"/>
+			<!-- ---------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Control name="$(parent)EmptyDrop" mouseEnabled="false" movable="false" hidden="true">
+					<Dimensions x="254" y="15"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="6" offsetY="6"/>
+					<Controls>
+						<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" alpha="1.0"/>
+					</Controls>
+				</Control>
+			<!-- ---------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)CloseButton">
+					<Dimensions x="40" y="40"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="4" offsetY="-8"/>
+					<Textures
+						normal="/esoui/art/cadwell/cadwell_indexicon_silver_up.dds"
+						pressed="/esoui/art/cadwell/cadwell_indexicon_silver_over.dds"
+						mouseOver="/esoui/art/cadwell/cadwell_indexicon_silver_down.dds"
+						disabled="/esoui/art/cadwell/cadwell_indexicon_silver_disabled.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLExport(102, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLExport(102, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLExport(102, 3)
+					</OnClicked>
+				</Button>
+			<!-- ---------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)NextButton">
+					<Dimensions x="32" y="32"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)CloseButton" relativePoint="LEFT" offsetX="-8" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/buttons/large_rightarrow_up.dds"
+						pressed="/esoui/art/buttons/large_rightarrow_over.dds"
+						mouseOver="/esoui/art/buttons/large_rightarrow_down.dds"
+						disabled="/esoui/art/buttons/large_rightarrow_over.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLExport(103, 1, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLExport(103, 2, 1)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLExport(103, 3, 1)
+					</OnClicked>
+				</Button>
+				<Button name="$(parent)PrevButton">
+					<Dimensions x="32" y="32"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)NextButton" relativePoint="LEFT" offsetX="8" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/buttons/large_leftdoublearrow_up.dds"
+						pressed="/esoui/art/buttons/large_leftdoublearrow_over.dds"
+						mouseOver="/esoui/art/buttons/large_leftdoublearrow_down.dds"
+						disabled="/esoui/art/buttons/large_leftdoublearrow_over.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLExport(103, 1, 2)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLExport(103, 2, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLExport(103, 3, 2)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)_PageLabel" font="ZoFontGame" color="ffffff" horizontalAlignment="LEFT" text="Page: ">
+					<Anchor point="RIGHT" relativeTo="$(parent)PrevButton" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+				</Label>
+<!-- ---------------------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Label name="$(parent)CopyLabel" font="ZoFontWinH5" color="FFFFFF" horizontalAlignment="CENTER" text="Click in results: Ctrl+A to Select, Ctrl+C to Copy">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="2"/>
+				</Label>
+<!-- ---------------------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)FoodButton">
+					<Dimensions x="44" y="44"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-2" offsetY="-10"/>
+					<Textures
+						normal="/esoui/art/treeicons/provisioner_indexicon_stew_up.dds"
+						pressed="/esoui/art/treeicons/provisioner_indexicon_stew_over.dds"
+						mouseOver="/esoui/art/treeicons/provisioner_indexicon_stew_down.dds"
+						disabled="/esoui/art/treeicons/provisioner_indexicon_stew_over.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLExport(104, 1, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLExport(104, 2, 1)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLExport(104, 3, 1)
+					</OnClicked>
+				</Button>
+			<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)FurnitureButton">
+					<Dimensions x="44" y="44"/>
+					<Anchor point="LEFT" relativeTo="$(parent)FoodButton" relativePoint="RIGHT" offsetX="-4" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/treeicons/collection_indexicon_furnishings_up.dds"
+						pressed="/esoui/art/treeicons/collection_indexicon_furnishings_over.dds"
+						mouseOver="/esoui/art/treeicons/collection_indexicon_furnishings_down.dds"
+						disabled="/esoui/art/treeicons/collection_indexicon_furnishings_over.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLExport(104, 1, 2)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLExport(104, 2, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLExport(104, 3, 2)
+					</OnClicked>
+				</Button>
+			<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Label name="$(parent)KnownLabel" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" text="|t16:16:/MasterRecipeList/bin/textures/known.dds|t">
+					<Anchor point="LEFT" relativeTo="$(parent)FurnitureButton" relativePoint="RIGHT" offsetX="8" offsetY="4"/>
+				</Label>
+                <Button name="$(parent)KnownBox" inherits="ZO_CheckButton">
+                    <OnMouseEnter>
+                        ESOMRL.XMLExport(105, 1, 1)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ESOMRL.XMLExport(105, 2, 1)
+                    </OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLExport(105, 3, 1)
+					</OnClicked>
+                    <Anchor point="LEFT" relativeTo="$(parent)KnownLabel" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+                </Button>
+			<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Label name="$(parent)UnknownLabel" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" text="|t16:16:/MasterRecipeList/bin/textures/unknown.dds|t">
+					<Anchor point="LEFT" relativeTo="$(parent)KnownBox" relativePoint="RIGHT" offsetX="8" offsetY="0"/>
+				</Label>
+                <Button name="$(parent)UnknownBox" inherits="ZO_CheckButton">
+                    <OnMouseEnter>
+                        ESOMRL.XMLExport(105, 1, 2)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ESOMRL.XMLExport(105, 2, 2)
+                    </OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLExport(105, 3, 2)
+					</OnClicked>
+                    <Anchor point="LEFT" relativeTo="$(parent)UnknownLabel" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+                </Button>
+<!-- List frames -->
+				<Control name="$(parent)_ListFrame">
+					<Dimensions x="920" y="520"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="38"/>
+					<Controls>
+					<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+						<Control name="$(parent)_DataFrame" tier="LOW">
+							<Dimensions x="920" y="530"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Controls>
+								<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.9"/>
+							</Controls>
+						</Control>
+					<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+						<EditBox name="$(parent)_TextBox" inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText" maxInputCharacters="29000" editEnabled="false" offsetY="4">
+							<Dimensions x="920" y="520"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="4"/>
+						</EditBox>
+					<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+					</Controls>
+				</Control>
+			<!-- ---------------------------------------------------------------------------------------------------------------------------------------- -->	
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

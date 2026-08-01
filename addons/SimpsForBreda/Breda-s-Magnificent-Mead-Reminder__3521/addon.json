@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/SimpsForBreda/Breda-s-Magnificent-Mead-Reminder__3521",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SimpsForBreda",
+  "canonical_id": "esoui:3521",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3521",
+  "deleted": false,
+  "directories": [
+    "BredaExp"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3521/",
+  "fingerprint": "2af2d9820e3c330715d4170618bb61e45eaccbcc27c144fb4613d90da59dfb77",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3521",
+  "source_url": "https://www.esoui.com/downloads/info3521-BredasMagnificentMeadReminder.html",
+  "stats": {
+    "downloads": 2794,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "Breda's Magnificent Mead Reminder",
+  "updated_at": 1675803458000,
+  "version": "v1.69420"
+}

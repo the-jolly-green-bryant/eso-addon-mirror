@@ -1,0 +1,54 @@
+{
+  "archive_path": "addons/PacificOshie/Mail-History__3561",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "PacificOshie",
+  "canonical_id": "esoui:3561",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3561",
+  "deleted": false,
+  "directories": [
+    "MailHistory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3561/",
+  "fingerprint": "277f34a656e54dc59779dca4ec56f474502e0e0c3eac668dff181a2d28a425f4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12142.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12143.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3561",
+  "source_url": "https://www.esoui.com/downloads/info3561-MailHistory.html",
+  "stats": {
+    "downloads": 7915,
+    "favorites": 13,
+    "monthly_downloads": 73
+  },
+  "title": "Mail History",
+  "updated_at": 1714015712000,
+  "version": "14"
+}

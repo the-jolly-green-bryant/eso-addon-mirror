@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Neurowise/Cyrodiil-Map-Labels-10.3.5__4065",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Neurowise",
+  "canonical_id": "esoui:4065",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4065",
+  "deleted": false,
+  "directories": [
+    "CyrodillMapLabels",
+    "__MACOSX"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4065/",
+  "fingerprint": "49eaf82e2766aaef90edf75b14322f012a4cda1f3dd79cfdbf049022f4fe1aac",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13845.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4065",
+  "source_url": "https://www.esoui.com/downloads/info4065-CyrodiilMapLabels10.3.5.html",
+  "stats": {
+    "downloads": 2234,
+    "favorites": 3,
+    "monthly_downloads": 42
+  },
+  "title": "Cyrodiil Map Labels (10.3.5)",
+  "updated_at": 1741898623000,
+  "version": "1.01"
+}

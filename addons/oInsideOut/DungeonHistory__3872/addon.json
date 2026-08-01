@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/oInsideOut/DungeonHistory__3872",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "oInsideOut",
+  "canonical_id": "esoui:3872",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3872",
+  "deleted": false,
+  "directories": [
+    "DungeonHistory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3872/",
+  "fingerprint": "972c86d032e5a829c4e48b7143c1183302b102a9d3d8ce1777208e90ce0a436c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13183.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13184.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13185.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13186.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13138.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13187.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13188.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3872",
+  "source_url": "https://www.esoui.com/downloads/info3872-DungeonHistory.html",
+  "stats": {
+    "downloads": 3934,
+    "favorites": 4,
+    "monthly_downloads": 25
+  },
+  "title": "DungeonHistory",
+  "updated_at": 1719165135000,
+  "version": "1.1.2"
+}

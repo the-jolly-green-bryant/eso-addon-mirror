@@ -1,0 +1,325 @@
+-- ***** FavoriteMount *****
+
+-- There is an event to register if the mount status changed
+
+--------------------------------------------------
+-- Initialize addon variables
+--------------------------------------------------
+FavoriteMount = {}
+FavoriteMount.name = "FavoriteMount"
+FavoriteMount.slashCommand = "/fmount"
+FavoriteMount.debug = false
+FavoriteMount.website = "https://www.esoui.com/downloads/info2915-FavoriteMount.html"
+FavoriteMount.version = "1.3.2 (20210711)"
+-- Added in a check for if the user is currently mounted in case of rapid dismount / mount before the mount switch occurs.
+
+FavoriteMount.collectible = 0
+
+
+--------------------------------------------------
+-- Link local variables to the in-game Globals
+--------------------------------------------------
+FavoriteMount.typeMounts = COLLECTIBLE_CATEGORY_TYPE_MOUNT -- ZOS GLOBAL
+FavoriteMount.cooldownError = COLLECTIBLE_USAGE_BLOCK_REASON_ON_COOLDOWN -- ZOS GLOBAL
+
+
+--------------------------------------------------
+-- Default saved variable settings
+--------------------------------------------------
+FavoriteMount.globalDefaults = {
+	unlockedMountsList = {},
+	unlockedMountsCount = 0
+}
+
+
+FavoriteMount.characterDefaults = {
+	favoriteMountsList = {}
+}
+
+
+--------------------------------------------------
+-- Initialize settings, load saved variables and register event triggers.
+--------------------------------------------------
+function FavoriteMount.Initialize()
+	FavoriteMount.GSV = ZO_SavedVars:NewAccountWide("FavoriteMountSavedVariables", 2, nil, FavoriteMount.globalDefaults)
+	FavoriteMount.CSV = ZO_SavedVars:NewCharacterIdSettings("FavoriteMountSavedVariables", 1, nil, FavoriteMount.characterDefaults)
+	
+	FavoriteMount.Check()
+	
+	EVENT_MANAGER:RegisterForEvent(FavoriteMount.name, EVENT_COLLECTIBLE_NOTIFICATION_NEW, FavoriteMount.Check)
+	EVENT_MANAGER:RegisterForEvent(FavoriteMount.name, EVENT_MOUNTED_STATE_CHANGED, FavoriteMount.SwitchMount)
+end
+
+
+--------------------------------------------------
+-- Check that the number of mountes saved matches the total number unlocked
+--------------------------------------------------
+function FavoriteMount.Check()
+	local umounts = GetTotalUnlockedCollectiblesByCategoryType(FavoriteMount.typeMounts)
+	local smounts = FavoriteMount.GSV.unlockedMountsCount
+
+	if smounts ~= umounts then FavoriteMount.Populate() end
+end
+
+
+--------------------------------------------------
+-- Populate the unlocked mounts list and save to saved variables
+--------------------------------------------------
+function FavoriteMount.Populate()
+	local mounts = {}
+	local mountcounter = 0
+	local unlockedmounts = GetTotalUnlockedCollectiblesByCategoryType(FavoriteMount.typeMounts)
+
+	if unlockedmounts > 0 then
+		for count = 1, GetTotalCollectiblesByCategoryType(FavoriteMount.typeMounts) do
+			local index = GetCollectibleIdFromType(FavoriteMount.typeMounts, count)
+			local p1, p2, p3, p4, p5, p6, p7, p8, p9 = GetCollectibleInfo(index)
+			if p5 then
+				mountcounter = mountcounter + 1
+				local mountNameClean = ZO_CachedStrFormat(SI_UNIT_NAME, p1)
+				mounts[mountcounter] = {index, mountNameClean, p3}
+			end
+		end
+		table.sort(mounts, function(a,b) return a[2] < b[2] end)
+		if FavoriteMount.debug then d("Function Populate") d(mounts)end
+	
+		FavoriteMount.GSV.unlockedMountsList = mounts
+		FavoriteMount.GSV.unlockedMountsCount = unlockedmounts
+	else
+		FavoriteMount.GSV.unlockedMountsList = {}
+		FavoriteMount.GSV.unlockedMountsCount = unlockedmounts
+	end
+	--[[ 
+		GetCollectibleInfo() returns
+		p1 = name(string)
+		p2 = description(string)
+		p3 = path to the item's texture if unlocked
+		p4 = path to the item's texture if locked
+		p5 = unlocked(boolean)
+		p6 = purchasable(boolean)
+		p7 = isActive(boolean)
+		p8 = Collectible Category Type (number matches the constant used in pre-initialize)
+		p9 = hint text for finding the item
+	]]--
+end
+
+
+--------------------------------------------------
+-- Check the results of the EVENT triggered when UseCollectible is called
+--------------------------------------------------
+function FavoriteMount.SwitchResult(eventCode, blockReason, attemptActivation)
+	if blockReason == FavoriteMount.cooldownError then
+		if FavoriteMount.debug then d("COOLDOWN ERROR") end
+		local delay = FavoriteMount.CalculateDelay()
+		zo_callLater(function() if not IsMounted() then UseCollectible(FavoriteMount.collectible) end end, delay)
+	else
+		if FavoriteMount.debug then d("COOLDOWN SUCCESSFUL") end
+		-- FavoriteMount.collectible = 0
+		EVENT_MANAGER:UnregisterForEvent(FavoriteMount.name, EVENT_COLLECTIBLE_USE_RESULT)
+	end
+end
+
+
+--------------------------------------------------
+-- Calculate how much of a delay before attempting to use pet
+--------------------------------------------------
+function FavoriteMount.CalculateDelay()
+	local delay = 1600
+	
+	if (IsInteracting() or IsInteractionPending()) then delay = 15000 end
+	if IsUnitSwimming("player") then delay = 30000 end
+	return delay
+end
+
+
+--------------------------------------------------
+-- Randomly set a mount as active when the player dismounts
+--------------------------------------------------
+function FavoriteMount.SwitchMount(eventid, mounted)
+	if FavoriteMount.debug then d("FUNCTION SwitchMount") if mounted then d("Mounted") else d("Not Mounted") end end
+	
+	if not mounted then
+		local list = FavoriteMount.CSV.favoriteMountsList
+		local active = GetActiveCollectibleByType(FavoriteMount.typeMounts)
+		local usemount = active
+	
+		if #list > 1 then
+			while active == usemount do
+				usemount = list[math.random(#list)]
+				end
+			if FavoriteMount.debug then d("Mount ID: "..usemount) end
+		else
+			usemount = list[1]
+		end
+		FavoriteMount.collectible = usemount
+		EVENT_MANAGER:RegisterForEvent(FavoriteMount.name, EVENT_COLLECTIBLE_USE_RESULT, FavoriteMount.SwitchResult)
+		local delay = FavoriteMount.CalculateDelay()
+		-- Check if the player quickly dismounted, then mounted again
+		zo_callLater(function() if not IsMounted() then UseCollectible(FavoriteMount.collectible) end end, delay)
+	end
+end
+
+
+--------------------------------------------------
+-- Check to see if a mount is in the favorites list - called from menu settings
+--------------------------------------------------
+function FavoriteMount.CheckIfFavorite(num)
+	if FavoriteMount.debug then d("Check If Favorite") end
+
+	local fav = FavoriteMount.CSV.favoriteMountsList
+	local found = false
+	
+	if fav then
+		for count = 1, #fav do
+			if num == fav[count] then found = true break end	
+		end
+	end
+	return found
+end
+
+
+--------------------------------------------------
+-- Either insert or remove the mount from the favorites table - called from menu settings
+--------------------------------------------------
+function FavoriteMount.SetFavorite(toggle, id)
+	if toggle then
+		table.insert(FavoriteMount.CSV.favoriteMountsList, id)
+	else
+		for key, value in ipairs(FavoriteMount.CSV.favoriteMountsList) do
+			if value == id then
+				table.remove(FavoriteMount.CSV.favoriteMountsList, key)
+				break
+			end
+		end
+	end
+	local ac, acv, act, fc, fcv, fct = FavoriteMount.SortMounts()
+	AvailableMounts:UpdateChoices(acv, ac, act)
+	FavoriteMounts:UpdateChoices(fcv, fc, fct)
+end
+
+
+--------------------------------------------------
+-- SlashCommand Debug - various debug and development information triggered by the slash command
+--------------------------------------------------
+function FavoriteMount.PingDebug()
+	
+	FavoriteMount.Populate()
+	
+end
+
+
+-- ***** Main *****
+
+
+--------------------------------------------------
+-- Check to see if this addon is the one loaded
+--------------------------------------------------
+function FavoriteMount.OnAddOnLoaded(event, addonName)
+	if addonName == FavoriteMount.name then
+		if FavoriteMount.debug then SLASH_COMMANDS[FavoriteMount.slashCommand] = FavoriteMount.PingDebug end
+		
+		FavoriteMount.Initialize()
+		
+		--------------------------------------------------
+		-- Was getting an error message from LAM saying the settings panel was trying to load before the
+		-- rest of the addon loaded.  Wrapping it in a function seems to have fixed it.
+		--------------------------------------------------
+		FavoriteMount.InitializeSettingsMenu()
+		EVENT_MANAGER:UnregisterForEvent(FavoriteMount.name, EVENT_ADD_ON_LOADED)
+	end
+end
+
+
+EVENT_MANAGER:RegisterForEvent(FavoriteMount.name, EVENT_ADD_ON_LOADED, FavoriteMount.OnAddOnLoaded)
+
+
+--------------------------------------------------
+-- ***** Settings *****
+--------------------------------------------------
+
+--------------------------------------------------
+-- Sort through the unlocked mounts and return menu settings information
+-- divided into available mounts and favorite mounts to help dynamically
+-- generate the new dropdown lists
+--------------------------------------------------
+function FavoriteMount.SortMounts()
+	local availableChoices = {}
+	local availableChoicesValues = {}
+	local availableChoicesTooltips = {}
+	local favoriteChoices = {}
+	local favoriteChoicesValues = {}
+	local favoriteChoicesTooltips = {}
+	
+	for key, value in ipairs(FavoriteMount.GSV.unlockedMountsList) do
+		local found = FavoriteMount.CheckIfFavorite(value[1])
+		if found then
+			table.insert(favoriteChoices, value[1])
+			table.insert(favoriteChoicesValues, value[2])
+			table.insert(favoriteChoicesTooltips, "|t400%:400%:"..value[3].."|t")
+		else
+			table.insert(availableChoices, value[1])
+			table.insert(availableChoicesValues, value[2])
+			table.insert(availableChoicesTooltips, "|t400%:400%:"..value[3].."|t")
+		end	
+	end
+	return availableChoices, availableChoicesValues, availableChoicesTooltips, favoriteChoices, favoriteChoicesValues, favoriteChoicesTooltips
+end
+
+
+--------------------------------------------------
+-- Generate the settings menu using LibAddonMenu2
+--------------------------------------------------
+function FavoriteMount.InitializeSettingsMenu()
+	if FavoriteMount.debug then d("Settings Menu") end
+
+	local LAM = LibAddonMenu2
+	local panelName = "FavoriteMountSettingsPanel"
+		 
+	local panelData = {
+		type = "panel",
+		name = "Favorite Mount",
+		displayName = "|c00E600Favorite Mount|r",
+		author = "|c787878ShadowMau|r",
+		registerForRefresh = true,
+		website = FavoriteMount.website,
+		version = FavoriteMount.version
+	}
+	
+	local optionsData = {}
+	
+	--------------------------------------------------
+	-- Dynamically generate the menu options
+	--------------------------------------------------
+	local ac, acv, act, fc, fcv, fct = FavoriteMount.SortMounts()
+	
+	temptable = {
+		type = "dropdown",
+		name = "Available Mounts",
+		width = "half",
+		scrollable = true,
+		reference = "AvailableMounts",
+		getFunc = function() return end,
+		setFunc = function(mountid) FavoriteMount.SetFavorite(true, mountid) end,
+		choices = acv,
+		choicesValues = ac,
+		choicesTooltips = act
+	}
+	table.insert(optionsData, temptable)
+	
+	temptable = {
+		type = "dropdown",
+		name = "Favorite Mounts",
+		width = "half",
+		scrollable = "true",
+		reference = "FavoriteMounts",
+		getFunc = function() return end,
+		setFunc = function(mountid) FavoriteMount.SetFavorite(false, mountid) end,
+		choices = fcv,
+		choicesValues = fc,
+		choicesTooltips = fct
+	}
+	table.insert(optionsData, temptable)
+
+	local panel = LAM:RegisterAddonPanel(panelName, panelData)
+	LAM:RegisterOptionControls(panelName, optionsData)
+end

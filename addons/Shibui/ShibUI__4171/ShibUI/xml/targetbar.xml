@@ -1,0 +1,26 @@
+<GuiXml>
+    <Controls>
+
+        <Control name="SUI_TargetUnitFrame" inherits="ZO_PlayerAttributeContainer" virtual="true">
+            <Dimensions x="281"/>
+            <Controls>
+                
+                <Control name="$(parent)BgContainer" inherits="ZO_PlayerAttributeBgContainer">
+                    <Dimensions x="281"/>
+                    <Anchor point="CENTER" />
+                    <Controls>
+                        <Texture name="$(parent)BgLeft" hidden="true"/>
+                        <Texture name="$(parent)BgRight" hidden="true"/>
+                        <Texture name="$(parent)BgCenter" hidden="true"/>
+                    </Controls>
+                </Control>
+
+                <Texture name="$(parent)FrameLeft" hidden="true" />
+                <Texture name="$(parent)FrameRight" hidden="true" />
+                <Texture name="$(parent)FrameCenter" hidden="true" />
+
+            </Controls>
+        </Control>
+    
+    </Controls>
+</GuiXml>

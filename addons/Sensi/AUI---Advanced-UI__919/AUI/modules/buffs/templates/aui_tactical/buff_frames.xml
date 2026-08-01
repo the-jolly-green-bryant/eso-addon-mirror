@@ -1,0 +1,108 @@
+<GuiXml>
+  <Controls>
+    <Control name="Tactical_Player_Buff_Control" mouseEnabled="false" hidden="false" alpha="0" virtual="true" tier="HIGH">
+      <Controls>
+        <Cooldown name="$(parent)_Cooldown" fillColor="00b711" tier="MEDIUM" level="120">
+          <AnchorFill />
+          <Controls>
+            <Texture name="$(parent)_Frame" color="026510" tier="LOW" level="100">
+              <Anchor point="TOPLEFT"/>
+              <Anchor point="BOTTOMRIGHT"/>
+            </Texture>
+          </Controls>
+        </Cooldown>
+        <Texture name="$(parent)_Icon" tier="HIGH" level="500">
+          <Anchor point="TOPLEFT" offsetX="2" offsetY="2"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2"/>
+          <Controls>
+            <Texture name="$(parent)_BG" tier="HIGH" level="100">
+              <AnchorFill />
+              <OnInitialized>
+                self:SetColor(0, 0, 0, 1)
+              </OnInitialized>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Label name="$(parent)_Text" />
+      </Controls>
+    </Control>
+    <Control name="Tactical_Player_Debuff_Control" mouseEnabled="false" hidden="false" alpha="0" virtual="true" tier="HIGH">
+      <Controls>
+        <Cooldown name="$(parent)_Cooldown" fillColor="ba0000" tier="MEDIUM" level="120">
+          <AnchorFill />
+          <Controls>
+            <Texture name="$(parent)_Frame" color="650202" tier="LOW" level="100">
+              <Anchor point="TOPLEFT"/>
+              <Anchor point="BOTTOMRIGHT"/>
+            </Texture>
+          </Controls>
+        </Cooldown>
+        <Texture name="$(parent)_Icon" tier="HIGH" level="500">
+          <Anchor point="TOPLEFT" offsetX="2" offsetY="2"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2"/>
+          <Controls>
+            <Texture name="$(parent)_BG" tier="HIGH" level="100">
+              <AnchorFill />
+              <OnInitialized>
+                self:SetColor(0, 0, 0, 1)
+              </OnInitialized>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Label name="$(parent)_Text" />
+      </Controls>
+    </Control>
+    <Control name="Tactical_Target_Buff_Control" mouseEnabled="false" hidden="false" alpha="0" virtual="true" tier="HIGH">
+      <Controls>
+        <Cooldown name="$(parent)_Cooldown" fillColor="00b711" tier="MEDIUM" level="120">
+          <AnchorFill />
+          <Controls>
+            <Texture name="$(parent)_Frame" color="026510" tier="LOW" level="100">
+              <Anchor point="TOPLEFT"/>
+              <Anchor point="BOTTOMRIGHT"/>
+            </Texture>
+          </Controls>
+        </Cooldown>
+        <Texture name="$(parent)_Icon" tier="HIGH" level="500">
+          <Anchor point="TOPLEFT" offsetX="2" offsetY="2"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2"/>
+          <Controls>
+            <Texture name="$(parent)_BG" tier="HIGH" level="100">
+              <AnchorFill />
+              <OnInitialized>
+                self:SetColor(0, 0, 0, 1)
+              </OnInitialized>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Label name="$(parent)_Text" />
+      </Controls>
+    </Control>
+    <Control name="Tactical_Target_Debuff_Control" mouseEnabled="false" hidden="false" alpha="0" virtual="true" tier="HIGH">
+      <Controls>
+        <Cooldown name="$(parent)_Cooldown" fillColor="ba0000" tier="MEDIUM" level="120">
+          <AnchorFill />
+          <Controls>
+            <Texture name="$(parent)_Frame" color="650202" tier="LOW" level="100">
+              <Anchor point="TOPLEFT"/>
+              <Anchor point="BOTTOMRIGHT"/>
+            </Texture>
+          </Controls>
+        </Cooldown>
+        <Texture name="$(parent)_Icon" tier="HIGH" level="500">
+          <Anchor point="TOPLEFT" offsetX="2" offsetY="2"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2"/>
+          <Controls>
+            <Texture name="$(parent)_BG" tier="HIGH" level="100">
+              <AnchorFill />
+              <OnInitialized>
+                self:SetColor(0, 0, 0, 1)
+              </OnInitialized>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Label name="$(parent)_Text" />
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

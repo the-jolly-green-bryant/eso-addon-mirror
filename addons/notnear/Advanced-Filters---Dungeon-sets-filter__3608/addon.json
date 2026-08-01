@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/notnear/Advanced-Filters---Dungeon-sets-filter__3608",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "notnear",
+  "canonical_id": "esoui:3608",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3608",
+  "deleted": false,
+  "directories": [
+    "AF_DungeonSetFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3608/",
+  "fingerprint": "7b204a579583c8b0329e4b428e4209f6dda51a840103226010dac1c76ab24060",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12292.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3608",
+  "source_url": "https://www.esoui.com/downloads/info3608-AdvancedFilters-Dungeonsetsfilter.html",
+  "stats": {
+    "downloads": 12285,
+    "favorites": 7,
+    "monthly_downloads": 37
+  },
+  "title": "Advanced Filters - Dungeon sets filter",
+  "updated_at": 1685857833000,
+  "version": "1.1.1"
+}

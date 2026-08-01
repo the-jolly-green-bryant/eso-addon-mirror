@@ -1,0 +1,25 @@
+## Title: Near's Skill Ranks
+## APIVersion: 101047
+## Version: 1.4.0
+## AddOnVersion: 140
+## SavedVariables: NearSkillRanks_Data
+## Author: |cCC99FFnotnear|r
+## OptionalDependsOn: AddonCategory
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+# All rights reserved.
+
+lang/en.lua
+lang/$(language).lua
+
+NearSkillRanks.lua
+functions.lua
+skilldata.lua
+
+NearSkillRanks.xml
+guifunctions.lua
+bindings.xml
+
+defaults.lua
+utils.lua

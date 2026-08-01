@@ -1,0 +1,529 @@
+<GuiXml>
+	<Controls>
+<!-- Left side recipe navigation frame -->
+		<Control name="ESOMRL_MainFrameSelectionFrame">
+			<Dimensions x="300" y="534"/>
+			<Anchor point="LEFT" relativeTo="ESOMRL_MainFrame" relativePoint="LEFT" offsetX="16" offsetY="14"/>
+			<Controls>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)ClearSearch">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="ESOMRL_MainFrame" relativePoint="BOTTOMLEFT" offsetX="-4" offsetY="5"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/minus_up.dds"
+						pressed="EsoUI/Art/Buttons/minus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/minus_up.dds"
+						disabled="EsoUI/Art/Buttons/minus_disabled.dds"
+					/>
+					<OnMouseDown>
+						ESOMRL_MainFrameSelectionFrameClearSearchLabel:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameSelectionFrameClearSearchLabel:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameSelectionFrameClearSearchLabel:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL_MainFrameSelectionFrameClearSearchLabel:SetAlpha(0.8)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(301)
+					</OnClicked>
+				</Button>
+				<Button name="$(parent)ClearSearchButton">
+					<Dimensions x="290" y="32"/>
+					<Anchor point="LEFT" relativeTo="$(parent)ClearSearch" relativePoint="RIGHT"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameSelectionFrameClearSearchLabel:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameSelectionFrameClearSearchLabel:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameSelectionFrameClearSearchLabel:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL_MainFrameSelectionFrameClearSearchLabel:SetAlpha(0.8)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(301)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)ClearSearchLabel" font="ZoFontWinH5" color="FEE854" horizontalAlignment="LEFT" alpha="0.8">
+					<Anchor point="LEFT" relativeTo="$(parent)ClearSearch" relativePoint="RIGHT"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)WritButton">
+					<Dimensions x="26" y="26"/>
+					<Anchor point="LEFT" relativeTo="$(parent)ClearSearchLabel" relativePoint="RIGHT" offsetX="0"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/accept_up.dds"
+						pressed="EsoUI/Art/Buttons/accept_down.dds"
+						mouseOver="EsoUI/Art/Buttons/accept_over.dds"
+						disabled="EsoUI/Art/Buttons/radiobuttondisabledup.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(302, nil, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(302, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(303)
+					</OnClicked>
+				</Button>
+<!-- Food navigation section -->
+				<Label name="$(parent)FoodList1" font="ZoFontHeader2" color="FFFF00" horizontalAlignment="LEFT" text="Food Recipes">
+					<Anchor point="TOPLEFT" offsetY="-4"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Food1B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)FoodList1" relativePoint="BOTTOMLEFT" offsetX="15"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 1)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Food1T" font="ZoFontWinH5" color="00FF00" horizontalAlignment="LEFT" text="Meat Dishes">
+					<Anchor point="LEFT" relativeTo="$(parent)Food1B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Food1T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Health)">
+					<Anchor point="LEFT" relativeTo="$(parent)Food1T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Food2B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Food1B" relativePoint="BOTTOMLEFT"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 2)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Food2T" font="ZoFontWinH5" color="00FF00" horizontalAlignment="LEFT" text="Fruit Dishes">
+					<Anchor point="LEFT" relativeTo="$(parent)Food2B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Food2T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Magicka)">
+					<Anchor point="LEFT" relativeTo="$(parent)Food2T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Food3B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Food2B" relativePoint="BOTTOMLEFT"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 3)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Food3T" font="ZoFontWinH5" color="00FF00" horizontalAlignment="LEFT" text="Vegetable Dishes">
+					<Anchor point="LEFT" relativeTo="$(parent)Food3B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Food3T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Stamina)">
+					<Anchor point="LEFT" relativeTo="$(parent)Food3T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Food4B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Food3B" relativePoint="BOTTOMLEFT"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 4)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Food4T" font="ZoFontWinH5" color="3A92FF" horizontalAlignment="LEFT" text="Savouries">
+					<Anchor point="LEFT" relativeTo="$(parent)Food4B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Food4T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Health/Magicka)">
+					<Anchor point="LEFT" relativeTo="$(parent)Food4T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Food5B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Food4B" relativePoint="BOTTOMLEFT"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 5)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Food5T" font="ZoFontWinH5" color="3A92FF" horizontalAlignment="LEFT" text="Ragout">
+					<Anchor point="LEFT" relativeTo="$(parent)Food5B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Food5T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Health/Stamina)">
+					<Anchor point="LEFT" relativeTo="$(parent)Food5T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Food6B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Food5B" relativePoint="BOTTOMLEFT"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 6)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Food6T" font="ZoFontWinH5" color="3A92FF" horizontalAlignment="LEFT" text="Entremet">
+					<Anchor point="LEFT" relativeTo="$(parent)Food6B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Food6T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Magicka/Stamina)">
+					<Anchor point="LEFT" relativeTo="$(parent)Food6T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Food7B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Food6B" relativePoint="BOTTOMLEFT"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 7)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Food7T" font="ZoFontWinH5" color="A02EF7" horizontalAlignment="LEFT" text="Gourmet">
+					<Anchor point="LEFT" relativeTo="$(parent)Food7B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Food7T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Health/Magicka/Stamina)">
+					<Anchor point="LEFT" relativeTo="$(parent)Food7T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Food8B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Food7B" relativePoint="BOTTOMLEFT"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 16)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Food8T" font="ZoFontWinH5" color="EECA2A" horizontalAlignment="LEFT" text="Delicacies">
+					<Anchor point="LEFT" relativeTo="$(parent)Food8B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Food8T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Unique Dishes)">
+					<Anchor point="LEFT" relativeTo="$(parent)Food8T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+<!-- Drink navigation section -->
+				<Label name="$(parent)DrinkList1" font="ZoFontHeader2" color="FFFF00" horizontalAlignment="LEFT" text="Drink Recipes">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Food8B" relativePoint="BOTTOMLEFT" offsetX="-16" offsetY="4"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Drink1B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)DrinkList1" relativePoint="BOTTOMLEFT" offsetX="15"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 8)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Drink1T" font="ZoFontWinH5" color="00FF00" horizontalAlignment="LEFT" text="Alcoholic Drinks">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink1B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Drink1T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Health)">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink1T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Drink2B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Drink1B" relativePoint="BOTTOMLEFT"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 9)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Drink2T" font="ZoFontWinH5" color="00FF00" horizontalAlignment="LEFT" text="Tea">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink2B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Drink2T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Magicka)">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink2T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Drink3B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Drink2B" relativePoint="BOTTOMLEFT"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 10)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Drink3T" font="ZoFontWinH5" color="00FF00" horizontalAlignment="LEFT" text="Tonics">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink3B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Drink3T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Stamina)">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink3T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Drink4B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Drink3B" relativePoint="BOTTOMLEFT"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 11)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Drink4T" font="ZoFontWinH5" color="3A92FF" horizontalAlignment="LEFT" text="Liqueurs">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink4B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Drink4T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Health/Magicka)">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink4T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Drink5B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Drink4B" relativePoint="BOTTOMLEFT"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 12)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Drink5T" font="ZoFontWinH5" color="3A92FF" horizontalAlignment="LEFT" text="Tinctures">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink5B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Drink5T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Health/Stamina)">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink5T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Drink6B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Drink5B" relativePoint="BOTTOMLEFT"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 13)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Drink6T" font="ZoFontWinH5" color="3A92FF" horizontalAlignment="LEFT" text="Cordial Teas">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink6B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Drink6T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Magicka/Stamina)">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink6T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Drink7B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Drink6B" relativePoint="BOTTOMLEFT"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 14)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Drink7T" font="ZoFontWinH5" color="A02EF7" horizontalAlignment="LEFT" text="Distillates">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink7B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Drink7T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Health/Magicka/Stamina)">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink7T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)Drink8B">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Drink7B" relativePoint="BOTTOMLEFT"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/plus_up.dds"
+						pressed="EsoUI/Art/Buttons/plus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+						disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+					/>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 15)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Drink8T" font="ZoFontWinH5" color="EECA2A" horizontalAlignment="LEFT" text="Delicacies">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink8B" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Drink8T2" font="ZoFontWinH5" color="C3C3C3" horizontalAlignment="LEFT" text="(Unique Drinks)">
+					<Anchor point="LEFT" relativeTo="$(parent)Drink8T" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)PsijicButton">
+					<Dimensions x="28" y="28"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Drink8B" relativePoint="BOTTOMLEFT" offsetX="-28" offsetY="0"/>
+					<Textures
+						normal="/MasterRecipeList/bin/textures/psijic_normal.dds"
+						pressed="/MasterRecipeList/bin/textures/psijic_over.dds"
+						mouseOver="/MasterRecipeList/bin/textures/psijic_over.dds"
+						disabled="/MasterRecipeList/bin/textures/psijic_normal.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(307, nil, nil, 1, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(307, nil, nil, 1, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 17)
+					</OnClicked>
+				</Button>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)OrsiniumButton">
+					<Dimensions x="28" y="28"/>
+					<Anchor point="LEFT" relativeTo="$(parent)PsijicButton" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<Textures
+						normal="/MasterRecipeList/bin/textures/orsinium_normal.dds"
+						pressed="/MasterRecipeList/bin/textures/orsinium_over.dds"
+						mouseOver="/MasterRecipeList/bin/textures/orsinium_over.dds"
+						disabled="/MasterRecipeList/bin/textures/orsinium_normal.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(307, nil, nil, 2, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(307, nil, nil, 2, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 18)
+					</OnClicked>
+				</Button>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)WitchesFestival">
+					<Dimensions x="28" y="28"/>
+					<Anchor point="LEFT" relativeTo="$(parent)OrsiniumButton" relativePoint="RIGHT" offsetX="-1" offsetY="-2"/>
+					<Textures
+						normal="/MasterRecipeList/bin/textures/witches_normal.dds"
+						pressed="/MasterRecipeList/bin/textures/witches_over.dds"
+						mouseOver="/MasterRecipeList/bin/textures/witches_over.dds"
+						disabled="/MasterRecipeList/bin/textures/witches_normal.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(307, nil, nil, 3, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(307, nil, nil, 3, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 19)
+					</OnClicked>
+				</Button>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)NewLifeFestival">
+					<Dimensions x="28" y="28"/>
+					<Anchor point="LEFT" relativeTo="$(parent)WitchesFestival" relativePoint="RIGHT" offsetX="-1" offsetY="1"/>
+					<Textures
+						normal="/MasterRecipeList/bin/textures/newlife_normal.dds"
+						pressed="/MasterRecipeList/bin/textures/newlife_over.dds"
+						mouseOver="/MasterRecipeList/bin/textures/newlife_over.dds"
+						disabled="/MasterRecipeList/bin/textures/newlife_normal.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(307, nil, nil, 4, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(307, nil, nil, 4, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 20)
+					</OnClicked>
+				</Button>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)JesterFestival">
+					<Dimensions x="28" y="28"/>
+					<Anchor point="LEFT" relativeTo="$(parent)NewLifeFestival" relativePoint="RIGHT" offsetX="-1" offsetY="1"/>
+					<Textures
+						normal="/MasterRecipeList/bin/textures/jester_normal.dds"
+						pressed="/MasterRecipeList/bin/textures/jester_over.dds"
+						mouseOver="/MasterRecipeList/bin/textures/jester_over.dds"
+						disabled="/MasterRecipeList/bin/textures/jester_normal.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(307, nil, nil, 5, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(307, nil, nil, 5, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 21)
+					</OnClicked>
+				</Button>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)ClockworkCity">
+					<Dimensions x="28" y="28"/>
+					<Anchor point="LEFT" relativeTo="$(parent)JesterFestival" relativePoint="RIGHT" offsetX="-1" offsetY="1"/>
+					<Textures
+						normal="/MasterRecipeList/bin/textures/clockwork_normal.dds"
+						pressed="/MasterRecipeList/bin/textures/clockwork_over.dds"
+						mouseOver="/MasterRecipeList/bin/textures/clockwork_over.dds"
+						disabled="/MasterRecipeList/bin/textures/clockwork_normal.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(307, nil, nil, 6, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(307, nil, nil, 6, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 22)
+					</OnClicked>
+				</Button>
+<!-- ---------------------------------------------------------------------------------------------------------------------------------------------------- -->
+			</Controls>
+		</Control>
+
+	</Controls>
+</GuiXml>

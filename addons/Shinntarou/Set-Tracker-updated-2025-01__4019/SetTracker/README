@@ -1,0 +1,25 @@
+I can't play ESO without Set Tracker. but the addon has been abandoned for a long time and has many errors in the latest ESO ver.
+So, I have modified the original addon. and I share it.
+
+[CODE]
+Simply.
+
+1. Delete original addons.(SetTracker & SetTracker updated)
+2. Download brand-new "Set Tracker Updated" by @q.bit
+3. Delete old lib files that original version has locally (Lib Stub, LibMsg, and so on)
+4. Rewrite "DependOn".
+
+It works!
+by Shinntarou
+[/CODE]
+
+[B]Based on:[/B]
+[URL="https://www.esoui.com/downloads/info2291-SetTracker-UPDATED.html"]SetTracker-UPDATED[/URL]
+
+[B]How to Install[/B]
+
+1. First, Delete original addons. (because I don't change addon's folder name. It'll conflict if the original addon exists.)
+2. Install the addon by minion etc.
+
+[B]TO AUTHORS(Elephant, @q.bit):[/B]
+If you don't want the modification, please contact me. I'll delete it ASAP.

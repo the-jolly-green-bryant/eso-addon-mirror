@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Sharlikran/Tamriel-Trade-Centre-Companion__3509",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:3509",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3509",
+  "deleted": false,
+  "directories": [
+    "TamrielTradeCentreCompanion"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3509/",
+  "fingerprint": "348a06f266d89345aecc0c311a6a31cb46a4d9d132ee82ebe959c48343879f7d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11947.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11948.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11949.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11953.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3509",
+  "source_url": "https://www.esoui.com/downloads/info3509-TamrielTradeCentreCompanion.html",
+  "stats": {
+    "downloads": 59194,
+    "favorites": 70,
+    "monthly_downloads": 908
+  },
+  "title": "Tamriel Trade Centre Companion",
+  "updated_at": 1759165326000,
+  "version": "1.11"
+}

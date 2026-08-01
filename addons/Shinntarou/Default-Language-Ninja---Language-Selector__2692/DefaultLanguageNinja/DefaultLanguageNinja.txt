@@ -1,0 +1,28 @@
+; 
+; the add-on set in-game default language.
+; 
+## Title: Default Language Ninja - Language Selector
+## Author: @Shinntarou (NA, PC)
+## Version: 1.0.3
+## APIVersion: 100030
+## SavedVariables: DefaultLanguageNinjaVariables
+## DependsOn: LibAddonMenu-2.0
+
+# Main file
+DefaultLanguageNinja.lua
+
+# functions
+ConfigMenu.lua
+SaveData.lua
+LoadLangCode.lua
+
+# const
+UserDefinedChar.lua
+DefaultLanguage.lua
+
+# for debug
+DevTool.lua
+
+# UI
+Controls.lua
+Controls.xml

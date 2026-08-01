@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/pineapple_aule/Murder-Hotkey__3155",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "pineapple_aule",
+  "canonical_id": "esoui:3155",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3155",
+  "deleted": false,
+  "directories": [
+    "MurderHotkey"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3155/",
+  "fingerprint": "1f7efb7c46136be0f5f3280455f4438825d44921ceb1f3cb2786b69efdc6e617",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10692.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3155",
+  "source_url": "https://www.esoui.com/downloads/info3155-MurderHotkey.html",
+  "stats": {
+    "downloads": 2253,
+    "favorites": 1,
+    "monthly_downloads": 17
+  },
+  "title": "Murder Hotkey",
+  "updated_at": 1626814044000,
+  "version": "0.1"
+}

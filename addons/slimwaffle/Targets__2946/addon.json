@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/slimwaffle/Targets__2946",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "slimwaffle",
+  "canonical_id": "esoui:2946",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:2946",
+  "deleted": false,
+  "directories": [
+    "Targets"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2946/",
+  "fingerprint": "323c4f8bae1750d161796095f673bd15d863b15d98a21601afdc6aa5f2e4a303",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11800.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2946",
+  "source_url": "https://www.esoui.com/downloads/info2946-Targets.html",
+  "stats": {
+    "downloads": 5852,
+    "favorites": 7,
+    "monthly_downloads": 19
+  },
+  "title": "Targets",
+  "updated_at": 1748498334000,
+  "version": "2.0"
+}

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Panicida/LibPanicida__4349",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Panicida",
+  "canonical_id": "esoui:4349",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4349",
+  "deleted": false,
+  "directories": [
+    "LibPanicida"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4349/",
+  "fingerprint": "67a4a54b80124668611013aa85e43f4ad098fbe925b6213e454675477e6b153b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4349",
+  "source_url": "https://www.esoui.com/downloads/info4349-LibPanicida.html",
+  "stats": {
+    "downloads": 4254,
+    "favorites": 1,
+    "monthly_downloads": 383
+  },
+  "title": "LibPanicida",
+  "updated_at": 1768423816000,
+  "version": "2.0.0"
+}

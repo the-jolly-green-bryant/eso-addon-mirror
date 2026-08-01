@@ -1,0 +1,92 @@
+## Title: Nvk3's Ultimate Tracker
+## Description: Combines Quest, Endeavor, Achievement, Golden Pursuit and Journal enhancements into one customizable tracking window with category control, filtering and full LAM integration.
+## Author: Nvk3
+## Version: 0.17.5
+## AddOnVersion: 1705
+## APIVersion: 101048
+## DependsOn: LibAddonMenu-2.0>=41 LibCustomMenu>=730
+## OptionalDependsOn:
+## SavedVariables: Nvk3UT_SV Nvk3UT_Data_Favorites Nvk3UT_Data_Recent Nvk3UT_Data_Quests
+Core/Nvk3UT_Utils.lua
+Core/Nvk3UT_Diagnostics.lua
+Core/Nvk3UT_SelfTest.lua
+Core/Nvk3UT_StateInit.lua
+Core/Nvk3UT_Rebuild.lua
+Core/Nvk3UT_Core.lua
+lang/default.lua
+lang/$(language).lua
+Bindings.xml
+## Model — Quest
+Model/Quest/Nvk3UT_QuestState.lua
+Model/Quest/Nvk3UT_QuestSelection.lua
+Model/Quest/Nvk3UT_QuestList.lua
+Model/Quest/Nvk3UT_QuestModel.lua
+## Model — Endeavor
+Model/Endeavor/Nvk3UT_EndeavorState.lua
+Model/Endeavor/Nvk3UT_EndeavorModel.lua
+## Model — Achievement
+Model/Achievement/Nvk3UT_AchievementState.lua
+Model/Achievement/Nvk3UT_AchievementStages.lua
+Model/Achievement/Nvk3UT_FavoritesData.lua
+Model/Achievement/Nvk3UT_RecentData.lua
+Model/Achievement/Nvk3UT_TodoData.lua
+Model/Achievement/Nvk3UT_CompletedData.lua
+Model/Achievement/Nvk3UT_FavoritesIntegration.lua
+Model/Achievement/Nvk3UT_RecentIntegration.lua
+Model/Achievement/Nvk3UT_TodoIntegration.lua
+Model/Achievement/Nvk3UT_CompletedIntegration.lua
+Model/Achievement/Nvk3UT_AchievementList.lua
+Model/Achievement/Nvk3UT_AchievementModel.lua
+Model/Achievement/Nvk3UT_AchievementCache.lua
+## Model — Golden
+Model/Golden/Nvk3UT_GoldenState.lua
+Model/Golden/Nvk3UT_GoldenList.lua
+Model/Golden/Nvk3UT_GoldenModel.lua
+## === Journal ===
+Journal/Nvk3UT_AchievementsJournal.lua
+Journal/Nvk3UT_FavoritesCategory.lua
+Journal/Nvk3UT_RecentCategory.lua
+Journal/Nvk3UT_RecentSummary.lua
+Journal/Nvk3UT_TodoCategory.lua
+Journal/Nvk3UT_TodoSummary.lua
+Journal/Nvk3UT_CompletedCategory.lua
+Journal/Nvk3UT_CompletedSummary.lua
+## === Runtime ===
+## Runtime order: Runtime -> Host -> HostLayout (Quest -> Endeavor -> Achievement -> Golden enforced via layout)
+Runtime/Nvk3UT_TrackerRuntime.lua
+Runtime/Nvk3UT_TrackerHost.lua
+Runtime/Nvk3UT_TrackerHostLayout.lua
+## Golden kommt nach Achievement (HostLayout enforced). Falls später Runtime-Dateien für Golden hinzukommen, diese unter Achievement-relevanten Runtime-Einträgen einfügen.
+## === Tracker ===
+## Tracker order: Quest -> Endeavor -> Achievement -> Golden
+Tracker/Quest/Nvk3UT_QuestFilter.lua
+Tracker/Quest/Nvk3UT_QuestTrackerController.lua
+Tracker/Quest/Nvk3UT_QuestTrackerRows.lua
+Tracker/Quest/Nvk3UT_QuestTrackerLayout.lua
+Tracker/Quest/Nvk3UT_QuestTracker.xml
+Tracker/Quest/Nvk3UT_QuestTracker.lua
+## Endeavor files: Facade -> Tracker -> Rows -> Layout (no events in this token)
+Tracker/Endeavor/Nvk3UT_Endeavor.lua
+Tracker/Endeavor/Nvk3UT_EndeavorTrackerController.lua
+Tracker/Endeavor/Nvk3UT_EndeavorTracker.lua
+Tracker/Endeavor/Nvk3UT_EndeavorTrackerRows.lua
+Tracker/Endeavor/Nvk3UT_EndeavorTrackerLayout.lua
+Tracker/Achievement/Nvk3UT_AchievementTracker.xml
+Tracker/Achievement/Nvk3UT_AchievementTrackerController.lua
+Tracker/Achievement/Nvk3UT_AchievementTrackerRows.lua
+Tracker/Achievement/Nvk3UT_AchievementTrackerLayout.lua
+Tracker/Achievement/Nvk3UT_AchievementTracker.lua
+# Golden Tracker (after Achievement)
+Tracker/Golden/Nvk3UT_GoldenTracker.lua
+Tracker/Golden/Nvk3UT_GoldenTrackerRows.lua
+Tracker/Golden/Nvk3UT_GoldenTrackerLayout.lua
+# Golden Controller
+Tracker/Golden/Nvk3UT_GoldenTrackerController.lua
+# Note: further Golden modules (Controller/Events) will be added in later tokens.
+## === Events ===
+## === UI ===
+Nvk3UT_UI.lua
+Nvk3UT_Tooltips.lua
+Nvk3UT_LAM.lua
+UI/Nvk3UT_ChatAchievementContext.lua
+README.txt

@@ -1,0 +1,15 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="PurpleBorder" tier="HIGH" alpha="0.66" hidden="true">
+			<AnchorFill />
+			<Controls>
+				<Backdrop name="$(parent)Overlay" edgeColor="DC143C">
+					<AnchorFill />
+					<Center file="EsoUI/Art/HUD/UITelvarOverlayCenter.dds" />
+					<Edge file="EsoUI/Art/HUD/UITelvarOverlayEdge.dds" edgeFileWidth="2048" edgeFileHeight="256" />
+					<Insets left="256" top="256" right="-256" bottom="-256" />
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

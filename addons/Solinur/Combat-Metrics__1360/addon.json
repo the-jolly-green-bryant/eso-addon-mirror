@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Solinur/Combat-Metrics__1360",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Solinur",
+  "canonical_id": "esoui:1360",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:1360",
+  "deleted": false,
+  "directories": [
+    "CombatMetrics"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1360/",
+  "fingerprint": "cea8372c278b94f38a119ef45c5f0f598ea859d33c37f42c75507af987dc3671",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6556.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6557.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6558.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6562.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6559.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6560.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6561.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1360",
+  "source_url": "https://www.esoui.com/downloads/info1360-CombatMetrics.html",
+  "stats": {
+    "downloads": 7140388,
+    "favorites": 1814,
+    "monthly_downloads": 33605
+  },
+  "title": "Combat Metrics",
+  "updated_at": 1782765212000,
+  "version": "1.7.8"
+}

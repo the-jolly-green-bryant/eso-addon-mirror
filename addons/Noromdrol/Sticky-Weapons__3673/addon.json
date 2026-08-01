@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Noromdrol/Sticky-Weapons__3673",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Noromdrol",
+  "canonical_id": "esoui:3673",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3673",
+  "deleted": false,
+  "directories": [
+    "StickyWeapons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3673/",
+  "fingerprint": "b9a9ecf9333f2712cf080d206ace9415aacadcc86bd1f41b5fa02985565ade67",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3673",
+  "source_url": "https://www.esoui.com/downloads/info3673-StickyWeapons.html",
+  "stats": {
+    "downloads": 3802,
+    "favorites": 5,
+    "monthly_downloads": 42
+  },
+  "title": "Sticky Weapons",
+  "updated_at": 1701132732000,
+  "version": "1.1.1"
+}

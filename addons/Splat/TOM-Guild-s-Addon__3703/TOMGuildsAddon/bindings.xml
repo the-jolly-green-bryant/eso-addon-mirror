@@ -1,0 +1,72 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="TOM Guild Addon">
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_CLEAR">
+				<Up>WhereAmI(13)</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_ONE">
+				<Up>WhereAmI(1)</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_TWO">
+				<Up>WhereAmI(2)</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_THREE">
+				<Up>WhereAmI(3)</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_FOUR">
+				<Up>WhereAmI(4)</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_FIVE">
+				<Up>WhereAmI(5)</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_SIX">
+				<Up>WhereAmI(6)</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_SEVEN">
+				<Up>WhereAmI(7)</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_EIGHT">
+				<Up>WhereAmI(8)</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_NINE">
+				<Up>WhereAmI(9)</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_TEN">
+				<Up>WhereAmI(10)</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_ELEVEN">
+				<Up>WhereAmI(11)</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_TWELVE">
+				<Up>WhereAmI(12)</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_XF">
+				<Up>MoveMarker("xf")</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_XB">
+				<Up>MoveMarker("xb")</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_YU">
+				<Up>MoveMarker("yu")</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_YD">
+				<Up>MoveMarker("yd")</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_ZF">
+				<Up>MoveMarker("zf")</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_MARKER_PLACEMENT_ZB">
+				<Up>MoveMarker("zb")</Up>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_TOGGLE_CYRO_SINGLE">
+				<Down>ICCYROToggle("single")</Down>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_TOGGLE_CYRO_GROUP">
+				<Down>ICCYROToggle("group")</Down>
+			</Action>
+			<Action name="TOM_GUILD_ADDON_TOGGLE_ENCOUNTER_LOG">
+				<Down>ToggleLogging()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

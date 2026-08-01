@@ -1,0 +1,9 @@
+## Title: TitleFlex
+## Version: 1.8.0
+## APIVersion: 101031
+## IsLibrary: false
+## SavedVariables: TitleFlexSavedVariables
+## DependsOn: LibAddonMenu-2.0>=28
+
+TitleFlex.lua
+TitleFlexSettings.lua

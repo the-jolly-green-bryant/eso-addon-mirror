@@ -1,0 +1,41 @@
+## Title: LovelyEmotes
+## Description: Provides quick and easy access to emotes. (For mouse/keyboard users)
+## Author: ShinyBones
+## Version: 5.1
+## AddOnVersion: 67
+## APIVersion: 101044
+## DependsOn: LibAddonMenu-2.0>=28
+## SavedVariables: LovelyEmotesVariables
+
+Localization/Default.lua
+Localization/$(language).lua
+Files/Constants.lua
+Files/Events.lua
+Files/Settings.lua
+Files/LovelyEmotes.lua
+Files/Colors.lua
+Files/EmoteData.lua
+Files/SettingsUpdate.lua
+Files/Sounds.lua
+Files/EmoteList.lua
+Files/MainWindow.lua
+Files/Modes/ModeBase.lua
+Files/Modes/FavoriteEmotes/FavoriteEmoteListItem.lua
+Files/Modes/FavoriteEmotes/FavoriteEmotesMode.lua
+Files/Modes/FavoriteEmotes/EmoteSelectionWindow.lua
+Files/Modes/EmoteList/EmoteListMode.lua
+Files/Modes/Personality/PersonalityMode.lua
+Files/RadialMenu.lua
+Files/FavoriteCommands.lua
+Files/ChatWindowButton.lua
+Files/EmoteSynchronization.lua
+Files/SettingsMenu.lua
+Files/Bindings.lua
+Files/Templates.xml
+Files/Modes/ModeBase.xml
+Files/FavoriteCommands.xml
+Files/EmoteList.xml
+Files/Modes/FavoriteEmotes/EmoteSelectionWindow.xml
+Files/MainWindow.xml
+Files/RadialMenu.xml
+Files/Bindings.xml

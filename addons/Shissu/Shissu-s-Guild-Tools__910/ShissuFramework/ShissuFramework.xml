@@ -1,0 +1,14 @@
+<GuiXml>
+  <Font name="SF_LINEFONT" font="$(STONE_TABLET_FONT)|30|soft-shadow-thick" />
+  <Font name="SF_MINIFONT" font="$(STONE_TABLET_FONT)|12|soft-shadow-thick" />
+  <Font name="SF_BUTTONFONT" font="$(STONE_TABLET_FONT)|14|soft-shadow-thick" />
+  
+	<Controls> 
+		<!-- ChatButton -->
+		<Button name="SGT_ZO_ToogleButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+      <Anchor point="RIGHT" relativeTo="ZO_ChatWindowOptions" relativePoint="RIGHT" offsetX="36" offsetY="0" />
+    	<Dimensions x="36" y="36" />
+      <Textures normal="ShissuFramework/textures/button_sgt.dds" mouseOver="ShissuFramework/textures/button_sgt2.dds" />
+		</Button> 	
+	</Controls>
+</GuiXml>

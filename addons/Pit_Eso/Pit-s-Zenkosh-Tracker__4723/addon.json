@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Pit_Eso/Pit-s-Zenkosh-Tracker__4723",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Pit_Eso",
+  "canonical_id": "esoui:4723",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4723",
+  "deleted": false,
+  "directories": [
+    "PitsZenkoshTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4723/",
+  "fingerprint": "b42b2fc867bfa60e21cc2de4b740af8fb4ecf13f26130f5a011084e84ab65a46",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16793.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4723",
+  "source_url": "https://www.esoui.com/downloads/info4723-PitsZenkoshTracker.html",
+  "stats": {
+    "downloads": 22,
+    "favorites": 1,
+    "monthly_downloads": 19
+  },
+  "title": "Pit's Zenkosh Tracker",
+  "updated_at": 1784804732000,
+  "version": "1.0.0"
+}

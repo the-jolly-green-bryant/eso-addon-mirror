@@ -1,0 +1,7 @@
+## APIVersion: 100024
+## Title: Anti Market Popup
+## Version: 1.1
+## Author: SDPhantom
+## Description: Blocks the obtrusive market announcement upon login.
+
+AntiMarketPopup.lua

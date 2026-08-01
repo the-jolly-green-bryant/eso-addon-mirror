@@ -1,0 +1,104 @@
+<GuiXml>
+    <Controls>		
+        <TopLevelControl name="GuildSummary_GUI" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions x="450" y="570" />
+            <Anchor point="CENTER" offsetY="-80" offsetX="-60"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" mouseEnabled="false" tier="LOW"/>
+                
+                <Label name="$(parent)WindowTitle" font="ZoFontWindowTitle" text="GuildSummary">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+                </Label>
+								   
+                <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="6" />
+                    <Textures   normal    ="EsoUI/Art/Buttons/closebutton_up.dds"
+                                pressed   ="EsoUI/Art/Buttons/closebutton_down.dds"
+                                mouseOver ="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+                                disabled  ="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+                    <OnClicked>
+                        GuildSummary.ToggleGUI();
+                    </OnClicked>
+                </Button>
+				
+				<EditBox name="$(parent)MultiLineText" inherits="ZO_DefaultEditMultiLineForBackdrop" maxInputCharacters="2500000" multiLine="true">
+					<Dimensions y="520" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="12" offsetY="47" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-12" offsetY="47" />
+				</EditBox>
+				
+				
+				<Control name="$(parent)Settings" resizeToFitDescendents="false" hidden="false" virtual="false" movable="false" mouseEnabled="false">
+					<Dimensions x="274" y="380" />
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="12"/>
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
+						
+
+						<Button name="$(parent)Button_CalculateSummary" inherits="ZO_DefaultButton" text="Calculate summary">
+							<Dimensions x="200" y="25" />
+							<Anchor point="BOTTOM" relativePoint="BOTTOM" relativeTo="$(parent)" offsetY="-12"/>
+							<OnClicked>
+								GuildSummary.GetGuildsSummary()
+							</OnClicked>
+						</Button>
+						
+						<Control name="$(parent)ComboboxGuilds" inherits="ZO_ComboBox">
+							<Dimensions x="250" y="32" />
+							<Anchor point="BOTTOM" relativeTo="$(parent)Button_CalculateSummary" relativePoint="TOP" offsetY="-12" />
+						</Control>
+						
+						<Control name="$(parent)ComboboxTimeRange" inherits="ZO_ComboBox">
+							<Dimensions x="250" y="32" />
+							<Anchor point="BOTTOM" relativeTo="$(parent)ComboboxGuilds" relativePoint="TOP" offsetY="-12" />
+						</Control>
+						
+						<Control name="$(parent)ComboboxFormat" inherits="ZO_ComboBox">
+							<Dimensions x="250" y="32" />
+							<Anchor point="BOTTOM" relativeTo="$(parent)ComboboxTimeRange" relativePoint="TOP" offsetY="-12" />
+						</Control>
+						
+						<Label name="$(parent)OutputSettings" font="ZoFontWindowSubtitle" text="Output & scope settings">
+							<Anchor point="BOTTOM" relativeTo="$(parent)ComboboxFormat" relativePoint="TOP" offsetY="-12" />
+						</Label>
+						
+						<Control name="$(parent)ComboboxTotalPrice" inherits="ZO_ComboBox">
+							<Dimensions x="250" y="32" />
+							<Anchor point="BOTTOM" relativeTo="$(parent)OutputSettings" relativePoint="TOP" offsetY="-12" />
+						</Control>
+						
+						<Control name="$(parent)ComboboxMostSold" inherits="ZO_ComboBox">
+							<Dimensions x="250" y="32" />
+							<Anchor point="BOTTOM" relativeTo="$(parent)ComboboxTotalPrice" relativePoint="TOP" offsetY="-12" />
+						</Control>
+						
+						<Control name="$(parent)ComboboxHighestPriceSingleItem" inherits="ZO_ComboBox">
+							<Dimensions x="250" y="32" />
+							<Anchor point="BOTTOM" relativeTo="$(parent)ComboboxMostSold" relativePoint="TOP" offsetY="-12" />
+						</Control>
+						
+						<Label name="$(parent)SummarySettings" font="ZoFontWindowSubtitle" text="Summary settings">
+							<Anchor point="BOTTOM" relativeTo="$(parent)ComboboxHighestPriceSingleItem" relativePoint="TOP" offsetY="-12" />
+						</Label>
+						
+						<Control name="$(parent)Author" resizeToFitDescendents="false" hidden="false" virtual="false" movable="false" mouseEnabled="false">
+							<Dimensions x="274" y="20" />
+							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)" offsetY="12"/>
+							<Controls>
+								<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
+								
+								<Label name="$(parent)MadeBy" text="Made by @|cBB1111Red|rnasD" font="$(MEDIUM_FONT)|$(KB_14)|soft-shadow-thin" >
+									<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+								</Label>
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+				
+				
+				
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

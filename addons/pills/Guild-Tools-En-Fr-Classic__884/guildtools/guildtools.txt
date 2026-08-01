@@ -1,0 +1,26 @@
+## Title: |c00ff00Guild Tools|r
+## APIVersion: 100011
+## SavedVariables: guildtools_data guildtools_foobar
+
+
+lib\LibStub\LibStub.lua
+lib\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+
+
+qMess.lua
+timer.lua
+guildtools.lua
+
+lang/en.lua
+lang/fr.lua
+lang/de.lua
+locale.lua
+
+settings.lua
+ui.lua
+
+bindings.xml
+
+
+
+

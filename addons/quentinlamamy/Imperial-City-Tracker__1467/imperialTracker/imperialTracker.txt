@@ -1,0 +1,8 @@
+## Title: |c0095DDEllerendil|r Imperial City Tracker
+## Author: Quentin Lamamy
+## Description: Display a bar that track imperial treasure key part count
+## Version: 1.0.0
+## APIVersion: 100016
+
+imperialTracker.lua
+imperialTracker.xml

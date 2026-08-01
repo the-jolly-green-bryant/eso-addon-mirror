@@ -1,0 +1,151 @@
+v1.2.48
+update for 2026-06-29 RIP Signet&WW
+
+v1.2.47
+update for 2026-06-09 Class Mastery
+
+v1.2.46
+update for 2026-03-10 DK renewal
+
+v1.2.45
+update for 2025-12-03
+
+v1.2.44
+update for 2025-11-10
+
+v1.2.43
+update for 2025-10-27
+
+v1.2.42
+update for (about)2025-10-01 mistlanslations?
+
+v1.2.41
+update for 2025-08-20 Feast of Shadows
+
+v1.2.40
+update for 2025-06-03 wormcult1
+
+v1.2.39
+update for 2025-03-12
+
+v1.2.38
+update for 2024-12-18
+
+v1.2.37
+update for 2024-10-30?
+
+v1.2.36
+update for 2024-09-?? (display for infinite archive's new set gears at tooltip. I forgot updating)
+
+v1.2.35
+update for 2024-08-20 (piercing cold nerf)
+
+v1.2.34
+EsoExtractData update, bugfix?(setitem data update)
+
+v1.2.33
+update for 2024-06-17 (after Gold Road)
+
+v1.2.32
+add public value, method:
+  LMN.ALL_LANGUAGE_NAMES -- ALL_LANGUAGE_NAMES = {["langCode"] = "name", ... ,}
+  LMN.createTableOfLangCodeToYourValue(defaultValue, specificValues)
+
+v1.2.31
+Chinese
+
+v1.2.30
+I forgot what the update is ...may be it's just routinely update.
+
+v1.2.29
+update for 2024-03-13? sorry for being late
+
+v1.2.28
+update for 2024-02-13
+
+v1.2.27
+update for 2023-11-06
+
+v1.2.26
+update for 2023-08-22
+
+v1.2.25
+update for 2023-06-06(Necrom)
+
+v1.2.24
+update for 2023-04-23
+
+v1.2.23
+update for 2023-03-14
+
+v1.2.22
+update for 2023-01-26
+
+v1.2.21
+update for 2022-12-20
+update for 2022-11-15
+
+v1.2.20
+update for 2022-11-14
+
+v1.2.19
+update for 2022-11-03
+
+v1.2.18
+update for 2022-10-03
+
+v1.2.17
+update for 2022-09-20
+
+v1.2.16
+update for 2022-08-23
+
+v1.2.15
+update for 2022-07-06
+
+v1.2.14
+update for 2022-06-20
+
+v1.2.13
+Spanish
+
+v1.2.12
+update for High Isle
+
+v1.2.11
+update for 2022-04-11
+
+v1.2.10
+update for 2022-03-28
+
+v1.2.9
+update for 2022-03-14
+
+v1.2.8
+update for 2022-01-28
+
+v1.2.7
+update for 2021-12-07
+
+v1.2.6
+bugfix for NameLanguageNinja
+
+v1.2.5
+bugfix: skill description of Sithis'Touch
+bugfix: skill description of Rattlecage
+
+v1.2.4
+update for 2021-11-15
+
+v1.2.3
+update for 7.2.5 : Deadlands
+bugfix related set bonus
+
+v1.2.2
+add variables for version control
+
+v1.2.1
+Fix for Pollox's daily quest tracker
+
+v1.2.0
+Now you can choose language packs you need. Please choose languages what you need at in-game "ADD-ONS" menu.

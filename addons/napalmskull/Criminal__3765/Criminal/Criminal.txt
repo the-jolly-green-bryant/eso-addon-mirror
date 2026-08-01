@@ -1,0 +1,9 @@
+## Title: Criminal
+## APIVersion: 101037
+## Version: 1.0.1
+## AddOnVersion: 1
+## Author: napalmskull
+## SavedVariables: savedCriminal
+## DependsOn: LibAddonMenu-2.0>=34
+
+Criminal.lua

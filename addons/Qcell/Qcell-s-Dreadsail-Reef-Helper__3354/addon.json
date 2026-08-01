@@ -1,0 +1,74 @@
+{
+  "archive_path": "addons/Qcell/Qcell-s-Dreadsail-Reef-Helper__3354",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Qcell",
+  "canonical_id": "esoui:3354",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3354",
+  "deleted": false,
+  "directories": [
+    "QcellDreadsailReefHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3354/",
+  "fingerprint": "c89832922247f038fc605733483e043a2260e3703ec0bec5f97545b62e109770",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11409.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11410.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11408.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11483.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11411.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11412.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11413.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11414.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11415.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11416.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3354",
+  "source_url": "https://www.esoui.com/downloads/info3354-QcellsDreadsailReefHelper.html",
+  "stats": {
+    "downloads": 184353,
+    "favorites": 91,
+    "monthly_downloads": 1151
+  },
+  "title": "Qcell's Dreadsail Reef Helper",
+  "updated_at": 1710292633000,
+  "version": "2.0.3"
+}

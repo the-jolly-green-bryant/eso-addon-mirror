@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/sintacks/Wykkyd-s-War-Tools-1.5.2.1-with-Sintack-s-patch__474",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sintacks",
+  "canonical_id": "esoui:474",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Live",
+      "version": "1.0"
+    }
+  ],
+  "content_id": "esoui:474",
+  "deleted": false,
+  "directories": [
+    "wykkydsWarTools"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl474/",
+  "fingerprint": "ede3fc0f2fc4c7eed0e3ac97b425c0f3f96bdf36f526b64c36573168d36164f6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1393.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "474",
+  "source_url": "https://www.esoui.com/downloads/info474-WykkydsWarTools1.5.2.1withSintackspatch.html",
+  "stats": {
+    "downloads": 8971,
+    "favorites": 0,
+    "monthly_downloads": 11
+  },
+  "title": "Wykkyd's War Tools 1.5.2.1 with Sintack's patch",
+  "updated_at": 1400121608000,
+  "version": "1.5.2.1_sintacks"
+}

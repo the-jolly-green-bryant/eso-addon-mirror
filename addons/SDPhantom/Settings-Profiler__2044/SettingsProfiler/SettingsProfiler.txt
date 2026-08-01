@@ -1,0 +1,15 @@
+## APIVersion: 100033
+## Title: Settings Profiler
+## Version: 2.5
+## Author: SDPhantom
+## SavedVariables: SettingsProfiler_SaveData
+## Description: Lets you make in-game settings profiles that you can copy or link with multiple characters.
+
+SettingsProfiler.lua
+Migration.lua
+Options.lua
+Commands.lua
+
+Modules/Settings.lua
+Modules/Chat.lua
+Modules/Keybinds.lua

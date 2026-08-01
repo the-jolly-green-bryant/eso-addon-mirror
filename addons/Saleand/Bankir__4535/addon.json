@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Saleand/Bankir__4535",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Saleand",
+  "canonical_id": "esoui:4535",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4535",
+  "deleted": false,
+  "directories": [
+    "Bankir"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4535/",
+  "fingerprint": "e9d2180a18d967fa0b5f90e02321940df2ba1f0c3579daa06a0c64aa79456e2b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15845.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15846.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15847.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15848.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15849.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15850.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4535",
+  "source_url": "https://www.esoui.com/downloads/info4535-Bankir.html",
+  "stats": {
+    "downloads": 215,
+    "favorites": 2,
+    "monthly_downloads": 55
+  },
+  "title": "Bankir",
+  "updated_at": 1784054064000,
+  "version": "2.4"
+}

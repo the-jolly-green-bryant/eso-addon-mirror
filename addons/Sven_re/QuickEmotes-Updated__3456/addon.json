@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Sven_re/QuickEmotes-Updated__3456",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sven_re",
+  "canonical_id": "esoui:3456",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3456",
+  "deleted": false,
+  "directories": [
+    "QuickEmotes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3456/",
+  "fingerprint": "2f6701cc93f54c7b6ddcbc4a68dd2fe4088ce135115c89dafb1a4413bd6d2cbf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11808.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3456",
+  "source_url": "https://www.esoui.com/downloads/info3456-QuickEmotesUpdated.html",
+  "stats": {
+    "downloads": 6190,
+    "favorites": 20,
+    "monthly_downloads": 35
+  },
+  "title": "QuickEmotes Updated",
+  "updated_at": 1671011287000,
+  "version": "1.0.6"
+}

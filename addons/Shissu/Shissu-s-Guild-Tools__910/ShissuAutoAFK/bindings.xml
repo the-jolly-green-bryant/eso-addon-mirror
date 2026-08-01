@@ -1,0 +1,7 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+	  <Category name="|cAFD3FFShissu|ceeeeee's AddOns|r">
+	    <Action name="SAAFK_autoOnline"><Down>ShissuFramework._bindings.SAAFK_autoOnline_toogle()</Down></Action>
+    </Category>
+  </Layer>
+</Bindings>

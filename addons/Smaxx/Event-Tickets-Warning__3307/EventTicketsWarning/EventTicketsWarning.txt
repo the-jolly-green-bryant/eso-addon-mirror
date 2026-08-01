@@ -1,0 +1,16 @@
+## APIVersion: 101032 101033
+## Title: Event Tickets Warning
+## Description: By default the quest rewards screen will only warn you about losing character specific currency. With this addon it will warn you about losing Event Tickets, too!
+## Author: Smaxx
+## Version 1.0.1
+## License: Proprietary
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms
+
+EventTicketsWarning.lua

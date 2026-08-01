@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/redgabber/LootWall-Ultimate-2018__1988",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "redgabber",
+  "canonical_id": "esoui:1988",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:1988",
+  "deleted": false,
+  "directories": [
+    "LootWall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1988/",
+  "fingerprint": "93d9ce993cb03ae97a99997d7c79e919b4c0abc686ff7fc1ecc9e0bdbe4f4b52",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6723.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6716.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6718.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6720.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6719.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6717.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6721.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1988",
+  "source_url": "https://www.esoui.com/downloads/info1988-LootWallUltimate2018.html",
+  "stats": {
+    "downloads": 4455,
+    "favorites": 10,
+    "monthly_downloads": 11
+  },
+  "title": "LootWall Ultimate 2018",
+  "updated_at": 1530957580000,
+  "version": "1.0.8"
+}

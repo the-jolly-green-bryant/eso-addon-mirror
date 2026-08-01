@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c66ccffEZReport|r Bindings">
+			<Action name="EZREPORT_OPEN">
+				<Up>EZReport.ShowMain()</Up>
+			</Action>
+			<Action name="EZREPORT_TARGET">
+				<Up>EZReport.ReportTarget()</Up>
+			</Action>
+			<Action name="EZREPORT_TARGET_HISTORY">
+				<Up>EZReport.TargetHistory()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

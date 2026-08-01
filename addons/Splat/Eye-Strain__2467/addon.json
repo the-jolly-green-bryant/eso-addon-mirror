@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/Splat/Eye-Strain__2467",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Splat",
+  "canonical_id": "esoui:2467",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2467",
+  "deleted": false,
+  "directories": [
+    "EyeStrain"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2467/",
+  "fingerprint": "89fba6d67edfd7b4a2a48983f9c700ea25f137fecdcab7ba8897ab4354eaa777",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8410.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2467",
+  "source_url": "https://www.esoui.com/downloads/info2467-EyeStrain.html",
+  "stats": {
+    "downloads": 6215,
+    "favorites": 9,
+    "monthly_downloads": 39
+  },
+  "title": "Eye Strain",
+  "updated_at": 1629723117000,
+  "version": "1.1.1"
+}

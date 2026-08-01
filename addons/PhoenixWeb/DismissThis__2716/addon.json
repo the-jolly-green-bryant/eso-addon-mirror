@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/PhoenixWeb/DismissThis__2716",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "PhoenixWeb",
+  "canonical_id": "esoui:2716",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2716",
+  "deleted": false,
+  "directories": [
+    "DismissThis"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2716/",
+  "fingerprint": "43b76e8e8210bd7307379452dfca35d1dfe59a72952ef49dde930a551c4e0adc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9301.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2716",
+  "source_url": "https://www.esoui.com/downloads/info2716-DismissThis.html",
+  "stats": {
+    "downloads": 4848,
+    "favorites": 6,
+    "monthly_downloads": 6
+  },
+  "title": "DismissThis",
+  "updated_at": 1608903130000,
+  "version": "v1.4"
+}

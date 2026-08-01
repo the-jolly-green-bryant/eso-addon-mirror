@@ -1,0 +1,24 @@
+## Title: ResourceRadar
+## Author: Shinni
+## Description: Displays and highlights nearby crafting material in the world and on the compass.
+## Version: 1.0.9
+## AddOnVersion: 10009
+## APIVersion: 101047
+## DependsOn: LibAddonMenu-2.0 NodeDetection
+## SavedVariables: ResourceRadar_SavedVars
+
+Libs/LibDAU/LibDAU.lua
+
+Main.lua
+Textures/Textures.lua
+
+Localization/UI/default.lua
+Localization/UI/$(language).lua
+
+Settings/Settings.lua
+Settings/LAMpanel.lua
+
+NodeDisplay/MapPins.lua
+NodeDisplay/CompassPins.lua
+NodeDisplay/FloatingMarkers.lua
+

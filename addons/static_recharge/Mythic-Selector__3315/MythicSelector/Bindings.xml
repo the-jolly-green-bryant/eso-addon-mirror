@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cFF8C1AMythic Selector|r ">
+			<Action name="MS_HOTKEY_TOGGLE">
+				<Down>MS_HOTKEY_TOGGLE()</Down>
+			</Action>
+			<Action name="MS_HOTKEY_RING">
+				<Down>MS_HOTKEY_RING()</Down>
+			</Action>
+      <Action name="MS_HOTKEY_NECKLACE">
+				<Down>MS_HOTKEY_NECKLACE()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

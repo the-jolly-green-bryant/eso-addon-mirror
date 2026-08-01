@@ -1,0 +1,104 @@
+<GuiXml>
+  <Controls>
+    <Control name="AUI_Player_Buff_Control" mouseEnabled="false" hidden="false" alpha="0" virtual="true" tier="HIGH">
+      <Controls>
+        <Texture name="$(parent)_Frame" textureFile="EsoUI/Art/ActionBar/abilityFrame64_up.dds" level="110">
+          <AnchorFill />
+          <Controls>
+            <Texture name="$(parent)_Overlay" textureFile="AUI/images/buffs/aui/buff_frame_overlay.dds" alpha="0.5" tier="HIGH" level="100">
+              <AnchorFill />
+            </Texture>
+            <Texture name="$(grandparent)_Icon" tier="HIGH" level="100">
+              <Anchor point="TOPLEFT" offsetX="1" offsetY="1"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="-1" offsetY="-1"/>
+              <Controls>
+                <Texture name="$(parent)_BG" tier="MEDIUM" level="100">
+                  <AnchorFill />
+                  <OnInitialized>
+                    self:SetColor(0, 0, 0, 0.5)
+                  </OnInitialized>
+                </Texture>
+              </Controls>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Label name="$(parent)_Text" />
+      </Controls>
+    </Control>
+    <Control name="AUI_Player_Debuff_Control" mouseEnabled="false" hidden="false" alpha="0" virtual="true" tier="HIGH">
+      <Controls>
+        <Texture name="$(parent)_Frame" textureFile="EsoUI/Art/ActionBar/abilityFrame64_up.dds" level="110">
+          <AnchorFill />
+          <Controls>
+            <Texture name="$(parent)_Overlay" textureFile="AUI/images/buffs/aui/debuff_frame_overlay.dds" alpha="0.5" tier="HIGH" level="100">
+              <AnchorFill />
+            </Texture>
+            <Texture name="$(grandparent)_Icon" tier="HIGH" level="100">
+              <Anchor point="TOPLEFT" offsetX="1" offsetY="1"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="-1" offsetY="-1"/>
+              <Controls>
+                <Texture name="$(parent)_BG" tier="MEDIUM" level="100">
+                  <AnchorFill />
+                  <OnInitialized>
+                    self:SetColor(0, 0, 0, 0.5)
+                  </OnInitialized>
+                </Texture>
+              </Controls>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Label name="$(parent)_Text" />
+      </Controls>
+    </Control>
+    <Control name="AUI_Target_Buff_Control" mouseEnabled="false" hidden="false" alpha="0" virtual="true" tier="HIGH">
+      <Controls>
+        <Texture name="$(parent)_Frame" textureFile="EsoUI/Art/ActionBar/abilityFrame64_up.dds" level="110">
+          <AnchorFill />
+          <Controls>
+            <Texture name="$(parent)_Overlay" textureFile="AUI/images/buffs/aui/buff_frame_overlay.dds" alpha="0.5" tier="HIGH" level="100">
+              <AnchorFill />
+            </Texture>
+            <Texture name="$(grandparent)_Icon" tier="HIGH" level="100">
+              <Anchor point="TOPLEFT" offsetX="1" offsetY="1"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="-1" offsetY="-1"/>
+              <Controls>
+                <Texture name="$(parent)_BG" tier="MEDIUM" level="100">
+                  <AnchorFill />
+                  <OnInitialized>
+                    self:SetColor(0, 0, 0, 0.5)
+                  </OnInitialized>
+                </Texture>
+              </Controls>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Label name="$(parent)_Text" />
+      </Controls>
+    </Control>
+    <Control name="AUI_Target_Debuff_Control" mouseEnabled="false" hidden="false" alpha="0" virtual="true" tier="HIGH">
+      <Controls>
+        <Texture name="$(parent)_Frame" textureFile="EsoUI/Art/ActionBar/abilityFrame64_up.dds" level="110">
+          <AnchorFill />
+          <Controls>
+            <Texture name="$(parent)_Overlay" textureFile="AUI/images/buffs/aui/debuff_frame_overlay.dds" alpha="0.5" tier="HIGH" level="100">
+              <AnchorFill />
+            </Texture>
+            <Texture name="$(grandparent)_Icon" tier="HIGH" level="100">
+              <Anchor point="TOPLEFT" offsetX="1" offsetY="1"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="-1" offsetY="-1"/>
+              <Controls>
+                <Texture name="$(parent)_BG" tier="MEDIUM" level="100">
+                  <AnchorFill />
+                  <OnInitialized>
+                    self:SetColor(0, 0, 0, 0.5)
+                  </OnInitialized>
+                </Texture>
+              </Controls>
+            </Texture>
+          </Controls>
+        </Texture>
+        <Label name="$(parent)_Text" />
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

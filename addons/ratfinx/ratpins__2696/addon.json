@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ratfinx/ratpins__2696",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ratfinx",
+  "canonical_id": "esoui:2696",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2696",
+  "deleted": false,
+  "directories": [
+    "ratpins"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2696/",
+  "fingerprint": "7d8988ad5150ef76c6d1221acaadcca7d429cc50c4809ebd365684b24ce46a2c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9128.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2696",
+  "source_url": "https://www.esoui.com/downloads/info2696-ratpins.html",
+  "stats": {
+    "downloads": 2345,
+    "favorites": 4,
+    "monthly_downloads": 11
+  },
+  "title": "ratpins",
+  "updated_at": 1593827905000,
+  "version": "1"
+}

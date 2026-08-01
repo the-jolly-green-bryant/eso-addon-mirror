@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Sir-Quackberry/USPF---Greymoor-Patch__2761",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sir Quackberry",
+  "canonical_id": "esoui:2761",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2761",
+  "deleted": false,
+  "directories": [
+    "USPF"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2761/",
+  "fingerprint": "d0cad12f2b8857a11a69c0396495378432a42b545432504f28d20b7bd059ab05",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2761",
+  "source_url": "https://www.esoui.com/downloads/info2761-USPF-GreymoorPatch.html",
+  "stats": {
+    "downloads": 13688,
+    "favorites": 23,
+    "monthly_downloads": 108
+  },
+  "title": "USPF - Greymoor Patch",
+  "updated_at": 1598726198000,
+  "version": "v1.0.0"
+}

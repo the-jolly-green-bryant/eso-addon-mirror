@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/Rhyono/Achievement-Finder__1607",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rhyono",
+  "canonical_id": "esoui:1607",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1607",
+  "deleted": false,
+  "directories": [
+    "AchievementFinder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1607/",
+  "fingerprint": "c8da7c098d6c9f1f08a4984fd5d5012d6d2a7719b2d4df62c30b095499accc81",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5269.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5268.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1607",
+  "source_url": "https://www.esoui.com/downloads/info1607-AchievementFinder.html",
+  "stats": {
+    "downloads": 30482,
+    "favorites": 51,
+    "monthly_downloads": 52
+  },
+  "title": "Achievement Finder",
+  "updated_at": 1632611312000,
+  "version": "1.23"
+}

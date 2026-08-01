@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/SDPhantom/Settings-Profiler__2044",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SDPhantom",
+  "canonical_id": "esoui:2044",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2044",
+  "deleted": false,
+  "directories": [
+    "SettingsProfiler"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2044/",
+  "fingerprint": "7a5ad78452835085c73fefc059523136a5e8b515065d4eda84c49be76598e276",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2044",
+  "source_url": "https://www.esoui.com/downloads/info2044-SettingsProfiler.html",
+  "stats": {
+    "downloads": 23453,
+    "favorites": 34,
+    "monthly_downloads": 122
+  },
+  "title": "Settings Profiler",
+  "updated_at": 1604213084000,
+  "version": "2.5"
+}

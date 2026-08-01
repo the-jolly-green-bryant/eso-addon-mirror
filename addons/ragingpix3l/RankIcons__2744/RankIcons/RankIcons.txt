@@ -1,0 +1,14 @@
+## Title: RankIcons
+## Author: RagingPix3l
+## APIVersion: 100031 
+## Description: Show ranks icons in guild roster and allows to filter by rank
+## Version: 0.05
+
+RankIcons.lua
+
+; Disclaimer
+;
+; Terms:
+; https://account.elderscrollsonline.com/add-on-terms
+
+

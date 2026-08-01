@@ -1,0 +1,67 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="GoldPerHourIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="320" y="80" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER"/>
+      <OnMoveStop>
+        GoldPerHour.OnIndicatorMoveStop()
+      </OnMoveStop>
+
+      <Controls>
+        <Backdrop name="$(parent)bg" inherits="ZO_DefaultBackdrop"></Backdrop>
+          <Label name="$(parent)TotalGold" height="15" font="ZoFontGameLargeBold" inheritAlpha="true" color="f7be39"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="RIGHT" text="Gold This Session : 0">
+            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+          </Label>
+          <Label name="$(parent)GoldPerHour" height="15" font="ZoFontGameLargeBold" inheritAlpha="true" color="f7be39"
+              wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="RIGHT" text="Test!">
+            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="25"/>
+          </Label>
+          <Label name="$(parent)RunningIndicator" height="10" font="ZoFontGameLargeBold" inheritAlpha="true" color="f7be39"
+              wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="Running...">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+          </Label>
+          <Button name="$(parent)Start" alpha="1"  topmost="true" text="Start" inherits="ZO_DefaultButton">
+            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetY="-28" offsetX='38' />
+            <Dimensions x="100" y="28" />
+            <OnClicked>
+              startSession()
+            </OnClicked>
+          </Button>
+          <Button name="$(parent)Stop" alpha="1"  topmost="true" text="Stop" inherits="ZO_DefaultButton">
+            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-28" offsetX = "38" />
+            <Dimensions x="100" y="28" />
+            <OnClicked>
+              endSession()
+            </OnClicked>
+          </Button>
+          <Button name="$(parent)Pause" alpha="1"  topmost="true" text="Pause" inherits="ZO_DefaultButton">
+            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-28" offsetX = "-38" />
+            <Dimensions x="100" y="28" />
+            <OnClicked>
+              TogglePause()
+            </OnClicked>
+          </Button>
+          <Button name="$(parent)Reset" alpha="1"  topmost="true" text="Reset" inherits="ZO_DefaultButton">
+            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-28" offsetX='-38' />
+            <Dimensions x="100" y="28" />
+            <OnClicked>
+              clearGoldPerHour()
+            </OnClicked>
+          </Button>
+          <Button name="$(parent)_toggle" inherits="ZO_ButtonBehaviorClickSound" >
+            <Dimensions x="30" y="30" />
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="-5"/>
+            <Textures
+                normal    ="\esoui\art\buttons\plus_up.dds"
+                pressed    ="\esoui\art\buttons\plus_over.dds"
+                mouseOver  ="\esoui\art\buttons\plus_down.dds"
+             />
+             <OnClicked>
+               toggleUI()
+             </OnClicked>
+          </Button>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

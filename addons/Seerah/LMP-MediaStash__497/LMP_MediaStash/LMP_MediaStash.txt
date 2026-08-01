@@ -1,0 +1,12 @@
+## APIVersion: 100010
+## Title: LMP MediaStash
+## Author: Seerah
+## Version: 1.1
+## Description: A stash of media for LibMediaProvider.
+## OptionalDependsOn: LibMediaProvider-1.0
+
+libs\LibStub\LibStub.lua
+libs\LibMediaProvider-1.0\LibMediaProvider-1.0.lua
+
+MediaStash.lua
+..\LMP_MediaStash_MyStash\MyStash.lua

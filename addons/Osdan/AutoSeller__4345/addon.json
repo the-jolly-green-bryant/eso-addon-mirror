@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Osdan/AutoSeller__4345",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Osdan",
+  "canonical_id": "esoui:4345",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4345",
+  "deleted": false,
+  "directories": [
+    "AutoSeller"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4345/",
+  "fingerprint": "8abf9e8432fdd6e9e2f4d314361bcd0c045a8ccbf2f1fc7fa83049bf32766afe",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15036.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15035.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4345",
+  "source_url": "https://www.esoui.com/downloads/info4345-AutoSeller.html",
+  "stats": {
+    "downloads": 663,
+    "favorites": 0,
+    "monthly_downloads": 31
+  },
+  "title": "AutoSeller",
+  "updated_at": 1767895367000,
+  "version": "0.2"
+}

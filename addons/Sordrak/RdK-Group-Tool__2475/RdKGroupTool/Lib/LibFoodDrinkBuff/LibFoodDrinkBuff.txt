@@ -1,0 +1,24 @@
+## APIVersion: 101031
+## Title: LibFoodDrinkBuff
+## Version: 18
+## AddOnVersion: 18
+## IsLibrary: true
+## Author: Scootworks, Baertram
+## SavedVariables: LibFoodDrinkBuff_Save
+## OptionalDependsOn: LibAsync>=20302 LibChatMessage>=100 LibDebugLogger>=217
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Constants.lua
+StartUp.lua
+
+lang\en.lua
+lang\$(language).lua
+
+Data.lua
+API.lua
+Collector.lua

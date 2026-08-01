@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/scorpius2k1/Combat-Pet-Cooldown__3039",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "scorpius2k1",
+  "canonical_id": "esoui:3039",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3039",
+  "deleted": false,
+  "directories": [
+    "CombatPetCooldown"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3039/",
+  "fingerprint": "4e2dd6dd2c59bc5192323e19789a61f14e4d7daec8c8ec88152d3e20be1cb45c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10214.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3039",
+  "source_url": "https://www.esoui.com/downloads/info3039-CombatPetCooldown.html",
+  "stats": {
+    "downloads": 2797,
+    "favorites": 4,
+    "monthly_downloads": 12
+  },
+  "title": "Combat Pet Cooldown",
+  "updated_at": 1622558618000,
+  "version": "1.2"
+}

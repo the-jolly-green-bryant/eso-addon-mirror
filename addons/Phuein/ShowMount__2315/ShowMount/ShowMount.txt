@@ -1,0 +1,15 @@
+## APIVersion: 100035
+## Title: ShowMount
+## Version: 1.28
+## Author: phuein & Sponsored by ShadowOFMen from Tamriel Crown Exchange
+## Description: Quickly toggle between two selected mounts with a chat /cmd or hotkey.
+## SavedVariables: ShowMountSavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+Languages\en.lua
+Languages\$(language).lua
+
+Bindings.xml
+
+ShowMount.lua
+Settings.lua

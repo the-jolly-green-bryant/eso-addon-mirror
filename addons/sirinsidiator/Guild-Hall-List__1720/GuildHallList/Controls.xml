@@ -1,0 +1,31 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <Label name="GuildHallListContainerRowTemplate" horizontalAlignment="CENTER" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" virtual="true">
+            <Controls>
+                <Texture name="$(parent)Icon">
+                    <Dimensions x="24" y="24" />
+                    <Anchor point="LEFT" relativeTo="RIGHT" />
+                </Texture>
+                <Button name="$(parent)Button" mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="RIGHT" relativeTo="LEFT" offsetX="3" />
+                    <Textures normal="EsoUI/Art/Housing/Keyboard/furniture_tabicon_place_up.dds" pressed="EsoUI/Art/Housing/Keyboard/furniture_tabicon_place_down.dds" mouseOver="EsoUI/Art/Housing/Keyboard/furniture_tabicon_place_over.dds" />
+                </Button>
+            </Controls>
+        </Label>
+        <Control name="GuildHallListContainer">
+            <Anchor point="TOP" relativeTo="ZO_GuildHomeTraderViewWeeklyBids" relativePoint="BOTTOM" offsetY="10" />
+            <Dimensions x="200" />
+            <Controls>
+                <Label name="$(parent)Header" horizontalAlignment="CENTER" font="ZoFontHeader2" modifyTextType="UPPERCASE" text="Guild Hall">
+                    <Anchor point="TOPLEFT" />
+                    <Anchor point="TOPRIGHT" />
+                </Label>
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" offsetX="16" offsetY="200" />
+                </Control>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

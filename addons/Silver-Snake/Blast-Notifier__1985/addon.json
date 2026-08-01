@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Silver-Snake/Blast-Notifier__1985",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Silver-Snake",
+  "canonical_id": "esoui:1985",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    }
+  ],
+  "content_id": "esoui:1985",
+  "deleted": false,
+  "directories": [
+    "BlastNotifier"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1985/",
+  "fingerprint": "ae25efe7cd4d0d68073c13cde22912c71b5e3d501d29edefd75f7865121f32fd",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1985",
+  "source_url": "https://www.esoui.com/downloads/info1985-BlastNotifier.html",
+  "stats": {
+    "downloads": 7925,
+    "favorites": 1,
+    "monthly_downloads": 11
+  },
+  "title": "Blast Notifier",
+  "updated_at": 1524865515000,
+  "version": "1.1"
+}

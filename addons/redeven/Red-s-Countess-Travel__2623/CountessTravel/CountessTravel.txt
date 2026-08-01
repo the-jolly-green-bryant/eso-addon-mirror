@@ -1,0 +1,11 @@
+## APIVersion: 100030
+## Title: Red's Countess Travel
+## Version: 1.1.0
+## AddOnVersion: 4
+## Author: Redeven
+## Description: Automatically filters Tip Board quests, and teleports player to nearest wayshrine for the Covetous Countess quest steps
+## SavedVariables: CountessTravelSavedVariables
+## DependsOn: LibAddonMenu-2.0>=28
+
+CountessTravel.lua
+Settings.lua

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/qulilalti/RU-Patch-for-Asylum-Tracker__2636",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "qulilalti",
+  "canonical_id": "esoui:2636",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2636",
+  "deleted": false,
+  "directories": [
+    "AsylumTrackerRUPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2636/",
+  "fingerprint": "01eee765083b645205815283402a12d4307e0c8678ddae105de97f7de4a9163f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8981.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2636",
+  "source_url": "https://www.esoui.com/downloads/info2636-RUPatchforAsylumTracker.html",
+  "stats": {
+    "downloads": 9770,
+    "favorites": 0,
+    "monthly_downloads": 72
+  },
+  "title": "RU Patch for Asylum Tracker",
+  "updated_at": 1590619463000,
+  "version": "1.0"
+}

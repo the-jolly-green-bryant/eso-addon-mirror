@@ -1,0 +1,23 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+; Change Log is in the CHANGELOG.MD file, with preferred/manual install/update instructions
+
+## Title: |c2046e5HodorReflexesIconExtension|r
+## Version: 1.4.1
+## Author: |c2046e5sshogrin|r 
+## APIVersion: 101046 101047
+## AddOnVersion: 104001
+## DependsOn: HodorReflexes LibAddonMenu-2.0>=30 LibCustomNames LibCustomIcons
+## SavedVariables: HodorReflexesIconExtensionSavedVariables
+## OptionalDependsOn: OdySupportIcons LibSlashCommander>=7 LibCustomNames LibCustomIcons
+## Description: Changes UI and icons to be more |c3200ccc|r|c640099o|r|c960066l|r|cc80033o|r|cfa0000r|r|cd85300f|r|cb2a700u|r|c8bfa00l|r to use with "Hodor Reflexes"
+
+HodorReflexesIconExtension.lua
+esouiart/esouiart.lua
+
+
+
+

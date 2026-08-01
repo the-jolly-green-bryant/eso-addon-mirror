@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/patrick_smyth/Traveller---Fast-Travel-Redesigned__1744",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "patrick_smyth",
+  "canonical_id": "esoui:1744",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:1744",
+  "deleted": false,
+  "directories": [
+    "Traveller"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1744/",
+  "fingerprint": "e5eadda6e2c99a95dafdc6ce74e3e7392ed9e411bcb832367dbd28a90119e275",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5757.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1744",
+  "source_url": "https://www.esoui.com/downloads/info1744-Traveller-FastTravelRedesigned.html",
+  "stats": {
+    "downloads": 5099,
+    "favorites": 2,
+    "monthly_downloads": 16
+  },
+  "title": "Traveller - Fast Travel Redesigned",
+  "updated_at": 1498409614000,
+  "version": "0.1.0"
+}

@@ -1,0 +1,13 @@
+## Title: MudcrabTracker
+## Author: @Snay
+## APIVersion: 101049
+## SavedVariables: MudcrabTracker_db
+## Version: 0.1.4
+## Description: Tracks mudcrab kills and logs loot obtained from them.
+## OptionalDependsOn: LibPrice
+
+Init.lua
+LootLogger.lua
+MudcrabTracker.lua
+MudcrabTracker.xml
+

@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="General">
+ 		<Category name="User Interface">
+			<Action name="OMNISTATS_TOGGLE">
+				<Down>OmniStatsToggleWindow()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

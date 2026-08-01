@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/samleegray/Sami-s-Trial-Helper__4604",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "samleegray",
+  "canonical_id": "esoui:4604",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4604",
+  "deleted": false,
+  "directories": [
+    "SamisTrialHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4604/",
+  "fingerprint": "d59d1355c9198fcbfbcf88a74aa2713590711e98def294749310a03f15233a1f",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4604",
+  "source_url": "https://www.esoui.com/downloads/info4604-SamisTrialHelper.html",
+  "stats": {
+    "downloads": 100,
+    "favorites": 0,
+    "monthly_downloads": 38
+  },
+  "title": "Sami's Trial Helper",
+  "updated_at": 1780298926000,
+  "version": "0.0.1"
+}

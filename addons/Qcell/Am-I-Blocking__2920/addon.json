@@ -1,0 +1,54 @@
+{
+  "archive_path": "addons/Qcell/Am-I-Blocking__2920",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Qcell",
+  "canonical_id": "esoui:2920",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2920",
+  "deleted": false,
+  "directories": [
+    "AmIBlocking"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2920/",
+  "fingerprint": "531fe1774e51795d23e94d541b4ef4b538e6fc7b18783f8d1efed040e1ea7a59",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9858.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9861.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2920",
+  "source_url": "https://www.esoui.com/downloads/info2920-AmIBlocking.html",
+  "stats": {
+    "downloads": 31538,
+    "favorites": 34,
+    "monthly_downloads": 479
+  },
+  "title": "Am I Blocking?",
+  "updated_at": 1646102254000,
+  "version": "2.7"
+}

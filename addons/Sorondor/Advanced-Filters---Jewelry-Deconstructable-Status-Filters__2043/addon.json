@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Sorondor/Advanced-Filters---Jewelry-Deconstructable-Status-Filters__2043",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sorondor",
+  "canonical_id": "esoui:2043",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2043",
+  "deleted": false,
+  "directories": [
+    "AF_JewelryDeconStatusFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2043/",
+  "fingerprint": "d9a066a6ff60f852bdc8547c3bf083aaad1dd4c29129104b12a783a0e7a43ff3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6887.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2043",
+  "source_url": "https://www.esoui.com/downloads/info2043-AdvancedFilters-JewelryDeconstructableStatusFilters.html",
+  "stats": {
+    "downloads": 15959,
+    "favorites": 13,
+    "monthly_downloads": 31
+  },
+  "title": "Advanced Filters - Jewelry Deconstructable Status Filters",
+  "updated_at": 1529215178000,
+  "version": "1.0"
+}

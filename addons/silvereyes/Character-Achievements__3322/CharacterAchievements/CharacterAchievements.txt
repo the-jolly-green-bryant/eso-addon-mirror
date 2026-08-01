@@ -1,0 +1,14 @@
+## Title: Character Achievements
+## Author: silvereyes
+## Description: Displays achievements backed up with LibAchievementsArchive as character-specific achievements with dates in the quest journal.
+## Version: 1.0.2
+## APIVersion: 101033
+## DependsOn: LibAchievementsArchive>=4
+## OptionalDependsOn: LibChatMessage
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+CharacterAchievements.lua
+
+classes/Data.lua
+classes/Utility.lua

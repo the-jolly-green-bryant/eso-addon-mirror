@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="ReloadUI">
+			<Action name="RUI_RELOAD_UI">
+				<Down>ReloadUI()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

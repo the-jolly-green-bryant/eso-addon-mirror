@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/NTak/NTak-Loot-n-Steal__2349",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "NTak",
+  "canonical_id": "esoui:2349",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2349",
+  "deleted": false,
+  "directories": [
+    "NTakLootSteal"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2349/",
+  "fingerprint": "51a5bd2d3279f1deca20b1d733513d28bbf4423f80b42884b06986355aaecc00",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8521.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8028.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8084.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8520.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8058.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8029.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8030.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2349",
+  "source_url": "https://www.esoui.com/downloads/info2349-NTakLootnSteal.html",
+  "stats": {
+    "downloads": 24723,
+    "favorites": 73,
+    "monthly_downloads": 48
+  },
+  "title": "NTak Loot'n'Steal",
+  "updated_at": 1714237002000,
+  "version": "1.8.14"
+}

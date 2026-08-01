@@ -1,0 +1,14 @@
+V1.0.4 -- 2019/05/17
+- Elsweyr API bump.
+- Made LibAddonMenu2 an external dependency so you need to install LibAddOnMenu2 if you haven't already.
+- Simplified the friend setting to no longer use a section for each friend.
+- No longer showing when interacting with inventory etc.
+
+V1.0.2 -- 2019/03/03
+- Bug fix on capitalization of Alliance causing issues when loading saved variables.
+
+V1.0.1 -- 2019/03/03
+- Moved Notify options above all the friends, and small bug fix to seconds since logoff.
+
+V1.0.0 -- 2019/03/01
+- First version.

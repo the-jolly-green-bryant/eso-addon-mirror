@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/sirinsidiator/LibGroupBroadcast__1337",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:1337",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:1337",
+  "deleted": false,
+  "directories": [
+    "LibGroupBroadcast"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1337/",
+  "fingerprint": "ed8ffadbaba03776cdc9a0e043c8479d624539199cc999432b739a2f56f36dfa",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1337",
+  "source_url": "https://www.esoui.com/downloads/info1337-LibGroupBroadcast.html",
+  "stats": {
+    "downloads": 415728,
+    "favorites": 209,
+    "monthly_downloads": 4044
+  },
+  "title": "LibGroupBroadcast",
+  "updated_at": 1771694468000,
+  "version": "2.0.0"
+}

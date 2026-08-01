@@ -1,0 +1,94 @@
+{
+  "archive_path": "addons/P5ych3/Gold-Ledger__3566",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "P5ych3",
+  "canonical_id": "esoui:3566",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3566",
+  "deleted": false,
+  "directories": [
+    "GoldLedger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3566/",
+  "fingerprint": "44bf1bf22064a4a75258290be747ae4e2d832bd9680a8b62e574f5719ec82376",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12188.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12189.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12191.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12190.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12102.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15578.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3566",
+  "source_url": "https://www.esoui.com/downloads/info3566-GoldLedger.html",
+  "stats": {
+    "downloads": 11972,
+    "favorites": 22,
+    "monthly_downloads": 84
+  },
+  "title": "Gold Ledger",
+  "updated_at": 1781066654000,
+  "version": "2.3.0"
+}

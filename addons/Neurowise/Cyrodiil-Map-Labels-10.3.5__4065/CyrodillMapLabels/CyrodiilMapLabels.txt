@@ -1,0 +1,8 @@
+## Title: Cyrodiil Map Labels
+## Author: Neurowise
+## Version: 1.0
+## APIVersion: 101039
+## Description: Adds location labels to the Cyrodiil main map across all campaigns.
+
+CyrodiilMapLabels.lua
+CyrodiilMapLabelsData.lua

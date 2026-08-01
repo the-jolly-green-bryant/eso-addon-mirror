@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/SDPhantom/Auto-Daily-Rewards__2041",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SDPhantom",
+  "canonical_id": "esoui:2041",
+  "category_id": "27",
+  "compatibility": [],
+  "content_id": "esoui:2041",
+  "deleted": false,
+  "directories": [
+    "AutoDailyRewards"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2041/",
+  "fingerprint": "1aa6b87b5b4768a94bb0fa88a9cc54d254055ad9e55b3bb0804ef6a0d13132ec",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2041",
+  "source_url": "https://www.esoui.com/downloads/info2041-AutoDailyRewards.html",
+  "stats": {
+    "downloads": 24693,
+    "favorites": 40,
+    "monthly_downloads": 96
+  },
+  "title": "Auto Daily Rewards",
+  "updated_at": 1534376899000,
+  "version": "1.2"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/SugaComa/EyeOnKeep-tested-on-console-as-working__4284",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SugaComa",
+  "canonical_id": "esoui:4284",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4284",
+  "deleted": false,
+  "directories": [
+    "EyeOnKeep"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4284/",
+  "fingerprint": "c89d0dc87e3cc7cdf0bb200694d09f14bd7cd1ab88998164da44149443d08b3b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4284",
+  "source_url": "https://www.esoui.com/downloads/info4284-EyeOnKeeptestedonconsoleasworking.html",
+  "stats": {
+    "downloads": 258,
+    "favorites": 0,
+    "monthly_downloads": 15
+  },
+  "title": "EyeOnKeep (tested on console as working)",
+  "updated_at": 1761420017000,
+  "version": "1.0"
+}

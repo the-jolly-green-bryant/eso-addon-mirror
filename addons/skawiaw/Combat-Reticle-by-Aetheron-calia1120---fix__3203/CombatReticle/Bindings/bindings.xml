@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="SI_KEYBINDINGS_CATEGORY_USER_INTERFACE">
+      <Action name="RETICLE_BRIGHTNESS_INCREASE">
+        <Down>CombatReticleBrightnessIncrease()</Down>
+      </Action>
+      <Action name="RETICLE_BRIGHTNESS_DECREASE">
+        <Down>CombatReticleBrightnessDecrease()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

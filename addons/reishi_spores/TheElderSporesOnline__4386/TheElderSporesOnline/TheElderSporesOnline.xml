@@ -1,0 +1,134 @@
+<GuiXml>
+    <Controls>
+        <!-- ============================================ -->
+        <!-- MINIMIZED BUTTON - Always visible toggle -->
+        <!-- ============================================ -->
+        <TopLevelControl name="TESO_MinButton" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="false">
+            <Dimensions x="75" y="30"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+            <Controls>
+                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" mouseEnabled="false">
+                    <Anchor point="TOPLEFT"/>
+                    <Anchor point="BOTTOMRIGHT"/>
+                </Backdrop>
+                <Label name="$(parent)_Label" font="ZoFontGameBold" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="SPORES" mouseEnabled="false">
+                    <Anchor point="TOPLEFT"/>
+                    <Anchor point="BOTTOMRIGHT"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- ============================================ -->
+        <!-- MAIN WINDOW - Export/Import Interface -->
+        <!-- ============================================ -->
+        <TopLevelControl name="TESO_MainWindow" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="700" y="900"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+            <Controls>
+                <!-- Window Background -->
+                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+                    <Anchor point="TOPLEFT"/>
+                    <Anchor point="BOTTOMRIGHT"/>
+                </Backdrop>
+                
+                <!-- Title Bar -->
+                <Label name="$(parent)_Title" font="ZoFontWinH2" horizontalAlignment="CENTER" text="The Elder Spores Online">
+                    <Dimensions x="660" y="35"/>
+                    <Anchor point="TOP" offsetX="0" offsetY="20"/>
+                </Label>
+                
+                <!-- Subtitle -->
+                <Label name="$(parent)_Subtitle" font="ZoFontGame" horizontalAlignment="CENTER" color="888888">
+                    <Dimensions x="660" y="20"/>
+                    <Anchor point="TOP" offsetY="55"/>
+                </Label>
+                
+                <!-- Lock Position Button -->
+                <Button name="$(parent)_LockBtn" mouseEnabled="true">
+                    <Dimensions x="80" y="30"/>
+                    <Anchor point="TOPLEFT" offsetX="12" offsetY="12"/>
+                    <OnClicked>
+                        TheElderSporesOnline:TogglePositionLock()
+                    </OnClicked>
+                </Button>
+                
+                <!-- Close Button -->
+                <Button name="$(parent)_CloseBtn" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-8" offsetY="8"/>
+                    <OnClicked>
+                        TheElderSporesOnline:MinimizeWindow()
+                    </OnClicked>
+                </Button>
+                
+                <!-- ============================================ -->
+                <!-- TAB BUTTONS -->
+                <!-- ============================================ -->
+                <Control name="$(parent)_TabBar">
+                    <Dimensions x="660" y="40"/>
+                    <Anchor point="TOP" offsetY="90"/>
+                </Control>
+                
+                <!-- ============================================ -->
+                <!-- EXPORT TAB CONTENT -->
+                <!-- ============================================ -->
+                <Control name="$(parent)_ExportTab" hidden="false">
+                    <Dimensions x="620" y="440"/>
+                    <Anchor point="TOP" offsetY="140"/>
+                    <Controls>
+                        <!-- Export Instructions -->
+                        <Label name="$(parent)_Instructions" font="ZoFontGame" horizontalAlignment="CENTER" wrapMode="ELLIPSIS">
+                            <Dimensions x="640" y="40"/>
+                            <Anchor point="TOP" offsetX="0" offsetY="5"/>
+                        </Label>
+                        
+                        <!-- Export Build Button -->
+                        <Button name="$(parent)_ExportBtn">
+                            <Dimensions x="250" y="40"/>
+                            <Anchor point="TOP" offsetY="60"/>
+                        </Button>
+                        
+                        <!-- JSON Output EditBox Container -->
+                        <Backdrop name="$(parent)_EditBG" inherits="ZO_EditBackdrop">
+                            <Dimensions x="640" y="320"/>
+                            <Anchor point="TOP" offsetY="130"/>
+                        </Backdrop>
+                        
+                        <EditBox name="$(parent)_EditBox" font="ZoFontGameSmall" multiLine="true" maxInputChars="100000" 
+                                 editEnabled="true" selectAllOnFocus="true" mouseEnabled="true" allowMarkupType="ALLOW_MARKUP_TYPE_ALL">
+                            <Dimensions x="620" y="300"/>
+                            <Anchor point="TOP" offsetY="140"/>
+                        </EditBox>
+                        
+                        <!-- Copy Hint -->
+                        <Label name="$(parent)_CopyHint" font="ZoFontGameSmall" horizontalAlignment="CENTER" color="AAAAAA">
+                            <Dimensions x="620" y="20"/>
+                            <Anchor point="BOTTOM" offsetY="5"/>
+                        </Label>
+                    </Controls>
+                </Control>
+                
+                <!-- ============================================ -->
+                <!-- GUIDE TAB CONTENT -->
+                <!-- ============================================ -->
+                <Control name="$(parent)_GuideTab" hidden="true">
+                    <Dimensions x="620" y="850"/>
+                    <Anchor point="TOP" offsetY="145"/>
+                    <Controls>
+                        <!-- Guide Dropdown & Title -->
+                        <Control name="$(parent)_GuideHeader">
+                            <Dimensions x="640" y="50"/>
+                            <Anchor point="TOP" offsetY="5"/>
+                        </Control>
+                        
+                        <!-- Guide Checklist Scroll Area -->
+                        <Control name="$(parent)_GuideScroll">
+                            <Dimensions x="640" y="750"/>
+                            <Anchor point="TOP" offsetY="60"/>
+                        </Control>
+                    </Controls>
+                </Control>
+                
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

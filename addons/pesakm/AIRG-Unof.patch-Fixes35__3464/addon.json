@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/pesakm/AIRG-Unof.patch-Fixes35__3464",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "pesakm",
+  "canonical_id": "esoui:3464",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3464",
+  "deleted": false,
+  "directories": [
+    "AIResearchGrid"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3464/",
+  "fingerprint": "bc31053ce722c715a8e171801fdd59fe04b4c1ea05e7ffaed7d46bd20e184575",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3464",
+  "source_url": "https://www.esoui.com/downloads/info3464-AIRG-Unof.patch-Fixes35.html",
+  "stats": {
+    "downloads": 7273,
+    "favorites": 0,
+    "monthly_downloads": 14
+  },
+  "title": " AIRG-Unof.patch-Fixes35",
+  "updated_at": 1662558701000,
+  "version": "11.5.04"
+}

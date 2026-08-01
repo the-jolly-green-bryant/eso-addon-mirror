@@ -1,0 +1,38 @@
+﻿## Title: EZ|c66ccffReport|r
+## Author: |c66ccffPhinix|r
+## Description: Quickly report cheating and other toxic behavior.
+## Version: 1.29
+## APIVersion: 101043 101044
+## SavedVariables: EZReport_Vars
+## DependsOn: LibAddonMenu-2.0>=30
+
+
+bin\EZReport.xml
+
+language\en.lua
+language\de.lua
+language\es.lua
+language\fr.lua
+language\it.lua
+language\ja.lua
+language\pl.lua
+language\ru.lua
+
+bin\EZMaint.lua
+bin\EZUtility.lua
+bin\EZSettings.lua
+
+EZReport.lua
+
+bin\EZGUI.lua
+bin\EZGUI.xml
+bin\bindings.xml
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and\or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https:\\account.elderscrollsonline.com\add-on-terms

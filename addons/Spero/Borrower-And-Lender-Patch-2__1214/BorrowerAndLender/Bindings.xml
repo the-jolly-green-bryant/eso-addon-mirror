@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="General">
+    <Category name="Borrower And Lender">
+      <Action name="TOGGLE_BAL">
+        <Down>BorrowerAndLender.CommandHandler()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

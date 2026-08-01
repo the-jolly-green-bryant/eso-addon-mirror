@@ -1,0 +1,14 @@
+## Title: |c7f7f7fDark|cada684UI|r v2.76
+## Version: 2.76
+## AddOnVersion: 276
+## Author: |cada684Jhenox|r, |cff9b15Sharlikran|r
+## APIVersion: 101045 101046
+## SavedVariables: DarkUI_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=40
+## OptionalDependsOn: Pre101046UI LuiExtended BanditsUserInterface
+
+i18n/en.lua
+i18n/$(language).lua
+
+DarkUI.lua
+DarkUISettings.lua

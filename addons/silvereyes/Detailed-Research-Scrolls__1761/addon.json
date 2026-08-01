@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/silvereyes/Detailed-Research-Scrolls__1761",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "silvereyes",
+  "canonical_id": "esoui:1761",
+  "category_id": "98",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:1761",
+  "deleted": false,
+  "directories": [
+    "DetailedResearchScrolls"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1761/",
+  "fingerprint": "52aed816c24ca7fc4c1bdaf53ed682d689357bfad5b7f98fb5cd9ea59fe1c59d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5852.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5847.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5853.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5846.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5854.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1761",
+  "source_url": "https://www.esoui.com/downloads/info1761-DetailedResearchScrolls.html",
+  "stats": {
+    "downloads": 18399,
+    "favorites": 35,
+    "monthly_downloads": 13
+  },
+  "title": "Detailed Research Scrolls",
+  "updated_at": 1635610176000,
+  "version": "1.4.13"
+}

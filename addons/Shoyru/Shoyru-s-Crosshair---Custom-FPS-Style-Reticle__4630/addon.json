@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Shoyru/Shoyru-s-Crosshair---Custom-FPS-Style-Reticle__4630",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shoyru",
+  "canonical_id": "esoui:4630",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4630",
+  "deleted": false,
+  "directories": [
+    "ShoyruCrosshair"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4630/",
+  "fingerprint": "c0798c8d9416edb45435a81803616ec3e1f30c06745cda1f28196a1756942b26",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4630",
+  "source_url": "https://www.esoui.com/downloads/info4630-ShoyrusCrosshair-CustomFPS-StyleReticle.html",
+  "stats": {
+    "downloads": 238,
+    "favorites": 1,
+    "monthly_downloads": 119
+  },
+  "title": "Shoyru's Crosshair - Custom FPS-Style Reticle",
+  "updated_at": 1781144591000,
+  "version": "1.0"
+}

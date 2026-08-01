@@ -1,0 +1,7 @@
+## Title: F_ckOff
+## Description: Declines applications of players who are already member of 5 guilds.
+## Author: |c6C00FFpeniku8|r
+## Version: 1.1.14
+## APIVersion: 101042
+
+F_ckOff.lua

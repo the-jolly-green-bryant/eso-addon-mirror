@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/NeiL978/Dark-Brotherhood-Spree-ZH__3601",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "NeiL978",
+  "canonical_id": "esoui:3601",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3601",
+  "deleted": false,
+  "directories": [
+    "DarkBrotherhoodSpreeZH"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3601/",
+  "fingerprint": "9068703f11e49b88d2818a028570ce4577d56199793005507a3745f6068a96a1",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3601",
+  "source_url": "https://www.esoui.com/downloads/info3601-DarkBrotherhoodSpreeZH.html",
+  "stats": {
+    "downloads": 2146,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "Dark Brotherhood Spree ZH",
+  "updated_at": 1679250376000,
+  "version": "1.0"
+}

@@ -1,0 +1,680 @@
+<GuiXml>
+	<Controls>
+<!-- Defines the clickable list functionality -->
+		<Control name="ESOMRL_ListItemTemplate" virtual="true">
+			<Dimensions x="940" y="18"/>
+			<OnMouseEnter>
+				ZO_ScrollList_MouseEnter(ESOMRL_MainFrameListFrameList, self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				ZO_ScrollList_MouseExit(ESOMRL_MainFrameListFrameList, self)
+			</OnMouseExit>
+			<OnMouseUp>
+				if(upInside) then
+					ZO_ScrollList_MouseClick(ESOMRL_MainFrameListFrameList, self)
+				end
+			</OnMouseUp>
+			<Controls>
+				<Label name="$(parent)Name" font="ZoFontGame" mouseEnabled="true">
+					<Dimensions x="840" y="16"/>
+					<Anchor point="TOPLEFT"/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(001, self, self:GetText(), 1, nil)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(001, self, self:GetText(), 2, nil)
+					</OnMouseExit>
+					<OnMouseDown>
+						ESOMRL.XMLNavigation(002, nil, self:GetText(), button)
+					</OnMouseDown>
+				</Label>
+			</Controls>
+		</Control>
+<!-- Top-level control frame, backdrop, header, close and info buttons -->
+		<TopLevelControl name="ESOMRL_MainFrame" tier="LOW" mouseEnabled="true" movable="true" clampedToScreen="false" hidden="true">
+			<Dimensions x="900" y="610"/>
+			<Anchor point="CENTER"/>
+			<OnMoveStop>
+				ESOMRL.XMLNavigation(101)
+			</OnMoveStop>
+			<OnInitialized>
+				ESOMRL.XMLNavigation(102)
+			</OnInitialized>
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.9"/>
+			<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Tooltip name="$(parent)RecipeTooltip" inherits="ZO_ItemIconTooltip" hidden="true">
+					<OnInitialized>
+						ESOMRL.XMLNavigation(103, self)
+					</OnInitialized>
+				</Tooltip>
+				<Tooltip name="$(parent)IngredientTooltip" inherits="ZO_ItemIconTooltip" hidden="true">
+					<OnInitialized>
+						ESOMRL.XMLNavigation(104, self)
+					</OnInitialized>
+				</Tooltip>
+			<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)CloseButton">
+					<Dimensions x="40" y="40"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" offsetY="-4"/>
+					<Textures
+						normal="/esoui/art/cadwell/cadwell_indexicon_silver_up.dds"
+						pressed="/esoui/art/cadwell/cadwell_indexicon_silver_over.dds"
+						mouseOver="/esoui/art/cadwell/cadwell_indexicon_silver_down.dds"
+						disabled="/esoui/art/cadwell/cadwell_indexicon_silver_disabled.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(105, nil, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(105, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(105, nil, nil, 3)
+					</OnClicked>
+				</Button>
+			<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)ListTooltipButton">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)CloseButton" relativePoint="LEFT" offsetX="14" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/cadwell/cadwell_indexicon_gold_up.dds"
+						pressed="/esoui/art/cadwell/cadwell_indexicon_gold_over.dds"
+						mouseOver="/esoui/art/cadwell/cadwell_indexicon_gold_down.dds"
+						disabled="/esoui/art/cadwell/cadwell_indexicon_gold_disabled.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(106, nil, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(106, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(106, nil, nil, 3)
+					</OnClicked>
+				</Button>
+			<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)InfoButton">
+					<Dimensions x="26" y="26"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ListTooltipButton" relativePoint="LEFT" offsetX="10" offsetY="-1"/>
+					<Textures
+						normal="/esoui/art/guild/guildheraldry_indexicon_finalize_up.dds"
+						pressed="/esoui/art/guild/guildheraldry_indexicon_finalize_over.dds"
+						mouseOver="/esoui/art/guild/guildheraldry_indexicon_finalize_down.dds"
+						disabled="/esoui/art/guild/guildheraldry_indexicon_finalize_disabled.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(107, nil, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(107, nil, nil, 2)
+					</OnMouseExit>
+				</Button>
+			<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)FoodButton" hidden="true">
+					<Dimensions x="52" y="52"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-7" offsetY="-6"/>
+					<Textures
+						normal="/esoui/art/treeicons/provisioner_indexicon_stew_up.dds"
+						pressed="/esoui/art/treeicons/provisioner_indexicon_stew_over.dds"
+						mouseOver="/esoui/art/treeicons/provisioner_indexicon_stew_down.dds"
+						disabled="/esoui/art/treeicons/provisioner_indexicon_stew_over.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(108, nil, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(108, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(108, nil, nil, 3)
+					</OnClicked>
+				</Button>
+			<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)3DButton" hidden="true">
+					<Dimensions x="26" y="26"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-2" offsetY="3"/>
+					<Textures
+						normal="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds"
+						pressed="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_over.dds"
+						mouseOver="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_down.dds"
+						disabled="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_over.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(109, nil, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(109, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(109, nil, nil, 3)
+					</OnClicked>
+				</Button>				
+			<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)FurnitureButton">
+					<Dimensions x="52" y="52"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-7" offsetY="-6"/>
+					<Textures
+						normal="/esoui/art/treeicons/collection_indexicon_furnishings_up.dds"
+						pressed="/esoui/art/treeicons/collection_indexicon_furnishings_over.dds"
+						mouseOver="/esoui/art/treeicons/collection_indexicon_furnishings_down.dds"
+						disabled="/esoui/art/treeicons/collection_indexicon_furnishings_over.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(108, nil, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(108, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(108, nil, nil, 3)
+					</OnClicked>
+				</Button>
+			<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)PageButton">
+					<Dimensions x="52" y="52"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)FurnitureButton" relativePoint="TOPRIGHT" offsetX="-9" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/worldmap/map_ava_tabicon_foodfarm_up.dds"
+						pressed="/esoui/art/worldmap/map_ava_tabicon_foodfarm_over.dds"
+						mouseOver="/esoui/art/worldmap/map_ava_tabicon_foodfarm_down.dds"
+						disabled="/esoui/art/worldmap/map_ava_tabicon_foodfarm_over.dds"
+					/>
+					<OnMouseEnter>
+						ESOMRL.XMLNavigation(110, nil, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(110, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(110, nil, nil, 3)
+					</OnClicked>
+				</Button>
+			<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Control name="$(parent)InfoBox" tier="HIGH" clampedToScreen="true" hidden="true">
+					<Dimensions x="310" y="200"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)InfoButton" relativePoint="BOTTOMRIGHT" offsetX="62" offsetY="-28"/>
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.9"/>
+					<!-- --------------------------------------------------------------------------------------------------------------------------------- -->
+						<Label name="$(parent)KnownIcon" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" text="|t16:16:/MasterRecipeList/bin/textures/known.dds|t">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="7" offsetY="2"/>
+						</Label>
+						<Label name="$(parent)KnownText" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" text=" = Known recipe.">
+							<Anchor point="LEFT" relativeTo="$(parent)KnownIcon" relativePoint="RIGHT" offsetX="0" offsetY="2"/>
+						</Label>
+					<!-- --------------------------------------------------------------------------------------------------------------------------------- -->
+						<Label name="$(parent)KnownTrackIcon" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" text="|t16:16:/MasterRecipeList/bin/textures/knownt.dds|t">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)KnownIcon" relativePoint="BOTTOMLEFT" offsetY="2"/>
+						</Label>
+						<Label name="$(parent)KnownTrackText" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" text=" = Known recipe, tracking.">
+							<Anchor point="LEFT" relativeTo="$(parent)KnownTrackIcon" relativePoint="RIGHT" offsetX="0" offsetY="2"/>
+						</Label>
+					<!-- --------------------------------------------------------------------------------------------------------------------------------- -->
+						<Label name="$(parent)UnknownIcon" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" text="|t16:16:/MasterRecipeList/bin/textures/unknown.dds|t">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)KnownTrackIcon" relativePoint="BOTTOMLEFT" offsetY="2"/>
+						</Label>
+						<Label name="$(parent)UnknownText" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" text=" = Unknown recipe.">
+							<Anchor point="LEFT" relativeTo="$(parent)UnknownIcon" relativePoint="RIGHT" offsetX="0" offsetY="2"/>
+						</Label>
+					<!-- --------------------------------------------------------------------------------------------------------------------------------- -->
+						<Label name="$(parent)TrackedIcon" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" text="|t16:16:/MasterRecipeList/bin/textures/unknownt.dds|t">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)UnknownIcon" relativePoint="BOTTOMLEFT" offsetY="2"/>
+						</Label>
+						<Label name="$(parent)TrackedText" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" text=" = Unknown recipe, tracking.">
+							<Anchor point="LEFT" relativeTo="$(parent)TrackedIcon" relativePoint="RIGHT" offsetX="0" offsetY="2"/>
+						</Label>
+					<!-- --------------------------------------------------------------------------------------------------------------------------------- -->
+						<Label name="$(parent)WritIcon" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" text="|t16:16:/MasterRecipeList/bin/textures/writ.dds|t">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)TrackedIcon" relativePoint="BOTTOMLEFT" offsetY="2"/>
+						</Label>
+						<Label name="$(parent)WritText" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" text=" = Needed for current writ.">
+							<Anchor point="LEFT" relativeTo="$(parent)WritIcon" relativePoint="RIGHT" offsetX="0" offsetY="2"/>
+						</Label>
+					<!-- --------------------------------------------------------------------------------------------------------------------------------- -->
+						<Label name="$(parent)WritTrackIcon" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" text="|t16:16:/MasterRecipeList/bin/textures/writt.dds|t">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)WritIcon" relativePoint="BOTTOMLEFT" offsetY="2"/>
+						</Label>
+						<Label name="$(parent)WritTrackText" font="ZoFontGame" color="c5c29e" horizontalAlignment="LEFT" text=" = Needed for writ, tracking.">
+							<Anchor point="LEFT" relativeTo="$(parent)WritTrackIcon" relativePoint="RIGHT" offsetX="0" offsetY="2"/>
+						</Label>
+					<!-- --------------------------------------------------------------------------------------------------------------------------------- -->
+						<Label name="$(parent)ShiftClickText" font="ZoFontWinH5" color="ffffff" horizontalAlignment="CENTER" text="(Shift-click items to link in chat.)">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)WritTrackIcon" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="18"/>
+						</Label>
+					</Controls>
+				</Control>
+			<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Control name="$(parent)InfoBoxIng" tier="HIGH" clampedToScreen="true" hidden="true">
+					<Dimensions x="266" y="80"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)InfoButton" relativePoint="BOTTOMRIGHT" offsetX="62" offsetY="-28"/>
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.9"/>
+						<Label name="$(parent)KnownText" font="ZoFontWinH5" color="ffff00" horizontalAlignment="LEFT" text="Tracked ingredients are colored gold.">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="7" offsetY="5"/>
+						</Label>
+						<Label name="$(parent)ShiftClickText" font="ZoFontWinH5" color="ffffff" horizontalAlignment="CENTER" text="(Shift-click items to link in chat.)">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)KnownText" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="18"/>
+						</Label>
+					</Controls>
+				</Control>
+			<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+				<Control name="$(parent)Header">
+					<Dimensions x="840" y="35"/>
+					<Anchor point="TOP" relativeTo="ESOMRL_MainFrame" relativePoint="TOP" offsetY="-5"/>
+					<Controls>
+						<Label name="$(parent)Title1" inherits="ZO_WindowTitle" color="FFFFFF" text=" ">
+							<Anchor point="CENTER" relativeTo="$(parent)Header" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)Title2" inherits="ZO_WindowTitle" color="FEE854" text="Elder Scrolls Online">
+							<Anchor point="RIGHT" relativeTo="$(parent)Title1" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)Title3" inherits="ZO_WindowTitle" color="FF9900" text=" Master Recipe List">
+							<Anchor point="LEFT" relativeTo="$(parent)Title1" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+					</Controls>
+				</Control>
+				 <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+					<Dimensions y="4"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetY="10"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" offsetY="10"/>
+				</Texture>
+
+<!-- Right-side frame which displays the list of recipes -->
+				<Control name="$(parent)ListFrame">
+					<Dimensions x="555" y="584"/>
+					<Anchor point="TOP" relativeTo="$(parent)Divider" relativePoint="BOTTOM" offsetX="156" offsetY="16"/>
+					<Controls>
+						<Control name="$(parent)List" inherits="ZO_ScrollList">
+							<Dimensions x="555" y="534"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+							<Controls>
+							</Controls>
+						</Control>
+					<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+						<Button name="$(parent)TooltipType">
+							<Dimensions x="26" y="26"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="21" offsetY="-30"/>
+							<Textures
+								normal="/esoui/art/treeicons/provisioner_indexicon_stew_up.dds"
+								pressed="/esoui/art/treeicons/provisioner_indexicon_stew_over.dds"
+								mouseOver="/esoui/art/treeicons/provisioner_indexicon_stew_down.dds"
+								disabled="/esoui/art/treeicons/provisioner_indexicon_stew_disabled.dds"
+							/>
+							<OnMouseEnter>
+								ESOMRL.XMLNavigation(305, nil, nil, 1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ESOMRL.XMLNavigation(305, nil, nil, 2)
+							</OnMouseExit>
+							<OnClicked>
+								ESOMRL.XMLNavigation(305, nil, nil, 3)
+							</OnClicked>
+						</Button>
+					<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+						<Button name="$(parent)RecipeListOptions">
+							<Dimensions x="26" y="26"/>
+							<Anchor point="RIGHT" relativeTo="$(parent)TooltipType" relativePoint="LEFT" offsetX="3" offsetY="1"/>
+							<Textures
+								normal="/esoui/art/mainmenu/menubar_journal_up.dds"
+								pressed="/esoui/art/mainmenu/menubar_journal_over.dds"
+								mouseOver="/esoui/art/mainmenu/menubar_journal_down.dds"
+								disabled="/esoui/art/mainmenu/menubar_journal_disabled.dds"
+							/>
+							<OnMouseEnter>
+								ESOMRL.XMLNavigation(306, nil, nil, 1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ESOMRL.XMLNavigation(306, nil, nil, 2)
+							</OnMouseExit>
+							<OnClicked>
+								ESOMRL.XMLNavigation(306, nil, nil, 3)
+							</OnClicked>
+						</Button>
+					<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+						<Button name="$(parent)TrackShown">
+							<Dimensions x="26" y="26"/>
+							<Anchor point="RIGHT" relativeTo="$(parent)RecipeListOptions" relativePoint="LEFT" offsetX="4" offsetY="0"/>
+							<Textures
+								normal="EsoUI/Art/Buttons/plus_up.dds"
+								pressed="EsoUI/Art/Buttons/plus_down.dds"
+								mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+								disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+							/>
+							<OnMouseEnter>
+								ESOMRL.XMLNavigation(310, nil, nil, 1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ESOMRL.XMLNavigation(310, nil, nil, 2)
+							</OnMouseExit>
+							<OnClicked>
+								ESOMRL.XMLNavigation(311)
+							</OnClicked>
+						</Button>
+						<Control name="$(parent)Quality">
+							<Dimensions x="156" y="26"/>
+							<Anchor point="RIGHT" relativeTo="$(parent)TrackShown" relativePoint="LEFT" offsetX="-4" offsetY="0"/>
+							<Controls>
+								<Button name="$(parent)Level_VI">
+									<Dimensions x="26" y="26"/>
+									<Anchor point="RIGHT" relativeTo="$(parent)RecipeListOptions" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+									<Textures
+										normal="MasterRecipeList/bin/textures/q6_normal.dds"
+										pressed="MasterRecipeList/bin/textures/q6_normal.dds"
+										mouseOver="MasterRecipeList/bin/textures/q6_over.dds"
+										disabled="MasterRecipeList/bin/textures/q6_normal.dds"
+									/>
+									<OnMouseEnter>
+										ESOMRL.XMLNavigation(308, nil, nil, 6, 1)
+									</OnMouseEnter>
+									<OnMouseExit>
+										ESOMRL.XMLNavigation(308, nil, nil, 6, 2)
+									</OnMouseExit>
+									<OnClicked>
+										ESOMRL.XMLNavigation(309, nil, nil, 6)
+									</OnClicked>
+								</Button>
+							<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+								<Button name="$(parent)Level_V">
+									<Dimensions x="26" y="26"/>
+									<Anchor point="RIGHT" relativeTo="$(parent)Level_VI" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+									<Textures
+										normal="MasterRecipeList/bin/textures/q5_normal.dds"
+										pressed="MasterRecipeList/bin/textures/q5_normal.dds"
+										mouseOver="MasterRecipeList/bin/textures/q5_over.dds"
+										disabled="MasterRecipeList/bin/textures/q5_normal.dds"
+									/>
+									<OnMouseEnter>
+										ESOMRL.XMLNavigation(308, nil, nil, 5, 1)
+									</OnMouseEnter>
+									<OnMouseExit>
+										ESOMRL.XMLNavigation(308, nil, nil, 5, 2)
+									</OnMouseExit>
+									<OnClicked>
+										ESOMRL.XMLNavigation(309, nil, nil, 5)
+									</OnClicked>
+								</Button>
+							<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+								<Button name="$(parent)Level_IV">
+									<Dimensions x="26" y="26"/>
+									<Anchor point="RIGHT" relativeTo="$(parent)Level_V" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+									<Textures
+										normal="MasterRecipeList/bin/textures/q4_normal.dds"
+										pressed="MasterRecipeList/bin/textures/q4_normal.dds"
+										mouseOver="MasterRecipeList/bin/textures/q4_over.dds"
+										disabled="MasterRecipeList/bin/textures/q4_normal.dds"
+									/>
+									<OnMouseEnter>
+										ESOMRL.XMLNavigation(308, nil, nil, 4, 1)
+									</OnMouseEnter>
+									<OnMouseExit>
+										ESOMRL.XMLNavigation(308, nil, nil, 4, 2)
+									</OnMouseExit>
+									<OnClicked>
+										ESOMRL.XMLNavigation(309, nil, nil, 4)
+									</OnClicked>
+								</Button>
+							<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+								<Button name="$(parent)Level_III">
+									<Dimensions x="26" y="26"/>
+									<Anchor point="RIGHT" relativeTo="$(parent)Level_IV" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+									<Textures
+										normal="MasterRecipeList/bin/textures/q3_normal.dds"
+										pressed="MasterRecipeList/bin/textures/q3_normal.dds"
+										mouseOver="MasterRecipeList/bin/textures/q3_over.dds"
+										disabled="MasterRecipeList/bin/textures/q3_normal.dds"
+									/>
+									<OnMouseEnter>
+										ESOMRL.XMLNavigation(308, nil, nil, 3, 1)
+									</OnMouseEnter>
+									<OnMouseExit>
+										ESOMRL.XMLNavigation(308, nil, nil, 3, 2)
+									</OnMouseExit>
+									<OnClicked>
+										ESOMRL.XMLNavigation(309, nil, nil, 3)
+									</OnClicked>
+								</Button>
+							<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+								<Button name="$(parent)Level_II">
+									<Dimensions x="26" y="26"/>
+									<Anchor point="RIGHT" relativeTo="$(parent)Level_III" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+									<Textures
+										normal="MasterRecipeList/bin/textures/q2_normal.dds"
+										pressed="MasterRecipeList/bin/textures/q2_normal.dds"
+										mouseOver="MasterRecipeList/bin/textures/q2_over.dds"
+										disabled="MasterRecipeList/bin/textures/q2_normal.dds"
+									/>
+									<OnMouseEnter>
+										ESOMRL.XMLNavigation(308, nil, nil, 2, 1)
+									</OnMouseEnter>
+									<OnMouseExit>
+										ESOMRL.XMLNavigation(308, nil, nil, 2, 2)
+									</OnMouseExit>
+									<OnClicked>
+										ESOMRL.XMLNavigation(309, nil, nil, 2)
+									</OnClicked>
+								</Button>
+							<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+								<Button name="$(parent)Level_I">
+									<Dimensions x="26" y="26"/>
+									<Anchor point="RIGHT" relativeTo="$(parent)Level_II" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+									<Textures
+										normal="MasterRecipeList/bin/textures/q1_normal.dds"
+										pressed="MasterRecipeList/bin/textures/q1_normal.dds"
+										mouseOver="MasterRecipeList/bin/textures/q1_over.dds"
+										disabled="MasterRecipeList/bin/textures/q1_normal.dds"
+									/>
+									<OnMouseEnter>
+										ESOMRL.XMLNavigation(308, nil, nil, 1, 1)
+									</OnMouseEnter>
+									<OnMouseExit>
+										ESOMRL.XMLNavigation(308, nil, nil, 1, 2)
+									</OnMouseExit>
+									<OnClicked>
+										ESOMRL.XMLNavigation(309, nil, nil, 1)
+									</OnClicked>
+								</Button>
+							</Controls>
+						</Control>
+<!-- Text search box and button -->
+						<Backdrop name="$(parent)SearchBG" inherits="ZO_EditBackdrop" alpha="0.0">
+							<Dimensions x="385" y="25"/>
+							<Anchor point="TOPLEFT" relativeTo="ESOMRL_MainFrame" relativePoint="BOTTOMRIGHT" offsetX="-405" offsetY="6"/>
+						</Backdrop>
+						<EditBox name="$(parent)SearchBox" inherits="ZO_DefaultEditForBackdrop" maxInputCharacters="50" editEnabled="true">
+							<Dimensions x="385" y="25"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)SearchBG" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<OnEnter>
+								ESOMRL.XMLNavigation(401, nil, nil, 5)
+							</OnEnter>
+							<OnMouseEnter>
+								ESOMRL.XMLNavigation(401, nil, nil, 1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ESOMRL.XMLNavigation(401, nil, nil, 2)
+							</OnMouseExit>
+							<OnFocusGained>
+								ESOMRL.XMLNavigation(401, nil, nil, 3)
+							</OnFocusGained>
+							<OnFocusLost>
+								ESOMRL.XMLNavigation(401, nil, nil, 4)
+							</OnFocusLost>
+							<OnTextChanged>
+								ESOMRL.XMLNavigation(401, nil, nil, 5)
+							</OnTextChanged>
+						</EditBox>
+						<Button name="$(parent)SearchButton">
+							<Dimensions x="26" y="26"/>
+							<Anchor point="LEFT" relativeTo="$(parent)SearchBox" relativePoint="RIGHT"/>
+							<Textures
+								normal="EsoUI/Art/Buttons/searchbutton_normal.dds"
+								pressed="EsoUI/Art/Buttons/searchbutton_mousedown.dds"
+								mouseOver="EsoUI/Art/Buttons/searchbutton_normal.dds"
+								disabled="EsoUI/Art/Buttons/searchbutton_disabled.dds"
+							/>
+							 <OnMouseEnter>
+								ESOMRL.XMLNavigation(401, nil, nil, 1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ESOMRL.XMLNavigation(401, nil, nil, 2)
+							</OnMouseExit>
+							<OnClicked>
+								ESOMRL.XMLNavigation(401, nil, nil, 5)
+							</OnClicked>
+						</Button>
+<!-- Recipe Tracking Config Panel -->
+						<Control name="$(parent)BatchTracking" tier="LOW" clampedToScreen="false" hidden="true">
+							<Dimensions x="299" y="64"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="17" offsetY="-78"/>
+							<Controls>
+								<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.9"/>
+							<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+								<Button name="$(parent)TrackUnknown">
+									<Dimensions x="40" y="40"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BatchTracking" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="6"/>
+									<Textures
+										normal="/esoui/art/dye/dyes_toolicon_fill_up.dds"
+										pressed="/esoui/art/dye/dyes_toolicon_fill_over.dds"
+										mouseOver="/esoui/art/dye/dyes_toolicon_fill_down.dds"
+										disabled="/esoui/art/dye/dyes_toolicon_fill_over.dds"
+									/>
+									<OnMouseEnter>
+										ESOMRL.XMLNavigation(601, nil, nil, 1)
+									</OnMouseEnter>
+									<OnMouseExit>
+										ESOMRL.XMLNavigation(601, nil, nil, 2)
+									</OnMouseExit>
+									<OnClicked>
+										ESOMRL.XMLNavigation(601, nil, nil, 3)
+									</OnClicked>
+								</Button>
+							<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+								<Button name="$(parent)SelectAllButton">
+									<Dimensions x="45" y="45"/>
+									<Anchor point="RIGHT" relativeTo="$(parent)TrackUnknown" relativePoint="LEFT" offsetX="12" offsetY="1"/>
+									<Textures
+										normal="/esoui/art/campaign/overview_indexicon_bonus_up.dds"
+										pressed="/esoui/art/campaign/overview_indexicon_bonus_over.dds"
+										mouseOver="/esoui/art/campaign/overview_indexicon_bonus_down.dds"
+										disabled="/esoui/art/campaign/overview_indexicon_bonus_over.dds"
+									/>
+									<OnMouseEnter>
+										ESOMRL.XMLNavigation(602, nil, nil, 1)
+									</OnMouseEnter>
+									<OnMouseExit>
+										ESOMRL.XMLNavigation(602, nil, nil, 2)
+									</OnMouseExit>
+									<OnClicked>
+										ESOMRL.XMLNavigation(602, nil, nil, 3)
+									</OnClicked>
+								</Button>
+							<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+								<Button name="$(parent)InfoButton">
+									<Dimensions x="26" y="26"/>
+									<Anchor point="RIGHT" relativeTo="$(parent)SelectAllButton" relativePoint="LEFT" offsetX="10" offsetY="1"/>
+									<Textures
+										normal="/esoui/art/help/help_tabicon_cs_up.dds"
+										pressed="/esoui/art/help/help_tabicon_cs_over.dds"
+										mouseOver="/esoui/art/help/help_tabicon_cs_down.dds"
+										disabled="/esoui/art/help/help_tabicon_cs_disabled.dds"
+									/>
+									<OnMouseEnter>
+										ESOMRL.XMLNavigation(111, nil, nil, 1)
+									</OnMouseEnter>
+									<OnMouseExit>
+										ESOMRL.XMLNavigation(111, nil, nil, 2)
+									</OnMouseExit>
+									<OnClicked>
+										ESOMRL.XMLNavigation(111, nil, nil, 3)
+									</OnClicked>
+								</Button>
+							<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+								<Button name="$(parent)RemoveCharacter">
+									<Dimensions x="40" y="40"/>
+									<Anchor point="BOTTOMLEFT" relativeTo="$(parent)BatchTracking" relativePoint="BOTTOMLEFT" offsetX="-8" offsetY="7"/>
+									<Textures
+										normal="/esoui/art/contacts/tabicon_ignored_up.dds"
+										pressed="/esoui/art/contacts/tabicon_ignored_over.dds"
+										mouseOver="/esoui/art/contacts/tabicon_ignored_down.dds"
+										disabled="/esoui/art/contacts/tabicon_ignored_over.dds"
+									/>
+									<OnMouseEnter>
+										ESOMRL.XMLNavigation(604, self, nil, 1)
+									</OnMouseEnter>
+									<OnMouseExit>
+										ESOMRL.XMLNavigation(604, self, nil, 2)
+									</OnMouseExit>
+									<OnClicked>
+										ESOMRL.XMLNavigation(604, self, nil, 3)
+									</OnClicked>
+								</Button>
+							<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+								<Button name="$(parent)TrashUncheckedButton">
+									<Dimensions x="30" y="30"/>
+									<Anchor point="LEFT" relativeTo="$(parent)RemoveCharacter" relativePoint="RIGHT" offsetX="-12" offsetY="2"/>
+									<Textures
+										normal="/esoui/art/worldmap/map_indexicon_locations_up.dds"
+										pressed="/esoui/art/worldmap/map_indexicon_locations_over.dds"
+										mouseOver="/esoui/art/worldmap/map_indexicon_locations_down.dds"
+										disabled="/esoui/art/worldmap/map_indexicon_locations_over.dds"
+									/>
+									<OnMouseEnter>
+										ESOMRL.XMLNavigation(603, nil, nil, 1)
+									</OnMouseEnter>
+									<OnMouseExit>
+										ESOMRL.XMLNavigation(603, nil, nil, 2)
+									</OnMouseExit>
+									<OnClicked>
+										ESOMRL.XMLNavigation(603, nil, nil, 3)
+									</OnClicked>
+								</Button>
+							<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+								<Button name="$(parent)KnownFilter">
+									<Dimensions x="26" y="26"/>
+									<Anchor point="LEFT" relativeTo="$(parent)TrashUncheckedButton" relativePoint="RIGHT" offsetX="2" offsetY="0"/>
+									<Textures
+										normal="/esoui/art/treeicons/provisioner_indexicon_stew_up.dds"
+										pressed="/esoui/art/treeicons/provisioner_indexicon_stew_over.dds"
+										mouseOver="/esoui/art/treeicons/provisioner_indexicon_stew_down.dds"
+										disabled="/esoui/art/treeicons/provisioner_indexicon_stew_disabled.dds"
+									/>
+									<OnMouseEnter>
+										ESOMRL.XMLNavigation(320, nil, nil, 1)
+									</OnMouseEnter>
+									<OnMouseExit>
+										ESOMRL.XMLNavigation(320, nil, nil, 2)
+									</OnMouseExit>
+									<OnClicked>
+										ESOMRL.XMLNavigation(320, nil, nil, 5)
+									</OnClicked>
+								</Button>
+							<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+								<Button name="$(parent)UnknownFilter">
+									<Dimensions x="26" y="26"/>
+									<Anchor point="LEFT" relativeTo="$(parent)KnownFilter" relativePoint="RIGHT" offsetX="1" offsetY="0"/>
+									<Textures
+										normal="/esoui/art/treeicons/provisioner_indexicon_stew_up.dds"
+										pressed="/esoui/art/treeicons/provisioner_indexicon_stew_over.dds"
+										mouseOver="/esoui/art/treeicons/provisioner_indexicon_stew_down.dds"
+										disabled="/esoui/art/treeicons/provisioner_indexicon_stew_disabled.dds"
+									/>
+									<OnMouseEnter>
+										ESOMRL.XMLNavigation(320, nil, nil, 3)
+									</OnMouseEnter>
+									<OnMouseExit>
+										ESOMRL.XMLNavigation(320, nil, nil, 4)
+									</OnMouseExit>
+									<OnClicked>
+										ESOMRL.XMLNavigation(320, nil, nil, 6)
+									</OnClicked>
+								</Button>
+							<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

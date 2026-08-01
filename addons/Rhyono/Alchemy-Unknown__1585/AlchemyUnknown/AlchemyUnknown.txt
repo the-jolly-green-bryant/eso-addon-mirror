@@ -1,0 +1,9 @@
+﻿;All of the good addons have comments here.
+
+## Title: Alchemy Unknown
+## APIVersion: 101034
+## Author: |c7f0000Rhyono|r
+## Description: Shows the effect symbols on reagents before they are known.
+## Version: 1.25
+
+AlchemyUnknown.lua

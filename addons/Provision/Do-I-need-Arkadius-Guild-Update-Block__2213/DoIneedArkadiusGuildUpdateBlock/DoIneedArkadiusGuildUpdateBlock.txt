@@ -1,0 +1,7 @@
+﻿## Title: Do I need `Arkadius Guild Update Block` ?
+## Author: Provision with Arkadius work
+## APIVersion: 100025, 100026
+## Description: Show you in the chat when the guild roster is updating.
+## Version: 1.0.1
+
+DoIneedArkadiusGuildUpdateBlock.lua

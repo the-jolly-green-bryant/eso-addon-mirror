@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Ruptxre/CritMarker__4690",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ruptxre",
+  "canonical_id": "esoui:4690",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4690",
+  "deleted": false,
+  "directories": [
+    "CritMarker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4690/",
+  "fingerprint": "d97afbf3cc7b9891d407eed66a2ec3e14f7f57d5a17bc4b718aec5982f5f4e98",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16780.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16697.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4690",
+  "source_url": "https://www.esoui.com/downloads/info4690-CritMarker.html",
+  "stats": {
+    "downloads": 330,
+    "favorites": 3,
+    "monthly_downloads": 327
+  },
+  "title": "CritMarker",
+  "updated_at": 1784756070000,
+  "version": "1.0"
+}

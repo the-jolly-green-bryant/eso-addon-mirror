@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/simonzeng/ZH-Patch-for-Dolgubon-s-Lazy-Writ-Crafter__3763",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "simonzeng",
+  "canonical_id": "esoui:3763",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:3763",
+  "deleted": false,
+  "directories": [
+    "DolgubonsLazyWritCreatorZHPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3763/",
+  "fingerprint": "a0915594b5b096676c4c8c59eb4feb6d64d66687030cb542e211a37a21631859",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3763",
+  "source_url": "https://www.esoui.com/downloads/info3763-ZHPatchforDolgubonsLazyWritCrafter.html",
+  "stats": {
+    "downloads": 13512,
+    "favorites": 1,
+    "monthly_downloads": 58
+  },
+  "title": "ZH Patch for Dolgubon's Lazy Writ Crafter",
+  "updated_at": 1731930144000,
+  "version": "1.1.5"
+}

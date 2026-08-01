@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/STUDLETON/Guild-Adblock-Customized__4340",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "STUDLETON",
+  "canonical_id": "esoui:4340",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4340",
+  "deleted": false,
+  "directories": [
+    "GuildAdblockCustomized"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4340/",
+  "fingerprint": "c6e8c656b1fe2f950ca59dfa269e07dbca1238dd4fa166306b1c3e54946f825a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14985.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14982.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14983.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14984.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14986.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4340",
+  "source_url": "https://www.esoui.com/downloads/info4340-GuildAdblockCustomized.html",
+  "stats": {
+    "downloads": 317,
+    "favorites": 5,
+    "monthly_downloads": 22
+  },
+  "title": "Guild Adblock Customized",
+  "updated_at": 1769735632000,
+  "version": "1.0.2"
+}

@@ -1,0 +1,10 @@
+## Title: Vampire Info
+## APIVersion: 101037 101038
+## AddOnVersion: 040000
+## DependsOn: LibAddonMenu-2.0>=34 LibMediaProvider-1.0>=18 LibVampire>=010100
+## SavedVariables: VampireInfo_SV
+## Author: notrix aka xirton, fixed by Baertram
+## Version: 4.00
+
+VampireInfo.lua
+VampireInfo.xml

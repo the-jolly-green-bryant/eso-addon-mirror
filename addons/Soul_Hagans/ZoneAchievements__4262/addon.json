@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Soul_Hagans/ZoneAchievements__4262",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Soul_Hagans",
+  "canonical_id": "esoui:4262",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4262",
+  "deleted": false,
+  "directories": [
+    "ZoneAchievements"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4262/",
+  "fingerprint": "5cafd98cb0ee41b2c0c93d232c5ba2fe3e627e334abe6e0c4de83181b94a996b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14620.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14621.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14622.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14623.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4262",
+  "source_url": "https://www.esoui.com/downloads/info4262-ZoneAchievements.html",
+  "stats": {
+    "downloads": 526,
+    "favorites": 2,
+    "monthly_downloads": 21
+  },
+  "title": "ZoneAchievements",
+  "updated_at": 1768291754000,
+  "version": "1.0.2"
+}

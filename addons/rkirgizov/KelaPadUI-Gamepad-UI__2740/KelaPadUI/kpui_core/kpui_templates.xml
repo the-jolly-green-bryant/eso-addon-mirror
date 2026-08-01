@@ -1,0 +1,49 @@
+<GuiXml>
+	<Controls>
+ 
+		<Control name="KelaDropdownTemplate" inherits="ZO_Gamepad_Dropdown_Item_Indented" virtual="true"/>
+
+		<Control name="Kela_GamepadMenuEntryTemplate" inherits="ZO_GamepadMenuEntryDimensionsTemplate ZO_GamepadMenuEntryLabelSizedTemplate" horizontalAlignment="LEFT" virtual="true">
+            <Controls>
+                <Label name="$(parent)Label" inherits="ZO_GamepadMenuEntryLabelTemplate" horizontalAlignment="LEFT" />
+                <Texture name="$(parent)Icon" inherits="ZO_GamepadMenuEntryIconTemplate">
+                    <Controls>
+                        <Label name="$(parent)StackCount" inherits="ZO_GamepadMenuEntryStackCountTemplate" />
+                    </Controls>
+                </Texture>
+            </Controls>
+        </Control>
+
+        <Control name="Kela_GamepadFullWidthLabelEntryTemplate" inherits="ZO_GamepadMenuEntryDimensionsTemplate ZO_GamepadMenuEntryLabelSizedTemplate" horizontalAlignment="LEFT"  virtual="true">
+            <Controls>
+                <Label name="$(parent)Label" inherits="ZO_GamepadFullWidthLabelTemplate" horizontalAlignment="LEFT" />
+                <Texture name="$(parent)Icon" inherits="ZO_GamepadMenuEntryIconTemplate">
+                    <Anchor point="CENTER" relativeTo="$(parent)Label" relativePoint="RIGHT" offsetX="ZO_GAMEPAD_DEFAULT_LIST_ENTRY_ICON_X_OFFSET" />
+					<Controls>
+                        <Label name="$(parent)StackCount" inherits="ZO_GamepadMenuEntryStackCountTemplate" />
+                    </Controls>
+                </Texture>
+            </Controls>
+        </Control>
+
+        <Label name="Kela_GamepadMenuEntryFullWidthHeaderTemplate" inherits="ZO_GamepadMenuEntryHeaderFontTemplate" horizontalAlignment="LEFT" virtual="true">
+            <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" />
+            <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetY="80"/>
+            <Dimensions y="123" />
+        </Label>
+
+
+        <Control name="Kela_GamepadNewMenuEntryTemplate" inherits="ZO_GamepadMenuEntryTemplate" virtual="true">
+			<Controls>
+                <Texture name="$(parent)StatusIndicator" inherits="ZO_GamepadMenuEntryStatusIndicationTemplate" />
+            </Controls>
+        </Control>
+
+        <Label name="Kela_GamepadGuildStoreBrowseHeaderTemplate" inherits="ZO_GamepadMenuEntryHeaderTemplate" horizontalAlignment="CENTER" virtual="true">
+            <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" />
+            <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetY="-19" />
+            <Dimensions y="24" />
+        </Label>
+
+    </Controls>
+</GuiXml>

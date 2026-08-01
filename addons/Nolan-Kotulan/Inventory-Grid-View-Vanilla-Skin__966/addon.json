@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Nolan-Kotulan/Inventory-Grid-View-Vanilla-Skin__966",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Nolan Kotulan",
+  "canonical_id": "esoui:966",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:966",
+  "deleted": false,
+  "directories": [
+    "InventoryGridViewVanillaSkin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl966/",
+  "fingerprint": "761888d89e62d1708e7326b6167caeef09451d094968c040e9b9913000543030",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2952.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2960.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2959.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "966",
+  "source_url": "https://www.esoui.com/downloads/info966-InventoryGridViewVanillaSkin.html",
+  "stats": {
+    "downloads": 24768,
+    "favorites": 22,
+    "monthly_downloads": 30
+  },
+  "title": "Inventory Grid View Vanilla Skin",
+  "updated_at": 1469889283000,
+  "version": "1.0.4"
+}

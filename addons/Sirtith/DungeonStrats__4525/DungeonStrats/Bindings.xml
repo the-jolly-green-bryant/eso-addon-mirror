@@ -1,0 +1,9 @@
+<Bindings>
+    <Layer name="General">
+        <Category name="DungeonStrats">
+            <Action name="DUNGEONSTRATS_TOGGLE">
+                <Down>DungeonStrats.Toggle()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

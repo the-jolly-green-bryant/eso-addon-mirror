@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="OdySupportIcons">
+			<Action name="OSI_TOGGLE">
+				<Down>OSI.ToggleIcons()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

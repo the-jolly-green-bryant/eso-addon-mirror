@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/notnear/Potent-Nirncrux-Alert---Loot-Alert__3487",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "notnear",
+  "canonical_id": "esoui:3487",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3487",
+  "deleted": false,
+  "directories": [
+    "NearPotentNirncruxAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3487/",
+  "fingerprint": "f0721abf29c5cb9c6a1c9b3932574e91d30c365f0b280dd7d96fd6257cc6919b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11882.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11881.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11880.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3487",
+  "source_url": "https://www.esoui.com/downloads/info3487-PotentNirncruxAlert-LootAlert.html",
+  "stats": {
+    "downloads": 6223,
+    "favorites": 8,
+    "monthly_downloads": 18
+  },
+  "title": "Potent Nirncrux Alert - Loot Alert",
+  "updated_at": 1710698053000,
+  "version": "2.0.2"
+}

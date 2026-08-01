@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Saleand/Let-s-Talk-Later__4304",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Saleand",
+  "canonical_id": "esoui:4304",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4304",
+  "deleted": false,
+  "directories": [
+    "LetsTalkLater"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4304/",
+  "fingerprint": "5ce0062ff3921dcc7311072ce2a5e49fd49ce8b4e2864e6e1032cad0bb857acc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14791.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14792.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14793.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4304",
+  "source_url": "https://www.esoui.com/downloads/info4304-LetsTalkLater.html",
+  "stats": {
+    "downloads": 299,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "Let's Talk Later",
+  "updated_at": 1778514295000,
+  "version": "0.1.4"
+}

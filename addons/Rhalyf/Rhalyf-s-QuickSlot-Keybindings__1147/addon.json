@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Rhalyf/Rhalyf-s-QuickSlot-Keybindings__1147",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rhalyf",
+  "canonical_id": "esoui:1147",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:1147",
+  "deleted": false,
+  "directories": [
+    "RhalyfsKeybindings"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1147/",
+  "fingerprint": "7937ba6557345e73b7adfaa7137c1dcf140e9b71120720f750846bda6ccd1d38",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3722.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3723.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3724.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3725.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1147",
+  "source_url": "https://www.esoui.com/downloads/info1147-RhalyfsQuickSlotKeybindings.html",
+  "stats": {
+    "downloads": 11326,
+    "favorites": 13,
+    "monthly_downloads": 43
+  },
+  "title": "Rhalyf's (QuickSlot) Keybindings",
+  "updated_at": 1778841795000,
+  "version": "1.1"
+}

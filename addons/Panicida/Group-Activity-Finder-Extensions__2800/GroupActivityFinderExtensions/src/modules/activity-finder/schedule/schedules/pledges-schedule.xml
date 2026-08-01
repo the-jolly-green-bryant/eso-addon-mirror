@@ -1,0 +1,16 @@
+<GuiXml>
+    <Controls>
+        <Control name="GAFE_PledgesScheduleRow" virtual="true">
+            <Controls>
+                <Label name="$(parent)Label" font="ZoFontWinH4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                </Label>
+                <Label name="$(parent)Maj" font="ZoFontWinH4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                </Label>
+                <Label name="$(parent)Glirion" font="ZoFontWinH4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                </Label>
+                <Label name="$(parent)Urgarlag" font="ZoFontWinH4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                </Label>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

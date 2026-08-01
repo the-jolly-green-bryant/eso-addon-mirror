@@ -1,0 +1,9 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="Kela_Undaunted" inherits="ZO_Gamepad_ParametricList_Screen">
+            <OnInitialized>
+                Kela_Undaunted_OnInitialize(self)
+            </OnInitialized>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

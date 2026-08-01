@@ -1,0 +1,10 @@
+## Title: Night Market Keys
+## Author: @RomillyMacAran
+## Version: 1.0.4
+## AddOnVersion: 104
+## APIVersion: 101049
+## SavedVariables: NightMarketKeysData
+## Description: Share Night Market key statuses with other players
+
+NightMarketKeysUI.xml
+NightMarketKeys.lua

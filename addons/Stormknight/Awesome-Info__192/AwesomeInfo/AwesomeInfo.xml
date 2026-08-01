@@ -1,0 +1,39 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="AwesomeInfo" mouseEnabled="true" clampedToScreen="true">                        
+			<OnMouseEnter>
+				AwesomeInfo:SetAlpha(1)
+			</OnMouseEnter>
+
+			<OnUpdate>
+                AI.OnUpdate()
+			</OnUpdate>
+
+			<OnMoveStart>
+				AI.MoveStart()
+			</OnMoveStart>
+
+			<OnMoveStop>
+				AI.MoveStop()
+			</OnMoveStop>
+
+            <Controls>
+
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+                <Label name="$(parent)LabelTime" font="ZoFontWinH1" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" text="" />
+                <Label name="$(parent)LabelDate" font="ZoFontWinH5" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" text="" />
+                <Label name="$(parent)LabelSkills" font="ZoFontWinH5" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" text="" />
+                <Label name="$(parent)LabelBags" font="ZoFontWinH5" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" text="" />
+                <Label name="$(parent)LabelDura" font="ZoFontWinH5" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" text="" />
+                <Label name="$(parent)LabelWeapon" font="ZoFontWinH5" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" text="" />
+                <Label name="$(parent)LabelRes1" font="ZoFontWinH5" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" text="" />
+                <Label name="$(parent)LabelRes2" font="ZoFontWinH5" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" text="" />
+                <Label name="$(parent)LabelRes3" font="ZoFontWinH5" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" text="" />
+                <Label name="$(parent)LabelHorse" font="ZoFontWinH5" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" text="" />
+                <Label name="$(parent)LabelShard" font="ZoFontWinH5" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" text="" />
+                <Label name="$(parent)LabelFence" font="ZoFontWinH5" color="FFFFFF" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" text="" />				
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

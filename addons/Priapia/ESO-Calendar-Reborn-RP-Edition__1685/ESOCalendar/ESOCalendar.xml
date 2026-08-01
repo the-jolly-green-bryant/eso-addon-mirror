@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="ESOCalendar">
+      <AnchorFill/>
+
+      <OnInitialized> ESOCalendar_Init() </OnInitialized>
+
+      <OnUpdate> ESOCalendar_UpdateDate() </OnUpdate>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

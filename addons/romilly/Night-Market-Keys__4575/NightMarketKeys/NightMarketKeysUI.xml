@@ -1,0 +1,557 @@
+<GuiXml>
+    <Controls>
+        <!-- Row Template for Share List -->
+        <Control name="NMKIShareListRowTemplate" virtual="true">
+            <Dimensions x="460" y="30" />
+            
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="1a1a1a" edgeColor="222222">
+                    <AnchorFill />
+                    <Edge edgeSize="1" />
+                </Backdrop>
+                
+                <Label name="$(parent)Name" font="ZoFontGame" color="FFFFFF">
+                    <Dimensions x="350" />
+                    <Anchor point="LEFT" offsetX="10" offsetY="0" />
+                </Label>
+                
+                <Button name="$(parent)Remove">
+                    <Dimensions x="80" y="22" />
+                    <Anchor point="RIGHT" offsetX="-10" offsetY="0" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="4a2a2a" edgeColor="FF0000">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        <Label name="$(parent)Text" font="ZoFontGameSmall" text="Remove" color="FFFFFF">
+                            <Anchor point="CENTER" />
+                        </Label>
+                    </Controls>
+                </Button>
+            </Controls>
+        </Control>
+        
+        <!-- Row Template for Blocked Players List -->
+        <Control name="NMKIBlockedRowTemplate" virtual="true">
+            <Dimensions x="410" y="30" />
+            
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="1a1a1a" edgeColor="222222">
+                    <AnchorFill />
+                    <Edge edgeSize="1" />
+                </Backdrop>
+                
+                <Label name="$(parent)Name" font="ZoFontGame" color="FFFFFF">
+                    <Dimensions x="300" />
+                    <Anchor point="LEFT" offsetX="10" offsetY="0" />
+                </Label>
+                
+                <Button name="$(parent)Unblock">
+                    <Dimensions x="80" y="22" />
+                    <Anchor point="RIGHT" offsetX="-10" offsetY="0" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="2a4a2a" edgeColor="00FF00">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        <Label name="$(parent)Text" font="ZoFontGameSmall" text="Unblock" color="FFFFFF">
+                            <Anchor point="CENTER" />
+                        </Label>
+                    </Controls>
+                </Button>
+            </Controls>
+        </Control>
+        
+        <!-- Row Template for Received Keys List -->
+        <Control name="NMKIReceivedRowTemplate" virtual="true">
+            <Dimensions x="570" y="30" />
+            
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="1a1a1a" edgeColor="222222">
+                    <AnchorFill />
+                    <Edge edgeSize="1" />
+                </Backdrop>
+                
+                <Label name="$(parent)Name" font="ZoFontGame" color="FFFFFF">
+                    <Dimensions x="160" />
+                    <Anchor point="LEFT" offsetX="10" offsetY="0" />
+                </Label>
+                
+                <Label name="$(parent)Keys" font="ZoFontGameFixed" color="CCCCCC">
+                    <Dimensions x="240" />
+                    <Anchor point="LEFT" offsetX="180" offsetY="0" />
+                </Label>
+                
+                <Button name="$(parent)Block">
+                    <Dimensions x="60" y="22" />
+                    <Anchor point="RIGHT" offsetX="-80" offsetY="0" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="4a3a2a" edgeColor="FF8800">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        <Label name="$(parent)Text" font="ZoFontGameSmall" text="Block" color="FFFFFF">
+                            <Anchor point="CENTER" />
+                        </Label>
+                    </Controls>
+                </Button>
+                
+                <Button name="$(parent)Delete">
+                    <Dimensions x="60" y="22" />
+                    <Anchor point="RIGHT" offsetX="-10" offsetY="0" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="4a2a2a" edgeColor="FF0000">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        <Label name="$(parent)Text" font="ZoFontGameSmall" text="Delete" color="FFFFFF">
+                            <Anchor point="CENTER" />
+                        </Label>
+                    </Controls>
+                </Button>
+            </Controls>
+        </Control>
+        
+        <!-- Main Share Window -->
+        <TopLevelControl name="NightMarketKeysShareWindow" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="400" y="500" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" />
+            
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+                
+                <!-- Title Bar -->
+                <Control name="$(parent)TitleBar">
+                    <Dimensions x="400" y="40" />
+                    <Anchor point="TOP" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="000000" edgeColor="666666">
+                            <AnchorFill />
+                            <Edge edgeSize="2" />
+                        </Backdrop>
+                        
+                        <Label name="$(parent)Title" font="ZoFontWinH3" color="FFD700" text="Night Market Keys">
+                            <Anchor point="LEFT" offsetX="10" />
+                        </Label>
+                        
+                        <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                            <Anchor point="RIGHT" offsetX="-5" />
+                        </Button>
+                    </Controls>
+                </Control>
+                
+                <!-- Keys Display Section -->
+                <Control name="$(parent)KeysSection">
+                    <Dimensions x="380" y="320" />
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)TitleBar" offsetY="10" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="0a0a0a" edgeColor="333333">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        
+                        <Label name="$(parent)Title" font="ZoFontGameBold" color="FFD700" text="Your Keys:">
+                            <Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+                        </Label>
+                        
+                        <!-- Zone 1: Parch (Red) -->
+                        <Label name="$(parent)Zone1" font="ZoFontGame" color="FF0000" text="Parch:">
+                            <Anchor point="TOPLEFT" offsetX="10" offsetY="40" />
+                        </Label>
+                        <Label name="$(parent)Argent1" font="ZoFontGame" color="FFFFFF" text="[ ] Ash Titan">
+                            <Anchor point="TOPLEFT" offsetX="30" offsetY="65" />
+                        </Label>
+                        <Label name="$(parent)Argent2" font="ZoFontGame" color="FFFFFF" text="[ ] Ozezan">
+                            <Anchor point="TOPLEFT" offsetX="30" offsetY="90" />
+                        </Label>
+                        <Label name="$(parent)Gilded1" font="ZoFontGame" color="FFD700" text="[ ] B'Kyfxi (Gilded)">
+                            <Anchor point="TOPLEFT" offsetX="30" offsetY="115" />
+                        </Label>
+                        
+                        <!-- Zone 2: Skittering (Green) -->
+                        <Label name="$(parent)Zone2" font="ZoFontGame" color="00FF00" text="Skittering Moor:">
+                            <Anchor point="TOPLEFT" offsetX="210" offsetY="40" />
+                        </Label>
+                        <Label name="$(parent)Argent3" font="ZoFontGame" color="FFFFFF" text="[ ] Flesh Abom.">
+                            <Anchor point="TOPLEFT" offsetX="230" offsetY="65" />
+                        </Label>
+                        <Label name="$(parent)Argent4" font="ZoFontGame" color="FFFFFF" text="[ ] Nassulekh">
+                            <Anchor point="TOPLEFT" offsetX="230" offsetY="90" />
+                        </Label>
+                        <Label name="$(parent)Gilded2" font="ZoFontGame" color="FFD700" text="[ ] Alziriix (Gilded)">
+                            <Anchor point="TOPLEFT" offsetX="230" offsetY="115" />
+                        </Label>
+                        
+                        <!-- Zone 3: Sorrow's (Blue) -->
+                        <Label name="$(parent)Zone3" font="ZoFontGame" color="4169E1" text="Sorrow's Reach:">
+                            <Anchor point="TOPLEFT" offsetX="10" offsetY="160" />
+                        </Label>
+                        <Label name="$(parent)Argent5" font="ZoFontGame" color="FFFFFF" text="[ ] Kovan">
+                            <Anchor point="TOPLEFT" offsetX="30" offsetY="185" />
+                        </Label>
+                        <Label name="$(parent)Argent6" font="ZoFontGame" color="FFFFFF" text="[ ] Molonach">
+                            <Anchor point="TOPLEFT" offsetX="30" offsetY="210" />
+                        </Label>
+                        <Label name="$(parent)Gilded3" font="ZoFontGame" color="FFD700" text="[ ] Fateline (Gilded)">
+                            <Anchor point="TOPLEFT" offsetX="30" offsetY="235" />
+                        </Label>
+                        
+                        <!-- Trial Status -->
+                        <Label name="$(parent)TrialStatus" font="ZoFontGameBold" color="FF6600" text="Opulent Ordeal: Not Ready">
+                            <Anchor point="TOPLEFT" offsetX="10" offsetY="280" />
+                        </Label>
+                    </Controls>
+                </Control>
+                
+                <!-- Action Buttons Section -->
+                <Control name="$(parent)ActionSection">
+                    <Dimensions x="380" y="80" />
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)KeysSection" offsetY="10" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="1a1a1a" edgeColor="444444">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        
+                        <!-- Manage Share List Button -->
+                        <Button name="$(parent)ShareListButton">
+                            <Dimensions x="180" y="30" />
+                            <Anchor point="TOPLEFT" offsetX="10" offsetY="15" />
+                            
+                            <Controls>
+                                <Backdrop name="$(parent)BG" centerColor="2a4a2a" edgeColor="00FF00">
+                                    <AnchorFill />
+                                    <Edge edgeSize="2" />
+                                </Backdrop>
+                                <Label name="$(parent)Text" font="ZoFontGame" text="Manage Share List" color="FFFFFF">
+                                    <Anchor point="CENTER" />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        
+                        <!-- View Received Button -->
+                        <Button name="$(parent)ViewButton">
+                            <Dimensions x="180" y="30" />
+                            <Anchor point="TOPLEFT" offsetX="195" offsetY="15" />
+                            
+                            <Controls>
+                                <Backdrop name="$(parent)BG" centerColor="2a2a4a" edgeColor="4169E1">
+                                    <AnchorFill />
+                                    <Edge edgeSize="2" />
+                                </Backdrop>
+                                <Label name="$(parent)Text" font="ZoFontGame" text="View Received Keys" color="FFFFFF">
+                                    <Anchor point="CENTER" />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        
+                        <Label name="$(parent)Info" font="ZoFontGameSmall" color="CCCCCC" text="Keys auto-shared with share list when changed" horizontalAlignment="TEXT_ALIGN_CENTER">
+                            <Dimensions x="360" />
+                            <Anchor point="TOPLEFT" offsetX="10" offsetY="52" />
+                        </Label>
+                    </Controls>
+                </Control>
+                
+                <!-- Footer with Version -->
+                <Control name="$(parent)Footer">
+                    <Dimensions x="380" y="20" />
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)ActionSection" offsetY="5" />
+                    
+                    <Controls>
+                        <Label name="$(parent)Version" font="ZoFontGame" color="FFFFFF" text="v1.0.4" horizontalAlignment="TEXT_ALIGN_CENTER">
+                            <Anchor point="CENTER" />
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+        
+        <!-- Share List Window -->
+        <TopLevelControl name="NightMarketKeysShareListWindow" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="500" y="500" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" />
+            
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+                
+                <!-- Title Bar -->
+                <Control name="$(parent)TitleBar">
+                    <Dimensions x="500" y="40" />
+                    <Anchor point="TOP" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="000000" edgeColor="666666">
+                            <AnchorFill />
+                            <Edge edgeSize="2" />
+                        </Backdrop>
+                        
+                        <Label name="$(parent)Title" font="ZoFontWinH3" color="FFD700" text="Share List - Auto-Share">
+                            <Anchor point="LEFT" offsetX="10" />
+                        </Label>
+                        
+                        <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                            <Anchor point="RIGHT" offsetX="-5" />
+                        </Button>
+                    </Controls>
+                </Control>
+                
+                <!-- Add Player Section -->
+                <Control name="$(parent)AddSection">
+                    <Dimensions x="480" y="60" />
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)TitleBar" offsetY="10" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="1a1a1a" edgeColor="444444">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        
+                        <Label name="$(parent)Label" font="ZoFontGame" color="CCCCCC" text="Add player to share list:">
+                            <Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+                        </Label>
+                        
+                        <EditBox name="$(parent)Input" inherits="ZO_DefaultEditForBackdrop">
+                            <Dimensions x="300" y="30" />
+                            <Anchor point="TOPLEFT" offsetX="10" offsetY="28" />
+                            <Controls>
+                                <Backdrop name="$(parent)Backdrop" centerColor="3a3a3a" edgeColor="666666">
+                                    <AnchorFill />
+                                    <Edge edgeSize="1" />
+                                </Backdrop>
+                            </Controls>
+                        </EditBox>
+                        
+                        <Button name="$(parent)AddButton">
+                            <Dimensions x="150" y="30" />
+                            <Anchor point="TOPLEFT" offsetX="320" offsetY="28" />
+                            
+                            <Controls>
+                                <Backdrop name="$(parent)BG" centerColor="2a4a2a" edgeColor="00FF00">
+                                    <AnchorFill />
+                                    <Edge edgeSize="2" />
+                                </Backdrop>
+                                <Label name="$(parent)Text" font="ZoFontGame" text="Add to List" color="FFFFFF">
+                                    <Anchor point="CENTER" />
+                                </Label>
+                            </Controls>
+                        </Button>
+                    </Controls>
+                </Control>
+                
+                <!-- Share List ScrollList -->
+                <Control name="$(parent)ListContainer">
+                    <Dimensions x="480" y="340" />
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)AddSection" offsetY="10" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="0a0a0a" edgeColor="333333">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        
+                        <Control name="$(parent)ScrollContainer">
+                            <Anchor point="TOPLEFT" offsetX="5" offsetY="5" />
+                            <Dimensions x="470" y="330" />
+                        </Control>
+                    </Controls>
+                </Control>
+                
+                <!-- Footer -->
+                <Control name="$(parent)Footer">
+                    <Dimensions x="480" y="40" />
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)ListContainer" offsetY="5" />
+                    
+                    <Controls>
+                        <Label name="$(parent)Count" font="ZoFontGame" color="CCCCCC" text="0 players on share list">
+                            <Anchor point="LEFT" offsetX="10" />
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+        
+        <!-- Received Keys Window -->
+        <TopLevelControl name="NightMarketKeysReceivedWindow" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="600" y="500" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" />
+            
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+                
+                <!-- Title Bar -->
+                <Control name="$(parent)TitleBar">
+                    <Dimensions x="600" y="40" />
+                    <Anchor point="TOP" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="000000" edgeColor="666666">
+                            <AnchorFill />
+                            <Edge edgeSize="2" />
+                        </Backdrop>
+                        
+                        <Label name="$(parent)Title" font="ZoFontWinH3" color="FFD700" text="Received Keys">
+                            <Anchor point="LEFT" offsetX="10" />
+                        </Label>
+                        
+                        <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                            <Anchor point="RIGHT" offsetX="-5" />
+                        </Button>
+                    </Controls>
+                </Control>
+                
+                <!-- Scrollable List -->
+                <Control name="$(parent)ListContainer">
+                    <Dimensions x="580" y="415" />
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)TitleBar" offsetY="5" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="0a0a0a" edgeColor="333333">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        
+                        <Control name="$(parent)Scroll" inherits="ZO_ScrollContainer">
+                            <Anchor point="TOPLEFT" offsetX="5" offsetY="5" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+                        </Control>
+                    </Controls>
+                </Control>
+                
+                <!-- Footer -->
+                <Control name="$(parent)Footer">
+                    <Dimensions x="580" y="30" />
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)ListContainer" offsetY="5" />
+                    
+                    <Controls>
+                        <Button name="$(parent)ClearAllButton">
+                            <Dimensions x="120" y="26" />
+                            <Anchor point="LEFT" offsetX="10" />
+                            
+                            <Controls>
+                                <Backdrop name="$(parent)BG" centerColor="4a2a2a" edgeColor="FF0000">
+                                    <AnchorFill />
+                                    <Edge edgeSize="2" />
+                                </Backdrop>
+                                <Label name="$(parent)Text" font="ZoFontGame" text="Clear All">
+                                    <Anchor point="CENTER" />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        
+                        <Button name="$(parent)BlockListButton">
+                            <Dimensions x="140" y="26" />
+                            <Anchor point="LEFT" offsetX="140" />
+                            
+                            <Controls>
+                                <Backdrop name="$(parent)BG" centerColor="4a3a2a" edgeColor="FF8800">
+                                    <AnchorFill />
+                                    <Edge edgeSize="2" />
+                                </Backdrop>
+                                <Label name="$(parent)Text" font="ZoFontGame" text="Block List">
+                                    <Anchor point="CENTER" />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        
+                        <Label name="$(parent)Info" font="ZoFontGameSmall" color="CCCCCC" text="0 received keys">
+                            <Anchor point="RIGHT" offsetX="-10" />
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+        
+        <!-- Block List Window -->
+        <TopLevelControl name="NightMarketKeysBlockListWindow" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="450" y="450" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" />
+            
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+                
+                <!-- Title Bar -->
+                <Control name="$(parent)TitleBar">
+                    <Dimensions x="450" y="40" />
+                    <Anchor point="TOP" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="000000" edgeColor="666666">
+                            <AnchorFill />
+                            <Edge edgeSize="2" />
+                        </Backdrop>
+                        
+                        <Label name="$(parent)Title" font="ZoFontWinH3" color="FFD700" text="Blocked Players">
+                            <Anchor point="LEFT" offsetX="10" />
+                        </Label>
+                        
+                        <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                            <Anchor point="RIGHT" offsetX="-5" />
+                        </Button>
+                    </Controls>
+                </Control>
+                
+                <!-- Info Section -->
+                <Control name="$(parent)InfoSection">
+                    <Dimensions x="430" y="50" />
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)TitleBar" offsetY="10" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="1a1a1a" edgeColor="444444">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        
+                        <Label name="$(parent)Label" font="ZoFontGameSmall" color="CCCCCC" text="Blocked players cannot send you keys.&#10;Unblock to receive their keys again.">
+                            <Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+                        </Label>
+                    </Controls>
+                </Control>
+                
+                <!-- Blocked Players List -->
+                <Control name="$(parent)ListContainer">
+                    <Dimensions x="430" y="300" />
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)InfoSection" offsetY="10" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="0a0a0a" edgeColor="333333">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        
+                        <Control name="$(parent)ScrollContainer">
+                            <Anchor point="TOPLEFT" offsetX="5" offsetY="5" />
+                            <Dimensions x="420" y="290" />
+                        </Control>
+                    </Controls>
+                </Control>
+                
+                <!-- Footer -->
+                <Control name="$(parent)Footer">
+                    <Dimensions x="430" y="30" />
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)ListContainer" offsetY="5" />
+                    
+                    <Controls>
+                        <Label name="$(parent)Info" font="ZoFontGameSmall" color="CCCCCC" text="0 blocked players">
+                            <Anchor point="LEFT" offsetX="10" />
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,24 @@
+## Title: |c66ccffRP Target Frame|r
+## Author: |c66ccffPhinix|r
+## Description: Hide various aspects of the UI.
+## Version: 1.05
+## APIVersion: 100017 100018
+## SavedVariables: RPTargetFrame
+## OptionalDependsOn: LibStub LibAddonMenu-2.0
+
+libs\LibStub\LibStub.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\controls\checkbox.lua
+
+RPTargetFrame.lua
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

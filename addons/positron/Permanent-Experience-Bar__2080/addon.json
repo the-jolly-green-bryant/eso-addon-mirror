@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/positron/Permanent-Experience-Bar__2080",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "positron",
+  "canonical_id": "esoui:2080",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2080",
+  "deleted": false,
+  "directories": [
+    "PermanentExperienceBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2080/",
+  "fingerprint": "4591d421d95fbc4973d499b2085d34a418eabe019a1f9c0f6be697bc89f60163",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2080",
+  "source_url": "https://www.esoui.com/downloads/info2080-PermanentExperienceBar.html",
+  "stats": {
+    "downloads": 28050,
+    "favorites": 12,
+    "monthly_downloads": 75
+  },
+  "title": "Permanent Experience Bar",
+  "updated_at": 1544162656000,
+  "version": "1.1.0"
+}

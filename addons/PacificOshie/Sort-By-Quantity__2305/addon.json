@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/PacificOshie/Sort-By-Quantity__2305",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "PacificOshie",
+  "canonical_id": "esoui:2305",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:2305",
+  "deleted": false,
+  "directories": [
+    "SortByQuantity"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2305/",
+  "fingerprint": "8d2a962099f3f24f47a5494c3b9f9fb3b69707970508d3e2c2462c68930a3a56",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7834.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9760.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2305",
+  "source_url": "https://www.esoui.com/downloads/info2305-SortByQuantity.html",
+  "stats": {
+    "downloads": 17830,
+    "favorites": 36,
+    "monthly_downloads": 27
+  },
+  "title": "Sort By Quantity",
+  "updated_at": 1705625647000,
+  "version": "21"
+}

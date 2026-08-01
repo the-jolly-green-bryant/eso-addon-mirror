@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Sven_re/Descendants-Support-Set-Tracker__3326",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sven_re",
+  "canonical_id": "esoui:3326",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3326",
+  "deleted": false,
+  "directories": [
+    "DescendantsSupportSetTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3326/",
+  "fingerprint": "f0bbb12a641e46fe9893f3e2f4f109eaa8bbe1708e3c701774fd54cc08615652",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11289.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11560.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12527.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3326",
+  "source_url": "https://www.esoui.com/downloads/info3326-DescendantsSupportSetTracker.html",
+  "stats": {
+    "downloads": 29754,
+    "favorites": 23,
+    "monthly_downloads": 450
+  },
+  "title": "Descendants Support Set Tracker",
+  "updated_at": 1773048757000,
+  "version": "1.1.0"
+}

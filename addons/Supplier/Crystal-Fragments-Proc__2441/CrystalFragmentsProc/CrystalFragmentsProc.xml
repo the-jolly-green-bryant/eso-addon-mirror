@@ -1,0 +1,22 @@
+<GuiXml>
+    <Controls>
+		  <TopLevelControl name = "CFPWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+		    <Dimensions x="85" y="85" /> <!--this sets the size of img.-->
+		    <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="1000" offsetY="790"/>
+			  <OnMoveStop>
+				  CFP.OnIndicatorMoveStop()
+			  </OnMoveStop>
+        <Controls>
+          <!--Future(Maybe) feature. This is the border. To re-enable it, just remove the comment. -->
+          <!--<Backdrop name="$(parent)Backdrop" edgeColor="FF0000">
+            <Dimensions x="90" y="90" />
+            <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER"/>
+          </Backdrop>
+          -->
+          <Label name="$(parent)Counter" font="EsoUI/Common/Fonts/univers67.otf|50|thick-outline" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="8">
+            <AnchorFill />
+          </Label>
+        </Controls>
+		  </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,25 @@
+RanckorsColors = {
+    Ebonheart  = "|cFF0000",   -- Red
+    Aldmeri    = "|cFFFF00",   -- Yellow
+    Daggerfall = "|c87CEEB",   -- Sky Blue
+    Blue       = "|c0000FF",   -- Blue
+    Green      = "|c00FF00",   -- Green
+    White      = "|cFFFFFF",   -- White
+    Grey       = "|c808080",   -- Grey
+    Error      = "|cFF0000",   -- Red for errors
+    Reset      = "|r",         -- Reset color
+    DarkBlue   = "|c00008B",   -- Dark Blue
+    LightGreen = "|c90EE90",   -- Light Green
+    DarkGreen  = "|c006400",   -- Dark Green
+    Orange     = "|cFFA500",   -- Orange
+    Purple     = "|c800080",   -- Purple
+    Magenta    = "|cFF00FF",   -- Magenta
+    Cyan       = "|c00FFFF",   -- Cyan
+    Pink       = "|cFFC0CB",   -- Pink
+    Brown      = "|c8B4513",   -- Brown
+    Gold       = "|cFFD700",   -- Gold
+    Silver     = "|cC0C0C0",   -- Silver
+    Maroon     = "|c800000",   -- Maroon
+    Olive      = "|c808000",   -- Olive
+    Teal       = "|c008080",   -- Teal
+}

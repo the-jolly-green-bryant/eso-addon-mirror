@@ -1,0 +1,98 @@
+{
+  "archive_path": "addons/Shadowfen/rChat__2500",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shadowfen",
+  "canonical_id": "esoui:2500",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2500",
+  "deleted": false,
+  "directories": [
+    "rChat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2500/",
+  "fingerprint": "e966c421d07b4905fb31ce990c07532062641a966b7c21c856bda947abf36f64",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8568.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8569.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8570.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8571.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8572.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8573.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8574.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8575.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8576.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8577.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2500",
+  "source_url": "https://www.esoui.com/downloads/info2500-rChat.html",
+  "stats": {
+    "downloads": 80560,
+    "favorites": 87,
+    "monthly_downloads": 273
+  },
+  "title": "rChat",
+  "updated_at": 1781033889000,
+  "version": "2.0.5"
+}

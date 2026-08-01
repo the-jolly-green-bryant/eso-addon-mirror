@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Rengaru/Rengaru-s-Status-Display__3868",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rengaru",
+  "canonical_id": "esoui:3868",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3868",
+  "deleted": false,
+  "directories": [
+    "RengarusStatusDisplay"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3868/",
+  "fingerprint": "0389e073238d00d79b101186d6e526a0d3f0bdb06fd86a926263697fc488ab1e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3868",
+  "source_url": "https://www.esoui.com/downloads/info3868-RengarusStatusDisplay.html",
+  "stats": {
+    "downloads": 2647,
+    "favorites": 5,
+    "monthly_downloads": 13
+  },
+  "title": "Rengaru's Status Display",
+  "updated_at": 1772474426000,
+  "version": "0.97"
+}

@@ -1,0 +1,88 @@
+2.3.0
+- Updated for the Blackwood Chapter and Update 30
+- Fixed more issues with items not loading from inventory correctly
+- Added hotkeys to select a specific quickslot
+
+2.2.0
+- Updated for the Flames of Ambition DLC and Update 29
+- Fixed issues with items not being found in inventory
+
+2.1.13
+- Fixed an issue with siege not being found in inventory
+
+2.1.12
+- Updated for the Greymoor Chapter and Update 26
+
+2.1.11
+- Fixed an issue with siege weapons not being loaded from a saved profile properly
+
+2.1.10
+- Updated for the Harrowstorm DLC and Update 25
+
+2.1.9
+- Updated for the Dragonhold DLC and Update 24
+- Switched to character ID saved variables to support character name changes better
+
+2.1.8
+- Updated for the Scalebreaker DLC and Update 23
+
+2.1.7
+- Updated for Elsweyr Chapter and Update 22
+
+2.1.6
+- Updated for the Wrathstone DLC and Update 21
+
+2.1.5
+- Fixed an issue that was preventing siege weapons from being loaded from saved profiles
+
+2.1.4
+- Fixed an issue where collection items were not loading from their saved profiles
+- Up to date for the Murkmire DLC and Update 20
+
+2.1.3
+- Updated for Wolfhunter DLC and Update 19
+
+2.1.2
+- Updated for Summerset and Update 18
+
+2.1.1
+- Updated for Dragon Bones DLC and Update 17
+- Fixed an issue with crown crate consumables not being found in your inventory
+
+2.1.0
+- Optimized the way inventory information is gathered, resulting in faster profile loading
+
+2.0.0
+- Added 5 hotkeys for quickly switching between profiles on the fly
+- Added tooltips to all buttons on the GUI
+
+1.2.2
+- Fixed an issue with certain consumable items not being found in your inventory such as pardon edicts
+
+1.2.1
+- Updated for the Clockwork City DLC
+- Fixed an issue when loading a profile that contained items that had the same name (ie. potions)
+
+1.2.0
+- Improved optimisation for the load function
+- Added a delay for loading quickslots to prevent the message rate limit from being reached
+- The load, save, new and clear buttons are disabled during the load function to prevent multiple messages
+- Added a chat message to indicate a specific item could not be found in your inventory when loading a profile with that item saved to it
+
+1.1.0
+- Fixed an issue that occured when you saved an empty slot to a profile and then tried to load that profile
+- Changed the behavior of the new profile entry box to save the profile automatically when you hit enter
+- Improved the new profile UI by adding buttons for accepting or declining the new name
+
+1.0.0
+- Full release
+- Added a graphical interface that only shows up on the quickslot inventory menu
+
+0.1.4
+- Fixed an issue with items that had the same name getting mixed up
+
+0.1.3
+- Fixed an issue with the list command not listing all profiles
+
+0.1.2
+- Beta release

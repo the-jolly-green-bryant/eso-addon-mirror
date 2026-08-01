@@ -1,0 +1,5 @@
+<GuiXml>
+    <Controls>
+        <Texture name="TE_MapTile" textureFile="TrueExploration/texture/undiscovered.dds" level="2" layer="0" virtual="true" />
+    </Controls>
+</GuiXml>

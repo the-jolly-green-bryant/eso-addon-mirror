@@ -1,0 +1,37 @@
+VCAP2 2.2.0-test5
+==================
+
+TEST BUILD - based on 2.2.0-test4.
+
+Purpose
+-------
+Fix console settings reopening after Reload UI by following the actual LHAS console lifecycle.
+
+What Test 4 taught us
+---------------------
+- LibHarvensAddonSettings does not create its console Add-ons panel or settings scene simply because enough time has passed after /reloadui.
+- LHAS initializes when ESO's MAIN_MENU_GAMEPAD_SCENE enters SCENE_SHOWING.
+- Therefore waiting 2.5s/3.5s without opening the main menu could never reliably reopen VCAP2.
+
+Changes from test4
+------------------
+- After EVENT_PLAYER_ACTIVATED, VCAP2 waits 1.5 seconds for the base game UI to settle.
+- VCAP2 explicitly opens ESO's main gamepad menu using SCENE_MANAGER:Show("mainMenuGamepad").
+- This triggers LHAS's normal console initialization path and creates the Add-ons entry and LibHarvensAddonSettingsScene.
+- VCAP2 then waits 750ms, selects its own LHAS addon object, and pushes LibHarvensAddonSettingsScene.
+- If LHAS is still not initialized, VCAP2 uses LHAS:Initialize() only as an idempotent fallback.
+- If the first reopen attempt fails, VCAP2 re-requests the main menu, waits 2 seconds, and tries once more.
+- If the second attempt fails, the one-shot flag is cleared and a single manual-open message is shown.
+- No automatic reload loop is possible.
+- No narration filtering or addon-tag rules changed from test4.
+
+Expected console flow
+---------------------
+Reload UI Now -> /reloadui -> player activates -> Main Menu opens -> LHAS initializes Add-ons -> VCAP2 settings opens.
+
+Safety
+------
+- Existing SavedVariables version remains 7.
+- Reopen remains explicit and one-shot.
+- Normal login/reload does not open VCAP2 unless VCAP2's Reload UI Now button was used.
+- Exact submenu/scroll position is not restored; only the main VCAP2 settings page is reopened.

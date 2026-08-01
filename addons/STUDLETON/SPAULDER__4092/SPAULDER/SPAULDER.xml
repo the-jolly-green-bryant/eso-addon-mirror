@@ -1,0 +1,15 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="SPAULDERIndicator" hidden="true">
+      <Dimensions x="300" y="50" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" />
+ 
+      <Controls>
+        <Label name="$(parent)Label" width="300" height="50" font="$(BOLD_FONT)|$(KB_54)|soft-shadow-thick" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="SPAULDER">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

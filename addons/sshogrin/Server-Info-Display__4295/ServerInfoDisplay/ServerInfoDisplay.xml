@@ -1,0 +1,18 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ServerInfoDisplayWindow" movable="true" mouseEnabled="true" clampedToScreen="true">
+			<Dimensions x="32" y="64"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="10"/>
+
+			<OnMoveStop>
+            SERVER_INFO_DISPLAY.SaveLoc()
+       		</OnMoveStop>
+
+			<Controls>
+				<Label name="$(parent)Label" font="" inheritAlpha="true" horizontalAlignment="LEFT" verticalAlignment="TOP" color="FFFF00" parent="GuiRoot" resizeToFitText="true">
+				    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

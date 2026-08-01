@@ -1,0 +1,6 @@
+## Title: Void Mystyx Icons
+## Author: @Superkitty193
+## Description: Adds a few custom items for close friends of the GM.
+## DependsOn: OdySupportIcons
+
+VoidMystyxIcons.lua

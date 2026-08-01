@@ -1,0 +1,56 @@
+Title: Time To Heal
+Description: Evade death by setting a reminder to "Heal Now!" based on your remaining health percentage.
+Why: I often forget to keep an eye on my health when tired. I figure I can't be the only one.
+Author: PlaceHolder
+
+-------------------------------------------------------------------------------------------------
+To Do List
+-------------------------------------------------------------------------------------------------
+	
+	-Add colour control
+
+-------------------------------------------------------------------------------------------------
+Change Log
+-------------------------------------------------------------------------------------------------
+
+Version 1.0.8 (25-05-2022)
+	API:
+		-Updated API version to remove the "Out Of Date" warning
+
+Version 1.0.7 (26-03-2022)
+	API:
+		-Updated API version to remove the "Out Of Date" warning
+
+Version 1.0.6 (21-11-2021)
+	API:
+		-Updated API version to remove the "Out Of Date" warning
+
+Version 1.0.5 (16-09-2021)
+	Libs:
+		-Updated calls to LibAddonMenu2 (Thank you sMuggle ^_^ )
+
+Version 1.0.4 (09-09-2021)
+	API:
+		-Updated API version to remove the "Out Of Date" warning
+
+Version 1.0.3 (30-07-2021)
+	API:
+		-Updated API version to remove the "Out Of Date" warning
+
+Version 1.0.2 (01-09-2020)
+	API:
+		-Updated API version to remove the "Out Of Date" warning
+
+Version 1.0.1 (17-07-2020)
+	Minor Bug Fixes:
+		-Fixed bug that would keep the Reminder displayed on death
+		-Fixed ReloadUI warning
+
+Version 1.0.0 (16-07-2020)
+	Initial version:
+		-Evade death by setting a reminder to "Heal Now!" based on your remaining health percentage
+		-Convenient button to Confirm settings and Reload the UI (ReloadUI is required for changes)
+		-Set Opacity, Duration, Position
+		-Character independent values!
+		-Can be accessed by typing /timetoheal
+

@@ -1,0 +1,14 @@
+## Title: Coming Back Home
+## Version: 1.5.1
+## APIVersion: 101048
+## Author: vexaiv
+## Description: Returns you back home after dungeons
+## SavedVariables: ComingBackHomeSavedVariables
+## DependsOn: LibAddonMenu-2.0>=32
+
+lang/en.lua
+lang/$(language).lua
+
+ComingBackHome.lua
+ComingBackHomeMenu.lua
+Bindings.xml

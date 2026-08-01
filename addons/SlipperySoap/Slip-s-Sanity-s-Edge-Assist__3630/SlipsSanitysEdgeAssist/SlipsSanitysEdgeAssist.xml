@@ -1,0 +1,197 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="SSEAAlerts" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="800" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-150" />
+      <OnMoveStop>SSEA.OnSSEAAlertsMove()</OnMoveStop>
+ 
+      <Controls>
+        <Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|144|soft-shadow-thick" inheritAlpha="true" color="CC33FF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="ALERTS">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+	<TopLevelControl name="SSEAAlerts2" mouseEnabled="true" movable="true" clampedToScreen="true">
+		<Dimensions x="800" y="200" />
+		<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-50" />
+		<OnMoveStop>SSEA.OnSSEAAlerts2Move()</OnMoveStop>
+
+		<Controls>
+			<Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|144|soft-shadow-thick" inheritAlpha="true" color="00a8e1"
+				wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="ALERTS2">
+				<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+			</Label>
+		</Controls>
+	</TopLevelControl>
+
+    <TopLevelControl name="SSEAAlerts3" mouseEnabled="true" movable="true" clampedToScreen="true">
+		<Dimensions x="800" y="200" />
+		<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-50" />
+		<OnMoveStop>SSEA.OnSSEAAlerts3Move()</OnMoveStop>
+
+		<Controls>
+			<Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|144|soft-shadow-thick" inheritAlpha="true" color="CC0000"
+				wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="ALERTS3">
+				<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+			</Label>
+		</Controls>
+	</TopLevelControl>
+    
+    <TopLevelControl name="SSEAPercentages" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="800" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="50" />
+      <OnMoveStop>SSEA.OnSSEAPercentagesMove()</OnMoveStop>
+      
+      <Controls>
+        <Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|144|soft-shadow-thick" inheritAlpha="true" color="8921cc"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="PERCENTAGES" alpha="0.85">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="SSEAStatus" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="500" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-150" offsetX="600" />
+      <OnMoveStop>SSEA.OnSSEAStatusMove()</OnMoveStop>
+      <!--<Controls>
+        <Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|144|soft-shadow-thick" inheritAlpha="true" color="CC33FF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="SECOND TEXT">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>-->
+      <Controls>
+      <Label name="$(parent)LabelTitle1" font="EsoUI/Common/Fonts/univers67.otf|60|soft-shadow-thick" color="FF0000" text="Title 1" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-200"/>
+      </Label>
+      <Label name="$(parent)LabelTitle2" font="EsoUI/Common/Fonts/univers67.otf|60|soft-shadow-thick" color="FF0000" text="Title 2" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-100"/>
+      </Label>
+      <Label name="$(parent)LabelAddonName" font="EsoUI/Common/Fonts/univers67.otf|16|soft-shadow-thick" color="FFFFFF" text="Slip's Sanity's Edge Assist" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-30"/>
+      </Label>
+      
+      <Texture name="$(parent)Divider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds">
+          <Dimensions x="180" y="4"/>
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-20" offsetX="-240"/>
+      </Texture>
+      
+      <Label name="$(parent)Label1" font="ZoFontWinH1" color="CC0000" text="Next Fire Bombs:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0"/>
+      </Label>
+      <Label name="$(parent)Label1Value" font="ZoFontWinH1" color="ff8500" text="20s" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="250"/>
+      </Label>
+	  <!-- offsetX was 170-->
+      <Label name="$(parent)Label2" font="ZoFontWinH1" color="00a8e1" text="Next Ice Tombs:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40"/>
+      </Label>
+      <Label name="$(parent)Label2Value" font="ZoFontWinH1" color="ff8500" text="30s" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="250"/>
+      </Label>
+	  <!-- offsetX was 170-->
+      <!-- color was ffffff-->
+	  <Label name="$(parent)Label23" font="ZoFontWinH1" color="FF00FF" text="Next Maze:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40"/>
+      </Label>
+      <Label name="$(parent)Label23Value" font="ZoFontWinH1" color="FF00FF" text="30s" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="250"/>
+      </Label>
+	  <!-- offsetX was 170-->
+      <Label name="$(parent)Label3" font="ZoFontWinH1" color="00CC00" text="Wamasu + Archers: " verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80"/>
+      </Label>
+      <Label name="$(parent)Label3Value" font="ZoFontWinH1" color="ff8500" text="90%" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="250"/>
+      </Label>
+	  <Label name="$(parent)Label33" font="ZoFontWinH1" color="00a8e1" text="Wrack: " verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80"/>
+      </Label>
+      <Label name="$(parent)Label33Value" font="ZoFontWinH1" color="00a8e1" text="40s" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="250"/>
+      </Label>
+	  <!-- offsetX was 170-->
+      <Label name="$(parent)Label4" font="ZoFontWinH1" color="e8f3ff" text="Next Shrapnel: " verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120"/>
+      </Label>
+      <Label name="$(parent)Label4Value" font="ZoFontWinH1" color="ff8500" text="20s" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120" offsetX="250"/>
+	  <!-- offsetX was 170-->
+	  </Label>
+      <Label name="$(parent)Label41" font="ZoFontWinH1" color="e8f3ff" text="Last Chained Tank: " verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0"/>
+      </Label>
+      <Label name="$(parent)Label41Value" font="ZoFontWinH1" color="ff8500" text="20s" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="300"/>
+	  <!-- offsetX was 170-->
+	  </Label>
+	  <Label name="$(parent)Label5" font="ZoFontWinH1" color="8cde8c" text="Portals + Archers: " verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+		  <Dimensions x="600" y="50" />
+		  <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160"/>
+	  </Label>
+	  <Label name="$(parent)Label5Value" font="ZoFontWinH1" color="ff8500" text="60%" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+		  <Dimensions x="600" y="50" />
+		  <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160" offsetX="250"/>
+      </Label>
+		  
+      <!-- Position of 3 is the same as 1, since we use Label1+2 for boss1, and Label3 for boss 2-->
+      <Label name="$(parent)Label1b" font="ZoFontWinH1" color="CC33FF" text="Chain Lightning:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0"/>
+      </Label>
+      <Label name="$(parent)Label1bValue" font="ZoFontWinH1" color="ff8500" text="15s" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="220"/>
+      </Label>
+      
+      <Label name="$(parent)Label2b" font="ZoFontWinH1" color="FFFFFF" text="Next Portals:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40"/>
+      </Label>
+      <Label name="$(parent)Label2bValue" font="ZoFontWinH1" color="ff8500" text="%" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="220"/>
+      </Label>
+      
+     
+      <Label name="$(parent)Label3b" font="ZoFontWinH1" color="FFFFFF" text="Chimera:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80"/>
+      </Label>
+      <Label name="$(parent)Label3bValue" font="ZoFontWinH1" color="ff8500" text="X" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="220"/>
+      </Label>
+
+	  <!-- Label6 Here -->
+	  <!-- Label65 Here -->
+	  <!-- Label66 Here -->
+      <!-- Xalvakka jump -->
+	  <!-- Label7 Here -->
+      <!-- Xalvakka purge soul -->
+	  <!-- Label8 Here -->
+      <!-- Xalvakka shield -->
+	  <!-- Label9 Here -->
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

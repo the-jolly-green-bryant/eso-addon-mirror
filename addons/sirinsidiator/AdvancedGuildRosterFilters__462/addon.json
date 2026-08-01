@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/sirinsidiator/AdvancedGuildRosterFilters__462",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:462",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    }
+  ],
+  "content_id": "esoui:462",
+  "deleted": false,
+  "directories": [
+    "AdvancedGuildRosterFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl462/",
+  "fingerprint": "4f31ea979f290cc047a271986ca89621c652dd8724386a1445a8ecc00e3fda14",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1588.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1589.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "462",
+  "source_url": "https://www.esoui.com/downloads/info462-AdvancedGuildRosterFilters.html",
+  "stats": {
+    "downloads": 9999,
+    "favorites": 34,
+    "monthly_downloads": 6
+  },
+  "title": "AdvancedGuildRosterFilters",
+  "updated_at": 1457362215000,
+  "version": "1.7"
+}

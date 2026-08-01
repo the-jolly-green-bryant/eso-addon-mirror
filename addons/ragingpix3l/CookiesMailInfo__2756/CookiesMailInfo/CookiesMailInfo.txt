@@ -1,0 +1,19 @@
+## Title: CookiesMailInfo
+## Author: ragingpix3l
+## APIVersion: 100032 100033
+## Description: CookiesMailInfo - gets avg prices of items attached to incoming mail
+## Version: 0.03
+## AddOnVersion: 000003
+## IsLibrary: false
+## OptionalDependsOn: MailR MasterMerchant ArkadiusTradeTools
+
+
+#main
+CookiesMailInfo.lua
+
+; Disclaimer
+;
+; Terms:
+; https://account.elderscrollsonline.com/add-on-terms
+
+

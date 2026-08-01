@@ -1,0 +1,28 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="TargetsIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="150" y="60" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+ 
+		<OnMoveStop>
+			Targets.OnIndicatorMoveStop()
+		</OnMoveStop>
+		
+		<OnUpdate>
+			Targets.Update()
+        </OnUpdate>
+ 
+      <Controls>
+		<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" ResizetoFitDescendants="true" />
+			
+			<Label name="$(parent)Time" font="ZoFontWindowTitle" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Time!" >
+				<Anchor point="TOP" relativeTo="$(parent)BG" relativePoint="TOP" />
+			</Label>
+			<Label name="$(parent)Date" font="ZoFontWindowTitle" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="BOTTOM" text="Date: " hidden="false">
+				<Anchor point="CENTER" relativePoint="BOTTOM" relativeTo="$(parent)BG" setPivot="TOP" offsetY="-20"/>
+			</Label>
+		
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

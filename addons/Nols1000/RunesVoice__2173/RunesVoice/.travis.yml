@@ -1,0 +1,26 @@
+language: minimal
+before_deploy:
+- mkdir -p /tmp/addon/RunesVoice
+- cp -R . /tmp/addon/RunesVoice
+- rm -rf /tmp/addon/RunesVoice/.git /tmp/addon/RunesVoice/.travis /tmp/addon/RunesVoice/*.md
+- pushd /tmp/addon && zip -r /tmp/RunesVoice.zip RunesVoice && popd
+addons:
+  apt:
+    packages:
+    - zip
+deploy:
+  - provider: script
+    script: sh .travis/deploy.sh 2173 $TRAVIS_TAG 4.1 /tmp/RunesVoice.zip
+    on:
+      repo: Nols1000/RunesVoice
+      tags: true
+  - provider: releases
+    api_key:
+      secure: TQzv5wwGizFw6xNhFhkGv4MBJoYGj+k/s0N6psMcV9i07jaOiqQ5ijc8Jv+DpnGkC6cZ7JjmO1XdLa70zBKPMUD+A7P1J6Ikep834AdBJhXTlCq43X3rCpaHIf42p9G+E5hAzE2rc02zGcpVT5HQifc8BLcRTrwKHhU0QBikG+XLKlEJrzDTRkDXiZaY19Q5aG0xUNIF7Ip6vmdYl2h65OUxrOgbflIDKhHsBjbPCKyaOArXswjU7VC3BnzCYXBe/pULvOy+Tz0vlgXPNerS2IY5xjtFnNOSVap9ZPRWnxpT+7DOW0TnZDd1722P5sq2PXdG2LXL7W19e/EPEJlDkwWWkiqTx9OtREQ4mWhJvVrlqIP8vGaJ6J+LG0PZwpddisZexPN0dNUZdrAEk8KGPsYaoDanUMS3ADgIroPgTrnKBaGV5ZA4Xk+nC7Agebu33a7ruW/LYni+f2rg+l22Ob3Hyt+tZKmWYJJBRRvDS0j7hClMSPNbGz0+joVhBYjrkL93T2AtJ/crNI0M5jYqMUuKuXf0zh4J3HAA9uMm3/U8sr4+xIqoiZ+y+2rjtnyf+o4j/wlJu+Eb3BT8NC9jk2a+ftaQdDstK+O7R80u81k45ueqTRlZ8vDxvi5LEkuAVcbCHI1G3yffzwCfOARrSKYIC7zHMbluZbbNumYp/Gk=
+    file: "/tmp/RunesVoice.zip"
+    on:
+      repo: Nols1000/RunesVoice
+      tags: true
+env:
+  global:
+    secure: vUnpHQZypkb2k8fcj0ATUhaWkoWogk4ybHfAeKDoOabCIbjkHg0C0jdjZDl9tEB+lsnTnztQ7sLfXrJx0Igb8KzjOeNrOOtBPQF9nbVsaTphVew97dcnYr6FlgrKJP4VF1D0z5cMtW7PEidvjY9k59wtNWyon/Q4s0JA3GZJ4r0bMRxLm4ZCzOaGlsYVqj7oBO8Qb/1NLWpRmnZa8ma2Kx4Bio25GaAFzfsrS1LOPFiGcD3W/jsNs3WL8vUAoJJWXQDEx2QUb6DfJDNmfEONdnDF/8n8/SG6X49/nj9vKvjhmJ9LCkEw5TGwnTSlaScSA3HPLkqLwtLEJTaq+IZSP1bP6Y3ohg3sTHk0iyGtZTmK2ETANhmxQOYjm16dwO0NtgZJ3V07SI5p8/zIfqVWRG4SOGvP6mGOXkDpaDDt6Ky5ceLugPLqlzsdDlc2RiwM+sFC7SqE1wUI+5vFkqLO6dBRMHMvIQFp+t21vE+nKLUDVtC1kYB0wnmLfWzSlJ0+oHveZ4j1tzp6rL7mSbeE4CNTmBHlhWzcKLS5+dT4Z82yJ0jt0Qz9DYlc5D0i9a62flAfTmgZJ9R19XuyvcXbfDSS90G6wyAkmhvXCsMNwZjSVFCfw3uc5fL2eArTAgpNc4FhdOyb6l1X/DTNyySVnfIApn9FIuePWrCRTXJyvKw=

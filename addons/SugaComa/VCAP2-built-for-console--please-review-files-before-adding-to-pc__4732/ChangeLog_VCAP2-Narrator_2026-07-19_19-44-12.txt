@@ -1,0 +1,24 @@
+VCAP2 2.2.0-test3
+==================
+
+TEST BUILD - based on 2.2.0-test2.
+
+Purpose
+-------
+Make the automatic addon-tag discovery workflow clearer on console when LibHarvensAddonSettings does not immediately display a newly discovered dynamic tag entry.
+
+Changes from test2
+------------------
+- Added an explanatory label at the top of the Detected Addon Tags section.
+- Added a tooltip explaining that new [AddonTag] values are stored immediately but may require /reloadui or a relog before they appear in the settings list.
+- Added a "Refresh Detected Addon Tags" button with "Reload UI Now" action.
+- On gamepad, the user can highlight the button and press X to call ReloadUI("ingame").
+- Added a safe fallback chat message if ReloadUI is unexpectedly unavailable.
+- No narration filtering rules changed from test2.
+- Newly detected addon tags still default to narration OFF.
+- Tags still remain visible in chat regardless of whether they are spoken.
+
+Safety
+------
+- SavedVariables version and existing settings behaviour are unchanged from test2.
+- Reload is user-initiated only; VCAP2 never forces an automatic reload when a new tag is discovered.

@@ -1,0 +1,61 @@
+<GuiXml>
+    <Controls>
+
+        <!-- Main window -->
+        <TopLevelControl name="DungeonStratsWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="700" y="600" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Label name="$(parent)Title" text="DungeonStrats" font="ZoFontWinH1" color="FFD700FF">
+                    <Anchor point="TOP" offsetY="14" />
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="10" />
+                    <OnClicked>
+                        DungeonStrats.Hide()
+                    </OnClicked>
+                </Button>
+
+                <!-- Category selector: Dungeons / Trials -->
+                <Label name="$(parent)CategoryLabel" text="Category:" font="ZoFontGame">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="56" />
+                </Label>
+                <Control name="$(parent)CategoryCombo" inherits="ZO_ComboBox">
+                    <Dimensions x="200" y="28" />
+                    <Anchor point="TOPLEFT" offsetX="100" offsetY="52" />
+                </Control>
+
+                <!-- Dungeon/Trial selector -->
+                <Label name="$(parent)DungeonLabel" text="Dungeon:" font="ZoFontGame">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="92" />
+                </Label>
+                <Control name="$(parent)DungeonCombo" inherits="ZO_ComboBox">
+                    <Dimensions x="280" y="28" />
+                    <Anchor point="TOPLEFT" offsetX="100" offsetY="88" />
+                </Control>
+
+                <!-- Boss selector -->
+                <Label name="$(parent)BossLabel" text="Boss:" font="ZoFontGame">
+                    <Anchor point="TOPLEFT" offsetX="400" offsetY="92" />
+                </Label>
+                <Control name="$(parent)BossCombo" inherits="ZO_ComboBox">
+                    <Dimensions x="260" y="28" />
+                    <Anchor point="TOPLEFT" offsetX="440" offsetY="88" />
+                </Control>
+
+                <!-- Scrollable strategy text area -->
+                <Control name="$(parent)Scroll" inherits="ZO_ScrollContainer">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="130" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-16" offsetY="-16" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

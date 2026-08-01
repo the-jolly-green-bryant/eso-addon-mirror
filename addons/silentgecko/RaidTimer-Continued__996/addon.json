@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/silentgecko/RaidTimer-Continued__996",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "silentgecko",
+  "canonical_id": "esoui:996",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:996",
+  "deleted": false,
+  "directories": [
+    "RaidTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl996/",
+  "fingerprint": "c295be381ac584bb32cad7d9d5a47527829474566cfd311d5848135412aa0d3d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3033.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3032.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "996",
+  "source_url": "https://www.esoui.com/downloads/info996-RaidTimerContinued.html",
+  "stats": {
+    "downloads": 41954,
+    "favorites": 30,
+    "monthly_downloads": 17
+  },
+  "title": "RaidTimer Continued",
+  "updated_at": 1454675805000,
+  "version": "1.4.0"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Sharlikran/LibMapData__3353",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:3353",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3353",
+  "deleted": false,
+  "directories": [
+    "LibMapData"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3353/",
+  "fingerprint": "eaa7e0542dba02532a7fcbe69f1be0a0e539bd166bc54f20a7e2d7143f29035c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3353",
+  "source_url": "https://www.esoui.com/downloads/info3353-LibMapData.html",
+  "stats": {
+    "downloads": 2370789,
+    "favorites": 839,
+    "monthly_downloads": 60044
+  },
+  "title": "LibMapData",
+  "updated_at": 1783044404000,
+  "version": "1.22"
+}

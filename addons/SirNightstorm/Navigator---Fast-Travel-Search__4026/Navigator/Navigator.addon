@@ -1,0 +1,47 @@
+## Title: |c66CCFFNavigator|r
+## Description: Find your way around ESO's maps quicker with a context-aware sidebar and search
+## Author: |c9999FFSirNightstorm|r
+## APIVersion: 101049 101050
+## Version: 1.3.0
+## AddOnVersion: 10300
+## DependsOn: LibAddonMenu-2.0>=43
+## OptionalDependsOn: LibDebugLogger>=307 pChat>=10007040 FasterTravel>=030302 LibSlashCommander>=45 LibWorldMapInfoTab>=127 PerfectPixel>=001331 LibTreasure>=24
+## SavedVariables: Navigator_SavedVariables
+
+Navigator.lua
+
+lang/en.lua
+lang/$(language).lua
+
+fzy.lua
+Data.lua
+Node.lua
+Nodes.lua
+Utils.lua
+Locations.lua
+Players.lua
+Search.lua
+Chat.lua
+Tooltip.lua
+Treasure.lua
+Quest.lua
+Views.lua
+MapTab.lua
+MapTab_keyboard.lua
+MapTab_gamepad.lua
+
+LAM_navactions.lua
+Settings.lua
+
+
+Recents.lua
+Bookmarks.lua
+
+MapTab.xml
+MapTab_gamepad.xml
+Bindings.xml
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax
+# Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+# registered trademarks or trademarks of ZeniMax Media Inc. in the United
+# States and/or other countries. All rights reserved.

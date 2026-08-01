@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Tamriel Calendar">
+            <Action name="TC_TOGGLE_UI">
+                <Down>TamrielCalendar.ToggleStrip()</Down>
+            </Action>
+            <Action name="TC_TOGGLE_WINDOW">
+                <Down>TamrielCalendar.ToggleWindow()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

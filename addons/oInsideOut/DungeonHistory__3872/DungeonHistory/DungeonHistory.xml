@@ -1,0 +1,179 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="DungeonHistoryListMainWindow" hidden="true" mouseEnabled="true" movable="true">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+            <Dimensions x="920" y="500" />
+            <Controls>
+                <Label name="$(parent)EditBoxHeading" font="$(HANDWRITTEN_FONT)|26" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" hidden="true" text="Notes">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="175" offsetY="10"/>
+                </Label>
+                <Texture name="$(parent)EditBoxHeadingDivider" textureFile="EsoUI/Art/Miscellaneous/centerscreen_topDivider.dds" hidden="true" tier="high">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="240" offsetY="50" />
+                    <Dimensions x="200" y="2"/>
+                </Texture>
+                <Backdrop name="$(parent)EditBoxBG" tier="low" hidden="true" inherits="ZO_DarkThinFrame" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" offsetY="-2"/>
+                    <Dimensions x="280" y="504" />
+                </Backdrop>
+                <EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditMultiLine" hidden="true" font="ZoFontEditChat" color="CFDCBD" tier="high">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="60"/>
+                    <Dimensions x="265" y="440" />
+                </EditBox>
+                <Button name="$(parent)ButtonToggleEditBox" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="32" y="32" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="50" offsetX="-10"/>
+					<Textures normal="EsoUI/Art/Buttons/large_rightarrow_up.dds"
+						pressed="EsoUI/Art/Buttons/large_rightarrow_down.dds"
+						mouseOver="EsoUI/Art/Buttons/large_rightarrow_over.dds"
+						disabled="EsoUI/Art/Buttons/large_rightarrow_disabled.dds"/>
+					<OnClicked>
+						DungeonHistory.XML.ToggleEditBox()
+					</OnClicked>
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, TOP, "Open/Close Notepad")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+				</Button>
+            </Controls>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" />
+                <Label name="$(parent)Heading" font="ZoFontWindowTitle" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Dungeon History">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="10"/>
+                </Label>
+                <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="16" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						DungeonHistory.XML.ToggleDungeonHistoryWindow()
+					</OnClicked>
+				</Button>
+                <Control name="$(parent)ComboBox" inherits="ZO_ScrollableComboBox" mouseEnabled="true" keyboardEnable="true">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-60" offsetY="16"/>
+                    <Dimensions x="250" y="30"/>
+                </Control>
+                <Label name="$(parent)TotalLabel" font="ZoFontGameLarge" text="Total Dungeons: ">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="-35"/>
+                </Label>
+                <Label name="$(parent)TotalLabelNumber" font="ZoFontGameLarge">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="70" offsetY="-20"/>
+                </Label>
+                <Label name="$(parent)DungeonCounter" font="ZoFontGameLarge" text="Dungeon Counter: ">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="205" offsetY="-35"/>
+                </Label>
+                <Label name="$(parent)DungeonCounterNumber" font="ZoFontGameLarge">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="270" offsetY="-20"/>
+                </Label>
+                <Label name="$(parent)DungeonCounterResetTime" font="ZoFontGameLarge" text="Last Counter reset on: ">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="415" offsetY="-35"/>
+                </Label>
+                <Label name="$(parent)DungeonCounterResetTimeDate" font="ZoFontGameLarge">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="495" offsetY="-20"/>
+                </Label>
+                <Button name="$(parent)DungeonCounterResetButton" inherits="ZO_DefaultButton" text="Reset Dungeon Counter">
+					<Dimensions x="200" y="30" />
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="740" offsetY="-32" />
+					<OnClicked>
+						DungeonHistory.XML.ResetDungeonCouter()
+					</OnClicked>
+				</Button>
+                <Control name="$(parent)Headers">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Heading" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="16"/>
+                    <Dimensions y="32" />
+                    <Controls>
+                        <Control name="$(parent)Started" inherits="ZO_SortHeader" mouseEnabled = "true">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Started", "started", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="170" y="32" />
+                        </Control>
+                        <Control name="$(parent)StartedDate" inherits="ZO_SortHeader" mouseEnabled = "true" hidden="true">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "StartedDate", "startedDate", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="170" y="32" />
+                        </Control>
+                        <Control name="$(parent)Dungeon" inherits="ZO_SortHeader" mouseEnabled = "true">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Dungeon", "dungeon", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Started" relativePoint="TOPRIGHT"/>
+                            <Dimensions x="200" y="32" />
+                        </Control>
+                        <Control name="$(parent)Duration" inherits="ZO_SortHeader" mouseEnabled = "true">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Duration", "duration", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Dungeon" relativePoint="TOPRIGHT" />
+                            <Dimensions x="128" y="32" />
+                        </Control>
+                        <Control name="$(parent)Difficulty" inherits="ZO_SortHeader" mouseEnabled = "true">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Difficulty", "difficulty", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Duration" relativePoint="TOPRIGHT" />
+                            <Dimensions x="135" y="32" />
+                        </Control>
+						<Control name="$(parent)Character" inherits="ZO_SortHeader" mouseEnabled = "true">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Character", "character", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Difficulty" relativePoint="TOPRIGHT" />
+                            <Dimensions x="232" y="32" />
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-12" offsetY="-64" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+        <Button name="DungeonHistoryListEntityRow" virtual="true">
+            <Dimensions y="30" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" />
+            <OnMouseEnter>
+                DungeonHistory.XML.SL.MouseEnter(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                DungeonHistory.XML.SL.MouseExit(self)
+            </OnMouseExit>
+            <OnMouseUp>
+                DungeonHistory.XML.SL.MouseUp(self, button, upInside)
+            </OnMouseUp>
+            <Controls>
+                <Label name="$(parent)Started" font="ZoFontWinH4" wrapMode="ELLIPSIS" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                    <Dimensions x="170" y="32" />
+                </Label>
+                <Label name="$(parent)StartedDate" font="ZoFontWinH4" wrapMode="ELLIPSIS" hidden="false">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                    <Dimensions x="170" y="32" />
+                </Label>
+                <Label name="$(parent)Dungeon" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Started" relativePoint="TOPRIGHT" />
+                    <Dimensions x="200" y="32" />
+                </Label>
+                <Label name="$(parent)Duration" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Dungeon"  relativePoint="TOPRIGHT" />
+                    <Dimensions x="128" y="32" />
+                </Label>
+                <Label name="$(parent)Difficulty" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Duration" relativePoint="TOPRIGHT" />
+                    <Dimensions x="135" y="32" />
+                </Label>
+				<Label name="$(parent)Character" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Difficulty" relativePoint="TOPRIGHT" />
+                    <Dimensions x="234" y="32" />
+                </Label>
+            </Controls>
+        </Button>
+    </Controls>
+</GuiXml>

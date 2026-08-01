@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/sirinsidiator/LibDateTime__2277",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:2277",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:2277",
+  "deleted": false,
+  "directories": [
+    "LibDateTime"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2277/",
+  "fingerprint": "04189add3b158187f9478f5758c619e96a2cffdc1a9914a44a2b49b35a2db803",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2277",
+  "source_url": "https://www.esoui.com/downloads/info2277-LibDateTime.html",
+  "stats": {
+    "downloads": 992756,
+    "favorites": 496,
+    "monthly_downloads": 4961
+  },
+  "title": "LibDateTime",
+  "updated_at": 1746122139000,
+  "version": "1.2.0"
+}

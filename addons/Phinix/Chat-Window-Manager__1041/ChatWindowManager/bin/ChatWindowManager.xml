@@ -1,0 +1,35 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="CWMAddon" />
+
+		<Button name="CWMAddon_ReloadButton1">
+			<Dimensions x="32" y="32"/>
+			<Anchor point="LEFT" relativeTo="ZO_ChatWindowNotifications" relativePoint="RIGHT" offsetX="12" offsetY="0"/>
+			<Textures
+				normal="/ChatWindowManager/bin/reload_up.dds"
+				pressed="/ChatWindowManager/bin/reload_down.dds"
+				mouseOver="/ChatWindowManager/bin/reload_down.dds"
+				disabled="/ChatWindowManager/bin/reload_up.dds"
+			/>
+			<OnMouseEnter>
+				CWMAddon.XMLNavigation(self, 1, 1)
+			</OnMouseEnter>
+			<OnMouseExit>
+				CWMAddon.XMLNavigation(self, 2, 1)
+			</OnMouseExit>
+			<OnClicked>
+				CWMAddon.XMLNavigation(self, 3, 1)
+			</OnClicked>
+		</Button>
+		<Button name="CWMAddon_ReloadButton2">
+			<Dimensions x="32" y="32"/>
+			<Anchor point="BOTTOM" relativeTo="ZO_ChatWindowMinBarMaximize" relativePoint="TOP" offsetX="2" offsetY="0"/>
+			<Textures
+				normal="/ChatWindowManager/bin/reload_up.dds"
+				pressed="/ChatWindowManager/bin/reload_down.dds"
+				mouseOver="/ChatWindowManager/bin/reload_down.dds"
+				disabled="/ChatWindowManager/bin/reload_up.dds"
+			/>
+		</Button>
+	</Controls>
+</GuiXml>

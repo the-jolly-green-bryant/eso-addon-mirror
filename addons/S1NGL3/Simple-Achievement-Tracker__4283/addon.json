@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/S1NGL3/Simple-Achievement-Tracker__4283",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "S1NGL3",
+  "canonical_id": "esoui:4283",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4283",
+  "deleted": false,
+  "directories": [
+    "SimpleAchievementTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4283/",
+  "fingerprint": "36cca5fce87c5c21baa2038c2b84f449cd9ddd84d1a13621cf507920fd2aa905",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14710.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14711.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14787.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14788.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14715.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14716.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4283",
+  "source_url": "https://www.esoui.com/downloads/info4283-SimpleAchievementTracker.html",
+  "stats": {
+    "downloads": 752,
+    "favorites": 3,
+    "monthly_downloads": 23
+  },
+  "title": "Simple Achievement Tracker",
+  "updated_at": 1763305941000,
+  "version": "1.0.5"
+}

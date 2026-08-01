@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/NOGARUKA/Zadrot-Companion__3094",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "NOGARUKA",
+  "canonical_id": "esoui:3094",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3094",
+  "deleted": false,
+  "directories": [
+    "Zadrot_Companion"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3094/",
+  "fingerprint": "aeea965e545a1a85d6582a29c61509fe719146337348292b6c718d6df516dc3f",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3094",
+  "source_url": "https://www.esoui.com/downloads/info3094-ZadrotCompanion.html",
+  "stats": {
+    "downloads": 8574,
+    "favorites": 10,
+    "monthly_downloads": 12
+  },
+  "title": "Zadrot Companion",
+  "updated_at": 1650658699000,
+  "version": "2"
+}

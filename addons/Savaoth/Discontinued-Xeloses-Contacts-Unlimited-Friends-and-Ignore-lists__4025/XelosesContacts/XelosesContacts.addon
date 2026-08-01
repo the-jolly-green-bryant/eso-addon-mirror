@@ -1,0 +1,67 @@
+﻿; SPDX-FileCopyrightText: 2025 Xeloses (@Savaoth [PC/EU])
+; SPDX-License-Identifier: GPL-3.0
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at: https://account.elderscrollsonline.com/add-on-terms
+
+## Name: Xeloses' Contacts
+## Title: |cee55eeXeloses|r' Contacts
+## Description: Unlimited Friends and Villains list with extended features.
+## Author: |cee55eeXeloses|r (|c7799ee@Savaoth|r [PC/EU])
+## Version: 1.2.12
+## AddOnVersion: 10212
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0>=41 LibCustomMenu>=730 LibSavedVars>=60007 LibExtendedJournal>=205020
+## OptionalDependsOn: LibChatMessage>=113 LibDebugLogger>=263 LibSlashCommander>=36 LGM
+## SavedVariables: XelosesContactsData
+
+lng/default.lua
+lng/$(language).lua
+
+classes/plugin.lua
+
+core/utils/globals.lua
+
+core/base/addon.lua
+core/base/constant.lua
+data/icons.lua
+data/zones.lua
+
+core/utils/common.lua
+core/utils/chat.lua
+core/utils/notification.lua
+core/utils/game.lua
+
+core/chat_cache.lua
+core/contact_groups.lua
+core/contacts.lua
+core/dialogs.lua
+core/import.lua
+core/hooks.lua
+core/contextmenu.lua
+core/group_finder.lua
+core/slashcmd.lua
+core/updater.lua
+
+ui/bindings.xml
+ui/controls.xml
+ui/ReticleMarker.lua
+ui/ReticleMarker.xml
+ui/ContactDialog.lua
+ui/ContactDialog.xml
+ui/ContactsList.lua
+ui/ContactsList.xml
+ui/ui.lua
+
+plugins/plugins_api.lua
+plugins/lgm/lgm_plugin.lua
+plugins/lootlog/lootlog_plugin.lua
+
+settings/defaults.lua
+settings/settings.lua
+
+XelosesContacts.lua

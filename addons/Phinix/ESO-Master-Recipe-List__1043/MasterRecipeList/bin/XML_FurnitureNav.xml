@@ -1,0 +1,1139 @@
+<GuiXml>
+	<Controls>
+<!-- Left side furniture navigation frame -->
+		<Control name="ESOMRL_MainFrameFurnitureFrame">
+			<Dimensions x="300" y="534"/>
+			<Anchor point="LEFT" relativeTo="ESOMRL_MainFrame" relativePoint="LEFT" offsetX="0" offsetY="14"/>
+			<Controls>
+			<!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+				<Button name="$(parent)FClearSearch">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="ESOMRL_MainFrame" relativePoint="BOTTOMLEFT" offsetX="-4" offsetY="5"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/minus_up.dds"
+						pressed="EsoUI/Art/Buttons/minus_down.dds"
+						mouseOver="EsoUI/Art/Buttons/minus_up.dds"
+						disabled="EsoUI/Art/Buttons/minus_disabled.dds"
+					/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameFClearSearchLabel:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameFClearSearchLabel:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameFClearSearchLabel:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL_MainFrameFurnitureFrameFClearSearchLabel:SetAlpha(0.8)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(301)
+					</OnClicked>
+				</Button>
+				<Button name="$(parent)FClearSearchButton">
+					<Dimensions x="290" y="32"/>
+					<Anchor point="LEFT" relativeTo="$(parent)FClearSearch" relativePoint="RIGHT"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameFClearSearchLabel:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameFClearSearchLabel:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameFClearSearchLabel:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL_MainFrameFurnitureFrameFClearSearchLabel:SetAlpha(0.8)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(301)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)FClearSearchLabel" font="ZoFontWinH5" color="FEE854" horizontalAlignment="LEFT" alpha="0.8">
+					<Anchor point="LEFT" relativeTo="$(parent)FClearSearch" relativePoint="RIGHT"/>
+				</Label>
+<!-- Alchemy Formula quality selection -->
+				<Label name="$(parent)AlchemyHead" font="ZoFontHeader2" color="FFFF00" horizontalAlignment="LEFT" text="Alchemy Formula">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-16	" offsetY="4"/>
+				</Label>
+				<Texture name="$(parent)Alchemy3T1" textureFile="MasterRecipeList/bin/textures/quality3.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)AlchemyHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Alchemy3T2" textureFile="MasterRecipeList/bin/textures/quality3i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)AlchemyHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)AlchemyButton3">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)AlchemyHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameAlchemy3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy3T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameAlchemy3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy3T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameAlchemy3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy3T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 3)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 103)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Alchemy2T1" textureFile="MasterRecipeList/bin/textures/quality2.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)AlchemyButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Alchemy2T2" textureFile="MasterRecipeList/bin/textures/quality2i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)AlchemyButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)AlchemyButton2">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)AlchemyButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameAlchemy2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy2T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameAlchemy2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy2T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameAlchemy2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy2T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 102)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Alchemy1T1" textureFile="MasterRecipeList/bin/textures/quality1.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)AlchemyButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Alchemy1T2" textureFile="MasterRecipeList/bin/textures/quality1i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)AlchemyButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)AlchemyButton1">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)AlchemyButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameAlchemy1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy1T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameAlchemy1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy1T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameAlchemy1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy1T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 1)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 101)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Alchemy4T1" textureFile="MasterRecipeList/bin/textures/quality4.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)AlchemyButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Alchemy4T2" textureFile="MasterRecipeList/bin/textures/quality4i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)AlchemyButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)AlchemyButton4">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)AlchemyButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameAlchemy4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy4T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameAlchemy4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy4T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameAlchemy4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy4T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 4)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 104)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Alchemy5T1" textureFile="MasterRecipeList/bin/textures/quality5.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)AlchemyButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Alchemy5T2" textureFile="MasterRecipeList/bin/textures/quality5i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)AlchemyButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)AlchemyButton5">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)AlchemyButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameAlchemy5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy5T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameAlchemy5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy5T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameAlchemy5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameAlchemy5T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 5)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 105)
+					</OnClicked>
+				</Button>
+<!-- Blacksmithing Diagram quality selection -->
+				<Label name="$(parent)BlacksmithHead" font="ZoFontHeader2" color="FFFF00" horizontalAlignment="LEFT" text="Blacksmithing Diagram">
+					<Anchor point="TOP" relativeTo="$(parent)AlchemyButton3" relativePoint="BOTTOM" offsetX="0" offsetY="20"/>
+				</Label>
+				<Texture name="$(parent)Blacksmith3T1" textureFile="MasterRecipeList/bin/textures/quality3.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)BlacksmithHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Blacksmith3T2" textureFile="MasterRecipeList/bin/textures/quality3i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)BlacksmithHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)BlacksmithButton3">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)BlacksmithHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith3T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith3T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith3T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 8)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 108)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Blacksmith2T1" textureFile="MasterRecipeList/bin/textures/quality2.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)BlacksmithButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Blacksmith2T2" textureFile="MasterRecipeList/bin/textures/quality2i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)BlacksmithButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)BlacksmithButton2">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)BlacksmithButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith2T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith2T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith2T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 7)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 107)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Blacksmith1T1" textureFile="MasterRecipeList/bin/textures/quality1.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)BlacksmithButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Blacksmith1T2" textureFile="MasterRecipeList/bin/textures/quality1i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)BlacksmithButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)BlacksmithButton1">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)BlacksmithButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith1T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith1T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith1T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 6)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 106)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Blacksmith4T1" textureFile="MasterRecipeList/bin/textures/quality4.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)BlacksmithButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Blacksmith4T2" textureFile="MasterRecipeList/bin/textures/quality4i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)BlacksmithButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)BlacksmithButton4">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)BlacksmithButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith4T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith4T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith4T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 9)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 109)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Blacksmith5T1" textureFile="MasterRecipeList/bin/textures/quality5.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)BlacksmithButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Blacksmith5T2" textureFile="MasterRecipeList/bin/textures/quality5i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)BlacksmithButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)BlacksmithButton5">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)BlacksmithButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith5T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith5T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameBlacksmith5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameBlacksmith5T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 10)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 110)
+					</OnClicked>
+				</Button>
+<!-- Clothing Pattern quality selection -->
+				<Label name="$(parent)ClothingHead" font="ZoFontHeader2" color="FFFF00" horizontalAlignment="LEFT" text="Clothing Pattern">
+					<Anchor point="TOP" relativeTo="$(parent)BlacksmithButton3" relativePoint="BOTTOM" offsetX="0" offsetY="20"/>
+				</Label>
+				<Texture name="$(parent)Clothing3T1" textureFile="MasterRecipeList/bin/textures/quality3.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)ClothingHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Clothing3T2" textureFile="MasterRecipeList/bin/textures/quality3i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)ClothingHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)ClothingButton3">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)ClothingHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameClothing3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing3T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameClothing3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing3T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameClothing3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing3T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 13)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 113)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Clothing2T1" textureFile="MasterRecipeList/bin/textures/quality2.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ClothingButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Clothing2T2" textureFile="MasterRecipeList/bin/textures/quality2i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ClothingButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)ClothingButton2">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ClothingButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameClothing2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing2T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameClothing2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing2T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameClothing2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing2T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 12)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 112)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Clothing1T1" textureFile="MasterRecipeList/bin/textures/quality1.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ClothingButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Clothing1T2" textureFile="MasterRecipeList/bin/textures/quality1i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ClothingButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)ClothingButton1">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ClothingButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameClothing1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing1T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameClothing1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing1T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameClothing1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing1T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 11)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 111)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Clothing4T1" textureFile="MasterRecipeList/bin/textures/quality4.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)ClothingButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Clothing4T2" textureFile="MasterRecipeList/bin/textures/quality4i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)ClothingButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)ClothingButton4">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)ClothingButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameClothing4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing4T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameClothing4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing4T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameClothing4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing4T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 14)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 114)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Clothing5T1" textureFile="MasterRecipeList/bin/textures/quality5.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)ClothingButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Clothing5T2" textureFile="MasterRecipeList/bin/textures/quality5i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)ClothingButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)ClothingButton5">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)ClothingButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameClothing5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing5T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameClothing5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing5T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameClothing5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameClothing5T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 15)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 115)
+					</OnClicked>
+				</Button>
+<!-- Enchanting Praxis quality selection -->
+				<Label name="$(parent)EnchantHead" font="ZoFontHeader2" color="FFFF00" horizontalAlignment="LEFT" text="Enchanting Praxis">
+					<Anchor point="TOP" relativeTo="$(parent)ClothingButton3" relativePoint="BOTTOM" offsetX="0" offsetY="20"/>
+				</Label>
+				<Texture name="$(parent)Enchant3T1" textureFile="MasterRecipeList/bin/textures/quality3.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)EnchantHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Enchant3T2" textureFile="MasterRecipeList/bin/textures/quality3i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)EnchantHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)EnchantButton3">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)EnchantHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameEnchant3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant3T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameEnchant3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant3T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameEnchant3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant3T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 18)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 118)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Enchant2T1" textureFile="MasterRecipeList/bin/textures/quality2.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)EnchantButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Enchant2T2" textureFile="MasterRecipeList/bin/textures/quality2i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)EnchantButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)EnchantButton2">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)EnchantButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameEnchant2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant2T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameEnchant2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant2T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameEnchant2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant2T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 17)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 117)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Enchant1T1" textureFile="MasterRecipeList/bin/textures/quality1.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)EnchantButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Enchant1T2" textureFile="MasterRecipeList/bin/textures/quality1i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)EnchantButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)EnchantButton1">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)EnchantButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameEnchant1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant1T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameEnchant1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant1T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameEnchant1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant1T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 16)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 116)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Enchant4T1" textureFile="MasterRecipeList/bin/textures/quality4.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)EnchantButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Enchant4T2" textureFile="MasterRecipeList/bin/textures/quality4i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)EnchantButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)EnchantButton4">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)EnchantButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameEnchant4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant4T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameEnchant4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant4T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameEnchant4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant4T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 19)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 119)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Enchant5T1" textureFile="MasterRecipeList/bin/textures/quality5.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)EnchantButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Enchant5T2" textureFile="MasterRecipeList/bin/textures/quality5i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)EnchantButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)EnchantButton5">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)EnchantButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameEnchant5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant5T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameEnchant5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant5T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameEnchant5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameEnchant5T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 20)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 120)
+					</OnClicked>
+				</Button>
+<!-- Provisioning Design quality selection -->
+				<Label name="$(parent)ProvisioningHead" font="ZoFontHeader2" color="FFFF00" horizontalAlignment="LEFT" text="Provisioning Design">
+					<Anchor point="TOP" relativeTo="$(parent)EnchantButton3" relativePoint="BOTTOM" offsetX="0" offsetY="20"/>
+				</Label>
+				<Texture name="$(parent)Provisioning3T1" textureFile="MasterRecipeList/bin/textures/quality3.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)ProvisioningHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Provisioning3T2" textureFile="MasterRecipeList/bin/textures/quality3i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)ProvisioningHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)ProvisioningButton3">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)ProvisioningHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameProvisioning3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning3T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameProvisioning3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning3T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameProvisioning3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning3T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 23)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 123)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Provisioning2T1" textureFile="MasterRecipeList/bin/textures/quality2.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ProvisioningButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Provisioning2T2" textureFile="MasterRecipeList/bin/textures/quality2i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ProvisioningButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)ProvisioningButton2">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ProvisioningButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameProvisioning2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning2T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameProvisioning2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning2T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameProvisioning2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning2T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 22)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 122)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Provisioning1T1" textureFile="MasterRecipeList/bin/textures/quality1.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ProvisioningButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Provisioning1T2" textureFile="MasterRecipeList/bin/textures/quality1i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ProvisioningButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)ProvisioningButton1">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)ProvisioningButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameProvisioning1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning1T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameProvisioning1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning1T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameProvisioning1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning1T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 21)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 121)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Provisioning4T1" textureFile="MasterRecipeList/bin/textures/quality4.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)ProvisioningButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Provisioning4T2" textureFile="MasterRecipeList/bin/textures/quality4i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)ProvisioningButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)ProvisioningButton4">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)ProvisioningButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameProvisioning4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning4T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameProvisioning4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning4T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameProvisioning4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning4T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 24)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 124)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Provisioning5T1" textureFile="MasterRecipeList/bin/textures/quality5.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)ProvisioningButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Provisioning5T2" textureFile="MasterRecipeList/bin/textures/quality5i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)ProvisioningButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)ProvisioningButton5">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)ProvisioningButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameProvisioning5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning5T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameProvisioning5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning5T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameProvisioning5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameProvisioning5T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 25)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 125)
+					</OnClicked>
+				</Button>
+<!-- Woodworking Blueprint quality selection -->
+				<Label name="$(parent)WoodworkingHead" font="ZoFontHeader2" color="FFFF00" horizontalAlignment="LEFT" text="Woodworking Blueprint">
+					<Anchor point="TOP" relativeTo="$(parent)ProvisioningButton3" relativePoint="BOTTOM" offsetX="0" offsetY="20"/>
+				</Label>
+				<Texture name="$(parent)Woodworking3T1" textureFile="MasterRecipeList/bin/textures/quality3.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)WoodworkingHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Woodworking3T2" textureFile="MasterRecipeList/bin/textures/quality3i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)WoodworkingHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)WoodworkingButton3">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)WoodworkingHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameWoodworking3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking3T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameWoodworking3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking3T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameWoodworking3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking3T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 28)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 128)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Woodworking2T1" textureFile="MasterRecipeList/bin/textures/quality2.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)WoodworkingButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Woodworking2T2" textureFile="MasterRecipeList/bin/textures/quality2i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)WoodworkingButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)WoodworkingButton2">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)WoodworkingButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameWoodworking2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking2T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameWoodworking2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking2T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameWoodworking2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking2T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 27)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 127)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Woodworking1T1" textureFile="MasterRecipeList/bin/textures/quality1.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)WoodworkingButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Woodworking1T2" textureFile="MasterRecipeList/bin/textures/quality1i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)WoodworkingButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)WoodworkingButton1">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)WoodworkingButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameWoodworking1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking1T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameWoodworking1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking1T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameWoodworking1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking1T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 26)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 126)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Woodworking4T1" textureFile="MasterRecipeList/bin/textures/quality4.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)WoodworkingButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Woodworking4T2" textureFile="MasterRecipeList/bin/textures/quality4i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)WoodworkingButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)WoodworkingButton4">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)WoodworkingButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameWoodworking4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking4T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameWoodworking4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking4T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameWoodworking4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking4T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 29)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 129)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Woodworking5T1" textureFile="MasterRecipeList/bin/textures/quality5.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)WoodworkingButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Woodworking5T2" textureFile="MasterRecipeList/bin/textures/quality5i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)WoodworkingButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)WoodworkingButton5">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)WoodworkingButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameWoodworking5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking5T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameWoodworking5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking5T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameWoodworking5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameWoodworking5T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 30)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 130)
+					</OnClicked>
+				</Button>
+<!-- Jewelry Crafting Sketch quality selection -->
+				<Label name="$(parent)JewelryHead" font="ZoFontHeader2" color="FFFF00" horizontalAlignment="LEFT" text="Jewelry Crafting Sketch">
+					<Anchor point="TOP" relativeTo="$(parent)WoodworkingButton3" relativePoint="BOTTOM" offsetX="0" offsetY="20"/>
+				</Label>
+				<Texture name="$(parent)Jewelry3T1" textureFile="MasterRecipeList/bin/textures/quality3.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)JewelryHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Jewelry3T2" textureFile="MasterRecipeList/bin/textures/quality3i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)JewelryHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)JewelryButton3">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOP" relativeTo="$(parent)JewelryHead" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameJewelry3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry3T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameJewelry3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry3T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameJewelry3T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry3T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 33)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 133)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Jewelry2T1" textureFile="MasterRecipeList/bin/textures/quality2.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)JewelryButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Jewelry2T2" textureFile="MasterRecipeList/bin/textures/quality2i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)JewelryButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)JewelryButton2">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)JewelryButton3" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameJewelry2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry2T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameJewelry2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry2T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameJewelry2T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry2T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 32)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 132)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Jewelry1T1" textureFile="MasterRecipeList/bin/textures/quality1.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)JewelryButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Jewelry1T2" textureFile="MasterRecipeList/bin/textures/quality1i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)JewelryButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)JewelryButton1">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)JewelryButton2" relativePoint="LEFT" offsetX="-0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameJewelry1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry1T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameJewelry1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry1T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameJewelry1T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry1T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 31)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 131)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Jewelry4T1" textureFile="MasterRecipeList/bin/textures/quality4.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)JewelryButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Jewelry4T2" textureFile="MasterRecipeList/bin/textures/quality4i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)JewelryButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)JewelryButton4">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)JewelryButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameJewelry4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry4T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameJewelry4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry4T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameJewelry4T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry4T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 34)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 134)
+					</OnClicked>
+				</Button>
+				<Texture name="$(parent)Jewelry5T1" textureFile="MasterRecipeList/bin/textures/quality5.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)JewelryButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>	
+				<Texture name="$(parent)Jewelry5T2" textureFile="MasterRecipeList/bin/textures/quality5i.dds" alpha="0">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)JewelryButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Button name="$(parent)JewelryButton5">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)JewelryButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+					<OnMouseDown>
+						ESOMRL_MainFrameFurnitureFrameJewelry5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry5T2:SetAlpha(0.5)
+					</OnMouseDown>
+					<OnMouseUp>
+						ESOMRL_MainFrameFurnitureFrameJewelry5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry5T2:SetAlpha(1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						ESOMRL_MainFrameFurnitureFrameJewelry5T1:SetAlpha(0)
+						ESOMRL_MainFrameFurnitureFrameJewelry5T2:SetAlpha(1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ESOMRL.XMLNavigation(312, nil, nil, 35)
+					</OnMouseExit>
+					<OnClicked>
+						ESOMRL.XMLNavigation(304, nil, nil, 135)
+					</OnClicked>
+				</Button>
+<!-- ---------------------------------------------------------------------------------------------------------------------------------------------------- -->
+			</Controls>
+		</Control>
+
+	</Controls>
+</GuiXml>

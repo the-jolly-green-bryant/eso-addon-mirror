@@ -1,0 +1,149 @@
+<GuiXml>
+	<Controls>
+
+		<TopLevelControl
+			name="DefaultLanguageNinja_UI"
+			mouseEnabled="true" 
+			movable="true" 
+			clampedToScreen="false" 
+			drawLayer="DL_BACKGROUND" 
+			hidden="true"
+		>
+			<Dimensions x="192" y="32" />
+			<Anchor
+				point="TOPLEFT"
+				relativePoint="TOPLEFT" 
+				relativeTo="GuiRoot" 
+				offsetX="0" 
+				offsetY="0"
+			/>
+			<Controls>
+				<Backdrop name="$(parent)_BGDark" alpha="0.5" inherits="ZO_ThinBackdrop"/>
+
+				<Button name="$(parent)_OpenSettings" clickSound="Click" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="8" />
+					<Dimensions x="32" y="32"/>
+					<OnClicked>
+						DefaultLanguageNinja_UI_OnClickOpenSettings()
+					</OnClicked>
+					<Controls>
+						<Texture name="$(parent)Texture" textureFile="/esoui/art/menubar/gamepad/gp_playermenu_icon_settings.dds" color="CCAA1A">
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+							<Dimensions y="32" x="32"/>
+						</Texture>
+					</Controls>
+				</Button>
+
+				<Button name="$(parent)_LoadEnglishNow" clickSound="Click" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="4" />
+					<Dimensions x="32" y="32"/>
+					<OnClicked>
+						DefaultLanguageNinja_UI_OnClickPresetLanguage("en")
+					</OnClicked>
+					<Controls>
+						<Label name="$(parent)Label" font="ZoFontHeader4" text="EN">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+						</Label>
+					</Controls>
+				</Button>
+
+				<Button name="$(parent)_LoadJapaneseNow" clickSound="Click" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="4" />
+					<Dimensions x="32" y="32"/>
+					<OnClicked>
+						DefaultLanguageNinja_UI_OnClickPresetLanguage("jp")
+					</OnClicked>
+					<Controls>
+						<Label name="$(parent)Label" font="ZoFontHeader4" text="JP">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+						</Label>
+					</Controls>
+				</Button> 
+
+				<Button name="$(parent)_LoadGermanNow" clickSound="Click" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="4" />
+					<Dimensions x="32" y="32"/>
+					<OnClicked>
+						DefaultLanguageNinja_UI_OnClickPresetLanguage("de")
+					</OnClicked>
+					<Controls>
+						<Label name="$(parent)Label" font="ZoFontHeader4" text="DE">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+						</Label>
+					</Controls>
+				</Button> 
+
+				<Button name="$(parent)_LoadFrenchNow" clickSound="Click" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="4" />
+					<Dimensions x="32" y="32"/>
+					<OnClicked>
+						DefaultLanguageNinja_UI_OnClickPresetLanguage("fr")
+					</OnClicked>
+					<Controls>
+						<Label name="$(parent)Label" font="ZoFontHeader4" text="FR">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+						</Label>
+					</Controls>
+				</Button> 
+
+				<Button name="$(parent)_LoadRussianNow" clickSound="Click" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="4" />
+					<Dimensions x="32" y="32"/>
+					<OnClicked>
+						DefaultLanguageNinja_UI_OnClickPresetLanguage("ru")
+					</OnClicked>
+					<Controls>
+						<Label name="$(parent)Label" font="ZoFontHeader4" text="RU">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+						</Label>
+					</Controls>
+				</Button> 
+
+				<Button name="$(parent)_LoadUserDefined0Now" clickSound="Click" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="4" />
+					<Dimensions x="32" y="32"/>
+					<OnClicked>
+						DefaultLanguageNinja_UI_OnClickUserDefinedLanguage(0)
+					</OnClicked>
+					<Controls>
+						<Label name="$(parent)Label" font="ZoFontHeader4" text="U0">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+						</Label>
+					</Controls>
+				</Button> 
+
+				<Button name="$(parent)_LoadUserDefined1Now" clickSound="Click" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="4" />
+					<Dimensions x="32" y="32"/>
+					<OnClicked>
+						DefaultLanguageNinja_UI_OnClickUserDefinedLanguage(1)
+					</OnClicked>
+					<Controls>
+						<Label name="$(parent)Label" font="ZoFontHeader4" text="U1">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+						</Label>
+					</Controls>
+				</Button> 
+
+				<Button name="$(parent)_LoadUserDefined2Now" clickSound="Click" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="4" />
+					<Dimensions x="32" y="32"/>
+					<OnClicked>
+						DefaultLanguageNinja_UI_OnClickUserDefinedLanguage(2)
+					</OnClicked>
+					<Controls>
+						<Label name="$(parent)Label" font="ZoFontHeader4" text="U2">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+						</Label>
+					</Controls>
+				</Button> 
+
+			</Controls>
+
+			<OnMouseUp>
+				DefaultLanguageNinja_UI_SavePosition()
+			</OnMouseUp>
+
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

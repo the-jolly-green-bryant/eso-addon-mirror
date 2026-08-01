@@ -1,0 +1,8 @@
+## Title: CompanionRapportNumbers
+## Author: Smaxx
+## Version: 1.2
+## Description: This addon shows a numeric value in your loot history whenever your Companion Rapport changes.
+## APIVersion: 101040
+## DependsOn: 
+
+main.lua

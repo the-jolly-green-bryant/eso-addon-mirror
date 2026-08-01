@@ -1,0 +1,24 @@
+## Title: |c7635f7Reveries: Emotes and Mementos|r
+## Description: Play simultaneous emotes and mementos for simple choreography
+## Author: |cf7a009StorybookTerror|r
+## Version: 0.9
+## APIVersion: 101041
+## SavedVariables: ReveriesVars ReveriesServerVars
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: LibSlashCommander
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+## Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+## trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+## other countries. All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+##
+## Thank you to the following addon authors, without whom it would have been a lot
+## harder to write this.
+##
+##   @Kelinmiriel (EventTracker)
+##
+
+Reveries.lua
+Reveries.xml

@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/rkuhnjr/IGOR-Research-Assistant__859",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "rkuhnjr",
+  "canonical_id": "esoui:859",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:859",
+  "deleted": false,
+  "directories": [
+    "IGOR"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl859/",
+  "fingerprint": "3637892d874942bfc3e91219bb569c156c747ed0ebac77cb5f293fd6a4ac8240",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2610.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2604.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2606.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2605.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "859",
+  "source_url": "https://www.esoui.com/downloads/info859-IGORResearchAssistant.html",
+  "stats": {
+    "downloads": 4873,
+    "favorites": 4,
+    "monthly_downloads": 15
+  },
+  "title": "IGOR :: Research Assistant",
+  "updated_at": 1418103850000,
+  "version": "0.1"
+}

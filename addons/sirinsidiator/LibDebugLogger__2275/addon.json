@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/sirinsidiator/LibDebugLogger__2275",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:2275",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:2275",
+  "deleted": false,
+  "directories": [
+    "LibDebugLogger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2275/",
+  "fingerprint": "8a463714f59b9786b6b818ae5d0325da017b64e814b6d5e18e3ee0ae69328282",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8129.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2275",
+  "source_url": "https://www.esoui.com/downloads/info2275-LibDebugLogger.html",
+  "stats": {
+    "downloads": 3707024,
+    "favorites": 1648,
+    "monthly_downloads": 26850
+  },
+  "title": "LibDebugLogger",
+  "updated_at": 1780943646000,
+  "version": "2.6.2"
+}

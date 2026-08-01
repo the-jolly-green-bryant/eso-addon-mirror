@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/notnear/AUI---Advanced-UI-PT-BR-Patch__3582",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "notnear",
+  "canonical_id": "esoui:3582",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3582",
+  "deleted": false,
+  "directories": [
+    "AUI_BRPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3582/",
+  "fingerprint": "687e5192775dbc83665fa3115d20e9bb8849e27927c46a8a15bea507195e3827",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3582",
+  "source_url": "https://www.esoui.com/downloads/info3582-AUI-AdvancedUIPT-BRPatch.html",
+  "stats": {
+    "downloads": 17494,
+    "favorites": 0,
+    "monthly_downloads": 158
+  },
+  "title": "AUI - Advanced UI PT-BR Patch",
+  "updated_at": 1677703901000,
+  "version": "1.0.0"
+}

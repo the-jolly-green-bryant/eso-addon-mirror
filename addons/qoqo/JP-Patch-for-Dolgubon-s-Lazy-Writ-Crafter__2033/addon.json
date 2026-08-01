@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/qoqo/JP-Patch-for-Dolgubon-s-Lazy-Writ-Crafter__2033",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "qoqo",
+  "canonical_id": "esoui:2033",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:2033",
+  "deleted": false,
+  "directories": [
+    "DolgubonsLazyWritCreator_jpPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2033/",
+  "fingerprint": "26f5e6c16432959b1ae2a6039daa3a431b8b15b53ef13f3cb0c847d971812c35",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8924.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2033",
+  "source_url": "https://www.esoui.com/downloads/info2033-JPPatchforDolgubonsLazyWritCrafter.html",
+  "stats": {
+    "downloads": 104551,
+    "favorites": 10,
+    "monthly_downloads": 141
+  },
+  "title": "JP Patch for Dolgubon's Lazy Writ Crafter",
+  "updated_at": 1752737044000,
+  "version": "3.1.7.5.4jp"
+}

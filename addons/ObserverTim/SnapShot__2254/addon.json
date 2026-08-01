@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/ObserverTim/SnapShot__2254",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ObserverTim",
+  "canonical_id": "esoui:2254",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2254",
+  "deleted": false,
+  "directories": [
+    "SnapShot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2254/",
+  "fingerprint": "e2f2f517e5206821a5c3600f2df23574aced4d80bddbfbacb29c66446fae6c41",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10720.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10719.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10718.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2254",
+  "source_url": "https://www.esoui.com/downloads/info2254-SnapShot.html",
+  "stats": {
+    "downloads": 12936,
+    "favorites": 19,
+    "monthly_downloads": 41
+  },
+  "title": "SnapShot",
+  "updated_at": 1778450782000,
+  "version": "3.3.5"
+}

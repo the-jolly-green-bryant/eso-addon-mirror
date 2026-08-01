@@ -1,0 +1,7 @@
+## Title: |c77ee02CovetousCountess|cd5b526ZH
+## Version: 1.0
+## Author: |c87ddf2NeiL978
+## APIVersion: 101037
+## Description: 只允许您从提示板中接取贪婪的伯爵夫人的任务。 Allows you to only take The Covetous Countess Contracts from the Thieves Guild Marked for Tip board.
+
+CovetousCountessZH.lua

@@ -1,0 +1,102 @@
+[COLOR="DeepSkyBlue"]1.21 (22)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.20 (21)[/COLOR]:
+[LIST]
+[*] API  and dependencies update
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.19 (20)[/COLOR]:
+[LIST]
+[*] API update
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.18 (19)[/COLOR]:
+[LIST]
+[*] Convert .txt manifest to .addon
+[*] Update required version numbers for dependent libraries
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.17 (18)[/COLOR]:
+[LIST]
+[*] Remove debug message that was left active by mistake.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.15 (16)[/COLOR]:
+[LIST]
+[*] API update
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.14 (15)[/COLOR]:
+[LIST]
+[*] Reduced the lag between opening the guild bank and changing to the chosen default guild bank.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.13 (14)[/COLOR]:
+[LIST]
+[*] Fix post-43 update problem with default guild bank not getting selected.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.12 (13)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.11 (12)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.10 (11)[/COLOR]:
+[LIST]
+[*] API bump (Necrom).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.9 (10)[/COLOR]:
+[LIST]
+[*] API bump (Scribes of Fate).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.8 (9)[/COLOR]:
+[LIST]
+[*] API bump (Firesong).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.7 (8)[/COLOR]:
+[LIST]
+[*] API bump (High Isle).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.6 (7)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.5 (6)[/COLOR]:
+[LIST]
+[*] API bump.
+[*] Require minimum version of installed LibAddonMenu to be at least 32. Earlier versions will break the user interface.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4 (5)[/COLOR]
+[LIST]
+[*] API bump for Waking Flame.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.2/1.3 (4)[/COLOR]
+[LIST]
+[*] API bump for Blackwood.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1 (3)[/COLOR]
+[LIST]
+[*] Resolved some timing issues with guild bank content display.
+[*] Changed name of addon to "Shadowfen's Default Guild Bank" since there is another Default Guild Bank addon.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.0.1 (2)[/COLOR]
+[LIST]
+[*] Debug cleanup
+[/LIST]

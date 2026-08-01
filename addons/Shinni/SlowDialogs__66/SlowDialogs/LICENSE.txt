@@ -1,0 +1,18 @@
+
+Except otherwise noted, this add-on is © 2019 Shinni, under a Creative Commons Attribution-NonComercial-NoDerivatives license:
+https://creativecommons.org/licenses/by-nc-nd/4.0/
+https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
+
+The French localization of this addon was provided by lexo1000 ( https://www.esoui.com/forums/member.php?u=31558 )
+The Russian localization of this addon was provided by calisto ( https://www.esoui.com/forums/member.php?u=47859 )
+
+The library "LibAddonMenu" is © 2016 Ryan Lakanen (Seerah), used under The Artistic License 2.0:
+see libs/LibAddonMenu-2.0/LibAddonMenu-2.0/LICENSE
+
+The library "LibStub" is Public Domain, see libs/LibAddonMenu-2.0/LibStub/LibStub.lua
+
+
+This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in
+the United States and/or other countries. All rights reserved.
+https://account.elderscrollsonline.com/print-terms?doc_id=addon_terms&language=en

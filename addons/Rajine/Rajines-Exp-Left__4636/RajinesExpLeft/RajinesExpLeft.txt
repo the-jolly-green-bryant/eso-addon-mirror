@@ -1,0 +1,16 @@
+## Title: Rajine's EXP left to next level
+## Description: Shows remaining EXP and repeat count after each XP gain.
+## Author: Rajine (@berethor85)
+## Version: 1.0
+## AddOnVersion: 1
+## APIVersion: 101050
+## SavedVariables: RajinesExpLeftSavedVars
+
+lang/en.lua
+lang/de.lua
+lang/fr.lua
+lang/es.lua
+lang/ru.lua
+lang/jp.lua
+
+RajinesExpLeft.lua

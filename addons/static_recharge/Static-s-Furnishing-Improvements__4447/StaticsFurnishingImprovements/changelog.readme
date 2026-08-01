@@ -1,0 +1,28 @@
+1.0.2
+  - Fixed a UI error that would occur when items were removed from the furnishing vault and then Vault Stats tried to update
+
+1.0.1
+  - Fixed a bug where the used vault amount would not show up when outside your houses
+
+1.0.0
+  - The Deposit Queue will save between UI reloads
+  - Deposit same from house now waits for remove furniture request result before proceeding to the next item
+
+0.3.0
+  - Added a queue feature for adding items to the furniture vault
+  - Added the vault stats module
+  - Both the queue and vault stats modules can be completely unloaded in settings
+  - Updated for 49
+
+0.2.0
+  - Made the retrieveto menu show up during more editor scenes
+  - Added a function with keybind/slashcommand to store same items from house to furnishing vault
+  - Added feature to be able to always send craftings stations to the furniture vault when retrieved
+  - Added a settings menu
+  - Added debugging information
+
+0.0.2
+  - Added function to store same items from inventory to the furnishing vault
+
+0.0.1
+  - Proof of concept

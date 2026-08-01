@@ -1,0 +1,65 @@
+<!--LootStatisticsWindow.xml-->
+<GuiXml>        
+    <Controls>
+        <!-- Loot Window Title -->
+        <Label name="Solution_LootWindowStatisticsTitle" font="ZoFontWinH4" text="Loot Tracker Solution Statistics" virtual="true">
+            <Anchor point="TOP" relativePoint="TOP" offsetY="15" />
+        </Label>
+        <!-- Close Button -->
+        <Button name="Solution_LootWindowStatisticsClose" virtual="true">
+            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+            <Dimensions x="20" y="20" />
+            <Textures normal="LootTrackerSolution/Textures/CrossIcon.dds" />
+        </Button>
+
+        <Control name="Solution_SearchTextBox" virtual="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+                    <Controls>
+                        <EditBox name="$(parent)SearchBox" inherits="ZO_DefaultEditForBackdrop" />
+                        <Button name="$(parent)SearchButton">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="5" offsetX="0" />
+                            <Textures normal="LootTrackerSolution/Textures/LupaIcon.dds" />
+                            <Dimensions x="20" y="20" />
+                        </Button>
+                        <Backdrop name="$(parent)Line" edgeColor="E5E5E5" centerColor="0" alpha="1" >
+                            <Dimensions x="150" y="1"/>
+                            <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="12"/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                    </Controls>
+                    
+        </Control>
+
+
+        <Backdrop name="Solution_LootWindowStatisticsBackdrop" edgeColor="FFFFFF" virtual="true" centerColor="0" alpha="1" >
+               <Dimensions x="150" y="1"/>
+               <Anchor point="BOTTOM"  relativeTo="$(parent)" offsetY="5" relativePoint="CENTER"/>
+               <Edge edgeSize="1"/>
+        </Backdrop>
+
+        <Button name="Solution_RowStatistics" virtual="true">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+            <Controls>                
+                <!-- Name Label -->
+                <Button name="$(parent)Name">
+
+                </Button>
+
+                <!-- Category Label -->
+                <Label name="$(parent)Category">
+                </Label>
+                
+                <!-- Amount Label -->
+                <Label name="$(parent)Amount">
+                </Label>
+                
+                <!-- Gold Label -->
+                <Label name="$(parent)Gold">
+                </Label>
+
+                <Label name="$(parent)GoldPerItem">
+                </Label>
+            </Controls>
+        </Button>        
+    </Controls>
+</GuiXml>

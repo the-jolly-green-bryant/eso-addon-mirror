@@ -1,0 +1,53 @@
+<GuiXml>        
+    <Controls>
+
+        <!-- Group Unit Frame -->
+        <Control name="SUI_GroupUnitFrame" virtual="true">
+            <Controls>
+                <Control name="$(parent)Background1">
+                    <Controls>
+                        <Texture name="$(parent)Left" hidden="true" />
+                        <Texture name="$(parent)Right" hidden="true" />
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+
+        <!-- Companion Unit Frame -->
+        <Control name="SUI_CompanionUnitFrame" virtual="true">
+            <Controls>
+                <Control name="$(parent)Background1">
+                    <Controls>
+                        <Texture name="$(parent)Left" hidden="true" />
+                        <Texture name="$(parent)Right" hidden="true" />
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+
+        <!-- Group Unit Frame Status Bar Template -->
+        <StatusBar name="SUI_GroupUnitFrameStatus_Keyboard_Template" inherits="ZO_ArrowStatusBarWithBG" virtual="true">
+          <Dimensions x="180" y="15" />
+          <Controls>
+                <!-- Override BG with hidden textures -->
+                <Control name="$(parent)BG">
+                    <Controls>
+                        <Texture name="$(parent)Left" hidden="true" />
+                        <Texture name="$(parent)Right" hidden="true" />
+                        <Texture name="$(parent)Middle" hidden="true" />
+                    </Controls>
+                </Control>
+        
+                <!-- Override Overlay with hidden textures -->
+                <Control name="$(parent)Overlay">
+                    <Controls>
+                        <Texture name="$(parent)Left" hidden="true" />
+                        <Texture name="$(parent)Right" hidden="true" />
+                        <Texture name="$(parent)Middle" hidden="true" />
+                    </Controls>
+                </Control>
+            </Controls>
+        </StatusBar>
+
+    </Controls>
+</GuiXml>

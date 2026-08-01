@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/Shadowfen/Advanced-Filters---UnCollected-Plugin__2829",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shadowfen",
+  "canonical_id": "esoui:2829",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2829",
+  "deleted": false,
+  "directories": [
+    "AdvFilters_UnCollected"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2829/",
+  "fingerprint": "9f38091b64f0ffa69f26831dc7591d249fd63d9b01a213644cf76fefafb6d344",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2829",
+  "source_url": "https://www.esoui.com/downloads/info2829-AdvancedFilters-UnCollectedPlugin.html",
+  "stats": {
+    "downloads": 18546,
+    "favorites": 17,
+    "monthly_downloads": 41
+  },
+  "title": "Advanced Filters - UnCollected Plugin",
+  "updated_at": 1654472260000,
+  "version": "1.0.6"
+}

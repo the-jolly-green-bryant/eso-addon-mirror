@@ -1,0 +1,7 @@
+## APIVersion: 101037
+## Title: |c77ee02DarkBrotherhoodSpree|cd5b526ZH
+## Version: 1.0
+## Author: |c87ddf2NeiL978
+## Description: 只允许您从死亡标记之书中接取杀戮盛宴合约的任务。 Allows you to only take Spree Contracts from the Dark Brotherhood Marked for Death Contract Book.
+
+DarkBrotherhoodSpreeZH.lua

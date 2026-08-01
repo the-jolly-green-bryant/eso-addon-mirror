@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/SSM24/Auto-Remove-Waypoint-Set-Destination__3544",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SSM24",
+  "canonical_id": "esoui:3544",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3544",
+  "deleted": false,
+  "directories": [
+    "AutoRemoveWaypoint"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3544/",
+  "fingerprint": "9d69140eeac914a5f1f30017865fd5ef277dd1e8dce9c283d2a9a6dc2eaf2635",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12507.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3544",
+  "source_url": "https://www.esoui.com/downloads/info3544-AutoRemoveWaypointSetDestination.html",
+  "stats": {
+    "downloads": 7178,
+    "favorites": 13,
+    "monthly_downloads": 40
+  },
+  "title": "Auto Remove Waypoint (Set Destination)",
+  "updated_at": 1689491062000,
+  "version": "1.1.0"
+}

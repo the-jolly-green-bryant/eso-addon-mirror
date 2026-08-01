@@ -1,0 +1,22 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ChronosClock" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="128" y="64"/>
+            <OnMoveStop>Chronos:SaveClockPosition()</OnMoveStop>
+            <Controls>
+                <Texture name="$(parent)BG" textureFile="/esoui/art/performance/statusmetermunge.dds">
+                    <TextureCoords left="0.125" right="0.875" top="0.375" bottom="0.625"/>
+                    <AnchorFill/>
+                </Texture>
+                <Label name="$(parent)Text" font="ZoFontWinT2" color="FFFFFF" wrapMode="TRUNCATE"
+                       verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                    <Anchor point="CENTER" relativeTo="$(parent)" offsetX="0" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)TimeZoneText" font="ZoFontWinT2" color="FFFFFF" wrapMode="TRUNCATE"
+                       verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                    <Anchor point="CENTER" relativeTo="$(parent)Text" relativePoint="BOTTOM" offsetX="0" offsetY="3"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

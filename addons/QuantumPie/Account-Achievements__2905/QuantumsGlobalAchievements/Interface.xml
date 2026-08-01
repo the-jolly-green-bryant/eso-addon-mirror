@@ -1,0 +1,115 @@
+<GuiXml>
+    <Controls>
+        <!--===== Custom Achievement Expanded Info =====-->
+        <Control name="QuantumsGA_AchievementCharacterEarned" virtual="true">
+            <Controls>
+                <Texture name="$(parent)ClassIcon" level="2">
+                    <Dimensions x="32" y="32"/>
+                    <Anchor point="TOPLEFT" offsetX="0" />
+                </Texture>
+                <Label name="$(parent)CharacterNameLabel" inherits="ZO_AchievementsDefaultLabel_Keyboard">
+                    <Dimensions x="125"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)ClassIcon" relativePoint="RIGHT" offsetX="10"/>
+                </Label>
+                <Label name="$(parent)DateEarnedLabel" inherits="ZO_AchievementsDefaultLabel_Keyboard">
+                    <Dimensions x="125"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)CharacterNameLabel" relativePoint="RIGHT" offsetX="20"/>
+                </Label>
+                <Label name="$(parent)ProgressLabel" inherits="ZO_AchievementsDefaultLabel_Keyboard" hidden="true">
+                    <Dimensions x="125"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)DateEarnedLabel" relativePoint="RIGHT" offsetX="20"/>
+                </Label>
+            </Controls>
+        </Control>
+        <!--===== Status Bars =====-->
+        <StatusBar name="QuantumsGA_ArrowStatusBarWithBG" inherits="ZO_ArrowStatusBar" virtual="true">
+            <Controls>
+                <Control name="$(parent)BG" inherits="ZO_ArrowStatusBarBG" />
+                <StatusBar name="$(parent)Character" inherits="ZO_ArrowStatusBar" />
+                <Control name="$(parent)Overlay" inherits="ZO_ArrowStatusBarOverlay" />
+            </Controls>
+        </StatusBar>
+        <StatusBar name="QuantumsGA_AchievementsStatusBar" inherits="QuantumsGA_ArrowStatusBarWithBG" virtual="true">
+            <Controls>
+                <Label name="$(parent)Label" inherits="ZO_AchievementsDefaultLabel_Keyboard" font="ZoFontWinH4">
+                    <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" offsetY="-4" />
+                </Label>
+                <Label name="$(parent)Progress" inherits="ZO_AchievementsDefaultLabel_Keyboard" horizontalAlignment="CENTER" verticalAlignment="CENTER" tier="HIGH" layer="OVERLAY" level="2">
+                    <Anchor point="TOPLEFT" offsetY="-1" />
+                    <Anchor point="BOTTOMRIGHT" />
+                </Label>
+            </Controls>
+        </StatusBar>
+        <!--===== Summary =====-->
+        <Control name="QuantumsGA_ProgressBars" inherits="ZO_ScrollContainer" virtual="true">
+            <Anchor point="TOPLEFT" />
+            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Recent" relativePoint="TOPRIGHT" offsetY="-5" />
+
+            <Controls>
+                <Control name="$(parent)ScrollChild" override="true">
+                    <Controls>
+                        <StatusBar name="$(parent)Total" inherits="QuantumsGA_AchievementsStatusBar" level="1">
+                            <Anchor point="TOPLEFT" offsetX="4" offsetY="28" />
+                            <Anchor point="RIGHT" relativeTo="$(grandparent)" constrains="X" offsetX="-25" />
+
+                            <Controls>
+                                <Label name="$(parent)Label" override="true" modifyTextType="UPPERCASE" text="SI_ACHIEVEMENTS_OVERALL" />
+                            </Controls>
+                        </StatusBar>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+        <!--===== Achievement List =====-->
+        <Control name="QuantumsGA_ContentList" inherits="ZO_ScrollContainer" virtual="true">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)Categories" relativePoint="TOPRIGHT" offsetY="5" />
+            <Anchor point="BOTTOMRIGHT" offsetX="-12" />
+        </Control>
+
+        <!--===== Achievements =====-->
+        <Control name="QuantumsGA_AchievementBase" virtual="true">
+            <Dimensions x="550" y="88" />
+
+            <Controls>
+                <Control name="$(parent)Highlight" inherits="ZO_ListEntryHighlight"/>
+
+                <Label name="$(parent)Points" font="ZoFontCallout3" horizontalAlignment="CENTER">
+                    <Dimensions x="70" />
+                    <Anchor point="TOPRIGHT" offsetX="-6" offsetY="2" />
+                </Label>
+
+                <Texture name="$(parent)Icon" level="3">
+                    <Anchor point="TOPLEFT" offsetX="38" offsetY="10" />
+                    <Dimensions x="52" y="52"/>
+
+                    <Controls>
+                        <Texture name="$(parent)EmergencyBG" textureFile="EsoUI/Art/Achievements/achievements_iconBG.dds" level="2">
+                            <AnchorFill />
+                        </Texture>
+
+                        <Texture name="$(parent)Frame" textureFile="EsoUI/Art/ActionBar/abilityFrame64_up.dds" layer="CONTROLS">
+                            <AnchorFill />
+                        </Texture>
+                    </Controls>
+                </Texture>
+
+                <Label name="$(parent)Title" inherits="ZO_AchievementsDefaultLabel_Keyboard" font="ZoFontWindowSubtitle" >
+                    <Dimensions x="274" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetX="6" />
+                </Label>
+
+                <Label name="$(parent)Description" inherits="ZO_AchievementsDefaultLabel_Keyboard" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_CONTRAST">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" />
+                </Label>
+
+                <Label name="$(parent)Date" font="ZoFontWinH4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                    <Anchor point="TOP" relativeTo="$(parent)Points" relativePoint="BOTTOM" offsetY="-8" />
+                </Label>
+
+                <Texture name="$(parent)RewardThumb" level="2" resizeToFitFile="true">
+                    <Anchor point="TOPLEFT" offsetX="42" offsetY="58" />
+                </Texture>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

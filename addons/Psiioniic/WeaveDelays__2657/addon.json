@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Psiioniic/WeaveDelays__2657",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Psiioniic",
+  "canonical_id": "esoui:2657",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:2657",
+  "deleted": false,
+  "directories": [
+    "WeaveDelays"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2657/",
+  "fingerprint": "535157ab6fa27c954fb977c3fca0471c35cb4ed664684084d11d08eed525bc06",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9856.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16742.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11068.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9857.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2657",
+  "source_url": "https://www.esoui.com/downloads/info2657-WeaveDelays.html",
+  "stats": {
+    "downloads": 68667,
+    "favorites": 89,
+    "monthly_downloads": 7450
+  },
+  "title": "WeaveDelays",
+  "updated_at": 1784591560000,
+  "version": "1.1.1"
+}

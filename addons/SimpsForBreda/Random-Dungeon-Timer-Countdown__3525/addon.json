@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/SimpsForBreda/Random-Dungeon-Timer-Countdown__3525",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SimpsForBreda",
+  "canonical_id": "esoui:3525",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3525",
+  "deleted": false,
+  "directories": [
+    "RandomDungeonTimerCountdown"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3525/",
+  "fingerprint": "0fbdcfd7091314340fe471a081bd0e13e937ee7fafc246a1be2299e3d651141d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11990.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11991.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11989.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3525",
+  "source_url": "https://www.esoui.com/downloads/info3525-RandomDungeonTimerCountdown.html",
+  "stats": {
+    "downloads": 2067,
+    "favorites": 1,
+    "monthly_downloads": 16
+  },
+  "title": "Random Dungeon Timer Countdown",
+  "updated_at": 1671644732000,
+  "version": "v0.69"
+}

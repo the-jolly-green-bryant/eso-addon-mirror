@@ -1,0 +1,18 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="SI_KEYBINDINGS_CATEGORY_CQM">
+      <Action name="CQM01">
+        <Down>CQM_JumpToGroup1()</Down>
+      </Action>
+      <Action name="CQM02">
+        <Down>CQM_JumpToGroup2()</Down>
+      </Action>
+      <Action name="CQM03">
+        <Down>CQM_ShareGenericCyrodiilQuests()</Down>
+      </Action>
+      <Action name ="CQM04">
+        <Down> CQM_ShareAllCyrodiilQuests()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

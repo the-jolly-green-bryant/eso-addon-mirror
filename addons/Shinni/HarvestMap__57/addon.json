@@ -1,0 +1,71 @@
+{
+  "archive_path": "addons/Shinni/HarvestMap__57",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shinni",
+  "canonical_id": "esoui:57",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:57",
+  "deleted": false,
+  "directories": [
+    "HarvestMap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl57/",
+  "fingerprint": "9c95f304ba1aed1293c83b4ae71b43f4bfa4aee14aa5dc3591eb4bc85747510b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4842.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4267.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4268.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "57",
+  "source_url": "https://www.esoui.com/downloads/info57-HarvestMap.html",
+  "stats": {
+    "downloads": 9594333,
+    "favorites": 5243,
+    "monthly_downloads": 117915
+  },
+  "title": "HarvestMap",
+  "updated_at": 1783976431000,
+  "version": "3.16.12"
+}

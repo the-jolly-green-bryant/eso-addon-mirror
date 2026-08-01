@@ -1,0 +1,13 @@
+## Title: CyroQuestManager
+## Author: Scobster007
+## APIVersion: 101046
+## SavedVariables: CyroQuestManagerVars
+## DependsOn: LibAddonMenu-2.0>=33
+
+CyroQuestManager.lua
+CyroGroupJump.lua
+CyroQuests.lua
+CyroChatManager.lua
+CyroQuestMenu.lua
+settings.lua
+bindings.xml

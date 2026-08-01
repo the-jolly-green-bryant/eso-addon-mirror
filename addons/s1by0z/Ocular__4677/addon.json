@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/s1by0z/Ocular__4677",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "s1by0z",
+  "canonical_id": "esoui:4677",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4677",
+  "deleted": false,
+  "directories": [
+    "Ocular"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4677/",
+  "fingerprint": "b22a1e8f5e7740a642f14926c6ca2248b83687f7a266c9b1406ee5d46586b3a0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16533.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16532.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16534.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4677",
+  "source_url": "https://www.esoui.com/downloads/info4677-Ocular.html",
+  "stats": {
+    "downloads": 38,
+    "favorites": 1,
+    "monthly_downloads": 37
+  },
+  "title": "Ocular",
+  "updated_at": 1783084738000,
+  "version": "1.0.1"
+}

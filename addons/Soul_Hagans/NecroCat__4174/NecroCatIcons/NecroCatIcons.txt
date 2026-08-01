@@ -1,0 +1,10 @@
+## Title: |c66f2ffCastle|r of Necro Cat Icons
+## Author: |cff6401Soul_Hagans|r
+## APIVersion: 101050
+## Version: 18.07.2026
+## AddOnVersion: 10402
+## SavedVariables: NecroCatIconsVars
+## Description: Добавляет кастоманые иконки для членов гильдии Castle of Necro-Cat
+## DependsOn: LibAddonMenu-2.0>=43 OdySupportIcons
+
+NecroCatIcons.lua

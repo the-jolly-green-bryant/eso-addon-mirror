@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/Solaris-Lorica/Root-State__2593",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Solaris Lorica",
+  "canonical_id": "esoui:2593",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2593",
+  "deleted": false,
+  "directories": [
+    "CombatTip"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2593/",
+  "fingerprint": "09583980d7b781ca0f7c6b9dd06c05e93d186600b96af30309a1d956cf2e92d0",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2593",
+  "source_url": "https://www.esoui.com/downloads/info2593-RootState.html",
+  "stats": {
+    "downloads": 2692,
+    "favorites": 2,
+    "monthly_downloads": 13
+  },
+  "title": "Root State",
+  "updated_at": 1587381775000,
+  "version": "0.1"
+}

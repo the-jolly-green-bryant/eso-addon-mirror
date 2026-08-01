@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Nvk3/Nvk3-s-Ultimate-Tracker-beta__4311",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Nvk3",
+  "canonical_id": "esoui:4311",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4311",
+  "deleted": false,
+  "directories": [
+    "Nvk3UT"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4311/",
+  "fingerprint": "a081b2849d2831727f9394b46400383636eea4c1bfa921d060813f0eb4a32222",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14826.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4311",
+  "source_url": "https://www.esoui.com/downloads/info4311-Nvk3sUltimateTrackerbeta.html",
+  "stats": {
+    "downloads": 707,
+    "favorites": 3,
+    "monthly_downloads": 20
+  },
+  "title": "Nvk3\u00b4s Ultimate Tracker (beta)",
+  "updated_at": 1767554377000,
+  "version": "v0.17.5"
+}

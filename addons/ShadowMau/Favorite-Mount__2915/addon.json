@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/ShadowMau/Favorite-Mount__2915",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ShadowMau",
+  "canonical_id": "esoui:2915",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:2915",
+  "deleted": false,
+  "directories": [
+    "FavoriteMount"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2915/",
+  "fingerprint": "5a4534f959ad1dca73ff97cc6bc50e1250ec56c8cd69cbd84ef14caa72b5b40e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10014.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10013.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2915",
+  "source_url": "https://www.esoui.com/downloads/info2915-FavoriteMount.html",
+  "stats": {
+    "downloads": 6057,
+    "favorites": 6,
+    "monthly_downloads": 15
+  },
+  "title": "Favorite Mount",
+  "updated_at": 1775872957000,
+  "version": "2.06"
+}

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Phinix/ESO-Treasure-Box__3178",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phinix",
+  "canonical_id": "esoui:3178",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3178",
+  "deleted": false,
+  "directories": [
+    "TreasureBox"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3178/",
+  "fingerprint": "6b24960e9a4aeec0e8fa12c5e4dd83e47f82e8cc15318682bcf8e6e3fb8f33c9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10784.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10785.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3178",
+  "source_url": "https://www.esoui.com/downloads/info3178-ESOTreasureBox.html",
+  "stats": {
+    "downloads": 14236,
+    "favorites": 40,
+    "monthly_downloads": 74
+  },
+  "title": "ESO Treasure Box",
+  "updated_at": 1701380986000,
+  "version": "1.08"
+}

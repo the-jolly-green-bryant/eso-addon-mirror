@@ -1,0 +1,60 @@
+{
+  "archive_path": "addons/Splat/Text-Trials-Guide__2461",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Splat",
+  "canonical_id": "esoui:2461",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2461",
+  "deleted": false,
+  "directories": [
+    "TextTrialsGuide"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2461/",
+  "fingerprint": "60dc1fed0c2f5485980f1878af4de67fb56307783f32624cf0a86141c301746c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8397.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8401.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8402.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8403.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2461",
+  "source_url": "https://www.esoui.com/downloads/info2461-TextTrialsGuide.html",
+  "stats": {
+    "downloads": 9979,
+    "favorites": 19,
+    "monthly_downloads": 27
+  },
+  "title": "Text Trials Guide",
+  "updated_at": 1629722947000,
+  "version": "1.2.8"
+}

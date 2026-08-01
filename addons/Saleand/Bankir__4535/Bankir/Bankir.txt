@@ -1,0 +1,19 @@
+## Title: Bankir
+## Version: 2.4
+## APIVersion: 101050
+## Author: vexaiv
+## Description: Helps with inventory management routine. Spiritual successor of the legendary Bank Manager (Revived).
+
+## SavedVariables: BankirSavedVariables
+## DependsOn: LibAddonMenu-2.0>=43
+
+lang/en.lua
+lang/$(language).lua
+
+BankirFunctions.lua
+BankirProfiles.lua
+BankirData.lua
+BankirTabs.lua
+BankirMenuBuildFunctions.lua
+BankirMenu.lua
+Bankir.lua

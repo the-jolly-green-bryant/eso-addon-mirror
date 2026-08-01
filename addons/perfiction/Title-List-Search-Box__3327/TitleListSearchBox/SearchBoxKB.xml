@@ -1,0 +1,30 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="TLSB_KB_Container" clampedToScreen="true"  movable="false" mouseEnabled="true" hidden="true" resizeHandleSize="0">
+            <Dimensions x="300" y="33"/>
+            <Anchor point="BOTTOM" relativeTo="ZO_StatsPanelPaneScrollChildDropdownRow1Dropdown" relativePoint="TOP"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"><AnchorFill/></Backdrop>
+
+                <Texture name="$(parent)SearchIcon" textureFile="/esoui/art/miscellaneous/search_icon.dds">
+                    <Dimensions x="32" y="32"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+                </Texture>
+
+                <EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="TEXT_TYPE_ALPHABETIC" allowMarkupType="ALLOW_MARKUP_TYPE_NONE" verticalAlignment="TEXT_ALIGN_CENTER">
+                    <Dimensions x="239" y="32"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)SearchIcon" relativePoint="RIGHT" offsetY="4"/>
+                </EditBox>
+
+                <Button name="$(parent)CloseButton">
+                    <Dimensions x="32" y="32"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)EditBox" relativePoint="RIGHT" offsetY="2"/>
+                    <Textures
+                        normal="/esoui/art/buttons/closebutton_up.dds"
+                        pressed="/esoui/art/buttons/closebutton_down.dds"
+                        mouseOver="/esoui/art/buttons/closebutton_mouseover.dds"/>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

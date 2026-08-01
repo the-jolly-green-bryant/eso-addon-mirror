@@ -1,0 +1,26 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="GuildEventsProgressDialog" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" >
+            <Dimensions x="300" y="80" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-160" offsetY="-40"/>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" edgeColor="3D362D" centerColor="2B2B2B" alpha="0.9" >
+                    <Dimensions x="320" y="80" />
+                    <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                    <Edge edgeSize="2" />
+                </Backdrop>
+                <Label name="$(parent)Text" font="ZoFontGame"
+                       color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+                       horizontalAlignment="CENTER" text="L.progressText">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="10"/>
+                    <Dimensions x="280" y="20" />
+                </Label>
+                <StatusBar name="$(parent)ProgressBar" color="AB7237" alpha="1">
+                    <Dimensions x="260" y="10" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="30" offsetY="50"/>
+                    <Limits min="0" max="100" />
+                </StatusBar>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

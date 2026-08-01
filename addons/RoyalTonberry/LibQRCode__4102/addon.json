@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/RoyalTonberry/LibQRCode__4102",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "RoyalTonberry",
+  "canonical_id": "esoui:4102",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4102",
+  "deleted": false,
+  "directories": [
+    "LibQRCode"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4102/",
+  "fingerprint": "99cad4bf762209218809050925ffc9a7bf950251301e7c37117791aaea33182a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14032.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14033.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4102",
+  "source_url": "https://www.esoui.com/downloads/info4102-LibQRCode.html",
+  "stats": {
+    "downloads": 68758,
+    "favorites": 39,
+    "monthly_downloads": 1908
+  },
+  "title": "LibQRCode",
+  "updated_at": 1751476805000,
+  "version": "1.0.8"
+}

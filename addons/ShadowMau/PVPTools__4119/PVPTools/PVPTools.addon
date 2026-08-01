@@ -1,0 +1,39 @@
+#Manifest File
+
+## Title: |c00E600PVP Tools|r |t45:45:PVPTools/paw.dds|t
+## Description: Pawprints' PVP related tools  -  Version: 1.18 (20260730)
+## Author: |c787878ShadowMau aka Pawprints|r |t45:45:PVPTools/paw.dds|t
+## SavedVariables: PVPToolsSavedVariables
+## DependsOn: LibAddonMenu-2.0>=39 LibMapPins-1.0>=41
+## IsLibrary: false
+
+## Version: 1.18
+## AddOnVersion: 20260730
+## APIVersion: 101050
+
+
+# List of lua and xml files associated with your addon - they are loaded in the order listed
+
+PT_AMS.lua
+PT_AutoInvite.xml
+PT_AutoInvite.lua
+PT_QuestShare.lua
+PT_QOL.lua
+PT_MapPinsData.lua
+PT_MapPins.lua
+PT_Merchant.lua
+PT_Settings.lua
+PVPTools.lua
+Bindings.xml
+
+# This Addon is not created by, affiliated with, or sponsored by
+# ZeniMax Media Inc. or its affiliates
+# The Elder Scrolls (c) and related logos are registered trademarks
+# or trademarks of ZeniMax Media Inc. in the United States and/or
+# other countries.  All rights reserved
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+# Make sure the name of the folder containing the addon and the name
+# of the .txt manifest file are EXACTLY the same, including Caps.
+# The string that is passed to the handler for EVENT_ADD_ON_LOADED
+# should also match.  

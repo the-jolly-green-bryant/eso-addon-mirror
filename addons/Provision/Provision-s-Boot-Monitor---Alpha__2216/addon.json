@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Provision/Provision-s-Boot-Monitor---Alpha__2216",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Provision",
+  "canonical_id": "esoui:2216",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2216",
+  "deleted": false,
+  "directories": [
+    "ProvisionsBootMonitor"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2216/",
+  "fingerprint": "e726e7e03a061a398facbeb1f189d94038008364346ff9cf19d67172562b3c7f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7598.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2216",
+  "source_url": "https://www.esoui.com/downloads/info2216-ProvisionsBootMonitor-Alpha.html",
+  "stats": {
+    "downloads": 3674,
+    "favorites": 2,
+    "monthly_downloads": 15
+  },
+  "title": "Provision's Boot Monitor - Alpha",
+  "updated_at": 1544479627000,
+  "version": "1.0.1"
+}

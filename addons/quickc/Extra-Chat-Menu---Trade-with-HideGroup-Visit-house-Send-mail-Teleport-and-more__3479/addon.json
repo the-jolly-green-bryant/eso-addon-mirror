@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/quickc/Extra-Chat-Menu---Trade-with-HideGroup-Visit-house-Send-mail-Teleport-and-more__3479",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "quickc",
+  "canonical_id": "esoui:3479",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3479",
+  "deleted": false,
+  "directories": [
+    "ExtraChatMenu"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3479/",
+  "fingerprint": "ce4622f4f06baeff8f8e4f5fd0348e988fcb11e1e7c7b135fec3749119321806",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11876.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3479",
+  "source_url": "https://www.esoui.com/downloads/info3479-ExtraChatMenu-TradewithHideGroupVisithouseSendmailTeleportandmore.html",
+  "stats": {
+    "downloads": 4961,
+    "favorites": 18,
+    "monthly_downloads": 19
+  },
+  "title": "Extra Chat Menu - Trade with HideGroup, Visit house, Send mail, Teleport and more",
+  "updated_at": 1665356015000,
+  "version": "0.3"
+}

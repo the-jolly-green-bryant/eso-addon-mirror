@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c66ccffLoot Shift|r">
+			<Action name="ALT_LOOT_MODE">
+				<Down>LSAddon.AltLootMode()</Down>
+			</Action>
+			<Action name="TOGGLE_LOOT_MODE">
+				<Down>LSAddon.ToggleLootMode()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

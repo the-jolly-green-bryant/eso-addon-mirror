@@ -1,0 +1,107 @@
+<GuiXml>
+	<Controls>
+<!--
+-->
+		<TopLevelControl name="SetTrackerUpdate" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false" >
+			<Dimensions x="10" y="10" />
+			<OnUpdate>
+				SetTrack.OnUpdate()
+			</OnUpdate>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0" />
+			</Controls>
+        </TopLevelControl>
+		<TopLevelControl name="SetTrackerNotesEdit" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" >
+			<Dimensions x="400" y="204" />
+			<OnMoveStop>
+				SetTrackerSaveWinPosAndSize(self)
+			</OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+				<Label name="$(parent)_WindowTitle" font="ZoFontGameLargeBoldShadow" text="|c8080ffSetTracker Set Notes|r" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>
+                <Backdrop	name="$(parent)EditBoxBg" inherits="ZO_EditBackdrop" alpha="1"  >
+					<Dimensions x="394" y="140"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="2" offsetY="30" />
+				</Backdrop>
+				<EditBox	name="$(parent)_Notes" font="ZoFontChat" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="" 
+							editEnabled="true" maxInputCharacters="1000" multiLine="true" newLineEnabled="true" inherits="ZO_DefaultEditForBackdrop">
+					<Dimensions x="394" y="140"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="2" offsetY="30" />
+					<OnTextChanged>
+						self:TakeFocus()
+					</OnTextChanged>
+				</EditBox>
+				<Button	name="$(parent)ButtonApply" inherits="ZO_ButtonBehaviorClickSound" font="ZoFontGameLargeBoldShadow" 
+						verticalAlignment="1" text="Apply" >
+					<Dimensions x="60" y="30" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+					<Textures	normal="/esoui/art/buttons/blade_closed_up.dds"
+								pressed="/esoui/art/buttons/blade_closed_down.dds"
+								mouseOver="/esoui/art/buttons/blade_open_up.dds"
+								disabled="/esoui/art/buttons/blade_disabled.dds" >
+					</Textures>
+					<OnClicked>
+						SetTrackerSaveNotes(self)
+					</OnClicked>
+				</Button>
+				<Button name="$(parent)_ButtonClose" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="18" offsetY="-6" />
+					<Textures	normal="EsoUI/Art/Buttons/closebutton_up.dds"
+								pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+								mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+								disabled="EsoUI/Art/Buttons/closebutton_disabled.dds" >
+					</Textures>
+					<OnClicked>
+						self:GetParent():SetHidden(true)
+					</OnClicked>
+				</Button>
+			</Controls>
+        </TopLevelControl>
+        <TopLevelControl name="SetTrackerNotesTT" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="300" y="200" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+				<Label name="$(parent)_Title" font="ZoFontChat" text="" >
+					<Dimensions x="300" y="20" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>
+				<Label name="$(parent)_Notes" font="ZoFontChat" text="" >
+					<Dimensions x="300" y="180" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="20" />
+				</Label>
+            </Controls>
+        </TopLevelControl>
+        <TopLevelControl name="SetTrackerNotesWin" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" >
+            <Dimensions x="300" y="200" />
+			<OnMoveStop>
+				SetTrackerSaveWinPosAndSize(self)
+			</OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+				<Label name="$(parent)_Title" font="ZoFontChat" text="" >
+					<Dimensions x="300" y="20" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>
+				<Label name="$(parent)_Notes" font="ZoFontChat" text="" >
+					<Dimensions x="300" y="180" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="20" />
+				</Label>
+				<Button name="$(parent)_ButtonClose" inherits="ZO_ButtonBehaviorClickSound" hidden="false" >
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="18" offsetY="-6" />
+					<Textures	normal="EsoUI/Art/Buttons/closebutton_up.dds"
+								pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+								mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+								disabled="EsoUI/Art/Buttons/closebutton_disabled.dds" >
+					</Textures>
+					<OnClicked>
+						self:GetParent():SetHidden(true)
+					</OnClicked>
+				</Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

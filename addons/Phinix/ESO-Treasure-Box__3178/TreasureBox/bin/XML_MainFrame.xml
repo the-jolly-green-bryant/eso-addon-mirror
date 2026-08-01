@@ -1,0 +1,681 @@
+<GuiXml>
+	<Controls>
+<!----------------------------------------------------------------------------------------------------------------------------------------------------------
+Defines the clickable list functionality.
+----------------------------------------------------------------------------------------------------------------------------------------------------------->
+		<Control name="TBoxAddon_ListItemTemplate" virtual="true">
+			<Dimensions x="940" y="18"/>
+			<OnMouseEnter>
+				ZO_ScrollList_MouseEnter(TBoxAddon_MainFrameListFrameList, self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				ZO_ScrollList_MouseExit(TBoxAddon_MainFrameListFrameList, self)
+			</OnMouseExit>
+			<OnMouseUp>
+				if(upInside) then
+					ZO_ScrollList_MouseClick(TBoxAddon_MainFrameListFrameList, self)
+				end
+			</OnMouseUp>
+			<Controls>
+				<Label name="$(parent)Name" font="ZoFontGame" mouseEnabled="true">
+					<Dimensions x="840" y="16"/>
+					<Anchor point="TOPLEFT"/>
+					<OnMouseEnter>
+						TBoxAddon.XMLNavigation(001, self, self:GetText(), 1, nil)
+					</OnMouseEnter>
+					<OnMouseExit>
+						TBoxAddon.XMLNavigation(001, self, self:GetText(), 2, nil)
+					</OnMouseExit>
+					<OnMouseDown>
+						TBoxAddon.XMLNavigation(002, nil, self:GetText(), button)
+					</OnMouseDown>
+				</Label>
+			</Controls>
+		</Control>
+<!----------------------------------------------------------------------------------------------------------------------------------------------------------
+Top-level control frame, backdrop, header, close and info buttons.
+----------------------------------------------------------------------------------------------------------------------------------------------------------->
+		<TopLevelControl name="TBoxAddon_MainFrame" tier="LOW" mouseEnabled="true" movable="true" clampedToScreen="false" hidden="true">
+			<Dimensions x="900" y="610"/>
+			<Anchor point="CENTER"/>
+			<OnMoveStop>
+				TBoxAddon.XMLNavigation(101)
+			</OnMoveStop>
+			<OnInitialized>
+				TBoxAddon.XMLNavigation(102)
+			</OnInitialized>
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.9"/>
+				<Tooltip name="$(parent)TreasureTooltip" inherits="ZO_ItemIconTooltip" hidden="true">
+					<OnInitialized>
+						TBoxAddon.XMLNavigation(103, self)
+					</OnInitialized>
+				</Tooltip>
+				<Control name="$(parent)Header">
+					<Dimensions x="720" y="35"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="228" offsetY="-5"/>
+					<Controls>
+						<Label name="$(parent)Title" inherits="ZO_WindowTitle" color="FFFFFF" text=" ">
+							<Anchor point="CENTER" relativeTo="$(parent)Header" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+						</Label>
+					</Controls>
+				</Control>
+				<Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+					<Dimensions y="4"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetY="10"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" offsetY="10"/>
+				</Texture>
+                <Button name="$(parent)SortByAlpha" inherits="ZO_CheckButton">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-2" offsetY="-4"/>
+					<OnMouseEnter>
+						TBoxAddon.XMLNavigation(503, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						TBoxAddon.XMLNavigation(503, nil, 3)
+					</OnMouseExit>
+					<OnClicked>
+						TBoxAddon.XMLNavigation(503, nil, 5)
+					</OnClicked>
+                </Button>
+                <Button name="$(parent)SortByFound" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)SortByAlpha" relativePoint="RIGHT" offsetX="2" offsetY="0"/>
+					<OnMouseEnter>
+						TBoxAddon.XMLNavigation(503, nil, 2)
+					</OnMouseEnter>
+					<OnMouseExit>
+						TBoxAddon.XMLNavigation(503, nil, 4)
+					</OnMouseExit>
+					<OnClicked>
+						TBoxAddon.XMLNavigation(503, nil, 6)
+					</OnClicked>
+                </Button>
+				<Button name="$(parent)CloseButton">
+					<Dimensions x="40" y="40"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" offsetY="-4"/>
+					<Textures
+						normal="/esoui/art/cadwell/cadwell_indexicon_silver_up.dds"
+						pressed="/esoui/art/cadwell/cadwell_indexicon_silver_over.dds"
+						mouseOver="/esoui/art/cadwell/cadwell_indexicon_silver_down.dds"
+						disabled="/esoui/art/cadwell/cadwell_indexicon_silver_disabled.dds"
+					/>
+					<OnMouseEnter>
+						TBoxAddon.XMLNavigation(104, nil, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						TBoxAddon.XMLNavigation(104, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						TBoxAddon.XMLNavigation(104, nil, nil, 3)
+					</OnClicked>
+				</Button>
+				<Button name="$(parent)ToggleFound">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)CloseButton" relativePoint="LEFT" offsetX="14" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/cadwell/cadwell_indexicon_gold_up.dds"
+						pressed="/esoui/art/cadwell/cadwell_indexicon_gold_over.dds"
+						mouseOver="/esoui/art/cadwell/cadwell_indexicon_gold_down.dds"
+						disabled="/esoui/art/cadwell/cadwell_indexicon_gold_disabled.dds"
+					/>
+					<OnMouseEnter>
+						TBoxAddon.XMLNavigation(105, nil, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						TBoxAddon.XMLNavigation(105, nil, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						TBoxAddon.XMLNavigation(105, nil, nil, 3)
+					</OnClicked>
+				</Button>
+<!---------------------------------------------------------------------------------------------------------------------------------------------------------
+Left-side nav frame which contains filter options.
+---------------------------------------------------------------------------------------------------------------------------------------------------------->
+				<Control name="$(parent)NavFrame">
+					<Dimensions x="292" y="610"/>
+					<Anchor point="TOPLEFT" relativeTo="TBoxAddon_MainFrame" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+					<Controls>
+						<Backdrop name="$(parent)LeftBG" inherits="ZO_DefaultBackdrop" alpha="0.6"/>
+						<Button name="$(parent)ResetFilterButton">
+							<Dimensions x="45" y="45"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="1" offsetY="10"/>
+							<Textures
+								normal="/esoui/art/campaign/overview_indexicon_bonus_up.dds"
+								pressed="/esoui/art/campaign/overview_indexicon_bonus_over.dds"
+								mouseOver="/esoui/art/campaign/overview_indexicon_bonus_down.dds"
+								disabled="/esoui/art/campaign/overview_indexicon_bonus_over.dds"
+							/>
+							<OnMouseEnter>
+								TBoxAddon.XMLNavigation(106, nil, nil, 1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(106, nil, nil, 2)
+							</OnMouseExit>
+							<OnClicked>
+								TBoxAddon.XMLNavigation(106, nil, nil, 3)
+							</OnClicked>
+						</Button>
+					<!-------------------------------------------------------------------------------------------------------------------------------------
+					-- Quality selection.
+					-------------------------------------------------------------------------------------------------------------------------------------->
+						<Label name="$(parent)QualityHead" font="ZoFontHeader2" color="FFFF00" horizontalAlignment="LEFT" text="">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="20"/>
+						</Label>
+						<Label name="$(parent)QualityText" font="ZoFontHeader2" color="FFFFFF" horizontalAlignment="LEFT" text="">
+							<Anchor point="LEFT" relativeTo="$(parent)QualityHead" relativePoint="RIGHT" offsetX="4" offsetY="0"/>
+						</Label>
+						<Texture name="$(parent)Quality0T1" textureFile="TreasureBox/bin/textures/quality0.dds">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)QualityHead" relativePoint="TOPLEFT" offsetX="123" offsetY="25"/>
+						</Texture>	
+						<Texture name="$(parent)Quality0T2" textureFile="TreasureBox/bin/textures/quality0i.dds" alpha="0">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)QualityHead" relativePoint="TOPLEFT" offsetX="123" offsetY="25"/>
+						</Texture>
+						<Button name="$(parent)QualityButton0">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)QualityHead" relativePoint="TOPLEFT" offsetX="123" offsetY="25"/>
+							<OnMouseDown>
+								TBoxAddon_MainFrameNavFrameQuality0T1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrameQuality0T2:SetAlpha(0.5)
+							</OnMouseDown>
+							<OnMouseUp>
+								if (upInside) then
+									TBoxAddon_MainFrameNavFrameQuality0T1:SetAlpha(0)
+									TBoxAddon_MainFrameNavFrameQuality0T2:SetAlpha(1)
+								end
+							</OnMouseUp>
+							<OnMouseEnter>
+								TBoxAddon_MainFrameNavFrameQuality0T1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrameQuality0T2:SetAlpha(1)
+								TBoxAddon.XMLNavigation(402, nil, 1, 1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(402, nil, 2, 1)
+							</OnMouseExit>
+							<OnClicked>
+								TBoxAddon.XMLNavigation(401, nil, "quality", 1)
+							</OnClicked>
+						</Button>
+						<Texture name="$(parent)Quality1T1" textureFile="TreasureBox/bin/textures/quality1.dds">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton0" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+						</Texture>	
+						<Texture name="$(parent)Quality1T2" textureFile="TreasureBox/bin/textures/quality1i.dds" alpha="0">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton0" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+						</Texture>
+						<Button name="$(parent)QualityButton1">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton0" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+							<OnMouseDown>
+								TBoxAddon_MainFrameNavFrameQuality1T1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrameQuality1T2:SetAlpha(0.5)
+							</OnMouseDown>
+							<OnMouseUp>
+								if (upInside) then
+									TBoxAddon_MainFrameNavFrameQuality1T1:SetAlpha(0)
+									TBoxAddon_MainFrameNavFrameQuality1T2:SetAlpha(1)
+								end
+							</OnMouseUp>
+							<OnMouseEnter>
+								TBoxAddon_MainFrameNavFrameQuality1T1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrameQuality1T2:SetAlpha(1)
+								TBoxAddon.XMLNavigation(402, nil, 1, 2)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(402, nil, 2, 2)
+							</OnMouseExit>
+							<OnClicked>
+								TBoxAddon.XMLNavigation(401, nil, "quality", 2)
+							</OnClicked>
+						</Button>
+						<Texture name="$(parent)Quality2T1" textureFile="TreasureBox/bin/textures/quality2.dds">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton1" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+						</Texture>	
+						<Texture name="$(parent)Quality2T2" textureFile="TreasureBox/bin/textures/quality2i.dds" alpha="0">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton1" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+						</Texture>
+						<Button name="$(parent)QualityButton2">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton1" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+							<OnMouseDown>
+								TBoxAddon_MainFrameNavFrameQuality2T1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrameQuality2T2:SetAlpha(0.5)
+							</OnMouseDown>
+							<OnMouseUp>
+								if (upInside) then
+									TBoxAddon_MainFrameNavFrameQuality2T1:SetAlpha(0)
+									TBoxAddon_MainFrameNavFrameQuality2T2:SetAlpha(1)
+								end
+							</OnMouseUp>
+							<OnMouseEnter>
+								TBoxAddon_MainFrameNavFrameQuality2T1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrameQuality2T2:SetAlpha(1)
+								TBoxAddon.XMLNavigation(402, nil, 1, 3)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(402, nil, 2, 3)
+							</OnMouseExit>
+							<OnClicked>
+								TBoxAddon.XMLNavigation(401, nil, "quality", 3)
+							</OnClicked>
+						</Button>
+						<Texture name="$(parent)Quality3T1" textureFile="TreasureBox/bin/textures/quality3.dds">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton2" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+						</Texture>	
+						<Texture name="$(parent)Quality3T2" textureFile="TreasureBox/bin/textures/quality3i.dds" alpha="0">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton2" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+						</Texture>
+						<Button name="$(parent)QualityButton3">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton2" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+							<OnMouseDown>
+								TBoxAddon_MainFrameNavFrameQuality3T1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrameQuality3T2:SetAlpha(0.5)
+							</OnMouseDown>
+							<OnMouseUp>
+								if (upInside) then
+									TBoxAddon_MainFrameNavFrameQuality3T1:SetAlpha(0)
+									TBoxAddon_MainFrameNavFrameQuality3T2:SetAlpha(1)
+								end
+							</OnMouseUp>
+							<OnMouseEnter>
+								TBoxAddon_MainFrameNavFrameQuality3T1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrameQuality3T2:SetAlpha(1)
+								TBoxAddon.XMLNavigation(402, nil, 1, 4)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(402, nil, 2, 4)
+							</OnMouseExit>
+							<OnClicked>
+								TBoxAddon.XMLNavigation(401, nil, "quality", 4)
+							</OnClicked>
+						</Button>
+						<Texture name="$(parent)Quality4T1" textureFile="TreasureBox/bin/textures/quality4.dds">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+						</Texture>	
+						<Texture name="$(parent)Quality4T2" textureFile="TreasureBox/bin/textures/quality4i.dds" alpha="0">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+						</Texture>
+						<Button name="$(parent)QualityButton4">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton3" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+							<OnMouseDown>
+								TBoxAddon_MainFrameNavFrameQuality4T1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrameQuality4T2:SetAlpha(0.5)
+							</OnMouseDown>
+							<OnMouseUp>
+								if (upInside) then
+									TBoxAddon_MainFrameNavFrameQuality4T1:SetAlpha(0)
+									TBoxAddon_MainFrameNavFrameQuality4T2:SetAlpha(1)
+								end
+							</OnMouseUp>
+							<OnMouseEnter>
+								TBoxAddon_MainFrameNavFrameQuality4T1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrameQuality4T2:SetAlpha(1)
+								TBoxAddon.XMLNavigation(402, nil, 1, 5)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(402, nil, 2, 5)
+							</OnMouseExit>
+							<OnClicked>
+								TBoxAddon.XMLNavigation(401, nil, "quality", 5)
+							</OnClicked>
+						</Button>
+						<Texture name="$(parent)Quality5T1" textureFile="TreasureBox/bin/textures/quality5.dds">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+						</Texture>	
+						<Texture name="$(parent)Quality5T2" textureFile="TreasureBox/bin/textures/quality5i.dds" alpha="0">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+						</Texture>
+						<Button name="$(parent)QualityButton5">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="LEFT" relativeTo="$(parent)QualityButton4" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+							<OnMouseDown>
+								TBoxAddon_MainFrameNavFrameQuality5T1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrameQuality5T2:SetAlpha(0.5)
+							</OnMouseDown>
+							<OnMouseUp>
+								if (upInside) then
+									TBoxAddon_MainFrameNavFrameQuality5T1:SetAlpha(0)
+									TBoxAddon_MainFrameNavFrameQuality5T2:SetAlpha(1)
+								end
+							</OnMouseUp>
+							<OnMouseEnter>
+								TBoxAddon_MainFrameNavFrameQuality5T1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrameQuality5T2:SetAlpha(1)
+								TBoxAddon.XMLNavigation(402, nil, 1, 6)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(402, nil, 2, 6)
+							</OnMouseExit>
+							<OnClicked>
+								TBoxAddon.XMLNavigation(401, nil, "quality", 6)
+							</OnClicked>
+						</Button>
+						<Texture name="$(parent)Divider1" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+							<Dimensions x="428" y="2"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-70" offsetY="74"/>
+						</Texture>
+					<!-------------------------------------------------------------------------------------------------------------------------------------
+					-- Time selection.
+					-------------------------------------------------------------------------------------------------------------------------------------->
+						<Label name="$(parent)TimeHead" font="ZoFontHeader2" color="FFFF00" horizontalAlignment="LEFT" text="">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)QualityHead" relativePoint="BOTTOMLEFT" offsetX="-1" offsetY="53"/>
+						</Label>
+						<Label name="$(parent)TimeDays" font="ZoFontHeader2" color="FFFFFF" horizontalAlignment="LEFT" text="">
+							<Anchor point="LEFT" relativeTo="$(parent)TimeHead" relativePoint="RIGHT" offsetX="4" offsetY="0"/>
+						</Label>
+
+						<Texture name="$(parent)3Day1" textureFile="/esoui/art/cadwell/cadwell_indexicon_gold_up.dds">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)TimeHead" relativePoint="TOPLEFT" offsetX="112" offsetY="20"/>
+						</Texture>	
+						<Texture name="$(parent)3Day2" textureFile="/esoui/art/cadwell/cadwell_indexicon_gold_down.dds" alpha="0">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)TimeHead" relativePoint="TOPLEFT" offsetX="112" offsetY="20"/>
+						</Texture>
+						<Button name="$(parent)3Day">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)TimeHead" relativePoint="TOPLEFT" offsetX="112" offsetY="20"/>
+							<OnMouseDown>
+								TBoxAddon_MainFrameNavFrame3Day1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrame3Day2:SetAlpha(0.5)
+							</OnMouseDown>
+							<OnMouseUp>
+								if (upInside) then
+									TBoxAddon_MainFrameNavFrame3Day1:SetAlpha(0)
+									TBoxAddon_MainFrameNavFrame3Day2:SetAlpha(1)
+								end
+							</OnMouseUp>
+							<OnMouseEnter>
+								TBoxAddon_MainFrameNavFrame3Day1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrame3Day2:SetAlpha(1)
+								TBoxAddon.XMLNavigation(404, nil, 1, 1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(404, nil, 2, 1)
+							</OnMouseExit>
+							<OnClicked>
+								TBoxAddon.XMLNavigation(403, nil, "time", 1)
+							</OnClicked>
+						</Button>
+						<Texture name="$(parent)7Day1" textureFile="/esoui/art/cadwell/cadwell_indexicon_gold_up.dds">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)3Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+						</Texture>	
+						<Texture name="$(parent)7Day2" textureFile="/esoui/art/cadwell/cadwell_indexicon_gold_down.dds" alpha="0">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)3Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+						</Texture>
+						<Button name="$(parent)7Day">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)3Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+							<OnMouseDown>
+								TBoxAddon_MainFrameNavFrame7Day1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrame7Day2:SetAlpha(0.5)
+							</OnMouseDown>
+							<OnMouseUp>
+								if (upInside) then
+									TBoxAddon_MainFrameNavFrame7Day1:SetAlpha(0)
+									TBoxAddon_MainFrameNavFrame7Day2:SetAlpha(1)
+								end
+							</OnMouseUp>
+							<OnMouseEnter>
+								TBoxAddon_MainFrameNavFrame7Day1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrame7Day2:SetAlpha(1)
+								TBoxAddon.XMLNavigation(404, nil, 1, 2)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(404, nil, 2, 2)
+							</OnMouseExit>
+							<OnClicked>
+								TBoxAddon.XMLNavigation(403, nil, "time", 2)
+							</OnClicked>
+						</Button>
+						<Texture name="$(parent)14Day1" textureFile="/esoui/art/cadwell/cadwell_indexicon_gold_up.dds">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)7Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+						</Texture>	
+						<Texture name="$(parent)14Day2" textureFile="/esoui/art/cadwell/cadwell_indexicon_gold_down.dds" alpha="0">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)7Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+						</Texture>
+						<Button name="$(parent)14Day">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)7Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+							<OnMouseDown>
+								TBoxAddon_MainFrameNavFrame14Day1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrame14Day2:SetAlpha(0.5)
+							</OnMouseDown>
+							<OnMouseUp>
+								if (upInside) then
+									TBoxAddon_MainFrameNavFrame14Day1:SetAlpha(0)
+									TBoxAddon_MainFrameNavFrame14Day2:SetAlpha(1)
+								end
+							</OnMouseUp>
+							<OnMouseEnter>
+								TBoxAddon_MainFrameNavFrame14Day1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrame14Day2:SetAlpha(1)
+								TBoxAddon.XMLNavigation(404, nil, 1, 3)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(404, nil, 2, 3)
+							</OnMouseExit>
+							<OnClicked>
+								TBoxAddon.XMLNavigation(403, nil, "time", 3)
+							</OnClicked>
+						</Button>
+						<Texture name="$(parent)21Day1" textureFile="/esoui/art/cadwell/cadwell_indexicon_gold_up.dds">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)14Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+						</Texture>	
+						<Texture name="$(parent)21Day2" textureFile="/esoui/art/cadwell/cadwell_indexicon_gold_down.dds" alpha="0">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)14Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+						</Texture>
+						<Button name="$(parent)21Day">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)14Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+							<OnMouseDown>
+								TBoxAddon_MainFrameNavFrame21Day1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrame21Day2:SetAlpha(0.5)
+							</OnMouseDown>
+							<OnMouseUp>
+								if (upInside) then
+									TBoxAddon_MainFrameNavFrame21Day1:SetAlpha(0)
+									TBoxAddon_MainFrameNavFrame21Day2:SetAlpha(1)
+								end
+							</OnMouseUp>
+							<OnMouseEnter>
+								TBoxAddon_MainFrameNavFrame21Day1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrame21Day2:SetAlpha(1)
+								TBoxAddon.XMLNavigation(404, nil, 1, 4)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(404, nil, 2, 4)
+							</OnMouseExit>
+							<OnClicked>
+								TBoxAddon.XMLNavigation(403, nil, "time", 4)
+							</OnClicked>
+						</Button>
+						<Texture name="$(parent)30Day1" textureFile="/esoui/art/cadwell/cadwell_indexicon_gold_up.dds">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)21Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+						</Texture>	
+						<Texture name="$(parent)30Day2" textureFile="/esoui/art/cadwell/cadwell_indexicon_gold_down.dds" alpha="0">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)21Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+						</Texture>
+						<Button name="$(parent)30Day">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)21Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+							<OnMouseDown>
+								TBoxAddon_MainFrameNavFrame30Day1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrame30Day2:SetAlpha(0.5)
+							</OnMouseDown>
+							<OnMouseUp>
+								if (upInside) then
+									TBoxAddon_MainFrameNavFrame30Day1:SetAlpha(0)
+									TBoxAddon_MainFrameNavFrame30Day2:SetAlpha(1)
+								end
+							</OnMouseUp>
+							<OnMouseEnter>
+								TBoxAddon_MainFrameNavFrame30Day1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrame30Day2:SetAlpha(1)
+								TBoxAddon.XMLNavigation(404, nil, 1, 5)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(404, nil, 2, 5)
+							</OnMouseExit>
+							<OnClicked>
+								TBoxAddon.XMLNavigation(403, nil, "time", 5)
+							</OnClicked>
+						</Button>
+						<Texture name="$(parent)AnyDay1" textureFile="/esoui/art/cadwell/cadwell_indexicon_gold_up.dds">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)30Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+						</Texture>	
+						<Texture name="$(parent)AnyDay2" textureFile="/esoui/art/cadwell/cadwell_indexicon_gold_down.dds" alpha="0">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)30Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+						</Texture>
+						<Button name="$(parent)AnyDay">
+							<Dimensions x="36" y="36"/>
+							<Anchor point="LEFT" relativeTo="$(parent)30Day" relativePoint="RIGHT" offsetX="-10" offsetY="0"/>
+							<OnMouseDown>
+								TBoxAddon_MainFrameNavFrameAnyDay1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrameAnyDay2:SetAlpha(0.5)
+							</OnMouseDown>
+							<OnMouseUp>
+								if (upInside) then
+									TBoxAddon_MainFrameNavFrameAnyDay1:SetAlpha(0)
+									TBoxAddon_MainFrameNavFrameAnyDay2:SetAlpha(1)
+								end
+							</OnMouseUp>
+							<OnMouseEnter>
+								TBoxAddon_MainFrameNavFrameAnyDay1:SetAlpha(0)
+								TBoxAddon_MainFrameNavFrameAnyDay2:SetAlpha(1)
+								TBoxAddon.XMLNavigation(404, nil, 1, 6)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(404, nil, 2, 6)
+							</OnMouseExit>
+							<OnClicked>
+								TBoxAddon.XMLNavigation(403, nil, "time", 6)
+							</OnClicked>
+						</Button>
+						<Texture name="$(parent)Divider2" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+							<Dimensions x="428" y="2"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-70" offsetY="155"/>
+						</Texture>
+					<!-------------------------------------------------------------------------------------------------------------------------------------
+					-- Stats.
+					-------------------------------------------------------------------------------------------------------------------------------------->
+						<Label name="$(parent)StatsTotals" font="ZoFontWinH5" color="FFFFFF" horizontalAlignment="LEFT" text=" ">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Divider2" relativePoint="BOTTOMLEFT" offsetX="77" offsetY="9"/>
+						</Label>
+						<Label name="$(parent)FavoriteZone" font="ZoFontWinH5" color="FFFFFF" horizontalAlignment="LEFT" text=" ">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)StatsTotals" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="8"/>
+						</Label>
+						<Label name="$(parent)RecentHead" font="ZoFontWinH5" color="FFFFFF" horizontalAlignment="LEFT" text=" ">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)StatsTotals" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="37"/>
+						</Label>
+						<Texture name="$(parent)Divider3" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+							<Dimensions x="428" y="2"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-70" offsetY="250"/>
+						</Texture>
+						<Button name="$(parent)RecentQualitySelect">
+							<Dimensions x="26" y="26"/>
+							<Anchor point="LEFT" relativeTo="$(parent)RecentHead" relativePoint="RIGHT" offsetX="156" offsetY="0"/>
+							<Textures
+								normal="EsoUI/Art/Buttons/plus_up.dds"
+								pressed="EsoUI/Art/Buttons/plus_down.dds"
+								mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+								disabled="EsoUI/Art/Buttons/plus_disabled.dds"
+							/>
+							<OnMouseEnter>
+								TBoxAddon.XMLNavigation(502, nil, nil, 1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(502, nil, nil, 2)
+							</OnMouseExit>
+						</Button>
+					</Controls>
+				</Control>
+<!---------------------------------------------------------------------------------------------------------------------------------------------------------
+Right-side frame which displays the list of treasures.
+---------------------------------------------------------------------------------------------------------------------------------------------------------->
+				<Control name="$(parent)ListFrame">
+					<Dimensions x="511" y="584"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="373" offsetY="60"/>
+					<Controls>
+						<Control name="$(parent)List" inherits="ZO_ScrollList">
+							<Dimensions x="511" y="534"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+							<Controls>
+							</Controls>
+						</Control>
+					<!-------------------------------------------------------------------------------------------------------------------------------------
+					-- Text search box and button.
+					-------------------------------------------------------------------------------------------------------------------------------------->
+						<Backdrop name="$(parent)SearchBG" inherits="ZO_EditBackdrop" alpha="0.0">
+							<Dimensions x="385" y="25"/>
+							<Anchor point="TOPLEFT" relativeTo="TBoxAddon_MainFrame" relativePoint="BOTTOMRIGHT" offsetX="-405" offsetY="6"/>
+						</Backdrop>
+						<EditBox name="$(parent)SearchBox" inherits="ZO_DefaultEditForBackdrop" maxInputCharacters="50" editEnabled="true">
+							<Dimensions x="385" y="25"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)SearchBG" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<OnEnter>
+								TBoxAddon.XMLNavigation(201, nil, nil, 5)
+							</OnEnter>
+							<OnMouseEnter>
+								TBoxAddon.XMLNavigation(201, nil, nil, 1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(201, nil, nil, 2)
+							</OnMouseExit>
+							<OnFocusGained>
+								TBoxAddon.XMLNavigation(201, nil, nil, 3)
+							</OnFocusGained>
+							<OnFocusLost>
+								TBoxAddon.XMLNavigation(201, nil, nil, 4)
+							</OnFocusLost>
+							<OnTextChanged>
+								TBoxAddon.XMLNavigation(201, nil, nil, 5)
+							</OnTextChanged>
+						</EditBox>
+						<Button name="$(parent)SearchButton">
+							<Dimensions x="26" y="26"/>
+							<Anchor point="LEFT" relativeTo="$(parent)SearchBox" relativePoint="RIGHT"/>
+							<Textures
+								normal="EsoUI/Art/Buttons/searchbutton_normal.dds"
+								pressed="EsoUI/Art/Buttons/searchbutton_mousedown.dds"
+								mouseOver="EsoUI/Art/Buttons/searchbutton_normal.dds"
+								disabled="EsoUI/Art/Buttons/searchbutton_disabled.dds"
+							/>
+							 <OnMouseEnter>
+								TBoxAddon.XMLNavigation(201, nil, true, 1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								TBoxAddon.XMLNavigation(201, nil, true, 2)
+							</OnMouseExit>
+							<OnClicked>
+								TBoxAddon.XMLNavigation(201, nil, nil, 6)
+							</OnClicked>
+						</Button>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

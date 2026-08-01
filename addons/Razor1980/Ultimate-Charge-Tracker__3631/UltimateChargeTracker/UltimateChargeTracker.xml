@@ -1,0 +1,36 @@
+<GuiXml>
+   <Controls>
+      <TopLevelControl name="UltimateChargeTracker_Template" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="true" virtual="true">
+         <Dimensions x="200" y="64" />
+         <Controls>
+
+            <Backdrop alpha="0.3" hidden="true">
+               <Anchor point="TOPLEFT" offsetX="-8" offsetY="-8" />
+               <Anchor point="BOTTOMRIGHT" offsetX="8" offsetY="8" />
+               <Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+               <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+               <Insets left="16" top="16" right="-16" bottom="-16" />
+
+               <Controls>
+                  <Texture textureFile="EsoUI/Art/Tooltips/munge_overlay.dds" addressMode="WRAP">
+                     <AnchorFill />
+                  </Texture>
+               </Controls>
+
+               <OnInitialized>
+                  self:GetParent().bd = self
+               </OnInitialized>
+            </Backdrop>
+
+            <Label font="ZoFontTooltipTitle" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="CENTER" text="No info">
+               <Anchor point="BOTTOMRIGHT" offsetX="400" offsetY="0" />
+               <Dimensions x="130" y="64" />
+               <OnInitialized>
+                  self:GetParent().label = self
+               </OnInitialized>
+            </Label>
+
+         </Controls>
+      </TopLevelControl>
+   </Controls>
+</GuiXml>

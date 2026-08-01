@@ -1,0 +1,15 @@
+## Title: Custom Graphics Presets
+## Description: Create different presets for video/graphics settings
+## Author: sepleen
+## APIVersion: 101047 101048
+## AddOnVersion: 102
+## Version: 1.0.2
+## DependsOn: LibAddonMenu-2.0>=34
+## IsLibrary: false
+## SavedVariables: GPSavedVariables
+
+UI.xml
+
+main.lua
+usersettings.lua
+addonmenu.lua

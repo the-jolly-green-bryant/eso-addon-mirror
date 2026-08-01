@@ -1,0 +1,8 @@
+## Title: Inventory Grid View Vanilla Skin
+## Author: |c07a1e2Nolan Kotulan|r
+## Version: 1.0.4
+## APIVersion: 100015
+## DependsOn: InventoryGridView
+## Description: This is a skin for Inventory Grid View by |c07a1e2Randactyl|r.
+
+InventoryGridViewVanillaSkin.lua

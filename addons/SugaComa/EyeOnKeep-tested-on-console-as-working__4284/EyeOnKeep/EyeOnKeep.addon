@@ -1,0 +1,24 @@
+## Title: EyeOnKeep
+## Description: Console-friendly Cyrodiil intel tool. Tracks keep ownership changes and reports status via /eyesup. Low spam, strategic output.
+## Author: Richard "SugaComa" Sprint
+## Version: 1.0
+## SavedVariables: EyeOnKeep_SV
+## APIVersion: 101047
+## License: Artistic-2.0
+
+; ---------------------------------------------------------------------
+; LEGAL & LICENSE NOTICE
+; This addon is licensed under the Artistic License 2.0.
+; You are free to use, modify, and redistribute it, provided that:
+; - You KEEP my name in the copyright notice,
+; - You SPECIFY what changes you made,
+; - You DO NOT close-source modified versions.
+;
+; Full license text is included in LICENSE.md in this addon’s folder.
+;
+; This Add-on is not affiliated with or endorsed by ZeniMax Media Inc.
+; The Elder Scrolls® is a registered trademark of ZeniMax Media Inc.
+; See: https://account.elderscrollsonline.com/add-on-terms
+; ---------------------------------------------------------------------
+
+EyeOnKeep.lua

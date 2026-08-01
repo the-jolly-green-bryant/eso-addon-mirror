@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/SkOODaT/CompanionInfo__3093",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SkOODaT",
+  "canonical_id": "esoui:3093",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3093",
+  "deleted": false,
+  "directories": [
+    "CompanionInfo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3093/",
+  "fingerprint": "ea2bcad38b214515867c459fa51645eae7ca61a2ad11e20de296c4f5162036b8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10431.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10432.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10436.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10435.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3093",
+  "source_url": "https://www.esoui.com/downloads/info3093-CompanionInfo.html",
+  "stats": {
+    "downloads": 48530,
+    "favorites": 44,
+    "monthly_downloads": 111
+  },
+  "title": "CompanionInfo",
+  "updated_at": 1635813831000,
+  "version": "101032.1"
+}

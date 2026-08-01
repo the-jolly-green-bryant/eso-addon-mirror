@@ -1,0 +1,13 @@
+## Title: |c4DB8FFRhalyf's Keybindings
+## Author: Rhalyf, fixed by Baertram
+## Description: Creates keybindings for QuickSlots so you can swap your active QuickSlot item without using the ESO's QuickSlot Radial tool. When you swap slots, there is an (optional) chat notification that tells you the item you swapped to and how many are in the stack. And eventually I'll add other things...maybe.
+## Version: 1.1
+## APIVersion: 101049 101050
+## SavedVariables: RK_SavedSettings
+## DependsOn: LibAddonMenu-2.0>=43
+
+GlobalConstants.lua
+RhalyfsKeybindings.lua
+Settings.lua
+Bindings.xml
+Item.lua

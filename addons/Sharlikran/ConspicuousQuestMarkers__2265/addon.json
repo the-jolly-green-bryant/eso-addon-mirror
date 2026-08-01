@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Sharlikran/ConspicuousQuestMarkers__2265",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:2265",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:2265",
+  "deleted": false,
+  "directories": [
+    "ConspicuousQuestMarkers"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2265/",
+  "fingerprint": "8d5132d29fe9f83ada7e09d3fdba7992809827f15f2dc8864c957919c97ccf70",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7774.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7732.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7750.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7748.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7749.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7751.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7752.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2265",
+  "source_url": "https://www.esoui.com/downloads/info2265-ConspicuousQuestMarkers.html",
+  "stats": {
+    "downloads": 51612,
+    "favorites": 113,
+    "monthly_downloads": 200
+  },
+  "title": "ConspicuousQuestMarkers",
+  "updated_at": 1749487280000,
+  "version": "1.23"
+}

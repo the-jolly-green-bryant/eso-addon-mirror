@@ -1,0 +1,19 @@
+<GuiXml>
+  <Controls>
+    <Control name="AUI_FrameMover_Window" tier="HIGH" virtual="true" DrawLayer="4" hidden="true">
+      <Controls>
+        <Backdrop name="$(parent)_BG" tier="HIGH">
+          <AnchorFill />
+          <Edge file="EsoUI/Art/WorldMap/worldmap_frame_edge.dds" edgeFileWidth="128" edgeFileHeight="16" />
+          <OnInitialized>
+            self:SetCenterColor(0, 0, 0, 0.8)
+          </OnInitialized>
+        </Backdrop>
+        <Label name="$(parent)_Text" tier="HIGH">
+          <Anchor point="CENTER" relativePoint="CENTER"/>
+        </Label>
+      </Controls>
+    </Control>
+    <TopLevelControl name="AUI_FrameMover" clampedToScreen="false"/>
+  </Controls>
+</GuiXml>

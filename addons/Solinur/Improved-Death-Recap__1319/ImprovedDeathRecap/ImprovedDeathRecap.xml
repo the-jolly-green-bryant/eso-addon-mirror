@@ -1,0 +1,147 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="IDR_TLW2" clampedToScreen="true" hidden="true" resizeToFitDescendents="false" mouseEnabled="true" movable="true" resizeHandleSize="10">
+			<Anchor point="TOPRIGHT" offsetX="-50" offsetY="50"/>
+			<Dimensions x="600" y="320" />
+			<DimensionConstraints minX="480" minY="125"/>
+
+			<OnMouseUp>
+				IDR.MoveWin()
+			</OnMouseUp>
+
+			<Controls>
+				<Backdrop name="$(parent)Bg" centerColor="FF000000" edgeColor="FF000000">
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+					<Edge edgeSize="2" />
+				</Backdrop>
+
+				<Label name="$(parent)Title" color="FFEEEEEE" text="Improved Death Recap" font="$(ANTIQUE_FONT)|24">
+					<Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="-280" offsetY="40" />
+				</Label>
+
+				<Button name="$(parent)CloseButton" inherits="ZO_ScrollUpButton">
+					<Anchor point="TOPRIGHT" offsetX="-10" offsetY="10"/>
+					<Dimensions x="24" y="24" />
+
+					<Textures
+						normal="esoui/art/buttons/decline_up.dds"
+						pressed="esoui/art/buttons/decline_down.dds"
+						mouseOver="esoui/art/buttons/decline_over.dds"
+					/>
+
+					<OnClicked>
+						IDR.Hide(nil, button)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)ClipboardButton" inherits="ZO_ScrollUpButton">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Title" offsetX="10" offsetY="0" />
+					<Dimensions x="30" y="30" />
+
+					<Textures
+						normal="esoui/art/buttons/edit_up.dds"
+						pressed="esoui/art/buttons/edit_down.dds"
+						mouseOver="esoui/art/buttons/edit_over.dds"
+					/>
+
+					<OnClicked>IDR.showclipboard()</OnClicked>
+				</Button>
+
+				<Control name="$(parent)ComboBox" inherits="ZO_ComboBox" mouseEnabled="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)ClipboardButton" offsetX="10" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)CloseButton" offsetX="-10" offsetY="10" />
+				</Control>
+
+				<Texture name="$(parent)Separator" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+					<Anchor point="TOPLEFT" offsetX="10" offsetY="52" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="-10" offsetY="60" />
+					<TextureCoords left="0.181640625" right="0.818359375" top="0" bottom="1" />
+				</Texture>
+
+				<Slider name="$(parent)Slider" mouseEnabled="true" step="1" hidden="true">
+					<Dimensions x="10" y="32" />
+					<Anchor point="TOPRIGHT" offsetX="-5" offsetY="84" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-5" offsetY="-48" />
+					<Limits min="1" max="1"/>
+
+					<ThumbTexture 
+						textureFile="EsoUI/Art/ChatWindow/chat_thumb.dds" 
+						disabledTextureFile="EsoUI/Art/ChatWindow/chat_thumb_disabled.dds" 
+						thumbWidth="10"
+						thumbHeight="30" 
+						bottom="0.6875"
+					/>
+
+					<BackgroundMiddle textureFile="EsoUI/Art/ChatWindow/chat_scrollbar_track.dds" left="-1"/>
+					<OnValueChanged> IDR.OnSliderValueChanged(self, value, eventReason) </OnValueChanged>
+
+					<Controls>
+						<Button name="$(parent)ScrollUp" inherits="ZO_ScrollUpButton">
+							<Anchor point="BOTTOM" relativePoint="TOP" offsetX="-1"/>
+							<Dimensions x="16" y="16" />
+
+							<Textures
+								normal="EsoUI/Art/ChatWindow/chat_scrollbar_upArrow_up.dds"
+								pressed="EsoUI/Art/ChatWindow/chat_scrollbar_upArrow_down.dds"
+								mouseOver="EsoUI/Art/ChatWindow/chat_scrollbar_upArrow_over.dds"
+								disabled="EsoUI/Art/ChatWindow/chat_scrollbar_upArrow_disabled.dds"
+							/>
+
+							<OnMouseDown>IDR.OnScrollButton(self, 1)</OnMouseDown>
+						</Button>
+
+						<Button name="$(parent)ScrollDown" inherits="ZO_ScrollDownButton">
+							<Anchor point="TOP" relativePoint="BOTTOM" offsetX="-1"/>
+							<Dimensions x="16" y="16" />
+
+							<Textures
+								normal="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_up.dds"
+								pressed="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_down.dds"
+								mouseOver="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_over.dds"
+								disabled="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_disabled.dds"
+							/>
+
+							<OnMouseDown>IDR.OnScrollButton(self, -1)</OnMouseDown>
+						</Button>
+
+						<Button name="$(parent)ScrollEnd" inherits="ZO_ScrollEndButton">
+							<Dimensions x="16" y="16" />
+							<Anchor point="TOP" relativeTo="$(parent)ScrollDown" relativePoint="BOTTOM"/>
+							<OnMouseDown>IDR.OnScrollButton(self)</OnMouseDown>
+						</Button>
+					</Controls>
+				</Slider>
+
+				<TextBuffer name="$(parent)Buffer" font="SI_IMPROVED_DEATH_RECAP_FONT" maxHistoryLines="1000" mouseEnabled="true" linkEnabled="false">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Separator" offsetX="0" offsetY="5" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)SliderScrollEnd" offsetX="-5" offsetY="0" />
+					<OnMouseWheel> IDR.OnScrollMouse(self, delta, ctrl, alt, shift)  </OnMouseWheel>
+				</TextBuffer>
+
+				<Control name="$(parent)Clipboard" mouseEnabled="true" hidden="true" tier="HIGH" level="3">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Buffer"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Buffer"/>
+
+					<Controls>
+						<Backdrop name="$(parent)Container" inherits="ZO_EditBackdrop">
+							<Anchor point="TOPLEFT" offsetX="5" offsetY="5" />
+							<Anchor point="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+
+							<Controls>
+								<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" editEnabled="false" multiLine="true" />
+							</Controls>
+						</Backdrop>
+
+						<Backdrop name="$(parent)Bg" centerColor="FF111111" edgeColor="FF888888">
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+							<Edge edgeSize="2" />
+						</Backdrop>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

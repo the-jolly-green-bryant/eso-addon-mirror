@@ -1,0 +1,24 @@
+## Title: |c1E90FFIC|r The Next Boss
+## Author: ownedbynico, akamatsu02, einar21121
+## Version: 1.3.0
+## Description: Tracks spawn times of bosses in Imperial City. Optional: Use LibGroupBroadcast to share your timers with your group!
+## APIVersion: 101045
+## DependsOn: LibAddonMenu-2.0>=40
+## OptionalDependsOn: LibGroupBroadcast
+## SavedVariables: ICTSV
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lang/en.lua
+lang/$(language).lua
+
+Bindings.xml
+ICTheNextBoss.xml
+ICTheNextBoss.lua
+ICTheNextBossData.lua
+ICTheNextBossGui.lua
+ICTheNextBossMenu.lua

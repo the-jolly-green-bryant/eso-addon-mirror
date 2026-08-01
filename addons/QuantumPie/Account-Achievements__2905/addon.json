@@ -1,0 +1,64 @@
+{
+  "archive_path": "addons/QuantumPie/Account-Achievements__2905",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "QuantumPie",
+  "canonical_id": "esoui:2905",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2905",
+  "deleted": false,
+  "directories": [
+    "QuantumsGlobalAchievements"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2905/",
+  "fingerprint": "dd149ae421eaeb2729dae93a20f9b143ea78bab6947ddf33e3adfb3315c444c7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9795.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9796.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9797.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9798.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2905",
+  "source_url": "https://www.esoui.com/downloads/info2905-AccountAchievements.html",
+  "stats": {
+    "downloads": 14286,
+    "favorites": 23,
+    "monthly_downloads": 25
+  },
+  "title": "Account Achievements",
+  "updated_at": 1641322166000,
+  "version": "2.0.2"
+}

@@ -1,0 +1,73 @@
+<GuiXml>
+	<Controls>
+
+		<Button name="LE_ButtonBehaviorClickSoundTemplate" inherits="ZO_ButtonBehaviorClickSound" virtual="true" >
+			<MouseButton button="2" enabled="true" />
+		</Button>
+
+		<Button name="LE_DefaultButtonTemplate" inherits="ZO_DefaultButton" virtual="true" >
+			<MouseButton button="2" enabled="true" />
+		</Button>
+
+		<Button name="LE_DefaultTextButtonTemplate" inherits="ZO_DefaultTextButton" virtual="true" >
+			<MouseButton button="2" enabled="true" />
+		</Button>
+
+		<Button name="LE_TextButtonTemplate" inherits="LE_DefaultTextButtonTemplate" virtual="true" >
+			<Textures
+				mouseOver="EsoUI/Art/Buttons/ESO_buttonLarge_mouseOver.dds"
+				pressed="EsoUI/Art/Buttons/ESO_buttonLarge_mouseOver.dds"
+			/>
+		</Button>
+
+		<Button name="LE_EmoteDefaultButtonTemplate" text=":(" inherits="LE_DefaultButtonTemplate" virtual="true" >
+			<Dimensions y="25" />
+		</Button>
+
+		<Button name="LE_EmoteTextButtonTemplate" text=":(" inherits="LE_TextButtonTemplate" virtual="true" >
+			<Dimensions y="25" />
+		</Button>
+
+		<Button name="LE_TabButtonTemplate" inherits="LE_DefaultTextButtonTemplate" clickSound="" virtual="true" >
+			<Dimensions x="22" y="20" />
+		</Button>
+
+		<Button name="LE_ConfigButtonTemplate" inherits="LE_ButtonBehaviorClickSoundTemplate" virtual="true" >
+			<Dimensions x="30" y="30" />
+			<Anchor point="LEFT" />
+			<Textures
+				normal="esoui/art/buttons/edit_up.dds"
+				mouseOver="esoui/art/buttons/edit_over.dds"
+				pressed="esoui/art/buttons/edit_down.dds"
+				disabled="esoui/art/buttons/edit_disabled.dds"
+			/>
+		</Button>
+
+		<Control name="LE_FavoriteEmoteDefaultButtonTemplate" virtual="true" >
+			<Controls>
+
+				<Button name="$(parent)ConfigButton" inherits="LE_ConfigButtonTemplate" />
+
+				<Button name="$(parent)EmoteButton" inherits="LE_EmoteDefaultButtonTemplate" >
+					<Anchor point="TOPLEFT" offsetX="30" />
+					<Anchor point="BOTTOMRIGHT" />
+				</Button>
+
+			</Controls>
+		</Control>
+
+		<Control name="LE_FavoriteEmoteTextButtonTemplate" virtual="true" >
+			<Controls>
+
+				<Button name="$(parent)ConfigButton" inherits="LE_ConfigButtonTemplate" />
+
+				<Button name="$(parent)EmoteButton" inherits="LE_EmoteTextButtonTemplate" >
+					<Anchor point="TOPLEFT" offsetX="30" />
+					<Anchor point="BOTTOMRIGHT" />
+				</Button>
+
+			</Controls>
+		</Control>
+
+	</Controls>
+</GuiXml>

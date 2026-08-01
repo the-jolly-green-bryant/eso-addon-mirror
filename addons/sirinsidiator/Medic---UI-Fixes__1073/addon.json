@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/sirinsidiator/Medic---UI-Fixes__1073",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:1073",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:1073",
+  "deleted": false,
+  "directories": [
+    "Medic"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1073/",
+  "fingerprint": "58e35793559be80afc6e47e7592c4ee73303971caed1eb728cc01e128d5b0af7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14913.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1073",
+  "source_url": "https://www.esoui.com/downloads/info1073-Medic-UIFixes.html",
+  "stats": {
+    "downloads": 25536,
+    "favorites": 52,
+    "monthly_downloads": 57
+  },
+  "title": "Medic - UI Fixes",
+  "updated_at": 1766182605000,
+  "version": "2.2.0"
+}

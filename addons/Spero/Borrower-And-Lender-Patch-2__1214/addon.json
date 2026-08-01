@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Spero/Borrower-And-Lender-Patch-2__1214",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Spero",
+  "canonical_id": "esoui:1214",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 7",
+      "version": "1.7.0"
+    }
+  ],
+  "content_id": "esoui:1214",
+  "deleted": false,
+  "directories": [
+    "BorrowerAndLender"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1214/",
+  "fingerprint": "e457ec94fb76400ecc6f11c30f961750c865f9a3fe49abc637d17bf455495f09",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3890.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1214",
+  "source_url": "https://www.esoui.com/downloads/info1214-BorrowerAndLenderPatch2.html",
+  "stats": {
+    "downloads": 3697,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "Borrower And Lender Patch 2",
+  "updated_at": 1445720748000,
+  "version": "3.4d"
+}

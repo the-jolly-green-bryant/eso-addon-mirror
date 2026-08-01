@@ -1,0 +1,19 @@
+## Title: | CraftingHouse |r
+## Description: Use "/crafting" to port to the crafting house
+## Author: |PrimeRibeye|r
+## Version: 2.7
+## APIVersion: 101039 101040
+## SavedVariables:
+## DependsOn:
+
+##AddOnVersion: 2
+##IsLibrary: false
+
+CraftingHouse.lua
+Bindings.xml
+
+# This Addon is not created by, affiliated with, or sponsored by
+# ZeniMax Media Inc. or its affiliates
+# The Elder Scrolls (c) and related logos are registered trademarks
+# or trademarks of ZeniMax Media Inc. in the United States and/or
+# other countries.  All rights reserved

@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/R0ctan/NextTry-StatusTracker__4589",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "R0ctan",
+  "canonical_id": "esoui:4589",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4589",
+  "deleted": false,
+  "directories": [
+    "NextTryStatusTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4589/",
+  "fingerprint": "4967e7d1e940e2dc6c2b512eec4e8ff024eefde1752bcfa65496864f7c3be267",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16380.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16123.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16105.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16106.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16107.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4589",
+  "source_url": "https://www.esoui.com/downloads/info4589-NextTryStatusTracker.html",
+  "stats": {
+    "downloads": 112,
+    "favorites": 2,
+    "monthly_downloads": 24
+  },
+  "title": "NextTry StatusTracker",
+  "updated_at": 1781992018000,
+  "version": "1.2.0"
+}

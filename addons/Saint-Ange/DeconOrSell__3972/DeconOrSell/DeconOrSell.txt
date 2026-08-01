@@ -1,0 +1,20 @@
+## Title: DeconOrSell
+## Author: Saint-Ange
+## Description: Mark gear for deconstruction or sell with FCOItemSaver based on their yielded materials value vs gear merchant price.
+## Version: 1.1.3
+## APIVersion: 101047
+## SavedVariables: DeconOrSell_SavedVars
+## DependsOn: LibAddonMenu-2.0>=37 FCOItemSaver TamrielTradeCentre
+## OptionalDependsOn: DeconStats
+
+data/data.lua
+DeconOrSell.lua
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

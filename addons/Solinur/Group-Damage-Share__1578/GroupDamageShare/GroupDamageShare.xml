@@ -1,0 +1,184 @@
+<GuiXml>
+
+	<Font name="GDSFontGameBig" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thin" />
+	
+	<Controls>
+		
+		<TopLevelControl name="GROUPDAMAGESHARE_WRAPPER" clampedToScreen="true">
+			
+			<AnchorFill/>
+			<Controls>
+				
+				<Control name="GROUPDAMAGESHARE_TLW" clampedToScreen="true" resizeToFitDescendents="true" mouseEnabled="true">
+					
+					<Dimensions x="350" y="200" />
+					<Anchor point="TOPLEFT"/>
+					
+					<Controls>
+						
+						<Backdrop name="$(parent)Bg" centerColor="DD000000" edgeColor="EE000000">
+							
+							<AnchorFill/>
+							
+							<Edge edgeSize="2" />
+						
+						</Backdrop>
+						
+						<Texture name="$(parent)IconClose" textureFile="GroupDamageShare/icons/deleteiconover.dds" mouseEnabled="true">
+							
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)Bg" offsetX="-5" offsetY="0" />
+							<Dimensions x="28" y="28"/>
+							
+							<OnMouseUp>
+								GDS_Hide()
+							</OnMouseUp>
+							
+						</Texture>
+						
+						<Texture name="$(parent)IconEnd" textureFile="GroupDamageShare/icons/endarrowover.dds" mouseEnabled="true">
+							
+							<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)IconClose" offsetX="-5" offsetY="0" />
+							<Dimensions x="28" y="28"/>
+							
+							<OnMouseUp>
+								GDS_Selector("end")
+							</OnMouseUp>
+							
+						</Texture>
+						
+						<Texture name="$(parent)IconRight" textureFile="GroupDamageShare/icons/rightarrowover.dds" mouseEnabled="true">
+							
+							<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)IconEnd" offsetX="-5" offsetY="0" />
+							<Dimensions x="28" y="28"/>
+							
+							<OnMouseUp>
+								GDS_Selector(-1)
+							</OnMouseUp>
+							
+						</Texture>
+						
+						<Texture name="$(parent)IconLeft" textureFile="GroupDamageShare/icons/leftarrowover.dds" mouseEnabled="true">
+							
+							<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)IconRight" offsetX="-5" offsetY="0" />
+							<Dimensions x="28" y="28"/>
+							
+							<OnMouseUp>
+								GDS_Selector(1)
+							</OnMouseUp>
+							
+						</Texture>
+						
+						<Texture name="$(parent)SelectRole" textureFile="esoui/art/lfg/lfg_dps_down_64.dds" mouseEnabled="true">
+							
+							<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)IconLeft" offsetX="-5" offsetY="0" />
+							<Dimensions x="28" y="28"/>
+							
+							<OnMouseUp>
+								GDS_Switch()
+							</OnMouseUp>
+							
+							<OnMouseEnter>
+								ZO_Options_OnMouseEnter(self)
+							</OnMouseEnter>
+
+							<OnMouseExit>
+								ZO_Options_OnMouseExit(self)
+							</OnMouseExit>
+							
+							<OnInitialized>
+								self.data = {tooltipText = GetString(SI_GROUPDAMAGESHARE_SET_ROLE_TOOLTIP)}
+							</OnInitialized>
+							
+						</Texture>
+						 
+						<Label name="$(parent)Label" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="GDSFontGameBig" text="DPS">
+							
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)Bg" offsetX="5" offsetY="4" />
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)SelectRole" offsetX="-4" offsetY="-1" />
+						
+						</Label>
+						
+						<Line name="$(parent)TitleSep" thickness="1" color="FFFFFFFF" layer="1">
+							
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Bg" offsetX="5" offsetY="31" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Bg" offsetX="-5" offsetY="31" />
+							
+						</Line>
+						
+						<Line name="$(parent)BlockSep" thickness="2" color="AAFFFFFF" hidden="true" layer="1">
+							
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Bg" offsetX="5" offsetY="30" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Bg" offsetX="-5" offsetY="30" />
+							
+						</Line>
+						
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+		
+		<Control name="GROUPDAMAGESHARE_UnitItemTemplate" virtual="true" resizeToFitDescendents="true">
+			
+			<ResizeToFitPadding width="5" height="2"/>
+			
+			<Controls>
+			
+				<Backdrop name="$(parent)Bg" centerColor="CC000000" edgeColor="00000000">
+					
+					<Dimensions x="300" y="24" />
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+				
+				</Backdrop>
+				
+				<Backdrop name="$(parent)Bg2" centerColor="CC000000" edgeColor="00000000">
+					
+					<Dimensions x="120" y="24" />
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Bg" offsetX="4" offsetY="0" />
+				
+				</Backdrop>
+				
+				<StatusBar name="$(parent)Bar" color="FF00AA00">
+					
+					<Dimensions x="300" y="24" />
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)Bg" offsetX="0" offsetY="0" />
+				
+				</StatusBar>
+				
+				<Label name="$(parent)Value" horizontalAlignment="TEXT_ALIGN_RIGHT" verticalAlignment="TEXT_ALIGN_CENTER" font="ZoFontGameMedium" text="1000" resizeToFitDescendents="true">
+					
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)Bg" offsetX="-4" offsetY="-2" />
+				
+				</Label>
+				
+				<StatusBar name="$(parent)Bar2" color="FFAAAA00">
+					
+					<Dimensions x="120" y="24" />
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)Bg2" offsetX="0" offsetY="0" />
+				
+				</StatusBar>
+				
+				<Label name="$(parent)Time" horizontalAlignment="TEXT_ALIGN_RIGHT" verticalAlignment="TEXT_ALIGN_CENTER" font="ZoFontGameMedium" text="10.0" resizeToFitDescendents="true">
+					
+					<Dimensions x="24" y="24"/>
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)Bg2" offsetX="-4" offsetY="-2" />
+				
+				</Label>
+				
+				<Texture name="$(parent)Icon" textureFile="esoui/art/icons/class/class_dragonknight.dds" layer="2">
+					
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)Bg" offsetX="0" offsetY="0" />
+				
+				</Texture>
+				
+				<Label name="$(parent)Label" horizontalAlignment="TEXT_ALIGN_LEFT" verticalAlignment="TEXT_ALIGN_CENTER" font="ZoFontGameMedium" text="player" resizeToFitDescendents="true">
+					
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Icon" offsetX="4" offsetY="-2" />
+				
+				</Label>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

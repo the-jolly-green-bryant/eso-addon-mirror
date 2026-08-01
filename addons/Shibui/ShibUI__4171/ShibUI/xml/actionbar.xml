@@ -1,0 +1,71 @@
+<GuiXml>
+    <Controls>
+    
+        <!-- Action Bar -->
+        <Control name="SUI_ActionBar1" virtual="true">
+            <Controls>
+                <Texture name="$(parent)KeybindBG" alpha="0" />
+            </Controls>
+        </Control>
+
+        <!-- Action Bar Buttons -->
+        <Control name="SUI_ActionButton_Keyboard_Template" virtual="true" >
+            <Controls> 
+
+<!--                 <Label name="$(parent)ButtonText" hidden="true" />
+ -->
+                <Texture name="$(parent)Decoration" hidden="true" />
+                
+                <Button name="$(parent)Button" alpha="0" />
+
+            </Controls>
+        </Control>
+
+         <Control name="SUI_UltimateActionButton_Keyboard_Template" virtual="true" >
+            <Dimensions x="60" y="60" />
+            <Controls>
+            
+                <Control name="$(parent)FlipCard" override="true">
+                    <Dimensions x="57" y="57" />
+                </Control>
+
+<!--                 <Label name="$(parent)ButtonText" hidden="true" />
+ -->
+                <Texture name="$(parent)Decoration" hidden="true" />
+
+                <Button name="$(parent)Button" alpha="0" />
+
+                <Texture name="$(parent)Icon" override="true"/>
+                <Texture name="$(parent)UltimateBar" alpha="0"/>
+                <Texture name="$(parent)LeadingEdge" alpha="0"/>
+
+            </Controls>
+        </Control>
+
+        <!-- Backbar Backrow -->
+        <Control name="SUI_ActionBarTimer_BackBarSlot_Keyboard_Template" virtual="true">
+            <Dimensions x="47" y="56" />
+            <Controls>
+                <StatusBar name="$(parent)ActionTimerStatusBar" inherits="ZO_DefaultStatusBar">
+                    <Dimensions y="10" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Frame" relativePoint="TOPLEFT" offsetX="0" offsetY="-10" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Frame" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
+                </StatusBar>
+
+                <Texture name="$(parent)Frame" alpha="0" />
+                <Texture name="$(parent)Icon" alpha="0" />
+                <Texture name="$(parent)BG" hidden="true" />
+                <Texture name="$(parent)Overlay" hidden="true" />
+
+            </Controls>
+        </Control>
+
+        <!-- Buff Debuff Icons -->
+        <Control name="SUI_BuffDebuffIcon" virtual="true">
+            <Controls>
+                <Texture name="$(parent)Frame" alpha="0" />
+            </Controls>
+        </Control>
+
+    </Controls>
+</GuiXml>

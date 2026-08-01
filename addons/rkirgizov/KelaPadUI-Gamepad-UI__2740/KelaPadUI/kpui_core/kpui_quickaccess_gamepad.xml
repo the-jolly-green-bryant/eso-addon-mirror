@@ -1,0 +1,9 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="Kela_QuickAccess" inherits="ZO_Gamepad_ParametricList_Screen">
+            <OnInitialized>
+                Kela_QuickAccess_OnInitialize(self)
+            </OnInitialized>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,9 @@
+## Title: AutoSeller
+## APIVersion: 101044
+## Description: Automatically sells items based on TTC prices.
+## Author: Osdan
+## Version: 0.1
+## DependsOn: TamrielTradeCentre
+## SavedVariables: AutoSellerSavedVars
+
+AutoSeller.lua

@@ -1,0 +1,15 @@
+## Title: MailItemsSummary
+## Author: ragingpix3l
+## APIVersion: 100031
+## Description: Puts attached items value into mail body using ATT
+## Version: 0.02
+## IsLibrary: false
+
+
+#main
+MailItemsSummary.lua
+
+; Disclaimer
+;
+; Terms:
+; https://account.elderscrollsonline.com/add-on-terms

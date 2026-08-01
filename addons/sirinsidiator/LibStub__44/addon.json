@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/sirinsidiator/LibStub__44",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:44",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:44",
+  "deleted": false,
+  "directories": [
+    "LibStub"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl44/",
+  "fingerprint": "5b9e8f06ad3f931f4f443b3885694899bea7b5821d19c063f19cbe80ece54117",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "44",
+  "source_url": "https://www.esoui.com/downloads/info44-LibStub.html",
+  "stats": {
+    "downloads": 1538074,
+    "favorites": 1004,
+    "monthly_downloads": 2963
+  },
+  "title": "LibStub",
+  "updated_at": 1582533535000,
+  "version": "1.0 r7"
+}

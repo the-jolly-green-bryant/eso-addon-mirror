@@ -1,0 +1,46 @@
+## Title: LootTrackerSolution
+## Author: Solution_Lop
+## APIVersion: 101040
+## Version: 1.0.4
+## AddOnVersion: 1
+## IsLibrary: false
+## Description: A comprehensive solution for tracking loot, counting money, and providing detailed statistics in The Elder Scrolls Online.
+## SavedVariables: LootTrackerSolutionSavedVariables
+## OptionalDependsOn: TamrielTradeCentre
+
+## This Add-On is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls� and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+LootTrackerSolution.lua
+Textures/
+Lib/LibAsync/LibAsync.lua
+Modules/
+Modules/SolutionLogicModule.lua
+Modules/StorageModule.lua
+Modules/LootTrackingModule.lua
+Modules/TradeCenterModule.lua
+Modules/StatisticsModule.lua
+Modules/ScrollListModule.lua
+UI/
+UI/Localization/
+UI/Localization/local.lua
+UI/Localization/ru_local.lua
+UI/Localization/zh_local.lua
+UI/Localization/de_local.lua
+UI/Localization/en_local.lua
+UI/Localization/es_local.lua
+UI/Localization/fr_local.lua
+UI/Localization/it_local.lua
+UI/Localization/jp_local.lua
+UI/Localization/kr_local.lua
+UI/Localization/pl_local.lua
+UI/Localization/ua_local.lua
+UI/Localization/tr_local.lua
+UI/Solution_Controls.xml
+UI/Solution_Controls.lua
+UI/LootJournalWindow.xml
+UI/LootJournalWindow.lua
+UI/LootStatisticsWindow.lua
+UI/LootStatisticsWindow.xml
+UI/LootSettingsWindow.xml
+UI/LootSettingsWindow.lua
+Bindings.xml

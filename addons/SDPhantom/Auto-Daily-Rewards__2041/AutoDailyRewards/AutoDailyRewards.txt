@@ -1,0 +1,6 @@
+## APIVersion: 100024
+## Title: Auto Daily Rewards
+## Version: 1.2
+## Author: SDPhantom
+
+AutoDailyRewards.lua

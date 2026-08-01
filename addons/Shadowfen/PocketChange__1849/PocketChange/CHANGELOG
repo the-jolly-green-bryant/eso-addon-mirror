@@ -1,0 +1,219 @@
+[COLOR="DeepSkyBlue"]1.36 (36)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.35 (35)[/COLOR]:
+[LIST]
+[*] Convert from .txt manifest to .addon.
+[*] Updated library dependency versions.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.34 (34)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.33 (33)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.32 (32)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.31 (31)[/COLOR]:
+[LIST]
+[*] Increased gold limit setting to 200,000 on request.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.30 (30)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.29 (29)[/COLOR]:
+[LIST]
+[*] API bump (Necrom).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.28 (28)[/COLOR]:
+[LIST]
+[*] API bump (Scribes of Fate).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.27 (27)[/COLOR]:
+[LIST]
+[*] API bump (Firesong).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.26 (26)[/COLOR]:
+[LIST]
+[*] API bump (High Isle).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.25 (25)[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.24 (24)[/COLOR]:
+[LIST]
+[*] Update color functions
+[*] Require minimum version of installed LibSFUtils to be at least 38. Earlier versions will probably break the user interface.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.23 (23)[/COLOR]:
+[LIST]
+[*] API bump
+[*] Require minimum version of installed LibAddonMenu to be at least 32. Earlier versions will break the user interface.
+[*] Update ZOS function usage.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.22 (22)[/COLOR]
+[LIST]
+[*] API bump (Waking Flame)
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.21 (21)[/COLOR]
+[LIST]
+[*] API bump (Blackwood)
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.20 (20)[/COLOR]
+[LIST]
+[*] API bump (Flames of Ambition)
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.19 (19)[/COLOR]
+[LIST]
+[*] API bump (Markarth)
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.18 (18)[/COLOR]
+[LIST]
+[*] API bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.17 (17)[/COLOR]
+[LIST]
+[*] API bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.16 (16)[/COLOR]
+[LIST]
+[*] Set AddonVersion in manifest file.
+[*] Prevent a negative value from being used for currency thresholds. This bug caused it to look as though auto-depositing of Telvar Stones (among others) was happening when they actually stayed on your toon.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.15[/COLOR]
+[LIST]
+[*] Fixed incorrect display of accountwide setting on the settings page. (reported by Kraistlin)
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.14[/COLOR]
+[LIST]
+[*] API bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.13[/COLOR]
+[LIST]
+[*] The toggle to enable/disable automatic depositing of alliance points and telvar stones were mistakenly swapped. Now they actually disable the currency that they describe.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.12[/COLOR]
+[LIST]
+[*] API bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.11[/COLOR]
+[LIST]
+[*] Use LibAddonMenu-2.0 directly instead of through LibStub. LibAddonMenu-2.0 and LibSFUtil both still need to be installed separately.
+[*] API Bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.10[/COLOR]
+[LIST]
+[*] API Bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.9[/COLOR]
+[LIST]
+[*] Changing the / command(s) used by PocketChange (to standardize with my other addons). The following / commands are now supported:
+
+    /pocketchange - (New) Displays the list of supported PocketChange / commands in chat
+    /pocket.settings - (New) Open settings window for PocketChange
+    /pocket debug - (previously /pocket.debug) Toggle display of debug messages from PocketChange
+    
+ 
+[*] Use the chatter messaging from LibSFUtils instead of reimplementing them. 
+[*] Removed direct dependency on library LibStub.
+[*] Change to use standalone libraries (LibSFUtils, and LibAddonMenu) instead of bundling the libraries with PocketChange.
+[*] Upgrade libSFutils to version 13.
+[*] Used the saved variables functions provided in libSFutils instead of reimplementing them over and over.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.8[/COLOR]
+[LIST]
+[*] Add a setting to turn off automatic depositing and withdrawing of gold to the bank as requested by ZoLatKam.
+[*] Also provide settings to turn off automatic depositing and withrawing of the other currencies to the bank as well.
+[*] API bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.7[/COLOR]
+[LIST]
+[*] Restrict PocketChange to only check when you go to the bank or to your personal banker. (Now that ESO has fixed the bug that allowed me to deposit/withdraw money from the bank from our house storage chests.)
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.6[/COLOR]
+[LIST]
+[*] API bump
+[*]Change to Saved Variables file requiring settings to be reset. Sorry.
+[*]Upgraded LibSFUtils to version 8.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.5[/COLOR]
+[LIST]
+[*]API bump.
+[*]Upgraded LibSFUtils to version 7.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4[/COLOR]
+[LIST]
+[*]API bump.
+[*]Upgraded LibSFUtils to version 6.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.3[/COLOR]
+[LIST]
+[*]Added the ability to monitor how many poisons you want to have equipped (at a minimum) for both the main weapon and the backup weapon poison slots. 
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.2[/COLOR]
+[LIST]
+[*]Added a monitor for empty soul gems by request.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.2[/COLOR]
+[LIST]
+[*]Fixed errors with having per-character settings. Now when you turn off the "Apply these settings account-wide", any further changes that you make to the settings will be saved specifically for the character you are playing. Turning "Apply these settings account-wide" back to ON will convert back to the account-wide settings.
+[*]Fixed the error with initializing saved variables to a default that includes subtables. It will now properly set default values for new variables that were added to the subtables without affecting the previously known settings.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.1[/COLOR]
+[LIST]
+[*]Fixed an error counting lockpicks in the backpack.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1[/COLOR]
+[LIST]
+[*]Added Supply Level Notifications
+[*]Released by Shadowfen
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.0[/COLOR]
+[LIST]
+[*]Initial currency management version for beta.
+[/LIST]

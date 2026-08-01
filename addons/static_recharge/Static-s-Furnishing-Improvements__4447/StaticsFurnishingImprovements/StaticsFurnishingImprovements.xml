@@ -1,0 +1,719 @@
+<GuiXml>
+  <Controls>
+
+    <!-- Virtual Definitions -->
+
+    <!-- Button Template -->
+    <Button name="SFIButton" font="ZoFontWinH3" horizontalAlignment="CENTER" verticalAlignment="CENTER" clickSound="Click" virtual="true">
+      <PressedOffset x="1" y="1" />
+      <FontColors normalColor="0086B3" mouseOverColor="FCD9B6" pressedColor="FCD9B6" />
+    </Button>
+
+    <!-- List Template -->
+    <Button name="SFIQueueList" font="ZoFontChat" clickSound="Click" verticalAlignment="CENTER" horizontalAlignment="LEFT" virtual="true">
+      <Dimensions x="370" y="32" />
+      <Textures name="$(parent)Highlight" mouseOver="esoui/art/buttons/selection_highlight.dds" pressed="esoui/art/buttons/selection_highlight.dds" />
+      <PressedOffset x="1" y="1" />
+      <MouseButton button="2" enabled="true" />
+    </Button>
+
+    <Control name="SFIVaultStatsSinglesList" font="ZoFontGameSmall" mouseEnabled="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" virtual="true">
+      <Dimensions x="370" y="24" />
+      <Controls>
+
+        <Label name="$(parent)Label" font="ZoFontGameSmall" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <AnchorFill />
+        </Label>
+
+      </Controls>
+    </Control>
+
+    <Control name="SFIVaultStatsBoundUnboundPairsList" mouseEnabled="true" virtual="true">
+      <Dimensions x="350" y="24" />
+      <Controls>
+
+        <Label name="$(parent)Item" font="ZoFontGameSmall" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Dimensions x="300" y="24" />
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+        </Label>
+
+        <Label name="$(parent)Quantity" font="ZoFontGameSmall" color="DDDDDD" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+          <Dimensions x="50" y="24" />
+          <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+        </Label>
+
+      </Controls>
+    </Control>
+
+    <!-- Storage Space Templates -->
+    <Control name="SFIStorageSpaceContainer" mouseEnabled="true" virtual="true">
+      <Dimensions y="28" />
+    </Control>
+
+    <Backdrop name="SFIStorageSpaceBackdrop" edgeColor="00000000" virtual="true">
+      <AnchorFill />
+    </Backdrop>
+
+    <!-- Storage Legend Templates -->
+    <Control name="SFIStorageLegendContainer" mouseEnabled="true" virtual="true">
+      <Dimensions x="188" y="24" />
+    </Control>
+
+    <Backdrop name="SFIStorageLegendSwatch" edgeColor="0086B3" virtual="true">
+      <Dimensions x="16" y="16" />
+    </Backdrop>
+
+    <Label name="SFIStorageLegendCategory" font="ZoFontGameSmall" color="DDDDDD" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="TEXT_WRAP_MODE_ELLIPSIS" virtual="true">
+      <Dimensions x="81" y="24" />
+      <Anchor point="LEFT" relativeTo="$(parent)Swatch" relativePoint="RIGHT" offsetX="2" offsetY="0" />
+    </Label>
+
+    <Label name="SFIStorageLegendInfo" font="ZoFontGameSmall" color="DDDDDD" horizontalAlignment="RIGHT" verticalAlignment="CENTER" wrapMode="TEXT_WRAP_MODE_ELLIPSIS" virtual="true">
+      <Dimensions x="81" y="24" />
+      <Anchor point="LEFT" relativeTo="$(parent)Category" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+    </Label>
+
+    <!-- UI Definitions -->
+
+    <!-- Queue Window -->
+    <TopLevelControl name="SFI_Queue_Window" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="384" y ="384" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+      <OnMoveStop> StaticsFurnishingImprovements.Queue:OnMoveStop() </OnMoveStop>
+      <Controls>
+
+        <!-- Main Backdrop -->
+        <Backdrop name="$(parent)BG" centerColor="CC050505" edgeColor="CC050505">
+          <AnchorFill />
+        </Backdrop>
+
+        <!-- Close Button -->
+        <Button name="$(parent)CloseButton" text="X" inherits="SFIButton">
+          <Dimensions x="32" y="32" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+          <OnClicked> StaticsFurnishingImprovements.Queue:ShowWindow(false) </OnClicked>
+        </Button>
+
+        <!-- Title -->
+        <Label name="$(parent)Title" text="Furniture Vault Queue" font="ZoFontWinH3" color="0086B3" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+          <Dimensions x="0" y="32" />
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+        </Label>
+
+        <!-- Info Tooltip -->
+        <Button name="$(parent)InfoButton" text="i" inherits="SFIButton">
+          <Dimensions x="32" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+          <OnMouseEnter>
+            ZO_Tooltips_ShowTextTooltip(self, LEFT, "These items will be automatically added to the |c0086B3Furnishing Vault|r on the next visit.\n\n|c0086B3Right Click|r on an item to remove it from the queue.")
+          </OnMouseEnter>
+          <OnMouseExit>
+            ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Button>
+
+        <!-- Scroll List -->
+        <Control name="$(parent)ScrollBox" inherits="ZO_ScrollContainer">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)InfoButton" relativePoint="BOTTOMLEFT" offsetX="4" offsetY="4" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="-4" />
+          <OnInitialized> ZO_Scroll_Initialize(self) </OnInitialized>
+          <Controls>
+
+            <!-- Scroll List Backdrop-->
+            <Backdrop name="$(parent)BG" centerColor="CC222222" edgeColor="CC222222">
+              <AnchorFill />
+            </Backdrop>
+
+          </Controls>
+        </Control> 
+
+      </Controls>
+    </TopLevelControl>
+
+
+    <!-- Vault Stats Window -->
+    <TopLevelControl name="SFI_Vault_Stats_Window" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="384" y ="640" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+      <OnMoveStop> StaticsFurnishingImprovements.VaultStats:OnMoveStop() </OnMoveStop>
+      <Controls>
+
+        <!-- Main Backdrop -->
+        <Backdrop name="$(parent)BG" centerColor="CC050505" edgeColor="CC050505">
+          <AnchorFill />
+        </Backdrop>
+
+        <!-- Title Bar-->
+        <Control name="$(parent)TitleBar">
+          <Dimensions y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+          <Controls>
+
+            <Button name="$(parent)CloseButton" text="X" inherits="SFIButton">
+              <Dimensions x="32" y="32" />
+              <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+              <OnClicked> StaticsFurnishingImprovements.VaultStats:ShowWindow(false) </OnClicked>
+            </Button>
+
+            <Label name="$(parent)Label" text="Furniture Vault Stats" font="ZoFontWinH3" color="0086B3" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+              <Dimensions x="0" y="32" />
+              <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            </Label>
+
+          </Controls>
+        </Control>
+
+        <!-- Storage Bar -->
+        <Control name="$(parent)StorageBar">
+          <Dimensions y="54" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)TitleBar" relativePoint="BOTTOMLEFT" offsetX="4" offsetY="4" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)TitleBar" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="4" />
+          <Controls>
+
+            <Label name="$(parent)Label" text="X/500 (XXX%)" font="ZoFontGameSmall" color="0086B3" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+              <Dimensions y="16" />
+              <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+            </Label>
+
+            <Backdrop name="$(parent)Backdrop" centerColor="00000000" edgeColor="0086B3" >
+              <Anchor point="TOP" relativeTo="$(parent)Label" relativePoint="BOTTOM" offsetX="0" offsetY="4" />
+              <Dimensions x="376" y="32" />
+              <Edge edgeSize="2" />
+            </Backdrop>
+
+            <!-- resulting visible area for storage spaces = 372 -->
+            <Control name="$(parent)Services" inherits="SFIStorageSpaceContainer">
+              <Dimensions x="28" />
+              <Anchor point="LEFT" relativeTo="$(parent)Backdrop" relativePoint="LEFT" offsetX="2" />
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Services")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+              <Controls>
+
+                <Backdrop name="$(parent)ServicesBg" centerColor="88CCEE" inherits="SFIStorageSpaceBackdrop" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Conservatory" inherits="SFIStorageSpaceContainer">
+              <Dimensions x="28" />
+              <Anchor point="LEFT" relativeTo="$(parent)Services" relativePoint="RIGHT" />
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Conservatory")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+              <Controls>
+
+                <Backdrop name="$(parent)ConservatoryBg" centerColor="44AA99" inherits="SFIStorageSpaceBackdrop" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Courtyard" inherits="SFIStorageSpaceContainer">
+              <Dimensions x="28" />
+              <Anchor point="LEFT" relativeTo="$(parent)Conservatory" relativePoint="RIGHT" />
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Courtyard")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+              <Controls>
+
+                <Backdrop name="$(parent)CourtyardBg" centerColor="AAFFC3" inherits="SFIStorageSpaceBackdrop" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Dining" inherits="SFIStorageSpaceContainer">
+              <Dimensions x="28" />
+              <Anchor point="LEFT" relativeTo="$(parent)Courtyard" relativePoint="RIGHT" />
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Dining")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+              <Controls>
+
+                <Backdrop name="$(parent)DiningBg" centerColor="888822" inherits="SFIStorageSpaceBackdrop" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Gallery" inherits="SFIStorageSpaceContainer">
+              <Dimensions x="28" />
+              <Anchor point="LEFT" relativeTo="$(parent)Dining" relativePoint="RIGHT" />
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Gallery")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+              <Controls>
+
+                <Backdrop name="$(parent)GalleryBg" centerColor="FFFAC8" inherits="SFIStorageSpaceBackdrop" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Hearth" inherits="SFIStorageSpaceContainer">
+              <Dimensions x="28" />
+              <Anchor point="LEFT" relativeTo="$(parent)Gallery" relativePoint="RIGHT" />
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Hearth")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+              <Controls>
+
+                <Backdrop name="$(parent)HearthBg" centerColor="E69F00" inherits="SFIStorageSpaceBackdrop" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Library" inherits="SFIStorageSpaceContainer">
+              <Dimensions x="28" />
+              <Anchor point="LEFT" relativeTo="$(parent)Hearth" relativePoint="RIGHT" />
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Library")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+              <Controls>
+
+                <Backdrop name="$(parent)LibraryBg" centerColor="FABED4" inherits="SFIStorageSpaceBackdrop" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Lighting" inherits="SFIStorageSpaceContainer">
+              <Dimensions x="28" />
+              <Anchor point="LEFT" relativeTo="$(parent)Library" relativePoint="RIGHT" />
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Lighting")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+              <Controls>
+
+                <Backdrop name="$(parent)LightingBg" centerColor="CC79A7" inherits="SFIStorageSpaceBackdrop" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Parlor" inherits="SFIStorageSpaceContainer">
+              <Dimensions x="28" />
+              <Anchor point="LEFT" relativeTo="$(parent)Lighting" relativePoint="RIGHT" />
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Parlor")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+              <Controls>
+
+                <Backdrop name="$(parent)ParlorBg" centerColor="DCBEFF" inherits="SFIStorageSpaceBackdrop" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Structures" inherits="SFIStorageSpaceContainer">
+              <Dimensions x="28" />
+              <Anchor point="LEFT" relativeTo="$(parent)Parlor" relativePoint="RIGHT" />
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Structures")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+              <Controls>
+
+                <Backdrop name="$(parent)StructuresBg" centerColor="957DAD" inherits="SFIStorageSpaceBackdrop" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Suite" inherits="SFIStorageSpaceContainer">
+              <Dimensions x="28" />
+              <Anchor point="LEFT" relativeTo="$(parent)Structures" relativePoint="RIGHT" />
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Suite")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+              <Controls>
+
+                <Backdrop name="$(parent)SuiteBg" centerColor="D6D2C4" inherits="SFIStorageSpaceBackdrop" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Undercroft" inherits="SFIStorageSpaceContainer">
+              <Dimensions x="28" />
+              <Anchor point="LEFT" relativeTo="$(parent)Suite" relativePoint="RIGHT" />
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Undercroft")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+              <Controls>
+
+                <Backdrop name="$(parent)UndercroftBg" centerColor="A9A9A9" inherits="SFIStorageSpaceBackdrop" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Workshop" inherits="SFIStorageSpaceContainer">
+              <Dimensions x="28" />
+              <Anchor point="LEFT" relativeTo="$(parent)Undercroft" relativePoint="RIGHT" />
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Workshop")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+              <Controls>
+
+                <Backdrop name="$(parent)WorkshopBg" centerColor="555555" inherits="SFIStorageSpaceBackdrop" />
+
+              </Controls>
+            </Control>
+
+          </Controls>
+        </Control>
+
+
+        <!-- Legend Bar -->
+        <Control name="$(parent)LegendBar">
+          <Dimensions x="376" y="168" />
+          <Anchor point="TOP" relativeTo="$(parent)StorageBar" relativePoint="BOTTOM" offsetX="0" offsetY="2" />
+          <Controls>
+
+            <Control name="$(parent)Services" inherits="SFIStorageLegendContainer">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+              <Controls>
+
+                <Backdrop name="$(parent)Swatch" centerColor="88CCEE" inherits="SFIStorageLegendSwatch">
+                  <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Category" text="Services" inherits="SFIStorageLegendCategory" />
+
+                <Label name="$(parent)Info" text="X (XXX%)" inherits="SFIStorageLegendInfo" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Conservatory" inherits="SFIStorageLegendContainer">
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+              <Controls>
+
+                <Backdrop name="$(parent)Swatch" centerColor="44AA99" inherits="SFIStorageLegendSwatch">
+                  <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Category" text="Conservatory" inherits="SFIStorageLegendCategory" />
+
+                <Label name="$(parent)Info" text="X (XXX%)" inherits="SFIStorageLegendInfo" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Courtyard" inherits="SFIStorageLegendContainer">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Services" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+              <Controls>
+
+                <Backdrop name="$(parent)Swatch" centerColor="AAFFC3" inherits="SFIStorageLegendSwatch">
+                  <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Category" text="Courtyard" inherits="SFIStorageLegendCategory" />
+
+                <Label name="$(parent)Info" text="X (XXX%)" inherits="SFIStorageLegendInfo" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Dining" inherits="SFIStorageLegendContainer">
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)Conservatory" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+              <Controls>
+
+                <Backdrop name="$(parent)Swatch" centerColor="888822" inherits="SFIStorageLegendSwatch">
+                  <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Category" text="Dining" inherits="SFIStorageLegendCategory" />
+
+                <Label name="$(parent)Info" text="X (XXX%)" inherits="SFIStorageLegendInfo" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Gallery" inherits="SFIStorageLegendContainer">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Courtyard" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+              <Controls>
+
+                <Backdrop name="$(parent)Swatch" centerColor="FFFAC8" inherits="SFIStorageLegendSwatch">
+                  <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Category" text="Gallery" inherits="SFIStorageLegendCategory" />
+
+                <Label name="$(parent)Info" text="X (XXX%)" inherits="SFIStorageLegendInfo" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Hearth" inherits="SFIStorageLegendContainer">
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)Dining" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+              <Controls>
+
+                <Backdrop name="$(parent)Swatch" centerColor="E69F00" inherits="SFIStorageLegendSwatch">
+                  <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Category" text="Hearth" inherits="SFIStorageLegendCategory" />
+
+                <Label name="$(parent)Info" text="X (XXX%)" inherits="SFIStorageLegendInfo" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Library" inherits="SFIStorageLegendContainer">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Gallery" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+              <Controls>
+
+                <Backdrop name="$(parent)Swatch" centerColor="FABED4" inherits="SFIStorageLegendSwatch">
+                  <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Category" text="Library" inherits="SFIStorageLegendCategory" />
+
+                <Label name="$(parent)Info" text="X (XXX%)" inherits="SFIStorageLegendInfo" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Lighting" inherits="SFIStorageLegendContainer">
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)Hearth" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+              <Controls>
+
+                <Backdrop name="$(parent)Swatch" centerColor="CC79A7" inherits="SFIStorageLegendSwatch">
+                  <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Category" text="Lighting" inherits="SFIStorageLegendCategory" />
+
+                <Label name="$(parent)Info" text="X (XXX%)" inherits="SFIStorageLegendInfo" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Parlor" inherits="SFIStorageLegendContainer">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Library" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+              <Controls>
+
+                <Backdrop name="$(parent)Swatch" centerColor="DCBEFF" inherits="SFIStorageLegendSwatch">
+                  <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Category" text="Parlor" inherits="SFIStorageLegendCategory" />
+
+                <Label name="$(parent)Info" text="X (XXX%)" inherits="SFIStorageLegendInfo" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Structures" inherits="SFIStorageLegendContainer">
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)Lighting" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+              <Controls>
+
+                <Backdrop name="$(parent)Swatch" centerColor="957DAD" inherits="SFIStorageLegendSwatch">
+                  <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Category" text="Structures" inherits="SFIStorageLegendCategory" />
+
+                <Label name="$(parent)Info" text="X (XXX%)" inherits="SFIStorageLegendInfo" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Suite" inherits="SFIStorageLegendContainer">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Parlor" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+              <Controls>
+
+                <Backdrop name="$(parent)Swatch" centerColor="D6D2C4" inherits="SFIStorageLegendSwatch">
+                  <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Category" text="Suite" inherits="SFIStorageLegendCategory" />
+
+                <Label name="$(parent)Info" text="X (XXX%)" inherits="SFIStorageLegendInfo" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Undercroft" inherits="SFIStorageLegendContainer">
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)Structures" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+              <Controls>
+
+                <Backdrop name="$(parent)Swatch" centerColor="A9A9A9" inherits="SFIStorageLegendSwatch">
+                  <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Category" text="Undercroft" inherits="SFIStorageLegendCategory" />
+
+                <Label name="$(parent)Info" text="X (XXX%)" inherits="SFIStorageLegendInfo" />
+
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)Workshop" inherits="SFIStorageLegendContainer">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Suite" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+              <Controls>
+
+                <Backdrop name="$(parent)Swatch" centerColor="555555" inherits="SFIStorageLegendSwatch">
+                  <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Category" text="Workshop" inherits="SFIStorageLegendCategory" />
+
+                <Label name="$(parent)Info" text="X (XXX%)" inherits="SFIStorageLegendInfo" />
+
+              </Controls>
+            </Control>
+
+          </Controls>
+        </Control>
+
+        <!-- Singles Scroll List -->
+        <Control name="$(parent)Singles">
+          <Dimensions x="376" y="146" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)LegendBar" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="4" />
+          <Controls>
+
+            <Label name="$(parent)Label" text="Single Stack Items" font="ZoFontGameSmall" color="0086B3" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+              <Dimensions x="376" y="24" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            </Label>
+
+            <Control name="$(parent)ScrollBox" inherits="ZO_ScrollContainer">
+              <Dimensions x="376" y="120" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+              <OnInitialized> ZO_Scroll_Initialize(self) </OnInitialized>
+              <Controls>
+
+                <!-- Scroll List Backdrop-->
+                <Backdrop name="$(parent)BG" centerColor="CC222222" edgeColor="CC222222">
+                  <AnchorFill />
+                </Backdrop>
+
+              </Controls>
+            </Control>
+
+          </Controls>
+        </Control>
+
+        <!-- Pairs Scroll List -->
+        <Control name="$(parent)Pairs">
+          <Dimensions x="376" y="146" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Singles" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="4" />
+          <Controls>
+
+            <Label name="$(parent)Label" text="Bound/Unbound Doubled Up Items (B/U)" font="ZoFontGameSmall" color="0086B3" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+              <Dimensions x="376" y="24" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            </Label>
+
+            <Control name="$(parent)ScrollBox" inherits="ZO_ScrollContainer">
+              <Dimensions x="376" y="120" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+              <OnInitialized> ZO_Scroll_Initialize(self) </OnInitialized>
+              <Controls>
+
+                <!-- Scroll List Backdrop-->
+                <Backdrop name="$(parent)BG" centerColor="CC222222" edgeColor="CC222222">
+                  <AnchorFill />
+                </Backdrop>
+
+              </Controls>
+            </Control>
+
+          </Controls>
+        </Control>
+
+        <!-- Cleaning Options -->
+        <Control name="$(parent)Cleaning">
+          <Dimensions x="376" />
+          <Anchor point="TOP" relativeTo="$(parent)Pairs" relativePoint="BOTTOM" offsetX="0" offsetY="4" />
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-4" />
+          <Controls>
+
+            <Label name="$(parent)Label" text="Cleaning Options" font="ZoFontGameSmall" color="0086B3" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+              <Dimensions x="376" y="24" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            </Label>
+
+            <Button name="$(parent)SinglesRemoveButton" text="Singles" inherits="SFIButton">
+              <Dimensions x="120" y="32" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+              <OnClicked>
+                StaticsFurnishingImprovements.VaultStats:RemoveItemsFromSinglesList()
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Remove all single items from the |c0086B3Furnishing Vault|r")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+
+            <Button name="$(parent)PairsBoundRemoveButton" text="Bound" inherits="SFIButton">
+              <Dimensions x="120" y="32" />
+              <Anchor point="TOP" relativeTo="$(parent)Label" relativePoint="BOTTOM" offsetX="0" offsetY="2" />
+              <OnClicked>
+                StaticsFurnishingImprovements.VaultStats:RemoveItemsFromPairsList(true)
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Remove all doubled up bound items from the |c0086B3Furnishing Vault|r")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+
+            <Button name="$(parent)PairsUnboundRemoveButton" text="Unbound" inherits="SFIButton">
+              <Dimensions x="120" y="32" />
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)Label" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
+              <OnClicked>
+                StaticsFurnishingImprovements.VaultStats:RemoveItemsFromPairsList(false)
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "Remove all doubled up unbound items from the |c0086B3Furnishing Vault|r")
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+
+          </Controls>
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

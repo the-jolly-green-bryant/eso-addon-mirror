@@ -1,0 +1,41 @@
+<GuiXml>
+  <Controls>
+    <!-- For all the different tooltip text -->
+    <Label name="TTCCTooltipText" virtual="true" font="ZoFontGame" linkEnabled="true" mouseEnabled="true" 
+           color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="XXX">
+    </Label>
+
+    <Control name="TTCCompanionPriceCalc" virtual="true" hidden="true" tier="high">
+      <Dimensions x="170" y="95"/>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
+        <Texture name="$(parent)Coin" textureFile="EsoUI/Art/currency/currency_gold.dds">
+          <Dimensions x="16" y="16"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="8"/>
+        </Texture>
+        <Backdrop name="$(parent)UnitCost" inherits="ZO_EditBackdrop">
+          <Anchor point="RIGHT" relativeTo="$(parent)Coin" relativePoint="LEFT" offsetX="-3"/>
+          <Dimensions x="150" y="25"/>
+          <Controls>
+            <EditBox name="$(parent)Amount" inherits="ZO_DefaultEditForBackdrop" textType="NUMERIC" defaultText="Enter Unit Cost">
+              <OnEnter>
+                TTCCompanion:updateCalc()
+                self:LoseFocus()
+              </OnEnter>
+            </EditBox>
+          </Controls>
+        </Backdrop>
+        <Label name="$(parent)Stack" font="ZoFontGame"
+               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="x 10">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-4" offsetY="34"/>
+        </Label>
+        <Label name="$(parent)Total" font="ZoFontGame"
+               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+               text="Total: 9,000 |t16:16:EsoUI/Art/currency/currency_gold.dds|t">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-4" offsetY="66"/>
+        </Label>
+      </Controls>
+    </Control>
+
+  </Controls>
+</GuiXml>

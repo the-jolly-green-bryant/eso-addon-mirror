@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Skill Blocker">
+			<Action name="NEARSB_suppressblock">
+				<Up>NEAR_SB.slash_commands.suppressBlock()</Up>
+			</Action>
+			<Action name="NEARSB_blockPvP">
+				<Up>NEAR_SB.slash_commands.blockPvP()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

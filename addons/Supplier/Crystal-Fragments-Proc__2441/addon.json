@@ -1,0 +1,56 @@
+{
+  "archive_path": "addons/Supplier/Crystal-Fragments-Proc__2441",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Supplier",
+  "canonical_id": "esoui:2441",
+  "category_id": "58",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2441",
+  "deleted": false,
+  "directories": [
+    "CrystalFragmentsProc"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2441/",
+  "fingerprint": "340e8ed4b5ed10f3d94d2c1e4e9146794342fb7f73a194c303a54e7d733dbb05",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8726.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9225.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8320.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8725.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2441",
+  "source_url": "https://www.esoui.com/downloads/info2441-CrystalFragmentsProc.html",
+  "stats": {
+    "downloads": 35390,
+    "favorites": 24,
+    "monthly_downloads": 161
+  },
+  "title": "Crystal Fragments Proc",
+  "updated_at": 1596080796000,
+  "version": "1.5"
+}

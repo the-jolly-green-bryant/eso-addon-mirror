@@ -1,0 +1,99 @@
+{
+  "archive_path": "addons/Puddy/pChat-Chat-customization-help-look-notification-sound-automation-history__93",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Puddy",
+  "canonical_id": "esoui:93",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:93",
+  "deleted": false,
+  "directories": [
+    "pChat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl93/",
+  "fingerprint": "4c1a90e0fd27f50f3f00a5e8e937321f3899f1bdd6b96d2fc5ca74df5405089d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14795.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2872.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2878.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3309.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2875.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2876.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2877.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3310.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3573.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2154.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2155.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "93",
+  "source_url": "https://www.esoui.com/downloads/info93-pChatChatcustomizationhelplooknotificationsoundautomationhistory.html",
+  "stats": {
+    "downloads": 1842477,
+    "favorites": 1196,
+    "monthly_downloads": 4272
+  },
+  "title": "pChat (Chat customization & help: look/notification/sound/automation/history)",
+  "updated_at": 1780938233000,
+  "version": "10.0.7.4"
+}

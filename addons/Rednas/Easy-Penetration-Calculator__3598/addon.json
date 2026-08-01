@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Rednas/Easy-Penetration-Calculator__3598",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rednas",
+  "canonical_id": "esoui:3598",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3598",
+  "deleted": false,
+  "directories": [
+    "EasyPenCalc"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3598/",
+  "fingerprint": "57adfee279eb2d0f9a537d2dc3281e5fa449852f67d990a5abe6e82c8d61435b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12438.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3598",
+  "source_url": "https://www.esoui.com/downloads/info3598-EasyPenetrationCalculator.html",
+  "stats": {
+    "downloads": 5816,
+    "favorites": 5,
+    "monthly_downloads": 50
+  },
+  "title": "Easy Penetration Calculator",
+  "updated_at": 1686061279000,
+  "version": "0.9.6"
+}

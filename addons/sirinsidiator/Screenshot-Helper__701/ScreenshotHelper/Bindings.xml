@@ -1,0 +1,41 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Screenshot Helper">
+			<Action name="TOGGLE_SCREENSHOT_HELPER">
+				<Up>ScreenshotHelper.TogglePortraitMode()</Up>
+			</Action>
+		</Category>
+	</Layer>
+	<Layer name="Screenshot Helper Mode">
+		<Category>
+			<!-- don't let players press enter while the UI is hidden, otherwise chat won't work anymore -->
+			<Action name="SCREENSHOT_HELPER_INTERCEPT_START_CHAT_ENTER" hideAction="true" rebindable="false" inheritsBindFrom="START_CHAT_ENTER">
+				<Down>return true</Down>
+			</Action>
+			<Action name="SCREENSHOT_HELPER_MOVE_UP">
+				<Down>ScreenshotHelper.MoveUp(true)</Down>
+				<Up>ScreenshotHelper.MoveUp(false)</Up>
+			</Action>
+			<Action name="SCREENSHOT_HELPER_MOVE_DOWN">
+				<Down>ScreenshotHelper.MoveDown(true)</Down>
+				<Up>ScreenshotHelper.MoveDown(false)</Up>
+			</Action>
+			<Action name="SCREENSHOT_HELPER_MOVE_LEFT">
+				<Down>ScreenshotHelper.MoveLeft(true)</Down>
+				<Up>ScreenshotHelper.MoveLeft(false)</Up>
+			</Action>
+			<Action name="SCREENSHOT_HELPER_MOVE_RIGHT">
+				<Down>ScreenshotHelper.MoveRight(true)</Down>
+				<Up>ScreenshotHelper.MoveRight(false)</Up>
+			</Action>
+			<Action name="SCREENSHOT_HELPER_INCREASE_FOV">
+				<Down>ScreenshotHelper.IncreaseFov(true)</Down>
+				<Up>ScreenshotHelper.IncreaseFov(false)</Up>
+			</Action>
+			<Action name="SCREENSHOT_HELPER_DECREASE_FOV">
+				<Down>ScreenshotHelper.DecreaseFov(true)</Down>
+				<Up>ScreenshotHelper.DecreaseFov(false)</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/sirinsidiator/LibGetText__2276",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:2276",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:2276",
+  "deleted": false,
+  "directories": [
+    "LibGetText"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2276/",
+  "fingerprint": "363b3e75e4a16df0804af4745e9f745f327c0f649c19d040c4cd3b7e29504ee6",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2276",
+  "source_url": "https://www.esoui.com/downloads/info2276-LibGetText.html",
+  "stats": {
+    "downloads": 743017,
+    "favorites": 508,
+    "monthly_downloads": 4590
+  },
+  "title": "LibGetText",
+  "updated_at": 1746123183000,
+  "version": "1.0.3"
+}

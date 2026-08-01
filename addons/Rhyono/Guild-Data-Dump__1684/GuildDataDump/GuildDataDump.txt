@@ -1,0 +1,11 @@
+;All of the good addons have comments here.
+
+## Title: Guild Data Dump
+## APIVersion: 101033
+## Author: |c7f0000Rhyono|r
+## Description: Saves a list of guild members or bank contents to saved variables.
+## Version: 1.23
+## OptionalDependsOn: Zgoo
+## SavedVariables: GuildDataDumpVars
+
+GuildDataDump.lua

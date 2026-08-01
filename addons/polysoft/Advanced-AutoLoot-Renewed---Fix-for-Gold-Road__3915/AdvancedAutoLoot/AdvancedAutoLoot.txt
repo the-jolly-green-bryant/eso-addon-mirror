@@ -1,0 +1,15 @@
+## Title: Advanced Autoloot Renewed
+## Author: |c666666Mandrakia|r, |c666666TheChessurCat|r, |c00FF00SilverWF|r,  |c666666polysoft
+## APIVersion: 100024 100025 100026
+## Version: 1.9.9
+## Description: Fast and simple loot filtering and mailing items by type (updatet for GoldRoad by polysoft)
+## SavedVariables: AdvancedAutoLoot_Db
+## DependsOn: LibStub LibAddonMenu-2.0
+## OptionalDependsOn: BeggingTheGear ItemSaver FCOItemSaver CraftStoreFixedAndImproved
+## FastAPI : 100024
+
+## Core:
+AdvancedAutoLootConfig.lua
+AdvancedAutoLoot.lua
+AdvancedAutoLoot.xml   
+Bindings.xml

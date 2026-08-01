@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Sharlikran/LibRecipe__3927",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:3927",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3927",
+  "deleted": false,
+  "directories": [
+    "LibRecipe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3927/",
+  "fingerprint": "aa5b02ccc631f8e1403ca6fbf020a59ecd4de276f81df11a333fc05c66b4698f",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3927",
+  "source_url": "https://www.esoui.com/downloads/info3927-LibRecipe.html",
+  "stats": {
+    "downloads": 63316,
+    "favorites": 42,
+    "monthly_downloads": 1765
+  },
+  "title": "LibRecipe",
+  "updated_at": 1778513359000,
+  "version": "1.12"
+}

@@ -1,0 +1,21 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|cea4e49Arca|cfeee5dnumA|c40c0f0rtis|r">
+            <Action name="AA_SETTINGS">
+                <Down>LibAddonMenu2:OpenToPanel(ArcanumGuildHall.panel)</Down>
+            </Action>
+            <Action name="AA_REPAIR_RECHARGE">
+                <Down>ArcanumGuildHall.RepairRecharge()</Down>
+            </Action>
+            <Action name="AA_REPAIR">
+                <Down>ArcanumGuildHall.RepairItemsWithKits()</Down>
+            </Action>
+            <Action name="AA_RECHARGE">
+                <Down>ArcanumGuildHall.RechargeItemsWithGems()</Down>
+            </Action>
+            <Action name="AA_TOME_WINDOW">
+                <Down>ArcanumGuildHall:ToggleTomeWindow()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

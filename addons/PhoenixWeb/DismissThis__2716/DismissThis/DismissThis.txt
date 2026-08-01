@@ -1,0 +1,15 @@
+## Title: |c8334ebDismiss|rThis v1.3
+## Description: Provides hotkey options (found in "Controls") for summoning/dismissing pets and assistants, as well as slash commands for summoning/dismissing assistants (banker, merchant, and fence.) 
+## APIVersion: 100033
+## Version: 1.4
+## Author: PhoenixWeb
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+DismissThis.lua
+Bindings.xml

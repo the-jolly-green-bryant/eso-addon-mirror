@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/SquizzOC/Grid-Pad-a-real-grid-inventory-for-gamepad-players__4686",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SquizzOC",
+  "canonical_id": "esoui:4686",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4686",
+  "deleted": false,
+  "directories": [
+    "GridPadInventory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4686/",
+  "fingerprint": "d4ca154dbaac46ce933ff73ebf0dbe17d3717534fb1aa51380ebfe5d8e0e8912",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16574.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16575.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16576.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16577.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16578.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16579.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16580.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4686",
+  "source_url": "https://www.esoui.com/downloads/info4686-GridPadarealgridinventoryforgamepadplayers.html",
+  "stats": {
+    "downloads": 210,
+    "favorites": 2,
+    "monthly_downloads": 204
+  },
+  "title": "Grid Pad \u2014 a real grid inventory for gamepad players",
+  "updated_at": 1785300852000,
+  "version": "1.03"
+}

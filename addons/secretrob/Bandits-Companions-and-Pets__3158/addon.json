@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/secretrob/Bandits-Companions-and-Pets__3158",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "secretrob",
+  "canonical_id": "esoui:3158",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3158",
+  "deleted": false,
+  "directories": [
+    "BanditsCompanions"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3158/",
+  "fingerprint": "03163c0dab7571ed543a120fb4e1604d297d7bee2d109079fa6f0c57d49cec8b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10920.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10695.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10703.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10702.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10733.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3158",
+  "source_url": "https://www.esoui.com/downloads/info3158-BanditsCompanionsandPets.html",
+  "stats": {
+    "downloads": 198164,
+    "favorites": 132,
+    "monthly_downloads": 2029
+  },
+  "title": "Bandits Companions and Pets",
+  "updated_at": 1782162662000,
+  "version": "1.7.16"
+}

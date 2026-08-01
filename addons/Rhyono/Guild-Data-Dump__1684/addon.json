@@ -1,0 +1,67 @@
+{
+  "archive_path": "addons/Rhyono/Guild-Data-Dump__1684",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rhyono",
+  "canonical_id": "esoui:1684",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1684",
+  "deleted": false,
+  "directories": [
+    "GuildDataDump"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1684/",
+  "fingerprint": "8f9e61f1ee91cf2db60608ea4541ae1cb2a130ef7b07e68883840c8ecd4d1005",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6307.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6308.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6309.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1684",
+  "source_url": "https://www.esoui.com/downloads/info1684-GuildDataDump.html",
+  "stats": {
+    "downloads": 8254,
+    "favorites": 5,
+    "monthly_downloads": 17
+  },
+  "title": "Guild Data Dump",
+  "updated_at": 1647384483000,
+  "version": "1.23"
+}

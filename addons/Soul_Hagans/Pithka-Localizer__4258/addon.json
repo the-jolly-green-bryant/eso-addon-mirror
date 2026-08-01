@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/Soul_Hagans/Pithka-Localizer__4258",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Soul_Hagans",
+  "canonical_id": "esoui:4258",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4258",
+  "deleted": false,
+  "directories": [
+    "PithkaLocalizer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4258/",
+  "fingerprint": "6fa1c3e76036360e55ff82aa1ab6191009a4b0705fbf2696965fa2a76a4c10bd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15082.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15080.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15077.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15078.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15076.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15079.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4258",
+  "source_url": "https://www.esoui.com/downloads/info4258-PithkaLocalizer.html",
+  "stats": {
+    "downloads": 1281,
+    "favorites": 0,
+    "monthly_downloads": 99
+  },
+  "title": "Pithka Localizer",
+  "updated_at": 1781198377000,
+  "version": "4.0.2"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Nols1000/RunesVoice__2173",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Nols1000",
+  "canonical_id": "esoui:2173",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2173",
+  "deleted": false,
+  "directories": [
+    "RunesVoice"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2173/",
+  "fingerprint": "5b368ba460a5a0dbc28369b6aac2ab4227e0c6e09034168d188c63412ae43e0c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2173",
+  "source_url": "https://www.esoui.com/downloads/info2173-RunesVoice.html",
+  "stats": {
+    "downloads": 2916,
+    "favorites": 6,
+    "monthly_downloads": 16
+  },
+  "title": "RunesVoice",
+  "updated_at": 1542122656000,
+  "version": "0.1.0"
+}

@@ -1,0 +1,252 @@
+<GuiXml>
+    <Controls>
+        <!-- Main Window - Redesigned Aesthetic Layout (250px height, two button rows) -->
+        <TopLevelControl name="CharacterMarkdownWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="1000" y="250" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" />
+            
+            <!-- Background -->
+            <Controls>
+                <!-- Solid background with border (texture added via Lua for scaling control) -->
+                <Backdrop name="$(parent)BG" edgeColor="888888">
+                    <AnchorFill />
+                    <Edge edgeSize="2" />
+                </Backdrop>
+                
+                <!-- Title Bar -->
+                <Control name="$(parent)Title">
+                    <Dimensions x="1000" y="40" />
+                    <Anchor point="TOP" />
+                    
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontWinH3" text="Character Markdown Export" color="FFFFFFFF">
+                            <Anchor point="LEFT" offsetX="20" />
+                        </Label>
+                        
+                        <!-- Focus Indicator Circle (Debug Only) -->
+                        <Label name="$(parent)FocusIndicator" font="ZoFontGame" text="●" color="FF0000FF" hidden="true">
+                            <Dimensions x="12" y="12" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Settings" relativePoint="TOPLEFT" offsetX="-8" offsetY="9" />
+                        </Label>
+                        
+                        <!-- Settings Button -->
+                        <Button name="$(parent)Settings" inherits="ZO_DefaultButton">
+                            <Dimensions x="120" y="30" />
+                            <Anchor point="TOPRIGHT" offsetX="-300" offsetY="5" />
+                            <OnClicked>
+                                CharacterMarkdown_OpenSettings()
+                            </OnClicked>
+                            <Controls>
+                                <Label name="$(parent)Label" font="ZoFontGame" text="[S] Settings" color="FFFFFFFF">
+                                    <Anchor point="CENTER" />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        
+                        <!-- ReloadUI Button -->
+                        <Button name="$(parent)ReloadUI" inherits="ZO_DefaultButton">
+                            <Dimensions x="120" y="30" />
+                            <Anchor point="TOPRIGHT" offsetX="-170" offsetY="5" />
+                            <OnClicked>
+                                ReloadUI()
+                            </OnClicked>
+                            <Controls>
+                                <Label name="$(parent)Label" font="ZoFontGame" text="[R] ReloadUI" color="FFFFFFFF">
+                                    <Anchor point="CENTER" />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        
+                        <!-- Close Button -->
+                        <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                            <Anchor point="TOPRIGHT" offsetX="-10" offsetY="5" />
+                            <OnClicked>
+                                CharacterMarkdownWindow:SetHidden(true)
+                            </OnClicked>
+                        </Button>
+                    </Controls>
+                </Control>
+                
+                <!-- Chunk Info Bar (centered, full width) -->
+                <Label name="$(parent)Instructions" font="ZoFontGame" text="" color="FFFFFFFF" horizontalAlignment="CENTER">
+                    <Dimensions x="960" y="30" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="5" />
+                </Label>
+                
+                <!-- Status Indicator (colored based on buffer) - HIDDEN, shown inline instead -->
+                <Label name="$(parent)StatusIndicator" font="ZoFontWinH4" text="OK" color="00FF00FF" verticalAlignment="CENTER" horizontalAlignment="RIGHT" hidden="true">
+                    <Dimensions x="60" y="30" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Title" relativePoint="BOTTOMRIGHT" offsetX="-20" offsetY="5" />
+                </Label>
+                
+                <!-- Text Display Area (NO SCROLL - Direct EditBox) - 2 lines visible -->
+                <Control name="$(parent)TextContainer">
+                    <Dimensions x="960" y="60" />
+                    <Anchor point="TOP" relativeTo="$(parent)Instructions" relativePoint="BOTTOM" offsetY="5" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                    
+                    <Controls>
+                        <!-- Dark background with subtle border -->
+                        <Backdrop name="$(parent)BG" centerColor="1a1a1a" edgeColor="666666">
+                            <AnchorFill />
+                            <Edge edgeSize="2" />
+                        </Backdrop>
+                        
+                        <!-- Progress bar background (10 segments) -->
+                        <Control name="$(parent)ProgressBar">
+                            <Dimensions x="940" y="56" />
+                            <Anchor point="CENTER" />
+                            <Controls>
+                                <!-- Progress segments (will be colored via Lua based on chunk fill) -->
+                                <Backdrop name="$(parent)Segment1" centerColor="00FF00" centerAlpha="0.0">
+                                    <Dimensions x="88" y="56" />
+                                    <Anchor point="LEFT" offsetX="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Segment2" centerColor="00FF00" centerAlpha="0.0">
+                                    <Dimensions x="88" y="56" />
+                                    <Anchor point="LEFT" offsetX="94" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Segment3" centerColor="00FF00" centerAlpha="0.0">
+                                    <Dimensions x="88" y="56" />
+                                    <Anchor point="LEFT" offsetX="188" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Segment4" centerColor="00FF00" centerAlpha="0.0">
+                                    <Dimensions x="88" y="56" />
+                                    <Anchor point="LEFT" offsetX="282" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Segment5" centerColor="00FF00" centerAlpha="0.0">
+                                    <Dimensions x="88" y="56" />
+                                    <Anchor point="LEFT" offsetX="376" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Segment6" centerColor="FFFF00" centerAlpha="0.0">
+                                    <Dimensions x="88" y="56" />
+                                    <Anchor point="LEFT" offsetX="470" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Segment7" centerColor="FFFF00" centerAlpha="0.0">
+                                    <Dimensions x="88" y="56" />
+                                    <Anchor point="LEFT" offsetX="564" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Segment8" centerColor="FF8800" centerAlpha="0.0">
+                                    <Dimensions x="88" y="56" />
+                                    <Anchor point="LEFT" offsetX="658" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Segment9" centerColor="FF0000" centerAlpha="0.0">
+                                    <Dimensions x="88" y="56" />
+                                    <Anchor point="LEFT" offsetX="752" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Segment10" centerColor="FF0000" centerAlpha="0.0">
+                                    <Dimensions x="88" y="56" />
+                                    <Anchor point="LEFT" offsetX="846" />
+                                </Backdrop>
+                            </Controls>
+                        </Control>
+                        
+                        <!-- Direct EditBox without scroll wrapper - Read-only behavior handled in code -->
+                        <EditBox name="$(parent)EditBox" font="ZoFontChat" multiLine="true" maxInputCharacters="22000" newLineEnabled="true">
+                            <Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-10" />
+                        </EditBox>
+                        
+                        <!-- Overlay Instructions (centered on top of EditBox) - Brighter color, hidden when content exists -->
+                        <Label name="$(parent)OverlayInstructions" font="ZoFontGame" text="Press [Space] or Ctrl+A then Ctrl+C to copy" color="E0E0E0FF" verticalAlignment="CENTER" horizontalAlignment="CENTER" mouseEnabled="false">
+                            <Dimensions x="940" y="60" />
+                            <Anchor point="CENTER" />
+                        </Label>
+                    </Controls>
+                </Control>
+                
+                <!-- Primary Actions Row - Symmetrical Layout -->
+                <Control name="$(parent)ButtonContainer">
+                    <Dimensions x="960" y="36" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)TextContainer" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="8" />
+                    
+                    <Controls>
+                        <!-- Generate Button (Left) - All buttons same width, anchored independently -->
+                        <Button name="$(parent)RegenerateButton" inherits="ZO_DefaultButton">
+                            <Dimensions x="165" y="32" />
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="120" />
+                            <OnClicked>
+                                CharacterMarkdown_RegenerateMarkdown()
+                            </OnClicked>
+                            <Controls>
+                                <Label name="$(parent)Label" font="ZoFontGame" text="[G] Generate" color="FFFFFFFF">
+                                    <Anchor point="CENTER" />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        
+                        <!-- Select All Button (Center) - Anchored to CENTER for perfect symmetry -->
+                        <Button name="$(parent)SelectAllButton" inherits="ZO_DefaultButton">
+                            <Dimensions x="165" y="32" />
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                            <OnClicked>
+                                CharacterMarkdown_CopyToClipboard()
+                            </OnClicked>
+                            <Controls>
+                                <Label name="$(parent)Label" font="ZoFontGame" text="[Space] Select All" color="FFFFFFFF">
+                                    <Anchor point="CENTER" />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        
+                        <!-- Dismiss Button (Right) - Mirrors Generate button spacing -->
+                        <Button name="$(parent)Dismiss" inherits="ZO_DefaultButton">
+                            <Dimensions x="165" y="32" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-120" />
+                            <OnClicked>
+                                CharacterMarkdownWindow:SetHidden(true)
+                            </OnClicked>
+                            <Controls>
+                                <Label name="$(parent)Label" font="ZoFontGame" text="[X] Dismiss" color="FFFFFFFF">
+                                    <Anchor point="CENTER" />
+                                </Label>
+                            </Controls>
+                        </Button>
+                    </Controls>
+                </Control>
+                
+                <!-- Navigation Row -->
+                <Control name="$(parent)NavigationContainer">
+                    <Dimensions x="960" y="36" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)ButtonContainer" relativePoint="BOTTOMLEFT" offsetY="4" />
+                    
+                    <Controls>
+                        <!-- Previous Chunk Button (Left) -->
+                        <Button name="$(parent)PrevChunkButton" inherits="ZO_DefaultButton">
+                            <Dimensions x="120" y="32" />
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="100" />
+                            <OnClicked>
+                                CharacterMarkdown_PreviousChunk()
+                            </OnClicked>
+                            <Controls>
+                                <Label name="$(parent)Label" font="ZoFontGame" text="[<] Previous" color="FFFFFFFF">
+                                    <Anchor point="CENTER" />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        
+                        <!-- Navigation Hint (Center) -->
+                        <Label name="$(parent)NavigationHint" font="ZoFontGame" text="PageUp / PageDown" color="999999FF" horizontalAlignment="CENTER">
+                            <Dimensions x="200" y="32" />
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                        </Label>
+                        
+                        <!-- Next Chunk Button (Right) -->
+                        <Button name="$(parent)NextChunkButton" inherits="ZO_DefaultButton">
+                            <Dimensions x="120" y="32" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-100" />
+                            <OnClicked>
+                                CharacterMarkdown_NextChunk()
+                            </OnClicked>
+                            <Controls>
+                                <Label name="$(parent)Label" font="ZoFontGame" text="[>] Next" color="FFFFFFFF">
+                                    <Anchor point="CENTER" />
+                                </Label>
+                            </Controls>
+                        </Button>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

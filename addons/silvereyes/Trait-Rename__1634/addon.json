@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/silvereyes/Trait-Rename__1634",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "silvereyes",
+  "canonical_id": "esoui:1634",
+  "category_id": "98",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:1634",
+  "deleted": false,
+  "directories": [
+    "TraitRename"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1634/",
+  "fingerprint": "3c0a5065513437ef3a51e249a60ee368caab1222a8bbaf1c6dffa751652db2a0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8684.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5350.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5352.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5353.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5354.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1634",
+  "source_url": "https://www.esoui.com/downloads/info1634-TraitRename.html",
+  "stats": {
+    "downloads": 9801,
+    "favorites": 13,
+    "monthly_downloads": 6
+  },
+  "title": "Trait Rename",
+  "updated_at": 1635609933000,
+  "version": "1.5.11"
+}

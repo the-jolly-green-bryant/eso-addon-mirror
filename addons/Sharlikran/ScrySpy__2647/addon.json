@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Sharlikran/ScrySpy__2647",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:2647",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2647",
+  "deleted": false,
+  "directories": [
+    "ScrySpy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2647/",
+  "fingerprint": "ea2fdec22db47387e7a06976e4c57b41285efc9caac2e2af55d40296aa4deb5a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10115.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9003.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9004.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9001.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8997.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2647",
+  "source_url": "https://www.esoui.com/downloads/info2647-ScrySpy.html",
+  "stats": {
+    "downloads": 170377,
+    "favorites": 168,
+    "monthly_downloads": 893
+  },
+  "title": "ScrySpy",
+  "updated_at": 1760660135000,
+  "version": "1.44"
+}

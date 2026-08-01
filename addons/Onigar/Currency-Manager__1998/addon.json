@@ -1,0 +1,72 @@
+{
+  "archive_path": "addons/Onigar/Currency-Manager__1998",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Onigar",
+  "canonical_id": "esoui:1998",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1998",
+  "deleted": false,
+  "directories": [
+    "CurrencyManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1998/",
+  "fingerprint": "1cb5d2837caace877b378492186bdc1ad7115f3c4e5feaa4c2dc2c6495271f47",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6978.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6979.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7025.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7026.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1998",
+  "source_url": "https://www.esoui.com/downloads/info1998-CurrencyManager.html",
+  "stats": {
+    "downloads": 7813,
+    "favorites": 11,
+    "monthly_downloads": 10
+  },
+  "title": "Currency Manager",
+  "updated_at": 1654503029000,
+  "version": "1.15.0"
+}

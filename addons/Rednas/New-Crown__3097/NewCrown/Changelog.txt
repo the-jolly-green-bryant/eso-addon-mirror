@@ -1,0 +1,47 @@
+Version 1.0.3
+ 1) API bumb
+
+Version 1.0.2 - 19-10-2021
+ 1) API bumb
+ 2) Added some personalized icons, can you find them all?
+
+Version 1.0.1 - 09-06-2021
+ 1) Small additions, changes and fixes in a few icons.
+
+Version 1.0 - 05-06-2021
+ 1) Restructured the code, making it more readable
+ 2) Rewrote the special feature ||, so its easy to add new Person Specific icons||
+ 3) Added a few new settings
+	- You can now turn the add-on off, only display the NewCrown in Combat, idle or both (=Always)
+	- You can enable/disable NewCrown in AvA area's (Cyrodiil & Imperial City)
+	- You can enable/disable NewCrown in Dungeons (Delves, group dungeons)
+	- You can enable/disable NewCrown in trials
+	- You can enable/disable NewCrown in overland
+ 4) Cleaned the settings menu
+ 5) Added information to the add-on in the add-on List
+ 6) Bug fixed when the crown was on another side of the door
+ 7) Performance optimalisation (Unregister and register events based on the settings)
+ 8) Added/updated a few icons
+ 9) Added Multi server support
+ 10) Added a slash command to open the settings (/newcrown)
+ 11) Updated API version
+
+--------------------------------------------------------------
+
+Version 0.1.3h - 16-05-2021
+ 1) Fixed the known issue where it didn't work with Lost treasure or some other add-on's/library's.
+
+--------------------------------------------------------------
+
+Version 0.1.3 - 14-05-2021
+	1) Added a setting to disable the special feature, so for instance it could be used when streaming
+		 My advise: Dont turn it off! It's worth it.
+	2) Made it easier to add new icons in the future
+	3) Removed icons and added new icons
+	   - Removed the Alliance war Icons
+	   - Added a new icon
+	   - Added a lot of new icons | Made by @MissCoko 🍪  (thanks!)
+	4) Improved the code, so it should impact performance even less (it wasn't a issue to begin with, but still: less is always more!)
+
+	Known issues:
+	- For a some users the add-on doesn't show up in the settings menu. (Lost treasures for some reason is the issue, thanks @MissCoko 🍪 for finding the culprit)

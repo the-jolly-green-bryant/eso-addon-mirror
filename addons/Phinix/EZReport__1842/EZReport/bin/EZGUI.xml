@@ -1,0 +1,242 @@
+<GuiXml>
+	<Controls>
+<!---------------------------------------------------------------------------------------------------------------------------------------------------------
+Defines the navigation list functionality.
+---------------------------------------------------------------------------------------------------------------------------------------------------------->
+		<Control name="EZReport_ListItemTemplate" virtual="true">
+			<Dimensions x="280" y="18"/>
+			<OnMouseEnter>
+				ZO_ScrollList_MouseEnter(EZReport_MainFrame_ListFrame_List, self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				ZO_ScrollList_MouseExit(EZReport_MainFrame_ListFrame_List, self)
+			</OnMouseExit>
+			<OnMouseUp>
+				if(upInside) then
+					ZO_ScrollList_MouseClick(EZReport_MainFrame_ListFrame_List, self)
+				end
+			</OnMouseUp>
+			<Controls>
+				<Label name="$(parent)_Name" font="ZoFontGame" mouseEnabled="true">
+					<Dimensions x="280" y="16"/>
+					<Anchor point="TOPLEFT"/>
+					<OnMouseEnter>
+						EZReport.XMLNavigation(001, self, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						EZReport.XMLNavigation(001, self, nil, 2)
+					</OnMouseExit>
+					<OnMouseDown>
+						EZReport.XMLNavigation(002, nil, self:GetText())
+					</OnMouseDown>
+				</Label>
+			</Controls>
+		</Control>
+
+<!---------------------------------------------------------------------------------------------------------------------------------------------------------
+Defines the edit list functionality.
+---------------------------------------------------------------------------------------------------------------------------------------------------------->
+		<Control name="EZReport_ListEditTemplate" virtual="true">
+			<Dimensions x="634" y="50"/>
+			<OnMouseEnter>
+				ZO_ScrollList_MouseEnter(EZReport_MainFrame_ListFrame_EditBox, self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				ZO_ScrollList_MouseExit(EZReport_MainFrame_ListFrame_EditBox, self)
+			</OnMouseExit>
+			<Controls>
+				<Label name="$(parent)_Name" font="ZoFontGame" mouseEnabled="true">
+					<Dimensions x="634" y="48"/>
+					<Anchor point="TOPLEFT"/>
+					<OnMouseEnter>
+						EZReport.XMLNavigation(003, self, nil, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						EZReport.XMLNavigation(003, self, nil, nil, 2)
+					</OnMouseExit>
+					<OnMouseDown>
+						EZReport.XMLNavigation(003, self, nil, button, 3)
+					</OnMouseDown>
+				</Label>
+			</Controls>
+		</Control>
+
+<!---------------------------------------------------------------------------------------------------------------------------------------------------------
+Top-level control frame, backdrop, header buttons.
+---------------------------------------------------------------------------------------------------------------------------------------------------------->
+		<TopLevelControl name="EZReport_MainFrame" tier="LOW" mouseEnabled="true" movable="true" clampedToScreen="false" hidden="true">
+			<Dimensions x="920" y="568"/>
+			<Anchor point="CENTER"/>
+			<OnMoveStop>
+				EZReport.XMLNavigation(101)
+			</OnMoveStop>
+			<OnInitialized>
+				EZReport.XMLNavigation(102)
+			</OnInitialized>
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.9"/>
+			<!-------------------------------------------------------------------------------------------------------------------------------------------->
+				<Control name="$(parent)_EmptyDrop" mouseEnabled="false" movable="false" hidden="true">
+					<Dimensions x="254" y="15"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="6" offsetY="6"/>
+					<Controls>
+						<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" alpha="1.0"/>
+					</Controls>
+				</Control>
+			<!-------------------------------------------------------------------------------------------------------------------------------------------->
+				<Button name="$(parent)_CloseButton">
+					<Dimensions x="40" y="40"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="4" offsetY="-8"/>
+					<Textures
+						normal="/esoui/art/cadwell/cadwell_indexicon_silver_up.dds"
+						pressed="/esoui/art/cadwell/cadwell_indexicon_silver_over.dds"
+						mouseOver="/esoui/art/cadwell/cadwell_indexicon_silver_down.dds"
+						disabled="/esoui/art/cadwell/cadwell_indexicon_silver_disabled.dds"
+					/>
+					<OnMouseEnter>
+						EZReport.XMLNavigation(103, self, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						EZReport.XMLNavigation(103, self, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						EZReport.XMLNavigation(103, self, nil, 3)
+					</OnClicked>
+				</Button>
+			<!-------------------------------------------------------------------------------------------------------------------------------------------->
+				<Button name="$(parent)_ModeButton">
+					<Dimensions x="30" y="30"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)_CloseButton" relativePoint="LEFT" offsetX="14" offsetY="0"/>
+					<Textures
+						normal="/esoui/art/cadwell/cadwell_indexicon_gold_up.dds"
+						pressed="/esoui/art/cadwell/cadwell_indexicon_gold_over.dds"
+						mouseOver="/esoui/art/cadwell/cadwell_indexicon_gold_down.dds"
+						disabled="/esoui/art/cadwell/cadwell_indexicon_gold_disabled.dds"
+					/>
+					<OnMouseEnter>
+						EZReport.XMLNavigation(104, self, nil, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						EZReport.XMLNavigation(104, self, nil, 2)
+					</OnMouseExit>
+					<OnClicked>
+						EZReport.XMLNavigation(104, self, nil, 3)
+					</OnClicked>
+				</Button>
+			<!-------------------------------------------------------------------------------------------------------------------------------------------->
+				<Label name="$(parent)_Title" inherits="ZO_WindowTitle" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Label>
+			<!-------------------------------------------------------------------------------------------------------------------------------------------->
+				 <Texture name="$(parent)_Divider" textureFile="esoui/art/guild/sectiondivider_left.dds">
+					<Dimensions y="4"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-10" offsetY="30"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-4" offsetY="30"/>
+				</Texture>
+<!---------------------------------------------------------------------------------------------------------------------------------------------------------
+List framess
+---------------------------------------------------------------------------------------------------------------------------------------------------------->
+				<Control name="$(parent)_ListFrame">
+					<Dimensions x="256" y="520"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="42"/>
+					<Controls>
+						<Control name="$(parent)_List" inherits="ZO_ScrollList">
+							<Dimensions x="256" y="510"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+						</Control>
+					<!------------------------------------------------------------------------------------------------------------------------------------>
+						<Control name="$(parent)_DataFrame" tier="LOW">
+							<Dimensions x="644" y="530"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_List" relativePoint="TOPRIGHT" offsetX="12" offsetY="-4"/>
+							<Controls>
+								<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.9"/>
+							</Controls>
+						</Control>
+					<!------------------------------------------------------------------------------------------------------------------------------------>
+						<EditBox name="$(parent)_TextBox" inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText" maxInputCharacters="50000" editEnabled="true" offsetY="4">
+							<Dimensions x="644" y="520"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_DataFrame" relativePoint="TOPLEFT" offsetX="0" offsetY="4"/>
+						</EditBox>
+					<!------------------------------------------------------------------------------------------------------------------------------------>
+						<Control name="$(parent)_EditBox" inherits="ZO_ScrollList" hidden="true">
+							<Dimensions x="644" y="510"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_DataFrame" relativePoint="TOPLEFT" offsetX="0" offsetY="4"/>
+							<Controls>
+							<!-----------------------------------------------------------------------------------------------------------------------------
+								Pop-up yes/no prompt to confirm DB entry deletion on click.
+							------------------------------------------------------------------------------------------------------------------------------>
+								<Control name="$(parent)_PopUp" tier="HIGH" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="true">
+									<Dimensions x="356" y="140"/>
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="127" offsetY="127"/>
+									<Controls>
+										<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" alpha="0.9"/>
+									<!-------------------------------------------------------------------------------------------------------------------->
+										<Label name="$(parent)_MessageText" font="ZoFontHeader3" color="66ccff" horizontalAlignment="CENTER">
+											<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="12"/>
+										</Label>
+									<!-------------------------------------------------------------------------------------------------------------------->
+										<Control name="$(parent)_Y" mouseEnabled="true" movable="false">
+											<Dimensions x="132" y="46"/>
+											<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="36" offsetY="-24"/>
+											<Controls>
+												<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" alpha="1.0"/>
+												<Label name="$(parent)Text" font="ZoFontHeader2" color="808080" horizontalAlignment="CENTER">
+													<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+												</Label>
+												<Button name="$(parent)Button">
+													<Dimensions x="132" y="46"/>
+													<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+													<OnMouseEnter>
+														EZReport.XMLNavigation(004, nil, nil, 1, 1)
+													</OnMouseEnter>
+													<OnMouseExit>
+														EZReport.XMLNavigation(004, nil, nil, 2, 1)
+													</OnMouseExit>
+													<OnClicked>
+														EZReport.XMLNavigation(004, nil, nil, 3, 1)
+													</OnClicked>
+												</Button>
+											</Controls>
+										</Control>
+									<!-------------------------------------------------------------------------------------------------------------------->
+										<Control name="$(parent)_N" mouseEnabled="true" movable="false">
+											<Dimensions x="132" y="46"/>
+											<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-36" offsetY="-24"/>
+											<Controls>
+												<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" alpha="1.0"/>
+												<Label name="$(parent)Text" font="ZoFontHeader2" color="808080" horizontalAlignment="CENTER">
+													<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+												</Label>
+												<Button name="$(parent)Button">
+													<Dimensions x="132" y="46"/>
+													<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+													<OnMouseEnter>
+														EZReport.XMLNavigation(004, nil, nil, 1, 2)
+													</OnMouseEnter>
+													<OnMouseExit>
+														EZReport.XMLNavigation(004, nil, nil, 2, 2)
+													</OnMouseExit>
+													<OnClicked>
+														EZReport.XMLNavigation(004, nil, nil, 3, 2)
+													</OnClicked>
+												</Button>
+											</Controls>
+										</Control>
+									</Controls>
+								</Control>
+							</Controls>
+						</Control>
+					<!------------------------------------------------------------------------------------------------------------------------------------>
+						<Texture name="$(parent)_Delete" hidden="true" tier="HIGH" textureFile="/esoui/art/contacts/tabicon_ignored_up.dds">
+							<Dimensions x="32" y="32"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+						</Texture>
+					<!------------------------------------------------------------------------------------------------------------------------------------>
+					</Controls>
+				</Control>
+			<!-------------------------------------------------------------------------------------------------------------------------------------------->	
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

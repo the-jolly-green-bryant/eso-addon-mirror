@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Rengaru/Rengaru-s-Antiquarian-s-Eye__3493",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rengaru",
+  "canonical_id": "esoui:3493",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3493",
+  "deleted": false,
+  "directories": [
+    "RengarusAntiquariansEye"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3493/",
+  "fingerprint": "a4bb3f42d7172201717f2361e82bb431426d09df0b816ee9e84e360afe4feb9e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11891.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3493",
+  "source_url": "https://www.esoui.com/downloads/info3493-RengarusAntiquariansEye.html",
+  "stats": {
+    "downloads": 3483,
+    "favorites": 12,
+    "monthly_downloads": 24
+  },
+  "title": "Rengaru's Antiquarian's Eye",
+  "updated_at": 1666239622000,
+  "version": "1"
+}

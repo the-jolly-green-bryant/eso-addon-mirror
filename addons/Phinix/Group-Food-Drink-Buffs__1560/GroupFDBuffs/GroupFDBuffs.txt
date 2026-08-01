@@ -1,0 +1,31 @@
+## Title: |c66ccffGroup Food & Drink|r
+## Author: |c66ccffPhinix|r
+## Description: Show the group status of food and drink buffs.
+## Version: 1.22
+## APIVersion: 101037
+## SavedVariables: GroupFDBuffs
+## DependsOn: LibAddonMenu-2.0>=30
+## OptionalDependsOn: FoundryTacticalCombat LuiExtended BanditsUserInterface AUI
+
+
+bin\GroupFDB.xml
+
+language\en.lua
+language\de.lua
+language\es.lua
+language\fr.lua
+language\it.lua
+language\ja.lua
+language\ru.lua
+
+bin\fdbDB.lua
+GroupFDBuffs.lua
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Nickxon/Remove-Animation-Cancel---ESO-Attack-Commitment__4576",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Nickxon",
+  "canonical_id": "esoui:4576",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4576",
+  "deleted": false,
+  "directories": [
+    "RemoveAnimationCanceling"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4576/",
+  "fingerprint": "10043d13111b70f9a31fbd9dd018e433f088d5d12265dda07c82dcf060766cad",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4576",
+  "source_url": "https://www.esoui.com/downloads/info4576-RemoveAnimationCancel-ESOAttackCommitment.html",
+  "stats": {
+    "downloads": 131,
+    "favorites": 0,
+    "monthly_downloads": 18
+  },
+  "title": "Remove Animation Cancel - ESO Attack Commitment",
+  "updated_at": 1778609039000,
+  "version": "1.3"
+}

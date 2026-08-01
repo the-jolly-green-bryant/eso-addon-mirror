@@ -1,0 +1,35 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: |cFFFFFFDestinations|r
+## Description: This addon adds various points of interest to your maps and compass.
+## AddOnVersion: 3006
+## Version: 30.06
+## Author: |cFF9B15Sharlikran|r, |c990000Snowman|r, |cFFFFFFDK|r, MasterLenman, Ayantir
+## APIVersion: 101047 101048
+## SavedVariables: Destinations_Settings
+## PCDependsOn: LibAddonMenu-2.0>=40 LibMapPins-1.0>=10047 CustomCompassPins>=137 LibMapData>=117
+## ConsoleDependsOn: LibMapPins-1.0>=10047 CustomCompassPins>=137
+## OptionalDependsOn: LibDebugLogger DebugLogViewer
+
+Init.lua
+data/EN/DestinationsCollectibles_en.lua
+data/EN/DestinationsSettings_en.lua
+
+data/$(language)/DestinationsCollectibles_$(language).lua
+data/$(language)/DestinationsSettings_$(language).lua
+
+data/DestinationsChampions.lua
+data/DestinationsFishAchieve.lua
+data/DestinationsPOIData.lua
+data/DestinationsQuestData.lua
+data/DestinationsSharedData.lua
+data/DestinationsSharedDataIDs.lua
+data/DestinationsMundus.lua
+
+console/Destinations.lua
+PC/Destinations.lua
+PC/Destinations_Settings.lua

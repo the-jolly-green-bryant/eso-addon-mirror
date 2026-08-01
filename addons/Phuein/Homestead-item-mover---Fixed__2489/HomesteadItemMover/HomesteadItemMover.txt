@@ -1,0 +1,12 @@
+﻿## Title: Homestead item mover
+## Description: Moves selected items in homestead. Can also rotate them precise amounts, or move them by block.
+## Version: 1.05
+## APIVersion: 100035
+## Author: Tactitocalon, Chibidragon, phuein, NordCarbon
+## SavedVariables: HomesteadItemMoverVars
+##
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+HomesteadItemMover.lua
+HomesteadItemMover.xml
+bindings.xml

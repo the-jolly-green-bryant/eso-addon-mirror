@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/QuantumPie/Custom-Player-Pins__2774",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "QuantumPie",
+  "canonical_id": "esoui:2774",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2774",
+  "deleted": false,
+  "directories": [
+    "CustomPlayerPins"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2774/",
+  "fingerprint": "37d76d6c03aa5b8a12b1ee12c34f7fcfe92205ef20a86e60dfa7a9e83a0001c2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9420.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2774",
+  "source_url": "https://www.esoui.com/downloads/info2774-CustomPlayerPins.html",
+  "stats": {
+    "downloads": 9828,
+    "favorites": 3,
+    "monthly_downloads": 49
+  },
+  "title": "Custom Player Pins",
+  "updated_at": 1600821731000,
+  "version": "1.2.0"
+}

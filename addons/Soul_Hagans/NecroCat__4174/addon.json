@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Soul_Hagans/NecroCat__4174",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Soul_Hagans",
+  "canonical_id": "esoui:4174",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4174",
+  "deleted": false,
+  "directories": [
+    "NecroCat",
+    "NecroCatIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4174/",
+  "fingerprint": "0f9bcbd5d4281f1fc37bc7aa1bf661c8bfe27c42b3e87b52d1ddc4dc5102561c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16393.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4174",
+  "source_url": "https://www.esoui.com/downloads/info4174-NecroCat.html",
+  "stats": {
+    "downloads": 1001,
+    "favorites": 0,
+    "monthly_downloads": 42
+  },
+  "title": "NecroCat",
+  "updated_at": 1785049286000,
+  "version": "1.9.1"
+}

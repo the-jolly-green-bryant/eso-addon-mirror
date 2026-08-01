@@ -1,0 +1,8 @@
+3.2.0
+Deconstruct NPC
+
+3.1.0
+bugfixes(Thank you Bear.)
+
+3.0.0
+first commit

@@ -1,0 +1,9 @@
+## Title: Royal House
+## Description: This addon is designed to collect ESO game character data and save the information for synchronization with the Royal House platform.
+## Author: @thiagodesouza, @viniborges89, @gunxxx
+## APIVersion: 101031
+## Version: 0.1.1
+## SavedVariables: RoyalHouseVars
+
+RoyalHouseVariables.lua
+RoyalHouse.lua

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/STUDLETON/Greasy-Grabby-Mitts-Lucent-Orphic-Mirrors__4366",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "STUDLETON",
+  "canonical_id": "esoui:4366",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4366",
+  "deleted": false,
+  "directories": [
+    "GreasyGrabbyMitts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4366/",
+  "fingerprint": "8421bdf5cfa8ff9a6e6ac5ac784f7abadab29533e9fa1dc6261c826c432e7627",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4366",
+  "source_url": "https://www.esoui.com/downloads/info4366-GreasyGrabbyMittsLucentOrphicMirrors.html",
+  "stats": {
+    "downloads": 473,
+    "favorites": 0,
+    "monthly_downloads": 57
+  },
+  "title": "Greasy Grabby Mitts (Lucent Orphic Mirrors)",
+  "updated_at": 1770030316000,
+  "version": "0.2.0"
+}

@@ -1,0 +1,46 @@
+-- YetAnotherCompass - Language - fr
+-- By @s0rdrak, @schorse4044 (PC / EU)
+-- Translated by @Nita65
+
+local YACS = _G['YACS']
+
+YACS.config.constants.CMD_TEXT_ON_OFF = YACS.slashCmd .. " <on/off>: active ou désactive la boussole"
+YACS.config.constants.CMD_TEXT_MENU = YACS.slashCmd .. " menu: ouvre le menu de configuration"
+YACS.config.constants.TOGGLE_YACS = "Afficher la boussole"
+YACS.menu.constants.CHK_ADDON_ENABLED = "Add-on activé"
+YACS.menu.constants.CHK_PVP = "Activé en PVP"
+YACS.menu.constants.CHK_PVE = "Activé en PVE"
+YACS.menu.constants.CHK_COMBAT = "Activé en combat"
+YACS.menu.constants.CHK_MOVABLE = "Boussole déplaçable"
+YACS.menu.constants.COLOR_COMPASS = "Couleur de boussole"
+YACS.menu.constants.COMPASS_SIZE = "Taille de boussole"
+YACS.menu.constants.COMPASS_SIZE_TOOLTIPE = "Détermine la taille de la boussole"
+YACS.menu.constants.COMPASS_STYLE = "Style de boussole"
+YACS.menu.constants.COMPASS_STYLE_TOOLTIP = "Choisissez votre style de boussole préféré "
+YACS.menu.constants.RESTORE_DEFAULTS = "Valeurs par défaut"
+
+
+YACS.compasses[1].name = "Standard"
+YACS.compasses[2].name = "Nordique gras"
+YACS.compasses[3].name = "Lignes fines"
+YACS.compasses[4].name = "Nordique original souligné"
+YACS.compasses[5].name = "Nordique gras souligné"
+YACS.compasses[6].name = "Scribble"
+YACS.compasses[7].name = "Cercle 1"
+YACS.compasses[8].name = "Cercle 2"
+YACS.compasses[9].name = "Diamant 1"
+YACS.compasses[10].name = "Diamant 2"
+YACS.compasses[11].name = "Points 1"
+YACS.compasses[12].name = "Points 2"
+YACS.compasses[13].name = "ELettre 1"
+YACS.compasses[14].name = "ELettre 2"
+YACS.compasses[15].name = "Flèche Chargée 1"
+YACS.compasses[16].name = "Flèche Chargée 2"
+YACS.compasses[17].name = "Aiguille 1"
+YACS.compasses[18].name = "Aiguille 2"
+YACS.compasses[19].name = "Petite Flèche 1"
+YACS.compasses[20].name = "Petite Flèche 2"
+YACS.compasses[21].name = "Compas Fr. 1"
+YACS.compasses[22].name = "Compas Fr. 2"
+YACS.compasses[23].name = "Compas Fr. 3"
+YACS.compasses[24].name = "Compas Fr. 4"

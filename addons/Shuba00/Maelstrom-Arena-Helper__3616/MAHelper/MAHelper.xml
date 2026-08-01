@@ -1,0 +1,14 @@
+<GuiXml>
+    <Controls>
+		 <TopLevelControl name="MAHelperAddonIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+             <Dimensions x="200" y="25" />
+             <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+             <Controls>
+                <Label name="$(parent)Label" width="200" height="25" font="ZoFontWinH1" inheritAlpha="true" movable="true" color="FF0000"
+                    wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="MAHELPER TEXT ICONS!">
+                  <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+                </Label>
+            </Controls>
+          </TopLevelControl>
+    </Controls>
+</GuiXml>

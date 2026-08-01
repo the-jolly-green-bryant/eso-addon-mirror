@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/notnear/Advanced-Filters---Trial-sets-filter__3555",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "notnear",
+  "canonical_id": "esoui:3555",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3555",
+  "deleted": false,
+  "directories": [
+    "AF_TrialSetFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3555/",
+  "fingerprint": "191570e56bce9b105f068c4f33d054495c8362b1cffaa082ad5f58ada0680ddc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12070.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3555",
+  "source_url": "https://www.esoui.com/downloads/info3555-AdvancedFilters-Trialsetsfilter.html",
+  "stats": {
+    "downloads": 12688,
+    "favorites": 7,
+    "monthly_downloads": 36
+  },
+  "title": "Advanced Filters - Trial sets filter",
+  "updated_at": 1685857884000,
+  "version": "1.1.1"
+}

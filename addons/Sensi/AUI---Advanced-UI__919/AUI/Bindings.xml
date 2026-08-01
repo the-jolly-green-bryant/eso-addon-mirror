@@ -1,0 +1,134 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|cF6B34AAUI (Minimap)">
+	  <Action name="AUI_Minimap_TOGGLE">
+        <Down>AUI.Minimap.Toggle()</Down>
+      </Action>
+	  <Action name="AUI_zoom_IN">
+        <Down>
+			if AUI.Minimap.IsEnabled() then
+				AUI.Minimap.ZoomIn()
+			end
+		</Down>
+      </Action>
+	  <Action name="AUI_zoom_OUT">
+        <Down>
+			if AUI.Minimap.IsEnabled() then
+				AUI.Minimap.ZoomOut()
+			end
+		</Down>
+      </Action>	  
+    </Category>	
+    <Category name="|cF6B34AAUI (Actionbar)">
+	  <Action name="AUI_QUICKSLOT_1">
+        <Down>
+			if AUI.Actionbar.IsEnabled() then
+				AUI.Actionbar.QuickButtons.SelectQuickSlotButton(1)
+			end
+		</Down>
+      </Action>
+	  <Action name="AUI_QUICKSLOT_2">
+        <Down>
+			if AUI.Actionbar.IsEnabled() then
+				AUI.Actionbar.QuickButtons.SelectQuickSlotButton(2)
+			end
+		</Down>
+      </Action>
+	  <Action name="AUI_QUICKSLOT_3">
+        <Down>
+			if AUI.Actionbar.IsEnabled() then
+				AUI.Actionbar.QuickButtons.SelectQuickSlotButton(3)
+			end
+		</Down>
+      </Action>
+	  <Action name="AUI_QUICKSLOT_4">
+        <Down>
+			if AUI.Actionbar.IsEnabled() then
+				AUI.Actionbar.QuickButtons.SelectQuickSlotButton(4)
+			end
+		</Down>
+      </Action>	 
+	  <Action name="AUI_QUICKSLOT_5">
+        <Down>
+			if AUI.Actionbar.IsEnabled() then
+				AUI.Actionbar.QuickButtons.SelectQuickSlotButton(5)
+			end
+		</Down>
+      </Action>	
+	  <Action name="AUI_QUICKSLOT_6">
+        <Down>
+			if AUI.Actionbar.IsEnabled() then
+				AUI.Actionbar.QuickButtons.SelectQuickSlotButton(6)
+			end
+		</Down>
+      </Action>	  
+	  <Action name="AUI_QUICKSLOT_7">
+        <Down>
+			if AUI.Actionbar.IsEnabled() then
+				AUI.Actionbar.QuickButtons.SelectQuickSlotButton(7)
+			end
+		</Down>
+      </Action>	  
+	  <Action name="AUI_QUICKSLOT_8">
+        <Down>
+			if AUI.Actionbar.IsEnabled() then
+				AUI.Actionbar.QuickButtons.SelectQuickSlotButton(8)
+			end
+		</Down>
+      </Action>
+	  <Action name="AUI_QUICKSLOT_SELECT_PREVIOUS">
+        <Down>
+			if AUI.Actionbar.IsEnabled() then
+				AUI.Actionbar.QuickButtons.SelectPreviosQuickSlotButton()
+			end
+		</Down>
+      </Action>	  
+	  <Action name="AUI_QUICKSLOT_SELECT_NEXT">
+        <Down>
+			if AUI.Actionbar.IsEnabled() then
+				AUI.Actionbar.QuickButtons.SelectNextQuickSlotButton()
+			end
+		</Down>
+      </Action>	  	  
+    </Category>	
+    <Category name="|cF6B34AAUI (Combat Meter)">
+	  <Action name="AUI_SHOW_COMBAT_STATISTIC">
+        <Down>
+			if AUI.Combat.IsEnabled() then
+				AUI.Combat.Statistics.Toggle()
+			end
+		</Down>
+      </Action>
+	  <Action name="AUI_POST_ALL_COMBAT_STATISTIC">
+        <Down>
+			if AUI.Combat.IsEnabled() then
+				AUI.Combat.PostPlayerCombatStatistics()
+			end
+		</Down>
+      </Action>	
+	  <Action name="AUI_POST_HIGHEST_TARGET_COMBAT_STATISTIC">
+        <Down>
+			if AUI.Combat.IsEnabled() then
+				AUI.Combat.PostHighestTargetCombatStatistics()
+			end
+		</Down>
+      </Action>	  
+    </Category>
+    <Category name="|cF6B34AAUI (Reload UI)">
+	  <Action name="AUI_RELOADUI">
+        <Down>
+			AUI.ReloadUIHelper.ReloadUI()
+		</Down>
+      </Action>  
+    </Category>	
+    <Category name="|cF6B34AAUI (Group)">
+	  <Action name="AUI_REGROUP">
+        <Down>
+			if AUI.UnitFrames.Group.IsEnabled() then
+				AUI.UnitFrames.Group.ReGroup()
+			end
+		</Down>
+      </Action>  
+    </Category>		
+  </Layer>
+</Bindings>

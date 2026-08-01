@@ -1,0 +1,18 @@
+
+## Title: LibMultilingualName_ru
+## Author: @Shinntarou (NA,PC)
+## IsLibrary: true
+## APIVersion: 101049 101050
+## Version: 1.2.48
+## AddOnVersion: 10248
+## DependsOn: LibMultilingualName
+
+LibMultilingualName_ru.lua
+
+GetRawItemName_ru.lua
+GetRawAbilityDescription_ru.lua
+GetRawQuestName_ru.lua
+GetRawQuestTaskName_ru.lua
+GetRawSkillName_ru.lua
+GetRawZoneName_ru.lua
+GetRawSetItemName_ru.lua

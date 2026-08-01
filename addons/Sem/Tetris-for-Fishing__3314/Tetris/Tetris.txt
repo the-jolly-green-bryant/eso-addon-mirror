@@ -1,0 +1,16 @@
+## Title: Tetris
+## Description: Play Tetris while fishing. |c0000C0Version: 1.7|r
+## Author: |c0000C0Sem|r
+## APIVersion: 101040
+## Version: 1.7
+## AddOnVersion: 17
+## DependsOn: LibAddonMenu-2.0>=35 FishingStateMachine>=120
+## OptionalDependsOn: LibDebugLogger>=263
+## SavedVariables: Tetrisparamsvar
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+Moves.lua
+Preview.lua
+Bindings.xml
+Tetris.lua

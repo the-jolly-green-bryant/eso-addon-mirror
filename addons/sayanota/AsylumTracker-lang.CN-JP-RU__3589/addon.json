@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/sayanota/AsylumTracker-lang.CN-JP-RU__3589",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sayanota",
+  "canonical_id": "esoui:3589",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3589",
+  "deleted": false,
+  "directories": [
+    "AsylumTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3589/",
+  "fingerprint": "e259fdfa5ce91b3d5bac025849a71cf1fb1c90eab501a5f0dfaea841bbc38423",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12195.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12194.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12196.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3589",
+  "source_url": "https://www.esoui.com/downloads/info3589-AsylumTrackerlang.CNJPRU.html",
+  "stats": {
+    "downloads": 7760,
+    "favorites": 1,
+    "monthly_downloads": 20
+  },
+  "title": "AsylumTracker lang.CN JP RU",
+  "updated_at": 1683297478000,
+  "version": "1.5"
+}

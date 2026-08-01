@@ -1,0 +1,10 @@
+{
+  "name": "ESO Chatlog Viewer",
+  "main": "index.html",
+  "window": {
+    "width": 1280,
+    "height": 800,
+    "toolbar": false,
+    "icon": "res/icon.png"
+  }
+}

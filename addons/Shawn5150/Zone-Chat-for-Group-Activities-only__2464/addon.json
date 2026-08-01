@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Shawn5150/Zone-Chat-for-Group-Activities-only__2464",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shawn5150",
+  "canonical_id": "esoui:2464",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    }
+  ],
+  "content_id": "esoui:2464",
+  "deleted": false,
+  "directories": [
+    "ZonePug"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2464/",
+  "fingerprint": "3565c85daee7d62b8e7cd04173572a58d1336b360b97e37f795c0aa78952105b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8405.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2464",
+  "source_url": "https://www.esoui.com/downloads/info2464-ZoneChatforGroupActivitiesonly.html",
+  "stats": {
+    "downloads": 3019,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "Zone Chat for Group Activities only",
+  "updated_at": 1571665524000,
+  "version": "0.31"
+}

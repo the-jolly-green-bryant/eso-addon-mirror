@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/ownedbynico/Drake-s-Rush-Tracker__3002",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ownedbynico",
+  "canonical_id": "esoui:3002",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3002",
+  "deleted": false,
+  "directories": [
+    "DrakesRush"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3002/",
+  "fingerprint": "b14c708d78ef86d5f8ff653013717a20cff06492ce13002abfc0b972081977ac",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10117.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10118.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10119.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3002",
+  "source_url": "https://www.esoui.com/downloads/info3002-DrakesRushTracker.html",
+  "stats": {
+    "downloads": 6185,
+    "favorites": 1,
+    "monthly_downloads": 19
+  },
+  "title": "Drake's Rush Tracker",
+  "updated_at": 1623203079000,
+  "version": "1.2"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/sirinsidiator/LibChatMessage__2382",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sirinsidiator",
+  "canonical_id": "esoui:2382",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:2382",
+  "deleted": false,
+  "directories": [
+    "LibChatMessage"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2382/",
+  "fingerprint": "b1ebc96af87d3ad8c266d6205ce0d94a17b060bd5a31b98b301414bef673eecb",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2382",
+  "source_url": "https://www.esoui.com/downloads/info2382-LibChatMessage.html",
+  "stats": {
+    "downloads": 2485301,
+    "favorites": 1484,
+    "monthly_downloads": 23577
+  },
+  "title": "LibChatMessage",
+  "updated_at": 1780942882000,
+  "version": "1.2.3"
+}

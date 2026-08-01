@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Nesferatum/Harven-s-Potions-Alert-Patched-NOT-SUPPORTED__3405",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Nesferatum",
+  "canonical_id": "esoui:3405",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3405",
+  "deleted": false,
+  "directories": [
+    "HarvensPotionsAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3405/",
+  "fingerprint": "dddaf80bb7f3dc5ae492cd7edeec98499b212539529b935427f7f1daed6ee9ec",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3405",
+  "source_url": "https://www.esoui.com/downloads/info3405-HarvensPotionsAlertPatchedNOTSUPPORTED.html",
+  "stats": {
+    "downloads": 4650,
+    "favorites": 0,
+    "monthly_downloads": 11
+  },
+  "title": "Harven's Potions Alert Patched (NOT SUPPORTED)",
+  "updated_at": 1655590904000,
+  "version": "1.11"
+}

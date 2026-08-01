@@ -1,0 +1,8 @@
+## Title: |c00C000Prov|r's Boot Monitor 1.0.0
+## Description: Show you the boot log.
+## Author: |c00C000Provision|r
+## OptionalDependsOn: LibStub
+## APIVersion: 100025, 100026
+## Version: 1.0.0
+
+ProvisionsBootMonitor.lua

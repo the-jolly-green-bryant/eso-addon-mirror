@@ -1,0 +1,15 @@
+## Title: Rhythmos - ESO Combat Overhaul
+## Author: NICKXON
+## Version: 1.0
+## APIVersion: 101046
+## Description: Adds a global skill cooldown and removes attack weaving by introducing attack, dodge, and weapon swap locks during combat actions in line with natural weapon combo animation timings. Designed to create a deliberate combat flow inspired by classic MMORPG combat pacing.
+## SavedVariables: RhythmosVars
+## DependsOn: LibAddonMenu-2.0>=41
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+bindings.xml
+Rhythmos.lua

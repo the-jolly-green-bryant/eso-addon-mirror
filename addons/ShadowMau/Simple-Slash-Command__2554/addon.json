@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/ShadowMau/Simple-Slash-Command__2554",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ShadowMau",
+  "canonical_id": "esoui:2554",
+  "category_id": "155",
+  "compatibility": [],
+  "content_id": "esoui:2554",
+  "deleted": false,
+  "directories": [
+    "SimpleSlashCommand"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2554/",
+  "fingerprint": "a1fa5508a535f17658466281269ee070325169461a45169f857641a158a6909b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8733.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2554",
+  "source_url": "https://www.esoui.com/downloads/info2554-SimpleSlashCommand.html",
+  "stats": {
+    "downloads": 3189,
+    "favorites": 0,
+    "monthly_downloads": 6
+  },
+  "title": "Simple Slash Command",
+  "updated_at": 1583539664000,
+  "version": "0.1.2"
+}

@@ -1,0 +1,21 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cFEE854Poison|r |cFF9900Master|r">
+			<Action name="TOGGLE_POISON_WINDOW">
+				<Up>PMAddon.XMLNavigation(01)</Up>
+			</Action>
+			<Action name="POISON_SLOT_1">
+				<Up>PMAddon.XMLNavigation(12, 1)</Up>
+			</Action>
+			<Action name="POISON_SLOT_2">
+				<Up>PMAddon.XMLNavigation(12, 2)</Up>
+			</Action>
+			<Action name="POISON_SLOT_3">
+				<Up>PMAddon.XMLNavigation(12, 3)</Up>
+			</Action>
+			<Action name="POISON_SLOT_4">
+				<Up>PMAddon.XMLNavigation(12, 4)</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

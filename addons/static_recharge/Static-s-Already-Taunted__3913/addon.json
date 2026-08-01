@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/static_recharge/Static-s-Already-Taunted__3913",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "static_recharge",
+  "canonical_id": "esoui:3913",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3913",
+  "deleted": false,
+  "directories": [
+    "StaticsAlreadyTaunted"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3913/",
+  "fingerprint": "7ab59d379a7c3dd9d0c2196af15111c7e6fd7d49698dcd66f12d54b95740e392",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13287.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13288.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13289.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3913",
+  "source_url": "https://www.esoui.com/downloads/info3913-StaticsAlreadyTaunted.html",
+  "stats": {
+    "downloads": 2651,
+    "favorites": 5,
+    "monthly_downloads": 64
+  },
+  "title": "Static's Already Taunted",
+  "updated_at": 1732772553000,
+  "version": "2.0.1"
+}

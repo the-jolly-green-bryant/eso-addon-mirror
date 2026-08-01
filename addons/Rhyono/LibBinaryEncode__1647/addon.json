@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Rhyono/LibBinaryEncode__1647",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rhyono",
+  "canonical_id": "esoui:1647",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1647",
+  "deleted": false,
+  "directories": [
+    "LibBinaryEncode"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1647/",
+  "fingerprint": "78af61e8a4cc14fd58f44ff020f13baf8ceec71fc0c07731685700c35105e4ad",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5398.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1647",
+  "source_url": "https://www.esoui.com/downloads/info1647-LibBinaryEncode.html",
+  "stats": {
+    "downloads": 1733650,
+    "favorites": 576,
+    "monthly_downloads": 4378
+  },
+  "title": "LibBinaryEncode",
+  "updated_at": 1647383968000,
+  "version": "1.34"
+}

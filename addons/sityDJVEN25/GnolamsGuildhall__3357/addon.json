@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/sityDJVEN25/GnolamsGuildhall__3357",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sityDJVEN25",
+  "canonical_id": "esoui:3357",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3357",
+  "deleted": false,
+  "directories": [
+    "GnolamsGuildhall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3357/",
+  "fingerprint": "e765566e07294989b0920e7fafc96854dcfe576607171a6a9f690f28bc0c5a08",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11456.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3357",
+  "source_url": "https://www.esoui.com/downloads/info3357-GnolamsGuildhall.html",
+  "stats": {
+    "downloads": 1750,
+    "favorites": 0,
+    "monthly_downloads": 6
+  },
+  "title": "GnolamsGuildhall",
+  "updated_at": 1652048976000,
+  "version": "1.0"
+}

@@ -1,0 +1,27 @@
+language: minimal
+
+before_deploy:
+  - mkdir -p /tmp/addon/Banker
+  - cp -R . /tmp/addon/Banker
+  - rm -rf /tmp/addon/Banker/.git /tmp/addon/Banker/.travis /tmp/addon/Banker/*.md
+  - pushd /tmp/addon && zip -r /tmp/Banker.zip Banker && popd
+addons:
+  apt:
+    packages:
+    - zip
+deploy:
+  - provider: script
+    script: sh .travis/deploy.sh $TRAVIS_TAG 4.2 /tmp/Banker.zip
+    on:
+      repo: Nols1000/Banker
+      tags: true
+  - provider: releases
+    api_key:
+      secure: L2YZPuVaxqKsgWjmOvg/+XmX+RXg45aCKp4uOrpFoef5LWHusiaSmaDsSWsIF7vdg/wGKcdDHgapqyawS7vlr3Y7IT7widvlgPIhQGKMb5FWoTMOfay1jBO3GGJyXY+pNM75bozJJZPaCftKWWg9ljBAt53QzoEOZo83o2TDbfTbYmfz2JkufSwcB113PR8/F3IIgym/8UcbgPiwIH6S8YTY2iDVkL1u6DExuzvF4+oB7p/rYokwXj49FvzQzSe8WaPzmsVK7Tjuz0c53+BKF4Vsx0IGe4qqdHPv4VTguDbtn4bu98mp9cNfuTmeDmXQ4ldC5S4z5xPaTLWQQmQ/IiPpxIxU7U6HIKOL58sDJuMTnVoauq3zBNZhhfE9kajUo1JzhIVcR5Eb5AERhgn6Y9hOQJ9cA7QOH1f61Gi4lFcABkpt53FxFFdq+HL/fWsuQQ4DgSZcn5LzL57OC8ooMMdaU4Sg2C6/D+vWKJwXqflFga3f3KkMP3LU4M0Cf1KzFoKrTLdr5G/u3zEIwvxIUQXVTzcyNSA1xnN11B/FNzNEnKOnF7/6eG59UWnrY+bDJN5wE89JTNietGqccFgQKocs6IjxJF3UIG3jKi8WBKmFg2PJy15UgheqDy8KPp4C3c3eWiO1LYkIRmZaNK/3mnvx/zCkof+NFDnxaNhkHyc=
+    file: "/tmp/Banker.zip"
+    on:
+      repo: Nols1000/Banker
+      tags: true
+env:
+  global:
+    secure: akF3JIJlyIZ6j1xrPlrpgGhCG3o0srO0dV1pR0vRHsm5rljLd9AvSujL4U2VAYGSNTqvzOyJYz5IudAyWYX7Xly/1roZt/LA29SciYvBT7WtjZYPoe7UkCHy90n9sK0dn2l3NFT83DMtI3rc0sHypRgl1sm3UBHOEgp+KDgerA/Bk1uZ+sGIrB1mo0dP+K+uSQciFkRfBPY/rmY4VfqjVpcDO/sgJGYKm/loZdzeLrDLjLGoKuGGpNjUR9Gs2GhEGSeHUqrRMTX1JfVqiCP/gTAe35mP2R5LZgqI7KvupcjChn+lXMrIF9NHSzjH34LJL3ymWWqMGp/+OXUZs9xZk47aWfa29MYUAgwqlQVGq49M8rOqHqSuidswSddP8jN6G5PkDAbwaipAi3TjYusmGcg5rijpfJQM411S8C2dRCSUvqyC3ADJYzXC3ZI74mgJboaPzQ6d04Y2w0E55ilBaCKXnK2bLyuS9OHSBJ00wf2QGKA0cLHbghumzPWaq2xmra9HZj57NABW2vhz8Jr+Y8rQqH1GJU7hAnU4J0VRrF3D29rtApg7yJLN1YgFCCP+UgpVbZjjAwqObJPlcVaT/Upd+JxhIt6prscW5gxpvynE9Zba9vdTRv/3v9kQSeeUyarFc6og96By7CSQvENR+OkSqmxOH59DCrGEFbr+0yQ=

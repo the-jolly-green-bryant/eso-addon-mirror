@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/sirinsidiator/LibMsgWin__802",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": " sirinsidiator",
+  "canonical_id": "esoui:802",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:802",
+  "deleted": false,
+  "directories": [
+    "LibMsgWin-1.0"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl802/",
+  "fingerprint": "aacfdfe87090f383fa3b06d3b7f1b9be04b7c938a0a62885bc02504cadfaac4f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2541.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2475.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "802",
+  "source_url": "https://www.esoui.com/downloads/info802-LibMsgWin.html",
+  "stats": {
+    "downloads": 558067,
+    "favorites": 394,
+    "monthly_downloads": 1728
+  },
+  "title": "LibMsgWin",
+  "updated_at": 1590700481000,
+  "version": "1.0 r11"
+}

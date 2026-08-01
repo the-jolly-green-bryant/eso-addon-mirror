@@ -1,0 +1,8 @@
+## Title: Shoyru's Classic CP
+## Author: Shoyru
+## Version: 1.0
+## APIVersion: 101050 101051
+## DependsOn: LibAddonMenu-2.0>=40
+## SavedVariables: ShoyruClassicCPSavedVariables
+
+ShoyruClassicCP.lua

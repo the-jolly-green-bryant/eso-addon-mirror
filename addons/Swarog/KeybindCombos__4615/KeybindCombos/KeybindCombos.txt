@@ -1,0 +1,7 @@
+## Title: Keybind Combos
+## Author: Swarog
+## Version: 1.0.0
+## APIVersion: 101049 101050
+## Description: Allows assigning key combinations in the Controls menu.
+
+KeybindCombos.lua

@@ -1,0 +1,8 @@
+## Title: AutoBank
+## Description: When a bank is opened, it automatically replenishes the bank's stock from the inventory. Sends only those things that are in the bank.
+## APIVersion: 100033 100034
+## Author: Kharin
+
+AutoBank.lua
+AutoBank.xml
+

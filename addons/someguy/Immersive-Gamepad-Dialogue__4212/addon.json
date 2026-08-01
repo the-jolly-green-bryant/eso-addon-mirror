@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/someguy/Immersive-Gamepad-Dialogue__4212",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "someguy",
+  "canonical_id": "esoui:4212",
+  "category_id": "162",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4212",
+  "deleted": false,
+  "directories": [
+    "ImmersiveGamepadDialogue"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4212/",
+  "fingerprint": "fe740f3574df71fd7d883ec65d14d43caf883d4111eb92e77b8298f2a7caee96",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14395.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14394.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14396.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4212",
+  "source_url": "https://www.esoui.com/downloads/info4212-ImmersiveGamepadDialogue.html",
+  "stats": {
+    "downloads": 825,
+    "favorites": 0,
+    "monthly_downloads": 38
+  },
+  "title": "Immersive Gamepad Dialogue",
+  "updated_at": 1755100789000,
+  "version": "1.0"
+}

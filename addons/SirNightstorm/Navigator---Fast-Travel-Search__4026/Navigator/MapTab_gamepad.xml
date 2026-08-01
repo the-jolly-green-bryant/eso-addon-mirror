@@ -1,0 +1,92 @@
+<GuiXml>
+    <Controls>
+        <Control name="Navigator_Gamepad_WayshrineRow" inherits="ZO_GamepadMenuEntryDimensionsTemplate ZO_GamepadMenuEntryLabelSizedTemplate" virtual="true">
+            <Controls>
+                <Label name="$(parent)Label" inherits="ZO_GamepadMenuEntryLabelTemplateLowercase42"/>
+                <Texture name="$(parent)Icon" inherits="ZO_GamepadMenuEntryIconTemplate" level="0">
+                    <Controls>
+                        <Label name="$(parent)StackCount" inherits="ZO_GamepadMenuEntryStackCountTemplate"/>
+                    </Controls>
+                </Texture>
+                <Texture name="$(parent)Overlay" textureFile="Navigator/media/overlays/coin.dds" color="FFCC33" level="3" tier="HIGH" hidden="false">
+                    <Dimensions x="32" y="32"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="0" offsetY="0" relativeTo="$(parent)Icon" />
+                    <TextureCoords top="0" bottom="1" left="0" right="1"/>
+                </Texture>
+            </Controls>
+        </Control>
+
+        <Control name="Navigator_Gamepad_HintRow" inherits="ZO_GamepadSubMenuEntryTemplateLowercase42" virtual="true"/>
+        <!--<Control name="Navigator_Gamepad_HintRow" inherits="ZO_GamepadMenuEntryDimensionsTemplate ZO_GamepadMenuEntryLabelSizedTemplate" resizeToFitDescendents="true" virtual="true">
+            <Controls>
+                <Label name="$(parent)Label" font="ZoFontGamepad42" horizontalAlignment="CENTER" verticalAlignment="CENTER" maxLineCount="3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" mouseEnabled="false">
+                </Label>
+            </Controls>
+        </Control>-->
+
+        <Control name="Navigator_MainTab_EditBox" virtual="true">
+            <OnInitialized>
+                self.edit = self:GetNamedChild("Backdrop"):GetNamedChild("Edit")
+                self.highlight = self:GetNamedChild("Highlight")
+            </OnInitialized>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" inherits="ZO_SingleLineEditBackdrop_Gamepad" tier="HIGH">
+                    <Anchor point="TOPLEFT"/>
+                    <Anchor point="TOPRIGHT"/>
+                    <Controls>
+                        <EditBox name="$(parent)Edit" inherits="ZO_DefaultEditForBackdrop_Gamepad">
+                            <!--<OnEnter>
+                                self:LoseFocus()
+                            </OnEnter>-->
+                            <OnEffectivelyShown>
+                                local tab = self:GetOwningWindow().tab
+                                tab:ResetSearch()
+                            </OnEffectivelyShown>
+                            <OnTextChanged>
+                                local tab = self:GetOwningWindow().tab
+                                --Navigator.log("onTextChanged: pos="..self:GetCursorPosition())
+                                tab:onTextChanged(self)
+                            </OnTextChanged>
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+                <Backdrop name="$(parent)Highlight" inherits="ZO_GamepadWhiteOutlineHighlight" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Backdrop"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Backdrop"/>
+                </Backdrop>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="Navigator_MainTab_Gamepad" hidden="true">
+            <OnInitialized>
+                Navigator_MainTab_Gamepad_OnInitialized(self)
+            </OnInitialized>
+            <Controls>
+                <Control name="$(parent)Main" inherits="ZO_WorldMapInfoContent_Gamepad">
+                    <Controls>
+                        <Control name="$(parent)Search" inherits="Navigator_MainTab_EditBox">
+                            <Anchor point="TOPLEFT"/>
+                            <Anchor point="TOPRIGHT"/>
+                        </Control>
+                        <Control name="$(parent)List" inherits="ZO_VerticalParametricScrollListTemplate" tier="MEDIUM">
+                            <Anchor point="TOPLEFT" offsetY="70"/>
+                            <Anchor point="BOTTOMRIGHT"/>
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)SideContent" inherits="ZO_GamepadGrid_NavQuadrant_4_Anchors">
+                    <Controls>
+                        <Control name="$(parent)Container" inherits="ZO_GamepadGrid_NavQuadrant_ContainerAnchors">
+                            <Controls>
+                                <Label name="$(grandparent)Info" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGamepadCondensed42">
+                                    <Anchor point="TOPLEFT" offsetY="ZO_GAMEPAD_CONTENT_HEADER_DIVIDER_OFFSET_Y"/>
+                                    <Anchor point="TOPRIGHT" offsetY="ZO_GAMEPAD_CONTENT_HEADER_DIVIDER_OFFSET_Y"/>
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

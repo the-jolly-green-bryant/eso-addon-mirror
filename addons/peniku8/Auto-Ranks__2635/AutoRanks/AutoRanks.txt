@@ -1,0 +1,14 @@
+## Title: Auto Ranks
+## Description: Automatically promote and demote guildmembers depending on their sales or donations. Works with either MM or ATT.
+## Author: |c6C00FFpeniku8|r
+## Version: 3.4.2
+## AddOnVersion: 34
+## APIVersion: 101042
+## SavedVariables: AutoRanksSavedVars
+## DependsOn: LibAddonMenu-2.0>=28
+
+AutoRanks.lua
+AutoRanksMenu.lua
+i18n/en.lua
+i18n/$(language).lua
+bindings.xml

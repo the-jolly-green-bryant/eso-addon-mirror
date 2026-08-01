@@ -1,0 +1,41 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: OdyHybridHeal
+## Description: Provides various tools for healers
+## Author: @Lamierina7
+## Version: 1.8.3
+## APIVersion: 100033
+## SavedVariables: OHHStore
+## DependsOn: LibAddonMenu-2.0
+
+OdyHybridHeal.lua
+
+; Changelog:
+;
+; Version 1.8.3 (2020/11/25)
+; * Fixed a bug where Minor Berserk tracker overview would show while not beeing grouped
+;
+; Version 1.8.2 (2020/11/24)
+; * Added option to track Empower with the Minor Berserk trackers extra bars
+; * Added option to show the number of buffed units for the Minor Berserk tracker
+; * Added links to sets, skills and buffs in the addon description
+;
+; Version 1.8.1 (2020/11/16)
+; * Added Hollowfang to resource return statistics
+; * Added Powerful Assault tracker
+; * Added option to adjust the height of the Minor Berserk trackers extra bars
+; * Added options to choose which colors to use for the Minor Berserk trackers extra bars
+; * Added options to choose which buffs to track with the Minor Berserk trackers extra bars
+; * Increased font size for Roaring Opportunist number of affected players
+; * Changed border colors for more consistency (green = active, yellow = inactive but unable to proc, orange = 3s until proc, red = ready to proc)
+;
+; Version 1.8.0 (2020/11/08)
+; * Added Force Overflow tracker
+; * Added resource return statistics
+; * Added affected targets for Roaring Opportunist
+; * Added Hiti's Hearth tracker
+; * Public release

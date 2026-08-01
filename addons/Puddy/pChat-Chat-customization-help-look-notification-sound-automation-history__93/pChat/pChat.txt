@@ -1,0 +1,45 @@
+﻿
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: pChat
+## Description: pChat overhauls the way text is displayed in the chatbox
+## Author: Ayantir, DesertDwellers, Baertram
+## APIVersion: 101050 101051
+## Version: 10.0.7.4
+## AddOnVersion: 10007040
+## SavedVariables: PCHAT_OPTS
+## DependsOn: LibAddonMenu-2.0>=43 LibAddonMenuSoundSlider>=6 LibCustomMenu>=730 LibDebugLogger>=268 LibMainMenu-2.0>=40400 LibMediaProvider>=36
+## OptionalDependsOn: LibCustomTitles LibChatMessage>=118 LibSlashCommander>=45
+
+Constants.lua
+
+i18n/en.lua
+i18n/$(language).lua
+
+Bindings.lua
+
+fonts.lua
+dialogs.lua
+pChat.lua
+
+HelperFunctions.lua
+SpamFilter.lua
+MessageFormatters.lua
+ChatHandlers.lua
+Settings.lua
+AutomatedMessages.lua
+IncomingMessages.lua
+CopyHandler.lua
+ChatConfig.lua
+ChatHistory.lua
+ChatTabs.lua
+ChatMentions.lua
+Teleport.lua
+
+copyDialog.xml
+pChat.xml
+bindings.xml

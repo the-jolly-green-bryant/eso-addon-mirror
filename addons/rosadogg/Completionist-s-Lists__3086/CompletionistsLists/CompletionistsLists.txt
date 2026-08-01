@@ -1,0 +1,73 @@
+## Title: Completionist's Lists
+## Author: @IceQieen
+## Description: Export Lists in CSV format of your characters known set items, Motifs, Provisioning Recipes, and Furniture Recipes. Export list of earned achievements. Export list of all antiquities. Export list of missing weapons and jewelery from trials. Also possible to export a list of all motifs and recipies in the game. Much thanks to the creators of MasterRecipeList, CraftStore, and DisplayLeads!
+## APIVersion: 101031
+## AddOnVersion: 0600
+## Version: 5.2
+## DependsOn: LibMotif LibZone LibSlashCommander
+## OptionalDependsOn: LibDebugLogger
+## IsLibrary: false
+## SavedVariables: CompletionistsListsSavedVariables CompletionistsListsExport
+
+' Performance settings
+# When the DisableSavedVariablesAutoSaving is set to "1", it won't consider the saved variables of this add-on for autosaving.
+## DisableSavedVariablesAutoSaving: 1
+
+# lua files for the addon
+CompletionistsLists.xml
+CompletionistsLists.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+;
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+;
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+;
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+
+# Updates
+# Version 2
+#   Improve: Added headers to the lists
+#   Improve: Add total known pages per motif in one-line view
+#   Improve: Added sample file, open office calculator format
+#   Fix: Saved variables store server, please delete your old one
+#   Fix: Unregister from event once loaded
+#   Fix: Scene manager and command inside on loaded
+#   Fix: Use Zo strings instead of hardcoded strings, note this might change some spelling
+#   Fix: Set current page to 1 on reload filter
+#   Fix: zipped in a folder so that it is properly extracted in Addon folder
+# Version 3
+#   Improve: Added show all antiquities
+#   Fix: Local variable scope
+# Version 4
+#   Improve: Add view for only name, or all info for recipes
+#   Improve: Include recipe category in full info
+# Version 5
+#   Fix: moved LibSlashCommander to required
+#   New: List all item sets
+# Version 5.1
+#   Fix: uploaded wrong zip, i should not update half asleep
+#   New: List all known set items per line option
+# Version 5.2
+#   Improve: updated ui handling
+#   Change: List all missing weapons and jewelery from trials when listing set items one per line
+#   future promise: more filters for that
+# Version 5.3
+#   New: List all achievements in game including rewards
+#   New: List all earned achievements on character

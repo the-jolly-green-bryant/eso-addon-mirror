@@ -1,0 +1,15 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="ATFinisherUi" mouseEnabled="false" movable="false" clampedToScreen="true">
+      <Dimensions x="200" y="25" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+ 
+      <OnMoveStop>
+        AT_Finisher.OnUIMoveStop()
+      </OnMoveStop>
+ 
+      <Controls>
+       </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

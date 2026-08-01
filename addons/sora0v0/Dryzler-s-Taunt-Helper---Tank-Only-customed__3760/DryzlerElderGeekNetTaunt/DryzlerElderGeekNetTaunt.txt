@@ -1,0 +1,22 @@
+## Title: |c3f95ffDryzler's|r |cEFEBBETaunt Helper Only Tank|r 
+## Description: Helps to taunt.
+## Author: |cEFEBBECreater dryzler.elder-geek.net : Custom sora0v0|r
+## APIVersion: 100032
+## Version: 1.020
+## SavedVariables: DryzlerElderGeekNetTauntSavedVariables
+## DependsOn: LibAddonMenu-2.0>=31 LibMOTD
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+##
+
+TauntInit.lua
+lang/strings.lua
+lang/$(language).lua
+lib/DEG/lang/strings.lua
+lib/DEG/lang/$(language).lua
+lib/DEG/deglib.deglib.lua
+lib/DEG/deglib.ad1.lua
+TauntSettings.lua
+Taunt.lua

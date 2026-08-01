@@ -1,0 +1,41 @@
+## ExecuteNow
+## Author: mooNylo
+## Patch Author: PlaceHolder
+## Version: 0.3.7
+
+25-05-2022
+	-Updated API version to remove the "Out Of Date" warning
+
+26-03-2022
+	-Updated API version to remove the "Out Of Date" warning
+
+21-11-2021
+	-Updated API version to remove the "Out Of Date" warning
+
+16-09-2021
+	-Updated calls to LibAddonMenu2 (Thank you sMuggle ^_^ )
+
+09-09-2021
+	-Updated API version to remove the "Out Of Date" warning
+
+30-07-2021
+	-Updated API version to remove the "Out Of Date" warning
+
+01-09-2020
+	-Updated API version to remove the "Out Of Date" warning
+
+16-07-2020
+	-Updated API version to remove the "Out Of Date" warning
+	-Updated Version to 0.3.0 to make more sense
+
+12-07-2020
+Took Jan/mooNylo's original ExecuteNow v0.2 Add-on as the base - ALL credit belongs to them except for the following:
+	-Removed the use of class dependent Execute values as some weapon skills have an Execute (Such as Two Handed)
+	-Added a manual slider & text box for Execute percentage input
+	-Added Confirm button to ReloadUI + setting warning (ReloadUI is needed for value changes to take effect)
+	-Made it character independent (not account based)
+	-Set default value to 25%
+	-Set default health to 100,000
+	-Set max health to 5,000,000
+	-Added description
+	-Created ChangeLog.txt

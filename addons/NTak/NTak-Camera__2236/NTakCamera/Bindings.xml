@@ -1,0 +1,63 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="N'|c887788Tak'|r Camera">
+            <Action name="NTCAM_SWAP">
+                <Up>KeyUp_SwapShoulder(false)</Up>
+            </Action>
+            <Action name="NTCAM_SWAP_X">
+                <Up>KeyUp_SwapShoulder(true)</Up>
+            </Action>
+            <Action name="NTCAM_SWAPCENTER">
+                <Up>KeyUp_SwapCenter(false)</Up>
+            </Action>
+            <Action name="NTCAM_SWAPCENTER_X">
+                <Up>KeyUp_SwapCenter(true)</Up>
+            </Action>
+			<Action name="NTCAM_CENTER">
+                <Up>KeyUp_ToggleCenter(false)</Up>
+            </Action>
+			<Action name="NTCAM_CENTER_X">
+                <Up>KeyUp_ToggleCenter(true)</Up>
+            </Action>
+			<Action name="NTCAM_ALT_ALL">
+                <Up>KeyUp_ToggleAltAll()</Up>
+            </Action>
+			<Action name="NTCAM_ALT_DIST">
+                <Up>KeyUp_ToggleAltDistance()</Up>
+            </Action>
+			<Action name="NTCAM_ALT_FOV">
+				<Up>KeyUp_ToggleAltFOV()</Up>
+			</Action>
+			<!--Action name="NTCAM_ALT_H_POS">
+                <Up>KeyUp_ToggleAltHPosition()</Up>
+            </Action>
+			<Action name="NTCAM_ALT_H_OFFSET">
+                <Up>KeyUp_ToggleAltHOffset()</Up>
+            </Action-->
+			<Action name="NTCAM_SIEGE">
+				<Up>KeyUp_ToggleSiege()</Up>
+			</Action>
+			<Action name="NTCAM_STATIC0">
+				<Up>KeyUp_StaticCamera(0)</Up>
+			</Action>
+			<Action name="NTCAM_STATIC1">
+				<Up>KeyUp_StaticCamera(1)</Up>
+			</Action>
+			<Action name="NTCAM_STATIC2">
+				<Up>KeyUp_StaticCamera(2)</Up>
+			</Action>
+			<Action name="NTCAM_STATIC3">
+				<Up>KeyUp_StaticCamera(3)</Up>
+			</Action>
+			<Action name="NTCAM_TOGGLE_CHAT">
+				<Up>KeyUp_ToggleChat()</Up>
+			</Action>
+			<Action name="NTCAM_TOGGLE_CRAFT">
+				<Up>KeyUp_ToggleCraft()</Up>
+			</Action>
+			<Action name="NTCAM_TOGGLE_LOCKP">
+				<Up>KeyUp_ToggleLockpicking()</Up>
+			</Action>		
+        </Category>
+    </Layer>
+</Bindings>

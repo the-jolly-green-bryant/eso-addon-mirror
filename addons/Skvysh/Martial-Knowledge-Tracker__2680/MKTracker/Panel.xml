@@ -1,0 +1,22 @@
+<GuiXml>
+    <Controls>
+		<TopLevelControl name="MKTrackerPanel" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="100" y="100" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="100" />
+			<Controls>
+				<Label name="$(parent)_Proc" width="50" height="50" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" inheritAlpha="true" color="00FFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0" hidden="false">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+				<Label name="$(parent)_Stam" width="50" height="50" font="$(MEDIUM_FONT)|$(KB_32)|soft-shadow-thick" inheritAlpha="true" color="00FF00" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="100" hidden="false">
+					<Anchor point="TOP" relativeTo="$(parent)_Proc" relativePoint="BOTTOM" offsetY="-5" />
+				</Label>
+				<Label name="$(parent)_GlobalProc" width="50" height="50" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" inheritAlpha="true" color="00FFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0" hidden="false">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="LEFT" offsetY="-10" offsetX="-3" />
+				</Label>
+			</Controls>
+			<OnMoveStop>
+				MKTracker.Move()
+			</OnMoveStop>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

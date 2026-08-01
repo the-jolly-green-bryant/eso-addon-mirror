@@ -1,0 +1,13 @@
+## Title: ShowRepairCosts
+## Version: 1.0
+## Author: |c29c530|PAGOOK
+## Description: This add-on shows the repair costs on the display and activated or deactivated automatic-repair. For show or hidden the Label type command: /src
+## APIVersion: 101050 101051
+
+ShowRepairCosts.lua
+ShowRepairCosts.xml
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax
+# Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+# registered trademarks or trademarks of ZeniMax Media Inc. in the United
+# States and/or other countries. All rights reserved.

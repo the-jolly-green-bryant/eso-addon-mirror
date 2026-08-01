@@ -1,0 +1,8 @@
+﻿## Title: LibSimpleArrowSlip
+## Description: @SlipperySoap's fork of andy.s's LibSimpleArrow library
+## APIVersion: 100030
+## Author: andy.s, SlipperySoap
+## AddOnVersion: 100
+## IsLibrary: true
+
+LibSimpleArrowSlip.lua

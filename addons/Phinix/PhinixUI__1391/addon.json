@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Phinix/PhinixUI__1391",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phinix",
+  "canonical_id": "esoui:1391",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1391",
+  "deleted": false,
+  "directories": [
+    "PhinixUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1391/",
+  "fingerprint": "a62ae3dc584c1d0d5b62a816865e7cd919d03d0aee7a9d9d6d912014d6ac6105",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4665.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4524.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4666.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4525.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4526.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4527.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4528.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4529.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4530.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1391",
+  "source_url": "https://www.esoui.com/downloads/info1391-PhinixUI.html",
+  "stats": {
+    "downloads": 70895,
+    "favorites": 99,
+    "monthly_downloads": 44
+  },
+  "title": "PhinixUI",
+  "updated_at": 1679165163000,
+  "version": "1.16"
+}

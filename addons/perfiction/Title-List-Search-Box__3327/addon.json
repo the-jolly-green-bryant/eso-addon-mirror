@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/perfiction/Title-List-Search-Box__3327",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "perfiction",
+  "canonical_id": "esoui:3327",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3327",
+  "deleted": false,
+  "directories": [
+    "TitleListSearchBox"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3327/",
+  "fingerprint": "12afccc7e3c50e6742e1c356a60dae58130acdbf69926cdb837f0fdf1fb7b2a1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11322.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11294.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3327",
+  "source_url": "https://www.esoui.com/downloads/info3327-TitleListSearchBox.html",
+  "stats": {
+    "downloads": 3688,
+    "favorites": 8,
+    "monthly_downloads": 15
+  },
+  "title": "Title List Search Box",
+  "updated_at": 1648735137000,
+  "version": "1.1.0"
+}

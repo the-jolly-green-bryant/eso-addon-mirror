@@ -1,0 +1,9 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="RdKGTool_Ftcb_LeaderBeam" tier="0" layer="0" level="0">
+			<Controls>
+				<Texture name="$(parent)Icon" textureFile="RdKGroupTool/Art/3DObjects/Beam1.dds" level="3" />
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

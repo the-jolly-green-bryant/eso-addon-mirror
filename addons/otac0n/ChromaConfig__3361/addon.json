@@ -1,0 +1,52 @@
+{
+  "archive_path": "addons/otac0n/ChromaConfig__3361",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "otac0n",
+  "canonical_id": "esoui:3361",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3361",
+  "deleted": false,
+  "directories": [
+    "ChromaConfig"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3361/",
+  "fingerprint": "7eebb1b417f432e5e30446469f3b21d6f6567c04948a10d98fce3563b6d45cf4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11460.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11461.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11462.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11463.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3361",
+  "source_url": "https://www.esoui.com/downloads/info3361-ChromaConfig.html",
+  "stats": {
+    "downloads": 3203,
+    "favorites": 4,
+    "monthly_downloads": 12
+  },
+  "title": "ChromaConfig",
+  "updated_at": 1664755540000,
+  "version": "1.1"
+}

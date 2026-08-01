@@ -1,0 +1,131 @@
+[COLOR="DeepSkyBlue"]041[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]040[/COLOR]:
+[LIST]
+[*] Added a preliminary translation for German.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]039[/COLOR]:
+[LIST]
+[*] Add ability to change location of sack icon through a settings lock/unlock. (Requested by DeaTHCorE161075)
+[/LIST]
+
+[COLOR="DeepSkyBlue"]038[/COLOR]:
+[LIST]
+[*] Catch the Time Sync error earlier.
+[*] Update bug database to also store error codes as recommended by sirinsidiator.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]037[/COLOR]:
+[LIST]
+[*] Remove displaying bugs for Time Sync (0x32BBA739) errors as requested by sirinsidiator.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]036[/COLOR]:
+[LIST]
+[*] API bump.
+[*] Updating Event calls for bug sack display.
+[*] Convert to LibSFUtils logger function.
+[*] Remove obsolete LibOmniMessage local library.
+[*] Convert from LibOmniMessage to zo_strformat()
+[*] Starting adding in language support.
+[*] Added explicit dependency to LibDebugLogger library. (The dependency was already implicitly there because LibSFUtils requires it.)
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]035[/COLOR]:
+[LIST]
+[*] Convert from .txt manifest to .addon
+[*] Update dependency library required versions.
+[*] Code cleaning.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]033[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]032[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]031[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]030[/COLOR]:
+[LIST]
+[*] API bump (Necrom).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]029[/COLOR]:
+[LIST]
+[*] API bump (Scribes of Fate).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]028[/COLOR]:
+[LIST]
+[*] API bump (Firesong).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]027[/COLOR]:
+[LIST]
+[*] API bump (High Isle).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]026[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]025[/COLOR]:
+[LIST]
+[*] API bump.
+[*] Require minimum version of installed LibAddonMenu to be at least 32. Earlier versions will break the user interface.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]024[/COLOR]:
+[LIST]
+[*] API bump - Flames of Ambition.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]023[/COLOR]:
+[LIST]
+[*] API bump - Blackwood.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]022[/COLOR]:
+[LIST]
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]021[/COLOR]:
+[LIST]
+[*] Added a /bugs chat command to open up the BugCatcher settings page. (requested by MycroftJr)
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]020[/COLOR]:
+[LIST]
+[*] API bump preparing for Stonethorn.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]019[/COLOR]:
+[LIST]
+[*] API bump preparing for Greymoor.
+[*] Removed a commented-out reference to a file from BugCatcher.txt.
+[*] Created a CHANGELOG. Filled out info about the previous change retroactively.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]018[/COLOR]:
+Created a patched version of Werewolf Finds Dragon's BugCatcher addon for Harrowstorm.
+[LIST]
+[*]  [COLOR="MediumSeaGreen"]Breaking Change[/COLOR]Removed the common embedded libraries so it now requires that the LibAddonMenu-2.0 addon be installed separately.
+[*] It has also been changed to address sirinsidiator's concern about firing the "LAM-RefreshPanel" callback too often.
+[*] The utility files including the lua .exe and dll files have been removed, because they are available from the original version - and elsewhere online - and I personally don't like pulling down opaque executables anyway.
+[/LIST]

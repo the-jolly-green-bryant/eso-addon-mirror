@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ragingpix3l/CookiesAutoFillMailer__2785",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ragingpix3l",
+  "canonical_id": "esoui:2785",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2785",
+  "deleted": false,
+  "directories": [
+    "CookiesAutoFillMailer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2785/",
+  "fingerprint": "94eafcb8e54eac19ab3d216cbfa18da7e4fd3a866fe8347c9942a059a9733e73",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9427.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2785",
+  "source_url": "https://www.esoui.com/downloads/info2785-CookiesAutoFillMailer.html",
+  "stats": {
+    "downloads": 3063,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "CookiesAutoFillMailer",
+  "updated_at": 1600643995000,
+  "version": "0.02"
+}

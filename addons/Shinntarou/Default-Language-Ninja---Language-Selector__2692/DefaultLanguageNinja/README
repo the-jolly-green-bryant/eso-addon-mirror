@@ -1,0 +1,9 @@
+This one is a Language-Selector.
+And also define your own default language in ESO using in-game addon only. without using external UserSettings. Even if you turn off ESO client, your last language code are restored at next time.
+Language codes are 5 bundled languages(en, de, fr, jp, ru) and user defined codes. the code can be modified via settings > addons.
+
+[B]DependsOn:[/B]
+
+[LIST]
+[*][URL="https://www.esoui.com/downloads/info7-LibAddonMenu.html"]LibAddonMenu-2.0[/URL]
+[/LIST]

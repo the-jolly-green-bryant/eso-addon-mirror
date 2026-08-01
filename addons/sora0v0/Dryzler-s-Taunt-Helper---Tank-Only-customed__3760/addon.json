@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/sora0v0/Dryzler-s-Taunt-Helper---Tank-Only-customed__3760",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sora0v0",
+  "canonical_id": "esoui:3760",
+  "category_id": "151",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3760",
+  "deleted": false,
+  "directories": [
+    "DryzlerElderGeekNetTaunt"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3760/",
+  "fingerprint": "901a2e4b2f35cb45e324812fa395bebd42420dd9b25646475395067cb9cb3be8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12745.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3760",
+  "source_url": "https://www.esoui.com/downloads/info3760-DryzlersTauntHelper-TankOnlycustomed.html",
+  "stats": {
+    "downloads": 2104,
+    "favorites": 0,
+    "monthly_downloads": 43
+  },
+  "title": "Dryzler's Taunt Helper  - Tank Only (customed)",
+  "updated_at": 1701238361000,
+  "version": "1.02-custom"
+}

@@ -1,0 +1,32 @@
+<GuiXml>
+    <!-- Optional backup font settings for Spanish language mode. "es" -->
+    <!-- These backup fonts will be used in place of the missing glyphs in the original font -->
+    <BackupFont originalFont="$(PROSE_ANTIQUE_FONT)" backupFont="$(LMP_FONT_PATH)ProseAntiquePSMTCyrillic.slug"/>
+    <BackupFont originalFont="$(PROSE_ANTIQUE_FONT)" backupFont="$(LMP_FONT_PATH)ESO_KafuPenji-M.slug"/>
+
+    <BackupFont originalFont="$(CONSOLAS_FONT)" backupFont="$(LMP_FONT_PATH)ESO_FWNTLGUDC70-DB.slug"/>
+
+    <BackupFont originalFont="$(FTN47_FONT)" backupFont="$(LMP_FONT_PATH)ESO_FWNTLGUDC70-DB.slug"/>
+
+    <BackupFont originalFont="$(FTN57_FONT)" backupFont="$(LMP_FONT_PATH)ESO_FWNTLGUDC70-DB.slug"/>
+
+    <BackupFont originalFont="$(FTN87_FONT)" backupFont="$(LMP_FONT_PATH)ESO_FWNTLGUDC70-DB.slug"/>
+
+    <BackupFont originalFont="$(HANDWRITTEN_BOLD_FONT)" backupFont="$(LMP_FONT_PATH)HandwrittenCyrillic_Bold.slug"/>
+    <BackupFont originalFont="$(HANDWRITTEN_BOLD_FONT)" backupFont="$(LMP_FONT_PATH)ESO_KafuPenji-M.slug"/>
+
+    <BackupFont originalFont="$(TRAJAN_PRO_R_FONT)" backupFont="$(LMP_FONT_PATH)TrajanProCyrillic-Regular.slug"/>
+    <BackupFont originalFont="$(TRAJAN_PRO_R_FONT)" backupFont="$(LMP_FONT_PATH)ESO_KafuPenji-M.slug"/>
+
+    <BackupFont originalFont="$(UNIVERS55_FONT)" backupFont="$(LMP_FONT_PATH)ESO_FWNTLGUDC70-DB.slug"/>
+
+    <BackupFont originalFont="$(UNIVERS57_FONT)" backupFont="$(LMP_FONT_PATH)Univers57Cyrillic-Condensed.slug"/>
+    <BackupFont originalFont="$(UNIVERS57_FONT)" backupFont="$(LMP_FONT_PATH)ESO_FWUDC_70-M.slug"/>
+
+    <BackupFont originalFont="$(UNIVERS67_FONT)" backupFont="$(LMP_FONT_PATH)Univers67Cyrillic-CondensedBold.slug"/>
+    <BackupFont originalFont="$(UNIVERS67_FONT)" backupFont="$(LMP_FONT_PATH)ESO_FWNTLGUDC70-DB.slug"/>
+
+    <BackupFont originalFont="$(UNIVERS57CYR_FONT)" backupFont="$(LMP_FONT_PATH)ESO_FWUDC_70-M.slug"/>
+
+    <BackupFont originalFont="$(UNIVERS67CYR_FONT)" backupFont="$(LMP_FONT_PATH)ESO_FWNTLGUDC70-DB.slug"/>
+</GuiXml>

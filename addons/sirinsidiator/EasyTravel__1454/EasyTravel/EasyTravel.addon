@@ -1,0 +1,24 @@
+## Title: EasyTravel
+## Author: sirinsidiator
+## Version: 1.9.7
+## APIVersion: 101050
+## AddOnVersion: 45
+## DependsOn: LibSlashCommander>=6 LibCustomMenu>=680 LibChatMessage>=87 LibGetText>=10
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+StartUp.lua
+
+i18n/en.lua
+i18n/$(language).lua
+
+ZoneList.lua
+PlayerList.lua
+DialogHelper.lua
+TargetHelper.lua
+JumpHelper.lua
+SlashCommandHelper.lua

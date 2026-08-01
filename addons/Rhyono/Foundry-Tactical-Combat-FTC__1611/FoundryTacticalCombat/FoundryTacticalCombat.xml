@@ -1,0 +1,11 @@
+<!----------------------------------------------------------
+	FOUNDRY TACTICAL COMBAT XML
+  --------------------------------------------------------->
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="FTC_UI" mouseEnabled="false">
+			<Dimensions x="1920" y="1080" />
+			<Anchor point="CENTER" />
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

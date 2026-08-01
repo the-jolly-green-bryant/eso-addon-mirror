@@ -1,0 +1,9 @@
+## Title: Undaunted Auto Queue
+## Author: @philtyr
+## Version: 1.1.2
+## APIVersion: 101049 101050
+## AddOnVersion: 23
+## SavedVariables: UndauntedAutoQueueSavedVariables
+## Description: Queue active Undaunted Pledge dungeons from Guild & Activity Finder, with Normal/Veteran selection, pledge filtering, and wait-time history.
+
+UndauntedAutoQueue.lua

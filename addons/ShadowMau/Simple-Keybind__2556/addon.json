@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/ShadowMau/Simple-Keybind__2556",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ShadowMau",
+  "canonical_id": "esoui:2556",
+  "category_id": "155",
+  "compatibility": [],
+  "content_id": "esoui:2556",
+  "deleted": false,
+  "directories": [
+    "SimpleKeybind"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2556/",
+  "fingerprint": "8bc9fd5598739c077f0214e396627d1659022ee2f30c52ae43d0fe22fa639857",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8740.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2556",
+  "source_url": "https://www.esoui.com/downloads/info2556-SimpleKeybind.html",
+  "stats": {
+    "downloads": 3546,
+    "favorites": 0,
+    "monthly_downloads": 15
+  },
+  "title": "Simple Keybind",
+  "updated_at": 1583540006000,
+  "version": "0.1.0"
+}

@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Ned_Washington/SBMI-Solstheim-Bards-Member-Information__2644",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ned_Washington",
+  "canonical_id": "esoui:2644",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:2644",
+  "deleted": false,
+  "directories": [
+    "SBMI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2644/",
+  "fingerprint": "4bad9a61c7a5f0f38b7ee7166250a9edb7c4bb471fe914c8c52f3314c4a44a55",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9876.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8990.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8991.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8992.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8993.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8994.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2644",
+  "source_url": "https://www.esoui.com/downloads/info2644-SBMISolstheimBardsMemberInformation.html",
+  "stats": {
+    "downloads": 3987,
+    "favorites": 2,
+    "monthly_downloads": 5
+  },
+  "title": "SBMI (Solstheim Bards Member Information)",
+  "updated_at": 1749055362000,
+  "version": "0.1.2"
+}

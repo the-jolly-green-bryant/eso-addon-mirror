@@ -1,0 +1,102 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="GuildAdblockCustomized" tier="HIGH" layer="CONTROLS" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="520" y="700" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.8">
+					<AnchorFill />
+				</Backdrop>
+				<Control name="$(parent)BlockHistoryButton" mouseEnabled="true">
+					<Dimensions x="120" y="40" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="8" offsetY="8" />
+					<Controls>
+						<Backdrop name="$(parent)BG" centerColor="4c4c7f" edgeColor="4c4c7f">
+							<AnchorFill />
+						</Backdrop>
+						<Label name="$(parent)Label" font="ZoFontGameBold" text="Block History" color="ffffff">
+							<Anchor point="CENTER" relativeTo="$(parent)" />
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)BlockCountButton" mouseEnabled="true">
+					<Dimensions x="120" y="40" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)BlockHistoryButton" relativePoint="TOPRIGHT" offsetX="1" />
+					<Controls>
+						<Backdrop name="$(parent)BG" centerColor="333333" edgeColor="333333">
+							<AnchorFill />
+						</Backdrop>
+						<Label name="$(parent)Label" font="ZoFontGameBold" text="Block Count" color="b2b2b2">
+							<Anchor point="CENTER" relativeTo="$(parent)" />
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)AdHistoryButton" mouseEnabled="true">
+					<Dimensions x="120" y="40" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)BlockCountButton" relativePoint="TOPRIGHT" offsetX="1" />
+					<Controls>
+						<Backdrop name="$(parent)BG" centerColor="333333" edgeColor="333333">
+							<AnchorFill />
+						</Backdrop>
+						<Label name="$(parent)Label" font="ZoFontGameBold" text="Ad History" color="b2b2b2">
+							<Anchor point="CENTER" relativeTo="$(parent)" />
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)AdCountButton" mouseEnabled="true">
+					<Dimensions x="120" y="40" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)AdHistoryButton" relativePoint="TOPRIGHT" offsetX="1" />
+					<Controls>
+						<Backdrop name="$(parent)BG" centerColor="333333" edgeColor="333333">
+							<AnchorFill />
+						</Backdrop>
+						<Label name="$(parent)Label" font="ZoFontGameBold" text="Ad Count" color="b2b2b2">
+							<Anchor point="CENTER" relativeTo="$(parent)" />
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)SliderContainer" resizeToFitDescendents="true" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)BlockHistoryButton" relativePoint="BOTTOMLEFT" offsetX="2" />
+					<Controls>
+						<Slider name="$(parent)Slider" inherits="ZO_Slider" step="60">
+							<Dimensions x="360" y="20" />
+							<Anchor point="TOPLEFT" />
+						</Slider>
+						<Label name="$(parent)SliderLabel" font="ZoFontGameBold" color="b2b2b2" >
+							<Anchor point="LEFT" relativeTo="$(parent)Slider" relativePoint="RIGHT" offsetX="5" />
+						</Label>
+					</Controls>
+				</Control>
+					
+				<Button name="$(parent)Hide" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="24" y="24" />
+					<OnMouseDown>GuildAdblockCustomized:SetHidden(true)</OnMouseDown>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="5" />
+					<Textures normal="/esoui/art/buttons/decline_up.dds"
+						pressed="/esoui/art/buttons/decline_down.dds"
+						mouseOver="/esoui/art/buttons/decline_over.dds"
+						disabled="/esoui/art/buttons/decline_disabled.dds" />
+				</Button>
+					
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Dimensions x="200" y="300" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)SliderContainer" offsetY="4" />
+					<Anchor point="BOTTOMRIGHT"/>
+				</Control>
+				<!-- <Texture name="$(parent)Icon" layer="CONTROLS" textureFile="/WizardsWardrobe/assets/icon64.dds" mouseEnabled="true">
+					<Dimensions x="46" y="46" />
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="10" />
+				</Texture>
+				<Label name="$(parent)TopLabel" font="ZoFontGameBold" verticalAlignment="TEXT_ALIGN_CENTER">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="60" offsetY="7" />
+				</Label>
+				<Label name="$(parent)MiddleLabel" font="ZoFontGameBold" verticalAlignment="TEXT_ALIGN_CENTER">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="60" />
+				</Label>
+				<Label name="$(parent)BottomLabel" font="ZoFontGameBold" verticalAlignment="TEXT_ALIGN_CENTER">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="60" offsetY="-7" />
+				</Label> -->
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

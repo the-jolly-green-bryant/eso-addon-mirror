@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/silvereyes/Craft-Bag-Extended__1419",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "silvereyes",
+  "canonical_id": "esoui:1419",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:1419",
+  "deleted": false,
+  "directories": [
+    "CraftBagExtended"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1419/",
+  "fingerprint": "58311f047e632fde8d3e6ea449987c5d459e9206714a484e0b14be400c153692",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1419",
+  "source_url": "https://www.esoui.com/downloads/info1419-CraftBagExtended.html",
+  "stats": {
+    "downloads": 123649,
+    "favorites": 197,
+    "monthly_downloads": 128
+  },
+  "title": "Craft Bag Extended",
+  "updated_at": 1755508474000,
+  "version": "3.0.13"
+}

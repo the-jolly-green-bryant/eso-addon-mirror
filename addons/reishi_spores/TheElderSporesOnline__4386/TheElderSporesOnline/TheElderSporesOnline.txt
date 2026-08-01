@@ -1,0 +1,10 @@
+## Title: TheElderSporesOnline 
+## Description: Companion addon for TheElderSporesOnline.com - Export/Import builds between game and website, updated for U50.
+## Author: Reishi_Spores
+## Version: 2.2.1
+## APIVersion: 101050
+## SavedVariables: TheElderSporesOnlineSV
+
+TheElderSporesOnline.xml
+TheElderSporesOnline.lua
+SPORES_GuideImport.lua

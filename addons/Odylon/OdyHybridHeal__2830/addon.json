@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Odylon/OdyHybridHeal__2830",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Odylon",
+  "canonical_id": "esoui:2830",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2830",
+  "deleted": false,
+  "directories": [
+    "OdyHybridHeal"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2830/",
+  "fingerprint": "6bc5133ffddea5883173fb7679c47eb5c587fd73335a2f034c27a99bef2e6a2d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9569.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9570.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9571.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2830",
+  "source_url": "https://www.esoui.com/downloads/info2830-OdyHybridHeal.html",
+  "stats": {
+    "downloads": 11384,
+    "favorites": 20,
+    "monthly_downloads": 35
+  },
+  "title": "OdyHybridHeal",
+  "updated_at": 1606306550000,
+  "version": "1.8.3"
+}

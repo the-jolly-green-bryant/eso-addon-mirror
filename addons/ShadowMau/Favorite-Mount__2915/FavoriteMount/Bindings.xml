@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name = "SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name = "|c00E600FavoriteMount|r">
+			<Action name = "FM_TOGGLE_ONLY_MULTIMOUNT">
+				<Down>FavoriteMount.SetOnlyMultimount(not FavoriteMount.CSV.onlyMultiMount, true)</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

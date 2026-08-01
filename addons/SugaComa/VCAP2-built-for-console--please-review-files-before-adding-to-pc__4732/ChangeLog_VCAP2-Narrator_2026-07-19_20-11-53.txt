@@ -1,0 +1,26 @@
+VCAP2 2.2.0-test4
+==================
+
+TEST BUILD - based on 2.2.0-test3.
+
+Purpose
+-------
+Return the player to the VCAP2 settings page after using the in-menu Reload UI Now action, while remaining safe on slower console UI initialization.
+
+Changes from test3
+------------------
+- Reload UI Now now sets a one-shot reopenSettingsAfterReload flag before calling ReloadUI("ingame").
+- After EVENT_PLAYER_ACTIVATED, VCAP2 waits 2.5 seconds before attempting to reopen its LHAS settings page.
+- If LHAS/menu/scene initialization is not ready, VCAP2 waits another 3.5 seconds and tries once more.
+- On success, VCAP2 selects its own settings page and opens LibHarvensAddonSettingsScene.
+- The reopen flag is cleared immediately after success.
+- If both attempts fail, the flag is cleared and VCAP2 prints a single fallback message telling the player to open Add-ons > VCAP2 manually.
+- No automatic reload loop is possible.
+- No narration filtering rules changed from test3.
+
+Safety
+------
+- Existing SavedVariables version remains 7.
+- The reopen request is explicit and one-shot.
+- Normal logins/reloads do not open VCAP2 unless the player used VCAP2's Reload UI Now button.
+- Exact submenu/scroll position is not restored; only the main VCAP2 settings page is reopened.

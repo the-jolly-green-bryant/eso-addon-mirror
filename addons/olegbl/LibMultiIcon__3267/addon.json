@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/olegbl/LibMultiIcon__3267",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "olegbl",
+  "canonical_id": "esoui:3267",
+  "category_id": "53",
+  "compatibility": [],
+  "content_id": "esoui:3267",
+  "deleted": false,
+  "directories": [
+    "LibMultiIcon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3267/",
+  "fingerprint": "ca2495530eafed24183ad285ab800eb7f08470b473136afdad4d70bfe5f9e0ab",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3267",
+  "source_url": "https://www.esoui.com/downloads/info3267-LibMultiIcon.html",
+  "stats": {
+    "downloads": 66542,
+    "favorites": 11,
+    "monthly_downloads": 785
+  },
+  "title": "LibMultiIcon",
+  "updated_at": 1780936547000,
+  "version": "1.04"
+}

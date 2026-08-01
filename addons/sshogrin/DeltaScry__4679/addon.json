@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/sshogrin/DeltaScry__4679",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sshogrin",
+  "canonical_id": "esoui:4679",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4679",
+  "deleted": false,
+  "directories": [
+    "DeltaScry"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4679/",
+  "fingerprint": "8b5c46da5a0a10f7c1a8ab2adb765d15945929d03f705a50130230b10165e844",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16556.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16555.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16554.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16553.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16552.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4679",
+  "source_url": "https://www.esoui.com/downloads/info4679-DeltaScry.html",
+  "stats": {
+    "downloads": 70,
+    "favorites": 1,
+    "monthly_downloads": 68
+  },
+  "title": "DeltaScry",
+  "updated_at": 1783121801000,
+  "version": "1.0.0"
+}

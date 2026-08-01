@@ -1,0 +1,112 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: OdySupportIcons
+## Author: |cff8534@Lamierina7|r & |c00FF00@ExoY94|r
+## Version: 1.13.3
+## APIVersion: 101049
+## SavedVariables: OSIStore
+## DependsOn: LibAddonMenu-2.0>=40 LibCustomMenu
+## OptionalDependsOn: LibCustomIcons
+
+OdySupportIcons.lua
+FixLibAddonMenu.lua
+FuncAddonOptions.lua
+FuncIconPool.lua
+FuncCustomIcons.lua
+FuncMechanicIcons.lua
+FuncRaidIcons.lua
+ModGuildRoster.lua
+ModFriendList.lua
+ModGroupWindow.lua
+ModChatWindow.lua
+ModWorldMap.lua
+IconsUnique.lua
+IconsRaid.lua
+Bindings.xml
+
+; Changelog:
+; Version 1.7.0 (2022/06/16)
+; * api bump to High Isle Chapter
+; * added new companions ember and isolde
+; * added armory assistant
+; * added ragepicker
+;
+; Version 1.6.5 (2021/07/13)
+; * Fixed custom assigned icons not beeing saved
+;
+; Version 1.6.4 (2021/07/05)
+; * Fixed rare bug with companion id's
+; * Added support for new crow assitents
+; * Added color to icon preview in options menu
+; * Added callbacks for world position icons
+; * Added callbacks for mechanic icons
+;
+; Version 1.6.3 (2021/06/29)
+; * Added options to use different icons for Bastian and Mirri
+; * Added options to use different colors for players beeing resurrected
+; * Added exposed function to retrieve icon size defined by player
+; * Added exposed function to create unique icon packs
+; * Added exposed function to place icons in the world
+;
+; Version 1.6.2 (2021/06/05)
+; * Added options to show icons for your allies
+; * Added exposed function to create custom icon packs
+;
+; Version 1.6.1 (2021/05/22)
+; * Fixed a problem with iconpicker component
+; * Adjusted API version for the upcoming Blackwood DLC
+; * Added options to allow disabling 3d and 2d icons separately
+; * Added exposed functions to adjust/reset mechanic icon size
+;
+; Version 1.6.0 (2021/05/13)
+; * Fixed icons in battlegrounds not showing sometimes
+; * Adjusted icon positioning to use bottom anchor
+; * Added option to show Hodor Reflexes icons and animations
+; * Added option to show icons for dead players, damage dealers and battleground team mates
+; * Added option to fade out icons close to the camera
+; * Added option to prioritize role icons over custom icons
+; * Added option to customize size for leader icon
+; * Added option to show icons in chat window
+; * Added option to show icons on world map
+; * Added options for icons in group window, friends list and guild roster
+; * Added more custom icons
+; * Added more unique icons
+; * Removed color option for custom icons
+; * Removed custom icons from role options
+;
+; Version 1.5.6 (2021/04/10)
+; * Fixed icon-window staying visible after closing friends-list or guild-roster
+; * Possibly fixed LUA errors when using addons which include old versions of LibAddonMenu
+; * Added more unique icons
+;
+; Version 1.5.5 (2021/03/18)
+; * Adjusted API version for Flames of Ambition DLC
+; * Changed priorization and layering of different icon types
+; * Unique and custom icons are now also shown in friends list and guild roster
+; * Added experimental feature allowing raidlead to force icons on groupmembers
+; * Added more unique icons
+;
+; Version 1.5.4 (2021/01/03)
+; * Changed dependency to require at least r31 of LibAddonMenu
+; * Added more unique icons
+;
+; Version 1.5.3 (2020/11/12)
+; * Removed /fixcam slash command
+; * Switched to raw unit positions to fix incorrectly placed icons in areas like Imperial City, Kyne's Aegis and Tempest Island
+;
+; Version 1.5.2 (2020/11/09)
+; * Adjusted API version for Markarth DLC
+;
+; Version 1.5.1 (2020/11/09)
+; * Fixed issue with multiple context menu entries
+; * Removed LibCustomMenu dependency
+;
+; Version 1.5.0 (2020/11/09)
+; * Added more unique icons
+; * Added more custom icons
+; * Improved drawing order
+; * Public release

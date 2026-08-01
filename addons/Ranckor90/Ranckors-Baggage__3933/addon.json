@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Ranckor90/Ranckors-Baggage__3933",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ranckor90",
+  "canonical_id": "esoui:3933",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3933",
+  "deleted": false,
+  "directories": [
+    "RanckorsBaggage"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3933/",
+  "fingerprint": "2a6b8c55196d1620c144d0fb68885b64291702980086509247307e814d778632",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13681.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13682.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13756.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3933",
+  "source_url": "https://www.esoui.com/downloads/info3933-RanckorsBaggage.html",
+  "stats": {
+    "downloads": 3419,
+    "favorites": 6,
+    "monthly_downloads": 80
+  },
+  "title": "Ranckors Baggage",
+  "updated_at": 1783899208000,
+  "version": "v3.1.2"
+}

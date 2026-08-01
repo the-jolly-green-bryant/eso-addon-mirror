@@ -1,0 +1,55 @@
+## Title: SocialIndicators
+## Author: sirinsidiator
+## Version: 1.11
+## APIVersion: 100016
+## OptionalDependsOn: LibStub LibAddonMenu-2.0 LibResurrection LibCustomMenu LibCustomTitles
+## SavedVariables: SocialIndicators_Settings SocialIndicators_Data
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lib/LibStub/LibStub.lua
+
+lib/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+lib/LibAddonMenu-2.0/controls/panel.lua
+lib/LibAddonMenu-2.0/controls/submenu.lua
+lib/LibAddonMenu-2.0/controls/checkbox.lua
+lib/LibAddonMenu-2.0/controls/dropdown.lua
+lib/LibAddonMenu-2.0/controls/header.lua
+
+lib/LibResurrection/LibResurrection.lua
+lib/LibCustomMenu/LibCustomMenu.lua
+lib/LibCustomTitles/LibCustomTitles.lua
+
+StartUp.lua
+Localization.lua
+Settings.lua
+utils/misc.lua
+GuildMemberIndex.lua
+FriendIndex.lua
+RaceHelper.lua
+StatsHelper.lua
+PlayerDetailPopup.lua
+TargetIndicators.lua
+GroupIndicators.lua
+NameIndicators.lua
+Bindings.xml
+playerDatabase/Codec.lua
+playerDatabase/PlayerData.lua
+playerDatabase/CharacterData.lua
+playerDatabase/PlayerDatabase.lua
+playerDatabase/FriendlistCollector.lua
+playerDatabase/GuildRosterCollector.lua
+playerDatabase/UnitCollector.lua
+socialList/SocialListFragment.lua
+socialList/SocialListFragment.xml
+socialList/PlayersOnlineFragment.lua
+socialList/SocialListFilterFragment.lua
+socialList/SocialList.lua
+playerDetailScreen/PlayerDetailScreen.lua
+playerDetailScreen/PlayerDetailScreen.xml
+playerDetailScreen/PlayerDetailFragment.lua
+playerDetailScreen/CharacterListFragment.lua

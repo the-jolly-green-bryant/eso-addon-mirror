@@ -1,0 +1,14 @@
+## Title: Research Craft
+## Author: silvereyes
+## Description: Allows exporting a batch order for research gear to chat and then running that command on a master crafter character to craft it all.
+## Version: 1.6.7
+## APIVersion: 101031 101032
+## OptionalDependsOn: FCOItemSaver
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls� and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+localization\EN.lua
+localization\$(language).lua
+localization\CreateStrings.lua
+
+ResearchCraft.lua

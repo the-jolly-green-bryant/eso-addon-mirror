@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Sirtith/DungeonStrats__4525",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sirtith",
+  "canonical_id": "esoui:4525",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4525",
+  "deleted": false,
+  "directories": [
+    "DungeonStrats"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4525/",
+  "fingerprint": "09f8684d3567d11c519eaa413253047ef03bab6b14bd01aae749f3da9e85cb82",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4525",
+  "source_url": "https://www.esoui.com/downloads/info4525-DungeonStrats.html",
+  "stats": {
+    "downloads": 578,
+    "favorites": 2,
+    "monthly_downloads": 44
+  },
+  "title": "DungeonStrats",
+  "updated_at": 1776714189000,
+  "version": "0.2.1"
+}

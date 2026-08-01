@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/ShadowMau/BattlegroundHudMover__2900",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ShadowMau",
+  "canonical_id": "esoui:2900",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:2900",
+  "deleted": false,
+  "directories": [
+    "BattlegroundHudMover"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2900/",
+  "fingerprint": "db30c8bcc0c746b634960c4384bde8c3e34828ee1ff9c4e76da4ce2dd157145d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13347.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13348.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2900",
+  "source_url": "https://www.esoui.com/downloads/info2900-BattlegroundHudMover.html",
+  "stats": {
+    "downloads": 4367,
+    "favorites": 4,
+    "monthly_downloads": 21
+  },
+  "title": "BattlegroundHudMover",
+  "updated_at": 1723930667000,
+  "version": "1.0.6"
+}

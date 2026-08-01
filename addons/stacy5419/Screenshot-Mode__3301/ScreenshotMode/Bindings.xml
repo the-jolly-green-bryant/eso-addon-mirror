@@ -1,0 +1,20 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Screenshot Mode">
+			<Action name="TOGGLE_SCREENSHOT_MODE">
+				<Up>ScreenshotMode.ToggleScreenshotMode()</Up>
+			</Action>
+			<Action name="SCM_COMBOSHOT">
+				<Up>ScreenshotMode.ComboShot()</Up>
+			</Action>
+		</Category>
+	</Layer>
+	<Layer name="Screenshot Mode">
+		<Category>
+			<!-- don't let players press enter while the UI is hidden, otherwise chat won't work anymore -->
+			<Action name="SCREENSHOT_MODE_INTERCEPT_START_CHAT_ENTER" hideAction="true" rebindable="false" inheritsBindFrom="START_CHAT_ENTER">
+				<Down>return true</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

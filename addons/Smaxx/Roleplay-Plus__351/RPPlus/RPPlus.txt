@@ -1,0 +1,9 @@
+## Title: Roleplay Plus
+## APIVersion: 100007
+## SavedVariables: RPPlus
+
+lib\LibStub\LibStub.lua
+lib\libChat\libChat-1.0.lua
+lib\LibAddonMenu-1.0\LibAddonMenu-1.0.lua
+
+RPPlus.lua

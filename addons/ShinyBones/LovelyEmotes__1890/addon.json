@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/ShinyBones/LovelyEmotes__1890",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ShinyBones",
+  "canonical_id": "esoui:1890",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:1890",
+  "deleted": false,
+  "directories": [
+    "LovelyEmotes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1890/",
+  "fingerprint": "0c4b5a7ce64097366d129e26a765562ae70ae1cdb2d36c989134fcd653f66150",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7645.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8312.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8316.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8314.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8313.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8315.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1890",
+  "source_url": "https://www.esoui.com/downloads/info1890-LovelyEmotes.html",
+  "stats": {
+    "downloads": 277720,
+    "favorites": 330,
+    "monthly_downloads": 606
+  },
+  "title": "LovelyEmotes",
+  "updated_at": 1736098657000,
+  "version": "5.1"
+}

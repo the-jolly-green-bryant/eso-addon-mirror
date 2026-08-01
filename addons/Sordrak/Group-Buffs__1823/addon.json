@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/Sordrak/Group-Buffs__1823",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sordrak",
+  "canonical_id": "esoui:1823",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1823",
+  "deleted": false,
+  "directories": [
+    "GroupBuffs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1823/",
+  "fingerprint": "7742c9a67ff89cc0b19f0cbe1bdea03a218d0e8b849a46a510fb06de011f61c1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6176.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6175.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6177.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6178.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6179.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6180.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1823",
+  "source_url": "https://www.esoui.com/downloads/info1823-GroupBuffs.html",
+  "stats": {
+    "downloads": 45232,
+    "favorites": 30,
+    "monthly_downloads": 42
+  },
+  "title": "Group Buffs",
+  "updated_at": 1717752238000,
+  "version": "1.5.22"
+}

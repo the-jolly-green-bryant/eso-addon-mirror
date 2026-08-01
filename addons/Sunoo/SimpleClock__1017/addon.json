@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Sunoo/SimpleClock__1017",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sunoo",
+  "canonical_id": "esoui:1017",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Update 7",
+      "version": "1.7.0"
+    }
+  ],
+  "content_id": "esoui:1017",
+  "deleted": false,
+  "directories": [
+    "SimpleClock",
+    "__MACOSX"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1017/",
+  "fingerprint": "328116194cdb0f7ec4d652d8a4f63989e53294ff3cd4be73c734f89934487141",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3813.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3814.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3815.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1017",
+  "source_url": "https://www.esoui.com/downloads/info1017-SimpleClock.html",
+  "stats": {
+    "downloads": 18212,
+    "favorites": 19,
+    "monthly_downloads": 35
+  },
+  "title": "SimpleClock",
+  "updated_at": 1442114262000,
+  "version": "1.2"
+}

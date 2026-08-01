@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/OwnLight88/Empower__3029",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "OwnLight88",
+  "canonical_id": "esoui:3029",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3029",
+  "deleted": false,
+  "directories": [
+    "Empower"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3029/",
+  "fingerprint": "80cc2777e76074c825399a289e7a14f38a06dc51985a1ff11fad01d7210552ca",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10176.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3029",
+  "source_url": "https://www.esoui.com/downloads/info3029-Empower.html",
+  "stats": {
+    "downloads": 4647,
+    "favorites": 1,
+    "monthly_downloads": 53
+  },
+  "title": "Empower",
+  "updated_at": 1618122546000,
+  "version": "1.2"
+}

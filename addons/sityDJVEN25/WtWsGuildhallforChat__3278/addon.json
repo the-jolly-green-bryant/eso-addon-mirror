@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/sityDJVEN25/WtWsGuildhallforChat__3278",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "sityDJVEN25",
+  "canonical_id": "esoui:3278",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3278",
+  "deleted": false,
+  "directories": [
+    "WtWsChatGuildhalls"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3278/",
+  "fingerprint": "9a3c9db095e66cbc3f6ddf043fefe0b129e4c7fa083a53c714cacb9cf85c0d2c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11485.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3278",
+  "source_url": "https://www.esoui.com/downloads/info3278-WtWsGuildhallforChat.html",
+  "stats": {
+    "downloads": 3118,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "WtWsGuildhallforChat",
+  "updated_at": 1652895728000,
+  "version": "2.0 beta"
+}

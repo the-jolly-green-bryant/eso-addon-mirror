@@ -1,0 +1,39 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+;
+; Stylich is a modernized, largely rewritten continuation of the abandoned
+; add-on "AlphaStyle" by mesota. Full credit to the original author.
+
+## Title: |cFFAA33Stylich|r
+## APIVersion: 101050 101051
+## Version: 1.2.2
+## AddOnVersion: 122
+## SavedVariables: Stylich_Settings Stylich_Styles
+## Author: @s1by0z - Menikus Noctesco [EU]
+## Description: Save and instantly swap complete looks - appearance, weapons, title, outfit - with a signature entrance memento and hotkeys. Use /stylich. A modernized, largely rewritten continuation of the abandoned AlphaStyle by mesota.
+
+
+## Init (single global table, loaded first)
+src/STLConstants.lua
+
+## Localization
+lang/en.lua
+lang/$(language).lua
+
+## Model
+src/STLModel.lua
+
+## UI
+src/STLUI.lua
+Stylich.xml
+dialogs/STLEditStylePropertiesDialog.xml
+dialogs/STLEditStylePropertiesDialog.lua
+
+## Main
+Stylich.lua
+
+## Key bindings
+Bindings.xml

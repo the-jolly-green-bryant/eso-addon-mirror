@@ -1,0 +1,24 @@
+<Bindings>
+	<Layer name = "SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name = "|c00E600PVPTools|r">
+			<Action name = "PVPTOOLS_SHARE_QUEST_HERE">
+				<Down>PVPTools.QuestShare.ProcessZoneChange(GetPlayerActiveSubzoneName(), true)</Down>
+			</Action>
+			<Action name = "PVPTOOLS_QUEST_TIMERS">
+				<Down>PVPTools.QuestShare.DisplayQuestTimers()</Down>
+			</Action>
+			<Action name = "PVPTOOLS_USE_RECALL">
+				<Down>PVPTools.QOL.UseRecallStone()</Down>
+			</Action>
+			<Action name = "PVPTOOLS_USE_MULTIMOUNTS">
+				<Down>PVPTools.QOL.ToggleMultiMountOnly(true)</Down>
+			</Action>
+			<Action name = "PVPTOOLS_RIDE_MULTIMOUNT">
+				<Down>PVPTools.QOL.RideMultimount()</Down>
+			</Action>
+			<Action name = "PVPTOOLS_JOKE_SIEGE_RENTAL">
+				<Down>PVPTools.QOL.QueueSiegeFee(GetUnitDisplayName("reticleover"), GetUnitAlliance("reticleover"))</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

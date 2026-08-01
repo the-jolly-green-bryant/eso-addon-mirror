@@ -1,0 +1,129 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="AbilityEdit" mouseEnabled="true" layer="OVERLAY" clampedToScreen="true" hidden="true">
+            <Dimensions x="720" y="750" />
+            <Controls>
+                <Control name="$(parent)Header">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="0" offsetX="0" />
+                    <Dimensions x="720" y="40" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <Texture name="$(parent)Icon" textureFile="SwissKnife/textures/dialogues/icons/edit_over.dds" color="CFDCBD">
+                            <Dimensions x="40" y="40" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                                    offsetX="3" offsetY="0"
+                            />
+                        </Texture>
+                        <Label name="$(parent)Title" font="ZoFontAnnounceMedium" color="CFDCBD"
+                               wrapMode="ELLIPSIS" verticalAlignment="CENTER"
+                        >
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT"
+                                    offsetX="3" offsetY="0"
+                            />
+                            <Dimensions x="650" y="40" />
+                        </Label>
+                        <Button name="$(parent)Close" inherits="ZO_ButtonBehaviorClickSound">
+                            <Anchor point="RIGHT" offsetX="-4" offsetY="20" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+                            <Dimensions x="40" y="40" />
+                            <Textures
+                                normal="SwissKnife/textures/dialogues/icons/cancel_up.dds"
+                                pressed="SwissKnife/textures/dialogues/icons/cancel_down.dds"
+                                mouseOver="SwissKnife/textures/dialogues/icons/cancel_over.dds"
+                                highlight="SwissKnife/textures/dialogues/icons/cancel_over.dds"
+                                disabled="SwissKnife/textures/dialogues/icons/cancel_up.dds"
+                            />
+                            <OnMouseEnter>
+                                InitializeTooltip(InformationTooltip, self, LEFT, 0, 1)
+                                SetTooltipText(InformationTooltip, GetString(SI_SK_DIALOG_CLOSE))
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                SetTooltipText(InformationTooltip)
+                            </OnMouseExit>
+                            <OnMouseDown>
+                                SKEA:Close()
+                            </OnMouseDown>
+                        </Button>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Body">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="47" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <Texture name="$(parent)AbilityIcon" alpha="1" layer="OVERLAY" mouseEnabled="true">
+                            <Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+                            <Dimensions x="44" y="44" />
+                            <TextureCoords left="0" right="1" top="0" bottom="1" />
+                        </Texture>
+                        <Control name="$(parent)Options">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)AbilityIcon" relativePoint="TOPRIGHT"
+                                    offsetX="5" offsetY="-8" />
+                            <Controls>
+                                <Control name="$(parent)Disabled" inherits="SK_Checkbox" mouseEnabled="true">
+                                    <Dimensions x="510" y="32" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Options"
+                                            relativePoint="TOPLEFT" offsetX="-5" offsetY="2" />
+                                </Control>
+                                <Control name="$(parent)CorrectionInterval" inherits="SK_LabeledEditBox" mouseEnabled="true" >
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Disabled" relativePoint="BOTTOMLEFT"
+                                            offsetX="8" offsetY="2"
+                                    />
+                                </Control>
+                                <Control name="$(parent)HP" inherits="SK_LabeledEditBox" mouseEnabled="true" >
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)CorrectionInterval" relativePoint="BOTTOMLEFT"
+                                            offsetY="8"
+                                    />
+                                </Control>
+                                <Control name="$(parent)IsFT" inherits="SK_Checkbox" mouseEnabled="true">
+                                    <Dimensions x="510" y="32" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)CorrectionInterval"
+                                            relativePoint="BOTTOMLEFT" offsetX="-8" offsetY="2" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                        <Label name="$(parent)Description" font="ZoFontEditChat" wrapMode="1"
+                               verticalAlignment="TOP" horizontalAlignment="LEFT" >
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Options"
+                                    relativePoint="BOTTOMLEFT" offsetX="5" offsetY="10" />
+                            <Dimensions x="620" />
+                        </Label>
+                        <Button name="$(parent)Accept" inherits="ZO_DefaultButton" text="SI_SK_DIALOG_SAVE">
+                            <Dimensions x="200" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Body" relativePoint="BOTTOM" offsetY="-39" />
+                            <OnClicked>
+                                SKEA:Save()
+                            </OnClicked>
+                        </Button>
+                        <Button name="$(parent)Decline" inherits="ZO_DefaultButton" text="SI_SK_DIALOG_CANCEL">
+                            <Dimensions x="200" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Body" relativePoint="BOTTOM" offsetY="-39" />
+                            <OnClicked>
+                                SKEA:Close()
+                            </OnClicked>
+                        </Button>
+                    </Controls>
+                </Control>
+	        </Controls>
+		</TopLevelControl>
+        <TopLevelControl name="InputAbilitiyPresetDialog" inherits="ZO_CustomDialogBase" hidden="true">
+            <Controls>
+                <Label name="$(parent)InputHeader" inherits="ZO_DialogContentAnchors" />
+                <Backdrop name="$(parent)Input" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)InputHeader" relativePoint="BOTTOMLEFT" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)InputHeader" relativePoint="BOTTOMRIGHT" />
+                    <Controls>
+                        <EditBox name="$(parent)Edit" inherits="ZO_DefaultEditForBackdrop">
+                            <OnEffectivelyShown>
+                                self:TakeFocus()
+                            </OnEffectivelyShown>
+                            <OnTab>
+                                self:TakeFocus()
+                            </OnTab>
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+                <Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton"/>
+                <Control name="$(parent)Apply" inherits="ZO_CustomDialogButton"/>
+            </Controls>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

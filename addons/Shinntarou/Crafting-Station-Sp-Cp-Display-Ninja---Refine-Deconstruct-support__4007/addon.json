@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Shinntarou/Crafting-Station-Sp-Cp-Display-Ninja---Refine-Deconstruct-support__4007",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shinntarou",
+  "canonical_id": "esoui:4007",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4007",
+  "deleted": false,
+  "directories": [
+    "CraftingStationSpCpDisplayNinja"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4007/",
+  "fingerprint": "81900ec2a853fe2ee4663861c2c61d6655700bdb607a541cc881303d5687d483",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13576.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13573.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13574.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4007",
+  "source_url": "https://www.esoui.com/downloads/info4007-CraftingStationSpCpDisplayNinja-RefineDeconstructsupport.html",
+  "stats": {
+    "downloads": 900,
+    "favorites": 0,
+    "monthly_downloads": 15
+  },
+  "title": "Crafting Station Sp Cp Display Ninja - Refine&Deconstruct support",
+  "updated_at": 1741633219000,
+  "version": "2.0"
+}

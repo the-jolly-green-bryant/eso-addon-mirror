@@ -1,0 +1,94 @@
+﻿<Bindings>
+   <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+      <Category name="Neltharions Camera Control">
+         <Action name="CAMERA_HORIZONTAL_INC">
+            <Down>NeltharionsCamControl.StartHorizontalInc() return true</Down>
+            <Up>NeltharionsCamControl.StopHorizontalInc() return true</Up>
+         </Action>
+         <Action name="CAMERA_HORIZONTAL_DEC">
+            <Down>NeltharionsCamControl.StartHorizontalDec() return true</Down>
+            <Up>NeltharionsCamControl.StopHorizontalDec() return true</Up>
+         </Action>
+         <Action name="CAMERA_HORIZONTALOFFSET_INC">
+            <Down>NeltharionsCamControl.StartHorizontalOffsetInc() return true</Down>
+            <Up>NeltharionsCamControl.StopHorizontalOffsetInc() return true</Up>
+         </Action>
+         <Action name="CAMERA_HORIZONTALOFFSET_DEC">
+            <Down>NeltharionsCamControl.StartHorizontalOffsetDec() return true</Down>
+            <Up>NeltharionsCamControl.StopHorizontalOffsetDec() return true</Up>
+         </Action>
+         <Action name="CAMERA_VERTICAL_INC">
+            <Down>NeltharionsCamControl.StartVerticalInc() return true</Down>
+            <Up>NeltharionsCamControl.StopVerticalInc() return true</Up>
+         </Action>
+         <Action name="CAMERA_VERTICAL_DEC">
+            <Down>NeltharionsCamControl.StartVerticalDec() return true</Down>
+            <Up>NeltharionsCamControl.StopVerticalDec() return true</Up>
+         </Action>
+         <Action name="CAMERA_FIELDVIEW_INC">
+           <Down>NeltharionsCamControl.StartFieldviewInc() return true</Down>
+           <Up>NeltharionsCamControl.StopFieldviewInc() return true</Up>
+         </Action>
+         <Action name="CAMERA_FIELDVIEW_DEC">
+           <Down>NeltharionsCamControl.StartFieldviewDec() return true</Down>
+           <Up>NeltharionsCamControl.StopFieldviewDec() return true</Up>
+         </Action>
+         <Action name="CAMERA_RECENTER">
+            <Down>NeltharionsCamControl.ReCenter() return true</Down>
+         </Action>
+         <Action name="CAMERA_TG_ZOOM">
+            <Down>NeltharionsCamControl.toggleZoom() return true</Down>
+         </Action>
+
+         <Action name="SAVE_QUICKSLOT_1">
+            <Down>NeltharionsCamControl.SaveQS(1) return true</Down>
+         </Action>
+         <Action name="LOAD_QUICKSLOT_1">
+            <Down>NeltharionsCamControl.LoadQS(1) return true</Down>
+         </Action>
+         <Action name="SAVE_QUICKSLOT_2">
+            <Down>NeltharionsCamControl.SaveQS(2) return true</Down>
+         </Action>
+         <Action name="LOAD_QUICKSLOT_2">
+            <Down>NeltharionsCamControl.LoadQS(2) return true</Down>
+         </Action>
+         <Action name="SAVE_QUICKSLOT_3">
+            <Down>NeltharionsCamControl.SaveQS(3) return true</Down>
+         </Action>
+         <Action name="LOAD_QUICKSLOT_3">
+            <Down>NeltharionsCamControl.LoadQS(3) return true</Down>
+         </Action>
+         <Action name="SAVE_QUICKSLOT_4">
+            <Down>NeltharionsCamControl.SaveQS(4) return true</Down>
+         </Action>
+         <Action name="LOAD_QUICKSLOT_4">
+            <Down>NeltharionsCamControl.LoadQS(4) return true</Down>
+         </Action>
+         <Action name="SAVE_QUICKSLOT_5">
+            <Down>NeltharionsCamControl.SaveQS(5) return true</Down>
+         </Action>
+         <Action name="LOAD_QUICKSLOT_5">
+            <Down>NeltharionsCamControl.LoadQS(5) return true</Down>
+         </Action>
+         <Action name="SAVE_QUICKSLOT_6">
+            <Down>NeltharionsCamControl.SaveQS(6) return true</Down>
+         </Action>
+         <Action name="LOAD_QUICKSLOT_6">
+            <Down>NeltharionsCamControl.LoadQS(6) return true</Down>
+         </Action>
+         <Action name="SAVE_QUICKSLOT_7">
+            <Down>NeltharionsCamControl.SaveQS(7) return true</Down>
+         </Action>
+         <Action name="LOAD_QUICKSLOT_7">
+            <Down>NeltharionsCamControl.LoadQS(7) return true</Down>
+         </Action>
+         <Action name="SAVE_QUICKSLOT_8">
+            <Down>NeltharionsCamControl.SaveQS(8) return true</Down>
+         </Action>
+         <Action name="LOAD_QUICKSLOT_8">
+            <Down>NeltharionsCamControl.LoadQS(8) return true</Down>
+         </Action>
+
+      </Category>
+   </Layer>
+</Bindings>

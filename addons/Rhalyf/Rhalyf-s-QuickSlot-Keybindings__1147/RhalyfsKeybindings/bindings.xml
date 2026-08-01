@@ -1,0 +1,30 @@
+<Bindings>
+  	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    	<Category name="|c4DB8FFRhalyf's Keybindings">
+      		<Action name="RK_QS_1">
+        		<Down>RhalyfsKeybindings.QSSelected(1)</Down>
+      		</Action>
+      		<Action name="RK_QS_2">
+        		<Down>RhalyfsKeybindings.QSSelected(2)</Down>
+      		</Action>
+      		<Action name="RK_QS_3">
+        		<Down>RhalyfsKeybindings.QSSelected(3)</Down>
+      		</Action>
+      		<Action name="RK_QS_4">
+        		<Down>RhalyfsKeybindings.QSSelected(4)</Down>
+      		</Action>
+      		<Action name="RK_QS_5">
+        		<Down>RhalyfsKeybindings.QSSelected(5)</Down>
+      		</Action>
+      		<Action name="RK_QS_6">
+        		<Down>RhalyfsKeybindings.QSSelected(6)</Down>
+      		</Action>
+      		<Action name="RK_QS_7">
+        		<Down>RhalyfsKeybindings.QSSelected(7)</Down>
+      		</Action>
+      		<Action name="RK_QS_8">
+        		<Down>RhalyfsKeybindings.QSSelected(8)</Down>
+      		</Action>
+    	</Category>
+  	</Layer>
+</Bindings>

@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/Neomazu/The-Soulless-of-Tamriel---Guild-Hall__3604",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Neomazu",
+  "canonical_id": "esoui:3604",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3604",
+  "deleted": false,
+  "directories": [
+    "TheSoullessOfTamriel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3604/",
+  "fingerprint": "b2255ce7c3a3d2d1e1e4bc379846e55fef8dc8914885beb6c2cf80a80e74bfc3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12315.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12316.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12317.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12318.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12319.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3604",
+  "source_url": "https://www.esoui.com/downloads/info3604-TheSoullessofTamriel-GuildHall.html",
+  "stats": {
+    "downloads": 1308,
+    "favorites": 5,
+    "monthly_downloads": 12
+  },
+  "title": "The Soulless of Tamriel - Guild Hall",
+  "updated_at": 1680979580000,
+  "version": "1.1"
+}

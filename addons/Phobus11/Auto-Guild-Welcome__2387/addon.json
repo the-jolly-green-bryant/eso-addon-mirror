@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Phobus11/Auto-Guild-Welcome__2387",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phobus11",
+  "canonical_id": "esoui:2387",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2387",
+  "deleted": false,
+  "directories": [
+    "AutoGuildWelcome"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2387/",
+  "fingerprint": "961ad1a19b4583563474e473fedbe0f297611b97fd34fc4cd2e76ea9e6863caf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8124.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2387",
+  "source_url": "https://www.esoui.com/downloads/info2387-AutoGuildWelcome.html",
+  "stats": {
+    "downloads": 7904,
+    "favorites": 8,
+    "monthly_downloads": 35
+  },
+  "title": "Auto Guild Welcome",
+  "updated_at": 1559225690000,
+  "version": "0.2.0"
+}

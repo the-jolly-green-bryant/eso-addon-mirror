@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/Rhyono/Wealth-Evaluator__1559",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rhyono",
+  "canonical_id": "esoui:1559",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:1559",
+  "deleted": false,
+  "directories": [
+    "WealthEvaluator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1559/",
+  "fingerprint": "80d55558c0bc86be917964bb4837a8e96723740adae26ca94070e2e5faeb52df",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5617.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5189.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1559",
+  "source_url": "https://www.esoui.com/downloads/info1559-WealthEvaluator.html",
+  "stats": {
+    "downloads": 73505,
+    "favorites": 67,
+    "monthly_downloads": 142
+  },
+  "title": "Wealth Evaluator",
+  "updated_at": 1775013777000,
+  "version": "1.52"
+}

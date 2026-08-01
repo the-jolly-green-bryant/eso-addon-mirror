@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Shinni/CustomCompassPins__185",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shinni",
+  "canonical_id": "esoui:185",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:185",
+  "deleted": false,
+  "directories": [
+    "CustomCompassPins"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl185/",
+  "fingerprint": "0f44c7804f5c0147a79b54af2f10329e243d83395868eae05b71f69381c726cd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw470.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "185",
+  "source_url": "https://www.esoui.com/downloads/info185-CustomCompassPins.html",
+  "stats": {
+    "downloads": 3450367,
+    "favorites": 2137,
+    "monthly_downloads": 14247
+  },
+  "title": "CustomCompassPins",
+  "updated_at": 1752004695000,
+  "version": "1.38"
+}

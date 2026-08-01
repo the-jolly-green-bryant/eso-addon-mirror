@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Text Trials Guide">
+			<Action name="TEXT_TRIALS_GUIDE_TOGGLE_WINDOW">
+				<Up>TTGAddon.ToggleWindow()</Up>
+			</Action>
+			<Action name="TEXT_TRIALS_GUIDE_SETTINGS_MENU">
+				<Up>SLASH_COMMANDS["/ttg"]()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

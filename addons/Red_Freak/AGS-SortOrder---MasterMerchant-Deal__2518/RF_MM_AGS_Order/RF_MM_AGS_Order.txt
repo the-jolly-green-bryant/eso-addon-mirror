@@ -1,0 +1,9 @@
+## Title: |ccc0000red_Freak|rs Master Merchant AwesomeGuildStore Order
+## Author: @|ccc0000red_Freak|r
+## Description: This AddOn adds the a sort-type "deal" to AGS. GuildStore-Entries are sortable by deal % this way.
+## APIVersion: 100029
+## Version: 0.0.2
+## AddOnVersion: 2
+## DependsOn: AwesomeGuildStore MasterMerchant
+
+RF_MM_AGS_Order.lua

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/ownedbynico/Synergy-Toggle__2673",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ownedbynico",
+  "canonical_id": "esoui:2673",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:2673",
+  "deleted": false,
+  "directories": [
+    "SynergyToggle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2673/",
+  "fingerprint": "dbcc55353d661c939137f6aa39a2aa087979f5e24075b133807e9589c4f7f7f7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9059.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9060.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9061.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2673",
+  "source_url": "https://www.esoui.com/downloads/info2673-SynergyToggle.html",
+  "stats": {
+    "downloads": 50638,
+    "favorites": 30,
+    "monthly_downloads": 177
+  },
+  "title": "Synergy Toggle",
+  "updated_at": 1701385381000,
+  "version": "1.12.0"
+}

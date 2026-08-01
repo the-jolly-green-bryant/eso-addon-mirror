@@ -1,0 +1,19 @@
+2.0.0
+  - Added reverse table lookup function
+  - Added generic sort function
+  - Changed function new calls from LibStatic.<module>:<function>(params) to LibStatic:<function>(params)
+  - Updated for 49
+  - Added support for multi select menus to the Paired List functions
+
+1.0.1
+  - Minor name changes
+
+0.0.3
+  - Added timer object to easily creat count up or count down timers
+
+0.0.2
+  - Added chat object to easily format text output including debug option
+
+0.0.1
+  - Added input converter function
+  - Added paired list object to use for settings menus and enums

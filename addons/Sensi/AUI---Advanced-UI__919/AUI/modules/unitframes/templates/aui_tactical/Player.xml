@@ -1,0 +1,407 @@
+<GuiXml>
+  <Controls>
+    <Backdrop name="AUI_Tactical_PlayerFrame_Health" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" level="1000" virtual="true" hidden="true">
+      <Dimensions x="350" y ="60" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" offsetX="-430" offsetY="-240" />
+      <Edge file="AUI\images\attributes\aui-tactical\edge.dds"/>
+      <OnInitialized>
+        self:SetCenterColor(0, 0, 0, 0)
+      </OnInitialized>
+      <Controls>
+        <Texture name="$(parent)_ChampionIcon" alpha="0.7"  hidden="true" textureFile="EsoUI/Art/champion/champion_icon.dds">
+          <Dimensions x="20" y="20"/>
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)_TextArea" relativePoint="TOPLEFT" offsetX="1" offsetY="-2" />
+        </Texture>
+        <Label name="$(parent)_Text_Level" alpha="0.7" tier="HIGH">
+          <Anchor point="LEFT" relativeTo="$(parent)_ChampionIcon" relativePoint="RIGHT" offsetX="4" offsetY="0"/>
+          <OnInitialized>
+            self.font = "$(MEDIUM_FONT)|"
+            self.fontSizeMultipler = 1.4
+          </OnInitialized>
+        </Label>
+        <Label name="$(parent)_Text_Name" alpha="0.7" tier="HIGH" wrapMode="ELLIPSIS">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Text_Level" relativePoint="TOPRIGHT" offsetX="4"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)_ClassIcon" relativePoint="BOTTOMLEFT" offsetX="-3" />
+          <OnInitialized>
+            self.font = "$(MEDIUM_FONT)|"
+            self.fontSizeMultipler = 1.4
+          </OnInitialized>
+        </Label>
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" />
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT" offsetX="10"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="%Percent%" tier="HIGH">
+              <Anchor point="RIGHT" relativePoint="RIGHT" offsetX="-12"/>
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" tier="LOW" level="500">
+          <Anchor point="TOPLEFT" offsetX="1" />
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" />
+          <Controls>
+            <Texture name="$(parent)_IncreaseRegLeft" textureFile="AUI/images/attributes/aui/other/attributebar_arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <TextureCoords left="1" right="0" top="0" bottom="1" />
+              <Anchor point="LEFT"/>
+              <OnInitialized>
+                self.endX = -4
+              </OnInitialized>
+            </Texture>
+            <Texture name="$(parent)_DecreaseRegLeft" textureFile="AUI/images/attributes/aui/other/attributebar_arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <Anchor point="RIGHT"/>
+              <OnInitialized>
+                self.endX = -4
+              </OnInitialized>
+            </Texture>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.1" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <StatusBar name="$(parent)_Bar2" tier="LOW" textureFile="AUI/images/attributes/aui/player/bar.dds" level="500">
+          <Anchor point="TOPLEFT" relativePoint="TOP" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-1" />
+          <Controls>
+            <Texture name="$(parent)_IncreaseRegLeft" textureFile="AUI/images/attributes/aui/other/attributebar_arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <TextureCoords left="1" right="0" top="0" bottom="1" />
+              <Anchor point="LEFT"/>
+              <OnInitialized>
+                self.endX = -4
+              </OnInitialized>
+            </Texture>
+            <Texture name="$(parent)_DecreaseRegLeft" textureFile="AUI/images/attributes/aui/other/attributebar_arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <Anchor point="RIGHT"/>
+              <OnInitialized>
+                self.endX = -4
+              </OnInitialized>
+            </Texture>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.1" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>		
+        <Texture name="$(parent)BG" tier="LOW">
+          <AnchorFill/>
+          <OnInitialized>
+            self:SetColor(0, 0, 0, 0.5)
+          </OnInitialized>
+        </Texture>
+        <Control name="$(parent)Warner" tier="LOW" hidden="true">
+          <OnInitialized>
+            self.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual("AUI_LowStatWarnerAnimation_Middle", self)
+          </OnInitialized>
+          <AnchorFill/>
+          <Controls>
+            <Texture name="$(parent)FrameCenterWarner" level="500" layer="OVERLAY" blendMode="ADD">
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Control>
+        <Texture name="$(parent)DecreasedArmorOverlay" textureFile="AUI/images/attributes/aui/other/decreased_armor_overlay.dds" tier="MEDIUM">
+          <OnInitialized>
+            self.offsetLeft = 10
+            self.offsetTop = 6
+            self.offsetRight = -12
+            self.offsetBottom = -6
+          </OnInitialized>
+        </Texture>
+        <Texture name="$(parent)IncreasedPowerOverlay" tier="LOW"  textureFile="EsoUI/Art/UnitAttributeVisualizer/increasedpower_animatedhalo_32fr.dds" level="150" alpha="0.5">
+          <OnInitialized>
+            self.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual("AUI_IncreasedPowerAnimation", self)
+            self.offsetLeft = 30
+            self.offsetTop = -60
+            self.offsetRight = -20
+            self.offsetBottom = 50
+          </OnInitialized>
+        </Texture>
+        <Texture name="$(parent)DecreasedPowerOverlay" tier="LOW" textureFile="EsoUI/Art/UnitAttributeVisualizer/increasedpower_animatedhalo_32fr.dds" level="150">
+          <OnInitialized>
+            self.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual("AUI_IncreasedPowerAnimation", self)
+            self.offsetLeft = 30
+            self.offsetTop = -80
+            self.offsetRight = -20
+            self.offsetBottom = 50
+          </OnInitialized>
+        </Texture>
+      </Controls>
+    </Backdrop>
+    <Backdrop name="AUI_Tactical_PlayerFrame_Magicka" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" level="1000" virtual="true" hidden="true">
+      <Dimensions x="350" y ="32" />
+      <Anchor point="TOP" relativePoint="BOTTOM" offsetY="-2" />
+      <Edge file="AUI\images\attributes\aui-tactical\edge.dds"/>
+      <OnInitialized>
+        self.relativeTo = AUI_UNIT_FRAME_TYPE_PLAYER_HEALTH
+        self:SetCenterColor(0, 0, 0, 0)
+      </OnInitialized>
+      <Controls>
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" />
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT" offsetX="10"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="%Percent%" tier="HIGH">
+              <Anchor point="RIGHT" relativePoint="RIGHT" offsetX="-12"/>
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" tier="LOW" textureFile="AUI/images/attributes/aui/player/bar.dds" level="500">
+          <Anchor point="TOPLEFT" offsetX="1" />
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.1" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <StatusBar name="$(parent)_Bar2" tier="LOW" textureFile="AUI/images/attributes/aui/player/bar.dds" level="500">
+          <Anchor point="TOPLEFT" relativePoint="TOP" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-1" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.1" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)BG" tier="LOW">
+          <AnchorFill/>
+          <OnInitialized>
+            self:SetColor(0, 0, 0, 0.5)
+          </OnInitialized>
+        </Texture>
+        <Control name="$(parent)Warner" tier="LOW" hidden="true">
+          <OnInitialized>
+            self.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual("AUI_LowStatWarnerAnimation_Middle", self)
+          </OnInitialized>
+          <AnchorFill/>
+          <Controls>
+            <Texture name="$(parent)FrameCenterWarner" textureFile="AUI/images/attributes/aui/player/bar.dds" level="500" layer="OVERLAY" blendMode="ADD">
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Control>
+      </Controls>
+    </Backdrop>
+    <Backdrop name="AUI_Tactical_PlayerFrame_Stamina" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" level="1000" virtual="true" hidden="true">
+      <Dimensions x="350" y ="32" />
+      <Anchor point="TOP" relativePoint="BOTTOM" offsetY="-2" />
+      <Edge file="AUI\images\attributes\aui-tactical\edge.dds"/>
+      <OnInitialized>
+        self.relativeTo = AUI_UNIT_FRAME_TYPE_PLAYER_MAGICKA
+        self:SetCenterColor(0, 0, 0, 0)
+      </OnInitialized>
+      <Controls>
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" />
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT" offsetX="10"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="%Percent%" tier="HIGH">
+              <Anchor point="RIGHT" relativePoint="RIGHT" offsetX="-12"/>
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" tier="LOW" level="500">
+          <Anchor point="TOPLEFT" offsetX="1" />
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.1" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <StatusBar name="$(parent)_Bar2" tier="LOW" level="500">
+          <Anchor point="TOPLEFT" relativePoint="TOP" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-1" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.1" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)BG" tier="LOW">
+          <AnchorFill/>
+          <OnInitialized>
+            self:SetColor(0, 0, 0, 0.5)
+          </OnInitialized>
+        </Texture>
+        <Control name="$(parent)Warner" tier="LOW" hidden="true">
+          <OnInitialized>
+            self.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual("AUI_LowStatWarnerAnimation_Middle", self)
+          </OnInitialized>
+          <AnchorFill/>
+          <Controls>
+            <Texture name="$(parent)FrameCenterWarner" level="500" layer="OVERLAY" blendMode="ADD">
+              <AnchorFill/>
+            </Texture>
+          </Controls>
+        </Control>
+      </Controls>
+    </Backdrop>
+    <Backdrop name="AUI_Tactical_PlayerFrame_Shield" tier="HIGH" mouseEnabled="false" clampedToScreen="true" level="1000" virtual="true" hidden="true">
+      <Dimensions y ="16" />
+      <Anchor point="BOTTOMLEFT" />
+      <Anchor point="BOTTOMRIGHT" offsetY="-1"/>
+      <Edge file="AUI\images\attributes\aui-tactical\edge.dds"/>
+      <OnInitialized>
+        self.relativeTo = AUI_UNIT_FRAME_TYPE_PLAYER_HEALTH
+        self:SetCenterColor(0, 0, 0, 0)
+      </OnInitialized>
+      <Controls>
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" />
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT" offsetX="10"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="%Percent%" tier="HIGH">
+              <Anchor point="RIGHT" relativePoint="RIGHT" offsetX="-12"/>
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" tier="MEDIUM" level="500">
+          <Anchor point="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)BG" tier="MEDIUM">
+          <AnchorFill/>
+          <OnInitialized>
+            self:SetColor(0, 0, 0, 0.5)
+          </OnInitialized>
+        </Texture>
+      </Controls>
+    </Backdrop>
+    <Backdrop name="AUI_Tactical_PlayerFrame_StaminaMount" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" level="1000" virtual="true" hidden="true">
+      <Dimensions y ="18" />
+      <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="30" />
+      <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" offsetY="8"/>
+      <Edge file="AUI\images\attributes\aui-tactical\edge.dds"/>
+      <OnInitialized>
+        self:SetCenterColor(0, 0, 0, 0)
+        self.relativeTo = AUI_UNIT_FRAME_TYPE_PLAYER_STAMINA
+      </OnInitialized>
+      <Controls>
+        <Texture name="$(parent)Icon" alpha="0.7" textureFile="esoui/art/icons/mapkey/mapkey_stables.dds" tier="MEDIUM">
+          <Dimensions x="26" y="26" />
+          <Anchor point="RIGHT" relativePoint="LEFT" offsetX="-4" offsetY="1"/>
+        </Texture>
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" tier="LOW" level="500">
+          <Anchor point="TOPLEFT" offsetX="1" />
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.1" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <StatusBar name="$(parent)_Bar2" tier="LOW" level="500">
+          <Anchor point="TOPLEFT" relativePoint="TOP" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-1" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.1" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)BG" tier="LOW">
+          <AnchorFill/>
+          <OnInitialized>
+            self:SetColor(0, 0, 0, 0.5)
+          </OnInitialized>
+        </Texture>
+      </Controls>
+    </Backdrop>
+    <Backdrop name="AUI_Tactical_PlayerFrame_Werewolf" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" level="1000" virtual="true" hidden="true">
+      <Dimensions y ="18" />
+      <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="30" />
+      <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" offsetY="8"/>
+      <Edge file="AUI\images\attributes\aui-tactical\edge.dds"/>
+      <OnInitialized>
+        self:SetCenterColor(0, 0, 0, 0)
+        self.relativeTo = AUI_UNIT_FRAME_TYPE_PLAYER_STAMINA
+      </OnInitialized>
+      <Controls>
+        <Texture name="$(parent)Icon" alpha="0.7" textureFile="esoui/art/icons/mapkey/mapkey_undaunted.dds" tier="MEDIUM">
+          <Dimensions x="26" y="26" />
+          <Anchor point="RIGHT" relativePoint="LEFT" offsetX="-4" offsetY="1"/>
+        </Texture>
+        <Control name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Control>
+        <StatusBar name="$(parent)_Bar" tier="LOW" level="500">
+          <Anchor point="TOPLEFT" offsetX="1" />
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.1" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <StatusBar name="$(parent)_Bar2" tier="LOW" level="500">
+          <Anchor point="TOPLEFT" relativePoint="TOP" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-1" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.1" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)BG" tier="LOW">
+          <AnchorFill/>
+          <OnInitialized>
+            self:SetColor(0, 0, 0, 0.5)
+          </OnInitialized>
+        </Texture>
+      </Controls>
+    </Backdrop>
+  </Controls>
+</GuiXml>

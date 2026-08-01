@@ -1,0 +1,19 @@
+<!--LootJournalWindow.xml-->
+<GuiXml>        
+    <Controls>
+        <!-- Loot Window Title -->
+        <Label name="Solution_LootSettingsTitle" font="ZoFontWinH4" text="Loot Tracker Solution Settings" virtual="true">
+            <Anchor point="TOP" relativePoint="TOP" offsetY="15" />
+        </Label>
+        <!-- Close Button -->
+        <Button name="Solution_LootSettingsClose" virtual="true">
+            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+            <Dimensions x="20" y="20" />
+            <Textures normal="LootTrackerSolution/Textures/CrossIcon.dds" />
+        </Button>
+
+        <Button name="Solution_RowSettings" virtual="true">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+        </Button>   
+    </Controls>
+</GuiXml>

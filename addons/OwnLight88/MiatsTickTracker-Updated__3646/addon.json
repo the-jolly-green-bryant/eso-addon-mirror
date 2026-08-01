@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/OwnLight88/MiatsTickTracker-Updated__3646",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "OwnLight88",
+  "canonical_id": "esoui:3646",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3646",
+  "deleted": false,
+  "directories": [
+    "MiatsTickTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3646/",
+  "fingerprint": "be4a18657a65deafcc8dda48a9b8c988d58ea15a3726e372fcdb083b836b2cf2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3646",
+  "source_url": "https://www.esoui.com/downloads/info3646-MiatsTickTrackerUpdated.html",
+  "stats": {
+    "downloads": 3596,
+    "favorites": 5,
+    "monthly_downloads": 22
+  },
+  "title": "MiatsTickTracker Updated",
+  "updated_at": 1685978873000,
+  "version": "U38"
+}

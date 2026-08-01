@@ -1,0 +1,40 @@
+## Title: |cAFD3FFShissu|ceeeeee's Framework v1.1.5|r
+## APIVersion: 100033
+## Author: |cAFD3FF@Shissu|r [EU]
+## SavedVariables: shissuFramework
+
+i18n\en.lua
+i18n\$(language).lua
+
+ShissuFramework.xml
+ShissuFramework.lua
+
+globals.lua
+
+# Funktionen
+functions\general.lua
+functions\fileintegrity.lua
+functions\chatsystem.lua
+functions\datatypes.lua
+functions\date.lua
+
+settings\settings.lua
+settings\checkbox.lua
+settings\colorpicker.lua
+settings\combobox.lua
+settings\description.lua
+settings\editbox.lua
+settings\title.lua
+settings\slider.lua
+settings\slidereditbox.lua
+settings\textbox.lua
+
+interface\interface.lua
+interface\coloredbutton.lua
+
+# Standard Addons/Module
+modules\language.lua
+modules\chatcommands.lua
+modules\fileintegrity.lua
+
+modules\bindings.xml 

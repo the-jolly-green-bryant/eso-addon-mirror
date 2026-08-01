@@ -1,0 +1,11 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="ClicksHouseGUI">
+      <Dimensions x="200" y="25" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+ 
+      <Controls>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

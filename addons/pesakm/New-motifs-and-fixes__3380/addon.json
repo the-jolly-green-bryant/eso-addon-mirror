@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/pesakm/New-motifs-and-fixes__3380",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "pesakm",
+  "canonical_id": "esoui:3380",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3380",
+  "deleted": false,
+  "directories": [
+    "AIResearchGrid"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3380/",
+  "fingerprint": "bfbf14559b3e616b3172fb8240eedb6002987f55735ed87a51dbf9fa36393068",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3380",
+  "source_url": "https://www.esoui.com/downloads/info3380-Newmotifsandfixes.html",
+  "stats": {
+    "downloads": 7861,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "New motifs and fixes",
+  "updated_at": 1654524848000,
+  "version": "11.5.04"
+}

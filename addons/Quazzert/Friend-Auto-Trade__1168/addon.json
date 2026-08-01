@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Quazzert/Friend-Auto-Trade__1168",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Quazzert",
+  "canonical_id": "esoui:1168",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1168",
+  "deleted": false,
+  "directories": [
+    "FriendAutoTrade"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1168/",
+  "fingerprint": "5d490dd62000a3f06554b25fc457033052346ad6f53b54978e82b8ae8c522c20",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3761.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1168",
+  "source_url": "https://www.esoui.com/downloads/info1168-FriendAutoTrade.html",
+  "stats": {
+    "downloads": 5393,
+    "favorites": 2,
+    "monthly_downloads": 17
+  },
+  "title": "Friend Auto Trade",
+  "updated_at": 1439147917000,
+  "version": "0.1"
+}

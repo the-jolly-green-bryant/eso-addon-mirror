@@ -1,0 +1,15 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+
+## Title: Furnishings Placed To Nickname
+## Description: Renames houses to display furnishings placed
+## Version: 37.0
+## Author: remosito
+## APIVersion: 100037
+
+
+FurnishingsPlaced2Nickname.lua
+

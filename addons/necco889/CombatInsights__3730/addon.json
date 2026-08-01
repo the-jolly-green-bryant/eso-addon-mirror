@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/necco889/CombatInsights__3730",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "necco889",
+  "canonical_id": "esoui:3730",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3730",
+  "deleted": false,
+  "directories": [
+    "CombatInsights"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3730/",
+  "fingerprint": "f0e4c070137490ce8ca677b693a7995877de8361e45848f4a427e7549b1b47ad",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12638.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3730",
+  "source_url": "https://www.esoui.com/downloads/info3730-CombatInsights.html",
+  "stats": {
+    "downloads": 7804,
+    "favorites": 8,
+    "monthly_downloads": 34
+  },
+  "title": "CombatInsights",
+  "updated_at": 1749383718000,
+  "version": "1.2.2"
+}

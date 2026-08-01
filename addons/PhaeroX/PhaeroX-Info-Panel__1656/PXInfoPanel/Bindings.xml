@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|cd8b620PhaeroX|r Info Panel">
+            <Action name="PX_INFO_PANEL_RESET">
+                <Down>PXInfoPanel_ProcessReset()</Down>
+            </Action>
+            <Action name="PX_INFO_PANEL_TOGGLE">
+                <Down>PXInfoPanel_ProcessToggle()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

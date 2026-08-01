@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Rynzaii/PantherXP__3404",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Rynzaii",
+  "canonical_id": "esoui:3404",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3404",
+  "deleted": false,
+  "directories": [
+    "PantherXP"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3404/",
+  "fingerprint": "931eaa107849a39151c24c476cbd0a7e1ca086168c118b122b1f1caa7ba5cf6e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11663.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11646.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11664.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11648.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3404",
+  "source_url": "https://www.esoui.com/downloads/info3404-PantherXP.html",
+  "stats": {
+    "downloads": 6145,
+    "favorites": 2,
+    "monthly_downloads": 35
+  },
+  "title": "PantherXP",
+  "updated_at": 1691974513000,
+  "version": "v2.1.0"
+}

@@ -1,0 +1,60 @@
+<GuiXml>
+    <Font name="tcoZoFontGameSmall" font="$(BOLD_FONT)|15|soft-shadow-thin" />
+    <Controls>
+        <TopLevelControl name="COAOCompass" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="260" y="40" />
+            <Anchor point="TOPLEFT" offsetX="0" offsetY="586"/>
+            <OnMoveStop>
+                COAOCompassMoveStop()
+            </OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" alpha="0.0" />
+                <Label name="$(parent)DisplayLeft" font="ZoFontWindowTitle" color="D6660C" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="">
+                    <AnchorFill />
+                    <Anchor point="LEFT" offsetX="5"/>
+                    <Dimensions x="80"/>
+                </Label>
+                <Label name="$(parent)DisplayMain" font="ZoFontWindowTitle" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="">
+                    <AnchorFill />
+                    <Anchor point="LEFT" relativeTo="$(parent)DisplayLeft" relativePoint="RIGHT" offsetX="10"/>
+                    <Dimensions x="80"/>                    
+                </Label>
+                <Label name="$(parent)DisplayRight" font="ZoFontWindowTitle" color="D6660C" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="">
+                    <AnchorFill />
+                    <Anchor point="LEFT" relativeTo="$(parent)DisplayMain" relativePoint="RIGHT" offsetX="10"/>
+                    <Dimensions x="80"/>                    
+                </Label>
+            </Controls>
+        </TopLevelControl>
+        <TopLevelControl name="COAOAPE" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="220" y="80" />
+            <Anchor point="TOPLEFT" offsetX="387" offsetY="24"/>
+            <OnMoveStop>
+                COAOAPEarnedMoveStop()
+            </OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" alpha="0.0" />
+                <Label name="$(parent)DisplayBG" font="tcoZoFontGameSmall" color="D6660C" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="">
+                    <AnchorFill />
+                    <Anchor point="LEFT" offsetX="0" offsetY="0"/>
+                    <Dimensions x="220" y="80" />
+                </Label>
+                <Label name="$(parent)DisplayLeft" font="tcoZoFontGameSmall" color="D6660C" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="">
+                    <AnchorFill />
+                    <Anchor point="LEFT" offsetX="5"/>
+                    <Dimensions x="100"/>
+                </Label>
+                <Label name="$(parent)DisplayCenter" font="tcoZoFontGameSmall" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="">
+                    <AnchorFill />
+                    <Anchor point="LEFT" offsetX="170" offsetY="9"/>
+                    <Dimensions x="150"/>
+                </Label>
+                <Label name="$(parent)DisplayRight" font="tcoZoFontGameSmall" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="">
+                    <AnchorFill />
+                    <Anchor point="LEFT" offsetX="5"/>
+                    <Dimensions x="160"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,10 @@
+-- Shissu Framework: Addon/Module Management
+-- -----------------------------------------
+-- 
+-- Filename:    modules/managment.lua
+-- Desc:        Verwalten der einzelnen Addons/Module innerhalb der ShissuFramework, - ein-/ausschalten
+-- Version:     v1.0.10
+-- Last Update: 16.11.2020
+--
+-- Written by Christian Flory (@Shissu, EU) - esoui@flory.one
+-- Distribution without license is prohibited!

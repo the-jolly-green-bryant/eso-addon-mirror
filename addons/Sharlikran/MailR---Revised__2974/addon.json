@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Sharlikran/MailR---Revised__2974",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:2974",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2974",
+  "deleted": false,
+  "directories": [
+    "MailR"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2974/",
+  "fingerprint": "fd348129723edf5bd88ae79a3fd1ec030c5028f5a92d4572f557de3e8f3782df",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10042.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10041.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2974",
+  "source_url": "https://www.esoui.com/downloads/info2974-MailR-Revised.html",
+  "stats": {
+    "downloads": 12977,
+    "favorites": 16,
+    "monthly_downloads": 60
+  },
+  "title": "MailR - Revised",
+  "updated_at": 1781061448000,
+  "version": "2.5.19"
+}

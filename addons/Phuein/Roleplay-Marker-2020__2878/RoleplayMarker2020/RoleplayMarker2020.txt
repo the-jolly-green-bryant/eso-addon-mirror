@@ -1,0 +1,15 @@
+## APIVersion: 100033
+## Title: RoleplayMarker2020
+## Version: 1.11
+## AddOnVersion: 1
+## Author: Phuein
+## Description: Marks players that are roleplaying.
+## SavedVariables: RoleplayMarkerSavedVariables
+## DependsOn: LibAddonMenu-2.0>=28
+
+Languages\en.lua
+Languages\$(language).lua
+
+SubmittedCharacterNames.lua
+RoleplayMarker2020.lua
+Settings.lua

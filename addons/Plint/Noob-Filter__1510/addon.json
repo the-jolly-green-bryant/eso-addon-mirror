@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Plint/Noob-Filter__1510",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Plint",
+  "canonical_id": "esoui:1510",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1510",
+  "deleted": false,
+  "directories": [
+    "NoobFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1510/",
+  "fingerprint": "730a4d04f61b6f188116fbda7f7d7484691c8778859a49659e7ccb570c5c3225",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1510",
+  "source_url": "https://www.esoui.com/downloads/info1510-NoobFilter.html",
+  "stats": {
+    "downloads": 9757,
+    "favorites": 6,
+    "monthly_downloads": 19
+  },
+  "title": "Noob Filter",
+  "updated_at": 1477610664000,
+  "version": "100030"
+}

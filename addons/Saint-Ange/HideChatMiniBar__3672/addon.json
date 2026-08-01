@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Saint-Ange/HideChatMiniBar__3672",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Saint-Ange",
+  "canonical_id": "esoui:3672",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3672",
+  "deleted": false,
+  "directories": [
+    "HideChatMiniBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3672/",
+  "fingerprint": "684ed5e5a32d60448c3ab54db21653f301103df644f2f98eeb4a581d756e3c97",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12500.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3672",
+  "source_url": "https://www.esoui.com/downloads/info3672-HideChatMiniBar.html",
+  "stats": {
+    "downloads": 2919,
+    "favorites": 0,
+    "monthly_downloads": 38
+  },
+  "title": "HideChatMiniBar",
+  "updated_at": 1755254210000,
+  "version": "1.1.1"
+}

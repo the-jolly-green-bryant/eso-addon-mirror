@@ -1,0 +1,39 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: KelaPadUI
+## APIVersion: 0.01a
+## Description: This addon improves the gamepad's UI by adding additional information and features.
+## SavedVariables: kpuiSavedVariables
+## OptionalDependsOn: 
+
+
+kpui_core/kpuiConstants.lua
+kpui_core/kpuiStyles.lua
+kpui_core/kpui_tooltip_gamepad.lua
+kpui_core/kpui_tooltip_gamepad.xml
+kpui_core/kpui_sets_gamepad.lua
+kpui_core/kpui_sets_gamepad.xml
+kpui_core/kpui_research_gamepad.lua
+kpui_core/kpui_research_gamepad.xml
+kpui_core/kpui_undaunted_gamepad.lua
+kpui_core/kpui_undaunted_gamepad.xml
+
+kpui_lang\en.lua
+kpui_lang\common.lua
+kpui_lang\$(language).lua
+
+kpuiInfoTooltip.lua
+kpuiMainMenu.lua
+KelaPadUI.lua
+
+kpuiCraftingPanelTips.lua
+kpuiSetsPanelTips.lua
+kpuiResearchableItems.lua
+
+kpui_core/kpuiFunctions.lua
+kpui_core/kpuiDialogs.lua
+kpui_core/kpuiEntryicon.xml
+

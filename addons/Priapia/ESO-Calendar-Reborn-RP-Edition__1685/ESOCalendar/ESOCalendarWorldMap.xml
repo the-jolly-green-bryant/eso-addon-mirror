@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="ESOCalendarWM">
+      <AnchorFill/>
+
+      <OnInitialized> ESOCalendar_WMInit() </OnInitialized>
+
+      <OnUpdate> ESOCalendar_WMUpdateDate() </OnUpdate>
+
+      <Controls>
+        <Label color="CFDCBD" font="ZoFontWindowTitle" name="$(parent)Date"
+               scale="0.55" wrapMode="ELLIPSIS">
+          <Anchor offsetX="70" offsetY="55" point="TOP_LEFT"/>
+        </Label>
+
+        <Label color="CCFFAA" font="ZoFontWindowTitle" name="$(parent)Holiday"
+               scale="0.55" wrapMode="ELLIPSIS">
+          <Anchor offsetX="-11" offsetY="45" point="TOPRIGHT"/>
+        </Label>
+
+        <Label color="FFCCAA" font="ZoFontWindowTitle"
+               name="$(parent)Daedricday" scale="0.55" wrapMode="ELLIPSIS">
+          <Anchor offsetX="-11" offsetY="65" point="TOPRIGHT"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

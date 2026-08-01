@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="Sora Ultimate Pair">
+            <Action name="SORA_ULTIMATE_PAIR_TOGGLE">
+                <Down>SoraUltimatePair.Toggle()</Down>
+            </Action>
+            <Action name="SORA_ULTIMATE_PAIR_CENTER">
+                <Down>SoraUltimatePair.ResetPositions()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

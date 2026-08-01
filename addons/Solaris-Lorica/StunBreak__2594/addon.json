@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/Solaris-Lorica/StunBreak__2594",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Solaris Lorica",
+  "canonical_id": "esoui:2594",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2594",
+  "deleted": false,
+  "directories": [
+    "StunBreak"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2594/",
+  "fingerprint": "3782286e8def2295d40e7066ae2316e6bc9d3e5321fb3eb74aacaddb2c56f20a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2594",
+  "source_url": "https://www.esoui.com/downloads/info2594-StunBreak.html",
+  "stats": {
+    "downloads": 4354,
+    "favorites": 6,
+    "monthly_downloads": 47
+  },
+  "title": "StunBreak",
+  "updated_at": 1587494936000,
+  "version": "1.1"
+}

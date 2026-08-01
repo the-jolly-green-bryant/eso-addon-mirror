@@ -1,0 +1,97 @@
+{
+  "archive_path": "addons/Shadowfen/Auto-Category---Revised__2300",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shadowfen",
+  "canonical_id": "esoui:2300",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2300",
+  "deleted": false,
+  "directories": [
+    "AutoCategory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2300/",
+  "fingerprint": "8107b279e01d51ca92f05457eb588cca1985962f639c8d029132ad83800a18e4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8077.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8078.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8079.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8080.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8680.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13263.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13264.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14076.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14077.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2300",
+  "source_url": "https://www.esoui.com/downloads/info2300-AutoCategory-Revised.html",
+  "stats": {
+    "downloads": 1194782,
+    "favorites": 412,
+    "monthly_downloads": 8182
+  },
+  "title": "Auto Category - Revised",
+  "updated_at": 1785198643000,
+  "version": "4.6.12"
+}

@@ -1,0 +1,23 @@
+## Title: PvP-erformance
+## Description: AI-assisted, standalone PvP performance journal. Tracks duels, matchups, win rate, Overall Tier, and Class Tier. No required or optional dependencies.
+## Author: Static Wave
+## Version: 1.0.1
+## APIVersion: 101050 101051
+## SavedVariables: PvPerformanceSavedVars
+## AddOnVersion: 1001
+
+PvPerformance.lua
+Core/Constants.lua
+Core/Utilities.lua
+Core/SavedVariables.lua
+Core/UIHelpers.lua
+Modules/Dueling/DuelingModule.lua
+Modules/Dueling/DuelingRating.lua
+Modules/Dueling/DuelingHistory.lua
+Modules/Dueling/UI/DuelingDetails.lua
+Modules/Dueling/UI/DuelingWindow.lua
+Modules/Dueling/UI/DuelingDashboard.lua
+Modules/Dueling/DuelingTracking.lua
+Modules/Dueling/DuelingCombat.lua
+Modules/Dueling/DuelingCommands.lua
+Bindings.xml

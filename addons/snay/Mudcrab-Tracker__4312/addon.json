@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/snay/Mudcrab-Tracker__4312",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "snay",
+  "canonical_id": "esoui:4312",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4312",
+  "deleted": false,
+  "directories": [
+    "MudcrabTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4312/",
+  "fingerprint": "b8b47c224cb6032568bbb78067be48ac28dc48e1ca48a0c07b8887057d6343c1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15091.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15107.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15094.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15092.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15093.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15106.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4312",
+  "source_url": "https://www.esoui.com/downloads/info4312-MudcrabTracker.html",
+  "stats": {
+    "downloads": 541,
+    "favorites": 2,
+    "monthly_downloads": 12
+  },
+  "title": "Mudcrab Tracker",
+  "updated_at": 1778197542000,
+  "version": "0.1.4"
+}

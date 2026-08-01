@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/Pretz333/Prismatic-Warning__2985",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Pretz333",
+  "canonical_id": "esoui:2985",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2985",
+  "deleted": false,
+  "directories": [
+    "PrismaticWarning"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2985/",
+  "fingerprint": "7afc81b904bde4b894cac19010ea63c4fec0d363ccbc4fadba74b738be7610dd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10076.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10077.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2985",
+  "source_url": "https://www.esoui.com/downloads/info2985-PrismaticWarning.html",
+  "stats": {
+    "downloads": 3013,
+    "favorites": 6,
+    "monthly_downloads": 10
+  },
+  "title": "Prismatic Warning",
+  "updated_at": 1616529192000,
+  "version": "4.5.4"
+}

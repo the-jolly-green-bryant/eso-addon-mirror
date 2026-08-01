@@ -1,0 +1,11 @@
+<GuiXml>
+    <Controls>
+		<TopLevelControl name = "WRWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+		<Dimensions x="250" y="250" />
+		<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="900" offsetY="400"/>
+			<OnMoveStop>
+				WR.OnIndicatorMoveStop()
+			</OnMoveStop>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

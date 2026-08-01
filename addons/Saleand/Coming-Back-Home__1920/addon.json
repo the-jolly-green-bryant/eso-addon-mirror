@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Saleand/Coming-Back-Home__1920",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Saleand",
+  "canonical_id": "esoui:1920",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:1920",
+  "deleted": false,
+  "directories": [
+    "ComingBackHome"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1920/",
+  "fingerprint": "95764dfcf7c44d78d3aba1e4cba9ead2ef64b8061af81c3a2a39582550100619",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7358.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6506.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7359.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1920",
+  "source_url": "https://www.esoui.com/downloads/info1920-ComingBackHome.html",
+  "stats": {
+    "downloads": 9410,
+    "favorites": 12,
+    "monthly_downloads": 15
+  },
+  "title": "Coming Back Home",
+  "updated_at": 1763740875000,
+  "version": "1.5.1"
+}

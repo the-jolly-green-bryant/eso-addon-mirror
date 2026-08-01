@@ -1,0 +1,14 @@
+## APIVersion: 100003
+## Title: |cFF2222Wykkyd's|r War Tools |c8866001.5.2.1|r 
+## Description: |ca0a0a0This addon embeds: |rLibStub|ca0a0a0,|r LibAddonMenu|ca0a0a0,|r LibWykkydFactory|ca0a0a0. The addon provides a HUD for quick access to information inside Cyrodiil.|r
+
+## OptionalDependsOn: LibAddonMenu-1.0 LibWykkydFactory
+## SavedVariables: wykkydsWarToolsGlobal
+
+embed/LibStub/LibStub.lua
+embed/LibAddonMenu/LibAddonMenu-1.0.lua
+embed/LibWykkydFactory/LibWykkydFactory.lua
+
+addon.luacode/Methods.lua
+code/UI.lua
+bindings/bindings.luabindings/bindings.xml

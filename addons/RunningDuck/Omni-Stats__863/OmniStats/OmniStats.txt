@@ -1,0 +1,15 @@
+## Title: OmniStats |c998877 4.0.0 |r
+## Version: 4.0.0
+## AddOnVersion: 400
+## Author: RunningDuck, M0R_Gaming
+## Description: Provides extended character attributes in a compact frame
+
+## APIVersion: 101033
+## SavedVariables: OmniStats_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=32
+## OptionalDependsOn: uespLog
+
+OmniStats.lua
+OmniStats.xml
+bindings.xml
+bindings.lua

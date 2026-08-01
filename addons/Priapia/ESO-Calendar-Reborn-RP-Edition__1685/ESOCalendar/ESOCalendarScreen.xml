@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GuiXml>
+  <Controls>
+    <TopLevelControl mouseEnabled="true" movable="false" name="ESOCalendarScr">
+      <Anchor offsetX="45" offsetY="10" point="BOTTOMLEFT"/>
+
+      <OnInitialized> ESOCalendar_ScrInit() </OnInitialized>
+
+      <OnUpdate> ESOCalendar_ScrUpdateDate() ESOCalendar_ScrUpdateHour()
+      </OnUpdate>
+
+      <Controls>
+        <Label color="CFDCBD" font="ZoFontWindowTitle" name="$(parent)Date"
+               scale="0.65" wrapMode="ELLIPSIS">
+          <Anchor point="TOPLEFT"/>
+        </Label>
+
+        <Label color="CFDCBD" font="ZoFontWindowTitle" name="$(parent)Hour"
+               scale="0.65" wrapMode="ELLIPSIS">
+          <Anchor offsetX="50" offsetY="300" point="RIGHT"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,25 @@
+﻿; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+; This Add-on is not created by, affiliated with or sponsored by Razer
+; Inc. or its affiliates. Chroma™ and related logos are registered
+; trademarks or trademarks of Razer Inc. in the United States and/or
+; other countries. All rights reserved.
+
+## Title: |cff0000C|cff8800h|cffff00r|c00ff00o|c4444ffm|cff00ffa|rConfig
+## APIVersion: 101033 101034 101035 101036
+## Version: 1.0
+## SavedVariables: ChromaConfig_Settings
+## Author: otac0n
+## Description: A utility for configuring the |c44d62cRazer Chroma™|r functionality
+## OptionalDependsOn:
+## DependsOn: LibSavedVars LibAddonMenu-2.0>=32
+
+ChromaConfig_Shared.lua
+ChromaConfig_StaticData.lua
+ChromaConfig_Strings.lua
+ChromaConfig_Settings.lua
+ChromaConfig_SettingsMenu.lua
+ChromaConfig.lua

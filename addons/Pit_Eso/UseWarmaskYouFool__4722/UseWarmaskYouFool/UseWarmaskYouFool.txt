@@ -1,0 +1,14 @@
+; Use Warmask you Fool
+; Tracks your Huntsman's Warmask (Mark of Hircine) uptime while in combat and
+; throws a big, customizable on-screen warning when it is missing or expires.
+
+## Title: |cFF4444Use Warmask you Fool|r
+## Author: @petethepower
+## Version: 1.4.1
+## AddOnVersion: 141
+## APIVersion: 101048 101049
+## SavedVariables: UseWarmaskYouFoolSV
+## OptionalDependsOn: LibAddonMenu-2.0
+## Description: Tracks Warmask (Huntsman's Warmask / Mark of Hircine) in combat with an icon + timer, and shows up to 4 big customizable warnings (text, colour, size, sound) when it drops.
+
+UseWarmaskYouFool.lua

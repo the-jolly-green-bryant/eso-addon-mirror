@@ -1,0 +1,8 @@
+## Title: MoreEmotes
+## Author: Relas & Ayantir
+## APIVersion: 100018
+
+Libs/LibStub/LibStub.lua
+Libs/LibCustomTitles2/LibCustomTitles2.lua
+
+MoreEmotes.lua

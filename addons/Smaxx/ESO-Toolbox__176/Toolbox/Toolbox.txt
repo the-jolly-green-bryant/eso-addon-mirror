@@ -1,0 +1,11 @@
+## Title: ESO Toolbox
+## Author: Smaxx
+## Version: 3.1
+## Description: This addon allows you to adjust or enable hidden game features and improves your game with small quality of life changes. Open the menu by using the '/toolbox' slash command or go to the addon settings menu.
+## SavedVariables: Toolbox
+## APIVersion: 100035 100036
+## DependsOn: LibAddonMenu-2.0
+
+lang/en.lua
+lang/$(language).lua
+Toolbox.lua

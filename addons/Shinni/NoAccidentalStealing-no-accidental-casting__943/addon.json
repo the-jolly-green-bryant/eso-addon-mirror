@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Shinni/NoAccidentalStealing-no-accidental-casting__943",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shinni",
+  "canonical_id": "esoui:943",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:943",
+  "deleted": false,
+  "directories": [
+    "NoAccidentalStealing"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl943/",
+  "fingerprint": "5cbfa976db0117c5fa0a45a6d29496c7a37b67f6eee7192095448704733de20a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3478.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2904.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "943",
+  "source_url": "https://www.esoui.com/downloads/info943-NoAccidentalStealingnoaccidentalcasting.html",
+  "stats": {
+    "downloads": 245082,
+    "favorites": 432,
+    "monthly_downloads": 162
+  },
+  "title": "NoAccidentalStealing (+no accidental casting)",
+  "updated_at": 1686019253000,
+  "version": "1.13"
+}

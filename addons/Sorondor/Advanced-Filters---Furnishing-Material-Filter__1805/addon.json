@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Sorondor/Advanced-Filters---Furnishing-Material-Filter__1805",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sorondor",
+  "canonical_id": "esoui:1805",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    }
+  ],
+  "content_id": "esoui:1805",
+  "deleted": false,
+  "directories": [
+    "AF_FurnishingMaterialFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1805/",
+  "fingerprint": "aedfda5d4c8ebe34b37290d73e78ae4885ff4d65f8df5bcf787c1447f35fb49c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6118.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1805",
+  "source_url": "https://www.esoui.com/downloads/info1805-AdvancedFilters-FurnishingMaterialFilter.html",
+  "stats": {
+    "downloads": 18017,
+    "favorites": 8,
+    "monthly_downloads": 39
+  },
+  "title": "Advanced Filters - Furnishing Material Filter",
+  "updated_at": 1506356980000,
+  "version": "1.0"
+}

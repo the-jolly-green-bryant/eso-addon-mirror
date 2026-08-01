@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/psi-pisi/Maarselok-HM-Pad-Markers__4104",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "psi-pisi",
+  "canonical_id": "esoui:4104",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4104",
+  "deleted": false,
+  "directories": [
+    "MaarselokPadMarkers"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4104/",
+  "fingerprint": "5d298638bbda7c5ec858bd1136861ed4e8e381ad76197feae0e01dcef54360de",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14034.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4104",
+  "source_url": "https://www.esoui.com/downloads/info4104-MaarselokHMPadMarkers.html",
+  "stats": {
+    "downloads": 1215,
+    "favorites": 3,
+    "monthly_downloads": 46
+  },
+  "title": "Maarselok HM Pad Markers",
+  "updated_at": 1747664482000,
+  "version": "1.0.1"
+}

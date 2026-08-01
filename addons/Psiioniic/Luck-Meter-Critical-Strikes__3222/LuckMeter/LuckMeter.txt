@@ -1,0 +1,18 @@
+﻿## Title: LuckMeter
+## APIVersion: 101032
+## Author: Psiioniic
+## Version: 0.3.1
+## AddOnVersion: 10000
+## DependsOn: LibCombat>=54 LibAddonMenu-2.0>=32
+## OptionalDependsOn: LibDebugLogger
+## SavedVariables: LuckMeterVars
+## Description: Computes how lucky the critical strikes have been in a fight
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. 
+; in the United States and/or other countries. All rights reserved.
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+LuckMeter.xml
+LuckMeter.lua

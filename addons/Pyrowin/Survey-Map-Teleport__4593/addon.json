@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Pyrowin/Survey-Map-Teleport__4593",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Pyrowin",
+  "canonical_id": "esoui:4593",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4593",
+  "deleted": false,
+  "directories": [
+    "SurveyMapTeleport"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4593/",
+  "fingerprint": "15f6d9771de79b0078f4ff1abe65e3e64f46114523531518664cbf1f3263b86f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16112.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4593",
+  "source_url": "https://www.esoui.com/downloads/info4593-SurveyMapTeleport.html",
+  "stats": {
+    "downloads": 285,
+    "favorites": 2,
+    "monthly_downloads": 83
+  },
+  "title": "Survey Map Teleport",
+  "updated_at": 1779969125000,
+  "version": "1.2.0"
+}

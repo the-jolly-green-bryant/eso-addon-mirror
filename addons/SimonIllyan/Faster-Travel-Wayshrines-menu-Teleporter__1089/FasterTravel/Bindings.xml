@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL"> -->
+		<Category name="Faster Travel">
+			<Action name="FASTER_TRAVEL_REJUMP" rebindable="true">
+				<Down>FasterTravel.Teleport.TeleportToZone("zone")</Down>
+			</Action>
+			<Action name="FASTER_TRAVEL_REJUMP_FORCED" rebindable="true">
+				<Down>FasterTravel.Teleport.TeleportToZone("zone", nil, true)</Down>
+			</Action>
+		</Category>	
+	</Layer>
+</Bindings>

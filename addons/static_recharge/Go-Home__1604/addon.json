@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/static_recharge/Go-Home__1604",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "static_recharge",
+  "canonical_id": "esoui:1604",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:1604",
+  "deleted": false,
+  "directories": [
+    "GoHome"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1604/",
+  "fingerprint": "dffc1b938c9c391b5b503792cf772bea9e509f234c8337439b35179cbcc59eb2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6702.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6703.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6704.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6700.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6711.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6707.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6708.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1604",
+  "source_url": "https://www.esoui.com/downloads/info1604-GoHome.html",
+  "stats": {
+    "downloads": 108055,
+    "favorites": 151,
+    "monthly_downloads": 159
+  },
+  "title": "Go Home",
+  "updated_at": 1640347096000,
+  "version": "8.0.0"
+}

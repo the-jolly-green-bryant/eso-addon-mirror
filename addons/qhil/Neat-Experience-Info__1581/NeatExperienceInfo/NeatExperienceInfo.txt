@@ -1,0 +1,15 @@
+## Title: Neat Experience Info
+## APIVersion: 101045
+
+## Author: qhil
+## Description: Neat Experience Info is a simple addon that shows you the gain of inspiration in all trading skill lines. Additionally it shows the experience gain in Legerdemain.
+## Version: 1.15.1
+
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: NeatExperienceInfoSavedVariables
+
+language/en.lua
+language/$(language).lua
+
+NeatExperienceInfo.xml
+NeatExperienceInfo.lua

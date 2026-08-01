@@ -1,0 +1,476 @@
+--[[
+-------------------------------------------------------------------------------
+-- LibQuestData
+-------------------------------------------------------------------------------
+-- Original data sources: SnowmanDK (Destinations), CaptainBlagbird (Quest Map)
+-- Initial integration and library creation by Sharlikran
+-- LibQuestInfo created 2020-05-17, renamed to LibQuestData 2020-06-13
+-- Maintained by Sharlikran since 2020-05-17
+--
+-------------------------------------------------------------------------------
+-- License: MIT License
+--   Permission is hereby granted, free of charge, to any person obtaining a copy
+--   of this software and associated documentation files (the "Software"), to deal
+--   in the Software without restriction, including without limitation the rights
+--   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+--   copies of the Software, and to permit persons to whom the Software is
+--   furnished to do so, subject to the conditions in the LICENSE file.
+--
+-------------------------------------------------------------------------------
+-- Data Integrity and Attribution Notice:
+-- While quest information can be collected using the ESO API, the compiled
+-- dataset in LibQuestData is the result of years of effort by multiple addon
+-- projects and contributors. This includes legacy data from Quest Map and
+-- Destinations, merged and maintained with continued contributions since 2020.
+--
+-- Reuse, redistribution, or repackaging of the quest data (in whole or part)
+-- without permission is discouraged. Claiming authorship of derived works
+-- without proper attribution violates the intent of open collaboration and
+-- disrespects the extensive effort by past and present contributors.
+-------------------------------------------------------------------------------
+]]
+local libName, libVersion = "LibQuestData", 279
+local lib = {}
+local internal = {}
+_G["LibQuestData"] = lib
+_G["LibQuestData_Internal"] = internal
+internal.masterModeActive = false
+
+-------------------------------------------------
+----- Logger Function                       -----
+-------------------------------------------------
+internal.show_log = true
+internal.loggerName = libName
+if LibDebugLogger then
+  -- LibDebugLogger.internal.verboseWhitelist[internal.loggerName] = true
+  internal.logger = LibDebugLogger.Create(internal.loggerName)
+end
+
+local logger
+local viewer
+if DebugLogViewer then viewer = true else viewer = false end
+if LibDebugLogger then logger = true else logger = false end
+
+local function create_log(log_type, log_content)
+  if not viewer and log_type == "Info" then
+    CHAT_ROUTER:AddSystemMessage(log_content)
+    return
+  end
+  if logger and log_type == "Info" then
+    internal.logger:Info(log_content)
+  end
+  if not internal.show_log then return end
+  if logger and log_type == "Debug" then
+    internal.logger:Debug(log_content)
+  end
+  if logger and log_type == "Verbose" then
+    internal.logger:Verbose(log_content)
+  end
+  if logger and log_type == "Warn" then
+    internal.logger:Warn(log_content)
+  end
+end
+
+local function emit_message(log_type, text)
+  if text == "" then
+    text = "[Empty String]"
+  end
+  create_log(log_type, text)
+end
+
+local function emit_userdata(log_type, udata)
+  local function_limit = 10   -- max functions to list
+  local total_limit    = 20  -- max total entries (functions + non-functions)
+  local function_count = 0
+  local entry_count    = 0
+
+  local function emit(msg) emit_message(log_type, msg) end
+
+  local function try(label, obj, fn)
+    local ok, res = pcall(fn, obj)
+    if ok and res ~= nil then emit("  " .. label .. ": " .. tostring(res)) end
+  end
+
+  emit("Userdata: " .. tostring(udata))
+
+  -- Quick, high-signal probes
+  if type(udata) == "userdata" then
+    if udata.GetName         then try("GetName",         udata, udata.GetName) end
+    if udata.GetParent       then try("Parent",          udata, function(o) local p=o:GetParent();       return p and p:GetName() end) end
+    if udata.GetOwningWindow then try("Owner",           udata, function(o) local w=o:GetOwningWindow(); return w and w:GetName() end) end
+    if udata.GetType         then try("Type",            udata, udata.GetType) end
+  end
+
+  -- Metatable introspection with limits
+  local meta = getmetatable(udata)
+  if not meta then
+    emit("  (No metatable)")
+    return
+  end
+
+  emit("  (metatable present)")
+  local idx = meta.__index
+  if type(idx) ~= "table" then
+    emit("  __index is " .. type(idx))
+    return
+  end
+
+  for k, v in pairs(idx) do
+    if type(v) == "function" then
+      if function_count < function_limit and entry_count < total_limit then
+        emit("  Function: " .. tostring(k))
+        function_count = function_count + 1
+        entry_count    = entry_count + 1
+      end
+    else
+      if entry_count < total_limit then
+        emit("  " .. tostring(k) .. ": " .. tostring(v))
+        entry_count = entry_count + 1
+      end
+    end
+
+    if entry_count >= total_limit then
+      emit("  ... (output truncated due to limit)")
+      break
+    end
+  end
+end
+
+local function emit_table(log_type, t, indent, table_history)
+  indent = indent or "."
+  table_history = table_history or {}
+
+  if t == nil then
+    emit_message(log_type, indent .. "[Nil Table]")
+    return
+  end
+  if next(t) == nil then
+    emit_message(log_type, indent .. "[Empty Table]")
+    return
+  end
+  if table_history[t] then
+    emit_message(log_type, indent .. "[Cycle Detected]")
+    return
+  end
+  table_history[t] = true
+
+  for k, v in pairs(t) do
+    local vt = type(v)
+    if vt == "table" then
+      emit_message(log_type, indent .. "(table): " .. tostring(k) .. " = {")
+      emit_table(log_type, v, indent .. "  ", table_history)
+      emit_message(log_type, indent .. "}")
+    elseif vt == "userdata" then
+      emit_message(log_type, indent .. "(userdata): " .. tostring(k) .. " = " .. tostring(v))
+      emit_userdata(log_type, v)
+    else
+      emit_message(log_type, indent .. "(" .. vt .. "): " .. tostring(k) .. " = " .. tostring(v))
+    end
+  end
+end
+
+local function contains_placeholders(str)
+  return type(str) == "string" and str:find("<<%d+>>")
+end
+
+function internal.dm(log_type, ...)
+  if not internal.show_log then
+    if log_type == "Info" then
+    else
+      -- Exit early if show_log is false and log_type is not "Info"
+      return
+    end
+  end
+
+  local num_args = select("#", ...)
+  local first_arg = select(1, ...)  -- The first argument is always the message string
+
+  -- Check if the first argument is a string with placeholders
+  if type(first_arg) == "string" and contains_placeholders(first_arg) then
+    -- Extract any remaining arguments for zo_strformat (after the message string)
+    local remaining_args = { select(2, ...) }
+
+    -- Format the string with the remaining arguments
+    local formatted_value = ZO_CachedStrFormat(first_arg, unpack(remaining_args))
+
+    -- Emit the formatted message
+    emit_message(log_type, formatted_value)
+
+    -- Also emit any remaining arguments (userdata, tables, etc.)
+    for i = 1, #remaining_args do
+      local value = remaining_args[i]
+      if type(value) == "userdata" then
+        emit_userdata(log_type, value)
+      elseif type(value) == "table" then
+        emit_table(log_type, value)
+      elseif value ~= nil then
+        emit_message(log_type, tostring(value))
+      end
+    end
+    return
+  end
+
+  -- Process other argument types (userdata, tables, etc.)
+  for i = 1, num_args do
+    local value = select(i, ...)
+    if type(value) == "userdata" then
+      emit_userdata(log_type, value)
+    elseif type(value) == "table" then
+      emit_table(log_type, value)
+    else
+      emit_message(log_type, tostring(value))
+    end
+  end
+end
+
+-------------------------------------------------
+----- early helper                          -----
+-------------------------------------------------
+
+function internal:is_in(search_value, search_table)
+  for k, v in pairs(search_table) do
+    if search_value == v then return true end
+    if type(search_value) == "string" then
+      if string.find(string.lower(v), string.lower(search_value)) then return true end
+    end
+  end
+  return false
+end
+
+--[[different from is_in such that the table is the search term and the string
+to match is zone_name such as "glenumbra/crosswych_base_0" and the table
+contains cyrodiil or another string to find in the zone_name
+]]--
+function internal:is_map_in(zone_name, name_matches_table)
+  for k, v in pairs(name_matches_table) do
+    if string.match(zone_name, v) then return true end
+  end
+  return false
+end
+
+-------------------------------------------------
+----- lib                                   -----
+-------------------------------------------------
+
+lib.quest_givers = {}
+lib.quest_names = {}
+lib.client_lang = GetCVar("Language.2")
+lib.effective_lang = nil
+local supported_lang = { "br", "de", "en", "es", "fr", "fx", "it", "jp", "kb", "kr", "pl", "ru", "tr", "zh", }
+if internal:is_in(lib.client_lang, supported_lang) then
+  lib.effective_lang = lib.client_lang
+else
+  lib.effective_lang = "en"
+end
+lib.supported_lang = lib.client_lang == lib.effective_lang
+--[[
+    ALLIANCE_ALDMERI_DOMINION = 1
+    ALLIANCE_EBONHEART_PACT = 2
+    ALLIANCE_DAGGERFALL_COVENANT = 3
+]]--
+--[[ Reward Data from GetJournalQuestRewardInfo
+    REWARD_TYPE_PARTIAL_SKILL_POINTS -- Skill Point
+]]--
+lib.player_alliance = GetUnitAlliance("player")
+lib.libName = libName
+lib.libVersion = libVersion
+
+lib.name_to_questid_table = {}
+lib.name_to_questid_table["br"] = {}
+lib.name_to_questid_table["de"] = {}
+lib.name_to_questid_table["en"] = {}
+lib.name_to_questid_table["es"] = {}
+lib.name_to_questid_table["fr"] = {}
+lib.name_to_questid_table["fx"] = {}
+lib.name_to_questid_table["it"] = {}
+lib.name_to_questid_table["jp"] = {}
+lib.name_to_questid_table["kb"] = {}
+lib.name_to_questid_table["kr"] = {}
+lib.name_to_questid_table["pl"] = {}
+lib.name_to_questid_table["ru"] = {}
+lib.name_to_questid_table["tr"] = {}
+lib.name_to_questid_table["zh"] = {}
+
+lib.name_to_npcid_table = {}
+lib.name_to_npcid_table["br"] = {}
+lib.name_to_npcid_table["de"] = {}
+lib.name_to_npcid_table["en"] = {}
+lib.name_to_npcid_table["es"] = {}
+lib.name_to_npcid_table["fr"] = {}
+lib.name_to_npcid_table["fx"] = {}
+lib.name_to_npcid_table["it"] = {}
+lib.name_to_npcid_table["jp"] = {}
+lib.name_to_npcid_table["kb"] = {}
+lib.name_to_npcid_table["kr"] = {}
+lib.name_to_npcid_table["pl"] = {}
+lib.name_to_npcid_table["ru"] = {}
+lib.name_to_npcid_table["tr"] = {}
+lib.name_to_npcid_table["zh"] = {}
+
+lib.quest_rewards_skilpoint = {}
+lib.started_quests = {}
+lib.completed_quests = {}
+lib.last_interaction_target = ""
+
+-- added 4/4/2021 to hold map information
+lib.zone_quests = {}
+lib.quest_in_zone_list = {} -- Added 5-2-22 in place of local var so I can clear it once lib.zone_quests is built
+-- Added 5-2-22 in place of local var so I can clear it with LMD callbacks
+-- Noticed on 6-30-25 that the LMD callbacks were no longer active leaving so I can clear it another way
+lib.questGiverName = nil
+
+if LibQuestData_SavedVariables == nil then LibQuestData_SavedVariables = {} end
+
+if LibQuestData_SavedVariables.version == nil then LibQuestData_SavedVariables.version = LibQuestData_SavedVariables.version or 1 end
+if LibQuestData_SavedVariables.libVersion == nil then LibQuestData_SavedVariables.libVersion = LibQuestData_SavedVariables.libVersion or lib.libVersion end
+if LibQuestData_SavedVariables.quests == nil then LibQuestData_SavedVariables.quests = {} end
+if LibQuestData_SavedVariables.quest_info == nil then LibQuestData_SavedVariables.quest_info = {} end
+if LibQuestData_SavedVariables.location_info == nil then LibQuestData_SavedVariables.location_info = {} end
+if LibQuestData_SavedVariables.quest_names == nil then LibQuestData_SavedVariables.quest_names = {} end
+if LibQuestData_SavedVariables.reward_info == nil then LibQuestData_SavedVariables.reward_info = {} end
+if LibQuestData_SavedVariables.reward_details == nil then LibQuestData_SavedVariables.reward_details = {} end
+if LibQuestData_SavedVariables.giver_names == nil then LibQuestData_SavedVariables.giver_names = {} end
+
+-- note only the "lib.client_lang" will contain data be default
+
+--[[ TODO Depreciated, refer to quest flags below
+
+lib.quest_data_index.quest_type = {
+  -- ESO Values for QUEST_TYPE_
+  QUEST_TYPE_NONE = 0,
+  QUEST_TYPE_GROUP = 1, -- Qty 96
+  QUEST_TYPE_MAIN_STORY = 2, -- Qty 17
+  QUEST_TYPE_GUILD = 3, -- Qty 170, (*) Various Skill Line Guild Quests
+  QUEST_TYPE_CRAFTING = 4, -- Qty 82, Ignore these they are the crafting certifications
+  QUEST_TYPE_DUNGEON = 5, -- Qty 82
+  QUEST_TYPE_RAID = 6, -- Qty 8
+  QUEST_TYPE_AVA = 7, -- Qty 165, unsure if verified
+  QUEST_TYPE_CLASS = 8, -- None in table
+  -- quest_type_qa_test = 9, not in game as far as I know
+  QUEST_TYPE_AVA_GROUP = 10, -- None in table, in check
+  QUEST_TYPE_AVA_GRAND = 11, -- None in table, in check
+  QUEST_TYPE_HOLIDAY_EVENT = 12, -- Qty 22
+  QUEST_TYPE_BATTLEGROUND = 13, -- Qty 4
+  QUEST_TYPE_PROLOGUE = 14, -- Qty 14
+  QUEST_TYPE_UNDAUNTED_PLEDGE = 15, -- Qty 42
+  QUEST_TYPE_COMPANION = 16,
+}
+]]--
+
+-- quest flags
+lib.flag_completed_quest = 1
+lib.flag_uncompleted_quest = 2
+lib.flag_hidden_quest = 3
+lib.flag_started_quest = 4
+lib.flag_guild_quest = 5
+lib.flag_daily_quest = 6
+lib.flag_skill_quest = 7
+lib.flag_cadwell_quest = 8
+lib.flag_dungeon_quest = 9
+lib.flag_holiday_quest = 10
+lib.flag_zone_raid_quest = 11
+lib.flag_zone_story_quest = 12
+lib.flag_type_prologue = 13
+lib.flag_type_pledge = 14
+lib.flag_companion_quest = 15
+
+lib.quest_data_index = {
+  -- quest_name      =    1, Depreciated, use lib:get_quest_name(id, lang)
+  -- quest_giver     =    2,  Depreciated, see quest_map_pin_index
+  quest_type = 1, -- Is type QuestType; QUEST_TYPE_MAIN_STORY, QUEST_TYPE_DUNGEON << -1 = Undefined >>
+  quest_repeat = 2, -- Is type QuestRepeatableType; QUEST_REPEAT_DAILY, QUEST_REPEAT_NOT_REPEATABLE, QUEST_REPEAT_REPEATABLE << -1 = Undefined >>
+  game_api = 3, -- 100003 means unverified, 100030 or higher means recent quest data
+  quest_line = 4, -- QuestLine (10000 = not assigned/not verified. 10001 = not part of a quest line/verified)
+  quest_number = 5, -- Quest Number In QuestLine (10000 = not assigned/not verified)
+  quest_series = 6, -- None = 0, Cadwell's Almanac = 1, Undaunted = 2, AD = 3, DC = 4, EP = 5.
+  quest_display_type = 7, -- Is type ZoneDisplayType; ZONE_DISPLAY_TYPE_ZONE_STORY, ZONE_DISPLAY_TYPE_DUNGEON << -1 = Undefined >>
+}
+
+lib.quest_map_pin_index = {
+  local_x = 1, -- GetMapPlayerPosition() << -10 = Undefined >>
+  local_y = 2, -- GetMapPlayerPosition() << -10 = Undefined >>
+  global_x = 3, -- LocalToGlobal(GetMapPlayerPosition()) << -10 = Undefined >>
+  global_y = 4, -- LocalToGlobal(GetMapPlayerPosition()) << -10 = Undefined >>
+  quest_id = 5, -- Number index of quest name i.e. 6404 for "The Dragonguard"  << -1 = Undefined >>
+  -- world_x     =    6, Depreciated, WorldX 3D Location << -10 = Undefined >>
+  -- world_y     =    7, Depreciated, WorldY 3D Location << -10 = Undefined >>
+  -- world_z     =    8, Depreciated, WorldZ 3D Location << -10 = Undefined >>
+  -- quest_giver =    9, Updated, was 9 now 6
+  quest_giver = 6, -- Arbitrary number pointing to an NPC Name 81004, "Abnur Tharn"  << -1 = Undefined >>
+}
+
+lib.quest_series_type = {
+  -- LibQuestData Values
+  quest_type_none = 0,
+  quest_type_cadwell = 1,
+  quest_type_undaunted = 2,
+  quest_type_ad = 3, -- DOM, AD
+  quest_type_dc = 4, -- COV, DC
+  quest_type_ep = 5, -- PAC, EP
+  quest_type_guild_mage = 6,
+  quest_type_guild_fighter = 7,
+  quest_type_guild_psijic = 8,
+  quest_type_guild_thief = 9,
+  quest_type_guild_dark = 10, -- Dark Brotherhood
+}
+
+lib.playerAlliance = {}
+lib.playerAlliance[ALLIANCE_ALDMERI_DOMINION] = lib.quest_series_type.quest_type_ad
+lib.playerAlliance[ALLIANCE_DAGGERFALL_COVENANT] = lib.quest_series_type.quest_type_dc
+lib.playerAlliance[ALLIANCE_EBONHEART_PACT] = lib.quest_series_type.quest_type_ep
+
+lib.quest_guild_names = {
+  [lib.quest_series_type.quest_type_guild_mage] = "Mages Guild",
+  [lib.quest_series_type.quest_type_guild_fighter] = "Fighters Guild",
+  [lib.quest_series_type.quest_type_guild_psijic] = "Psijic Order",
+  [lib.quest_series_type.quest_type_guild_thief] = "Thieves Guild",
+  [lib.quest_series_type.quest_type_guild_dark] = "Dark Brotherhood",
+  [lib.quest_series_type.quest_type_undaunted] = "Undaunted",
+}
+
+lib.quest_guild_rank_data = {
+  [lib.quest_series_type.quest_type_undaunted] = { name = "", rank = 0, },
+  [lib.quest_series_type.quest_type_guild_mage] = { name = "", rank = 0, },
+  [lib.quest_series_type.quest_type_guild_fighter] = { name = "", rank = 0, },
+  [lib.quest_series_type.quest_type_guild_psijic] = { name = "", rank = 0, },
+  [lib.quest_series_type.quest_type_guild_thief] = { name = "", rank = 0, },
+  [lib.quest_series_type.quest_type_guild_dark] = { name = "", rank = 0, },
+}
+
+lib.dest_quest_data_index = {
+  quest_x = 1,
+  quest_y = 2,
+  questnpc = 3,
+  questtype = 4,
+  questrepeat = 5,
+  questid = 6,
+  questline = 7, -- QuestLine (10000 = not assigned/not verified. 10001 = not part of a quest line/verified)
+  questnumber = 8, -- Quest Number In QuestLine (10000 = not assigned/not verified)
+  questseries = 9, -- None = 0,	Cadwell's Almanac = 1,	Undaunted = 2, AD = 3, DC = 4, EP = 5.
+}
+
+lib.dest_quest_series_index = {
+  quest_series_none = 0,
+  quest_series_cadwell = 1,
+  quest_series_undaunted = 2,
+  quest_series_ad = 3,
+  quest_series_dc = 4,
+  quest_series_ep = 5,
+}
+
+lib.unknown_quest_name_string = {
+  ["br"] = "Nome Desconhecido",
+  ["de"] = "Unbekannter Name",
+  ["en"] = "Unknown Name",
+  ["es"] = "Nombre desconocido",
+  ["fr"] = "Nom inconnu",
+  ["fx"] = "Nieznane imię",
+  ["it"] = "Nome sconosciuto",
+  ["jp"] = "不明な名前",
+  ["kb"] = "알 수없는 이름",
+  ["kr"] = "알 수없는 이름",
+  ["pl"] = "Nieznane imię",
+  ["ru"] = "Неизвестное имя",
+  ["tr"] = "Bilinmeyen isim",
+  ["zh"] = "未知名称",
+}

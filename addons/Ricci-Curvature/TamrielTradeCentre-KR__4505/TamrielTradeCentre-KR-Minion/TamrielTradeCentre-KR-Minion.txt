@@ -1,0 +1,11 @@
+## Title: TamrielTradeCentre - Korean Patch
+## Description: Standalone Korean patch for TamrielTradeCentre.
+## Version: 1.0.0
+## AddOnVersion: 10000
+## Author: TamrielKR
+## APIVersion: 101049
+## DependsOn: TamrielTradeCentre
+## OptionalDependsOn: TamrielKR
+
+TamrielTradeCentre/ItemLookUpTable_kr.lua
+TamrielTradeCentre/lang/kr.lua

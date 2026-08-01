@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/quietly-confident/Locked-Items-Tab__3420",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "quietly-confident",
+  "canonical_id": "esoui:3420",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3420",
+  "deleted": false,
+  "directories": [
+    "LockedItemsTab"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3420/",
+  "fingerprint": "7bc426c5d7e1a59578d7198580192c4b00b49ca07211dfe7a924c1ca6d890cc7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11706.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3420",
+  "source_url": "https://www.esoui.com/downloads/info3420-LockedItemsTab.html",
+  "stats": {
+    "downloads": 4354,
+    "favorites": 10,
+    "monthly_downloads": 27
+  },
+  "title": "Locked Items Tab",
+  "updated_at": 1659108141000,
+  "version": "1.3"
+}

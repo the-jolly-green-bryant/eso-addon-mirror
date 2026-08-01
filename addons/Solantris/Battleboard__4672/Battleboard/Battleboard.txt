@@ -1,0 +1,27 @@
+## Title: Battleboard
+## APIVersion: 101050
+## Version: 1.0.2
+## AddOnVersion: 2
+## Author: Solantris
+## Description: Stores Battleground scoreboard results and shows match history.
+## SavedVariables: BattleboardSavedVariables
+## DependsOn: LibMainMenu-2.0>=40500 LibAddonMenu-2.0>=43
+## OptionalDependsOn: LibChatMessage>=113
+
+Battleboard.xml
+Battleboard_Constants.lua
+Battleboard_Core.lua
+Battleboard_Helpers.lua
+Battleboard_Matches.lua
+Battleboard_Settings.lua
+Battleboard_Stats.lua
+Battleboard_Features.lua
+Battleboard_Events.lua
+Battleboard_Capture.lua
+Battleboard_Debug.lua
+Battleboard_UI.lua
+Battleboard_EndMatch.lua
+Battleboard_Observatory.lua
+Battleboard_Share.lua
+Battleboard_Init.lua
+bindings.xml

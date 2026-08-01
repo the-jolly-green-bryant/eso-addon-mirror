@@ -1,0 +1,208 @@
+Version 3.1.7.5.4jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.1.7.2 to V3.1.7.5.4
+- As the final version of the patch for V3.x.x, this add-on will be automatically disabled in V4.x.x and later versions.
+- Updated API version to 101046 (ESO 11.0.x : Seasons of the Worm Cult Part 1)
+
+Version 3.1.7.2jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.1.7 to V3.1.7.2
+- Updated Japanese Translation
+- Updated API version to 101045 (ESO 10.3.x : Fallen Banners)
+
+Version 3.1.7jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.1.6.5.1 to V3.1.7
+- Updated Japanese Translation
+- Updated API version to 101043 (ESO 10.1.x : Update 43)
+
+Version 3.1.6.5.1jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.1.6.4 to V3.1.6.5.1
+- Fixed a UI error when crafting an enchanting gryph for master writs.
+
+Version 3.1.6.4jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.1.6.1 to V3.1.6.4
+- Updated API version to 101042 (ESO 10.0.x : Gold Road)
+
+Version 3.1.6.1jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.1.5.6 to V3.1.6.1
+- Updated Japanese Translation
+
+Version 3.1.5.6jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator V3.1.5.6
+- Updated Japanese Translation
+- Updated API version to 101041 (ESO 9.3.x : Scions of Ithelia)
+
+Version 3.1.5.5jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.1.5.3 to V3.1.5.5
+- Updated Japanese Translation
+- Updated API version to 101040 (ESO 9.2.x : Update 40)
+
+Version 3.1.5.3jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator V3.1.5.3
+- Updated Japanese Translation
+
+Version 3.1.5.2jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.1.4 to V3.1.5.2
+- Updated Japanese Translation
+
+Version 3.1.4jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.1.3.1 to V3.1.4
+- Updated Japanese Translation
+- Updated API version to 101038 (ESO 9.0.x : Necrom)
+
+Version 3.1.3.1jp-1  (Calamath)
+- Updated Japanese Translation
+- Addressed an issue specific to Japanese mode only that the book will not opening properly when the emote is performed.
+
+Version 3.1.3.1jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator V3.1.3.1
+
+Version 3.1.3jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.1.1 to V3.1.3
+- Updated Japanese Translation
+
+Version 3.1.1jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator V3.1.1
+- Updated Japanese Translation
+- Updated API version to 101037 (ESO 8.3.x : Scribes of Fate)
+
+Version 3.1.0jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.0.98 to V3.1.0
+- Updated API version to 101036 (ESO 8.2.x : Firesong)
+
+Version 3.0.98jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.0.96.9 to V3.0.98
+- Updated API version to 101035 (ESO 8.1.x : Lost Depths)
+
+Version 3.0.96.9jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator V3.0.96.9
+- Updated Japanese Translation
+
+Version 3.0.96.8jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.0.96.6 to V3.0.96.8
+- Updated Japanese Translation
+
+Version 3.0.96.6jp-1  (Calamath)
+- Fixed Japanese Translation
+
+Version 3.0.96.6jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.0.96 to V3.0.96.6
+- Updated Japanese Translation
+- Updated API version to 101033 (ESO 7.3.x : Ascending Tide)
+
+Version 3.0.96jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator V3.0.96
+
+Version 3.0.95jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator V3.0.95
+- Support for automatic hireling looting in Japanese mode
+- Updated Japanese Translation
+
+Version 3.0.94jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.0.93 to V3.0.94
+
+Version 3.0.93jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.0.91 to V3.0.93
+- Updated Japanese Translation
+- Updated API version to 101031 (ESO 7.1.x : Waking Flame)
+
+Version 3.0.91jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.0.7 to V3.0.91
+
+Version 3.0.7jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator V3.0.7
+- Updated API version to 100035 (ESO 7.0.x : Blackwood)
+
+Version 3.0.6jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Creator from V3.0.3.1 to V3.0.6
+- Updated Japanese Translation
+
+Version 3.0.3.1jp-1  (Calamath)
+Resolved the following issues related to the enchantment master writ.
+- Fixed an issue specific to Japanese mode where 'Glyph of Increase Magical Harm' could not be created due to past translation changes.
+- Fixed an issue where 'Glyph of Bracing' could not be created due to past item name changes.
+- Added support for creating 'Glyph of Reduce Skill Cost' and 'Glyph of Prismatic Recovery'.
+
+Version 3.0.3.1jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter from V3.0.2 to V3.0.3.1
+- Updated Japanese Translation
+
+Version 3.0.2jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter V3.0.2
+- Updated Japanese Translation
+
+Version 3.0.1jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter V3.0.1
+- Updated Japanese Translation
+
+Version 3.0.0jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter V3.0.0
+- Updated Japanese Translation
+- Updated API version to 100034 (ESO 6.3.x : Flames of Ambition)
+
+Version 2.9.4jp-2  (Calamath)
+- Jewelry master writ creation feature works properly now.
+
+Version 2.9.4jp-1  (Calamath)
+- Addressed an issue specific to Japanese mode only that would cause a UI error when crafting a legendary quality enchantment master writ. Special thanks to @kyohei!
+- Fixed a bug in the jpPatch-specific code related to the jewelry master writ support.
+
+Version 2.9.4jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter V2.9.4
+- Updated Japanese Translation
+- Updated API version to 100033 (ESO 6.2.x : Markarth)
+
+Version 2.9.3jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter from V2.9.1 to V2.9.3
+- Updated API version to 100032 (ESO 6.1.x : Stonethorn)
+
+Version 2.9.1jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter from V2.8.9 to V2.9.1
+
+Version 2.8.9jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter V2.8.9
+- Updated Japanese Translation
+
+Version 2.8.8.1jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter from V2.8.4 to V2.8.8.1
+- Updated Japanese Translation
+- Updated API version to 100031 (ESO 6.0.x : Greymoor)
+
+Version 2.8.4jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter V2.8.4
+
+Version 2.8.3jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter from V2.8.0.1 to V2.8.3
+- Updated Japanese Translation
+
+Version 2.8.0.1jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter from V2.7.14.1 to V2.8.0.1
+- Updated Japanese Translation
+- Updated API version to 100030 (ESO 5.3.x : Harrowstorm)
+
+Version 2.7.14.1jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter V2.7.14.1
+- Updated Japanese Translation
+
+Version 2.7.14jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter V2.7.14
+
+Version 2.7.13jp  (Calamath)
+- Merged changes original Dolgubon's Lazy Writ Crafter from V2.7.10 to V2.7.13
+- Updated API version to 100029 (ESO 5.2.5 : Dragonhold)
+
+Version 2.7.10jp  (Calamath)
+- Merged qoqo's jpPatch to original Dolgubon's Lazy Writ Crafter Version 2.7.10
+- Updated API version to 100028 (ESO 5.1.5 : Scalebreaker)
+
+
+Version 2.5.17.3jp: (qoqo)
+2.5.17.3対応
+
+Version 2.5.16.5jp: (qoqo)
+2.5.16.5対応
+
+Version 2.5.15.3jp: (qoqo)
+依頼の納品物を銀行から取り出す機能とマスター依頼に対応しました。
+Marifyさんありがとう！
+
+Version 2.5.13jp3: (qoqo)
+JPパッチ用にフォルダを分けました。

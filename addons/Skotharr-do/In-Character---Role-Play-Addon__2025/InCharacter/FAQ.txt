@@ -1,0 +1,59 @@
+In-Character - Role Play Addon
+by Skotharr-do
+
+Q: How to install this addon?
+A: Put the addon folder to "My Documents\Elder Scrolls Online\live\AddOns\"
+
+Q: What is this addon for?
+A: To write a very short description about what other role-players could see on your character visually. 
+	Example: "Wears a steel sword on his left side, a dagger coated in silver on his right. His face has two scars going down the left half. The right ear is missing."
+
+Q: How or where do enter I my character description?
+A: You can either type '/ic edit' in the chat to open the window or set up a key in the Controls to toggle it.
+
+Q: How long can my character description be?
+A: 348 standard english letters. If you use special characters of other languages, the amount is reduced due to how ESO chat system works (bug-report sent to them).
+	The addon will show a warning in the edit window if the text becomes too long when using special characters.
+
+Q: Who can see my character description?
+A: Only those using this addon can see it permanently.
+
+Q: How do I allow others to see my character description?
+A: The description must be sent via any text channel to a player. This way their game can recieve your description.
+	Write '/ic print' in the chat to automatically input your current character description to it, or use 'Save & to Chat' in the edit window. 
+	You can also set up a key in the Controls to insert your current character description to chat. 
+	Once the text has been inserted to your chat box, you must just press enter to send it.
+
+Q: Someone who uses this addon cannot see my character description! What to do?
+A: They must have recieved your chat message (see question above) with the description. If they were out of range or not online, they do not recieve it.
+
+Q: How can I see other players' descriptions?
+A: If they use this addon, too, and you recieved their description via chat message, move your crosshair over them to make a pop-up appear.
+
+Q: I cannot see the description of other players! What to do?
+A: See the question above.
+
+Q: The edit window or character description pop-up blocks my view! Can I move it?
+A: Yes you can. Simply enable your mouse cursor and drag the windows to the desired places. 
+	If you want to set this up without having someone under your crosshair, type '/ic always' in the chat to display the pop-up permanently.
+	To reset this, type '/ic normal', to display it just when someone is under your crosshair.
+	Those positions will be saved character-wide. 
+
+Q: What is this silly time there for at the end of the description of others?
+A: It displays the time you recieved their displayed character description. By this you can decide yourself if there might be a more up-to-date description of them by now, and perhaps ask them to send you a fresh one.
+
+Q: How can I disable the description pop-up without having to disable the addon and reload my UI?
+A: You can set up a button to toggle it in the Controls, or type '/ic disable' to the chat. To re-enable it via command, type '/ic enable'.
+
+Q: How do I ensure the description pop-up always resized relative to the bottom of my screen?
+A: Type '/ic bottom' to the chat to force the description pop-up being anchored to the bottom, and resizing upwards.
+	To make it resize downwards and being anchored to the top again, type '/ic top' to the chat.
+
+Q: How can I see a character description of someone who is not under my crosshair right now?
+A: Type '/ic <CharacterName>' to the chat. It will, if available, print out the character description of the given character.
+
+Q: How can I see what character descriptions of a player are known for my game client?
+A: Type '/ic list <CharacterName/AccountName>' to chat. It will display a list of character names that are known to your game client.
+
+Q: What more commands are there?
+A: Type '/ic help' to get a list of all commands and descriptions.

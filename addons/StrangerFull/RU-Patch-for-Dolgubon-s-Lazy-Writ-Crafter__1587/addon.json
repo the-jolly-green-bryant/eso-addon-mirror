@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/StrangerFull/RU-Patch-for-Dolgubon-s-Lazy-Writ-Crafter__1587",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "StrangerFull",
+  "canonical_id": "esoui:1587",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1587",
+  "deleted": false,
+  "directories": [
+    "DolgubonsLazyWritCreatorRUPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1587/",
+  "fingerprint": "008875e718d245f46c69ace5ae6adfd0193517ecbde57f814b47ab1462570629",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6277.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1587",
+  "source_url": "https://www.esoui.com/downloads/info1587-RUPatchforDolgubonsLazyWritCrafter.html",
+  "stats": {
+    "downloads": 323174,
+    "favorites": 90,
+    "monthly_downloads": 450
+  },
+  "title": "RU Patch for Dolgubon's Lazy Writ Crafter",
+  "updated_at": 1591006608000,
+  "version": "2.9.1ru31"
+}

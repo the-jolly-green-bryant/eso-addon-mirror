@@ -1,0 +1,23 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="PXWritStatusAddonIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" resizeToFitDescendents="true" tier="LOW">
+      <Dimensions x="400" y="200" />
+      <Anchor point="RIGHT" />
+
+      <OnMoveStop>
+        PXWritStatusAddon.OnIndicatorMoveStop()
+      </OnMoveStop>
+ 
+      <Controls>
+
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" centerColor="020202" alpha="0.5" edgeSize="2" edgeColor="888888">
+          <AnchorFill />
+        </Backdrop>
+
+        <Label name="$(parent)Label" width="400" height="200" font="ZoFontWinH3" inheritAlpha="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" wrapMode="ELLIPSIS" verticalAlignment="TOP" horizontalAlignment="LEFT" text="">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

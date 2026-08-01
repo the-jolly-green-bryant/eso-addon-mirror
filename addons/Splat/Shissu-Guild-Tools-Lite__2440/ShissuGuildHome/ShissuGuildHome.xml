@@ -1,0 +1,47 @@
+<!-- Teleporter -->
+<GuiXml>
+	<Controls>		
+	    <TopLevelControl name="SGT_KioskTime" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="330" y="150" />
+	      	<Anchor point="CENTER" offsetX="100" offsetY="100" />      
+	      	<Controls>
+		        <Backdrop name="$(parent)_Background" inherits="ZO_DefaultBackdrop" />
+		        
+		    <Label name="$(parent)_Title" font="$(ANTIQUE_FONT)|24" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Gildenhändler">
+				  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="0" />
+				</Label>
+        
+        <Texture name="$(parent)_Line" mouseEnabled="true" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds">
+          <Dimensions x="360" y="3" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_Title" relativePoint="TOPLEFT" offsetX="-30" offsetY="35" />
+			  </Texture>		
+				
+        <Label name="$(parent)_NextKiosk" font="ZoFontChat" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Neuer Händler in:">
+				  <Anchor point="TOPLEFT" relativeTo="$(parent)_Title" relativePoint="TOPLEFT" offsetX="0" offsetY="52" />
+				</Label>
+        <Label name="$(parent)_NextKioskCount" font="ZoFontChat" wrapMode="ELLIPSIS" verticalAlignment="RIGHT" text="xxxxxxxx">
+				  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-150" offsetY="54" />
+				</Label>
+
+        <Label name="$(parent)_LastBid" font="ZoFontChat" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Gebots Ende:">
+				  <Anchor point="TOPLEFT" relativeTo="$(parent)_NextKiosk" relativePoint="TOPLEFT" offsetX="0" offsetY="32" />
+				</Label>
+        <Label name="$(parent)_LastBidCount" font="ZoFontChat" wrapMode="ELLIPSIS" verticalAlignment="RIGHT" text="xxxxxxxx">
+				  <Anchor point="TOPLEFT" relativeTo="$(parent)_NextKioskCount" relativePoint="TOPLEFT" offsetX="0" offsetY="32" />
+				</Label>
+
+        <Label name="$(parent)_ReplacementBid" font="ZoFontChat" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Ersatzhändler ab:">
+				  <Anchor point="TOPLEFT" relativeTo="$(parent)_LastBid" relativePoint="TOPLEFT" offsetX="0" offsetY="32" />
+				</Label>
+        <Label name="$(parent)_ReplacementBidCount" font="ZoFontChat" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="xxxxxxxx">
+				  <Anchor point="TOPLEFT" relativeTo="$(parent)_LastBidCount" relativePoint="TOPLEFT" offsetX="0" offsetY="32" />
+				</Label>
+                
+				<Label name="$(parent)_Version" font="$(ANTIQUE_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="RIGHT" text="Shissu's Guild Tools">
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-66" offsetY="12" />
+				</Label>
+
+		    </Controls>
+		</TopLevelControl>    
+	</Controls>
+</GuiXml>

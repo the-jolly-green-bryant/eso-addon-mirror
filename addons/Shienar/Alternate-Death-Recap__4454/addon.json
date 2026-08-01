@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Shienar/Alternate-Death-Recap__4454",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Shienar",
+  "canonical_id": "esoui:4454",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4454",
+  "deleted": false,
+  "directories": [
+    "AlternateDeathRecap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4454/",
+  "fingerprint": "c0915896a84ca2d3c77d88731e9c7d3d33c773a82c993e91e064d3097173006f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15507.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15508.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15505.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4454",
+  "source_url": "https://www.esoui.com/downloads/info4454-AlternateDeathRecap.html",
+  "stats": {
+    "downloads": 355,
+    "favorites": 3,
+    "monthly_downloads": 29
+  },
+  "title": "Alternate Death Recap",
+  "updated_at": 1774655837000,
+  "version": "3.3"
+}

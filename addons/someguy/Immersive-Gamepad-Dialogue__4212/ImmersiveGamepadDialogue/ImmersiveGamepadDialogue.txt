@@ -1,0 +1,8 @@
+## APIVersion: 101044
+## Author: SomeGuy
+## Title: ImmersiveGamepadDialogue
+## Version: 1.0
+
+
+ImmersiveGamepadDialogue.lua
+Bindings.xml

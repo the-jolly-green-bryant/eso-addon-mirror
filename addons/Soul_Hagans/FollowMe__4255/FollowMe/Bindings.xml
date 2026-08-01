@@ -1,0 +1,15 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="FollowMe">
+            <Action name="FOLLOWME_SEND">
+                <Down>FollowMe.SendBeacon()</Down>
+            </Action>
+            <Action name="FOLLOWME_YES">
+                <Down>FollowMe.AcceptDialog()</Down>
+            </Action>
+            <Action name="FOLLOWME_NO">
+                <Down>FollowMe.CloseDialog()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

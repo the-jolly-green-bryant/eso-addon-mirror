@@ -1,0 +1,10 @@
+﻿## Title: SkyShardStatus
+## Description: Simple Addon To Show Current SkyShard Collection Status
+## APIVersion: 101032
+## Version: 101032.1
+## Author: SkOODaT
+## SavedVariables: SkyShardStatus_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=32
+
+SkyShardStatusMenu.lua
+SkyShardStatus.lua

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Sharlikran/Advanced-Member-Tooltip---LibHistoire__2972",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sharlikran",
+  "canonical_id": "esoui:2972",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:2972",
+  "deleted": false,
+  "directories": [
+    "AdvancedMemberTooltip"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2972/",
+  "fingerprint": "23db1cbe8c088ae862acc277d599b52fa19288d505d22468bbc8a36d607fd701",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10218.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10219.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2972",
+  "source_url": "https://www.esoui.com/downloads/info2972-AdvancedMemberTooltip-LibHistoire.html",
+  "stats": {
+    "downloads": 84555,
+    "favorites": 23,
+    "monthly_downloads": 393
+  },
+  "title": "Advanced Member Tooltip - LibHistoire",
+  "updated_at": 1743957403000,
+  "version": "2.38"
+}

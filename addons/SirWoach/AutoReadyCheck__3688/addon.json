@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/SirWoach/AutoReadyCheck__3688",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SirWoach",
+  "canonical_id": "esoui:3688",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3688",
+  "deleted": false,
+  "directories": [
+    "AutoReadyCheck"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3688/",
+  "fingerprint": "c37dad5773dc27d73b9cf1c059fc49c2364e3863e5cd3eb3b3e8e2af33ed5904",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15149.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3688",
+  "source_url": "https://www.esoui.com/downloads/info3688-AutoReadyCheck.html",
+  "stats": {
+    "downloads": 3626,
+    "favorites": 6,
+    "monthly_downloads": 46
+  },
+  "title": "AutoReadyCheck",
+  "updated_at": 1770143729000,
+  "version": "2.4.1"
+}

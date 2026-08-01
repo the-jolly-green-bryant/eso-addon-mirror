@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Provision/Provision-s-Chalutier-Fishing__2203",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Provision",
+  "canonical_id": "esoui:2203",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2203",
+  "deleted": false,
+  "directories": [
+    "ProvisionsChalutier"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2203/",
+  "fingerprint": "3b464f3fbde3aa91e3a9d923a34f5af30f4e20a58ae5e61da2da5a808ae7e00f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7557.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7558.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2203",
+  "source_url": "https://www.esoui.com/downloads/info2203-ProvisionsChalutierFishing.html",
+  "stats": {
+    "downloads": 18142,
+    "favorites": 12,
+    "monthly_downloads": 59
+  },
+  "title": "Provision's Chalutier : Fishing",
+  "updated_at": 1547794158000,
+  "version": "1.0.3"
+}

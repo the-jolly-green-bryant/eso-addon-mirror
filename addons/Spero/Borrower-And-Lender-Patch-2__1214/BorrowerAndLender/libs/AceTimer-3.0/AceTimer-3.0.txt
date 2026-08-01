@@ -1,0 +1,6 @@
+## APIVersion: 100000
+## Title: AceTimer-3.0
+## Credits: Kaelten, ported to ESO by Errc
+## DependsOn: LibStub
+
+AceTimer/AceTimer-3.0.lua

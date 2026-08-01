@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/Noobanidus/NowTalking__1300",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Noobanidus",
+  "canonical_id": "esoui:1300",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1300",
+  "deleted": false,
+  "directories": [
+    "NowTalking"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1300/",
+  "fingerprint": "a41add6194662caf1644d98048eae5c458c55c9068200e88c06ff0db17476f5f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4214.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1300",
+  "source_url": "https://www.esoui.com/downloads/info1300-NowTalking.html",
+  "stats": {
+    "downloads": 3101,
+    "favorites": 6,
+    "monthly_downloads": 18
+  },
+  "title": "NowTalking",
+  "updated_at": 1489115302000,
+  "version": "1.0.3"
+}

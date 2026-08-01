@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/SugaComa/VCAP2-built-for-console--please-review-files-before-adding-to-pc__4732",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "SugaComa",
+  "canonical_id": "esoui:4732",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4732",
+  "deleted": false,
+  "directories": [
+    "VCAP2"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4732/",
+  "fingerprint": "7a4c6a0b0c02df54442e21a6b4b52fa540179a5cc335d26bdd7c2042ef139604",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4732",
+  "source_url": "https://www.esoui.com/downloads/info4732-VCAP2builtforconsole-pleasereviewfilesbeforeaddingtopc.html",
+  "stats": {
+    "downloads": 7,
+    "favorites": 0,
+    "monthly_downloads": 5
+  },
+  "title": "VCAP2 (built for console- please review files before adding to pc)",
+  "updated_at": 1785199136000,
+  "version": "2.2.5"
+}

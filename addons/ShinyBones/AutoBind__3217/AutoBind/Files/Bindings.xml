@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Auto Bind">
+			<Action name="SBAUTOBIND_SHOW_PREVIEW">
+				<Down> AutoBind.PreviewWindow.ToggleShown() </Down>
+			</Action>
+			<Action name="SBAUTOBIND_BIND_ALL_UNKNOWN">
+				<Down> AutoBind.BindAllUnknown() </Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

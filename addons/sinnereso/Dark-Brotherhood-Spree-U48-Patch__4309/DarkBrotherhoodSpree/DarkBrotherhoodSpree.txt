@@ -1,0 +1,7 @@
+## APIVersion: 101048
+## Title: DarkBrotherhoodSpree
+## Version: 1.5
+## Author: Chazwazer
+## Description: Allows you to only take Spree Contracts from the Dark Brotherhood Marked for Death Contract Book.
+
+DarkBrotherhoodSpree.lua

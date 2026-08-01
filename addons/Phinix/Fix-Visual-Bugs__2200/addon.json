@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Phinix/Fix-Visual-Bugs__2200",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Phinix",
+  "canonical_id": "esoui:2200",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2200",
+  "deleted": false,
+  "directories": [
+    "FixVisualBugs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2200/",
+  "fingerprint": "7a568fba07b29df03d95d15fb2c0e66bf1bcdaf769748ae85873ac696ad33603",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10842.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2200",
+  "source_url": "https://www.esoui.com/downloads/info2200-FixVisualBugs.html",
+  "stats": {
+    "downloads": 9870,
+    "favorites": 12,
+    "monthly_downloads": 19
+  },
+  "title": "Fix Visual Bugs",
+  "updated_at": 1679164639000,
+  "version": "1.10"
+}

@@ -1,0 +1,18 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Splats Encounter Log v1.20
+## Description: Splats Encounter Log
+## Version 1.20
+## APIVersion: 101038 101039
+## IsLibrary: false
+## SavedVariables: SplatsEncounterLogging
+## DependsOn: LibAddonMenu-2.0
+## Author: |c009ad6Splat|r
+
+SplatsEncounterLog.lua
+bindings.xml
+SplatsEncounterLog.xml

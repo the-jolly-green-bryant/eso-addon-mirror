@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Sanct/Sanct-s-Ultimate-Organiser__1787",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Sanct",
+  "canonical_id": "esoui:1787",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    }
+  ],
+  "content_id": "esoui:1787",
+  "deleted": false,
+  "directories": [
+    "SanctsUltimateOrganiser"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1787/",
+  "fingerprint": "968363cd599f692014427c603f95c299708677f548deda5c30a1f5392d5f15a9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6062.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6063.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6064.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6065.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6068.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6070.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1787",
+  "source_url": "https://www.esoui.com/downloads/info1787-SanctsUltimateOrganiser.html",
+  "stats": {
+    "downloads": 18415,
+    "favorites": 8,
+    "monthly_downloads": 21
+  },
+  "title": "Sanct's Ultimate Organiser",
+  "updated_at": 1504461857000,
+  "version": "1.2"
+}

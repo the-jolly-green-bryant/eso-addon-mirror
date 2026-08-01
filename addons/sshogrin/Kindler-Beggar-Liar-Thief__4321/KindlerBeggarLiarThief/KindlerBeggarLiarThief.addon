@@ -1,0 +1,13 @@
+## Title: Kindler Beggar Liar Thief
+## Author: katkat42 |c2046e5sshogrin|r
+## Version: 1.2
+## APIVersion: 101048 101048
+## AddonVersion: 102000
+## DependsOn: LibAddonMenu-2.0>=41
+## SavedVariables: KindlerBeggarLiarThief
+
+KBLTStrings.lua
+KBLTWindow.lua
+KBLTMenu.lua
+bindings.xml
+KindlerBeggarLiarThief.lua

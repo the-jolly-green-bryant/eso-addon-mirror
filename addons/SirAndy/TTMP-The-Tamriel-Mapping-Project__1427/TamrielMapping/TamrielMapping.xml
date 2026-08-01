@@ -1,0 +1,9 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="TamrielMapping">
+			<OnUpdate>
+				TTMP.OnUpdate(iTime)
+			</OnUpdate>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>
