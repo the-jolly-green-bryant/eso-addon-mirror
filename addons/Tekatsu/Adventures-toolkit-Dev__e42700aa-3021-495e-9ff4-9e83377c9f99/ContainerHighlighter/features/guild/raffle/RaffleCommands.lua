@@ -1,0 +1,2 @@
+-- Raffle command scaffolding
+-- Compatibility split: implementation currently resides in RaffleDashboard.lua

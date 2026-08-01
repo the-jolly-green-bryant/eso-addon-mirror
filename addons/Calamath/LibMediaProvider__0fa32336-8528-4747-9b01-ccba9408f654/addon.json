@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Calamath/LibMediaProvider__0fa32336-8528-4747-9b01-ccba9408f654",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Calamath",
+  "canonical_id": "bethesda:0fa32336-8528-4747-9b01-ccba9408f654",
+  "content_id": "0fa32336-8528-4747-9b01-ccba9408f654",
+  "deleted": false,
+  "fingerprint": "ce34718cd2d15b78a083d1024353f6e36625e899bce0002880f328f45185a515",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "0fa32336-8528-4747-9b01-ccba9408f654",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/0fa32336-8528-4747-9b01-ccba9408f654",
+  "title": "LibMediaProvider"
+}

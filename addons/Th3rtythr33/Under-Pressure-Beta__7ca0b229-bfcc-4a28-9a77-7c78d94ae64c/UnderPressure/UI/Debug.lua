@@ -3,11 +3,12 @@
 -- =============================================================================
 -- Optional debug overlay. Toggled via the slash command /updebug and via
 -- the settings panel. Shows LIVE values only:
---   * health, combat state
+--   * health, combat state, dead state (engine's isDead, not just the UI's)
 --   * adjusted pressure DPS, burst multiplier, risk bonus
---   * attacker count and mode
+--   * attacker count, silence state and count
 --   * current TTD, candidate state, published state, active debuff count
---   * last 8 normalized events
+--   * last 8 events, with abilityType / statusEffectType for each effect --
+--     the only way to verify silence detection on console hardware
 --
 -- Feature-detect results deliberately live in /up-api-audit (chat) instead.
 -- They are fixed for the session, so repainting them here at 5 Hz consumed
@@ -51,10 +52,28 @@ function UP.Debug.LogDamage(amount, abilityId)
     trimLog()
 end
 
-function UP.Debug.LogEffect(category, abilityId)
+-- abilityType and statusEffectType are logged because they are the ONLY way to
+-- answer, on hardware, which of the two silence signals the console runtime
+-- actually populates -- the same role abilityId plays for verifying the
+-- classifier's ability-ID table. A debuff showing "aT=- sT=-" means neither
+-- field arrived and silence detection cannot work at all.
+function UP.Debug.LogEffect(category, abilityId, abilityType, statusEffectType)
     if not visible then return end
-    logBuffer[#logBuffer + 1] = ("effect   cat=%-13s ability=%-7s"):format(
-        tostring(category), tostring(abilityId or "-"))
+    logBuffer[#logBuffer + 1] = ("effect  cat=%-11s ab=%-7s aT=%-4s sT=%-4s"):format(
+        tostring(category), tostring(abilityId or "-"),
+        tostring(abilityType or "-"), tostring(statusEffectType or "-"))
+    trimLog()
+end
+
+-- Separate from LogEffect so a detected silence is unmissable in the buffer,
+-- and so it is recorded even when the effect is otherwise unclassified.
+function UP.Debug.LogSilence(abilityId, changeType, abilityType, statusEffectType)
+    if not visible then return end
+    local faded = (type(EFFECT_RESULT_FADED) == "number") and EFFECT_RESULT_FADED or 2
+    logBuffer[#logBuffer + 1] = ("SILENCE %-6s ab=%-7s aT=%-4s sT=%-4s"):format(
+        (changeType == faded) and "faded" or "on",
+        tostring(abilityId or "-"),
+        tostring(abilityType or "-"), tostring(statusEffectType or "-"))
     trimLog()
 end
 
@@ -102,12 +121,19 @@ function UP.Debug.Refresh()
     for _ in pairs(s.activeEffects or {}) do effectCount = effectCount + 1 end
 
     local lines = {
-        ("hp=%d / %d   inCombat=%s"):format(
-            s.health or 0, s.maxHealth or 0, tostring(s.inCombat and true or false)),
+        ("hp=%d / %d   inCombat=%s  dead=%s"):format(
+            s.health or 0, s.maxHealth or 0, tostring(s.inCombat and true or false),
+            tostring(s.isDead and true or false)),
         ("pressureDPS=%s  burstMul=%s  riskBonus=%s"):format(
             fmtNum(s.pressureDps), fmtNum(s.burstMul), fmtNum(s.riskBonus)),
-        ("attackers: %s mode  count=%d"):format(
-            tostring(s.attackerMode or "?"), s.attackerCount or 0),
+        -- The "+VISUALTEST" marker matters: without it a ring on screen beside
+        -- "silenced=no" looks like a detection bug rather than /up-visual-test.
+        ("attackers=%d  silenced=%s%s"):format(
+            s.attackerCount or 0,
+            (UP.Silence and UP.Silence.IsActive and UP.Silence.IsActive())
+                and ("YES x" .. tostring(UP.Silence.Count())) or "no",
+            (UP.SilenceRing and UP.SilenceRing.IsTestActive and UP.SilenceRing.IsTestActive())
+                and "  +VISUALTEST" or ""),
         ("dmgEvts=%d  activeDebuffs=%d  cand=%s"):format(
             s.damageEventCount or 0, effectCount, tostring(s.candidateState)),
         "--- recent events ---",

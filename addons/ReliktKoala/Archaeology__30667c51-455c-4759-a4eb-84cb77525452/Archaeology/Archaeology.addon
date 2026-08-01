@@ -1,0 +1,14 @@
+## Title: Archaeology
+## Description: Shows expiring antiquity leads and reminders in chat.
+## Author: ReliktGepard3
+## Version: 0.0.22
+## APIVersion: 101047
+## SavedVariables: ArchaeologySavedVariables
+## OptionalDependsOn: LibHarvensAddonSettings
+Archaeology.lua
+Text.lua
+Leads.lua
+Zone.lua
+Commands.lua
+Settings.lua
+Events.lua

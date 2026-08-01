@@ -1,0 +1,491 @@
+<GuiXml>
+    <Animations>
+        <!-- Fade-in for the main window -->
+        <AnimationTimeline name="ATK_Raffle_WindowFade" virtual="true">
+            <Animations>
+                <AlphaAnimation duration="400" startAlpha="0" endAlpha="1" />
+                <ScaleAnimation duration="400" startScale="0.95" endScale="1.0" />
+            </Animations>
+        </AnimationTimeline>
+        <!-- Subtle slide and fade for list rows -->
+        <AnimationTimeline name="ATK_Raffle_RowFade" virtual="true">
+            <Animations>
+                <AlphaAnimation duration="300" startAlpha="0" endAlpha="1" />
+                <TranslateAnimation duration="300" deltaX="20" deltaY="0" deltaXFromEnd="0" deltaYFromEnd="0" />
+            </Animations>
+        </AnimationTimeline>
+        <!-- Pulsing glow for selection -->
+        <AnimationTimeline name="ATK_Raffle_SelectionPulse" virtual="true">
+            <Animations>
+                <AlphaAnimation duration="800" startAlpha="0.3" endAlpha="0.7" playbackType="PING_PONG" loopCount="LOOP_INDEFINITELY" />
+            </Animations>
+        </AnimationTimeline>
+        <!-- Card focus pulse -->
+        <AnimationTimeline name="ATK_Raffle_CardFocusPulse" virtual="true">
+            <Animations>
+                <AlphaAnimation duration="1000" startAlpha="0.4" endAlpha="0.8" playbackType="PING_PONG" loopCount="LOOP_INDEFINITELY" />
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+
+    <Controls>
+        <!-- Reusable row template for Raffle Entries -->
+        <Control name="ATK_Raffle_EntryRow" virtual="true" mouseEnabled="true">
+            <Dimensions x="680" y="40" />
+            <OnInitialized>
+                self.timeline = ANIMATION_MANAGER:CreateTimelineFromVirtual("ATK_Raffle_RowFade", self)
+                self.glowTimeline = ANIMATION_MANAGER:CreateTimelineFromVirtual("ATK_Raffle_SelectionPulse", self:GetNamedChild("Highlight"))
+            </OnInitialized>
+            <Controls>
+                <!-- Row Highlight Glow -->
+                <Texture name="$(parent)Highlight" textureFile="EsoUI/Art/Buttons/gamepad/gp_button_generic_glow.dds" hidden="true" alpha="0.5" color="FFD700">
+                    <AnchorFill/>
+                </Texture>
+
+                <Backdrop name="$(parent)BG" alpha="0.2">
+                    <AnchorFill/>
+                    <Edge edgeSize="1" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="444444"/>
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="222222"/>
+                </Backdrop>
+                
+                <Label name="$(parent)Num" font="ZoFontGamepad27" horizontalAlignment="RIGHT">
+                    <Dimensions x="40" y="30" />
+                    <Anchor point="LEFT" offsetX="5" />
+                </Label>
+                <Label name="$(parent)Name" font="ZoFontGamepad27" horizontalAlignment="LEFT">
+                    <Dimensions x="300" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Num" relativePoint="RIGHT" offsetX="15" />
+                </Label>
+                <Label name="$(parent)Tickets" font="ZoFontGamepad27" horizontalAlignment="RIGHT">
+                    <Dimensions x="100" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="10" />
+                </Label>
+                <Label name="$(parent)Gold" font="ZoFontGamepad27" horizontalAlignment="RIGHT">
+                    <Dimensions x="180" y="30" />
+                    <Anchor point="RIGHT" offsetX="-10" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="ATK_Raffle_UI" hidden="true" mouseEnabled="true" movable="false">
+            <AnchorFill/>
+            <OnInitialized>
+                self.timeline = ANIMATION_MANAGER:CreateTimelineFromVirtual("ATK_Raffle_WindowFade", self)
+            </OnInitialized>
+            <Controls>
+                <!-- Main Window Gilded Frame -->
+                <Backdrop name="$(parent)BG" alpha="0.98">
+                    <AnchorFill/>
+                    <Edge edgeSize="3" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="000000"/>
+                </Backdrop>
+
+                <!-- Layered Backgrounds for Premium Depth -->
+                <Texture name="$(parent)OrnamentalBG" textureFile="EsoUI/Art/Guild/gamepad/gp_guild_banner_background.dds" alpha="0.12">
+                    <AnchorFill/>
+                </Texture>
+                
+                <Texture name="$(parent)Vignette" textureFile="EsoUI/Art/HUD/Gamepad/gp_radialMenu_vignette.dds" alpha="0.85">
+                    <AnchorFill/>
+                </Texture>
+
+                <!-- Center Piece Ornament -->
+                <Texture name="$(parent)CenterMandala" textureFile="EsoUI/Art/Miscellaneous/centerscreen_top_bracket.dds" alpha="0.15">
+                    <Dimensions x="800" y="200" />
+                    <Anchor point="CENTER" offsetY="50" />
+                </Texture>
+
+                <!-- Decorative Brackets (Four Corners) -->
+                <Texture name="$(parent)TopLeftCorner" textureFile="EsoUI/Art/HUD/Gamepad/gp_chat_corner.dds" color="FFD700">
+                    <Dimensions x="180" y="180" />
+                    <Anchor point="TOPLEFT" offsetX="5" offsetY="5" />
+                </Texture>
+                <Texture name="$(parent)TopRightCorner" textureFile="EsoUI/Art/HUD/Gamepad/gp_chat_corner.dds" color="FFD700">
+                    <Dimensions x="180" y="180" />
+                    <Anchor point="TOPRIGHT" offsetX="-5" offsetY="5" />
+                    <TextureCoords left="1" right="0" top="0" bottom="1" />
+                </Texture>
+                <Texture name="$(parent)BottomLeftCorner" textureFile="EsoUI/Art/HUD/Gamepad/gp_chat_corner.dds" color="FFD700">
+                    <Dimensions x="180" y="180" />
+                    <Anchor point="BOTTOMLEFT" offsetX="5" offsetY="-5" />
+                    <TextureCoords left="0" right="1" top="1" bottom="0" />
+                </Texture>
+                <Texture name="$(parent)BottomRightCorner" textureFile="EsoUI/Art/HUD/Gamepad/gp_chat_corner.dds" color="FFD700">
+                    <Dimensions x="180" y="180" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+                    <TextureCoords left="1" right="0" top="1" bottom="0" />
+                </Texture>
+
+                <!-- Header Section -->
+                <Control name="$(parent)Header">
+                    <Dimensions x="1400" y="200" />
+                    <Anchor point="TOP" offsetY="40" />
+                    <Controls>
+                        <!-- High-End Header Plate -->
+                        <Backdrop name="$(parent)Plate" alpha="0.95">
+                            <Dimensions x="1000" y="120" />
+                            <Anchor point="CENTER" />
+                            <Edge edgeSize="3" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="111111"/>
+                        </Backdrop>
+                        <Label name="$(parent)Title" font="ZoFontGamepadBold48" horizontalAlignment="CENTER" modifyTextType="UPPERCASE" text="Guild Raffle Manager" color="FFD700">
+                            <Anchor point="CENTER" offsetY="-15" />
+                        </Label>
+                        <Label name="$(parent)Subtitle" font="ZoFontGamepad34" horizontalAlignment="CENTER" color="E6E6E6">
+                            <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetY="5" />
+                        </Label>
+                        <!-- Gilded Divider with Center Ornament -->
+                        <Control name="$(parent)DividerContainer">
+                            <Dimensions x="1100" y="48" />
+                            <Anchor point="BOTTOM" offsetY="10" />
+                            <Controls>
+                                <Texture name="$(parent)Left" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider_edge.dds" color="FFD700">
+                                    <Dimensions x="520" y="8" />
+                                    <Anchor point="LEFT" />
+                                </Texture>
+                                <Texture name="$(parent)Right" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider_edge.dds" color="FFD700">
+                                    <Dimensions x="520" y="8" />
+                                    <Anchor point="RIGHT" />
+                                    <TextureCoords left="1" right="0" top="0" bottom="1" />
+                                </Texture>
+                                <Texture name="$(parent)Center" textureFile="EsoUI/Art/Dye/gamepad/dye_swatch_highlighter.dds" color="FFD700">
+                                    <Dimensions x="64" y="64" />
+                                    <Anchor point="CENTER" />
+                                </Texture>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <!-- Left Column: Guilds & Stats -->
+                <Control name="$(parent)LeftCol">
+                    <Dimensions x="400" y="700" />
+                    <Anchor point="TOPLEFT" offsetX="100" offsetY="220" />
+                    <Controls>
+                        <!-- Guild List Card -->
+                        <Control name="$(parent)GuildsCard">
+                            <Dimensions x="380" y="350" />
+                            <Anchor point="TOP" />
+                            <OnInitialized>
+                                self.glowTimeline = ANIMATION_MANAGER:CreateTimelineFromVirtual("ATK_Raffle_CardFocusPulse", self:GetNamedChild("FocusGlow"))
+                            </OnInitialized>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" alpha="0.85">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="3" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="444444"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="111111"/>
+                                </Backdrop>
+                                <!-- Focused Glow for Card -->
+                                <Texture name="$(parent)FocusGlow" textureFile="EsoUI/Art/Buttons/gamepad/gp_button_generic_glow.dds" alpha="0.6" hidden="true" color="FFD700">
+                                    <AnchorFill/>
+                                </Texture>
+                                
+                                <!-- Card Header Plate -->
+                                <Backdrop name="$(parent)HeaderPlate" alpha="0.95">
+                                    <Dimensions x="360" y="50" />
+                                    <Anchor point="TOP" offsetY="5" />
+                                    <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="222222"/>
+                                </Backdrop>
+                                <Label name="$(parent)Title" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" text="Guilds" modifyTextType="UPPERCASE" color="FFD700">
+                                    <Anchor point="TOP" offsetY="15" />
+                                </Label>
+                                <Control name="$(parent)List">
+                                    <Dimensions x="340" y="280" />
+                                    <Anchor point="TOP" offsetY="65" />
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                        <!-- Settings/Stats Card (wider for linked guild breakdown) -->
+                        <Control name="$(parent)StatsCard">
+                            <Dimensions x="550" y="320" />
+                            <Anchor point="TOP" relativeTo="$(parent)GuildsCard" relativePoint="BOTTOM" offsetY="30" />
+                            <Controls>
+                                <Backdrop name="$(parent)BG" alpha="0.85">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="3" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="444444"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="111111"/>
+                                </Backdrop>
+                                <!-- Card Header Plate -->
+                                <Backdrop name="$(parent)HeaderPlate" alpha="0.95">
+                                    <Dimensions x="530" y="50" />
+                                    <Anchor point="TOP" offsetY="5" />
+                                    <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="222222"/>
+                                </Backdrop>
+                                <Label name="$(parent)Title" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" text="Raffle Stats" modifyTextType="UPPERCASE" color="FFD700">
+                                    <Anchor point="TOP" offsetY="15" />
+                                </Label>
+                                <Label name="$(parent)TicketPrice" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Anchor point="TOPLEFT" offsetX="20" offsetY="75"/></Label>
+                                <Label name="$(parent)Suffix" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Anchor point="TOPLEFT" offsetX="20" offsetY="115"/></Label>
+                                <Label name="$(parent)Period" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Anchor point="TOPLEFT" offsetX="20" offsetY="155"/></Label>
+                                <Label name="$(parent)LastScan" font="ZoFontGamepad22" horizontalAlignment="LEFT" color="888888"><Anchor point="BOTTOMLEFT" offsetX="20" offsetY="-25"/></Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <!-- Right Column: Entries -->
+                <Control name="$(parent)EntriesCol">
+                    <Dimensions x="800" y="700" />
+                    <Anchor point="TOPRIGHT" offsetX="-100" offsetY="220" />
+                    <OnInitialized>
+                        self.glowTimeline = ANIMATION_MANAGER:CreateTimelineFromVirtual("ATK_Raffle_CardFocusPulse", self:GetNamedChild("FocusGlow"))
+                    </OnInitialized>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" alpha="0.85">
+                            <AnchorFill/>
+                            <Edge edgeSize="3" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="444444"/>
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="111111"/>
+                        </Backdrop>
+                        <!-- High-Intensity Selection Glow for Card -->
+                        <Texture name="$(parent)FocusGlow" textureFile="EsoUI/Art/Buttons/gamepad/gp_button_generic_glow.dds" alpha="0.6" hidden="true" color="FFD700">
+                            <AnchorFill/>
+                        </Texture>
+                        
+                        <!-- Header Ornate Plate -->
+                        <Backdrop name="$(parent)HeaderPlate" alpha="0.95">
+                            <Dimensions x="780" y="60" />
+                            <Anchor point="TOP" offsetY="5" />
+                            <Edge edgeSize="3" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="222222"/>
+                        </Backdrop>
+                        <Label name="$(parent)Header" font="ZoFontGamepadBold34" horizontalAlignment="CENTER" modifyTextType="UPPERCASE" color="FFD700">
+                            <Anchor point="TOP" offsetY="15" />
+                        </Label>
+                        
+                        <!-- Column Header Labels with Ornate Font -->
+                        <Control name="$(parent)ColumnHeaders">
+                            <Dimensions x="740" y="40" />
+                            <Anchor point="TOP" offsetY="75" />
+                            <Controls>
+                                <Label name="$(parent)Num" font="ZoFontGamepad27" color="888888" text="#">
+                                    <Anchor point="LEFT" offsetX="25" />
+                                </Label>
+                                <Label name="$(parent)Name" font="ZoFontGamepad27" color="888888" text="MEMBER">
+                                    <Anchor point="LEFT" offsetX="80" />
+                                </Label>
+                                <Label name="$(parent)Tickets" font="ZoFontGamepad27" color="888888" text="TICKETS">
+                                    <Anchor point="LEFT" offsetX="390" />
+                                </Label>
+                                <Label name="$(parent)Gold" font="ZoFontGamepad27" color="888888" text="TOTAL GOLD">
+                                    <Anchor point="RIGHT" offsetX="-25" />
+                                </Label>
+                            </Controls>
+                        </Control>
+
+                        <!-- Gilded Separator -->
+                        <Texture name="$(parent)ColDivider" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider.dds" color="FFD700" alpha="0.8">
+                            <Dimensions x="760" y="4" />
+                            <Anchor point="TOP" offsetY="115" />
+                        </Texture>
+
+                        <!-- Dynamic Entries List Container -->
+                        <Control name="$(parent)List">
+                            <Dimensions x="740" y="520" />
+                            <Anchor point="TOP" offsetY="125" />
+                            <Controls>
+                                <!-- Moving Selection Frame -->
+                                <Backdrop name="$(parent)SelectionFrame" inherits="ZO_DefaultBackdrop" alpha="0" hidden="false">
+                                    <Dimensions x="720" y="45" />
+                                    <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                                    <Edge edgeSize="3" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="FFD70033"/>
+                                </Backdrop>
+                                <!-- Pre-defined rows -->
+                                <Control name="$(parent)Row1" inherits="ATK_Raffle_EntryRow" hidden="true"><Anchor point="TOPLEFT" offsetX="20" offsetY="0"/></Control>
+                                <Control name="$(parent)Row2" inherits="ATK_Raffle_EntryRow" hidden="true"><Anchor point="TOPLEFT" offsetX="20" offsetY="42"/></Control>
+                                <Control name="$(parent)Row3" inherits="ATK_Raffle_EntryRow" hidden="true"><Anchor point="TOPLEFT" offsetX="20" offsetY="84"/></Control>
+                                <Control name="$(parent)Row4" inherits="ATK_Raffle_EntryRow" hidden="true"><Anchor point="TOPLEFT" offsetX="20" offsetY="126"/></Control>
+                                <Control name="$(parent)Row5" inherits="ATK_Raffle_EntryRow" hidden="true"><Anchor point="TOPLEFT" offsetX="20" offsetY="168"/></Control>
+                                <Control name="$(parent)Row6" inherits="ATK_Raffle_EntryRow" hidden="true"><Anchor point="TOPLEFT" offsetX="20" offsetY="210"/></Control>
+                                <Control name="$(parent)Row7" inherits="ATK_Raffle_EntryRow" hidden="true"><Anchor point="TOPLEFT" offsetX="20" offsetY="252"/></Control>
+                                <Control name="$(parent)Row8" inherits="ATK_Raffle_EntryRow" hidden="true"><Anchor point="TOPLEFT" offsetX="20" offsetY="294"/></Control>
+                                <Control name="$(parent)Row9" inherits="ATK_Raffle_EntryRow" hidden="true"><Anchor point="TOPLEFT" offsetX="20" offsetY="336"/></Control>
+                                <Control name="$(parent)Row10" inherits="ATK_Raffle_EntryRow" hidden="true"><Anchor point="TOPLEFT" offsetX="20" offsetY="378"/></Control>
+                                <Control name="$(parent)Row11" inherits="ATK_Raffle_EntryRow" hidden="true"><Anchor point="TOPLEFT" offsetX="20" offsetY="420"/></Control>
+                                <Control name="$(parent)Row12" inherits="ATK_Raffle_EntryRow" hidden="true"><Anchor point="TOPLEFT" offsetX="20" offsetY="462"/></Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <!-- Footer: Controls Hint -->
+                <Label name="$(parent)Footer" font="ZoFontGamepad22" horizontalAlignment="CENTER">
+                    <Anchor point="BOTTOM" offsetY="-40" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Aesthetic Raffle Picker Dialog -->
+        <TopLevelControl name="ATK_RafflePickerDialog" hidden="true" mouseEnabled="true" movable="false" drawLayer="4" tier="HIGH">
+            <Dimensions x="600" y="400"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" alpha="0.98">
+                    <AnchorFill/>
+                    <Edge edgeSize="3" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="111111"/>
+                </Backdrop>
+                <Label name="$(parent)Title" font="ZoFontGamepadBold42" horizontalAlignment="CENTER" modifyTextType="UPPERCASE" text="|cFFD700Draw Winners|r">
+                    <Anchor point="TOP" offsetY="30"/>
+                </Label>
+                <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider.dds" color="FFD700" alpha="0.6">
+                    <Dimensions x="400" y="4" />
+                    <Anchor point="TOP" offsetY="85" />
+                </Texture>
+                <Label name="$(parent)Period" font="ZoFontGamepad34" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" offsetY="110"/>
+                </Label>
+                <Label name="$(parent)Stats" font="ZoFontGamepad27" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" offsetY="160"/>
+                </Label>
+                <Label name="$(parent)WinnerCount" font="ZoFontGamepadBold42" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" offsetY="230"/>
+                </Label>
+                <Label name="$(parent)Controls" font="ZoFontGamepad27" horizontalAlignment="CENTER" text="|cFFFF00[A] Draw|r   |c888888[B] Cancel|r">
+                    <Anchor point="BOTTOM" offsetY="-30"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Aesthetic Raffle Winner Dialog -->
+        <TopLevelControl name="ATK_RaffleWinnerDialog" hidden="true" mouseEnabled="true" movable="false" drawLayer="4" tier="HIGH">
+            <Dimensions x="700" y="500"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" alpha="0.98">
+                    <AnchorFill/>
+                    <Edge edgeSize="3" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="111111"/>
+                </Backdrop>
+                <Label name="$(parent)Title" font="ZoFontGamepadBold42" horizontalAlignment="CENTER" modifyTextType="UPPERCASE" text="|cFFD700Winners Selection|r">
+                    <Anchor point="TOP" offsetY="30"/>
+                </Label>
+                <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider.dds" color="FFD700" alpha="0.6">
+                    <Dimensions x="500" y="4" />
+                    <Anchor point="TOP" offsetY="85" />
+                </Texture>
+                <Label name="$(parent)WinnerName" font="ZoFontGamepad34" horizontalAlignment="CENTER">
+                    <Dimensions x="650" y="250"/>
+                    <Anchor point="TOP" offsetY="110"/>
+                </Label>
+                <Label name="$(parent)Stats" font="ZoFontGamepad22" horizontalAlignment="CENTER">
+                    <Anchor point="BOTTOM" offsetY="-80"/>
+                </Label>
+                <Label name="$(parent)Controls" font="ZoFontGamepad27" horizontalAlignment="CENTER" text="|cFFFF00[X] Reroll|r   |c888888[B] Close|r">
+                    <Anchor point="BOTTOM" offsetY="-30"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Comprehensive Raffle Settings Dialog -->
+        <TopLevelControl name="ATK_RaffleSettingsDialog" hidden="true" mouseEnabled="true" movable="false" drawLayer="4" tier="HIGH">
+            <Dimensions x="900" y="700"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" alpha="0.98">
+                    <AnchorFill/>
+                    <Edge edgeSize="3" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="111111"/>
+                </Backdrop>
+                <Label name="$(parent)Title" font="ZoFontGamepadBold42" horizontalAlignment="CENTER" modifyTextType="UPPERCASE" text="|cFFD700Raffle Settings|r">
+                    <Anchor point="TOP" offsetY="20"/>
+                </Label>
+                <Label name="$(parent)GuildName" font="ZoFontGamepad27" horizontalAlignment="CENTER" color="AAAAAA">
+                    <Anchor point="TOP" offsetY="60"/>
+                </Label>
+                <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider.dds" color="FFD700" alpha="0.6">
+                    <Dimensions x="850" y="4" />
+                    <Anchor point="TOP" offsetY="95" />
+                </Texture>
+                
+                <!-- Tab Bar (7 tabs, 120px each) -->
+                <Control name="$(parent)TabBar">
+                    <Dimensions x="850" y="40"/>
+                    <Anchor point="TOP" offsetY="105"/>
+                    <Controls>
+                        <Label name="$(parent)Tab1" font="ZoFontGamepad22" horizontalAlignment="CENTER" text="TICKETS"><Dimensions x="120" y="35"/><Anchor point="LEFT" offsetX="5"/></Label>
+                        <Label name="$(parent)Tab2" font="ZoFontGamepad22" horizontalAlignment="CENTER" text="PACKS"><Dimensions x="120" y="35"/><Anchor point="LEFT" offsetX="125"/></Label>
+                        <Label name="$(parent)Tab3" font="ZoFontGamepad22" horizontalAlignment="CENTER" text="RANKS"><Dimensions x="120" y="35"/><Anchor point="LEFT" offsetX="245"/></Label>
+                        <Label name="$(parent)Tab4" font="ZoFontGamepad22" horizontalAlignment="CENTER" text="BONUSES"><Dimensions x="120" y="35"/><Anchor point="LEFT" offsetX="365"/></Label>
+                        <Label name="$(parent)Tab5" font="ZoFontGamepad22" horizontalAlignment="CENTER" text="PRIZES"><Dimensions x="120" y="35"/><Anchor point="LEFT" offsetX="485"/></Label>
+                        <Label name="$(parent)Tab6" font="ZoFontGamepad22" horizontalAlignment="CENTER" text="RULES"><Dimensions x="120" y="35"/><Anchor point="LEFT" offsetX="605"/></Label>
+                        <Label name="$(parent)Tab7" font="ZoFontGamepad22" horizontalAlignment="CENTER" text="LINKED"><Dimensions x="120" y="35"/><Anchor point="LEFT" offsetX="725"/></Label>
+                    </Controls>
+                </Control>
+                <Texture name="$(parent)TabDivider" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider.dds" color="FFD700" alpha="0.4">
+                    <Dimensions x="850" y="2" />
+                    <Anchor point="TOP" offsetY="150" />
+                </Texture>
+                
+                <!-- Settings Content Area -->
+                <Control name="$(parent)Content">
+                    <Dimensions x="850" y="450"/>
+                    <Anchor point="TOP" offsetY="160"/>
+                    <Controls>
+                        <!-- Options will be populated dynamically -->
+                        <Label name="$(parent)Row1" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="800" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="10"/></Label>
+                        <Label name="$(parent)Row2" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="800" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="55"/></Label>
+                        <Label name="$(parent)Row3" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="800" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="100"/></Label>
+                        <Label name="$(parent)Row4" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="800" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="145"/></Label>
+                        <Label name="$(parent)Row5" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="800" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="190"/></Label>
+                        <Label name="$(parent)Row6" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="800" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="235"/></Label>
+                        <Label name="$(parent)Row7" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="800" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="280"/></Label>
+                        <Label name="$(parent)Row8" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="800" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="325"/></Label>
+                        <Label name="$(parent)Row9" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="800" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="370"/></Label>
+                        <Label name="$(parent)Row10" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="800" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="415"/></Label>
+                        <!-- Selection highlight -->
+                        <Backdrop name="$(parent)SelectionBG" alpha="0.3" hidden="false">
+                            <Dimensions x="820" y="40"/>
+                            <Anchor point="TOPLEFT" offsetX="15" offsetY="10"/>
+                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="FFD70033"/>
+                        </Backdrop>
+                    </Controls>
+                </Control>
+                
+                <!-- Page indicator -->
+                <Label name="$(parent)PageInfo" font="ZoFontGamepad22" horizontalAlignment="CENTER" color="888888">
+                    <Anchor point="BOTTOM" offsetY="-60"/>
+                </Label>
+                
+                <!-- Controls -->
+                <Label name="$(parent)Controls" font="ZoFontGamepad22" horizontalAlignment="CENTER" text="|cFFFF00[LB/RB] Tab|r  |c00FFFF[D-Pad] Navigate|r  |cFFFF00[A] ↑|r  |cFFFF00[Y] ↓|r  |c888888[B] Close|r">
+                    <Anchor point="BOTTOM" offsetY="-25"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Participant Details Dialog -->
+        <TopLevelControl name="ATK_ParticipantDetailsDialog" hidden="true" mouseEnabled="true" movable="false" drawLayer="4" tier="HIGH">
+            <Dimensions x="500" y="380"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" alpha="0.98">
+                    <AnchorFill/>
+                    <Edge edgeSize="3" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="111111"/>
+                </Backdrop>
+                <Label name="$(parent)Title" font="ZoFontGamepadBold34" horizontalAlignment="CENTER" modifyTextType="UPPERCASE">
+                    <Anchor point="TOP" offsetY="20"/>
+                </Label>
+                <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider.dds" color="FFD700" alpha="0.6">
+                    <Dimensions x="450" y="4" />
+                    <Anchor point="TOP" offsetY="60" />
+                </Texture>
+                <Label name="$(parent)Row1" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="450" y="30"/><Anchor point="TOPLEFT" offsetX="25" offsetY="80"/></Label>
+                <Label name="$(parent)Row2" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="450" y="30"/><Anchor point="TOPLEFT" offsetX="25" offsetY="115"/></Label>
+                <Label name="$(parent)Row3" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="450" y="30"/><Anchor point="TOPLEFT" offsetX="25" offsetY="150"/></Label>
+                <Label name="$(parent)Row4" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="450" y="30"/><Anchor point="TOPLEFT" offsetX="25" offsetY="185"/></Label>
+                <Label name="$(parent)Row5" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="450" y="30"/><Anchor point="TOPLEFT" offsetX="25" offsetY="220"/></Label>
+                <Label name="$(parent)Row6" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="450" y="30"/><Anchor point="TOPLEFT" offsetX="25" offsetY="255"/></Label>
+                <Label name="$(parent)Row7" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="450" y="30"/><Anchor point="TOPLEFT" offsetX="25" offsetY="290"/></Label>
+                <Label name="$(parent)Controls" font="ZoFontGamepad22" horizontalAlignment="CENTER" text="|c888888[B] Close|r">
+                    <Anchor point="BOTTOM" offsetY="-20"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GuiXml>
+  <Controls>
+    <!-- Row template: 121x30; two 14px bars that touch, centered vertically -->
+    <Control name="EvRowTemplate" virtual="true">
+      <Dimensions x="121" y="30" />
+      <Controls>
+        <!-- Top lane (RR): y = 1, height 14 -->
+        <StatusBar name="$(parent)BarTop" color="FF00DD00">
+          <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="1"  offsetY="1" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-1" offsetY="1" />
+          <Dimensions y="14" />
+        </StatusBar>
+
+        <!-- Bottom lane (EV): starts at y = 15 (touching top), height 14 -->
+        <StatusBar name ="$(parent)BarBottom" color="FFFF8800">
+          <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="1"  offsetY="15" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-1" offsetY="15" />
+          <Dimensions y="14" />
+        </StatusBar>
+
+        <!-- Single row label (overlays both lanes) -->
+        <Label name="$(parent)Label" text=""
+               horizontalAlignment="LEFT" verticalAlignment="CENTER"
+               font="ZoFontGameSmall" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+          <Dimensions x="113" y="30" />
+          <Anchor point="LEFT" relativeTo ="$(parent)" relativePoint="LEFT" offsetX="8" />
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- Frame: 2 columns x 6 rows -->
+    <TopLevelControl name="EvFrame" mouseEnabled="false" movable="false" hidden="true" clampedToScreen="true">
+      <Dimensions x="242" y="180" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+      <OnMoveStop> Ev.savePos() </OnMoveStop>
+
+      <Controls>
+        <!-- Column 1: rows 1–6 -->
+        <Control name="$(parent)Row1" inherits="EvRowTemplate">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <OnInitialized> self:GetNamedChild("Label"):SetText("group1") </OnInitialized>
+        </Control>
+        <Control name="$(parent)Row2" inherits="EvRowTemplate">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Row1" relativePoint="BOTTOMLEFT" />
+          <OnInitialized> self:GetNamedChild("Label"):SetText("group2") </OnInitialized>
+        </Control>
+        <Control name="$(parent)Row3" inherits="EvRowTemplate">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Row2" relativePoint="BOTTOMLEFT" />
+          <OnInitialized> self:GetNamedChild("Label"):SetText("group3") </OnInitialized>
+        </Control>
+        <Control name="$(parent)Row4" inherits="EvRowTemplate">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Row3" relativePoint="BOTTOMLEFT" />
+          <OnInitialized> self:GetNamedChild("Label"):SetText("group4") </OnInitialized>
+        </Control>
+        <Control name="$(parent)Row5" inherits="EvRowTemplate">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Row4" relativePoint="BOTTOMLEFT" />
+          <OnInitialized> self:GetNamedChild("Label"):SetText("group5") </OnInitialized>
+        </Control>
+        <Control name="$(parent)Row6" inherits="EvRowTemplate">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Row5" relativePoint="BOTTOMLEFT" />
+          <OnInitialized> self:GetNamedChild("Label"):SetText("group6") </OnInitialized>
+        </Control>
+
+        <!-- Column 2: rows 7–12 -->
+        <Control name ="$(parent)Row7" inherits="EvRowTemplate">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Row1" relativePoint="TOPRIGHT" />
+          <OnInitialized> self:GetNamedChild("Label"):SetText("group7") </OnInitialized>
+        </Control>
+        <Control name ="$(parent)Row8" inherits="EvRowTemplate">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Row7" relativePoint="BOTTOMLEFT" />
+          <OnInitialized> self:GetNamedChild("Label"):SetText("group8") </OnInitialized>
+        </Control>
+        <Control name ="$(parent)Row9" inherits="EvRowTemplate">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Row8" relativePoint="BOTTOMLEFT" />
+          <OnInitialized> self:GetNamedChild("Label"):SetText("group9") </OnInitialized>
+        </Control>
+        <Control name ="$(parent)Row10" inherits="EvRowTemplate">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Row9" relativePoint="BOTTOMLEFT" />
+          <OnInitialized> self:GetNamedChild("Label"):SetText("group10") </OnInitialized>
+        </Control>
+        <Control name ="$(parent)Row11" inherits="EvRowTemplate">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Row10" relativePoint="BOTTOMLEFT" />
+          <OnInitialized> self:GetNamedChild("Label"):SetText("group11") </OnInitialized>
+        </Control>
+        <Control name ="$(parent)Row12" inherits="EvRowTemplate">
+          <Anchor point="TOPLEFT" relativeTo ="$(parent)Row11" relativePoint="BOTTOMLEFT" />
+          <OnInitialized> self:GetNamedChild("Label"):SetText("group12") </OnInitialized>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

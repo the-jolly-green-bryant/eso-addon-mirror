@@ -1,0 +1,4 @@
+<GuiXml>
+    <!-- font path for consoles. -->
+    <String name="LMP_FONT_PATH" value="EsoUI/Common/Fonts/" />
+</GuiXml>

@@ -8,7 +8,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | --- | --- | --- | --- |
 | [I Summon Thee](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/I-Summon-Thee__1582) | manavortex | PC / Mac | 0.3b |
 | [I'm Calling U - Don't miss notification and chat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tdenc/I-m-Calling-U---Don-t-miss-notification-and-chat__3147) | tdenc | PC / Mac | 0.6.0 |
-| [IAH Test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cFFFF00andy.s-r-c4B8BFEgamer_sa22-r/IAH-Test__2e7370ba-81d3-4bb3-8b0b-2bff4a943421) | \|cFFFF00andy.s\|r, \|c4B8BFEgamer_sa22\|r | Console | — |
+| [IAH Test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gamer_sa22/IAH-Test__2e7370ba-81d3-4bb3-8b0b-2bff4a943421) | Gamer_sa22 | Console | — |
 | [IC The Next Boss (Imperial City Spawn Tracker)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ownedbynico/IC-The-Next-Boss-Imperial-City-Spawn-Tracker__2552) | ownedbynico | PC / Mac | 1.3.0 |
 | [Iconoxe](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/grovex_fr/Iconoxe__3623) | grovex_fr | PC / Mac | 4600 |
 | [Idle Animations Continued](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SwaggyBatman/Idle-Animations-Continued__2157) | SwaggyBatman | PC / Mac | 3 |
@@ -41,7 +41,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Improved Death Recap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solinur/Improved-Death-Recap__1319) | Solinur | PC / Mac | 1.0.2 |
 | [Improved Golden Pursuit Filters](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/Improved-Golden-Pursuit-Filters__4005) | MrPikPik | PC / Mac | 1.5.1 |
 | [Improved Item Set Collection Filters](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/Improved-Item-Set-Collection-Filters__3402) | MrPikPik | PC / Mac | 1.1.1 |
-| [Improved Night Market HUD](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Improved-Night-Market-HUD__b344faa0-0b93-431e-ae22-befcaaa36333) | @code65536 | Console | — |
+| [Improved Night Market HUD](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Improved-Night-Market-HUD__b344faa0-0b93-431e-ae22-befcaaa36333) | code65536 | Console | — |
 | [Improved Night Market HUD](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Improved-Night-Market-HUD__4560) | code65536 | PC / Mac | 1.0.3 |
 | [Improved PvP UI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/imPDA/Improved-PvP-UI__4035) | imPDA | PC / Mac | 1.7.5 |
 | [Improved Tomes UI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/imPDA/Improved-Tomes-UI__4496) | imPDA | PC / Mac | 6 |
@@ -54,7 +54,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Incombat wear helmet](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ek1/Incombat-wear-helmet__1687) | Ek1 | PC / Mac | 1047.251018 |
 | [Increase Keybinds for Setups to 50](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wambo/Increase-Keybinds-for-Setups-to-50__3768) | wambo | PC / Mac | 1.4.1 |
 | [Infinite Archive Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/andy.s/Infinite-Archive-Helper__3867) | andy.s | PC / Mac | 0.4.2 |
-| [Infinite Archive Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cFFFF00andy.s-r-c4B8BFEgamer_sa22-r/Infinite-Archive-Helper__fd1c014a-ca0d-42e8-91b7-3ce3c64be6b8) | \|cFFFF00andy.s\|r, \|c4B8BFEgamer_sa22\|r | Console | — |
+| [Infinite Archive Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gamer_sa22/Infinite-Archive-Helper__fd1c014a-ca0d-42e8-91b7-3ce3c64be6b8) | Gamer_sa22 | Console | — |
 | [Info Panel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hoft/Info-Panel__1831) | Hoft | PC / Mac | 1.63 |
 | [InfoDisplay](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels387/InfoDisplay__3245) | Wheels387 | PC / Mac | 1.03 |
 | [InfoPanel Layout Fix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dylanethan/InfoPanel-Layout-Fix__4725) | dylanethan | PC / Mac | 1.0.1 |
@@ -62,12 +62,12 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Innocent Blade of Woe (and Vampire Feed)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dorrino/Innocent-Blade-of-Woe-and-Vampire-Feed__1386) | dorrino | PC / Mac | 1.24 |
 | [ins:Mobs2Level](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ins/ins-Mobs2Level__58) | ins | PC / Mac | 20211111 |
 | [Insatiable Hunger Blocker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Insatiable-Hunger-Blocker__4628) | Lykeion | PC / Mac | 1.10 |
-| [Insatiable Hunger Blocker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c215895L-c3E6284y-c5A6B73k-c777562e-c937F51i-cB08840o-cCC922Fn-r/Insatiable-Hunger-Blocker__42a55498-b21a-4657-86ba-bdb954f7a09d) | \|c215895L\|c3E6284y\|c5A6B73k\|c777562e\|c937F51i\|cB08840o\|cCC922Fn\|r | Console | — |
+| [Insatiable Hunger Blocker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Insatiable-Hunger-Blocker__42a55498-b21a-4657-86ba-bdb954f7a09d) | Lykeion+ | Console | — |
 | [insjunkyard update for ESO 1.4.3](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Klingo/insjunkyard-update-for-ESO-1.4.3__719) | Klingo | PC / Mac | 1.03 |
 | [Inspect Vestige](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/LuckyRome13/Inspect-Vestige__4706) | LuckyRome13 | PC / Mac | 1.4.0 |
 | [Instant Swap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/delstrega/Instant-Swap__2987) | delstrega | PC / Mac | 1.2 |
 | [InstaQ](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Synkronist/InstaQ__5da20bd4-9950-42b8-aca8-deadd5817210) | Synkronist | Console | — |
-| [Interrupt Narc](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/YourName/Interrupt-Narc__fe232f99-8f31-4163-906d-48182e80a59d) | YourName | Console | — |
+| [Interrupt Narc](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/brossin13/Interrupt-Narc__fe232f99-8f31-4163-906d-48182e80a59d) | brossin13 | Console | — |
 | [Inventory Bank Sort](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rlinosaur/Inventory-Bank-Sort__3344) | rlinosaur | PC / Mac | 1.2 |
 | [Inventory Extensions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Panicida/Inventory-Extensions__2801) | Panicida | PC / Mac | 1.0.0 |
 | [Inventory Grid View](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DunkleMaterie/Inventory-Grid-View__2227) | DunkleMaterie | PC / Mac | 2.0.9.2c |
@@ -92,8 +92,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [InventoryManagerTESO](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/IgorSab/InventoryManagerTESO__4071) | IgorSab | PC / Mac | 1.0.2 |
 | [InventoryUpkeep](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manyrabidrats/InventoryUpkeep__1045) | manyrabidrats | PC / Mac | 1.7.0.0 |
 | [Is Target Guildie?](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/Is-Target-Guildie__3717) | Masteroshi430 | PC / Mac | 2026.07.06 |
-| [IsItTaunted](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/RipleyZephyer/IsItTaunted__6b4f359b-e17e-46f6-b2c9-9a1e42e7de2b) | RipleyZephyer | Console | — |
-| [IsItTaunted-testing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/RipleyZephyer/IsItTaunted-testing__96f579ed-c17e-44c6-b3e3-969c34e8f20f) | RipleyZephyer | Console | — |
+| [IsItTaunted](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/RipleyZepher/IsItTaunted__6b4f359b-e17e-46f6-b2c9-9a1e42e7de2b) | RipleyZepher | Console | — |
+| [IsItTaunted-testing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/RipleyZepher/IsItTaunted-testing__96f579ed-c17e-44c6-b3e3-969c34e8f20f) | RipleyZepher | Console | — |
 | [IsJusta Chat Right](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/IsJustaGhost/IsJusta-Chat-Right__3470) | IsJustaGhost | PC / Mac | 1 |
 | [IsJusta Collectible Randomizer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/IsJustaGhost/IsJusta-Collectible-Randomizer__3482) | IsJustaGhost | PC / Mac | 2.1.4 |
 | [IsJusta Companion UI Enhancements](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/IsJustaGhost/IsJusta-Companion-UI-Enhancements__3131) | IsJustaGhost | PC / Mac | 2.4.6 |
@@ -111,7 +111,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [IsJusta Utility Radial Menu Cancel Option](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/IsJustaGhost/IsJusta-Utility-Radial-Menu-Cancel-Option__3476) | IsJustaGhost | PC / Mac | 1.2 |
 | [IsJusta Utility Radial Menu Combat Safety.](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/IsJustaGhost/IsJusta-Utility-Radial-Menu-Combat-Safety__3618) | IsJustaGhost | PC / Mac | 1.2.1 |
 | [Italian Scrolls Online - Traduzione Italiana](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dusty82/Italian-Scrolls-Online---Traduzione-Italiana__2854) | Dusty82 | PC / Mac | 166 |
-| [ItalianScrollsOnline](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Italian-Scrolls-Online/ItalianScrollsOnline__5d612b95-1149-48f4-b359-2aaee406bd86) | Italian Scrolls Online | Console | — |
+| [ItalianScrollsOnline](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dusty82/ItalianScrollsOnline__5d612b95-1149-48f4-b359-2aaee406bd86) | dusty82 | Console | — |
 | [Item Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TheJoltman/Item-Alert__3954) | TheJoltman | PC / Mac | 1.1.2 |
 | [Item Condition Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tridman/Item-Condition-Alert__240) | tridman | PC / Mac | 1.5.10 |
 | [Item Cooldown Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeadSoon/Item-Cooldown-Tracker__2823) | @DeadSoon | PC / Mac | 5.1 |
@@ -123,7 +123,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Item Set Browser](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Item-Set-Browser__1480) | code65536 | PC / Mac | 4.6.11 |
 | [Item Set Collection Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zelenin/Item-Set-Collection-Tracker__2816) | zelenin | PC / Mac | 0.4.1 |
 | [Item Sets Summary Page Percentages](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tombaa/Item-Sets-Summary-Page-Percentages__2831) | tombaa | PC / Mac | 0.4.2 |
-| [Item Stack Splitter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c39B5E5Eldibabalo-r/Item-Stack-Splitter__fd260c09-574e-4494-9d13-dad835b05662) | \|c39B5E5Eldibabalo\|r | Console | — |
+| [Item Stack Splitter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Item-Stack-Splitter__fd260c09-574e-4494-9d13-dad835b05662) | Eldibabalo | Console | — |
 | [Item Titan](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/boggo/Item-Titan__1681) | boggo | PC / Mac | 0.3.3 |
 | [Item Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/A5ha/Item-Tracker__4351) | A5ha | PC / Mac | 5 |
 | [Items tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Upyachka/Items-tracker__1472) | Upyachka | PC / Mac | 1.1_ |

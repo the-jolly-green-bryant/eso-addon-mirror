@@ -1,0 +1,28 @@
+STARS 0.5.37-test13
+====================
+
+CONNECTED MODULE SELECTOR FIX
+-----------------------------
+- Fixed the Connected Modules dropdown storing the complete LHAS dropdown item
+  table instead of the selected module ID on console.
+- Scrolling left or right now genuinely changes the selected module.
+- The "Show Selected Module in STARS" checkbox now refreshes immediately to
+  display the on/off state belonging to the module currently shown.
+- Multiple modules in the same STARS category can now be enabled independently,
+  up to the existing limit of 10 active modules per category.
+- The active-module count refreshes after selecting or toggling a module.
+
+ROOT CAUSE
+----------
+Console LibHarvensAddonSettings passes the selected dropdown entry as a table:
+{name = "Module Name", data = "module.id"}.
+
+STARS saved that whole table into connectSelection. The selection validator
+expects a module ID string, rejected the table, and silently returned to the
+first registered module. This made every checkbox operation affect module one.
+
+COMPATIBILITY
+-------------
+The selector now accepts both LHAS callback forms:
+- a complete dropdown item table on console;
+- a direct data value or visible item name on other implementations.

@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/RipleyZepher/RezAlert__9d977c03-cdc6-45ef-99da-5dcd825ccfa1",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "RipleyZepher",
+  "canonical_id": "bethesda:9d977c03-cdc6-45ef-99da-5dcd825ccfa1",
+  "content_id": "9d977c03-cdc6-45ef-99da-5dcd825ccfa1",
+  "deleted": false,
+  "fingerprint": "dd4b73d8edd4800d9bfa7fb659cf98bb5f19eb48d3b6023f9f2a0532d8c483e5",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "9d977c03-cdc6-45ef-99da-5dcd825ccfa1",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/9d977c03-cdc6-45ef-99da-5dcd825ccfa1",
+  "title": "RezAlert"
+}

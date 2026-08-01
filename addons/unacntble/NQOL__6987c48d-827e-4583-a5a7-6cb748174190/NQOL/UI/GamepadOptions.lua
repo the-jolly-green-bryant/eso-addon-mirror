@@ -77,6 +77,7 @@ GamepadOptions.PanelIds = {
     INFINITE_ARCHIVE = 9179,
     INFINITE_ARCHIVE_FRAME = 9180,
     COMBAT_INFINITE_ARCHIVE = 9181,
+    COMBAT_MISCELLANEOUS = 9183,
 }
 
 local PanelIds = GamepadOptions.PanelIds
@@ -103,6 +104,7 @@ local PLAYER_INTERACTION_PANEL_ID = PanelIds.PLAYER_INTERACTION
 local SUBTITLES_PANEL_ID = PanelIds.SUBTITLES
 local COMBAT_PANEL_ID = PanelIds.COMBAT
 local COMBAT_INFINITE_ARCHIVE_PANEL_ID = PanelIds.COMBAT_INFINITE_ARCHIVE
+local COMBAT_MISCELLANEOUS_PANEL_ID = PanelIds.COMBAT_MISCELLANEOUS
 local ULTIMATE_COUNTDOWN_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN
 local ULTIMATE_COUNTDOWN_FRONT_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_FRONT
 local ULTIMATE_COUNTDOWN_BACK_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_BACK
@@ -175,6 +177,7 @@ GamepadOptions.PLAYER_INTERACTION_PANEL_ID = PanelIds.PLAYER_INTERACTION
 GamepadOptions.SUBTITLES_PANEL_ID = PanelIds.SUBTITLES
 GamepadOptions.COMBAT_PANEL_ID = PanelIds.COMBAT
 GamepadOptions.COMBAT_INFINITE_ARCHIVE_PANEL_ID = PanelIds.COMBAT_INFINITE_ARCHIVE
+GamepadOptions.COMBAT_MISCELLANEOUS_PANEL_ID = PanelIds.COMBAT_MISCELLANEOUS
 GamepadOptions.ULTIMATE_COUNTDOWN_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN
 GamepadOptions.ULTIMATE_COUNTDOWN_FRONT_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_FRONT
 GamepadOptions.ULTIMATE_COUNTDOWN_BACK_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_BACK
@@ -399,6 +402,7 @@ local SUBPANEL_PARENT_IDS = {
     [AUTO_REPAIR_PANEL_ID] = GEAR_PANEL_ID,
     [COMBAT_PANEL_ID] = ROOT_PANEL_ID,
     [COMBAT_INFINITE_ARCHIVE_PANEL_ID] = COMBAT_PANEL_ID,
+    [COMBAT_MISCELLANEOUS_PANEL_ID] = COMBAT_PANEL_ID,
     [ULTIMATE_COUNTDOWN_PANEL_ID] = COMBAT_PANEL_ID,
     [ULTIMATE_COUNTDOWN_FRONT_PANEL_ID] = ULTIMATE_COUNTDOWN_PANEL_ID,
     [ULTIMATE_COUNTDOWN_BACK_PANEL_ID] = ULTIMATE_COUNTDOWN_PANEL_ID,
@@ -473,8 +477,9 @@ PANEL_RESET_PATHS = {
     [AUTO_CHARGE_PANEL_ID] = { { "gear" } },
     [AUTO_REPAIR_PANEL_ID] = { { "gear" } },
     [AUTO_BOUND_PANEL_ID] = { { "gear" } },
-    [COMBAT_PANEL_ID] = { { "ultimateCountdown" }, { "combat", "infiniteArchive" } },
+    [COMBAT_PANEL_ID] = { { "ultimateCountdown" }, { "combat", "infiniteArchive" }, { "combat", "miscellaneous" } },
     [COMBAT_INFINITE_ARCHIVE_PANEL_ID] = { { "combat", "infiniteArchive" } },
+    [COMBAT_MISCELLANEOUS_PANEL_ID] = { { "combat", "miscellaneous" } },
     [ULTIMATE_COUNTDOWN_PANEL_ID] = { { "ultimateCountdown" } },
     [ULTIMATE_COUNTDOWN_FRONT_PANEL_ID] = { { "ultimateCountdown", "frontBar" } },
     [ULTIMATE_COUNTDOWN_BACK_PANEL_ID] = { { "ultimateCountdown", "backBar" } },
@@ -1677,6 +1682,9 @@ function GamepadOptions.RegisterPanelHeaderStrings()
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. COMBAT_INFINITE_ARCHIVE_PANEL_ID, NQOL.L("ui.gamepad_options.infinite_archive_52c9059"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. COMBAT_INFINITE_ARCHIVE_PANEL_ID, 1)
 
+    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. COMBAT_MISCELLANEOUS_PANEL_ID, NQOL.L("ui.gamepad_options.miscellaneous"))
+    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. COMBAT_MISCELLANEOUS_PANEL_ID, 1)
+
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. ULTIMATE_COUNTDOWN_PANEL_ID, NQOL.L("ui.gamepad_options.ultimate_countdown_12344ec"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. ULTIMATE_COUNTDOWN_PANEL_ID, 1)
 
@@ -1944,6 +1952,10 @@ function GamepadOptions.RegisterCategory()
 
     if not GAMEPAD_SETTINGS_DATA[COMBAT_INFINITE_ARCHIVE_PANEL_ID] then
         GamepadOptions.RegisterPanel(COMBAT_INFINITE_ARCHIVE_PANEL_ID, GamepadOptions.BuildCombatInfiniteArchiveOptionsData())
+    end
+
+    if not GAMEPAD_SETTINGS_DATA[COMBAT_MISCELLANEOUS_PANEL_ID] then
+        GamepadOptions.RegisterPanel(COMBAT_MISCELLANEOUS_PANEL_ID, GamepadOptions.BuildCombatMiscellaneousOptionsData())
     end
 
     if not GAMEPAD_SETTINGS_DATA[ULTIMATE_COUNTDOWN_PANEL_ID] then

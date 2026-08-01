@@ -5,6 +5,7 @@ local PanelIds = GamepadOptions.PanelIds
 local ULTIMATE_COUNTDOWN_FRONT_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_FRONT
 local ULTIMATE_COUNTDOWN_BACK_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_BACK
 local COMBAT_INFINITE_ARCHIVE_PANEL_ID = PanelIds.COMBAT_INFINITE_ARCHIVE
+local COMBAT_MISCELLANEOUS_PANEL_ID = PanelIds.COMBAT_MISCELLANEOUS
 
 local function BuildUltimateCountdownEnabledOption(panelId, settingId, countdownKey)
     local ultimateCountdown = NQOL.Features.UltimateCountdown
@@ -139,6 +140,25 @@ function GamepadOptions.BuildCombatInfiniteArchiveOptionsData()
         GamepadOptions.BuildCheckboxOption(COMBAT_INFINITE_ARCHIVE_PANEL_ID, 2, archive.GetLogStartLabel(), archive.GetLogStartTooltip(), archive.GetLogStart, archive.SetLogStart, archive.GetTrackProgress, archive.GetLogStartDefault),
         GamepadOptions.BuildCheckboxOption(COMBAT_INFINITE_ARCHIVE_PANEL_ID, 3, archive.GetLogBestLabel(), archive.GetLogBestTooltip(), archive.GetLogBest, archive.SetLogBest, archive.GetTrackProgress, archive.GetLogBestDefault),
         GamepadOptions.BuildCheckboxOption(COMBAT_INFINITE_ARCHIVE_PANEL_ID, 4, archive.GetLogStopLabel(), archive.GetLogStopTooltip(), archive.GetLogStop, archive.SetLogStop, archive.GetTrackProgress, archive.GetLogStopDefault),
+    }
+end
+
+function GamepadOptions.BuildCombatMiscellaneousOptionsData()
+    local miscellaneous = NQOL.Features.CombatMiscellaneous
+    local option = GamepadOptions.BuildCheckboxOption(
+        COMBAT_MISCELLANEOUS_PANEL_ID,
+        1,
+        miscellaneous.GetLCCrutchMirrorsRotateLabel(),
+        miscellaneous.GetLCCrutchMirrorsRotateTooltip(),
+        miscellaneous.GetLCCrutchMirrorsRotate,
+        miscellaneous.SetLCCrutchMirrorsRotate,
+        miscellaneous.IsCrutchAlertsAvailable,
+        miscellaneous.GetLCCrutchMirrorsRotateDefault
+    )
+    option.gamepadIsEnabledCallback = miscellaneous.IsCrutchAlertsAvailable
+
+    return {
+        option,
     }
 end
 

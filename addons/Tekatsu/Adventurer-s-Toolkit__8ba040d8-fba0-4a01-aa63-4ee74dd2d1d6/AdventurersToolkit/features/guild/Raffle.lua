@@ -1,0 +1,4 @@
+-- ============================================
+-- GUILD RAFFLE ORCHESTRATOR
+-- ============================================
+-- Implementations are split across features/guild/raffle/*.lua and loaded via manifest order.

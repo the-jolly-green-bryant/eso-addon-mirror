@@ -151,6 +151,9 @@ local COMPANION = {
     HEIGHT_MAX = 400,
     LABEL_HEIGHT = 22,
     LABEL_GAP = 4,
+    XP_BAR_HEIGHT = 7,
+    XP_BAR_GAP = 2,
+    RAPPORT_ICON = "EsoUI/Art/HUD/lootHistory_icon_rapportIncrease_generic.dds",
     resourceValue = {
         current = nil,
         maximum = nil,
@@ -264,6 +267,14 @@ local function DefaultPlayerBarColors()
         stamina = { r = C.RESOURCE_COLORS[C.RESOURCE_STAMINA][1], g = C.RESOURCE_COLORS[C.RESOURCE_STAMINA][2], b = C.RESOURCE_COLORS[C.RESOURCE_STAMINA][3], a = C.RESOURCE_COLORS[C.RESOURCE_STAMINA][4] },
         trauma = { r = C.PLAYER_TRAUMA_COLOR[1], g = C.PLAYER_TRAUMA_COLOR[2], b = C.PLAYER_TRAUMA_COLOR[3], a = C.PLAYER_TRAUMA_COLOR[4] },
     }
+end
+local function DefaultCompanionXpColor()
+    if GetInterfaceColor and INTERFACE_COLOR_TYPE_PROGRESSION and PROGRESSION_COLOR_XP_START then
+        local red, green, blue, alpha = GetInterfaceColor(INTERFACE_COLOR_TYPE_PROGRESSION, PROGRESSION_COLOR_XP_START)
+        return { r = red, g = green, b = blue, a = alpha }
+    end
+
+    return { r = 0.20, g = 0.72, b = 0.82, a = 1 }
 end
 local defaults = {
     ui = {
@@ -406,6 +417,7 @@ local defaults = {
                 showNqolCompanionFrame = false,
                 showOnlyInCombat = false,
                 healthColor = { r = C.RESOURCE_COLORS[C.RESOURCE_HEALTH][1], g = C.RESOURCE_COLORS[C.RESOURCE_HEALTH][2], b = C.RESOURCE_COLORS[C.RESOURCE_HEALTH][3], a = C.RESOURCE_COLORS[C.RESOURCE_HEALTH][4] },
+                xpColor = DefaultCompanionXpColor(),
                 showInSettings = true,
                 orientation = COMPANION.HORIZONTAL,
                 horizontalPosition = 50,
@@ -416,6 +428,8 @@ local defaults = {
                 font = NQOL.Util.GetDefaultFont(),
                 fontSize = C.CLASSIC_DEFAULT_FONT_SIZE,
                 showName = true,
+                showRapport = false,
+                showXpProgress = false,
                 currentValue = C.CURRENT_VALUE.NUMBER,
                 smoothTransitions = true,
                 transitionShadow = true,
@@ -828,6 +842,7 @@ local function GetCompanionSettings()
     NQOL.Settings.Boolean(settings, companionDefaults, "showNqolCompanionFrame")
     NQOL.Settings.Boolean(settings, companionDefaults, "showOnlyInCombat")
     PlayerBars.Group.EnsureColor(settings, companionDefaults, "healthColor")
+    PlayerBars.Group.EnsureColor(settings, companionDefaults, "xpColor")
     NQOL.Settings.Boolean(settings, companionDefaults, "showInSettings")
     NQOL.Settings.Choice(settings, companionDefaults, "orientation", COMPANION.VALID_ORIENTATIONS)
     NQOL.Settings.ClampedNumber(settings, companionDefaults, "horizontalPosition", 0, 100)
@@ -840,6 +855,8 @@ local function GetCompanionSettings()
     end
     NQOL.Settings.ClampedNumber(settings, companionDefaults, "fontSize", C.CLASSIC_FONT_SIZE_MIN, C.CLASSIC_FONT_SIZE_MAX, true)
     NQOL.Settings.Boolean(settings, companionDefaults, "showName")
+    NQOL.Settings.Boolean(settings, companionDefaults, "showRapport")
+    NQOL.Settings.Boolean(settings, companionDefaults, "showXpProgress")
     NQOL.Settings.Choice(settings, companionDefaults, "currentValue", C.CURRENT_VALUE.VALID_CHOICES)
     settings.barIntensity = nil
     settings.barOpacity = nil

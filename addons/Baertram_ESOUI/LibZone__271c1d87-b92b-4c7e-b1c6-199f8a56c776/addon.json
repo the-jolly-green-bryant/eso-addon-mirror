@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Baertram_ESOUI/LibZone__271c1d87-b92b-4c7e-b1c6-199f8a56c776",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Baertram_ESOUI",
+  "canonical_id": "bethesda:271c1d87-b92b-4c7e-b1c6-199f8a56c776",
+  "content_id": "271c1d87-b92b-4c7e-b1c6-199f8a56c776",
+  "deleted": false,
+  "fingerprint": "dc9c3134ede9019646d3b64ab7deeab0d206eabe2dab8c414b9d51b201cda2b6",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "271c1d87-b92b-4c7e-b1c6-199f8a56c776",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/271c1d87-b92b-4c7e-b1c6-199f8a56c776",
+  "title": "LibZone"
+}

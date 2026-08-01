@@ -1,0 +1,2 @@
+-- GST scan orchestration scaffolding
+-- Compatibility split: current implementation is in GSTEventProcessing.lua

@@ -524,19 +524,17 @@ local function SetClippedTexture(control, percent, alpha, widget)
     local inverse = widget.inverseFill == true
     local filledTop = inverse and topCoord or bottomCoord - filledSpan
     local filledBottom = inverse and topCoord + filledSpan or bottomCoord
-    if control.nqolInverse ~= inverse or control.nqolTopCoord ~= topCoord or control.nqolBottomCoord ~= bottomCoord then
+    -- Keep position and height on the same fractional scale as the full track.
+    -- Bottom anchoring or rounding the height can leave a stale-looking offset
+    -- when ESO changes a resource maximum during rapid power updates.
+    local y = HEIGHT * filledTop
+    if control.nqolY ~= y then
         control:ClearAnchors()
-        if inverse then
-            control:SetAnchor(TOPLEFT, control:GetParent(), TOPLEFT, 0, HEIGHT * topCoord)
-        else
-            control:SetAnchor(BOTTOMLEFT, control:GetParent(), TOPLEFT, 0, HEIGHT * bottomCoord)
-        end
-        control.nqolInverse = inverse
-        control.nqolTopCoord = topCoord
-        control.nqolBottomCoord = bottomCoord
+        control:SetAnchor(TOPLEFT, control:GetParent(), TOPLEFT, 0, y)
+        control.nqolY = y
     end
 
-    local fillHeight = math.max(1, zo_floor(HEIGHT * filledSpan))
+    local fillHeight = math.max(1, HEIGHT * filledSpan)
     if control.nqolWidth ~= WIDTH or control.nqolHeight ~= fillHeight then
         control:SetDimensions(WIDTH, fillHeight)
         control.nqolWidth = WIDTH
@@ -595,7 +593,7 @@ local function SetClippedTextureRange(control, startPercent, endPercent, alpha, 
         control:SetAnchor(TOPLEFT, control:GetParent(), TOPLEFT, 0, y)
         control.nqolY = y
     end
-    local fillHeight = math.max(1, zo_floor(HEIGHT * (filledBottom - filledTop)))
+    local fillHeight = math.max(1, HEIGHT * (filledBottom - filledTop))
     if control.nqolWidth ~= WIDTH or control.nqolHeight ~= fillHeight then
         control:SetDimensions(WIDTH, fillHeight)
         control.nqolWidth = WIDTH

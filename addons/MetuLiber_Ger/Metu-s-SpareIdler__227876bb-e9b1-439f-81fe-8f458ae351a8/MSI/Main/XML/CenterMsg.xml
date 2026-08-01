@@ -1,0 +1,20 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/DakJaniels/esoui_gui_xsd/main/esoui_gui_xml.xsd">
+<Controls>
+<TopLevelControl name="CenterMsgDisplay" hidden="true" alpha="0.0">
+	<Dimensions x="300" y="300" />
+	<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="200" />
+		<Controls>
+			<Texture name="CenterMsgTexture" textureFile="MSI/Media/media_icon_metu_liber.dds" tier="HIGH">
+				<Dimensions x="96" y="96"/>
+				<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-100" />
+			</Texture>
+			<Label name="CenterMsgTextLabel" width="400" height="400" font="ZoFontGamepad42" color="FFFFFF"
+				wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"
+				text="|cD0D172[|r|c990000M|r|cB8860BS|r|c778899I|r|cD0D172]|r |c990000Metu's|r |cB8860BSpare|r|c778899Idler|r |cFFB90FESO|r |c8B7355AddOn|r">
+				<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+		</Label>
+		</Controls>
+</TopLevelControl>
+</Controls>
+</GuiXml>
+<!-- eof -->

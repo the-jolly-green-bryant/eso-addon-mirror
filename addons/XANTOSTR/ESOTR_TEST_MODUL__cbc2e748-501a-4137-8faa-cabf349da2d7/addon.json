@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/XANTOSTR/ESOTR_TEST_MODUL__cbc2e748-501a-4137-8faa-cabf349da2d7",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "XANTOSTR",
+  "canonical_id": "bethesda:cbc2e748-501a-4137-8faa-cabf349da2d7",
+  "content_id": "cbc2e748-501a-4137-8faa-cabf349da2d7",
+  "deleted": false,
+  "fingerprint": "05d0b6485f2e81bf194d6d22d01404be46d400451d6b760cb7b3a611baaab3bd",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "cbc2e748-501a-4137-8faa-cabf349da2d7",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/cbc2e748-501a-4137-8faa-cabf349da2d7",
+  "title": "ESOTR_TEST_MODUL"
+}

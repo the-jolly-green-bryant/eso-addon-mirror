@@ -81,9 +81,10 @@ local throttledCall = tbug.throttledCall
 local tbug_SetTemplate = tbug.SetTemplate
 --local tbug_getActiveTabPanel = tbug.GetActiveTabPanel
 
-
-
 local specialMasterListType2InspectorClass = tbug.specialMasterListType2InspectorClass
+local allowedSlashCommandsEventsParameters = tbug.allowedSlashCommandsEventsParameters
+local tbug_SetAutomaticEventsTrackingFlag
+
 
 local tbug_inspect
 local objInsp
@@ -1367,7 +1368,41 @@ local tbug_slashCommandSavedVariables = tbug.slashCommandSavedVariables
 
 function tbug.slashCommandEvents(args)
     clearDataForInspector()
-    tbug_slashCommand("events", args)
+
+    local argsOptions = (args ~= nil and parseSlashCommandArgumentsAndReturnTable(args, true)) or nil
+    local option1 = (argsOptions ~= nil and argsOptions[1]) or nil
+--d(">argsOptions[1]: " .. tos(option1))
+    if option1 ~= nil and allowedSlashCommandsEventsParameters[option1] then
+        --[[
+                /tbe start      Start the event tracking
+                /tbe stop       Stop the event tracking
+                /tbe autooff    Disable automatic event tracking
+                /tbe 1reload    Enable event tracking after 1 next reloadui
+                /tbe reload     Enable event tracking after each reloadui
+                /tbe reloadnow  Enable event tracking after each reloadui and reload the UI now
+                /tbe login      Enable event tracking once at next login
+        ]]
+        --value, doReloadUI, activateNextLogin, chatOutput, onlyFor1ReloadUI, allOff
+        tbug_SetAutomaticEventsTrackingFlag = tbug_SetAutomaticEventsTrackingFlag or tbug.SetAutomaticEventsTrackingFlag
+        if option1 == "reload" then
+            tbug_SetAutomaticEventsTrackingFlag(true, false, nil, true)
+        elseif option1 == "1reload" then
+            tbug_SetAutomaticEventsTrackingFlag(true, false, nil, true, true)
+        elseif option1 == "reloadnow" then
+            tbug_SetAutomaticEventsTrackingFlag(true, true, nil, true)
+        elseif option1 == "login" then
+            tbug_SetAutomaticEventsTrackingFlag(nil, false, true, true)
+        elseif option1 == "start" then
+            tbug.StartEventTracking()
+        elseif option1 == "stop" then
+            tbug.StopEventTracking()
+        elseif option1 == "autooff" then
+            tbug_SetAutomaticEventsTrackingFlag(nil, nil, nil, true, nil, true)
+        end
+
+    else
+        tbug_slashCommand("events", args)
+    end
 end
 local tbug_slashCommandEvents = tbug.slashCommandEvents
 
@@ -1770,6 +1805,19 @@ local function tbugChatTextEntry_Execute(control)
             end
         end
     end
+end
+
+--Logout and Quit hook function
+local function tbugLogoutQuitHook(type)
+--d("[TBUG]Logout/Quit PreHook - trackEventsAutoOnNextLogin: " ..tos(tbug.activateAutomaticEventTrackingOnNextLogin))
+    if tbug.activateAutomaticEventTrackingOnNextLogin == true then
+        tbug.savedVars.enableEventTrackerAtNextLogin = true
+        tbug.savedVars.enableEventTrackerAtStartupOnlyOnce = true
+        tbug.savedVars.enableEventTrackerAtStartup = false
+    else
+        tbug.savedVars.enableEventTrackerAtNextLogin = nil
+    end
+    --return true --todo remove after debugging: Prevent logout/quit to check debug messages
 end
 
 function tbug.UpdateAddOns()
@@ -2529,6 +2577,10 @@ local function onAddOnLoaded(event, addOnName)
     end
 
     updateTbugGlobalMouseUpHandler(isMouseRightAndLeftAndSHIFTClickEnabled(true))
+
+    --For the automatic event tracking on next login
+    ZO_PreHook("Logout",    function() return tbugLogoutQuitHook("Logout") end)
+    ZO_PreHook("Quit",      function() return tbugLogoutQuitHook("Quit") end)
 end
 EM:RegisterForEvent(myNAME .."_AddOnLoaded", EVENT_ADD_ON_LOADED, onAddOnLoaded)
 

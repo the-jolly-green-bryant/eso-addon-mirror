@@ -1,0 +1,19 @@
+## Title: BetterEffectViewer
+## APIVersion: 101048
+## Author: Vixen Hunny
+## Version: 1.2
+## DependsOn: LibAddonMenu-2.0
+## Description: LUI-style buff/debuff tracker for reticleover targets.
+## SavedVariables: BetterEffectViewer_SV
+
+BetterEffectViewer.xml
+BetterEffectViewer.lua
+BEV_Schema.lua
+BEV_Platform.lua
+BEV_Effects.lua
+BEV_UI.lua
+BEV_Settings.lua
+BEV_Targeting.lua
+BEV_Events.lua
+BEV_VisualUpdate.lua
+BEV_Init.lua

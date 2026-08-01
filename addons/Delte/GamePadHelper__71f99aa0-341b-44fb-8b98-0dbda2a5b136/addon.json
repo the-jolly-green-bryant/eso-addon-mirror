@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Delte/GamePadHelper__71f99aa0-341b-44fb-8b98-0dbda2a5b136",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Delte",
+  "canonical_id": "bethesda:71f99aa0-341b-44fb-8b98-0dbda2a5b136",
+  "content_id": "71f99aa0-341b-44fb-8b98-0dbda2a5b136",
+  "deleted": false,
+  "fingerprint": "f10e6a145e529688a099c791cc6895b542c2f3dd548677103218dce2c64059b1",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "71f99aa0-341b-44fb-8b98-0dbda2a5b136",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/71f99aa0-341b-44fb-8b98-0dbda2a5b136",
+  "title": "GamePadHelper"
+}

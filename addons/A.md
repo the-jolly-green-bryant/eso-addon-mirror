@@ -11,13 +11,14 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [a dawg's FlipWorthy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/runcarsnowpen/a-dawg-s-FlipWorthy__4563) | runcarsnowpen | PC / Mac | 1.1.0 |
 | [a dawg's Group Manager - Auto-relist, Auto-kick and more](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/runcarsnowpen/a-dawg-s-Group-Manager---Auto-relist-Auto-kick-and-more__4561) | runcarsnowpen | PC / Mac | 1.1.1 |
 | [A More Alternative Boss Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/A-More-Alternative-Boss-Bar__3820) | M0R | PC / Mac | 3.0.1 |
-| [A More Automated Invite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c0DC1CF-M0R_Gaming-r/A-More-Automated-Invite__44437e40-fb6e-46cb-9717-9b21c46fc1cf) | \|c0DC1CF@M0R_Gaming\|r | Console | — |
+| [A More Automated Invite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/A-More-Automated-Invite__44437e40-fb6e-46cb-9717-9b21c46fc1cf) | M0R | Console | — |
 | [A Super Useful Gadget Bar - by Gol](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Golnebo/A-Super-Useful-Gadget-Bar---by-Gol__1982) | Golnebo | PC / Mac | 1.42 |
 | [AA_Profiler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/spoqster/AA_Profiler__66400ef3-3d78-4737-a158-c48633706a83) | spoqster | Console | — |
 | [Abah's Appraiser - Auto Sell Junk](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xbutch/Abah-s-Appraiser---Auto-Sell-Junk__2d6ff530-edbc-4425-be68-daadbc3c0afa) | xbutch | Console | — |
 | [Ability Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/jultzy94/Ability-Frames__1714) | jultzy94 | PC / Mac | 1.1 |
 | [Ability Icons Framework (AIF)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wicked_prophet/Ability-Icons-Framework-AIF__4061) | wicked_prophet | PC / Mac | 1.5.6 |
 | [ABnC Gold Manager - revisited](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dbojan/ABnC-Gold-Manager---revisited__2890) | dbojan | PC / Mac | 1.3.100009a rv3 |
+| [Above Me](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BMGxSancho/Above-Me__c1746be9-5c6a-4516-aa21-e54bd8e5a25e) | BMGxSancho | Console | — |
 | [Accept or Decline Group Invites](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TwinLamps/Accept-or-Decline-Group-Invites__4371) | TwinLamps | PC / Mac | 1.1 |
 | [Accessorize](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/deadohiosky48/Accessorize__2541) | deadohiosky48 | PC / Mac | 24 |
 | [Account Achievements](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/QuantumPie/Account-Achievements__2905) | QuantumPie | PC / Mac | 2.0.2 |
@@ -47,12 +48,12 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Added Info - Targeted Unit Frame](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/Added-Info---Targeted-Unit-Frame__2631) | MrPikPik | PC / Mac | 2.5 |
 | [Added Info - Unit Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/Added-Info---Unit-Frames__2771) | MrPikPik | PC / Mac | 1.3.3 |
 | [Additional Ignore List](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akarivs/Additional-Ignore-List__4193) | akarivs | PC / Mac | 0.4.5 |
-| [Additional Reminders](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c0DC1CF-M0R_Gaming-r/Additional-Reminders__301799ca-d139-4097-8799-022ef07985ad) | \|c0DC1CF@M0R_Gaming\|r | Console | — |
-| [Addon Load Time Monitor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Addon-Load-Time-Monitor__a89e4472-1774-4182-bc32-05d04d19ca06) | @code65536 | Console | — |
-| [Addon Loadouts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dack_janiels-PC/Addon-Loadouts__1ff1b2cd-ba65-4264-a11d-2c55b57eb158) | @dack_janiels\[PC\] | Console | — |
+| [Additional Reminders](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/Additional-Reminders__301799ca-d139-4097-8799-022ef07985ad) | M0R | Console | — |
+| [Addon Load Time Monitor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Addon-Load-Time-Monitor__a89e4472-1774-4182-bc32-05d04d19ca06) | code65536 | Console | — |
+| [Addon Loadouts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dack.Janiels/Addon-Loadouts__1ff1b2cd-ba65-4264-a11d-2c55b57eb158) | Dack.Janiels | Console | — |
 | [Addon Selector (Save & Load AddOn profiles/packs)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/Addon-Selector-Save-Load-AddOn-profiles-packs__1161) | Baertram | PC / Mac | 3.22 |
 | [AddonAnalyzer (ANDY) - Checks for malicious, stolen, and other flagged content in addons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lent/AddonAnalyzer-ANDY---Checks-for-malicious-stolen-and-other-flagged-content-in-ad__4293) | Lent | PC / Mac | 1.1.1 |
-| [AddonAnalyzer (ANDY) - Checks for malicious, stolen, or other flagged content in addons!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lent-IGN-CallMeLent/AddonAnalyzer-ANDY---Checks-for-malicious-stolen-or-other-flagged-content-in-add__0495e6ed-49a8-4a03-b529-048fbc4b758a) | Lent (IGN @CallMeLent) | Console | — |
+| [AddonAnalyzer (ANDY) - Checks for malicious, stolen, or other flagged content in addons!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CallMeLent/AddonAnalyzer-ANDY---Checks-for-malicious-stolen-or-other-flagged-content-in-add__0495e6ed-49a8-4a03-b529-048fbc4b758a) | CallMeLent | Console | — |
 | [AddonCategory](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Floliroy/AddonCategory__3427) | Floliroy | PC / Mac | 1.5.3 |
 | [AddonCategory](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/QuantumFate/AddonCategory__3840) | QuantumFate | PC / Mac | 1.0.1 |
 | [AddonCategory - Fixed and improved](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/AddonCategory---Fixed-and-improved__3970) | Baertram | PC / Mac | 1.6.2 |
@@ -103,7 +104,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Advanced Filters - UnCollected Plugin](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/Advanced-Filters---UnCollected-Plugin__2829) | Shadowfen | PC / Mac | 1.0.6 |
 | [Advanced Filters - Uncollected Set Items filter plugin](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Advanced-Filters---Uncollected-Set-Items-filter-plugin__2836) | code65536 | PC / Mac | 2.1.1 |
 | [Advanced Filters - Unique items filter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/Advanced-Filters---Unique-items-filter__982) | Baertram | PC / Mac | 1.9 |
-| [Advanced Filters - Updated (Inventory sub- & dropdown plugin filters)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/Advanced-Filters---Updated-Inventory-sub--dropdown-plugin-filters__2215) | Baertram | PC / Mac | 1.6.5.5 |
+| [Advanced Filters - Updated (Inventory sub- & dropdown plugin filters)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/Advanced-Filters---Updated-Inventory-sub--dropdown-plugin-filters__2215) | Baertram | PC / Mac | 1.6.5.6 |
 | [Advanced Filters: Unknown Trait filter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Advanced-Filters-Unknown-Trait-filter__2014) | manavortex | PC / Mac | 1.0.0 |
 | [Advanced Game Settings](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Advanced-Game-Settings__3173) | code65536 | PC / Mac | 1.1.0 |
 | [Advanced Grass Toggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Valve/Advanced-Grass-Toggle__3577) | Valve | PC / Mac | 1.1.0 |
@@ -116,9 +117,9 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Advanced Smart Auto Loot](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Archshot/Advanced-Smart-Auto-Loot__2611) | @Archshot | PC / Mac | 1.0.2 |
 | [Advanced Synergies](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/marlonbrando/Advanced-Synergies__2017) | marlonbrando | PC / Mac | 1.0.7 |
 | [AdvancedGuildRosterFilters](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/AdvancedGuildRosterFilters__462) | sirinsidiator | PC / Mac | 1.7 |
-| [Advancing Yokeda Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CodeWarrior82/Advancing-Yokeda-Tracker__3cd8f841-6502-49d4-866c-a49b12a16460) | CodeWarrior82 | Console | — |
-| [Adventurer's Toolkit](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tek/Adventurer-s-Toolkit__8ba040d8-fba0-4a01-aa63-4ee74dd2d1d6) | Tek | Console | — |
-| [Adventures toolkit (Dev)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tek/Adventures-toolkit-Dev__e42700aa-3021-495e-9ff4-9e83377c9f99) | Tek | Console | — |
+| [Advancing Yokeda Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Advancing-Yokeda-Tracker__3cd8f841-6502-49d4-866c-a49b12a16460) | codeWarrior82 | Console | — |
+| [Adventurer's Toolkit](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tekatsu/Adventurer-s-Toolkit__8ba040d8-fba0-4a01-aa63-4ee74dd2d1d6) | Tekatsu | Console | — |
+| [Adventures toolkit (Dev)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tekatsu/Adventures-toolkit-Dev__e42700aa-3021-495e-9ff4-9e83377c9f99) | Tekatsu | Console | — |
 | [Aenathel's Keybinds](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aenathel/Aenathel-s-Keybinds__2608) | Aenathel | PC / Mac | 1.10.1 |
 | [Aenathel's Lazy Antiquarian](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aenathel/Aenathel-s-Lazy-Antiquarian__3084) | Aenathel | PC / Mac | 1.2.1 |
 | [Aenathel's Lazy Chat Linker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aenathel/Aenathel-s-Lazy-Chat-Linker__3083) | Aenathel | PC / Mac | 1.1.0 |
@@ -149,32 +150,33 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [AKick](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jar-Ek/AKick__1084) | Jar-Ek | PC / Mac | 1.7 |
 | [AKsAttributeBars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akbosser/AKsAttributeBars__e0f48487-697e-4d3f-8768-ce763362046a) | akbosser | Console | — |
 | [Alchemist (Continued by Koenari)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Koenari/Alchemist-Continued-by-Koenari__2419) | Koenari | PC / Mac | 7.1.5-1.0 |
-| [Alchemy Opener](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen-Hunny/Alchemy-Opener__8f125308-c2a5-40e6-b249-d29e85f81020) | Vixen Hunny | Console | — |
+| [Alchemy Opener](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/Alchemy-Opener__8f125308-c2a5-40e6-b249-d29e85f81020) | Vixen_Hunny | Console | — |
 | [Alchemy Quantity Input](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Chuaznega/Alchemy-Quantity-Input__4520) | Chuaznega | PC / Mac | 1.0 |
 | [Alchemy Tooltips](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hyperioxes/Alchemy-Tooltips__2531) | Hyperioxes | PC / Mac | 1.30 |
 | [Alchemy Unknown](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyono/Alchemy-Unknown__1585) | Rhyono | PC / Mac | 1.25 |
 | [Aldanga's Improved Antiquities](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aldanga/Aldanga-s-Improved-Antiquities__2669) | Aldanga | PC / Mac | 0.1.0 |
 | [Aldanga's Lazier Writ Precrafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aldanga/Aldanga-s-Lazier-Writ-Precrafter__2674) | Aldanga | PC / Mac | 1.7.0 |
-| [Aldrens Grandmaster Workshop](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aldren-ChatGPT/Aldrens-Grandmaster-Workshop__764a614a-74ad-46e6-b587-0bea7cd6174c) | Aldren + ChatGPT | Console | — |
+| [Aldrens Grandmaster Workshop](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyojaan/Aldrens-Grandmaster-Workshop__764a614a-74ad-46e6-b587-0bea7cd6174c) | Rhyojaan | Console | — |
 | [Aldrens Movable UI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyojaan/Aldrens-Movable-UI__a25448d4-0fb6-421f-bdb2-d9cf32a397d5) | Rhyojaan | Console | — |
-| [Aldrens Timers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aldren-Project/Aldrens-Timers__9341ca4f-303b-4e36-b2c8-b559e428c6d2) | Aldren Project | Console | — |
+| [Aldrens Timers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyojaan/Aldrens-Timers__9341ca4f-303b-4e36-b2c8-b559e428c6d2) | Rhyojaan | Console | — |
 | [Aldrens World Events](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyojaan/Aldrens-World-Events__1314f50c-ef2d-47b1-a8e8-18bf28416980) | Rhyojaan | Console | — |
 | [AlignGrid](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Crabby654/AlignGrid__1292) | Crabby654 | PC / Mac | 1.4.4 |
 | [Alik'r Dolmen Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haipahaipa/Alik-r-Dolmen-Helper__2399) | haipahaipa | PC / Mac | v0.1.0 |
-| [Alkosh Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c39B5E5Eldibabalo-r/Alkosh-Timer__e1b107d5-082e-4ed1-9cfc-81b9a42e0528) | \|c39B5E5Eldibabalo\|r | Console | — |
+| [Alkosh Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Alkosh-Timer__e1b107d5-082e-4ed1-9cfc-81b9a42e0528) | Eldibabalo | Console | — |
 | [All The Collectibles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/All-The-Collectibles__4638) | DakJaniels | PC / Mac | 1.3 |
 | [AllAP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ace-r/AllAP__2086) | Ace'r | PC / Mac | 1.3.3 |
-| [AllAP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Acer/AllAP__c0c82f16-9b5b-4707-bf96-be0f3c78a77a) | Acer | Console | — |
+| [AllAP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ace.r/AllAP__c0c82f16-9b5b-4707-bf96-be0f3c78a77a) | Ace.r | Console | — |
 | [AllCraft](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MethosFrost/AllCraft__2488) | MethosFrost | PC / Mac | 0.935Alpha |
 | [Alliance Base Cartographer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyoma/Alliance-Base-Cartographer__1299) | Kyoma | PC / Mac | 1.3 |
 | [Alliance Point Counter (AP Logger)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mladen90/Alliance-Point-Counter-AP-Logger__1764) | Mladen90 | PC / Mac | 1.6.0 |
+| [Alliance Rank Progress](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dusty-Warehouse/Alliance-Rank-Progress__8e880053-fe2b-4934-9745-a0670e1e12d6) | Dusty-Warehouse | Console | — |
 | [Alliance Rank Progress](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DustyWarehouse/Alliance-Rank-Progress__2772) | DustyWarehouse | PC / Mac | 1.18 |
-| [Alliance Rank Progress](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cB22222Dusty-Warehouse-r/Alliance-Rank-Progress__8e880053-fe2b-4934-9745-a0670e1e12d6) | \|cB22222Dusty Warehouse\|r | Console | — |
 | [AllianceBuddy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Minceraft/AllianceBuddy__872) | Minceraft | PC / Mac | 3.2 |
 | [AlphaGear 2 (Builds, Gear, Skills, Banking)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mesota/AlphaGear-2-Builds-Gear-Skills-Banking__1812) | mesota | PC / Mac | 6.17.0 |
 | [AlphaGear 2 Preview Channel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mesota/AlphaGear-2-Preview-Channel__2170) | mesota | PC / Mac | 6.4.1 beta 3 |
 | [AlphaScry (Leads, Antiquities, Filter)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mesota/AlphaScry-Leads-Antiquities-Filter__2689) | mesota | PC / Mac | 1.0.0 |
 | [AlphaStyle (Outfit, Mount, Pet, Collectibles)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mesota/AlphaStyle-Outfit-Mount-Pet-Collectibles__2411) | mesota | PC / Mac | 1.0.0 |
+| [AlreadyListed](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/svammy/AlreadyListed__66e34000-1a7c-4b71-9c6b-18742fa714c5) | svammy | Console | — |
 | [ALT — Addon Loading Times](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/ALT-Addon-Loading-Times__4613) | atharti | PC / Mac | 1.8 |
 | [Alternate Death Recap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shienar/Alternate-Death-Recap__4454) | Shienar | PC / Mac | 3.3 |
 | [AlternateDeathRecap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shienar/AlternateDeathRecap__9e55edc2-32f8-4c75-b87c-e921fd53e9cf) | Shienar | Console | — |
@@ -182,26 +184,26 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Alternative Boss Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Boss-Bar__3052) | buldezir | PC / Mac | 1.0.19 |
 | [Alternative Buffs/Debuffs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Buffs-Debuffs__3875) | buldezir | PC / Mac | 1.0.3 |
 | [Alternative Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Group-Frames__3053) | buldezir | PC / Mac | 1.2.30 |
-| [Alternative Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BulDeZir-Glande-Pas/Alternative-Group-Frames__21f64968-c492-4b43-82ff-b7b1f25c7500) | BulDeZir, Glande-Pas | Console | — |
+| [Alternative Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Copper0/Alternative-Group-Frames__21f64968-c492-4b43-82ff-b7b1f25c7500) | Copper0 | Console | — |
 | [Always Logging](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eurymachos/Always-Logging__4081) | Eurymachos | PC / Mac | v3.1.12.0.0 |
 | [AlwaysCompass: Never Get Lost Again](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mouton/AlwaysCompass-Never-Get-Lost-Again__4107) | Mouton | PC / Mac | 0.0.2 |
 | [AlwaysExpandedAttributeBars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/partdark/AlwaysExpandedAttributeBars__2979) | partdark | PC / Mac | 2.6a |
 | [Am I Blocking+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Am-I-Blocking__3929) | Lykeion | PC / Mac | 3.13 |
-| [Am I Blocking+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c215895Qcell-r-cCC922FLykeion-r/Am-I-Blocking__e1710013-83a1-4e50-941a-5464d85d587c) | \|c215895Qcell\|r \|cCC922FLykeion\|r | Console | — |
+| [Am I Blocking+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Am-I-Blocking__e1710013-83a1-4e50-941a-5464d85d587c) | Lykeion+ | Console | — |
 | [Am I Blocking?](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Qcell/Am-I-Blocking__2920) | Qcell | PC / Mac | 2.7 |
 | [AncestralMotifsCheck](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tumsa/AncestralMotifsCheck__3498) | tumsa | PC / Mac | 1.3.1 |
-| [andy.s's Heat Shocker Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cFFFF00andy.s-r/andy.s-s-Heat-Shocker-Tracker__6c2f0adf-9ca4-4dc4-bd4f-e1f6f5059665) | \|cFFFF00andy.s\|r | Console | — |
+| [andy.s's Heat Shocker Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/andy.s-s-Heat-Shocker-Tracker__6c2f0adf-9ca4-4dc4-bd4f-e1f6f5059665) | Lykeion+ | Console | — |
 | [AnimatedActionBar+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haze068/AnimatedActionBar__4598) | haze068 | PC / Mac | 2.0 |
 | [Another Quest Markers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hitsi/Another-Quest-Markers__2686) | Hitsi | PC / Mac | 1.0 |
-| [Anti All Caps](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/Anti-All-Caps__556512a1-fb7c-4558-9572-f7cf6fd8b171) | @Dolgubon | Console | — |
+| [Anti All Caps](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/Anti-All-Caps__556512a1-fb7c-4558-9572-f7cf6fd8b171) | Dolgubon | Console | — |
 | [Anti All Caps](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/Anti-All-Caps__3779) | Dolgubon | PC / Mac | 1.1 |
 | [Anti Dismount](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/Anti-Dismount__1da0a275-fc2d-43cc-869f-a8103095dc29) | Dolgubon | Console | — |
 | [Anti Dismount](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/Anti-Dismount__4570) | Dolgubon | PC / Mac | 1.0.1 |
 | [Anti Market Popup](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SDPhantom/Anti-Market-Popup__2042) | SDPhantom | PC / Mac | 1.1 |
-| [AntiDK](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen-Hunny/AntiDK__1f552d57-81fb-407f-b9f2-f45228e2a171) | Vixen Hunny | Console | — |
-| [AntiDK2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen-Hunny/AntiDK2__282c4ce3-9c61-409b-913c-b7bec357586d) | Vixen Hunny | Console | — |
+| [AntiDK](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/AntiDK__1f552d57-81fb-407f-b9f2-f45228e2a171) | Vixen_Hunny | Console | — |
+| [AntiDK2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/AntiDK2__282c4ce3-9c61-409b-913c-b7bec357586d) | Vixen_Hunny | Console | — |
 | [Antiquarian's Codex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xbutch/Antiquarian-s-Codex__09fedb91-c1d9-4f3b-8882-b8c9e36bda36) | xbutch | Console | — |
-| [Antiquities Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c39B5E5Eldibabalo-r/Antiquities-Tracker__c26064b6-d685-492c-b750-3bc59f315109) | \|c39B5E5Eldibabalo\|r | Console | — |
+| [Antiquities Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Antiquities-Tracker__c26064b6-d685-492c-b750-3bc59f315109) | Eldibabalo | Console | — |
 | [AntiquitiesTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aronsini/AntiquitiesTracker__4172) | aronsini | PC / Mac | 1.0 |
 | [Antiquity Compare Keybind](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mandemikc/Antiquity-Compare-Keybind__4667) | Mandemikc | PC / Mac | 1.2.2 |
 | [Antiquity Deal Intel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thevoidcousine/Antiquity-Deal-Intel__4401) | thevoidcousine | PC / Mac | 2.0.0 |
@@ -216,12 +218,12 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Arch's Enhanced Map](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architecture/Arch-s-Enhanced-Map__1432) | Architecture | PC / Mac | 1.6.0 |
 | [Arch's Gamepad Extension for MailLooter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architecture/Arch-s-Gamepad-Extension-for-MailLooter__1461) | Architecture | PC / Mac | 1.0.5 |
 | [Arch's Quest Refresh (Abandon Pledge Quests)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architecture/Arch-s-Quest-Refresh-Abandon-Pledge-Quests__1503) | Architecture | PC / Mac | 1.1.5 |
-| [Archaeology](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ReliktGepard3/Archaeology__30667c51-455c-4759-a4eb-84cb77525452) | ReliktGepard3 | Console | — |
+| [Archaeology](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ReliktKoala/Archaeology__30667c51-455c-4759-a4eb-84cb77525452) | ReliktKoala | Console | — |
 | [ArchdruidTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/ArchdruidTracker__7b383e7f-a85f-491d-b950-dffc87bcec10) | tmbrinks | Console | — |
 | [ArchdruidTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/ArchdruidTracker__3473) | tmbrinks | PC / Mac | 1.1.0 |
 | [Archive Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FlatBadger/Archive-Helper__3772) | FlatBadger | PC / Mac | 1.4.2 |
-| [ArcTech](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Scribe-Rob/ArcTech__fd28ddff-8837-4702-8beb-110fee70b432) | Scribe Rob | Console | — |
-| [ArcTechv2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Arcanist-Rob/ArcTechv2__798e2650-33dc-48bb-80c5-8c09cabc36b5) | Arcanist Rob | Console | — |
+| [ArcTech](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Scribe_Rob/ArcTech__fd28ddff-8837-4702-8beb-110fee70b432) | Scribe_Rob | Console | — |
+| [ArcTechv2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Scribe_Rob/ArcTechv2__798e2650-33dc-48bb-80c5-8c09cabc36b5) | Scribe_Rob | Console | — |
 | [Are We Mounted](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DaWeedle/Are-We-Mounted__4134) | DaWeedle | PC / Mac | 1.0.0 |
 | [Are we there yet?](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mitaa/Are-we-there-yet__2682) | Mitaa | PC / Mac | 0.6.4 |
 | [AreYouSlow?](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Th3rtythr33/AreYouSlow__11615176-cc74-452d-a5b3-cd3fe5272a2a) | Th3rtythr33 | Console | — |
@@ -239,12 +241,12 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Armory Build Display](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tes4p00ner/Armory-Build-Display__3221) | tes4p00ner | PC / Mac | 1.0.8 |
 | [Armory Style Manager (for Update 44)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/loosej/Armory-Style-Manager-for-Update-44__3949) | loosej | PC / Mac | 0.15.1 |
 | [ArmoryLocker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KrykiZZ/ArmoryLocker__3748) | KrykiZZ | PC / Mac | 1.0.0 |
+| [ArmoryRoleSwitcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/ArmoryRoleSwitcher__ec09cf15-d910-4d7e-b9cc-17c759d03aa0) | Masteroshi430 | Console | — |
 | [ArmoryRoleSwitcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/ArmoryRoleSwitcher__3901) | Masteroshi430 | PC / Mac | 2026.07.09 |
-| [ArmoryRoleSwitcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c3CB371-Masteroshi430-r/ArmoryRoleSwitcher__ec09cf15-d910-4d7e-b9cc-17c759d03aa0) | \|c3CB371@Masteroshi430\|r | Console | — |
 | [ArmoryWarning](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Citats/ArmoryWarning__4046) | Citats | PC / Mac | 1.0 |
 | [Arrow To The Knee GuildHalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/animalu/Arrow-To-The-Knee-GuildHalls__3018) | animalu | PC / Mac | 0.0.6 |
 | [Arry's Build Set Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Arandul/Arry-s-Build-Set-Tracker__4682) | Arandul | PC / Mac | 1.0.0 |
-| [Artaeum Group Tool](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c0DC1CF-M0R_Gaming-r/Artaeum-Group-Tool__dc653131-c684-4f94-b875-35a29506436b) | \|c0DC1CF@M0R_Gaming\|r | Console | — |
+| [Artaeum Group Tool](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/Artaeum-Group-Tool__dc653131-c684-4f94-b875-35a29506436b) | M0R | Console | — |
 | [Artaeum Group Tool 2.0](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/Artaeum-Group-Tool-2.0__3012) | M0R | PC / Mac | 5.0.2 |
 | [Artempapa Guild Hall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Artempapa/Artempapa-Guild-Hall__3135) | Artempapa | PC / Mac | 2.0 |
 | [Asquart's Authentic Icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Asquart/Asquart-s-Authentic-Icons__4195) | Asquart | PC / Mac | 1.4.1 |
@@ -293,15 +295,15 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Auto Eat, Recharge, Repair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jodynn/Auto-Eat-Recharge-Repair__2198) | Jodynn | PC / Mac | 1.1 |
 | [Auto Extract](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/msetten/Auto-Extract__0763042f-816e-4f4f-baae-c50159fc5bd5) | msetten | Console | — |
 | [Auto Guild Welcome](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phobus11/Auto-Guild-Welcome__2387) | Phobus11 | PC / Mac | 0.2.0 |
-| [Auto Guild Welcome Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaffeinatedMayhem-Phobus11/Auto-Guild-Welcome-Revised__2b95c809-f14b-4c3c-9c0c-945a3e8547c4) | CaffeinatedMayhem, Phobus11 | Console | — |
+| [Auto Guild Welcome Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaffeinatedMayhem/Auto-Guild-Welcome-Revised__2b95c809-f14b-4c3c-9c0c-945a3e8547c4) | CaffeinatedMayhem | Console | — |
 | [Auto Handle Shared Quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaptainBlagbird/Auto-Handle-Shared-Quests__1217) | CaptainBlagbird | PC / Mac | 2.3 |
 | [Auto Kick](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/Auto-Kick__3613) | peniku8 | PC / Mac | 2.2.4 |
 | [Auto Loot Crafting Materials](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/estera/Auto-Loot-Crafting-Materials__1430) | estera | PC / Mac | 1.0 |
-| [AUTO LUA MEMORY CLEANER](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ca500f3A-r-cb400e6P-r-cc300daH-r-cd200cdO-r-ce100c1NlC-r/AUTO-LUA-MEMORY-CLEANER__9926b8d4-d4ca-4215-8790-013c0b1630c0) | \|ca500f3A\|r\|cb400e6P\|r\|cc300daH\|r\|cd200cdO\|r\|ce100c1NlC\|r | Console | — |
+| [AUTO LUA MEMORY CLEANER](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/APH0NlC/AUTO-LUA-MEMORY-CLEANER__9926b8d4-d4ca-4215-8790-013c0b1630c0) | APH0NlC | Console | — |
 | [Auto Lua Memory Cleaner (PC & Console)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/APH0N1C/Auto-Lua-Memory-Cleaner-PC-Console__4388) | APH0N1C | PC / Mac | 0.0.8 |
 | [Auto Message](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/Auto-Message__2859) | peniku8 | PC / Mac | 1.4.12 |
 | [Auto Offline - Sets Your Status To Offline On Logout](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Auto-Offline---Sets-Your-Status-To-Offline-On-Logout__4634) | Duesentrieb | PC / Mac | 20260624-0001 |
-| [Auto Opener](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Copper/Auto-Opener__79b6b597-9e33-4cd7-b076-44e9a153a44c) | Copper | Console | — |
+| [Auto Opener](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Copper0/Auto-Opener__79b6b597-9e33-4cd7-b076-44e9a153a44c) | Copper0 | Console | — |
 | [Auto Outfit Switcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/raj72616a/Auto-Outfit-Switcher__1968) | raj72616a | PC / Mac | 0.7 |
 | [Auto Process Stolen Items](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Auto-Process-Stolen-Items__1878) | manavortex | PC / Mac | 1.3b |
 | [Auto Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/QuaintShanty/Auto-Queue__2067) | QuaintShanty | PC / Mac | 1.0.05 |
@@ -312,25 +314,25 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Auto Recruit](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/Auto-Recruit__2571) | peniku8 | PC / Mac | 3.3.2 |
 | [Auto Remove Waypoint (Set Destination)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SSM24/Auto-Remove-Waypoint-Set-Destination__3544) | SSM24 | PC / Mac | 1.1.0 |
 | [Auto Repair and Recharge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shienar/Auto-Repair-and-Recharge__560a465f-d7b4-49ae-af7a-0558e1683ada) | Shienar | Console | — |
+| [Auto Research](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/Auto-Research__6694e6d4-7ae0-4eb8-9a61-e1c53ac5c187) | Dolgubon | Console | — |
 | [Auto Research](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/Auto-Research__1652) | Dolgubon | PC / Mac | 3.1.0 |
-| [Auto Research](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silvereyes-console-port-by-Dolgubon/Auto-Research__6694e6d4-7ae0-4eb8-9a61-e1c53ac5c187) | silvereyes, console port by Dolgubon | Console | — |
 | [Auto Research Scrolls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ghostbane/Auto-Research-Scrolls__3659) | ghostbane | PC / Mac | 1.2.0 |
 | [Auto Run](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaptainBlagbird/Auto-Run__1310) | CaptainBlagbird | PC / Mac | 1.0.12 |
-| [Auto-Claim or Hide Golden Pursuits](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Auto-Claim-or-Hide-Golden-Pursuits__48b63611-befb-44e1-b87a-1bac567ee234) | @code65536 | Console | — |
+| [Auto-Claim or Hide Golden Pursuits](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Auto-Claim-or-Hide-Golden-Pursuits__48b63611-befb-44e1-b87a-1bac567ee234) | code65536 | Console | — |
 | [Auto-Claim or Hide Golden Pursuits](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Auto-Claim-or-Hide-Golden-Pursuits__4545) | code65536 | PC / Mac | 2.0.0 |
-| [Auto-Claim or Hide Tome Challenges](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Auto-Claim-or-Hide-Tome-Challenges__910446ca-4e83-47c8-8c9b-a5d99bcec73e) | @code65536 | Console | — |
+| [Auto-Claim or Hide Tome Challenges](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Auto-Claim-or-Hide-Tome-Challenges__910446ca-4e83-47c8-8c9b-a5d99bcec73e) | code65536 | Console | — |
 | [Auto-Claim or Hide Tome Challenges](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Auto-Claim-or-Hide-Tome-Challenges__4484) | code65536 | PC / Mac | 2.0.0 |
 | [Auto-Tabard](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aldericon/Auto-Tabard__1853) | aldericon | PC / Mac | 12.0 |
 | [AutoBank](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/one_kharin/AutoBank__2957) | one_kharin | PC / Mac | 0.3v |
 | [Autobanker (Automatic Bank Deposit)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/r4cken/Autobanker-Automatic-Bank-Deposit__2199) | r4cken | PC / Mac | 2.5 |
-| [AutoBankMats+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hearthcode/AutoBankMats__f2ed8662-096e-46fa-bed1-9a73691c8f8f) | Hearthcode | Console | — |
+| [AutoBankMats+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeman1734/AutoBankMats__f2ed8662-096e-46fa-bed1-9a73691c8f8f) | codeman1734 | Console | — |
 | [AutoBind](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ShinyBones/AutoBind__3217) | ShinyBones | PC / Mac | 3.0.0 |
 | [AutoBind Uncollected Set Items](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/msetten/AutoBind-Uncollected-Set-Items__080f12f0-6b90-43c7-b89f-352feee686e2) | msetten | Console | — |
 | [AutoCollect](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kahanor/AutoCollect__3723) | Kahanor | PC / Mac | 1.2 |
-| [AutoConsume](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562/AutoConsume__126f9ed8-95dd-46e4-b365-18e7f56bb804) | user562 | Console | — |
+| [AutoConsume](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/AutoConsume__126f9ed8-95dd-46e4-b365-18e7f56bb804) | user562x | Console | — |
 | [AutoEmote - Fixed- Update 7 + FR](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Klayvan/AutoEmote---Fixed--Update-7-FR__2578) | Klayvan | PC / Mac | 1.1 |
 | [AutoGuildWelcome Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaffeinatedMayhem/AutoGuildWelcome-Revised__3995) | CaffeinatedMayhem | PC / Mac | 1.21 |
-| [AutoInteract](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SquidMeat/AutoInteract__ddf1a1e2-b627-4cb5-a40a-a3ece40c609c) | SquidMeat | Console | — |
+| [AutoInteract](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Squid.Meat/AutoInteract__ddf1a1e2-b627-4cb5-a40a-a3ece40c609c) | Squid.Meat | Console | — |
 | [AutoInteract](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SquidMeat/AutoInteract__4093) | SquidMeat | PC / Mac | 1.8.6 |
 | [AutoInvite - Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/amuridee/AutoInvite---Updated__2633) | amuridee | PC / Mac | 2026.07.07 |
 | [AutoInvite RU Patch (for v2.4.1)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ForgottenLight/AutoInvite-RU-Patch-for-v2.4.1__1336) | ForgottenLight | PC / Mac | 2.4.1.1 |
@@ -340,7 +342,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Automate](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/Automate__2852) | peniku8 | PC / Mac | 1.2.21 |
 | [Automatic Overland Difficulty (AOD)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/Automatic-Overland-Difficulty-AOD__4622) | Wrynch | PC / Mac | 1.3.0 |
 | [Automatically Accept Quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/marlonbrando/Automatically-Accept-Quests__1994) | marlonbrando | PC / Mac | 1.28 |
-| [AutoReadyCheck](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/L_cky/AutoReadyCheck__be99bdeb-a9e3-4b63-abe8-9aa886190e8e) | @L_cky | Console | — |
+| [AutoReadyCheck](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/L_cky/AutoReadyCheck__be99bdeb-a9e3-4b63-abe8-9aa886190e8e) | L_cky | Console | — |
 | [AutoReadyCheck](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SirWoach/AutoReadyCheck__3688) | SirWoach | PC / Mac | 2.4.1 |
 | [AutoRefine](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ihause/AutoRefine__2175) | ihause | PC / Mac | 0.9.1 |
 | [AutoReleaseInBG](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/powdercake/AutoReleaseInBG__2602) | powdercake | PC / Mac | 0.2 |

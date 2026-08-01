@@ -3,7 +3,7 @@ if LibConsoleMenu then
 end
 
 LibConsoleMenu = {}
-LibConsoleMenu.version = 70
+LibConsoleMenu.version = 74
 local LibConsoleMenu = LibConsoleMenu
 
 -----
@@ -19,6 +19,7 @@ LibConsoleMenu.CT_LABEL = 7
 LibConsoleMenu.CT_SECTION = 8
 LibConsoleMenu.CT_ICONPICKER = 9
 LibConsoleMenu.CT_DROPDOWN = 10
+LibConsoleMenu.CT_CHECKLIST = 11
 -----
 
 -- Shared handler tables (filled by ControlHandlers / controls/* modules).
@@ -124,6 +125,19 @@ function AddonSettingsControl:ResetToDefaults()
 		if self.control and self.setFunction then
 			local combobox = self.control.GetDropDown and self.control:GetDropDown() or self.control.dropdown
 			self.setFunction(combobox, item and item.name or default, item)
+		end
+	elseif self.type == LibConsoleMenu.CT_CHECKLIST then
+		local default = self.default
+		if type(default) ~= "table" then
+			default = {}
+		end
+		local copy = {}
+		for i = 1, #default do
+			copy[i] = default[i]
+		end
+		self:SetValue(copy)
+		if self.setFunction then
+			self.setFunction(copy)
 		end
 	elseif self.type == LibConsoleMenu.CT_COLORPICKER then
 		self:SetValue(unpack(self.default))
@@ -359,3 +373,5 @@ function LibConsoleMenu:Initialize()
 
 	self.initialized = true
 end
+
+

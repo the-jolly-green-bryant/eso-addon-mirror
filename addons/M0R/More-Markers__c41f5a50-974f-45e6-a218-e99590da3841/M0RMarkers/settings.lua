@@ -1,0 +1,917 @@
+local MM = M0RMarkers
+MM.Settings = {}
+local settings = MM.Settings
+local print = MM.print
+
+
+settings.colourPresets = {
+	"|cffffffWhite|r", -- 1,1,1,1
+	"|c0000ffBlue|r", -- 0, 0, 1, 1
+	"|c00ff00Green|r", -- 0, 1, 0, 1
+	"|cff8000Orange|r", -- 1, 0.5, 0, 1
+	"|cff00e6Pink|r", -- 1, 0, 0.9, 1
+	"|cff0000Red|r", -- 1, 0, 0, 1
+	"|cffcc00Yellow|r", -- 1, 0.8, 0, 1
+	"|c00ffa6Lime Green|r", -- 0, 1, 0.65, 1
+}
+local colourPresets = settings.colourPresets
+
+settings.colourLookup = {
+	["|cffffffWhite|r"] = {1, 1, 1, 1},
+	["|c0000ffBlue|r"] = {0, 0, 1, 1},
+	["|c00ff00Green|r"] = {0, 1, 0, 1},
+	["|cff8000Orange|r"] = {1, 0.5, 0, 1},
+	["|cff00e6Pink|r"] = {1, 0, 0.9, 1},
+	["|cff0000Red|r"] = {1, 0, 0, 1},
+	["|cffcc00Yellow|r"] = {1, 0.8, 0, 1},
+	["|c00ffa6Lime Green|r"] = {0, 1, 0.65, 1},
+
+	["ffffff"] = "|cffffffWhite|r",
+	["0000ff"] = "|c0000ffBlue|r",
+	["00ff00"] = "|c00ff00Green|r",
+	["ff8000"] = "|cff8000Orange|r",
+	["ff00e6"] = "|cff00e6Pink|r",
+	["ff0000"] = "|cff0000Red|r",
+	["ffcc00"] = "|cffcc00Yellow|r",
+	["00ffa6"] = "|c00ffa6Lime Green|r",
+}
+
+local colourLookup = settings.colourLookup
+settings.displayChoices = {}
+settings.textureSearchup = {}
+local displayChoices = settings.displayChoices
+
+local textureChoices = MM.builtInTextureList
+
+local textureSearchup = settings.textureSearchup
+for i,v in pairs(textureChoices) do
+	local textureName = string.match(v:reverse(), "sdd.(.-)/"):reverse() or "" --string.match(v, "/(.-).dds")
+
+	displayChoices[#displayChoices+1] = "|t24:24:"..v.."|t ("..textureName..")"
+	textureSearchup[displayChoices[#displayChoices]] = v
+	textureSearchup[v] = displayChoices[#displayChoices]
+end
+
+
+
+
+
+
+
+
+
+function settings.createSettings()
+	--local vars = AD.vars
+
+	local panelName = "M0RMarkersSettingsPanel"
+	local panelData = {
+		type = "panel",
+		name = "|cFFD700More Markers|r",
+		author = "|c0DC1CF@M0R_Gaming|r",
+		slashCommand = "/mmarkers"
+	}
+
+	
+
+	MM.vars.currentSelections = MM.vars.currentSelections or {
+		text = "",
+		offsetYPercent=50,
+		texture=textureChoices[1],
+		floating=true,
+		rgba={1,1,1,1},
+		size=1,
+		yaw=0,
+		pitch=-90,
+	}
+
+	settings.currentSelections = MM.vars.currentSelections
+
+
+	if not ZO_IsConsoleOrGameCoreUI() then
+
+		MM.vars.quickSelections = MM.vars.quickSelections or { -- seperate to avoid needing to update the menu (also now can remove it when porting to console)
+			text = "",
+			offsetY=50,
+			texture=textureChoices[1],
+			floating=true,
+			rgba={1,1,1,1},
+			size=1,
+			yaw=0,
+			pitch=-90,
+		}
+
+		settings.quickSelections = MM.vars.quickSelections
+
+		settings.InitColourPicker()
+		settings.InitTexturePicker()
+
+		M0RMarkerPlaceToplevelSizeSlider:SetValue(MM.vars.quickSelections.size*10)
+		M0RMarkerPlaceToplevelSizeSlider:GetParent():GetNamedChild("Size"):SetText("Size: "..(MM.vars.quickSelections.size).."m")
+		M0RMarkerPlaceToplevelOffsetSlider:SetValue(MM.vars.quickSelections.offsetY)
+		M0RMarkerPlaceToplevelOffsetSlider:GetParent():GetNamedChild("Offset"):SetText("Vertical Offset: "..(MM.vars.quickSelections.offsetY).."%")
+		M0RMarkerPlaceToplevelTextEdit:SetText(MM.vars.quickSelections.text or "")
+	end
+
+	
+
+
+
+	local currentSelections = settings.currentSelections
+
+	
+
+	--a = displayChoices
+
+
+	MM.exportString = ""
+	--local exportString = MM.exportString
+	local importString = ""
+
+	local elmsImportString = ""
+
+	MM.currentLoadProfileName = "Default"
+	local currentLoadProfileName = MM.currentLoadProfileName
+
+
+
+	local toInsert = {}
+
+
+	MM.currentAdditionalProfiles = {}
+	MM.multipleProfilesLoaded = false
+
+	local profileSelectButton = {
+		type = "dropdown",
+		name = "Profile Selection",
+		width = "half",
+		scrollable = 10,
+		reference = "M0RMarkersProfileDropdown",
+		choices = {},
+		getFunc = function()
+			MM.updateProfileDropdown(false)
+			local currentZone = GetUnitRawWorldPosition('player')
+			return MM.vars.loadedProfile[currentZone] or "Default"
+		end,
+		setFunc = function(value)
+			currentLoadProfileName = value;
+			MM.loadProfile(value)
+			if M0RMarkersProfilesCurrentLoadedProfile then M0RMarkersProfilesCurrentLoadedProfile:UpdateValue() end
+			MM.currentAdditionalProfiles = {}
+			MM.multipleProfilesLoaded = false
+		end,
+	}
+
+
+
+	local multiProfileLoadButton = {
+		type = "dropdown",
+		name = "Load Additional Profiles",
+		width = "half",
+		scrollable = 10,
+		reference = "M0RMarkersProfileDropdownAdditional",
+		warning = "You cannot place or remove markers while multiple profiles are loaded.",
+		choices = {},
+		multiSelect = true,
+		getFunc = function() MM.updateProfileDropdown(false, true) return MM.currentAdditionalProfiles end,
+		setFunc = function(value)
+			MM.currentAdditionalProfiles = value
+			MM.loadAdditionalProfiles(MM.currentAdditionalProfiles)
+		end,
+	}
+
+	local refreshLoadedProfile = function() if M0RMarkersProfilesCurrentLoadedProfile then M0RMarkersProfilesCurrentLoadedProfile:UpdateValue() end end
+
+
+
+	local fontFaceOptions = {
+		["GAMEPAD_BOLD_FONT"] = "Bold",
+		["GAMEPAD_MEDIUM_FONT"] = "Medium",
+		["GAMEPAD_LIGHT_FONT"] = "Light",
+		["GAMEPAD_MEDIUM_FONT_LATIN"] = "Latin",
+		["ANTIQUE_FONT"] = "Antique",
+		["HANDWRITTEN_FONT"] = "Handwritten",
+		["STONE_TABLET_FONT"] = "Stone Tablet",
+	}
+	local fontEffectOptions = {
+		["|thick-outline"] = "Thick Outline",
+		["|soft-shadow-thick"] = "Soft Shadow Thick",
+		["|soft-shadow-thin"] = "Soft Shadow Thin",
+		[""] = "No Effect"
+	}
+	local fontFaceDisplays = {}
+	local fontEffectDisplays = {}
+
+	for i,v in pairs(ZO_ShallowTableCopy(fontFaceOptions)) do
+		fontFaceOptions[v] = i
+		fontFaceDisplays[#fontFaceDisplays+1] = v
+	end
+	for i,v in pairs(ZO_ShallowTableCopy(fontEffectOptions)) do
+		fontEffectOptions[v] = i
+		fontEffectDisplays[#fontEffectDisplays+1] = v
+	end
+	table.sort(fontFaceDisplays)
+	table.sort(fontEffectDisplays)
+
+
+
+	local setFontFaceButton = {
+		type = "dropdown",
+		name = "Change Font",
+		width = "half",
+		tooltip = "Click this button to change the font!",
+		warning = "Changes will only take affect after you load a new profile/zone.",
+		choices = fontFaceDisplays,
+		getFunc = function()
+			return fontFaceOptions[MM.vars.fontface or "GAMEPAD_BOLD_FONT"]
+		end,
+		setFunc = function(value)
+			MM.vars.fontface = fontFaceOptions[value] or "GAMEPAD_BOLD_FONT"
+		end
+	}
+
+
+	local setFontEffectButton = {
+		type = "dropdown",
+		name = "Change Font Effect",
+		width = "half",
+		tooltip = "Click this button to change the font effect!",
+		warning = "Changes will only take affect after you load a new profile/zone.",
+		choices = fontEffectDisplays,
+		getFunc = function()
+			return fontEffectOptions[MM.vars.fonteffect or "|thick-outline"]
+		end,
+		setFunc = function(value)
+			MM.vars.fonteffect = fontEffectOptions[value] or "|thick-outline"
+		end
+	}
+
+	if ZO_IsConsoleOrGameCoreUI() then
+
+			refreshLoadedProfile = function()
+				if LibHarvensAddonSettings.list then
+					LibHarvensAddonSettings.list:RefreshVisible()
+				end
+			end
+
+
+			toInsert = {
+				{
+					type = "description",
+					title = "|cFFD700[More Markers]|r",
+					text = "Hello, and thank you for using More Markers! If you have any errors or complaints, please reach out to me either on discord (@m0r) or at the link below!",
+					width = "full",
+				},
+				{
+					type = "button",
+					name = "Contact Me \n(QR Code)",
+					tooltip = "Click this button to be directed to a QR Code which opens the More Markers esoui page where you can reach out to me!",
+					width = "half",
+					func = function() RequestOpenUnsafeURL("https://m0rgaming.github.io/create-qr-code/?url=https://www.esoui.com/downloads/info4266-MoreMarkers.html#comments") end,
+				},
+				{
+					type = "button",
+					name = "Contact Me \n(Direct Link)",
+					tooltip = "Click this button to be directed to the More Markers esoui page where you can reach out to me!",
+					width = "half",
+					func = function() RequestOpenUnsafeURL("https://www.esoui.com/downloads/info4266-MoreMarkers.html#comments") end,
+				},
+				{
+					type = "divider",
+				},
+			}
+
+			profileSelectButton = {
+				type = "button",
+				name = "Select Profile",
+				tooltip = "Click this button to change profiles!",
+				func = function() MM.ShowProfileSelect() end,
+			}
+
+			multiProfileLoadButton = {
+				type = "button",
+				name = "Load Additional Profiles",
+				tooltip = "Click this button to load multiple profiles at once!",
+				func = function() MM.ShowMultiProfileSelect() end,
+			}
+
+
+			setFontFaceButton = {
+				type = "button",
+				name = "Change Font",
+				tooltip = "Click this button to change the font!\n\nChanges will only take affect after you load a new profile/zone.\nIt is recommended to reload your UI after setting this, to clean up memory usage.",
+				func = function() MM.ShowFontSelect("fontFace") end,
+			}
+
+			setFontEffectButton = {
+				type = "button",
+				name = "Change Font Effect",
+				tooltip = "Click this button to change the font effect!\n\nChanges will only take affect after you load a new profile/zone.\nIt is recommended to reload your UI after setting this, to clean up memory usage.",
+				func = function() MM.ShowFontSelect("fontEffect") end,
+			}
+
+			
+		end
+
+
+
+
+
+
+
+
+
+
+	local optionsTable = {
+
+		{
+			type = "description",
+			title = "|cFFD700[Place Markers]|r",
+			width = "full",
+		},
+
+		-- PLACE PRESET MARKERS HERE
+		--[[
+		
+		--]]
+
+		{
+			type = "dropdown",
+			name = "Texture",
+			choices = displayChoices,
+			tooltip = "",
+			getFunc = function() return textureSearchup[MM.vars.currentSelections.texture] end,
+			setFunc = function(value) MM.vars.currentSelections.texture = textureSearchup[value] end,
+		},
+
+
+
+		{
+			type = "dropdown",
+			name = "Preset Colours",
+			width = "half",
+			tooltip = "Select one of a few default colours, or use the colour picker to fully create your own!",
+			choices = colourPresets,
+			getFunc = function() return colourLookup[ZO_ColorDef.FloatsToHex(unpack(MM.vars.currentSelections.rgba))] end,
+			setFunc = function(value) MM.vars.currentSelections.rgba = colourLookup[value] end,
+		},
+
+		{
+			type = "colorpicker",
+			name = "Colour Picker",
+			tooltip = "",
+			width = "half",
+			getFunc = function() return unpack(MM.vars.currentSelections.rgba) end,
+			setFunc = function(r,g,b,a) MM.vars.currentSelections.rgba = {r,g,b,a} end,
+		},
+		
+		
+		{
+			type = "slider",
+			name = "Size (cm)",
+			tooltip = "This is the diameter of the marker. (1 meter = 100 cm)",
+			min = 10,
+			max = 1000,
+			step = 10,	--(optional)
+			width = "half",
+			getFunc = function() return MM.vars.currentSelections.size*100 end,
+			setFunc = function(value) MM.vars.currentSelections.size = value/100 end,
+		},
+
+		{
+			type = "editbox",
+			name = "Text",
+			tooltip = "",
+			width = "half",
+			isMultiline = true,
+			getFunc = function() return MM.vars.currentSelections.text end,
+			setFunc = function(text) MM.vars.currentSelections.text = text end,
+		},
+
+		{
+			type = "button",
+			name = "|cFF5555Remove Icon|r",
+			warning = "This will remove the closest icon to you.",
+			width = "half",
+			func = function()
+				MM.ShowDialogue("Warning: Destructive Action",
+					"Are you sure you would like to remove the closest marker on the ground?",
+					"This is a destructive action and cannot be undone.",
+					MM.removeClosestIcon
+				)
+			end
+		},
+
+		{
+			type = "button",
+			name = "Place Icon",
+			width = "half",
+			func = MM.placeIcon,
+		},
+
+		{
+			type = "submenu",
+			name = "[Advanced Placing]",
+			tooltip = "",
+			controls = {
+
+
+				{
+					type = "checkbox",
+					name = "Facing User",
+					tooltip = "If this is enabled, markers will be 'floating' in the air and always turn to face the user.",
+					warning = "When turning off 'Facing User' to create flat icons, it is recommended to set your vertical offset to 0%",
+					width = "half",
+					getFunc = function() return MM.vars.currentSelections.floating end,
+					setFunc = function(value) MM.vars.currentSelections.floating = value end,
+				},
+				{
+					type = "button",
+					name = "Set Yaw to Camera Yaw",
+					tooltip = "This will set the yaw slider below to what your camera was facing before you entered the settings menu.",
+					width = "half",
+					func = function()
+						MM.setYaw()
+						if M0RMarkersAdvancedYaw then M0RMarkersAdvancedYaw:UpdateValue() end 
+					end,
+				},
+				{
+					type = "slider",
+					name = "Yaw",
+					tooltip = "If 'Facing User' is off, this will rotate the marker around the vertical axis.",
+					min = 0,
+					max = 360,
+					step = 1,	--(optional)
+					reference = "M0RMarkersAdvancedYaw",
+					width = "half",
+					getFunc = function() return MM.vars.currentSelections.yaw end,
+					setFunc = function(value) MM.vars.currentSelections.yaw = value end,
+				},
+
+				{
+					type = "slider",
+					name = "Pitch",
+					tooltip = "If 'Facing User' is off, this will rotate the marker up and down vertically.",
+					min = -90,
+					max = 90,
+					step = 1,	--(optional)
+					width = "half",
+					getFunc = function() return MM.vars.currentSelections.pitch end,
+					setFunc = function(value) MM.vars.currentSelections.pitch = value end,
+				},
+
+				{
+					type = "editbox",
+					name = "Custom Texture",
+					tooltip = "If you want to use a custom texture (either in base game or included in an addon), type the texture path into this box.",
+					getFunc = function() return MM.vars.currentSelections.texture end,
+					setFunc = function(value) MM.vars.currentSelections.texture = value end,
+				},
+				{
+					type = "slider",
+					name = "Vertical Offset",
+					tooltip = "This will adjust the vertical offset of the marker, in percentage.\n50% means that the bottom of the marker will be at the ground, and 0% means that the center of the marker will be on the ground.",
+					min = -100,
+					max = 300,
+					step = 5,
+					getFunc = function() return MM.vars.currentSelections.offsetYPercent end,
+					setFunc = function(value) MM.vars.currentSelections.offsetYPercent = value end,
+				},
+			}
+		},
+		{
+			type = "button",
+			name = "Open Editor",
+			tooltip = "Click this button to open the profile editor!",
+			width = "full",
+			func = function() SCENE_MANAGER:Push('M0RMarkerEditorScene') end,
+		},
+		{
+			type = "description",
+			text = "You can display a marker preview on your world map/mini map by enabling the map filter in your world map!",
+			width = "full",
+		},
+		{
+			type = "divider",
+		},
+		{
+			type = "description",
+			title = "|cFFD700[Profiles]|r",
+			width = "full",
+		},
+
+		{
+			type = "description",
+			title = function()
+				local currentZone = GetUnitRawWorldPosition('player')
+				return string.format("Current Loaded Profile: |cFFD700%s|r", MM.vars.loadedProfile[currentZone] or "Default")
+			end,
+			text = function() return string.format("Last Edited at: |c0DC1CF%s|r", os.date("%a, %b %d %Y - %I:%M %p", MM.loadedMarkers.currentTimestamp)) end,
+			reference = "M0RMarkersProfilesCurrentLoadedProfile",
+			width = "full",
+		},
+
+		profileSelectButton,
+
+
+
+		{
+			type = "button",
+			name = "|cFF5555Delete Profile|r",
+			warning = "This will delete all markers in the current profile.",
+			width = "half",
+			func = function()
+				MM.ShowDialogue("Warning: Destructive Action",
+					"Are you sure you would like to empty the current loaded profile?",
+					"This is a destructive action and cannot be undone.", function()
+					MM.deleteCurrentProfile();
+					refreshLoadedProfile()
+				end)
+			end,
+		},
+
+
+		{
+			type = "button",
+			name = "Create Profile",
+			width = "half",
+			func = function()
+				local editFunc = MM.ShowEditDialogue
+				if IsInGamepadPreferredMode() then editFunc = MM.ShowGPEdit end
+				editFunc("Creating Profile",
+					"What would you like to name the new profile?",
+					"",
+					function(name)
+						MM.loadProfile(name or "Default")
+						refreshLoadedProfile()
+					end
+				)
+			end,
+		},
+		{
+			type = "button",
+			name = "Rename Profile",
+			width = "half",
+			func = function()
+				local editFunc = MM.ShowEditDialogue
+				if IsInGamepadPreferredMode() then editFunc = MM.ShowGPEdit end
+				editFunc("Renaming Profile",
+					"What would you like to rename the current profile to?",
+					"If the desired name is already a profile, it will be overwritten.",
+					function(name)
+						MM.renameCurrentProfile(name)
+						refreshLoadedProfile()
+					end
+				)
+			end,
+		},
+
+
+
+		multiProfileLoadButton,
+
+		{
+			type = "button",
+			name = "Insert Premade Profiles",
+			tooltip = "More Markers has a few premade profiles for a few trials, created from both converting from Elms Markers strings and Hand Placement. This button will import these premade markers as new profiles.\n\nPremade profiles are available for vAS, vOC, vSS, vRG, vLC, vKA, vDSR, and vSE.",
+			width = "half",
+			func = function()
+				MM.ShowDialogue("Premade Profiles",
+					"Would you like to install the premade profiles? These profiles were made by M0R, both via a conversion of Elms Markers and Hand Placement.\n\nThis will NOT replace your current profiles, but instead add them on top.",
+					"",
+					function()
+						MM.InsertPremades() 
+					end)
+			end,
+			
+		},
+
+		{
+			type = "button",
+			name = "Unload Additional Profiles",
+			tooltip = "Unloads all of the additional Profiles",
+			width = "half",
+			func = function()
+				MM.ShowDialogue("Unloading Profiles",
+					"Would you like to unload all the additional loaded profiles?",
+					"This will not unload your main active profile.",
+					function()
+						MM.currentAdditionalProfiles = {}
+						MM.loadAdditionalProfiles({})
+					end)
+			end,
+			
+		},
+
+		{
+			type = "button",
+			name = "Merge Profiles",
+			tooltip = "Merges multiple profiles into one",
+			width = "half",
+			func = function()
+				local editFunc = MM.ShowEditDialogue
+				if IsInGamepadPreferredMode() then editFunc = MM.ShowGPEdit end
+
+				local function callback(profiles)
+					if #profiles == 0 then
+						print("No profiles selected (how did we get here)")
+						return
+					end
+					editFunc("Merging Profiles",
+						"What would you like to name the new profile?",
+						"If the desired name is already a profile, it will be overwritten.",
+						function(name)
+							print("Creating profile with name "..name)
+							MM.createMergedProfile(name, profiles)
+						end
+					)
+				end
+
+				if ZO_IsConsoleOrGameCoreUI() then
+					MM.ShowMultiProfileSelectBase(callback)
+				else
+					ZO_Dialogs_ShowPlatformDialog("M0RMarkerPCProfileSelectMulti", {callbackFunc = callback})
+				end
+			end,
+			
+		},
+
+		{
+			type = "button",
+			name = "Duplicate Profile",
+			tooltip = "Creates a copy of the currently loaded profile",
+			width = "half",
+			func = function()
+				local editFunc = MM.ShowEditDialogue
+				if IsInGamepadPreferredMode() then editFunc = MM.ShowGPEdit end
+				editFunc("Duplicating Profile",
+					"What would you like to name the new profile?",
+					"If the desired name is already a profile, it will be overwritten.",
+					function(name)
+						MM.renameCurrentProfile(name, true)
+						refreshLoadedProfile()
+					end
+				)
+			end,
+			
+		},
+
+		{
+			type = "button",
+			name = "|c0DC1CFShare Profile|r",
+			tooltip = "This button will share the currently loaded profile with everyone in the group, without needing to share a custom string.",
+			width = "half",
+			func = function()
+				MM.ShowDialogue("Transmitting Profile",
+					"Would you like to share your currently loaded profile to everyone in the group?",
+					"This will open a popup on their screen when the sharing finishes, and should probably not be used in combat.",
+					function()
+						MM.shareCurrentZone() 
+					end)
+			end,
+		},
+
+
+		
+
+		{
+			type = "divider",
+		},
+		
+		{
+			type = "editbox",
+			name = "Import Markers String / Convert Elms Markers or Akamatsu's Marker String",
+			tooltip = "Insert either a More Markers Profile String here, or insert an Elm's Markers or Akamatsu's Marker Import String to automatically convert it.",
+			width = "full",
+			isMultiline = true,
+			maxChars = 10000,
+			reference = "M0RMarkersImportEditBox",
+			default = "Insert either a More Markers Profile String here, or insert an Elm's Markers or Akamatsu's Marker Import String to automatically convert it.",
+			isExtraWide = true,
+			getFunc = function() return importString end, --return importString end,
+			setFunc = function(text) importString = text end,
+		},
+
+		{
+			type = "button",
+			name = "Append to Profile",
+			tooltip = "Clicking this button will add the markers to your current profile without removing anything.",
+			width = "half",
+			func = function()
+				local foundMMarkers = string.find(importString, "<(.-)](.-)](.-)](.-)](.-)](.-)](.-)](.-)](.-)>")
+				if foundMMarkers == nil then
+
+					local foundElmsMarkers = string.find(importString, "/(%d+)//(%d+),(%d+),(%d+),(%d+)/")
+					if foundElmsMarkers == nil then -- didnt find either M0R markers string or Elms String
+
+						local foundAkaMarkers = string.find(importString, "//(%d+)/(%d+)/(%d+)/(%d+)/(%d+)")
+						if foundAkaMarkers == nil then
+							MM.ShowNotice("Notice", "Failed to find either a More Markers, Elms Markers, or Akamatsu's Marker string", "")
+						else
+							--MM.parseAkamatsuString(markerString, useLibEmote)
+							if string.find(importString, "//(%d+)/(%d+)/(%d+)/(%d+)/(%d[12367890]%d%d%d)") then
+								-- found a LibEmote marker (aka not pack 15 or 14). Ask user if they want to convert it or use LibEmote
+								if LibEmote then
+									MM.ShowDialogue("Custom Emotes Detected",
+										"The detected Akamatsu's Marker profile contains LibEmote custom icons in it. Would you like to convert these custom icons to chevrons?",
+										"If you choose not to convert to chevrons, only people who have LibEmote installed will be able to see the markers which contain the custom icon.",
+										function()
+											local amountLoaded, zoneString = MM.parseAkamatsuString(importString, false)
+											if M0RMarkersExportEditBox then M0RMarkersExportEditBox:UpdateValue() end
+											MM.ShowNotice("Notice", "Loaded a total of "..tostring(amountLoaded).." markers from Akamatsu's Marker!", "")
+										end,
+										function()
+											local amountLoaded, zoneString = MM.parseAkamatsuString(importString, true)
+											if M0RMarkersExportEditBox then M0RMarkersExportEditBox:UpdateValue() end
+											MM.ShowNotice("Notice", "Loaded a total of "..tostring(amountLoaded).." markers from Akamatsu's Marker!", "")
+										end
+									)
+								else
+									local amountLoaded, zoneString = MM.parseAkamatsuString(importString, false)
+									MM.ShowNotice("Notice", "Loaded a total of "..tostring(amountLoaded).." markers from Akamatsu's Marker!", "Markers which used LibEmote icons were automatically converted to chevrons. To keep them as LibEmote icons, install LibEmote and reimport!")
+								end
+							else
+								local amountLoaded, zoneString = MM.parseAkamatsuString(importString, false)
+								MM.ShowNotice("Notice", "Loaded a total of "..tostring(amountLoaded).." markers from Akamatsu's Marker!", "")
+							end
+
+
+						end
+					else 
+						local amountLoaded, zoneString = MM.parseElmsString(importString)
+						print("Parsed ".. tostring(amountLoaded).. " markers.")
+						MM.ShowNotice("Notice", "Loaded a total of "..tostring(amountLoaded).." markers from Elms!", "")
+						--exportString = zoneString
+						if M0RMarkersExportEditBox then M0RMarkersExportEditBox:UpdateValue() end
+					end
+				else
+					local zoneString = MM.importIcons(importString, false)
+					--exportString = zoneString
+					if M0RMarkersExportEditBox then M0RMarkersExportEditBox:UpdateValue() end
+				end
+			end,
+		},
+		{
+			type = "button",
+			name = "|cFF5555Overwrite Profile|r",
+			warning = "Clicking this button will add the markers to your current profile, replacing all of the markers loaded.",
+			width = "half",
+			func = function()
+				local foundMMarkers = string.find(importString, "<(.-)](.-)](.-)](.-)](.-)](.-)](.-)](.-)](.-)>")
+				if foundMMarkers == nil then
+					local foundElmsMarkers = string.find(importString, "/(%d+)//(%d+),(%d+),(%d+),(%d+)/")
+					if foundElmsMarkers == nil then -- didnt find either M0R markers string or Elms String
+						local foundAkaMarkers = string.find(importString, "//(%d+)/(%d+)/(%d+)/(%d+)/(%d+)")
+						if foundAkaMarkers == nil then
+							MM.ShowNotice("Notice", "Failed to find either a More Markers, Elms Markers, or Akamatsu's Marker string", "")
+						else
+							--MM.parseAkamatsuString(markerString, useLibEmote)
+							if string.find(importString, "//(%d+)/(%d+)/(%d+)/(%d+)/(%d[12367890]%d%d%d)") then
+								-- found a LibEmote marker (aka not pack 15 or 14). Ask user if they want to convert it or use LibEmote
+								if LibEmote then
+									MM.ShowDialogue("Custom Emotes Detected",
+										"The detected Akamatsu's Marker profile contains LibEmote custom icons in it. Would you like to convert these custom icons to chevrons?",
+										"If you choose not to convert to chevrons, only people who have LibEmote installed will be able to see the markers which contain the custom icon.",
+										function()
+											MM.emptyCurrentZone()
+											local amountLoaded, zoneString = MM.parseAkamatsuString(importString, false)
+											if M0RMarkersExportEditBox then M0RMarkersExportEditBox:UpdateValue() end
+											MM.ShowNotice("Notice", "Loaded a total of "..tostring(amountLoaded).." markers from Akamatsu's Marker!", "")
+										end,
+										function()
+											MM.emptyCurrentZone()
+											local amountLoaded, zoneString = MM.parseAkamatsuString(importString, true)
+											if M0RMarkersExportEditBox then M0RMarkersExportEditBox:UpdateValue() end
+											MM.ShowNotice("Notice", "Loaded a total of "..tostring(amountLoaded).." markers from Akamatsu's Marker!", "")
+										end
+									)
+								else
+									MM.emptyCurrentZone()
+									local amountLoaded, zoneString = MM.parseAkamatsuString(importString, false)
+									MM.ShowNotice("Notice", "Loaded a total of "..tostring(amountLoaded).." markers from Akamatsu's Marker!", "Markers which used LibEmote icons were automatically converted to chevrons. To keep them as LibEmote icons, install LibEmote and reimport!")
+								end
+							else
+								MM.emptyCurrentZone()
+								local amountLoaded, zoneString = MM.parseAkamatsuString(importString, false)
+								MM.ShowNotice("Notice", "Loaded a total of "..tostring(amountLoaded).." markers from Akamatsu's Marker!", "")
+							end
+
+
+						end
+					else
+						MM.ShowDialogue("Warning: Destructive Action",
+							"Are you sure you would like to overwrite the current profile?",
+							"This is a destructive action and cannot be undone.",
+							function()
+								MM.emptyCurrentZone()
+								local amountLoaded, zoneString = MM.parseElmsString(importString)
+								print("Parsed ".. tostring(amountLoaded).. " markers.")
+								--exportString = zoneString
+								if M0RMarkersExportEditBox then M0RMarkersExportEditBox:UpdateValue() end
+							end
+						)
+					end
+				else
+					MM.ShowDialogue("Warning: Destructive Action", "Are you sure you would like to overwrite the current profile?", "This is a destructive action and cannot be undone.", function()
+						MM.importIcons(importString, true);
+						--exportString = importString;
+						if M0RMarkersExportEditBox then M0RMarkersExportEditBox:UpdateValue() end
+					end)
+				end
+			end,
+		},
+
+		{
+			type = "divider",
+		},
+
+		{
+			type = "editbox",
+			name = "Export String",
+			tooltip = "Sharing this string to other people will allow them to import your currently loaded profile.",
+			width = "full",
+			isMultiline = true,
+			maxChars = 10000,
+			reference = "M0RMarkersExportEditBox",
+			isExtraWide = true,
+			getFunc = function() return MM.exportString or "" end,
+			setFunc = function(text) end,
+		},
+
+
+		{
+			type = "button",
+			name = "|cFF5555Clear Zone|r",
+			tooltip = "",
+			warning = "This will delete all markers in the current zone, similar to the 'Delete Profile' button above.",
+			width = "full",
+			func = function()
+				MM.ShowDialogue("Warning: Destructive Action", "Are you sure you would like to empty the current zone?", "This is a destructive action and cannot be undone.", function()
+					MM.emptyCurrentZone(); if M0RMarkersExportEditBox then M0RMarkersExportEditBox:UpdateValue() end
+				end)
+			end,
+		},
+
+		{
+			type = "divider",
+		},
+
+		{
+			type = "description",
+			title = "|cFFD700[Global Settings]|r",
+			width = "full",
+		},
+
+		{
+			type = "slider",
+			name = "Global Size Multiplier (%)",
+			tooltip = "This multiplier gets applied to all markers, on top of their normal size multipliers.\n\nChanges will only take affect after you load a new profile/zone.",
+			warning = "The markers are made to match in game units, changing the global size may make certain markers inaccurate (ie. vAS Jumps).",
+			min = 10,
+			max = 200,
+			step = 5,
+			width = "half",
+			getFunc = function() return MM.vars.globalMult*100 end,
+			setFunc = function(value) MM.vars.globalMult = value/100 end,
+		},
+
+
+		{
+			type = "slider",
+			name = "Culling Distance (m)",
+			tooltip = "Markers further than this distance will be hidden from the player. Setting this to 0 will disable culling.",
+			min = 0,
+			max = 200,
+			step = 10,
+			width = "half",
+			getFunc = function() return MM.vars.cullingDistance end,
+			setFunc = function(value) MM.vars.cullingDistance = value; MM.startCulling() end,
+		},
+		{
+			type = "slider",
+			name = "Font Scale Multiplier (%)",
+			tooltip = "This multiplier will apply to all text elements in markers, on top of their normal size multipliers.\n\nChanges will only take affect after you load a new profile/zone.",
+			min = 5,
+			max = 200,
+			step = 5,
+			width = "half",
+			getFunc = function() return MM.vars.fontScale*100 end,
+			setFunc = function(value) MM.vars.fontScale = value/100 end,
+		},
+		setFontFaceButton,
+		setFontEffectButton
+
+	}
+
+
+	
+
+	local mergedTables = {}
+
+	ZO_CombineNumericallyIndexedTables(mergedTables, toInsert, optionsTable)
+
+
+
+	local panel = LibAddonMenu2:RegisterAddonPanel(panelName, panelData)
+	LibAddonMenu2:RegisterOptionControls(panelName, mergedTables)
+
+end

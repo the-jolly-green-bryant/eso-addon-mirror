@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/votan73/LibAsync__72c475de-1f9e-433f-8047-57f7fb4ff786",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "votan73",
+  "canonical_id": "bethesda:72c475de-1f9e-433f-8047-57f7fb4ff786",
+  "content_id": "72c475de-1f9e-433f-8047-57f7fb4ff786",
+  "deleted": false,
+  "fingerprint": "f9d77f10b12cb4a7744f32b213b901f9359d8e8a0c7ff1007cfcb84eeed1ffb5",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "72c475de-1f9e-433f-8047-57f7fb4ff786",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/72c475de-1f9e-433f-8047-57f7fb4ff786",
+  "title": "LibAsync"
+}

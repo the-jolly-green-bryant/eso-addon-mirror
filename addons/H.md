@@ -39,8 +39,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Harven's Subtitles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Harven/Harven-s-Subtitles__339) | Harven | PC / Mac | 2.0.4 |
 | [Harven's Thieves Troves Marker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Harven/Harven-s-Thieves-Troves-Marker__1313) | Harven | PC / Mac | 1.1.0 |
 | [Harven's Trait and Style](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Harven/Harven-s-Trait-and-Style__436) | Harven | PC / Mac | 2.10.3 |
-| [HarvestMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/HarvestMap__f552385a-cc51-4031-bf63-43abd2709e70) | Shinni | Console | — |
 | [HarvestMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/HarvestMap__57) | Shinni | PC / Mac | 3.16.12 |
+| [HarvestMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni42/HarvestMap__f552385a-cc51-4031-bf63-43abd2709e70) | Shinni42 | Console | — |
 | [HarvestMap-Data](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/HarvestMap-Data__3034) | Shinni | PC / Mac | 3.15.3 |
 | [HarvestPins](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hatory/HarvestPins__2435) | Hatory | PC / Mac | 1.9 |
 | [HarvestPins - Hidden Stash Addon (Khajiit Paw)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Craziux/HarvestPins---Hidden-Stash-Addon-Khajiit-Paw__2803) | Craziux | PC / Mac | 1.0 |
@@ -62,14 +62,14 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Helix Rotations](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/helixanon/Helix-Rotations__3181) | helixanon | PC / Mac | v0.6.1 |
 | [Hello Tamriel - Travel Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dharan-Empire/Hello-Tamriel---Travel-Tools__4229) | Dharan-Empire | PC / Mac | 1.0 |
 | [Hello Tamriel! - Chat Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dharan-Empire/Hello-Tamriel---Chat-Assistant__4180) | Dharan-Empire | PC / Mac | 5.0 |
-| [Hello, goodbye](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Murfiex/Hello-goodbye__80a0dbcb-9e84-4f98-8d1d-d2fd78129f82) | Murfiex | Console | — |
-| [HelloWorld](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ReliktGepard3/HelloWorld__d3514a63-e01b-4267-ab25-f1b8e79aa586) | ReliktGepard3 | Console | — |
+| [Hello, goodbye](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/murphyx/Hello-goodbye__80a0dbcb-9e84-4f98-8d1d-d2fd78129f82) | murphyx | Console | — |
+| [HelloWorld](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ReliktKoala/HelloWorld__d3514a63-e01b-4267-ab25-f1b8e79aa586) | ReliktKoala | Console | — |
 | [Helmet Toggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Akhaten/Helmet-Toggle__950) | Akhaten | PC / Mac | 1.0 |
 | [Helmet Toggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaptainBlagbird/Helmet-Toggle__792) | CaptainBlagbird | PC / Mac | 1.5.16 |
 | [Helmet Toggle, Dragon Bones](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/glorinand/Helmet-Toggle-Dragon-Bones__1915) | glorinand | PC / Mac | v. 1.1 |
 | [HelmetPal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/fallinintheblak/HelmetPal__1872) | fallinintheblak | PC / Mac | 0.3 |
 | [Hermes - Tools, Tomes & more](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Niwasaka/Hermes---Tools-Tomes-more__3499) | Niwasaka | PC / Mac | 1.5.2 |
-| [Hero's Compass](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Murfiex/Hero-s-Compass__282169ec-5b28-4744-bed7-c866d07adb4a) | Murfiex | Console | — |
+| [Hero's Compass](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/murphyx/Hero-s-Compass__282169ec-5b28-4744-bed7-c866d07adb4a) | murphyx | Console | — |
 | [Heroism Potions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Saenic/Heroism-Potions__3568) | Saenic | PC / Mac | 1.0.1 |
 | [Hidden Rolls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Akardra/Hidden-Rolls__3197) | Akardra | PC / Mac | 1.00 |
 | [Hide Action Bar Labels (Lost Depths)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CodeStripper/Hide-Action-Bar-Labels-Lost-Depths__3475) | CodeStripper | PC / Mac | 1.0.1 |
@@ -82,8 +82,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [HideChatMiniBar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Saint-Ange/HideChatMiniBar__3672) | Saint-Ange | PC / Mac | 1.1.1 |
 | [HideCompassDistances](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/VollständigerName/HideCompassDistances__4221) | VollständigerName | PC / Mac | 1.0.3 |
 | [HideGroup](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels/HideGroup__2273) | Wheels | PC / Mac | 2.1 |
+| [HideGroupNecro](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/B7TxSpeed/HideGroupNecro__8e7b0d7b-4c3c-4dfc-896e-6c413074928b) | B7TxSpeed | Console | — |
 | [HideGroupNecro](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/B7TxSpeed/HideGroupNecro__3472) | B7TxSpeed | PC / Mac | 1.5.1 |
-| [HideGroupNecro](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c00fffe-B7TxSpeed-r/HideGroupNecro__8e7b0d7b-4c3c-4dfc-896e-6c413074928b) | \|c00fffe@B7TxSpeed\|r | Console | — |
 | [HideHousePreviews (Updated)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Zandar/HideHousePreviews-Updated__3175) | Zandar | PC / Mac | 3.0.5 |
 | [HideHousePreviews on World Map](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baumkuchen3/HideHousePreviews-on-World-Map__2245) | Baumkuchen3 | PC / Mac | 3.0.25 |
 | [HideInventoryClutter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Schrodi/HideInventoryClutter__3247) | Schrodi | PC / Mac | 2.0 |
@@ -96,7 +96,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [History](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/hisdad/History__1059) | hisdad | PC / Mac | 97 |
 | [Hodor Reflex - Piou Icons Roster \[DEPRECATED\]](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tenshiraito/Hodor-Reflex---Piou-Icons-Roster-DEPRECATED__3842) | Tenshiraito | PC / Mac | 2.9 |
 | [Hodor Restyle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hyperioxes/Hodor-Restyle__3533) | Hyperioxes | PC / Mac | 2.5 |
-| [HodorReflexes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cFFFF00-andy.s-r-c76c3f4-m00nyONE-r/HodorReflexes__fef0db78-bc0e-4c89-b77e-f03d570d10a9) | \|cFFFF00@andy.s\|r, \|c76c3f4@m00nyONE\|r | Console | — |
+| [HodorReflexes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/HodorReflexes__fef0db78-bc0e-4c89-b77e-f03d570d10a9) | m00nyONE | Console | — |
 | [HodorReflexes - DPS & ULT tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/andy.s/HodorReflexes---DPS-ULT-tracker__2311) | andy.s | PC / Mac | 2026-05-17 |
 | [HodorReflexesIconExtension](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/HodorReflexesIconExtension__3520) | sshogrin | PC / Mac | 1.4.1 |
 | [HOF Swap Notifier](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/HOF-Swap-Notifier__1848) | Dolgubon | PC / Mac | 1 |
@@ -115,12 +115,12 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [House and Wayshrine](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ZaiZah/House-and-Wayshrine__4068) | ZaiZah | PC / Mac | 1.0.3 |
 | [House Census](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Deandra/House-Census__1809) | Deandra | PC / Mac | 1.1.6 |
 | [House Click](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/iiJonno/House-Click__2962) | iiJonno | PC / Mac | 1.2 |
-| [House Hotkey](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thisbeaurielle/House-Hotkey__256dc81e-d505-4eb6-9a51-1d7ffc360c69) | thisbeaurielle | Console | — |
+| [House Hotkey](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/saranicole1980/House-Hotkey__256dc81e-d505-4eb6-9a51-1d7ffc360c69) | saranicole1980 | Console | — |
 | [House Hotkey](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thisbeaurielle/House-Hotkey__4185) | thisbeaurielle | PC / Mac | 1.8.1 |
-| [House ID](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/JenovaSeph/House-ID__1a4c7280-2bf3-4373-b9b5-6f872886f724) | JenovaSeph | Console | — |
+| [House ID](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Trunxrdm/House-ID__1a4c7280-2bf3-4373-b9b5-6f872886f724) | Trunxrdm | Console | — |
 | [House Preview Hotkey](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TwinLamps/House-Preview-Hotkey__4391) | TwinLamps | PC / Mac | 1.0 |
 | [HouseTravel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ShadowMau/HouseTravel__2960) | ShadowMau | PC / Mac | 1.0.1 |
-| [HouseValue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeDumCHee/HouseValue__3162) | DeDumChee | PC / Mac | 1.0.1 |
+| [HouseValue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeDumChee/HouseValue__3162) | DeDumChee | PC / Mac | 1.0.1 |
 | [Housing Hub](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architectura/Housing-Hub__2923) | Architectura | PC / Mac | 1776 |
 | [HoustonSkillPath](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xhoustonx/HoustonSkillPath__4051) | xhoustonx | PC / Mac | 1.7 |
 | [How Many](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/flipswitchingmonkey/How-Many__2280) | flipswitchingmonkey | PC / Mac | 1.0.9 |

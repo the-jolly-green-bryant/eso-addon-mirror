@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/rockintrumpet/SmartCombatAlertv1__19ce6fa1-98c2-458e-b92b-c47fc6f55b55",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "rockintrumpet",
+  "canonical_id": "bethesda:19ce6fa1-98c2-458e-b92b-c47fc6f55b55",
+  "content_id": "19ce6fa1-98c2-458e-b92b-c47fc6f55b55",
+  "deleted": false,
+  "fingerprint": "675a6d12a2071725420c00e8cf4e7b1414d7ee7bb487e04d090dda83f2f13373",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "19ce6fa1-98c2-458e-b92b-c47fc6f55b55",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/19ce6fa1-98c2-458e-b92b-c47fc6f55b55",
+  "title": "SmartCombatAlertv1"
+}

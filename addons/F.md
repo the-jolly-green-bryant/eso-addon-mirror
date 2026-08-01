@@ -9,15 +9,15 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [F_ckOff](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/F_ckOff__2724) | peniku8 | PC / Mac | 1.1.14 |
 | [FadePins](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/JGeurrie-Llivas/FadePins__4537) | JGeurrie(@Llivas) | PC / Mac | 1.0 |
 | [Fancy Action Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/andy.s/Fancy-Action-Bar__2462) | andy.s | PC / Mac | 2.8 |
+| [Fancy Action Bar+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/acastanza/Fancy-Action-Bar__922792c1-1d90-4415-ada5-c356757e857f) | acastanza | Console | — |
 | [Fancy Action Bar+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Anthonysc/Fancy-Action-Bar__3938) | Anthonysc | PC / Mac | 2.18.5 |
-| [Fancy Action Bar+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Incanus-dack_janiels-nogetrandom-andy.s/Fancy-Action-Bar__922792c1-1d90-4415-ada5-c356757e857f) | Incanus, dack_janiels, nogetrandom, andy.s | Console | — |
 | [FancyTitles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haze068/FancyTitles__4355) | haze068 | PC / Mac | 5.5 |
 | [Fang Lair Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/GioBozza/Fang-Lair-Helper__2447) | GioBozza | PC / Mac | 1.0.1 |
 | [Farm Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dirtdart/Farm-Manager__2496) | dirtdart | PC / Mac | 0.8.0.0 |
 | [Farmers ToolKit](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vilkasmanga/Farmers-ToolKit__3789) | Vilkasmanga | PC / Mac | 260302-V2 |
 | [Farming Party](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aldanga/Farming-Party__1822) | Aldanga | PC / Mac | 2.15.0 |
 | [Farming Party Plus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeviousCode/Farming-Party-Plus__4611) | DeviousCode | PC / Mac | 3.0.8 |
-| [Fashion Mount](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cB427D3Su-c546D6Aga-c889764Co-cDA34CDma-r/Fashion-Mount__91a5e014-74ee-4d3b-a612-b2b05dd223d8) | \|cB427D3Su\|c546D6Aga\|c889764Co\|cDA34CDma\|r | Console | — |
+| [Fashion Mount](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Fashion-Mount__91a5e014-74ee-4d3b-a612-b2b05dd223d8) | SugaComa | Console | — |
 | [Fast Ride](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/Fast-Ride__1936) | Shadowfen | PC / Mac | 3.2.1 |
 | [Fast Travel Spendings](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/Fast-Travel-Spendings__2798) | MrPikPik | PC / Mac | 1.1 |
 | [Faster Travel (Wayshrines menu & Teleporter)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SimonIllyan/Faster-Travel-Wayshrines-menu-Teleporter__1089) | SimonIllyan | PC / Mac | 3.3.2 |
@@ -26,10 +26,10 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [FastVolume](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/powdercake/FastVolume__2598) | powdercake | PC / Mac | 1.2 |
 | [FatedFryer  (Fated Fortune tracker)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/VaalHazac/FatedFryer-Fated-Fortune-tracker__4489) | VaalHazac | PC / Mac | 1.2 |
 | [FatStacks updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ayantir/FatStacks-updated__687) | Ayantir | PC / Mac | 0.4 |
-| [FavOptions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Murfiex/FavOptions__d13d8dac-6694-4ebe-8685-ce038ec06a1e) | Murfiex | Console | — |
+| [FavOptions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/murphyx/FavOptions__d13d8dac-6694-4ebe-8685-ce038ec06a1e) | murphyx | Console | — |
 | [Favor Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xpherion/Favor-Tracker__4717) | xpherion | PC / Mac | 1.0.5 |
 | [Favorite Dungeon Rotation](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ownedbynico/Favorite-Dungeon-Rotation__2643) | ownedbynico | PC / Mac | 1.2.0 |
-| [Favorite Home Teleporter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hearthcode/Favorite-Home-Teleporter__fc9f4f62-3d31-41cd-b9ee-e1a0ea0f6ecb) | Hearthcode | Console | — |
+| [Favorite Home Teleporter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeman1734/Favorite-Home-Teleporter__fc9f4f62-3d31-41cd-b9ee-e1a0ea0f6ecb) | codeman1734 | Console | — |
 | [Favorite Mount](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ShadowMau/Favorite-Mount__2915) | ShadowMau | PC / Mac | 2.06 |
 | [Favorite Pet](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ShadowMau/Favorite-Pet__2917) | ShadowMau | PC / Mac | 2.02 |
 | [Favourite Furniture Crafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DonRomano/Favourite-Furniture-Crafter__2081) | DonRomano | PC / Mac | 1.05 |
@@ -46,8 +46,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [FCO GuildCampaign](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/FCO-GuildCampaign__3567) | Baertram | PC / Mac | 0.3 |
 | [FCO GuildInfo](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/FCO-GuildInfo__1265) | Baertram | PC / Mac | 2.44 |
 | [FCO ItemSaver (Mark, filter and save your items against decon/sell/etc.)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/FCO-ItemSaver-Mark-filter-and-save-your-items-against-decon-sell-etc__630) | Baertram | PC / Mac | 2.8.3 |
-| [FCO Lockpicker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/FCO-Lockpicker__f141edd7-7b4f-4b3e-b32e-9e6df1ec228b) | Baertram | Console | — |
 | [FCO Lockpicker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/FCO-Lockpicker__909) | Baertram | PC / Mac | 0.31 |
+| [FCO Lockpicker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram_ESOUI/FCO-Lockpicker__f141edd7-7b4f-4b3e-b32e-9e6df1ec228b) | Baertram_ESOUI | Console | — |
 | [FCO Mounty](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/FCO-Mounty__1866) | Baertram | PC / Mac | 0.2.81 |
 | [FCO Notes (Guild members/Friends/Ignored players)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/FCO-Notes-Guild-members-Friends-Ignored-players__1065) | Baertram | PC / Mac | 0.2.0 |
 | [FCO PsijicUndoHelper (Undo/Temproal Guard/Precognition)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/FCO-PsijicUndoHelper-Undo-Temproal-Guard-Precognition__3595) | Baertram | PC / Mac | 1.0 |
@@ -60,7 +60,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Feeding Frenzy Tracker (Werewolf)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Grizzly_Khan/Feeding-Frenzy-Tracker-Werewolf__4698) | Grizzly_Khan | PC / Mac | 1.0.1 |
 | [Fighting Display - Shows Fighting! when in combat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Fighting-Display---Shows-Fighting-when-in-combat__4246) | Duesentrieb | PC / Mac | 20250909-1138 |
 | [Filtered Loot Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MycroftJr/Filtered-Loot-Tracker__3932) | MycroftJr | PC / Mac | 1.0.0 |
-| [Find My Stuff](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cff00ffVixen-Hunny-r/Find-My-Stuff__3a04382d-3f1c-4340-9fa5-abd6af19a2af) | \|cff00ffVixen Hunny\|r | Console | — |
+| [Find My Stuff](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/Find-My-Stuff__3a04382d-3f1c-4340-9fa5-abd6af19a2af) | Vixen_Hunny | Console | — |
 | [FineClubIcons - Kyne's Aegis icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/B7TxSpeed/FineClubIcons---Kyne-s-Aegis-icons__3937) | B7TxSpeed | PC / Mac | 1.0.1 |
 | [First Person Camera Lock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/First-Person-Camera-Lock__1271) | sirinsidiator | PC / Mac | 1.3 |
 | [First Person Riding (gamepad supported)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/crocodarrel/First-Person-Riding-gamepad-supported__2583) | crocodarrel | PC / Mac | 2.8 |
@@ -89,7 +89,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [FlapRider](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/awamani/FlapRider__4503) | awamani | PC / Mac | 1.0.1 |
 | [FlatUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/FlatUI__3758) | DakJaniels | PC / Mac | 1.0.0 |
 | [Flex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gloomwidow/Flex__2943) | Gloomwidow | PC / Mac | 1.0.1 |
-| [Flexible Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c0DC1CF-M0R_Gaming-r/Flexible-Bars__4be7617d-7e6d-42bf-bcbb-921e37ace7bc) | \|c0DC1CF@M0R_Gaming\|r | Console | — |
+| [Flexible Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/Flexible-Bars__4be7617d-7e6d-42bf-bcbb-921e37ace7bc) | M0R | Console | — |
 | [FloatingDamageNumbers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/bluraptor7099/FloatingDamageNumbers__4381) | bluraptor7099 | PC / Mac | 1.4.1 |
 | [Floffel's Pledge queuer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Floffel/Floffel-s-Pledge-queuer__2563) | Floffel | PC / Mac | 1.42 |
 | [Flowers She Likes (Fixed & Modernized) - original by Ayantir](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hyborem/Flowers-She-Likes-Fixed-Modernized---original-by-Ayantir__4398) | Hyborem | PC / Mac | v.14.2 |
@@ -101,10 +101,10 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Font Accessibility - Font Changer based on Pawksicles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lucifer1309/Font-Accessibility---Font-Changer-based-on-Pawksicles__4012) | Lucifer1309 | PC / Mac | 1.7.0 |
 | [Font Changer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ferrety6012/Font-Changer__3728) | Ferrety6012 | PC / Mac | 0.9 |
 | [Font Changer (updated)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zetauma/Font-Changer-updated__3858) | zetauma | PC / Mac | 1.6 |
-| [FoodReminder_v2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cB427D3Su-c546D6Aga-c889764Co-cDA34CDma-r/FoodReminder_v2__d1d0a73f-951f-40f2-973b-6ddb92428cbb) | \|cB427D3Su\|c546D6Aga\|c889764Co\|cDA34CDma\|r | Console | — |
+| [FoodReminder_v2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/FoodReminder_v2__d1d0a73f-951f-40f2-973b-6ddb92428cbb) | SugaComa | Console | — |
 | [Force Overflow](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels/Force-Overflow__2826) | Wheels | PC / Mac | 1.0 |
 | [Forgetfulness Poison XI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ownedbynico/Forgetfulness-Poison-XI__2559) | ownedbynico | PC / Mac | 1.2 |
-| [Forpl-KDA-Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/brady/Forpl-KDA-Bar__844b3c4f-aa76-42d6-8ef7-dcf6dec3b447) | brady | Console | — |
+| [Forpl-KDA-Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Forpl/Forpl-KDA-Bar__844b3c4f-aa76-42d6-8ef7-dcf6dec3b447) | Forpl | Console | — |
 | [Forward Camp Preview](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Valve/Forward-Camp-Preview__1776) | Valve | PC / Mac | 1.1.3 |
 | [Foundry Tactical Combat (FTC)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyono/Foundry-Tactical-Combat-FTC__1611) | Rhyono | PC / Mac | 1.32 |
 | [FOV Zoom](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/UsefulEejit/FOV-Zoom__4519) | UsefulEejit | PC / Mac | 1.0 |
@@ -122,9 +122,9 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [FsBountyDecay](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FelipeS11/FsBountyDecay__2486) | FelipeS11 | PC / Mac | 3.0 |
 | [Full Moon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/g4rr3t/Full-Moon__2107) | g4rr3t | PC / Mac | 1.2.4 |
 | [Fun Kill Feed - (tested on console)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Fun-Kill-Feed---tested-on-console__4286) | SugaComa | PC / Mac | 1.3.5 |
-| [FunKillFeed](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cB427D3Su-c546D6Aga-c889764Co-cDA34CDma-r/FunKillFeed__08954d6b-1604-4daf-9cf3-99b327dd7afd) | \|cB427D3Su\|c546D6Aga\|c889764Co\|cDA34CDma\|r | Console | — |
+| [FunKillFeed](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/FunKillFeed__08954d6b-1604-4daf-9cf3-99b327dd7afd) | SugaComa | Console | — |
 | [Furnishing Recipe Collector](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomstock/Furnishing-Recipe-Collector__3862) | tomstock | PC / Mac | 1.4.9 |
-| [Furnishing Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c39B5E5Eldibabalo-r/Furnishing-Tracker__c49eb98c-6821-47de-9cb2-10b972d1a55f) | \|c39B5E5Eldibabalo\|r | Console | — |
+| [Furnishing Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Furnishing-Tracker__c49eb98c-6821-47de-9cb2-10b972d1a55f) | Eldibabalo | Console | — |
 | [Furnishings placed 2 Nickname](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/remosito/Furnishings-placed-2-Nickname__3579) | remosito | PC / Mac | 37.0 |
 | [Furniture Catalogue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Furniture-Catalogue__1617) | manavortex | PC / Mac | 6.3.0 |
 | [Furniture Grouper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/datael/Furniture-Grouper__1799) | datael | PC / Mac | 1.0.6a |

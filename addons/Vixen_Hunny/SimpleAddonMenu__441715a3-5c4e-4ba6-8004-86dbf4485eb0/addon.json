@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Vixen_Hunny/SimpleAddonMenu__441715a3-5c4e-4ba6-8004-86dbf4485eb0",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Vixen_Hunny",
+  "canonical_id": "bethesda:441715a3-5c4e-4ba6-8004-86dbf4485eb0",
+  "content_id": "441715a3-5c4e-4ba6-8004-86dbf4485eb0",
+  "deleted": false,
+  "fingerprint": "6f6b8a0d18dad2acc6fff93e6dd2354cebf77e38b0f77211412f0ddb09de2de8",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "441715a3-5c4e-4ba6-8004-86dbf4485eb0",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/441715a3-5c4e-4ba6-8004-86dbf4485eb0",
+  "title": "SimpleAddonMenu"
+}

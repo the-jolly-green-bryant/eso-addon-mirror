@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/TankiestTank/SurvivalMode__79d39b6d-3f2c-48e3-a08f-b6c2c69751fd",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "TankiestTank",
+  "canonical_id": "bethesda:79d39b6d-3f2c-48e3-a08f-b6c2c69751fd",
+  "content_id": "79d39b6d-3f2c-48e3-a08f-b6c2c69751fd",
+  "deleted": false,
+  "fingerprint": "468fcdd058208f231ed51438c57b96233236a51ef6072708608544d79c1db05e",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "79d39b6d-3f2c-48e3-a08f-b6c2c69751fd",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/79d39b6d-3f2c-48e3-a08f-b6c2c69751fd",
+  "title": "SurvivalMode"
+}

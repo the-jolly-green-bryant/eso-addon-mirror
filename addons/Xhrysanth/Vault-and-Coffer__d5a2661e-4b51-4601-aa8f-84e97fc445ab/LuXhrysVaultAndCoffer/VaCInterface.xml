@@ -1,0 +1,619 @@
+<GuiXml>
+	<Controls>
+
+
+<!-- =================| InfoPanel Custom Quadrants |=================== -->
+
+		<!-- Templates for a Quadrant 3 panel. The default options have arrows, and we just want straight rails. TODO: Scrolling? -->
+
+		<Control name="LuXhrys_VaultAndCoffer_Gamepad_Quadrant_3_Background_Template" inherits="ZO_Gamepad_BackgroundControl_Rails" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Bg" inherits="ZO_GamepadGrid_BackgroundTexture">
+					<TextureCoords left="ZO_GAMEPAD_QUADRANT_3_LEFT_COORD" right="ZO_GAMEPAD_QUADRANT_3_RIGHT_COORD" top="0" bottom="ZO_GAMEPAD_PANEL_BG_BOTTOM_COORD"/>
+				</Texture>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="LuXhrys_VaultAndCoffer_TopLevel_Gamepad_Quadrant_3_Background" inherits="ZO_GamepadGrid_NavQuadrant_3_Anchors ZO_Gamepad_BackgroundTopLevel_Base_Template">
+			<Controls>
+				<Control name="$(parent)NestedBg" inherits="LuXhrys_VaultAndCoffer_Gamepad_Quadrant_3_Background_Template"/>
+			</Controls>
+		</TopLevelControl>
+
+		<!-- Templates for a panel stretching from the right of quadrant 2 to the left of quadrant 4.
+		The following are based on controls in esoui/common/gamepad/gamepadquadrants.xml -->
+
+		<Control name="LuXhrys_VaultAndCoffer_Gamepad_Quadrant_3Wide_Anchors" virtual="true">
+			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.WIDE.PANEL_WIDTH"/> <!-- Consider also "ZO_GAMEPAD_PANEL_WIDE_WIDTH" for a fixed width! -->
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" offsetX="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.WIDE.LEFT_OFFSET" offsetY="ZO_GAMEPAD_QUADRANT_TOP_OFFSET"/>
+<!--			<Anchor point="BOTTOMLEFT" relativeTo="GuiRoot" offsetX="ZO_GAMEPAD_QUADRANT_2_RIGHT_OFFSET" offsetY="ZO_GAMEPAD_QUADRANT_BOTTOM_OFFSET"/> -->
+			<Anchor point="BOTTOMLEFT" relativeTo="GuiRoot" offsetX="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.WIDE.LEFT_OFFSET" offsetY="ZO_GAMEPAD_QUADRANT_BOTTOM_OFFSET"/>
+		</Control>
+
+		<Control name="LuXhrys_VaultAndCoffer_Gamepad_Quadrant_3_Wide_Background_Template" inherits="ZO_Gamepad_BackgroundControl_Rails" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Bg" inherits="ZO_GamepadGrid_BackgroundTexture">
+					<TextureCoords left="ZO_GAMEPAD_QUADRANT_2_RIGHT_COORD" right="ZO_GAMEPAD_QUADRANT_4_LEFT_COORD" top="0" bottom="ZO_GAMEPAD_PANEL_BG_BOTTOM_COORD"/> <!-- Consider also right="ZO_GAMEPAD_QUADRANT_3_RIGHT_COORD" -->
+				</Texture>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="LuXhrys_VaultAndCoffer_TopLevel_Gamepad_Quadrant_3_Wide_Background" inherits="LuXhrys_VaultAndCoffer_Gamepad_Quadrant_3Wide_Anchors ZO_Gamepad_BackgroundTopLevel_Base_Template">
+			<Controls>
+				<Control name="$(parent)NestedBg" inherits="LuXhrys_VaultAndCoffer_Gamepad_Quadrant_3_Wide_Background_Template"/>
+			</Controls>
+		</TopLevelControl>
+
+		<Control name="LuXhrys_VaultAndCoffer_Gamepad_AnchoredToQuadrant_3_Wide_Background" virtual="true">
+			<Anchor point="TOPLEFT" relativeTo="LuXhrys_VaultAndCoffer_TopLevel_Gamepad_Quadrant_3_Wide_Background"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="LuXhrys_VaultAndCoffer_TopLevel_Gamepad_Quadrant_3_Wide_Background"/>
+		</Control>
+
+
+<!-- ======================| Entry Templates |========================= -->
+
+<!-- The following are in esoui/common/gamepad/zo_gamepadtemplatescommon.xml: -->
+
+<!--
+	x	ZO_GamepadMenuEntryHeaderTemplate
+	x	ZO_GamepadMenuEntryWithIconHeaderTemplate (inherits ZO_GamepadMenuEntryHeaderTemplate and adds icon)
+		These are used to add a category header above a normal entry. They are not standalone section headers.
+-->
+		<Label name="LuXhrys_VaultAndCoffer_GamepadMenuEntryHeaderTemplate" inherits="ZO_GamepadMenuEntryHeaderTemplate" virtual="true">
+		</Label>
+		<Label name="LuXhrys_VaultAndCoffer_GamepadMenuEntryWithIconHeaderTemplate" font="ZoFontGamepadBold42" inherits="ZO_GamepadMenuEntryWithIconHeaderTemplate" virtual="true">
+		</Label>
+
+<!--
+		ZO_GamepadMenuHeaderTemplate (does not inherit, has its own setup function, and contains a label)
+		ZO_GamepadMenuHeaderUppercaseTemplate (similar but is presumably all uppercase)
+			This template is intended for usage with the template setup function set to ZO_GamepadMenuHeaderTemplate_Setup.
+			When using that setup function, this template includes a few additional features that can be enabled in the item
+			data:
+
+				text - Can be either a string or a function to call that returns a string.
+				color - Can be a color string, color table, or a function that returns either of the first two.
+
+			Note that by default, this template cannot be selected in the parametric scroll list, however this behavior can be
+			overriden by manually setting the canSelect flag in the item's data when adding an item using the template.
+-->
+		<Control name="LuXhrys_VaultAndCoffer_GamepadMenuHeaderTemplate" inherits="ZO_GamepadMenuHeaderTemplate" virtual="true">
+		</Control>
+		<Control name="LuXhrys_VaultAndCoffer_GamepadMenuHeaderUppercaseTemplate" inherits="ZO_GamepadMenuHeaderUppercaseTemplate" virtual="true">
+		</Control>
+
+<!--
+*		ZO_GamepadMenuEntryTemplate (inherits ZO_GamepadMenuEntryDimensionsTemplate and ZO_GamepadMenuEntryLabelSizedTemplate, and adds label, icon, and stackCount)
+		ZO_GamepadSubMenuEntryTemplate (inherits ZO_GamepadMenuEntryDimensionsTemplate and ZO_GamepadMenuEntryLabelSizedTemplate, and adds label, icon, stackCount, and SubStatusIcon)
+-->
+		<Control name="LuXhrys_VaultAndCoffer_GamepadMenuEntryTemplate" inherits="ZO_GamepadMenuEntryTemplate" virtual="true">
+		</Control>
+		<Control name="LuXhrys_VaultAndCoffer_GamepadSubMenuEntryTemplate" inherits="ZO_GamepadSubMenuEntryTemplate" virtual="true">
+		</Control>
+
+<!-- The following are in esoui/ingame/gamepad/gamepadtemplates/gamepadtemplates.xml: -->
+
+<!--
+	ZO_GamepadNewMenuEntryTemplate (inherits ZO_GamepadMenuEntryTemplate and adds status indicator)
+	ZO_GamepadSubMenuEntryTemplateWithStatus (inherits ZO_GamepadSubMenuEntryTemplate and adds status indicator)
+-->
+
+		<Control name="LuXhrys_VaultAndCoffer_GamepadNewMenuEntryTemplate" inherits="ZO_GamepadNewMenuEntryTemplate" virtual="true">
+		</Control>
+		<Control name="LuXhrys_VaultAndCoffer_GamepadSubMenuEntryTemplateWithStatus" inherits="ZO_GamepadSubMenuEntryTemplateWithStatus" virtual="true">
+		</Control>
+
+<!--
+	ZO_GamepadItemEntryTemplate (inherits ZO_GamepadMenuEntryTemplate and adds cooldown and status indicator)
+	ZO_GamepadItemSubEntryTemplate (inherits ZO_GamepadSubMenuEntryTemplate and adds cooldown and status indicator)
+-->
+
+		<Control name="LuXhrys_VaultAndCoffer_GamepadItemEntryTemplate" inherits="ZO_GamepadItemEntryTemplate" virtual="true">
+		</Control>
+		<Control name="LuXhrys_VaultAndCoffer_GamepadItemSubEntryTemplate" inherits="ZO_GamepadItemSubEntryTemplate" virtual="true">
+		</Control>
+
+
+<!-- ==================| InfoPanel Entry Templates |=================== -->
+
+
+		<!-- Generic text label, generally used for something like "No results found." -->
+
+
+		<Label name="LuXhrys_VaultAndCoffer_InfoPanel_GenericEntryNameLabel_Lowercase34_Template_Gamepad" font="ZoFontGamepadCondensed34" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="LEFT" wrapMode="ELLIPSIS" virtual="true">
+			<Anchor point="TOPLEFT" offsetX="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.ROW_INDENT"/>
+			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.ENTRY_WIDTH"/>
+		</Label>
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_GenericEntryRow_Template_Gamepad" virtual="true">
+			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.ENTRY_WIDTH" y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.ENTRY_HEIGHT"/>
+			<OnInitialized>
+				self.nameLabel = self:GetNamedChild("NameLabel")
+			</OnInitialized>
+			<Controls>
+				<Label name="$(parent)NameLabel" inherits="LuXhrys_VaultAndCoffer_InfoPanel_GenericEntryNameLabel_Lowercase34_Template_Gamepad"/>
+			</Controls>
+		</Control>
+
+
+		<!-- Name/Value Pair Templates -->
+
+
+		<Label name="LuXhrys_VaultAndCoffer_InfoPanel_NameValuePairEntryValueLabel_Lowercase34_Template_Gamepad" font="ZoFontGamepadCondensed34" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT">
+			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.COUNTS_TABLE_COLUMN_WIDTH"/>
+			<Anchor point="RIGHT"/>
+<!-- offsetX="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.GRID_PADDING_X" -->
+		</Label>
+
+		<Label name="LuXhrys_VaultAndCoffer_InfoPanel_NameValuePairEntryNameLabel_Lowercase27_Template_Gamepad" font="ZoFontGamepadCondensed27" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="LEFT" wrapMode="ELLIPSIS" virtual="true">
+			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.TABLE_FIRST_COLUMN_WIDTH_TWO_COLUMNS"/>
+			<Anchor point="LEFT" offsetX="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.ROW_INDENT"/>
+		</Label>
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_NameValuePairEntry_Base_Template_Gamepad" virtual="true">
+			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.CONTENT_WIDTH" y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.ENTRY_HEIGHT"/>
+			<OnInitialized>
+				self.nameLabel = self:GetNamedChild("NameLabel")
+				self.valueLabel = self:GetNamedChild("ValueLabel")
+			</OnInitialized>
+		</Control>
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_NameValuePairEntryRow_Template_Gamepad" inherits="LuXhrys_VaultAndCoffer_InfoPanel_NameValuePairEntry_Base_Template_Gamepad" virtual="true">
+			<Controls>
+				<Label name="$(parent)NameLabel" inherits="LuXhrys_VaultAndCoffer_InfoPanel_NameValuePairEntryNameLabel_Lowercase27_Template_Gamepad"/>
+				<Label name="$(parent)ValueLabel" inherits="LuXhrys_VaultAndCoffer_InfoPanel_NameValuePairEntryValueLabel_Lowercase34_Template_Gamepad"/>
+			</Controls>
+		</Control>
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_NameValuePairEntryRow_Uppercase_Template_Gamepad" inherits="LuXhrys_VaultAndCoffer_InfoPanel_NameValuePairEntry_Base_Template_Gamepad" virtual="true">
+			<Controls>
+				<Label name="$(parent)NameLabel" modifyTextType="UPPERCASE" inherits="LuXhrys_VaultAndCoffer_InfoPanel_NameValuePairEntryNameLabel_Lowercase27_Template_Gamepad"/>
+				<Label name="$(parent)ValueLabel" inherits="LuXhrys_VaultAndCoffer_InfoPanel_NameValuePairEntryValueLabel_Lowercase34_Template_Gamepad"/>
+			</Controls>
+		</Control>
+
+
+<!-- Multi-column table row entries -->
+
+
+		<Label name="LuXhrys_VaultAndCoffer_InfoPanel_MultiColumnSectionEntryRowValueLabel_Lowercase34_Template_Gamepad" font="ZoFontGamepadCondensed34" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" virtual="true">
+			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.COUNTS_TABLE_COLUMN_WIDTH"/>
+<!-- offsetX="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.GRID_PADDING_X" -->
+		</Label>
+
+
+<!-- Companion Equipped/Placed Furniture Inventory Table Row Template (Name NAME Qty) -->
+
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_TwoNamesOneValueEntryRow_Template_Gamepad" virtual="true">
+			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.CONTENT_WIDTH" y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.ENTRY_HEIGHT"/>
+			<OnInitialized>
+				self.nameLabel1 = self:GetNamedChild ("NameLabel1")
+				self.nameLabel2 = self:GetNamedChild ("NameLabel2")
+				self.valueLabel = self:GetNamedChild ("ValueLabel")
+			</OnInitialized>
+			<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+				<Label name="$(parent)NameLabel1" font="ZoFontGamepadCondensed27" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.TABLE_2N1V_FIRST_TWO_COLUMN_WIDTHS"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.ROW_INDENT"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+				<Label name="$(parent)NameLabel2" font="ZoFontGamepadCondensed27" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.TABLE_2N1V_FIRST_TWO_COLUMN_WIDTHS"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)NameLabel1" relativePoint="BOTTOMRIGHT" offsetX="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.GRID_PADDING_X"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+				<Label name="$(parent)ValueLabel" inherits="LuXhrys_VaultAndCoffer_InfoPanel_MultiColumnSectionEntryRowValueLabel_Lowercase34_Template_Gamepad">
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+			</Controls>
+		</Control>
+
+
+<!-- Companion Equipped/Placed Furniture Inventory Table Row Template (Name Qty Qty) -->
+
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_NameTwoValuesEntryRow_Template_Gamepad" virtual="true">
+			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.CONTENT_WIDTH" y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.ENTRY_HEIGHT"/>
+			<OnInitialized>
+				self.nameLabel = self:GetNamedChild ("NameLabel")
+				self.valueLabel1 = self:GetNamedChild ("ValueLabel1")
+				self.valueLabel2 = self:GetNamedChild ("ValueLabel2")
+			</OnInitialized>
+			<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+				<Label name="$(parent)NameLabel" font="ZoFontGamepadCondensed27" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.TABLE_FIRST_COLUMN_WIDTH_THREE_COLUMNS"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.ROW_INDENT"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+				<Label name="$(parent)ValueLabel2" inherits="LuXhrys_VaultAndCoffer_InfoPanel_MultiColumnSectionEntryRowValueLabel_Lowercase34_Template_Gamepad">
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+				<Label name="$(parent)ValueLabel1" inherits="LuXhrys_VaultAndCoffer_InfoPanel_MultiColumnSectionEntryRowValueLabel_Lowercase34_Template_Gamepad">
+					<Anchor point="RIGHT" relativeTo="$(parent)ValueLabel2" relativePoint="LEFT" offsetX="-LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.GRID_PADDING_X"/>
+<!--					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ValueLabel2" relativePoint="BOTTOMLEFT"/> -->
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+			</Controls>
+		</Control>
+
+
+<!-- Character Inventory Table Row Template (Name Qty Qty Qty) -->
+
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_NameThreeValuesEntryRow_Template_Gamepad" virtual="true">
+			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.CONTENT_WIDTH" y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.ENTRY_HEIGHT"/>
+			<OnInitialized>
+				self.nameLabel = self:GetNamedChild ("NameLabel")
+				self.valueLabel1 = self:GetNamedChild ("ValueLabel1")
+				self.valueLabel2 = self:GetNamedChild ("ValueLabel2")
+				self.valueLabel3 = self:GetNamedChild ("ValueLabel3")
+			</OnInitialized>
+			<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+			<Label name="$(parent)NameLabel" font="ZoFontGamepadCondensed27" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.TABLE_FIRST_COLUMN_WIDTH_FOUR_COLUMNS"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.ROW_INDENT"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+				<Label name="$(parent)ValueLabel3" inherits="LuXhrys_VaultAndCoffer_InfoPanel_MultiColumnSectionEntryRowValueLabel_Lowercase34_Template_Gamepad">
+					<Anchor point="RIGHT" relativeTo="$(parent)ValueLabel4" relativePoint="LEFT" offsetX="-LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.GRID_PADDING_X"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+				<Label name="$(parent)ValueLabel2" inherits="LuXhrys_VaultAndCoffer_InfoPanel_MultiColumnSectionEntryRowValueLabel_Lowercase34_Template_Gamepad">
+					<Anchor point="RIGHT" relativeTo="$(parent)ValueLabel3" relativePoint="LEFT" offsetX="-LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.GRID_PADDING_X"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+				<Label name="$(parent)ValueLabel1" inherits="LuXhrys_VaultAndCoffer_InfoPanel_MultiColumnSectionEntryRowValueLabel_Lowercase34_Template_Gamepad">
+					<Anchor point="RIGHT" relativeTo="$(parent)ValueLabel2" relativePoint="LEFT" offsetX="-LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.GRID_PADDING_X"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+
+
+			</Controls>
+		</Control>
+
+
+<!-- Character Inventory Table Row Template (Name Qty Qty Qty Qty) -->
+
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_NameFourValuesEntryRow_Template_Gamepad" virtual="true">
+			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.CONTENT_WIDTH" y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.ENTRY_HEIGHT"/>
+			<OnInitialized>
+				self.nameLabel = self:GetNamedChild ("NameLabel")
+				self.valueLabel1 = self:GetNamedChild ("ValueLabel1")
+				self.valueLabel2 = self:GetNamedChild ("ValueLabel2")
+				self.valueLabel3 = self:GetNamedChild ("ValueLabel3")
+				self.valueLabel4 = self:GetNamedChild ("ValueLabel4")
+			</OnInitialized>
+			<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+			<Label name="$(parent)NameLabel" font="ZoFontGamepadCondensed27" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.TABLE_FIRST_COLUMN_WIDTH_FIVE_COLUMNS"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.ROW_INDENT"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+				<Label name="$(parent)ValueLabel4" inherits="LuXhrys_VaultAndCoffer_InfoPanel_MultiColumnSectionEntryRowValueLabel_Lowercase34_Template_Gamepad">
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+				<Label name="$(parent)ValueLabel3" inherits="LuXhrys_VaultAndCoffer_InfoPanel_MultiColumnSectionEntryRowValueLabel_Lowercase34_Template_Gamepad">
+					<Anchor point="RIGHT" relativeTo="$(parent)ValueLabel4" relativePoint="LEFT" offsetX="-LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.GRID_PADDING_X"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+				<Label name="$(parent)ValueLabel2" inherits="LuXhrys_VaultAndCoffer_InfoPanel_MultiColumnSectionEntryRowValueLabel_Lowercase34_Template_Gamepad">
+					<Anchor point="RIGHT" relativeTo="$(parent)ValueLabel3" relativePoint="LEFT" offsetX="-LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.GRID_PADDING_X"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+				<Label name="$(parent)ValueLabel1" inherits="LuXhrys_VaultAndCoffer_InfoPanel_MultiColumnSectionEntryRowValueLabel_Lowercase34_Template_Gamepad">
+					<Anchor point="RIGHT" relativeTo="$(parent)ValueLabel2" relativePoint="LEFT" offsetX="-LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.GRID_PADDING_X"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Label>
+
+
+			</Controls>
+		</Control>
+
+
+<!-- ========| InfoPanel Section and Table Header Templates |========== -->
+
+
+		<!-- Section Title Template -->
+
+
+		<Label name="LuXhrys_VaultAndCoffer_InfoPanel_SectionTitleText_Template_Gamepad" font="ZoFontGamepadCondensed42" verticalAlignment="TOP" horizontalAlignment="LEFT" wrapMode="ELLIPSIS" maxLineCount="1" virtual="true"/>
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_SectionTitle_Template_Gamepad" virtual="true">
+			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.CONTENT_WIDTH" y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.SECTION_HEADER_HEIGHT"/>
+			<OnInitialized>
+				self.icon = self:GetNamedChild ("Icon")
+				self.title = self:GetNamedChild ("Title")
+			</OnInitialized>
+			<Controls>
+				<Texture name="$(parent)Icon">
+					<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.SECTION_HEADER_ICON_SIZE" y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.SECTION_HEADER_ICON_SIZE"/>
+					<Anchor point="LEFT"/>
+				</Texture>
+				<Label name="$(parent)Title" inherits="LuXhrys_VaultAndCoffer_InfoPanel_SectionTitleText_Template_Gamepad">
+					<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.SECTION_HEADER_LABEL_WIDTH" y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.SECTION_HEADER_HEIGHT"/>
+					<Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.SECTION_HEADER_INDENT"/>
+				</Label>
+			</Controls>
+		</Control> <!-- LuXhrys_VaultAndCoffer_InfoPanel_SectionTitleContainer_Template_Gamepad -->
+
+
+		<!--   Table subheader icon and name -->
+
+
+		<Label name="LuXhrys_VaultAndCoffer_InfoPanel_SubTitleText_Template_Gamepad" font="ZoFontGamepadCondensed34" verticalAlignment="TOP" horizontalAlignment="LEFT" wrapMode="ELLIPSIS" modifyTextType="UPPERCASE" maxLineCount="1" virtual="true"/>
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_SubSectionTitleRow_Template_Gamepad" virtual="true">
+<!--			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.ENTRY_WIDTH" y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.SECTION_HEADER_HEIGHT"/> --> <!-- Indent from the edge of the section container. -->
+			<OnInitialized>
+				self.subSectionIcon = self:GetNamedChild ("SubSectionIcon")
+				self.subSectionTitle = self:GetNamedChild ("SubSectionTitle")
+			</OnInitialized>
+			<Controls>
+				<Texture name="$(parent)Icon">
+					<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.COUNTS_TABLE_ICON_SIZE" y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.COUNTS_TABLE_ICON_SIZE"/>
+					<Anchor point="LEFT" offsetX="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.SECTION_HEADER_INDENT"/>
+				</Texture>
+				<Label name="$(parent)SubSectionTitle" inherits="LuXhrys_VaultAndCoffer_InfoPanel_SubTitleText_Template_Gamepad">
+					<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.TABLE_FIRST_COLUMN_WIDTH" y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.ENTRY_HEIGHT"/>
+					<Anchor point="LEFT" relativeTo="$(parent)SubSectionIcon" relativePoint="RIGHT" offsetX="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.SECTION_HEADER_INDENT"/>
+				</Label>
+			</Controls>
+		</Control> <!-- LuXhrys_VaultAndCoffer_InfoPanel_SectionTitleContainer_Template_Gamepad -->
+
+
+<!-- Character Inventory Icon Table Header Row Template -->
+
+
+		<Texture name="LuXhrys_VaultAndCoffer_InfoPanel_TableIconHeaderIcon_Template_Gamepad" virtual="true">
+			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.COUNTS_TABLE_ICON_SIZE" y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.COUNTS_TABLE_ICON_SIZE"/>
+		</Texture>
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_TableIconHeader_Template_Gamepad" virtual="true">
+			<Dimensions x="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.QUADRANT.CONTENT_WIDTH" y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.COUNTS_TABLE_ICON_SIZE"/>
+			<OnInitialized>
+				self.tableHeaderIcon1 = self:GetNamedChild ("TableHeaderIcon1")
+				self.tableHeaderIcon2 = self:GetNamedChild ("TableHeaderIcon2")
+				self.tableHeaderIcon3 = self:GetNamedChild ("TableHeaderIcon3")
+				self.tableHeaderIcon4 = self:GetNamedChild ("TableHeaderIcon4")
+			</OnInitialized>
+			<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+				<Texture name="$(parent)TableHeaderIcon4" inherits="LuXhrys_VaultAndCoffer_InfoPanel_TableIconHeaderIcon_Template_Gamepad">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.COUNTS_TABLE_ICON_RIGHT_OFFSET"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Texture>
+				<Texture name="$(parent)TableHeaderIcon3" inherits="LuXhrys_VaultAndCoffer_InfoPanel_TableIconHeaderIcon_Template_Gamepad">
+					<Anchor point="RIGHT" relativeTo="$(parent)TableHeaderIcon4" relativePoint="LEFT"  offsetX="-LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.COUNTS_TABLE_HALF_COLUMN_WIDTH"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Texture>
+				<Texture name="$(parent)TableHeaderIcon2" inherits="LuXhrys_VaultAndCoffer_InfoPanel_TableIconHeaderIcon_Template_Gamepad">
+					<Anchor point="RIGHT" relativeTo="$(parent)TableHeaderIcon3" relativePoint="LEFT"  offsetX="-LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.COUNTS_TABLE_HALF_COLUMN_WIDTH"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Texture>
+				<Texture name="$(parent)TableHeaderIcon1" inherits="LuXhrys_VaultAndCoffer_InfoPanel_TableIconHeaderIcon_Template_Gamepad">
+					<Anchor point="RIGHT" relativeTo="$(parent)TableHeaderIcon2" relativePoint="LEFT" offsetX="-LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.COUNTS_TABLE_HALF_COLUMN_WIDTH"/>
+<Controls>
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+</Controls>
+				</Texture>
+			</Controls>
+		</Control>
+
+
+<!-- ==================| InfoPanel Core Templates |==================== -->
+
+
+		<!--  Main Header/Title Template. Header at the top of the InfoPanel, including the title. This is analogous to ZO_GamepadStatsTopLevelRightPaneHeaderContainer in zo_stats_gamepad.xml and modeled after ZO_GamepadContentHeaderContainer in genericheader.xml. -->
+
+		<!-- analogous to ZO_GamepadContentHeaderTitleTextTemplate -->
+		<Label name="LuXhrys_VaultAndCoffer_InfoPanel_MainHeaderTitleText_Template_Gamepad" font="ZoFontGamepadBold54" verticalAlignment="BOTTOM" horizontalAlignment="CENTER" wrapMode="ELLIPSIS" virtual="true" excludeFromResizeToFitExtents="true" maxLineCount="2"/>
+
+		<!-- analagous to RightPaneHeaderContainer and ZO_GamepadContentHeaderContainer-->
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_MainHeaderContainer_Template_Gamepad" inherits="ZO_GamepadGrid_NavQuadrant_ContainerAnchors" virtual="true"> <!-- Consider resizeToFitDescendents="true" -->
+<!--			<Dimensions y="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.MAIN_HEADER_HEIGHT"/> -->
+			<Controls>
+				<Control name="$(parent)Header" resizeToFitDescendents="true"> <!-- analolgous to ZO_GamepadGenericContentHeader -->
+					<Anchor point="TOPLEFT"/> <!-- analagous to ZO_GamepadHeaderAnchors -->
+					<Anchor point="TOPRIGHT"/> <!-- analagous to ZO_GamepadHeaderAnchors -->
+					<Controls>
+						<Control name="$(parent)TitleContainer"> <!-- analagous to ZO_GamepadHeaderTitleAnchors -->
+							<Anchor point="TOPLEFT"/> <!-- analagous to ZO_GamepadHeaderTitleAnchors -->
+							<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetY="LUXHRYS.INFO_PANEL_GAMEPAD_CONSTANTS.COMMON.MAIN_HEADER_HEIGHT"/> <!-- analagous to ZO_GamepadHeaderTitleAnchors -->
+							<Controls>
+								<Label name="$(parent)Title" inherits="LuXhrys_VaultAndCoffer_InfoPanel_MainHeaderTitleText_Template_Gamepad" excludeFromResizeToFitExtents="true" text="INVENTORY DETAILS"> <!-- analolgous to ZO_GamepadGenericContentHeader and ZO_GamepadContentHeaderTitleTextTemplate--> <!-- TODO: set text dynamically? -->
+									<Anchor point="BOTTOMLEFT"/>
+									<Anchor point="BOTTOMRIGHT"/>
+								</Label> <!-- $(parent)Title -->
+							</Controls>
+						</Control> <!-- $(parent)TitleContainer -->
+					</Controls>
+				</Control> <!-- $(parent)Header -->
+			</Controls>
+		</Control> <!-- Header Container -->
+
+
+		<!-- Main content container for InfoPanel. The following are based on ZO_GamepadStatsTopLevelRightPaneInfoPanel controls in zo_stats_gamepad.xml. -->
+
+
+		<!-- analagous to RightPaneInfoPanel and ZO_GamepadStatsContentAnchor -->
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_MainContentContainer_Template_Gamepad" virtual="true">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)MainHeaderContainerHeader" relativePoint="BOTTOMLEFT"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)MainHeaderContainer" relativePoint="BOTTOMRIGHT"/>
+			<Controls>
+				<Control name="$(parent)InfoPanel" inherits="ZO_GridScrollList_NotAnchored_Gamepad"> <!-- analagous to AdvancedAttributesPanel -->
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" offsetY="-15"/>
+				</Control>
+			</Controls>
+		</Control>
+
+
+		<!-- Main (topmost) container for InfoPanel. The following are based on ZO_GamepadStatsTopLevelRightPaneInfoPanel controls in zo_stats_gamepad.xml. -->
+
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_GenericInfoPanelContainer_Template_Gamepad" hidden="true" virtual="true"> <!-- analagous to RightPane -->
+			<OnInitialized>
+				LUXHRYS.VaC_InfoPanel_Gamepad_OnInitialize (self)
+			</OnInitialized>
+			<Controls>
+				<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+					<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+				</Backdrop>
+				<Control name="$(parent)MainHeaderContainer" inherits="LuXhrys_VaultAndCoffer_InfoPanel_MainHeaderContainer_Template_Gamepad"/> <!-- analagous to RightPaneHeaderContainer -->
+				<Control name="$(parent)MainContentContainer" inherits="LuXhrys_VaultAndCoffer_InfoPanel_MainContentContainer_Template_Gamepad"/> <!-- analagous to RightPaneInfoPanel -->
+			</Controls>
+		</Control>
+
+		<!-- Main InfoPanel container templates. The following are based on ZO_GamepadStatsTopLevelRightPaneInfoPanel controls in zo_stats_gamepad.xml. There is a separate one for each style infoPanel, chosen by user option but limited by screen resolution/scale. -->
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_Quadrant4InfoPanelContainer_Template_Gamepad" inherits="LuXhrys_VaultAndCoffer_InfoPanel_GenericInfoPanelContainer_Template_Gamepad ZO_GamepadGrid_NavQuadrant_4_Anchors" virtual="true"/> <!-- analagous to RightPane -->
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_Quadrant3InfoPanelContainer_Template_Gamepad" inherits="LuXhrys_VaultAndCoffer_InfoPanel_GenericInfoPanelContainer_Template_Gamepad ZO_GamepadGrid_NavQuadrant_3_Anchors" virtual="true"/> <!-- analagous to RightPane -->
+
+		<Control name="LuXhrys_VaultAndCoffer_InfoPanel_Quadrant3WideInfoPanelContainer_Template_Gamepad" inherits="LuXhrys_VaultAndCoffer_InfoPanel_GenericInfoPanelContainer_Template_Gamepad LuXhrys_VaultAndCoffer_Gamepad_Quadrant_3Wide_Anchors" virtual="true"/> <!-- analagous to RightPane -->
+
+
+<!-- =======| Main Extended Inventory Screen Top Level Control |======= -->
+
+
+		<!-- This is our main inventory list and the InfoPanel is included within. -->
+
+		<TopLevelControl name="LuXhrys_VaultAndCoffer_GamepadInventoryTopLevel" inherits="ZO_Gamepad_ParametricList_Screen" hidden="true">
+			<OnInitialized>
+<!--				LuXhrys_VaultAndCoffer_Gamepad_OnInitialize (self) -->
+				LUXHRYS.VaC_ListScreen_Gamepad_OnInitialize (self)
+			</OnInitialized>
+			<!-- One of the above three infoPanel container templates should be inserted here programatically based on screen scaling/resolution. -->
+		</TopLevelControl>
+
+
+	</Controls>
+</GuiXml>
+
+
+
+<!--
+						<Backdrop name="$(parent)Border" inherits="ZO_GridScrollList_Highlight_Gamepad">
+							<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+						</Backdrop>
+-->
+

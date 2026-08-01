@@ -113,6 +113,9 @@ local getRelevantNameForCall = tbug.getRelevantNameForCall
 local defaultScrollableContextMenuOptions = tbug.defaultScrollableContextMenuOptions
 local updateTbugGlobalMouseUpHandler = tbug.updateTbugGlobalMouseUpHandler
 
+local tbug_SetAutomaticEventsTrackingFlag
+
+
 --======================================================================================================================
 --= CONTEXT MENU FUNCTIONS                                                                                     -v-
 --======================================================================================================================
@@ -834,6 +837,8 @@ local function showEventsContextMenu(p_self, p_row, p_data, isEventMainUIToggle)
     end
     if not useLibScrollableMenu then return end
 
+    local sv = tbug.savedVars
+
     local events    = tbug.Events
     eventsInspector = eventsInspector or events.getEventsTrackerInspectorControl()
 
@@ -977,8 +982,10 @@ local function showEventsContextMenu(p_self, p_row, p_data, isEventMainUIToggle)
 
 
     if isEventSettingsMenu then
-        AddCustomScrollableMenuDivider()
+        local dividerEventsSaveLoadAdded = false
         if enableBecauseEventsListIsNotEmpty() then
+            AddCustomScrollableMenuDivider()
+            dividerEventsSaveLoadAdded = true
             AddCustomScrollableMenuEntry("Save currently tracked events", function() tbug.SaveEventsTracked() end, LSM_ENTRY_TYPE_NORMAL, nil, {
                 tooltip = "Save the currently tracked events so that you can load them later again.\n\nThis will only work, if you currently got tracked events in the list!"
             })
@@ -988,15 +995,29 @@ local function showEventsContextMenu(p_self, p_row, p_data, isEventMainUIToggle)
         if not ZO_IsTableEmpty(savedEvents) then
             local eventTrackingSettingsLoadSavedSubmenu = {}
             for k, v in ipairs(savedEvents) do
-                local timeStampStr = (v._timeStamp ~= nil and os.date("%c", v._timeStamp)) or ""
-                local loadDetailsStr = tostring(k) .. ". " .. timeStampStr .. " (#" .. tos(NonContiguousCount(v.events)) ..")"
+                local savedEventsIndex = k
+                local savedEventsData = v
+                local timeStampStr = (savedEventsData._timeStamp ~= nil and os.date("%c", savedEventsData._timeStamp)) or ""
+                local loadDetailsStr = tostring(savedEventsIndex) .. ". " .. timeStampStr .. " (#" .. tos(NonContiguousCount(savedEventsData.events)) ..")"
                 local eventTrackingSettingsLoadSubmenuEntry = {
                     label = "Load " .. loadDetailsStr,
                     callback = function()
-                        tbug.LoadEventsTracked(k, loadDetailsStr)
+                        tbug.LoadEventsTracked(savedEventsIndex, loadDetailsStr)
+                    end,
+                    contextMenuCallback = function(self)
+                        ClearMenu()
+                        AddMenuItem("Delete saved event \'" .. loadDetailsStr  .. "\'", function()
+                            tbug.DeleteEventsTracked(savedEventsIndex)
+                        end)
+                        lsm.preventLSMClosingZO_Menu = true
+                        ShowMenu()
                     end,
                 }
                 table_insert(eventTrackingSettingsLoadSavedSubmenu, eventTrackingSettingsLoadSubmenuEntry)
+            end
+            if not dividerEventsSaveLoadAdded then
+                AddCustomScrollableMenuDivider()
+                dividerEventsSaveLoadAdded = true
             end
             AddCustomScrollableSubMenuEntry("Load tracked events", eventTrackingSettingsLoadSavedSubmenu)
         end
@@ -1004,24 +1025,66 @@ local function showEventsContextMenu(p_self, p_row, p_data, isEventMainUIToggle)
         --Enable event tracking at startup of tbug/reloadui
         local eventTrackingAtStartupSettingsSubmenu = {}
         eventTrackingAtStartupSettingsSubmenu[#eventTrackingAtStartupSettingsSubmenu + 1] = {
-            name            = "Automatically enable at startup",
-            checked           = function() return tbug.savedVars.enableEventTrackerAtStartup end,
-            callback        =   function(comboBox, itemName, item, checked)
-                tbug.savedVars.enableEventTrackerAtStartup = checked
+            name            = "|cFF0000Disable|r the automatic Event tracking",
+            checked         = function() return not sv.enableEventTrackerAtStartup and not tbug.activateAutomaticEventTrackingOnNextLogin and not sv.enableEventTrackerAtNextLogin end,
+            callback        = function(comboBox, itemName, item, checked, data)
+                tbug_SetAutomaticEventsTrackingFlag = tbug_SetAutomaticEventsTrackingFlag or tbug.SetAutomaticEventsTrackingFlag
+                --value, doReloadUI, activateNextLogin, chatOutput, onlyFor1ReloadUI, allOff
+                tbug_SetAutomaticEventsTrackingFlag(nil, nil, nil, true, nil, true)
             end,
             --entries         = submenuEntries,
-            tooltip         = "Automatically enable the event tracker as the AddOn merTorchbug loads. \nThis will open the global inspector and activate the events tab if you login or reload the UI.",
-            entryType = lsm.LSM_ENTRY_TYPE_CHECKBOX,
+            tooltip         = "Disable the automatic event tracking. The global inspector and the events tab wont show automatically.",
+            entryType = lsm.LSM_ENTRY_TYPE_RADIOBUTTON,
+            buttonGroup = 1,
             --rightClickCallback = function() d("Test context menu")  end
         }
         eventTrackingAtStartupSettingsSubmenu[#eventTrackingAtStartupSettingsSubmenu + 1] = {
-            name            = "Enable at startup & !|cFF0000Reload the UI Now|r!",
-            callback        =   function(comboBox, itemName, item)
-                tbug.savedVars.enableEventTrackerAtStartup = true
-                ReloadUI()
+            name            = "Automatically enable 1x (after ReloadUI)",
+            checked         = function() return sv.enableEventTrackerAtStartupOnlyOnce == true and sv.enableEventTrackerAtStartup == true and not tbug.activateAutomaticEventTrackingOnNextLogin and not sv.enableEventTrackerAtNextLogin end,
+            callback        = function(comboBox, itemName, item, checked, data)
+                tbug_SetAutomaticEventsTrackingFlag = tbug_SetAutomaticEventsTrackingFlag or tbug.SetAutomaticEventsTrackingFlag
+                tbug_SetAutomaticEventsTrackingFlag(checked, false, nil, true, true)
             end,
             --entries         = submenuEntries,
-            tooltip         = "|cFF0000Attention:|r Clicking this button will automatically enable the event tracker as the AddOn merTorchbug loads AND |cFF0000it will relod your UI now|r!\nThis will open the global inspector and activate the events tab if you login or reload the UI.",
+            tooltip         = "Automatically enable the event tracker ONLY for the NEXT ReloadUI (or login, if you logout/quit before the next ReloadUI was done), as the AddOn merTorchbug loads.\nThis will open the global inspector and activate the events tab automatically.",
+            entryType = lsm.LSM_ENTRY_TYPE_RADIOBUTTON,
+            buttonGroup = 1,
+            --rightClickCallback = function() d("Test context menu")  end
+        }
+        eventTrackingAtStartupSettingsSubmenu[#eventTrackingAtStartupSettingsSubmenu + 1] = {
+            name            = "Automatically enable (all ReloadUIs)",
+            checked         = function() return not sv.enableEventTrackerAtStartupOnlyOnce and sv.enableEventTrackerAtStartup == true and not tbug.activateAutomaticEventTrackingOnNextLogin and not sv.enableEventTrackerAtNextLogin end,
+            callback        = function(comboBox, itemName, item, checked, data)
+                tbug_SetAutomaticEventsTrackingFlag = tbug_SetAutomaticEventsTrackingFlag or tbug.SetAutomaticEventsTrackingFlag
+                tbug_SetAutomaticEventsTrackingFlag(checked, false, nil, true)
+            end,
+            --entries         = submenuEntries,
+            tooltip         = "Automatically enable the event tracker after each ReloadUI (or login, if you logout/quit before the next ReloadUI was done), as the AddOn merTorchbug loads.\nThis will open the global inspector and activate the events tab automatically.\n\n|cFF0000Attention|r: This will stay active until you manually turn this option here off again or use the slash command /tbe autoff!",
+            entryType = lsm.LSM_ENTRY_TYPE_RADIOBUTTON,
+            buttonGroup = 1,
+            --rightClickCallback = function() d("Test context menu")  end
+        }
+        eventTrackingAtStartupSettingsSubmenu[#eventTrackingAtStartupSettingsSubmenu + 1] = {
+            name            = "Automatically enable (after next Login)",
+            checked         = function() return (tbug.activateAutomaticEventTrackingOnNextLogin == true or sv.enableEventTrackerAtNextLogin == true) and not sv.enableEventTrackerAtStartup end,
+            callback        = function( comboBox, itemName, item, checked, data)
+                tbug_SetAutomaticEventsTrackingFlag = tbug_SetAutomaticEventsTrackingFlag or tbug.SetAutomaticEventsTrackingFlag
+                tbug_SetAutomaticEventsTrackingFlag(nil, false, true, true)
+            end,
+            --entries         = submenuEntries,
+            tooltip         = "Automatically enable the event tracker after your 1 next login (character change, or client restart), as the AddOn merTorchbug loads.\nThis will open the global inspector and activate the events tab automatically.\n\n|cFF0000Attention|r: This will reset if you reload the UI or get into a loading screen before logout/quit!",
+            entryType = lsm.LSM_ENTRY_TYPE_RADIOBUTTON,
+            buttonGroup = 1,
+            --rightClickCallback = function() d("Test context menu")  end
+        }
+        eventTrackingAtStartupSettingsSubmenu[#eventTrackingAtStartupSettingsSubmenu + 1] = {
+            name            = "Automatically enable (after ReloadUI) & !|cFF0000Reload the UI Now|r!",
+            callback        = function(comboBox, itemName, item)
+                tbug_SetAutomaticEventsTrackingFlag = tbug_SetAutomaticEventsTrackingFlag or tbug.SetAutomaticEventsTrackingFlag
+                tbug_SetAutomaticEventsTrackingFlag(true, true)
+            end,
+            --entries         = submenuEntries,
+            tooltip         = "|cFF0000Attention:|r Clicking this button will automatically enable the event tracker after the ReloadUI, as the AddOn merTorchbug loads AND |cFF0000it will relod your UI now|r!\nThis will open the global inspector and activate the events tab automatically.",
             entryType = lsm.LSM_ENTRY_TYPE_BUTTON,
             --rightClickCallback = function() d("Test context menu")  end
         }
@@ -1035,7 +1098,6 @@ local function showEventsContextMenu(p_self, p_row, p_data, isEventMainUIToggle)
     end
 end
 tbug.ShowEventsContextMenu = showEventsContextMenu
-
 
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -2443,7 +2505,7 @@ function tbug.ShowTabWindowContextMenu(selfCtrl, button, upInside, selfInspector
 			for _, template in ipairs(tbug.UITemplates) do
                 local templateData = template
 				tins(settingsFontSubmenu, {
-					buttonGroup = 1,
+					buttonGroup = 2,
 					label		= templateData.name,
 					entryType	= LSM_ENTRY_TYPE_RADIOBUTTON,
 					checked		= function() return templateData.font == tbug.savedVars.customTemplate.font end,

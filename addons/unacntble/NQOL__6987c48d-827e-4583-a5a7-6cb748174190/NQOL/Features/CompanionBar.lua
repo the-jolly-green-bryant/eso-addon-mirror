@@ -55,7 +55,28 @@ function COMPANION.EnsureControls()
 
     COMPANION.root = CreateRootControl(COMPANION.ROOT_CONTROL_NAME)
     COMPANION.widget = CreateClassicResourceWidget(COMPANION.root, C.RESOURCE_HEALTH)
-    COMPANION.nameLabel = CreateCompanionNameLabel(COMPANION.root, GetCompanionLabelFont())
+    COMPANION.nameRow = WINDOW_MANAGER:CreateControl(nil, COMPANION.root, CT_CONTROL)
+    COMPANION.nameLabel = CreateCompanionNameLabel(COMPANION.nameRow, GetCompanionLabelFont())
+    COMPANION.rapportLabel = CreateCompanionNameLabel(COMPANION.nameRow, GetCompanionLabelFont())
+    COMPANION.rapportLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+
+    COMPANION.xpTrack = WINDOW_MANAGER:CreateControl(nil, COMPANION.root, CT_BACKDROP)
+    COMPANION.xpTrack:SetCenterColor(0, 0, 0, 0)
+    COMPANION.xpTrack:SetEdgeColor(0, 0, 0, 0)
+    COMPANION.xpTrack:SetEdgeTexture(C.TEXTURE_WHITE, 1, 1, 1)
+    COMPANION.xpTrack:SetDrawLevel(C.DRAW_LEVEL)
+
+    COMPANION.xpBar = WINDOW_MANAGER:CreateControl(nil, COMPANION.xpTrack, CT_STATUSBAR)
+    COMPANION.xpBar:SetAnchorFill(COMPANION.xpTrack)
+    COMPANION.xpBar:SetTexture(C.TEXTURE_FILL)
+    COMPANION.xpBar:SetMinMax(0, 1)
+    COMPANION.xpBar:SetValue(0)
+    COMPANION.xpBar:SetDrawLevel(C.DRAW_LEVEL + 1)
+    if GetInterfaceColor and INTERFACE_COLOR_TYPE_PROGRESSION and PROGRESSION_COLOR_XP_START then
+        COMPANION.xpBar:SetColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_PROGRESSION, PROGRESSION_COLOR_XP_START))
+    else
+        COMPANION.xpBar:SetColor(0.20, 0.72, 0.82, 1)
+    end
 
     return true
 end
@@ -117,6 +138,73 @@ function COMPANION.GetName()
     return NQOL.L("features.companion_bar.companion")
 end
 
+function COMPANION.GetRapportLevelName()
+    local hasActiveCompanion = HasActiveCompanion and HasActiveCompanion() == true
+    if (hasActiveCompanion or COMPANION.DoesExist()) and GetActiveCompanionRapportLevel and GetString then
+        local rapportLevel = GetActiveCompanionRapportLevel()
+        if rapportLevel ~= nil then
+            return GetString("SI_COMPANIONRAPPORTLEVEL", rapportLevel)
+        end
+    end
+
+    if COMPANION.IsPreviewVisible() and GetString and RAPPORT_LEVEL_SLIGHT_AFFINITY then
+        return GetString("SI_COMPANIONRAPPORTLEVEL", RAPPORT_LEVEL_SLIGHT_AFFINITY)
+    end
+
+    return ""
+end
+
+function COMPANION.GetRapportDisplayText(settings)
+    local rapportLevelName = COMPANION.GetRapportLevelName()
+    if rapportLevelName == "" then
+        return ""
+    end
+
+    local hasActiveCompanion = HasActiveCompanion and HasActiveCompanion() == true
+    local rapportPercent
+    if (hasActiveCompanion or COMPANION.DoesExist()) and GetActiveCompanionRapport and GetMinimumRapport and GetMaximumRapport then
+        local currentRapport = tonumber(GetActiveCompanionRapport()) or 0
+        local minimumRapport = tonumber(GetMinimumRapport()) or 0
+        local maximumRapport = tonumber(GetMaximumRapport()) or 0
+        local rapportRange = maximumRapport - minimumRapport
+        if rapportRange > 0 then
+            rapportPercent = Round(Clamp((currentRapport - minimumRapport) / rapportRange, 0, 1) * 100)
+        end
+    elseif COMPANION.IsPreviewVisible() then
+        rapportPercent = 65
+    end
+
+    if rapportPercent ~= nil then
+        rapportLevelName = rapportLevelName .. " " .. tostring(rapportPercent) .. "%"
+    end
+
+    if zo_iconFormat then
+        local iconSize = math.max(16, math.min(COMPANION.LABEL_HEIGHT, settings.fontSize or COMPANION.LABEL_HEIGHT))
+        rapportLevelName = zo_iconFormat(COMPANION.RAPPORT_ICON, iconSize, iconSize) .. " " .. rapportLevelName
+    end
+
+    return rapportLevelName
+end
+
+function COMPANION.GetXpProgress()
+    local hasActiveCompanion = HasActiveCompanion and HasActiveCompanion() == true
+    if (hasActiveCompanion or COMPANION.DoesExist()) and GetActiveCompanionLevelInfo and GetNumExperiencePointsInCompanionLevel then
+        local level, currentExperience = GetActiveCompanionLevelInfo()
+        local maximumExperience = GetNumExperiencePointsInCompanionLevel((tonumber(level) or 0) + 1) or 0
+        if maximumExperience <= 0 then
+            return 1, 1
+        end
+
+        return tonumber(currentExperience) or 0, maximumExperience
+    end
+
+    if COMPANION.IsPreviewVisible() then
+        return 65, 100
+    end
+
+    return 0, 1
+end
+
 function COMPANION.LayoutInnerShadow(width, height, settings)
     Shadow.Layout(COMPANION.widget, width, height, settings.borderSize, settings.shadow, settings.shadowIntensity)
 end
@@ -131,18 +219,20 @@ function COMPANION.LayoutFrame()
     end
 
     local showName = settings.showName == true
+    local showRapport = showName and settings.showRapport == true
+    local showXpProgress = settings.showXpProgress == true
+    local xpBarSpace = showXpProgress and (COMPANION.XP_BAR_HEIGHT + COMPANION.XP_BAR_GAP) or 0
     local valueLabelWidth = settings.orientation == COMPANION.VERTICAL and math.max(width * 3, 72) or width
     local nameWidth = showName and math.max(valueLabelWidth, 120) or 0
     local horizontalNameSpace = settings.orientation ~= COMPANION.VERTICAL and showName and (COMPANION.LABEL_HEIGHT + COMPANION.LABEL_GAP) or 0
     local verticalValueSpace = settings.orientation == COMPANION.VERTICAL and (COMPANION.LABEL_HEIGHT + COMPANION.LABEL_GAP) or 0
     local verticalNameSpace = settings.orientation == COMPANION.VERTICAL and showName and (COMPANION.LABEL_HEIGHT + COMPANION.LABEL_GAP) or 0
     local rootWidth = settings.orientation == COMPANION.VERTICAL and math.max(width, valueLabelWidth, nameWidth) or math.max(width, nameWidth)
-    local rootHeight = settings.orientation == COMPANION.VERTICAL and height + verticalValueSpace * 2 + verticalNameSpace or height + horizontalNameSpace
-    local barX = 0
+    local rootHeight = settings.orientation == COMPANION.VERTICAL and height + verticalValueSpace * 2 + verticalNameSpace + xpBarSpace or height + horizontalNameSpace + xpBarSpace
+    local barX = zo_floor((rootWidth - width) * 0.5)
     local barY = 0
 
     if settings.orientation == COMPANION.VERTICAL then
-        barX = zo_floor((rootWidth - width) * 0.5)
         barY = verticalValueSpace
         if settings.reverse == true then
             barY = barY + verticalNameSpace
@@ -161,6 +251,12 @@ function COMPANION.LayoutFrame()
 
     COMPANION.LayoutInnerShadow(width, height, settings)
 
+    COMPANION.xpTrack:ClearAnchors()
+    COMPANION.xpTrack:SetDimensions(width, COMPANION.XP_BAR_HEIGHT)
+    COMPANION.xpTrack:SetAnchor(TOPLEFT, COMPANION.widget, BOTTOMLEFT, 0, COMPANION.XP_BAR_GAP)
+    COMPANION.xpTrack:SetHidden(not showXpProgress or COMPANION.resourceValue.hidden == true)
+    local lowerAnchorControl = showXpProgress and COMPANION.xpTrack or COMPANION.widget
+
     COMPANION.widget.leftLabel:ClearAnchors()
     COMPANION.widget.rightLabel:ClearAnchors()
     COMPANION.widget.leftLabel:SetHidden(false)
@@ -174,11 +270,11 @@ function COMPANION.LayoutFrame()
             COMPANION.widget.leftLabel:SetVerticalAlignment(TEXT_ALIGN_BOTTOM)
             COMPANION.widget.rightLabel:SetVerticalAlignment(TEXT_ALIGN_TOP)
             COMPANION.widget.leftLabel:SetAnchor(BOTTOM, COMPANION.widget, TOP, 0, -COMPANION.LABEL_GAP)
-            COMPANION.widget.rightLabel:SetAnchor(TOP, COMPANION.widget, BOTTOM, 0, COMPANION.LABEL_GAP)
+            COMPANION.widget.rightLabel:SetAnchor(TOP, lowerAnchorControl, BOTTOM, 0, COMPANION.LABEL_GAP)
         else
             COMPANION.widget.leftLabel:SetVerticalAlignment(TEXT_ALIGN_TOP)
             COMPANION.widget.rightLabel:SetVerticalAlignment(TEXT_ALIGN_BOTTOM)
-            COMPANION.widget.leftLabel:SetAnchor(TOP, COMPANION.widget, BOTTOM, 0, COMPANION.LABEL_GAP)
+            COMPANION.widget.leftLabel:SetAnchor(TOP, lowerAnchorControl, BOTTOM, 0, COMPANION.LABEL_GAP)
             COMPANION.widget.rightLabel:SetAnchor(BOTTOM, COMPANION.widget, TOP, 0, -COMPANION.LABEL_GAP)
         end
     else
@@ -192,31 +288,56 @@ function COMPANION.LayoutFrame()
         COMPANION.widget.rightLabel:SetAnchor(BOTTOMRIGHT, COMPANION.widget, BOTTOMRIGHT, -C.CLASSIC_LABEL_PADDING, 0)
     end
 
-    COMPANION.nameLabel:ClearAnchors()
+    COMPANION.nameRow:ClearAnchors()
+    COMPANION.nameRow:SetDimensions(nameWidth, COMPANION.LABEL_HEIGHT)
     COMPANION.nameLabel:SetFont(font)
+    COMPANION.rapportLabel:SetFont(font)
     if settings.orientation == COMPANION.VERTICAL then
-        COMPANION.nameLabel:SetDimensions(nameWidth, COMPANION.LABEL_HEIGHT)
-        COMPANION.nameLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
         if settings.reverse == true then
-            COMPANION.nameLabel:SetAnchor(BOTTOM, COMPANION.widget, TOP, 0, -(COMPANION.LABEL_HEIGHT + COMPANION.LABEL_GAP * 2))
+            COMPANION.nameRow:SetAnchor(BOTTOM, COMPANION.widget, TOP, 0, -(COMPANION.LABEL_HEIGHT + COMPANION.LABEL_GAP * 2))
         else
-            COMPANION.nameLabel:SetAnchor(TOP, COMPANION.widget, BOTTOM, 0, COMPANION.LABEL_HEIGHT + COMPANION.LABEL_GAP * 2)
+            COMPANION.nameRow:SetAnchor(TOP, lowerAnchorControl, BOTTOM, 0, COMPANION.LABEL_HEIGHT + COMPANION.LABEL_GAP * 2)
         end
-    elseif settings.reverse == true then
-        COMPANION.nameLabel:SetDimensions(width, COMPANION.LABEL_HEIGHT)
-        COMPANION.nameLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-        COMPANION.nameLabel:SetAnchor(BOTTOMRIGHT, COMPANION.widget, TOPRIGHT, 0, -COMPANION.LABEL_GAP)
     else
-        COMPANION.nameLabel:SetDimensions(width, COMPANION.LABEL_HEIGHT)
-        COMPANION.nameLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
-        COMPANION.nameLabel:SetAnchor(BOTTOMLEFT, COMPANION.widget, TOPLEFT, 0, -COMPANION.LABEL_GAP)
+        COMPANION.nameRow:SetAnchor(BOTTOM, COMPANION.widget, TOP, 0, -COMPANION.LABEL_GAP)
     end
-    COMPANION.nameLabel:SetHidden(not showName)
+
+    local rapportText = showRapport and COMPANION.GetRapportDisplayText(settings) or ""
+    COMPANION.rapportLabel:SetDimensions(nameWidth, COMPANION.LABEL_HEIGHT)
+    COMPANION.rapportLabel:SetText(rapportText)
+    local measuredRapportWidth = showRapport and COMPANION.rapportLabel.GetTextWidth and math.ceil(COMPANION.rapportLabel:GetTextWidth()) or 0
+    local rapportWidth = math.min(measuredRapportWidth, math.max(nameWidth - 40, 0))
+    local nameGap = rapportWidth > 0 and COMPANION.LABEL_GAP or 0
+    COMPANION.nameLabel:ClearAnchors()
+    COMPANION.nameLabel:SetDimensions(math.max(nameWidth - rapportWidth - nameGap, 0), COMPANION.LABEL_HEIGHT)
+    COMPANION.nameLabel:SetAnchor(TOPLEFT, COMPANION.nameRow, TOPLEFT, 0, 0)
+    COMPANION.nameLabel:SetHorizontalAlignment(settings.orientation == COMPANION.VERTICAL and TEXT_ALIGN_CENTER or (settings.reverse == true and TEXT_ALIGN_RIGHT or TEXT_ALIGN_LEFT))
+    COMPANION.rapportLabel:ClearAnchors()
+    COMPANION.rapportLabel:SetDimensions(rapportWidth, COMPANION.LABEL_HEIGHT)
+    COMPANION.rapportLabel:SetAnchor(TOPRIGHT, COMPANION.nameRow, TOPRIGHT, 0, 0)
+    COMPANION.rapportLabel:SetHidden(rapportWidth <= 0)
+    COMPANION.nameRow:SetHidden(not showName)
     if showName then
         COMPANION.nameLabel:SetText(COMPANION.GetName())
     end
 
     ApplyRootPosition(COMPANION.root, settings)
+end
+
+function COMPANION.ApplyXpProgress()
+    local settings = GetCompanionSettings()
+    local visible = settings.showXpProgress == true and COMPANION.resourceValue.hidden ~= true
+    COMPANION.xpTrack:SetHidden(not visible)
+    if not visible then
+        return
+    end
+
+    local currentExperience, maximumExperience = COMPANION.GetXpProgress()
+    maximumExperience = math.max(tonumber(maximumExperience) or 0, 1)
+    local color = settings.xpColor
+    COMPANION.xpBar:SetColor(color.r, color.g, color.b, color.a or 1)
+    COMPANION.xpBar:SetMinMax(0, maximumExperience)
+    COMPANION.xpBar:SetValue(Clamp(tonumber(currentExperience) or 0, 0, maximumExperience))
 end
 
 function COMPANION.ApplyResourceValue(smoothUpdate)
@@ -331,6 +452,7 @@ function COMPANION.RefreshFrame()
     COMPANION.UpdateResourceValue(true)
     COMPANION.LayoutFrame()
     COMPANION.ApplyResourceValue()
+    COMPANION.ApplyXpProgress()
     if previewVisible then
         Shared.SetSettingsPreviewDrawOrder(COMPANION.root)
     end

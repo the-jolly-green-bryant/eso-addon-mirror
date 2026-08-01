@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Gamer_sa22/Pet-Health__d8639f08-8c9a-4f4c-af6d-5a86588cd787",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Gamer_sa22",
+  "canonical_id": "bethesda:d8639f08-8c9a-4f4c-af6d-5a86588cd787",
+  "content_id": "d8639f08-8c9a-4f4c-af6d-5a86588cd787",
+  "deleted": false,
+  "fingerprint": "bdb5680dd9ca5bbce84b9e6a82385ef06ce87909a76b757ddfe18d0a1722e76c",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "d8639f08-8c9a-4f4c-af6d-5a86588cd787",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/d8639f08-8c9a-4f4c-af6d-5a86588cd787",
+  "title": "Pet Health"
+}

@@ -7,7 +7,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | Add-on | Author | Platform | Version |
 | --- | --- | --- | --- |
 | [Nail Down GUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Nail-Down-GUI__1460) | manavortex | PC / Mac | 0.1b |
-| [name](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unknown/name__a2b82a6f-4da6-492b-9132-52354a645321) | Unknown | Console | — |
+| [name](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wsollers/name__a2b82a6f-4da6-492b-9132-52354a645321) | wsollers | Console | — |
 | [Name Language Ninja - Translation assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinntarou/Name-Language-Ninja---Translation-assistant__2667) | Shinntarou | PC / Mac | 1.1.17 |
 | [NamePlater (Custom Fonts/Styles/Sizes)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kadeer/NamePlater-Custom-Fonts-Styles-Sizes__2344) | kadeer | PC / Mac | v0.15 |
 | [Namez - More info when you put your reticle on other players!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toirealach/Namez---More-info-when-you-put-your-reticle-on-other-players__3411) | Toirealach | PC / Mac | 1.1.14 |
@@ -18,7 +18,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Neat Experience Info](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/qhil/Neat-Experience-Info__1581) | qhil | PC / Mac | 1.15.1 |
 | [NecroCat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/NecroCat__4174) | Soul_Hagans | PC / Mac | 1.9.1 |
 | [NecromancerTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PersistentMemory/NecromancerTracker__2795) | PersistentMemory | PC / Mac | 1.3.3.1 |
-| [Ned's Group Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cFF0000Ned919x-r-c00FF00STUDLETON-r/Ned-s-Group-Manager__4f86b7c8-8fb6-432c-a1b9-2004263244ab) | \|cFF0000Ned919x\|r & \|c00FF00STUDLETON\|r | Console | — |
+| [Ned's Group Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ned919x/Ned-s-Group-Manager__4f86b7c8-8fb6-432c-a1b9-2004263244ab) | Ned919x | Console | — |
 | [Neli's Misfits Guild Hub](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kylecwhite1/Neli-s-Misfits-Guild-Hub__3215) | kylecwhite1 | PC / Mac | 9.0 |
 | [Neltharions Cam Controler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/neltahrion11/Neltharions-Cam-Controler__3480) | neltahrion11 | PC / Mac | 1.14 |
 | [Neltharions Healer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/neltahrion11/Neltharions-Healer__2955) | neltahrion11 | PC / Mac | 2.22 |
@@ -32,7 +32,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [New motifs and fixes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/pesakm/New-motifs-and-fixes__3380) | pesakm | PC / Mac | 11.5.04 |
 | [New World UI - NWUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/New-World-UI---NWUI__4587) | Wrynch | PC / Mac | 1.0.1 |
 | [Next Boss Stage(Custom Boss Frame)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/awfuldead/Next-Boss-Stage-Custom-Boss-Frame__2889) | awfuldead | PC / Mac | 2.0.6 |
-| [NextQuest](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dicen95728/NextQuest__dfed21f9-988b-44b9-a054-89bfcce20639) | @Dicen95728 | Console | — |
+| [NextQuest](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dicen9/NextQuest__dfed21f9-988b-44b9-a054-89bfcce20639) | dicen9 | Console | — |
 | [NextTry StatusTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/R0ctan/NextTry-StatusTracker__4589) | R0ctan | PC / Mac | 1.2.0 |
 | [NextTry Ultimate Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/R0ctan/NextTry-Ultimate-Tracker__4650) | R0ctan | PC / Mac | 1.2.0 |
 | [Night Market Faction Score Hider](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ZareShadows/Night-Market-Faction-Score-Hider__4558) | ZareShadows | PC / Mac | 1.0.1 |
@@ -47,13 +47,13 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [No compass](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/hatsune681/No-compass__1187) | hatsune681 | PC / Mac | 11.101034 |
 | [No Dialog Background](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dr4Wm4N/No-Dialog-Background__1874) | Dr4Wm4N | PC / Mac | 1.10 |
 | [No ESO Trait Info](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Werewolf-Finds-Dragon/No-ESO-Trait-Info__1951) | Werewolf Finds Dragon | PC / Mac | 001-100022 |
-| [No function](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Test/No-function__710b2a6c-f46d-4d5f-aee2-9cc4d0267de0) | Test | Console | — |
+| [No function](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FiNk3F13/No-function__710b2a6c-f46d-4d5f-aee2-9cc4d0267de0) | FiNk3F13 | Console | — |
 | [No Green Incap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ace-r/No-Green-Incap__2110) | Ace'r | PC / Mac | 1 |
 | [No Interact](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyono/No-Interact__1623) | Rhyono | PC / Mac | 1.36 |
 | [No Logout Confirmation](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/No-Logout-Confirmation__3551) | kawamonkey | PC / Mac | 1.0 |
 | [No Mail Deletion Confirmation](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/No-Mail-Deletion-Confirmation__2986) | code65536 | PC / Mac | 1.2.0 |
 | [No More Antiquity Comparisons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/No-More-Antiquity-Comparisons__4719) | M0R | PC / Mac | 1.0 |
-| [No More Errors](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c0DC1CF-M0R_Gaming-r/No-More-Errors__91c0799a-d1f2-46e3-9ef6-2c470d6869f6) | \|c0DC1CF@M0R_Gaming\|r | Console | — |
+| [No More Errors](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/No-More-Errors__91c0799a-d1f2-46e3-9ef6-2c470d6869f6) | M0R | Console | — |
 | [No More Sticky Wheels](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/No-More-Sticky-Wheels__3387) | M0R | PC / Mac | 1.0 |
 | [No Pickpocket Ding](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tactitocalon/No-Pickpocket-Ding__1883) | Tactitocalon | PC / Mac | 1 |
 | [No Research Dupes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kierdavis/No-Research-Dupes__2964) | kierdavis | PC / Mac | 3 |
@@ -83,7 +83,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [NTak Camera](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NTak/NTak-Camera__2236) | NTak | PC / Mac | 2.5.6 |
 | [NTak Dialog](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NTak/NTak-Dialog__2290) | NTak | PC / Mac | 1.12.5 |
 | [NTak Loot'n'Steal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NTak/NTak-Loot-n-Steal__2349) | NTak | PC / Mac | 1.8.14 |
+| [NumbersOnDummyOnly](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/NumbersOnDummyOnly__7dd87315-5f9a-4644-887f-a38632d7f70e) | Masteroshi430 | Console | — |
 | [NumbersOnDummyOnly](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/NumbersOnDummyOnly__3573) | Masteroshi430 | PC / Mac | 2026.07.09 |
-| [NumbersOnDummyOnly](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c3CB371-Masteroshi430-r/NumbersOnDummyOnly__7dd87315-5f9a-4644-887f-a38632d7f70e) | \|c3CB371@Masteroshi430\|r | Console | — |
 | [Nvk3´s Ultimate Tracker (beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Nvk3/Nvk3-s-Ultimate-Tracker-beta__4311) | Nvk3 | PC / Mac | v0.17.5 |
 | [Nyghts Notebook](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Nyght/Nyghts-Notebook__3454) | Nyght | PC / Mac | 1.0 |

@@ -1,0 +1,9117 @@
+-- =========================================================
+-- Tamriel Master Ledger v2.0.16.83
+-- PUBLIC RELEASE SHARED SALES / NET WORTH DEDUPE / SCROLL / FOOTER FIX
+--
+-- This build fixes shared sales refresh safety, Net Worth duplicate item aggregation, scroll wheel behavior, and footer reset order while keeping the safe gamepad main-menu entry intact.
+-- =========================================================
+
+TamrielMasterLedger = TamrielMasterLedger or {}
+local TML = TamrielMasterLedger
+TML.name = "TamrielMasterLedger"
+TML.title = "Tamriel Master Ledger"
+TML.displayTitle = "|c00D9FFTamriel Master Ledger|r"
+TML.lastUpdated = "06/15/2026 09:15 UTC"
+TML.version = "2.0.16.83"
+TML.addOnVersion = 21683
+TML.icon = "TamrielMasterLedger/textures/tamrielmasterledger_icon.dds"
+TML.state = {
+  mode = "closed",        -- closed | menu | tool
+  menu = "main",          -- main | personal | guild
+  selected = { main = 1, personal = 1, guild = 1 },
+  offset = { main = 0, personal = 0, guild = 0 },
+  activeTool = nil,
+  toolReturnMenu = "main",
+}
+TML.ui = {}
+TML.pool = {}
+TML.keybindGroupAdded = false
+TML.returnSceneName = nil
+TML.returnSceneObject = nil
+
+local function SafeCall(fn, ...)
+  if type(fn) ~= "function" then return false end
+  local ok, a,b,c,d,e,f,g,h,i,j,k,l,m,n,o = pcall(fn, ...)
+  if ok then return true,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o end
+  return false
+end
+
+local function Lower(v)
+  if zo_strlower then return zo_strlower(tostring(v or "")) end
+  return string.lower(tostring(v or ""))
+end
+
+local function RGBA(hex, alpha)
+  hex = tostring(hex or "FFFFFF"):gsub("#", "")
+  local r = tonumber(hex:sub(1,2), 16) or 255
+  local g = tonumber(hex:sub(3,4), 16) or 255
+  local b = tonumber(hex:sub(5,6), 16) or 255
+  return r/255, g/255, b/255, alpha == nil and 1 or alpha
+end
+
+local C = {
+  white = {RGBA("FFFFFF")},
+  dim = {RGBA("D6D6D6")},
+  muted = {RGBA("E0E0E0")},
+  gold = {RGBA("D4AF37")},
+  yellow = {RGBA("FFD700")},
+  black90 = {0,0,0,0.90},
+  black82 = {0,0,0,0.82},
+  black70 = {0,0,0,0.70},
+  cyan = {RGBA("00D9FF")},
+  cyanSoft = {RGBA("69E8FF")},
+  cyanDim = {RGBA("40E8FF")},
+  yellowDim = {RGBA("FFE45C")},
+  red = {RGBA("FF5555")},
+  redDim = {RGBA("FF7777")},
+}
+
+local function ApplyColor(control, color)
+  if control and control.SetColor and color then control:SetColor(unpack(color)) end
+end
+
+local function SafeFont(control, font)
+  if not control or not control.SetFont then return end
+  if not SafeCall(function() control:SetFont(font) end) then SafeCall(function() control:SetFont("ZoFontGame") end) end
+end
+
+local FONTS = {
+  -- Use the same verified large gamepad font for selected and unselected rows.
+  -- This prevents the menu text from shrinking until highlighted.
+  menuSelected = "ZoFontGamepad34",
+  menuNormal = "ZoFontGamepad34",
+  menuSmall = "ZoFontGamepad22",
+  panelTitle = "ZoFontGamepad34",
+  panelText = "ZoFontGamepad22",
+  panelSmall = "ZoFontGamepad18",
+}
+
+local function LimitText(text, max)
+  text = tostring(text or "")
+  max = tonumber(max) or 36
+  if #text > max then return text:sub(1, math.max(1, max - 3)) .. "..." end
+  return text
+end
+
+function TML:GetUserDisplayName()
+  if type(GetDisplayName) == "function" then
+    local ok, name = SafeCall(GetDisplayName)
+    if ok and name and tostring(name) ~= "" then return tostring(name) end
+  end
+  return "@UserID"
+end
+
+function TML:GetMenuEntryLabel(entry)
+  if not entry then return "" end
+  if entry.dynamicText == "userId" then return self:GetUserDisplayName() end
+  return tostring(entry.text or "")
+end
+
+local function IsKey(key, ...)
+  for i = 1, select('#', ...) do
+    local name = select(i, ...)
+    local val = _G[name]
+    if val ~= nil and key == val then return true end
+  end
+  return false
+end
+
+
+local function FrameMS()
+  if type(GetFrameTimeMilliseconds) == "function" then
+    local ok, ms = pcall(GetFrameTimeMilliseconds)
+    if ok and ms then return tonumber(ms) or 0 end
+  end
+  if type(GetGameTimeMilliseconds) == "function" then
+    local ok, ms = pcall(GetGameTimeMilliseconds)
+    if ok and ms then return tonumber(ms) or 0 end
+  end
+  return math.floor((os.clock() or 0) * 1000)
+end
+
+-- Pipeline map for reconnect after menu shell approval. No pipeline functions are called in this build.
+TML.pipelineMap = {
+  net_worth = {
+    title = "Net Worth",
+    parent = "personal",
+    reconnect = "Reconnect inventory, currency, craft bag, price-cache and top-value item scan modules.",
+    previousFunctions = "OpenNetWorth / ScanNetWorth / ScanBagValue / Craft Bag scanner",
+  },
+  gold_ledger_personal = {
+    title = "Gold Ledger",
+    parent = "personal",
+    reconnect = "Reconnect personal gold ledger, account gold, bank gold, deposit/withdraw display, and character totals.",
+    previousFunctions = "Personal ledger/gold summary pages",
+  },
+  craft_bag = {
+    title = "Craft Bag Tracker",
+    parent = "personal",
+    reconnect = "Reconnect BAG_VIRTUAL/craft bag scan and material quantity/value display.",
+    previousFunctions = "Craft Bag / material tracking pipeline",
+  },
+  personal_sales = {
+    title = "Personal Sales Tracker",
+    parent = "personal",
+    reconnect = "Reconnect personal seller-only trader history rows and item-sale summaries.",
+    previousFunctions = "OpenPlayerSalesTracker / GetMySalesSummaryAndDetails",
+  },
+  daily_quests = {
+    title = "Daily Quest Tracker",
+    parent = "personal",
+    reconnect = "Reconnect saved daily checklist, completion toggles, reset logic, and zone priority list.",
+    previousFunctions = "OpenDailyQuestTracker",
+  },
+  fishing = {
+    title = "Fishing Tracker",
+    parent = "personal",
+    reconnect = "Reconnect fish item tracking, bait/fish counts, caught totals, and status/time display.",
+    previousFunctions = "OpenFishingTracker",
+  },
+  guild_gold_ledger = {
+    title = "Gold Ledger",
+    parent = "guild",
+    reconnect = "Reconnect guild bank gold history: donations, withdrawals, raffle entries, pending bids, bid refunds, trader costs.",
+    previousFunctions = "Guild Bank Gold / ScanGuildGoldEvents / pending bid logic",
+  },
+  guild_bank = {
+    title = "Guild Bank",
+    parent = "guild",
+    reconnect = "Reconnect guild bank item history, member item totals, bank totals, and gold/current total calculations.",
+    previousFunctions = "OpenGuildBank / ScanGuildBankItems / ComputeGuildBankStats",
+  },
+  guild_sales = {
+    title = "Guild Sales Tracker",
+    parent = "guild",
+    reconnect = "Reconnect guild trader sales history, seller totals, guild tax, personal sales, and item price cache.",
+    previousFunctions = "OpenSalesTracker / ScanGuildSales / GetSalesRows",
+  },
+  guild_bookkeeper = {
+    title = "Guild Bookkeeper",
+    parent = "guild",
+    reconnect = "Reconnect roster scan, member sales, donations, raffle purchases, dues, bank activity, and last-online rows.",
+    previousFunctions = "OpenBookKeeper / ScanAllActivity / BuildBookKeeperRows",
+  },
+  guild_raffle = {
+    title = "Guild Raffle",
+    parent = "guild",
+    reconnect = "Reconnect exact-ticket deposit scan, manual pot, manual prize split, winner picker, and centered winner display.",
+    previousFunctions = "OpenRaffle / ScanRaffleEntries / PickRaffleWinners",
+  },
+  guild_dues = {
+    title = "Guild Dues",
+    parent = "guild",
+    reconnect = "Reconnect dues amount, paid/unpaid calculation, roster lookup, saved due settings, and display output.",
+    previousFunctions = "OpenGuildDues",
+  },
+  trader_bids = {
+    title = "Trader Bids / Pending Bids",
+    parent = "guild",
+    reconnect = "Reconnect bid-to-hire trader detection, lost bid cleanup, hired/withdrawn handling, and red subtraction display.",
+    previousFunctions = "Pending bid logic from bank gold withdrawals/history text parsing",
+  },
+
+  personal_instructions = {
+    title = "Instructions",
+    parent = "personal",
+    reconnect = "Personal tools instruction page. No heavy data pipeline required.",
+    previousFunctions = "OpenPersonalHelp",
+  },
+  creator = {
+    title = "Creator",
+    parent = "main",
+    reconnect = "Creator/about page only. No live data pipeline is required.",
+    previousFunctions = "New page added during menu-shell design testing.",
+  },
+  help = {
+    title = "Help & Instructions",
+    parent = "main",
+    reconnect = "Reconnect final help text after menu shell is approved.",
+    previousFunctions = "OpenHelp / OpenPersonalHelp / OpenGuildHelp",
+  },
+}
+
+TML.menus = {
+  main = {
+    parent = nil,
+    entries = {
+      { text = "@UserID", dynamicText = "userId", icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_character.dds", type = "menu", target = "personal" },
+      { text = "Guild", icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_guilds.dds", type = "menu", target = "guild" },
+      { text = "Help & Instructions", icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_help.dds", type = "tool", target = "help" },
+      { text = "Creator", icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_character.dds", type = "tool", target = "creator" },
+      { text = "Exit", icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_logout.dds", type = "exit", target = "exit" },
+    },
+  },
+  personal = {
+    parent = "main",
+    entries = {
+      { text = "Net Worth", icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_inventory.dds", type = "tool", target = "net_worth" },
+      { text = "Gold Ledger", icon = "EsoUI/Art/currency/gamepad/gp_gold.dds", type = "tool", target = "gold_ledger_personal" },
+      { text = "Personal Sales Tracker", icon = "EsoUI/Art/TradingHouse/Gamepad/gp_tradinghouse_sell_tabIcon.dds", type = "tool", target = "personal_sales" },
+      { text = "Daily Quest Tracker", icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_journal.dds", type = "tool", target = "daily_quests" },
+      { text = "Fishing Tracker", icon = "EsoUI/Art/Icons/crafting_fishing_bait_worms.dds", type = "tool", target = "fishing" },
+      { text = "Instructions", icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_help.dds", type = "tool", target = "personal_instructions" },
+      { text = "Back", icon = "EsoUI/Art/Buttons/Gamepad/gp_backarrow.dds", type = "back", target = "main" },
+      { text = "Exit", icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_logout.dds", type = "exit", target = "exit" },
+    },
+  },
+  guild = {
+    parent = "main",
+    entries = {
+      { text = "Gold Ledger", icon = "EsoUI/Art/currency/gamepad/gp_gold.dds", type = "tool", target = "guild_gold_ledger" },
+      { text = "Guild Bank", icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_inventory.dds", type = "tool", target = "guild_bank" },
+      { text = "Guild Sales Tracker", icon = "EsoUI/Art/TradingHouse/Gamepad/gp_tradinghouse_sell_tabIcon.dds", type = "tool", target = "guild_sales" },
+      { text = "Guild Bookkeeper", icon = "EsoUI/Art/Journal/Gamepad/gp_questTypeIcon_cadwell.dds", type = "tool", target = "guild_bookkeeper" },
+      { text = "Guild Raffle", icon = "EsoUI/Art/Buttons/Gamepad/gp_randomize.dds", type = "tool", target = "guild_raffle" },
+      { text = "Guild Dues", icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_guilds.dds", type = "tool", target = "guild_dues" },
+      { text = "Trader Bids / Pending Bids", icon = "EsoUI/Art/TradingHouse/Gamepad/gp_tradinghouse_buy_tabIcon.dds", type = "tool", target = "trader_bids" },
+      { text = "Back", icon = "EsoUI/Art/Buttons/Gamepad/gp_backarrow.dds", type = "back", target = "main" },
+      { text = "Exit", icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_logout.dds", type = "exit", target = "exit" },
+    },
+  },
+}
+
+function TML:Defaults()
+  return {
+    lastMenu = "main",
+    selected = { main = 1, personal = 1, guild = 1 },
+    note = "Working phase build with connected pipelines and memory-safe page cleanup.",
+  }
+end
+
+function TML:GetControl(key, parent, ctype)
+  self.pool = self.pool or {}
+  local fullName = "TML_21662_" .. tostring(key)
+  local ctrl = self.pool[fullName]
+  if not ctrl then
+    ctrl = WINDOW_MANAGER:CreateControl(fullName, parent, ctype)
+    self.pool[fullName] = ctrl
+  end
+  if parent and ctrl.SetParent then SafeCall(function() ctrl:SetParent(parent) end) end
+  if ctrl.SetHidden then ctrl:SetHidden(false) end
+  return ctrl
+end
+
+function TML:HideAllPooledControls()
+  if not self.pool then return end
+  for _, ctrl in pairs(self.pool) do
+    if ctrl and ctrl.SetHidden then ctrl:SetHidden(true) end
+    if ctrl and ctrl.SetMouseEnabled then ctrl:SetMouseEnabled(false) end
+  end
+end
+
+function TML:Backdrop(key, parent, x, y, w, h, center, edge)
+  local bd = self:GetControl(key, parent, CT_BACKDROP)
+  bd:ClearAnchors(); bd:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y); bd:SetDimensions(w, h)
+  bd:SetCenterColor(unpack(center or C.black82))
+  if edge then bd:SetEdgeColor(unpack(edge)) else bd:SetEdgeColor(0,0,0,0) end
+  SafeCall(function() bd:SetEdgeTexture(nil, 8, 8, 1) end)
+  if bd.SetMouseEnabled then bd:SetMouseEnabled(false) end
+  return bd
+end
+
+function TML:Texture(key, parent, texture, x, y, w, h, color)
+  local tex = self:GetControl(key, parent, CT_TEXTURE)
+  tex:ClearAnchors(); tex:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y); tex:SetDimensions(w, h)
+  if texture and texture ~= "" and tex.SetTexture then SafeCall(function() tex:SetTexture(texture) end) end
+  if color and tex.SetColor then tex:SetColor(unpack(color)) end
+  if tex.SetMouseEnabled then tex:SetMouseEnabled(false) end
+  return tex
+end
+
+function TML:Label(key, parent, text, x, y, w, h, color, font, align)
+  local label = self:GetControl(key, parent, CT_LABEL)
+  label:ClearAnchors(); label:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y); label:SetDimensions(w, h)
+  SafeFont(label, font or FONTS.panelText)
+  label:SetText(text or "")
+  ApplyColor(label, color or C.white)
+  if label.SetHorizontalAlignment then label:SetHorizontalAlignment(align or TEXT_ALIGN_LEFT) end
+  if label.SetVerticalAlignment then label:SetVerticalAlignment(TEXT_ALIGN_CENTER) end
+  if label.SetMouseEnabled then label:SetMouseEnabled(false) end
+  return label
+end
+
+function TML:Hit(key, parent, x, y, w, h, onClick)
+  local hit = self:GetControl(key, parent, CT_CONTROL)
+  hit:ClearAnchors(); hit:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y); hit:SetDimensions(w, h)
+  hit:SetMouseEnabled(true)
+  hit:SetHandler("OnMouseDown", nil)
+  hit:SetHandler("OnMouseUp", function(_, button, upInside)
+    if upInside == nil or upInside then onClick() end
+  end)
+  return hit
+end
+
+function TML:BuildUI()
+  local root = TamrielMasterLedgerRoot
+  self.ui.root = root
+  if not root then return end
+  root:SetHidden(true)
+  -- Do not make the root a fullscreen blocker. Only child hitboxes receive mouse input.
+  root:SetMouseEnabled(false)
+  -- Do not steal keyboard focus on open; ESO's menu/keybind strip owns navigation while this scene is active.
+  if root.SetKeyboardEnabled then root:SetKeyboardEnabled(false) end
+  if root.SetDrawLayer then root:SetDrawLayer(DL_OVERLAY) end
+  if root.SetDrawTier then root:SetDrawTier(DT_HIGH) end
+  if root.SetDrawLevel then root:SetDrawLevel(120) end
+  if GuiRoot and GuiRoot.GetDimensions then
+    local w,h = GuiRoot:GetDimensions()
+    if w and h then root:SetDimensions(w,h) end
+  end
+  root:ClearAnchors(); root:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+  root:SetHandler("OnMouseWheel", function(_, delta)
+    if delta and delta > 0 then TML:MoveSelection(-1) else TML:MoveSelection(1) end
+  end)
+  root:SetHandler("OnKeyDown", function(_, key)
+    TML:HandleKeyDown(key)
+  end)
+end
+
+
+function TML:BuildScene()
+  if self.sceneCreated then return end
+  if not self.ui or not self.ui.root then self:BuildUI() end
+  local root = self.ui and self.ui.root
+  if not root or not SCENE_MANAGER or not ZO_Scene then return end
+  local sceneName = "tamriel_master_ledger_shell"
+  local scene = nil
+  local okExisting, existing = pcall(function() return SCENE_MANAGER:GetScene(sceneName) end)
+  if okExisting then scene = existing end
+  if not scene then
+    local okCreated, created = pcall(function() return ZO_Scene:New(sceneName, SCENE_MANAGER) end)
+    if okCreated then scene = created end
+  end
+  if not scene then return end
+  self.scene = scene
+  if ZO_SimpleSceneFragment and scene.AddFragment then
+    local okFrag, fragment = pcall(function() return ZO_SimpleSceneFragment:New(root) end)
+    if okFrag and fragment then
+      SafeCall(function() scene:AddFragment(fragment) end)
+      self.sceneFragment = fragment
+    end
+  end
+  if scene.RegisterCallback then
+    SafeCall(function()
+      scene:RegisterCallback("StateChange", function(oldState, newState)
+        if newState == SCENE_SHOWING or newState == SCENE_SHOWN or newState == "showing" or newState == "shown" then
+          if TML and TML.state and TML.state.mode == "closed" then
+            zo_callLater(function() if TML then TML:OpenMenu("main") end end, 50)
+          end
+        elseif newState == SCENE_HIDING or newState == SCENE_HIDDEN or newState == "hiding" or newState == "hidden" then
+          if TML and TML.ui and TML.ui.root then TML.ui.root:SetHidden(true) end
+          if TML and TML.RemoveKeybinds then TML:RemoveKeybinds() end
+          if TML and TML.RemoveInputHandlers then TML:RemoveInputHandlers() end
+        end
+      end)
+    end)
+  end
+  self.sceneCreated = true
+end
+
+function TML:GetRootSize()
+  local w,h = 1920,1080
+  if self.ui and self.ui.root and self.ui.root.GetDimensions then
+    local rw,rh = self.ui.root:GetDimensions()
+    w = tonumber(rw) or w
+    h = tonumber(rh) or h
+  end
+  return w,h
+end
+
+function TML:IsOpen()
+  return self.ui and self.ui.root and not self.ui.root:IsHidden()
+end
+
+function TML:FocusRootForControls()
+  local root = self.ui and self.ui.root
+  if not root then return end
+  if root.SetKeyboardEnabled then SafeCall(function() root:SetKeyboardEnabled(true) end) end
+  -- Focus is applied only after the visible menu/tool has rendered. This keeps M&K controls active without reopening the old grey-screen path.
+  if type(SetKeyboardFocus) == "function" then SafeCall(SetKeyboardFocus, root) end
+  if WINDOW_MANAGER and type(WINDOW_MANAGER.SetKeyboardFocus) == "function" then SafeCall(function() WINDOW_MANAGER:SetKeyboardFocus(root) end) end
+end
+
+function TML:ClearRootFocus()
+  local root = self.ui and self.ui.root
+  if root and root.SetKeyboardEnabled then SafeCall(function() root:SetKeyboardEnabled(false) end) end
+  if type(SetKeyboardFocus) == "function" then SafeCall(SetKeyboardFocus, nil) end
+  if WINDOW_MANAGER and type(WINDOW_MANAGER.SetKeyboardFocus) == "function" then SafeCall(function() WINDOW_MANAGER:SetKeyboardFocus(nil) end) end
+end
+
+function TML:GetSceneName(scene)
+  if not scene then return nil end
+  if scene.GetName then
+    local ok, name = SafeCall(function() return scene:GetName() end)
+    if ok and name and name ~= "" then return tostring(name) end
+  end
+  if scene.name and scene.name ~= "" then return tostring(scene.name) end
+  return nil
+end
+
+function TML:CaptureReturnScene()
+  if not SCENE_MANAGER or not SCENE_MANAGER.GetCurrentScene then return end
+  local ok, current = pcall(function() return SCENE_MANAGER:GetCurrentScene() end)
+  if not ok or not current or current == self.scene then return end
+  local name = self:GetSceneName(current)
+  if name == "tamriel_master_ledger_shell" then return end
+  self.returnSceneObject = current
+  self.returnSceneName = name
+end
+
+function TML:ShowSceneByName(sceneName)
+  if not SCENE_MANAGER or not sceneName or sceneName == "" then return false end
+  local ok = SafeCall(function() SCENE_MANAGER:Show(sceneName) end)
+  return ok == true
+end
+
+function TML:FindESOGamepadMenuSceneName()
+  if not SCENE_MANAGER then return nil end
+  local preferred = {
+    self.returnSceneName,
+    "gamepad_main_menu",
+    "mainMenuGamepad",
+    "mainMenu",
+    "gameMenuGamepad",
+    "gameMenu",
+  }
+  for _, name in ipairs(preferred) do
+    if name and name ~= "" and name ~= "tamriel_master_ledger_shell" then
+      if not SCENE_MANAGER.GetScene then return name end
+      local ok, scene = pcall(function() return SCENE_MANAGER:GetScene(name) end)
+      if ok and scene then return name end
+    end
+  end
+  return nil
+end
+
+function TML:HideShellOnly()
+  if self.ui and self.ui.root then self.ui.root:SetHidden(true) end
+  self.state.mode = "closed"
+  self.state.activeTool = nil
+  self:RemoveKeybinds()
+  self:RemoveInputHandlers()
+  self:ClearRootFocus()
+end
+
+function TML:ReturnToESOMenu()
+  -- This is NOT a full close to gameplay. It hides the TML shell and returns to ESO's menu scene.
+  self:HideShellOnly()
+  local target = self:FindESOGamepadMenuSceneName()
+  if target and self:ShowSceneByName(target) then return end
+  -- Last-resort fallback: try to show the captured scene object without going to gameplay.
+  if SCENE_MANAGER and self.returnSceneObject and self.returnSceneObject.Show then
+    local ok = SafeCall(function() self.returnSceneObject:Show() end)
+    if ok then return end
+  end
+  -- Do not call ShowBaseScene here. That closes the ESO menu, which is exactly what this build is fixing.
+end
+
+function TML:ShowRoot()
+  if not self.ui or not self.ui.root then self:BuildUI() end
+  if not self.ui or not self.ui.root then return end
+  if GuiRoot and GuiRoot.GetDimensions then
+    local w,h = GuiRoot:GetDimensions()
+    if w and h then self.ui.root:SetDimensions(w,h) end
+  end
+  if self.ui.root.SetParent then SafeCall(function() self.ui.root:SetParent(GuiRoot) end) end
+  if self.mainMenuIconOverlay then self.mainMenuIconOverlay:SetHidden(true) end
+  if self.ui.root.SetMouseEnabled then self.ui.root:SetMouseEnabled(false) end
+  -- Keyboard is enabled only after render/show so M&K controls work without stealing focus too early.
+  if self.ui.root.SetKeyboardEnabled then self.ui.root:SetKeyboardEnabled(true) end
+  if self.ui.root.SetDrawLayer then self.ui.root:SetDrawLayer(DL_OVERLAY) end
+  if self.ui.root.SetDrawTier then self.ui.root:SetDrawTier(DT_HIGH) end
+  if self.ui.root.SetDrawLevel then self.ui.root:SetDrawLevel(120) end
+  self.ui.root:SetHidden(false)
+  if self.ui.root.BringWindowToTop then SafeCall(function() self.ui.root:BringWindowToTop() end) end
+  -- Install input after the visible menu is on screen. This keeps the safe open path, then enables controller + M&K.
+  self:InstallInputHandlers()
+  self:FocusRootForControls()
+  self:AddKeybinds()
+  self:RefreshKeybinds()
+end
+
+function TML:Close()
+  -- Close means return to the ESO menu that launched Tamriel Master Ledger, not back to gameplay.
+  self:ReturnToESOMenu()
+end
+
+function TML:EmergencyClose(reason)
+  if self.ui and self.ui.root then self.ui.root:SetHidden(true) end
+  self.state.mode = "closed"
+  self.state.activeTool = nil
+  self:RemoveKeybinds()
+  self:RemoveInputHandlers()
+  self:ClearRootFocus()
+  if type(SetGameCameraUIMode) == "function" then SafeCall(SetGameCameraUIMode, false) end
+  if SCENE_MANAGER and self.scene and SCENE_MANAGER.GetCurrentScene then
+    local ok, current = pcall(function() return SCENE_MANAGER:GetCurrentScene() end)
+    if ok and current == self.scene and SCENE_MANAGER.ShowBaseScene then SafeCall(function() SCENE_MANAGER:ShowBaseScene() end) end
+  end
+  if d and reason then d("Tamriel Master Ledger recovered from open error: " .. tostring(reason)) end
+end
+
+function TML:BuildKeybinds()
+  -- Keybind strip catches A/B/Menu style actions on gamepad when the TML scene is active.
+  -- D-pad/stick movement is handled separately through DIRECTIONAL_INPUT because keybind-strip
+  -- directional shortcuts are not reliable for custom menu shells.
+  self.keybinds = {
+    alignment = KEYBIND_STRIP_ALIGN_CENTER,
+    { name = "Select", keybind = "UI_SHORTCUT_PRIMARY", order = 10, callback = function() TML:SelectCurrent() end, visible = function() return TML:IsOpen() end },
+    { name = "Back", keybind = "UI_SHORTCUT_NEGATIVE", order = 20, callback = function() TML:Back() end, visible = function() return TML:IsOpen() end },
+    { name = "Exit", keybind = "UI_SHORTCUT_EXIT", order = 30, callback = function() TML:ReturnToESOMenu() end, visible = function() return TML:IsOpen() end },
+  }
+end
+
+function TML:EnsureDirectionalInput()
+  if self.directionalInputObject then return self.directionalInputObject end
+  local obj = { lastMoveMS = 0 }
+  function obj:UpdateDirectionalInput(deltaS)
+    if not TML or not TML:IsOpen() then return end
+    if not DIRECTIONAL_INPUT then return end
+    local x, y = 0, 0
+    local function readDevice(dev)
+      if dev == nil then return end
+      if DIRECTIONAL_INPUT.GetXY then
+        local ok, gx, gy = SafeCall(function() return DIRECTIONAL_INPUT:GetXY(dev) end)
+        if ok then
+          gx, gy = tonumber(gx) or 0, tonumber(gy) or 0
+          if math.abs(gx) > math.abs(x) then x = gx end
+          if math.abs(gy) > math.abs(y) then y = gy end
+        end
+      else
+        if DIRECTIONAL_INPUT.GetX then
+          local ok, gx = SafeCall(function() return DIRECTIONAL_INPUT:GetX(dev) end)
+          gx = ok and (tonumber(gx) or 0) or 0
+          if math.abs(gx) > math.abs(x) then x = gx end
+        end
+        if DIRECTIONAL_INPUT.GetY then
+          local ok, gy = SafeCall(function() return DIRECTIONAL_INPUT:GetY(dev) end)
+          gy = ok and (tonumber(gy) or 0) or 0
+          if math.abs(gy) > math.abs(y) then y = gy end
+        end
+      end
+    end
+    readDevice(_G.ZO_DI_DPAD)
+    readDevice(_G.ZO_DI_LEFT_STICK)
+    readDevice(1); readDevice(2); readDevice(3)
+    if DIRECTIONAL_INPUT.ConsumeAll then SafeCall(function() DIRECTIONAL_INPUT:ConsumeAll() end) end
+    local now = FrameMS()
+    if (math.abs(x) > 0.55 or math.abs(y) > 0.55) and (now - (self.lastMoveMS or 0) > 165) then
+      self.lastMoveMS = now
+      if math.abs(y) >= math.abs(x) then
+        if y > 0 then TML:MoveSelection(-1) else TML:MoveSelection(1) end
+      else
+        if TML.state and TML.state.mode == "tool" then
+          -- On the working pipeline tool panel, left/right swaps between Back to Menu and Exit.
+          if x > 0 then TML:MoveSelection(1) else TML:MoveSelection(-1) end
+        else
+          -- Left/right should not accidentally enter/exit menus; keep it as vertical menu movement for now.
+          if x > 0 then TML:MoveSelection(1) else TML:MoveSelection(-1) end
+        end
+      end
+    end
+  end
+  self.directionalInputObject = obj
+  return obj
+end
+
+function TML:ActivateDirectionalInput()
+  if not DIRECTIONAL_INPUT or not self.ui or not self.ui.root then return end
+  local obj = self:EnsureDirectionalInput()
+  if DIRECTIONAL_INPUT.IsListening then
+    local ok, listening = SafeCall(function() return DIRECTIONAL_INPUT:IsListening(obj) end)
+    if ok and listening then return end
+  end
+  SafeCall(function() DIRECTIONAL_INPUT:Activate(obj, self.ui.root) end)
+end
+
+function TML:DeactivateDirectionalInput()
+  if DIRECTIONAL_INPUT and self.directionalInputObject then
+    SafeCall(function() DIRECTIONAL_INPUT:Deactivate(self.directionalInputObject) end)
+  end
+end
+
+function TML:InstallInputHandlers()
+  local root = self.ui and self.ui.root
+  if not root then return end
+  if root.SetKeyboardEnabled then SafeCall(function() root:SetKeyboardEnabled(true) end) end
+  root:SetHandler("OnKeyDown", function(_, key, ctrl, alt, shift, command)
+    TML:HandleKeyDown(key)
+    return true
+  end)
+  root:SetHandler("OnMouseWheel", function(_, delta)
+    if delta and delta > 0 then TML:MoveSelection(-1) else TML:MoveSelection(1) end
+    return true
+  end)
+  root:SetHandler("OnUpdate", function(_, deltaS)
+    -- Fallback polling for controllers that do not call UpdateDirectionalInput on a custom scene.
+    if TML and TML.directionalInputObject and TML.directionalInputObject.UpdateDirectionalInput then
+      TML.directionalInputObject:UpdateDirectionalInput(deltaS)
+    end
+  end)
+  self:ActivateDirectionalInput()
+end
+
+function TML:RemoveInputHandlers()
+  local root = self.ui and self.ui.root
+  if root and root.SetHandler then
+    root:SetHandler("OnUpdate", nil)
+    root:SetHandler("OnKeyDown", nil)
+    root:SetHandler("OnMouseWheel", nil)
+  end
+  self:DeactivateDirectionalInput()
+end
+
+function TML:AddKeybinds()
+  if not KEYBIND_STRIP then return end
+  if not self.keybinds then self:BuildKeybinds() end
+  if not self.keybindGroupAdded then
+    local ok = SafeCall(function() KEYBIND_STRIP:AddKeybindButtonGroup(self.keybinds) end)
+    if ok then self.keybindGroupAdded = true end
+  end
+  SafeCall(function() KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybinds) end)
+end
+
+function TML:RemoveKeybinds()
+  if KEYBIND_STRIP and self.keybinds and self.keybindGroupAdded then
+    SafeCall(function() KEYBIND_STRIP:RemoveKeybindButtonGroup(self.keybinds) end)
+  end
+  self.keybindGroupAdded = false
+end
+
+function TML:RefreshKeybinds()
+  if KEYBIND_STRIP and self.keybinds then SafeCall(function() KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybinds) end) end
+end
+
+function TML:HandleKeyDown(key)
+  if not self:IsOpen() then return end
+  if IsKey(key, "KEY_ESCAPE", "KEY_BACKSPACE", "KEY_X", "KEY_B", "KEY_GAMEPAD_BUTTON_B", "KEY_GAMEPAD_BUTTON_2") then self:Back(); return end
+  if IsKey(key, "KEY_ENTER", "KEY_E", "KEY_SPACEBAR", "KEY_SPACE", "KEY_GAMEPAD_BUTTON_A", "KEY_GAMEPAD_BUTTON_1") then self:SelectCurrent(); return end
+  if IsKey(key, "KEY_UPARROW", "KEY_W", "KEY_GAMEPAD_DPAD_UP", "KEY_GAMEPAD_LEFT_STICK_UP", "KEY_GAMEPAD_LEFT_SHOULDER", "KEY_PAGEUP") then self:MoveSelection(-1); return end
+  if IsKey(key, "KEY_DOWNARROW", "KEY_S", "KEY_GAMEPAD_DPAD_DOWN", "KEY_GAMEPAD_LEFT_STICK_DOWN", "KEY_GAMEPAD_RIGHT_SHOULDER", "KEY_PAGEDOWN") then self:MoveSelection(1); return end
+  if IsKey(key, "KEY_GAMEPAD_START", "KEY_GAMEPAD_BUTTON_START", "KEY_DELETE") then self:ReturnToESOMenu(); return end
+end
+
+function TML:MenuBindingAction(action)
+  if not self:IsOpen() then
+    if action == "select" then self:OpenFromBinding() end
+    return
+  end
+  if action == "select" then self:SelectCurrent()
+  elseif action == "back" then self:Back()
+  elseif action == "up" then self:MoveSelection(-1)
+  elseif action == "down" then self:MoveSelection(1)
+  elseif action == "exit" then self:ReturnToESOMenu()
+  end
+end
+
+function TML:GetCurrentMenuDef()
+  return self.menus[self.state.menu or "main"] or self.menus.main
+end
+
+function TML:GetSelectedIndex(menuName)
+  local menu = menuName or self.state.menu or "main"
+  local def = self.menus[menu] or self.menus.main
+  local idx = (self.state.selected and self.state.selected[menu]) or 1
+  idx = math.max(1, math.min(idx, #(def.entries or {})))
+  self.state.selected[menu] = idx
+  return idx
+end
+
+function TML:SetSelectedIndex(menuName, idx)
+  self.state.selected = self.state.selected or {}
+  local def = self.menus[menuName] or self.menus.main
+  self.state.selected[menuName] = math.max(1, math.min(tonumber(idx) or 1, #(def.entries or {})))
+end
+
+function TML:OpenMenu(menuName, keepSelection)
+  menuName = menuName or "main"
+  if not self.menus[menuName] then menuName = "main" end
+  if not self.ui or not self.ui.root then self:BuildUI() end
+  if not self.ui or not self.ui.root then return end
+  self.state.mode = "menu"
+  self.state.menu = menuName
+  self.state.activeTool = nil
+  if not keepSelection then self:SetSelectedIndex(menuName, self:GetSelectedIndex(menuName)) end
+  if self.saved then self.saved.lastMenu = menuName; self.saved.selected = self.state.selected end
+  -- Render while hidden first. If rendering fails, do not leave ESO in a grey/invisible focus state.
+  self.ui.root:SetHidden(true)
+  local ok, err = pcall(function() self:RenderMenu() end)
+  if not ok then self:EmergencyClose(err); return end
+  self:ShowRoot()
+end
+
+function TML:OpenTool(toolKey)
+  local tool = self.pipelineMap[toolKey]
+  if not tool then return end
+  if not self.ui or not self.ui.root then self:BuildUI() end
+  if not self.ui or not self.ui.root then return end
+  self.state.mode = "tool"
+  self.state.activeTool = toolKey
+  self.state.toolReturnMenu = tool.parent or self.state.menu or "main"
+  self.state.toolButton = 1
+  self.ui.root:SetHidden(true)
+  local ok, err = pcall(function() self:RenderTool(toolKey) end)
+  if not ok then self:EmergencyClose(err); return end
+  self:ShowRoot()
+end
+
+function TML:MoveSelection(delta)
+  if self.state.mode == "tool" then
+    local idx = (self.state.toolButton or 1) + (tonumber(delta) or 0)
+    if idx < 1 then idx = 2 end
+    if idx > 2 then idx = 1 end
+    self.state.toolButton = idx
+    self:RenderTool(self.state.activeTool or "help")
+    return
+  end
+  if self.state.mode ~= "menu" then return end
+  local menuName = self.state.menu or "main"
+  local def = self.menus[menuName] or self.menus.main
+  local count = #(def.entries or {})
+  if count <= 0 then return end
+  local idx = self:GetSelectedIndex(menuName) + (tonumber(delta) or 0)
+  if idx < 1 then idx = count end
+  if idx > count then idx = 1 end
+  self:SetSelectedIndex(menuName, idx)
+  self:RenderMenu()
+end
+
+function TML:SelectCurrent()
+  if self.state.mode == "tool" then
+    if (self.state.toolButton or 1) == 1 then self:Back() else self:ReturnToESOMenu() end
+    return
+  end
+  local menuName = self.state.menu or "main"
+  local def = self.menus[menuName] or self.menus.main
+  local entry = (def.entries or {})[self:GetSelectedIndex(menuName)]
+  if not entry then return end
+  if entry.type == "menu" then
+    self:OpenMenu(entry.target)
+  elseif entry.type == "tool" then
+    self:OpenTool(entry.target)
+  elseif entry.type == "back" then
+    local currentDef = self:GetCurrentMenuDef()
+    self:OpenMenu((currentDef and currentDef.parent) or entry.target or "main", true)
+  elseif entry.type == "exit" then
+    self:ReturnToESOMenu()
+  end
+end
+
+function TML:Back()
+  if self.state.mode == "tool" then
+    self:OpenMenu(self.state.toolReturnMenu or "main", true)
+    return
+  end
+  if self.state.mode == "menu" then
+    local def = self:GetCurrentMenuDef()
+    if def and def.parent then
+      self:OpenMenu(def.parent, true)
+    else
+      self:ReturnToESOMenu()
+    end
+    return
+  end
+  self:ReturnToESOMenu()
+end
+
+
+function TML:IsHelpEntry(entry)
+  return entry and (entry.target == "help" or entry.text == "Help & Instructions")
+end
+
+function TML:GetEntryColors(entry, isSelected)
+  if entry and entry.type == "back" then
+    return isSelected and C.cyanSoft or C.muted, isSelected and C.cyanSoft or C.muted
+  end
+  if entry and entry.type == "exit" then
+    return isSelected and C.red or C.redDim, isSelected and C.red or C.redDim
+  end
+  if self:IsHelpEntry(entry) then
+    return isSelected and C.yellow or C.yellowDim, isSelected and C.yellow or C.yellowDim
+  end
+  return isSelected and C.white or C.dim, isSelected and C.white or C.dim
+end
+
+function TML:RenderHeader(root, railW, menuName)
+  local iconSize = 44
+  self:Texture("HeaderIcon", root, self.icon, 38, 34, iconSize, iconSize, C.cyanSoft)
+  self:Label("HeaderTitle", root, "TAMRIEL MASTER\nLEDGER", 92, 22, railW - 128, 68, C.cyanSoft, FONTS.panelTitle, TEXT_ALIGN_LEFT)
+  self:Label("HeaderContext", root, string.upper(menuName or "MAIN"), 92, 88, railW - 128, 28, C.white, FONTS.menuSmall, TEXT_ALIGN_LEFT)
+  self:Label("HeaderUpdated", root, "Last Updated: " .. tostring(self.lastUpdated or "") .. "  |  v" .. tostring(self.version or ""), 38, 120, railW - 76, 26, C.muted, FONTS.menuSmall, TEXT_ALIGN_LEFT)
+  self:Backdrop("HeaderDivider", root, 38, 154, railW - 76, 2, {C.cyan[1], C.cyan[2], C.cyan[3], 0.70}, nil)
+end
+
+function TML:GetMenuDisplayName(menuName)
+  if menuName == "personal" then return self:GetUserDisplayName() end
+  if menuName == "guild" then return "Guild" end
+  return "Main Menu"
+end
+
+function TML:GetMenuViewport(menuName)
+  local def = self.menus[menuName] or self.menus.main
+  local count = #(def.entries or {})
+  local visible = 7
+  local selected = self:GetSelectedIndex(menuName)
+  local offset = self.state.offset[menuName] or 0
+  if selected <= offset then offset = selected - 1 end
+  if selected > offset + visible then offset = selected - visible end
+  offset = math.max(0, math.min(offset, math.max(0, count - visible)))
+  self.state.offset[menuName] = offset
+  return offset + 1, math.min(count, offset + visible)
+end
+
+function TML:RenderControlsFooter(root, railW, usableH, context)
+  -- ESO-style fallback controls shown inside the rail because custom shell scenes do not always inherit the native bottom keybind strip.
+  local y = usableH - 162
+  self:Backdrop("ControlsFooterBg", root, 22, y - 10, railW - 44, 142, {0,0,0,0.74}, {C.cyan[1], C.cyan[2], C.cyan[3], 0.45})
+  self:Label("ControlsFooter1", root, "A / E / Enter  SELECT", 38, y, railW - 76, 24, C.cyanSoft, FONTS.menuSmall, TEXT_ALIGN_LEFT)
+  self:Label("ControlsFooter2", root, "B / X / Esc / Backspace  BACK", 38, y + 28, railW - 76, 24, C.white, FONTS.menuSmall, TEXT_ALIGN_LEFT)
+  self:Label("ControlsFooter3", root, "D-Pad / WASD / Arrows  MOVE", 38, y + 56, railW - 76, 24, C.white, FONTS.menuSmall, TEXT_ALIGN_LEFT)
+  self:Label("ControlsFooter4", root, "Mouse Click / Wheel  CLICK + SCROLL", 38, y + 84, railW - 76, 24, C.white, FONTS.menuSmall, TEXT_ALIGN_LEFT)
+  self:Label("ControlsFooter5", root, "v" .. tostring(self.version or ""), 38, y + 112, railW - 76, 22, C.cyanSoft, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+end
+
+function TML:RenderBottomExit(root, railW, usableH)
+  local y = usableH - 200
+  self:Backdrop("BottomExitBg", root, 36, y, railW - 72, 50, {0,0,0,0.55}, {C.red[1], C.red[2], C.red[3], 0.75})
+  self:Label("BottomExitText", root, "Exit", 58, y, railW - 116, 50, C.red, FONTS.menuNormal, TEXT_ALIGN_LEFT)
+  self:Hit("BottomExitHit", root, 36, y, railW - 72, 50, function() TML:ReturnToESOMenu() end)
+end
+
+function TML:RenderMenu()
+  self:HideAllPooledControls()
+  local root = self.ui.root
+  if not root then return end
+  local rw,rh = self:GetRootSize()
+  local railW = math.floor(math.min(560, rw * 0.34))
+  local usableH = rh - 8
+  self:Backdrop("RailBackground", root, 0, 0, railW, usableH, C.black90, {C.cyan[1], C.cyan[2], C.cyan[3], 0.65})
+  self:Backdrop("RailDivider", root, railW - 4, 0, 4, usableH, {C.cyan[1], C.cyan[2], C.cyan[3], 0.95}, nil)
+  local menuName = self.state.menu or "main"
+  self:RenderHeader(root, railW, self:GetMenuDisplayName(menuName))
+  local def = self.menus[menuName] or self.menus.main
+  local startIndex, endIndex = self:GetMenuViewport(menuName)
+  local count = #(def.entries or {})
+  local selected = self:GetSelectedIndex(menuName)
+  local rowH = 64
+  local listTop = 172
+  -- Keep every menu/submenu aligned directly under the cyan Last Updated divider.
+  -- The selected row now starts and ends exactly with the divider's 38px inset.
+  local startY = listTop
+  local rowX = 38
+  local rowW = railW - 76
+  local xIcon = rowX + 24
+  local xText = rowX + 82
+  local textW = rowW - 104
+
+  for i = startIndex, endIndex do
+    local entry = def.entries[i]
+    local row = i - startIndex
+    local y = startY + row * rowH
+    local isSelected = (i == selected)
+    local textColor, iconColor = self:GetEntryColors(entry, isSelected)
+    if isSelected then
+      self:Backdrop("SelGlow"..i, root, rowX, y + 4, rowW, rowH - 8, {C.cyan[1], C.cyan[2], C.cyan[3], 0.12}, {C.cyan[1], C.cyan[2], C.cyan[3], 0.75})
+    end
+    self:Texture("Icon"..i, root, entry.icon or self.icon, xIcon, y + 13, 38, 38, iconColor)
+    local labelText = LimitText(self:GetMenuEntryLabel(entry), 30)
+    self:Label("Text"..i, root, labelText, xText, y, textW, rowH, textColor, FONTS.menuNormal)
+    self:Hit("Hit"..i, root, rowX, y, rowW, rowH, function()
+      TML:SetSelectedIndex(menuName, i)
+      TML:RenderMenu()
+      TML:SelectCurrent()
+    end)
+  end
+
+  self:RenderControlsFooter(root, railW, usableH, "menu")
+  self:RefreshKeybinds()
+end
+
+
+function TML:GetToolIcon(toolKey)
+  toolKey = tostring(toolKey or "")
+  for _, menuName in ipairs({"main", "personal", "guild"}) do
+    local def = self.menus and self.menus[menuName]
+    if def and def.entries then
+      for _, entry in ipairs(def.entries) do
+        if entry and entry.target == toolKey then return entry.icon or self.icon end
+      end
+    end
+  end
+  return self.icon
+end
+
+function TML:DrawInfoCard(root, key, x, y, w, h, title, body, accentColor)
+  self:Backdrop(key.."Bg", root, x, y, w, h, {0,0,0,0.58}, {accentColor[1], accentColor[2], accentColor[3], 0.42})
+  self:Label(key.."Title", root, title or "", x + 22, y + 14, w - 44, 32, accentColor, FONTS.panelText, TEXT_ALIGN_LEFT)
+  self:Label(key.."Body", root, body or "", x + 22, y + 52, w - 44, h - 62, C.muted, FONTS.panelText, TEXT_ALIGN_LEFT)
+end
+
+
+TML.pageDesigns = {
+  net_worth = {
+    title = "Net Worth", accent = "cyan", subtitle = "Personal account value dashboard working pipeline.",
+    leftTitle = "VALUE SUMMARY", leftHint = "Prepared for account gold, bank gold, inventory value, and top item totals.",
+    stats = {"Account Gold", "Bank Gold", "Inventory Value", "Craft Bag Value", "Estimated Total"},
+    sections = {
+      {"TOP VALUE ITEMS", "Reserved for highest-value inventory, bank, and craft materials."},
+      {"CHARACTER BREAKDOWN", "Reserved for character-by-character gold and bag value."},
+      {"PRICE SOURCE", "Reserved for Xbox NA price source/status display."},
+      {"REFRESH STATUS", "Reserved for scan progress and last refresh state."},
+    },
+    headers = {"Source", "Live Total", "Status"},
+    rows = { {"Character Gold", "--", "Waiting"}, {"Bank Gold", "--", "Waiting"}, {"Top Items", "--", "Waiting"}, {"Total Net Worth", "--", "Waiting"} },
+  },
+  gold_ledger_personal = {
+    title = "Gold Ledger", accent = "gold", subtitle = "Personal gold flow working pipeline.",
+    leftTitle = "PERSONAL GOLD", leftHint = "Prepared for wallet, bank movement, deposits, withdrawals, and history rows.",
+    stats = {"Current Gold", "Bank Gold", "Gold In", "Gold Out", "Net Change"},
+    sections = {
+      {"TRANSACTION TIMELINE", "Reserved for personal gold history and manual ledger rows."},
+      {"DEPOSIT TRACKING", "Reserved for personal deposits and added gold."},
+      {"WITHDRAW TRACKING", "Reserved for withdrawals and removed gold."},
+      {"FILTERS", "Reserved for date, character, and guild filters."},
+    },
+    headers = {"Date", "Type", "Amount", "Note"},
+    rows = { {"--", "Deposit", "--", "Live"}, {"--", "Withdrawal", "--", "Live"}, {"--", "Transfer", "--", "Live"} },
+  },
+  personal_sales = {
+    title = "Personal Sales Tracker", accent = "cyan", subtitle = "Personal sales dashboard working pipeline.",
+    leftTitle = "SALES SUMMARY", leftHint = "Prepared for your sold items, guild trader totals, taxes, and seller trend rows.",
+    stats = {"Sales Today", "Sales This Week", "Items Sold", "Guild Tax", "Net Earned"},
+    sections = {
+      {"SALES TABLE", "Reserved for item name, buyer, guild, quantity, and price."},
+      {"BEST SELLERS", "Reserved for highest-value and fastest-selling items."},
+      {"GUILD FILTER", "Reserved for selected guild or show-all sales view."},
+      {"PRICE MEMORY", "Reserved for learned sale prices and averages."},
+    },
+    headers = {"Item", "Guild", "Qty", "Gold"},
+    rows = { {"Live Item", "Guild", "--", "--"}, {"Live Item", "Guild", "--", "--"}, {"Live Item", "Guild", "--", "--"} },
+  },
+  daily_quests = {
+    title = "Daily Quest Tracker", accent = "yellow", subtitle = "Daily checklist working pipeline.",
+    leftTitle = "DAILY PRIORITY", leftHint = "Prepared for daily zone priority, completion states, and reset tracking.",
+    stats = {"Completed", "Remaining", "High Value", "Reset Timer", "Tracked Zones"},
+    sections = {
+      {"SOLSTICE / SUNPORT", "Reserved for delve and world boss daily rows."},
+      {"WEST WEALD / SKINGRAD", "Reserved for delve, boss, and incursion tracking."},
+      {"FARGRAVE / EVENT", "Reserved for limited-time daily event tasks."},
+      {"NECROM / APOCRYPHA", "Reserved for Bastion Nymic and zone dailies."},
+    },
+    headers = {"Zone", "Daily", "Status", "Reward Focus"},
+    rows = { {"Solstice", "Delve/Boss", "--", "Motifs/Plans"}, {"West Weald", "Dailies", "--", "Coffers"}, {"Fargrave", "Event", "--", "Limited"} },
+  },
+  fishing = {
+    title = "Fishing Tracker", accent = "cyan", subtitle = "Fishing and bait dashboard working pipeline.",
+    leftTitle = "FISHING STATUS", leftHint = "Prepared for fish caught, bait counts, water type, and zone progress.",
+    stats = {"Fish Caught", "Tracked Fish", "Bait Ready", "Zones", "Session Time"},
+    sections = {
+      {"BAIT INVENTORY", "Reserved for bait names, counts, and water compatibility."},
+      {"TRACKED FISH", "Reserved for fish item name, quantity, and zone source."},
+      {"ZONE PROGRESS", "Reserved for zone checklist and remaining fish."},
+      {"SESSION LOG", "Reserved for current session catches and time."},
+    },
+    headers = {"Fish / Bait", "Zone", "Qty", "Status"},
+    rows = { {"Bait Live", "Any", "--", "Waiting"}, {"Fish Live", "Zone", "--", "Waiting"}, {"Rare Fish", "Zone", "--", "Waiting"} },
+  },
+  guild_gold_ledger = {
+    title = "Guild Gold Ledger", accent = "gold", subtitle = "Guild bank gold and bid ledger working pipeline.",
+    leftTitle = "GUILD GOLD", leftHint = "Prepared for bank deposits, withdrawals, raffle entries, and trader bid separation.",
+    stats = {"Bank Gold", "Donations", "Withdrawn", "Pending Bids", "Adjusted Total"},
+    sections = {
+      {"DONATIONS", "Reserved for bank gold deposits only."},
+      {"WITHDRAWALS", "Reserved for bank gold withdrawals and heraldry edits."},
+      {"PENDING BIDS", "Reserved for bid-to-hire trader tracking and cleanup."},
+      {"RAFFLE ENTRIES", "Reserved for exact ticket deposit matching."},
+    },
+    headers = {"Member / System", "Event", "Amount", "Bucket"},
+    rows = { {"@User", "Deposited", "--", "Donation"}, {"@User", "Withdrew", "--", "Withdrawal"}, {"System", "Bid", "--", "Pending"} },
+  },
+  guild_bank = {
+    title = "Guild Bank", accent = "cyan", subtitle = "Guild bank item dashboard working pipeline.",
+    leftTitle = "BANK SUMMARY", leftHint = "Prepared for bank items, deposits, withdrawals, value totals, and member item movement.",
+    stats = {"Items Added", "Items Removed", "Current Items", "Estimated Value", "Top Item"},
+    sections = {
+      {"BANK ITEM TABLE", "Reserved for item name, quantity, member, and event type."},
+      {"TOP VALUE ITEMS", "Reserved for most valuable current bank items."},
+      {"MEMBER ACTIVITY", "Reserved for who deposited or withdrew items."},
+      {"GUILD FILTER", "Reserved for selected guild data source."},
+    },
+    headers = {"Item", "Member", "Qty", "Action"},
+    rows = { {"Live Item", "@User", "--", "Deposit"}, {"Live Item", "@User", "--", "Withdraw"}, {"Live Item", "@User", "--", "Current"} },
+  },
+  guild_sales = {
+    title = "Guild Sales Tracker", accent = "cyan", subtitle = "Guild trader sales dashboard working pipeline.",
+    leftTitle = "GUILD SALES", leftHint = "Prepared for guild sales totals, seller leaderboard, item rows, and tax estimates.",
+    stats = {"Total Sales", "Guild Tax", "Items Sold", "Top Seller", "Top Item"},
+    sections = {
+      {"SELLER LEADERBOARD", "Reserved for ranked member sales totals."},
+      {"ITEM SALES", "Reserved for item names, quantities, and sale prices."},
+      {"GUILD TOTALS", "Reserved for guild trader sales totals."},
+      {"TIME FILTER", "Reserved for today, week, and history ranges."},
+    },
+    headers = {"Seller", "Item", "Qty", "Gold"},
+    rows = { {"@Seller", "Live Item", "--", "--"}, {"@Seller", "Live Item", "--", "--"}, {"@Seller", "Live Item", "--", "--"} },
+  },
+  guild_bookkeeper = {
+    title = "Guild Bookkeeper", accent = "cyan", subtitle = "Guild member accounting working pipeline.",
+    leftTitle = "BOOKKEEPER", leftHint = "Prepared for member roster, sales, donations, raffle entries, dues, and bank activity.",
+    stats = {"Members", "Paid Dues", "Donations", "Sales", "Flags"},
+    sections = {
+      {"MEMBER TABLE", "Reserved for member name, rank, sales, donations, dues, and last online."},
+      {"DONATION CREDIT", "Reserved for deposits that count toward member totals."},
+      {"DUES STATUS", "Reserved for paid/unpaid due rows."},
+      {"ACTIVITY FLAGS", "Reserved for inactive or missing activity indicators."},
+    },
+    headers = {"Member", "Sales", "Donations", "Dues"},
+    rows = { {"@Member", "--", "--", "--"}, {"@Member", "--", "--", "--"}, {"@Member", "--", "--", "--"} },
+  },
+  guild_raffle = {
+    title = "Guild Raffle", accent = "yellow", subtitle = "Raffle control board working pipeline.",
+    leftTitle = "RAFFLE BOARD", leftHint = "Prepared for entries, manual pot, prize split, winner picker, and centered winner display.",
+    stats = {"Raffle Pot", "Entries", "Tickets", "Prize Split", "Winners"},
+    sections = {
+      {"ENTRY SCAN", "Reserved for exact gold deposit ticket detection."},
+      {"MANUAL POT", "Reserved for controller-friendly manual pot entry."},
+      {"PRIZE SPLIT", "Reserved for 1st/2nd/3rd payout logic."},
+      {"WINNER BOX", "Reserved for centered winner results."},
+    },
+    headers = {"Member", "Deposit", "Tickets", "Prize"},
+    rows = { {"@Member", "--", "--", "--"}, {"@Member", "--", "--", "--"}, {"@Member", "--", "--", "--"} },
+  },
+  guild_dues = {
+    title = "Guild Dues", accent = "cyan", subtitle = "Guild dues status working pipeline.",
+    leftTitle = "DUES CONTROL", leftHint = "Prepared for due amount, paid/unpaid totals, roster lookup, and member status rows.",
+    stats = {"Due Amount", "Paid", "Unpaid", "Overpaid", "Roster"},
+    sections = {
+      {"DUES SETTINGS", "Reserved for weekly/monthly due amount and rules."},
+      {"PAID MEMBERS", "Reserved for members who met the due target."},
+      {"UNPAID MEMBERS", "Reserved for members missing dues."},
+      {"EXCEPTIONS", "Reserved for exempt ranks or manual adjustments."},
+    },
+    headers = {"Member", "Due", "Paid", "Status"},
+    rows = { {"@Member", "--", "--", "Waiting"}, {"@Member", "--", "--", "Waiting"}, {"@Member", "--", "--", "Waiting"} },
+  },
+  trader_bids = {
+    title = "Trader Bids / Pending Bids", accent = "red", subtitle = "Guild trader bid tracking working pipeline.",
+    leftTitle = "TRADER BIDS", leftHint = "Prepared for pending bid subtraction, lost bid cleanup, hired trader outcomes, and withdrawn bids.",
+    stats = {"Pending Bids", "Lost Bids", "Hired Trader", "Withdrawn", "Net Impact"},
+    sections = {
+      {"PENDING BID LIST", "Reserved for active bid-to-hire trader rows."},
+      {"LOST BID CLEANUP", "Reserved for lost bid detection and pending removal."},
+      {"HIRED TRADER", "Reserved for successful hired trader costs."},
+      {"WITHDRAWN BID", "Reserved for bid withdrawal handling."},
+    },
+    headers = {"Trader", "Event", "Amount", "Status"},
+    rows = { {"Trader", "Bid", "--", "Pending"}, {"Trader", "Lost Bid", "--", "Clear"}, {"Trader", "Hired", "--", "Final"} },
+  },
+  help = {
+    title = "Help & Instructions", accent = "yellow", subtitle = "Controls and usage guide working pipeline.",
+    leftTitle = "HELP CENTER", leftHint = "Prepared for clean instructions covering controls, scans, ledgers, raffle, and guild pages.",
+    stats = {"Controller", "Keyboard", "Mouse", "Back Stack", "Scan Rules"},
+    sections = {
+      {"NAVIGATION", "A/E/Enter selects. B/X/Esc/Backspace goes back."},
+      {"MENU FLOW", "Page -> submenu -> main menu -> ESO menu."},
+      {"SCAN SAFETY", "Live scans will reconnect with chunking after layout approval."},
+      {"COLOR GUIDE", "Cyan = info, Yellow = help/raffle, Red = exit/negative values."},
+    },
+    headers = {"Control", "Action", "Notes"},
+    rows = { {"A / E / Enter", "Select", "Activate highlighted item"}, {"B / X / Esc", "Back", "Return one level"}, {"D-Pad / WASD", "Move", "Navigate lists"} },
+  },
+  personal_instructions = {
+    title = "Instructions",
+    parent = "personal",
+    reconnect = "Personal tools instruction page. No heavy data pipeline required.",
+    previousFunctions = "OpenPersonalHelp",
+  },
+  creator = {
+    title = "Creator", accent = "cyan", subtitle = "Creator and notice page working pipeline.",
+    leftTitle = "CREATOR", leftHint = "Prepared for creator credit, player-created notice, trademark notice, and support disclaimer.",
+    stats = {"Creator", "Guild", "Build", "Status", "Notice"},
+    sections = {
+      {"CREATED BY", "xPricee / The Eternal Gods."},
+      {"PROJECT", "Tamriel Master Ledger console-first menu shell."},
+      {"STATUS", "Design working pipeline build. Live pipelines disconnected."},
+      {"NOTICE", "Player-created content. Not official ZOS/Bethesda product."},
+    },
+    headers = {"Section", "Information", "Status"},
+    rows = { {"Creator", "xPricee", "Shown"}, {"Guild", "The Eternal Gods", "Shown"}, {"Build", "Live UI", "Testing"} },
+  },
+}
+
+function TML:GetPageDesign(toolKey)
+  local design = self.pageDesigns and self.pageDesigns[toolKey]
+  if design then return design end
+  local tool = self.pipelineMap[toolKey] or self.pipelineMap.help or { title = "Tool" }
+  return {
+    title = tool.title or "Tool", accent = "cyan", subtitle = "Live page.",
+    leftTitle = "PLACEHOLDER", leftHint = tool.reconnect or "Reserved for future reconnect.",
+    stats = {"Total", "Status", "Rows", "Filters", "Updated"},
+    sections = {{"RECONNECT TARGET", tool.reconnect or "N/A"}, {"PREVIOUS FUNCTIONS", tool.previousFunctions or "N/A"}},
+    headers = {"Column 1", "Column 2", "Column 3"},
+    rows = {{"Live", "--", "Waiting"}},
+  }
+end
+
+function TML:GetAccentColor(name)
+  name = tostring(name or "cyan")
+  if name == "yellow" then return C.yellow end
+  if name == "gold" then return C.gold end
+  if name == "red" then return C.red end
+  return C.cyanSoft
+end
+
+function TML:DrawMiniStat(root, key, x, y, w, h, title, value, accent)
+  self:Backdrop(key.."Bg", root, x, y, w, h, {0,0,0,0.56}, {accent[1], accent[2], accent[3], 0.44})
+  self:Label(key.."Title", root, tostring(title or ""), x + 18, y + 10, w - 36, 28, accent, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+  self:Label(key.."Value", root, tostring(value or "--"), x + 18, y + 42, w - 36, h - 48, C.white, FONTS.panelText, TEXT_ALIGN_LEFT)
+end
+
+function TML:DrawSectionTile(root, key, x, y, w, h, title, body, accent)
+  self:Backdrop(key.."Bg", root, x, y, w, h, {0,0,0,0.50}, {accent[1], accent[2], accent[3], 0.34})
+  self:Label(key.."Title", root, tostring(title or ""), x + 20, y + 12, w - 40, 30, accent, FONTS.panelText, TEXT_ALIGN_LEFT)
+  self:Label(key.."Body", root, tostring(body or ""), x + 20, y + 46, w - 40, h - 52, C.white, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+end
+
+function TML:DrawLiveTable(root, key, x, y, w, h, headers, rows, accent)
+  self:Backdrop(key.."Bg", root, x, y, w, h, {0,0,0,0.52}, {accent[1], accent[2], accent[3], 0.42})
+  headers = headers or {"Column", "Column", "Column"}
+  rows = rows or {}
+  local headerH = 42
+  local colCount = math.max(1, #headers)
+  local colW = math.floor((w - 36) / colCount)
+  self:Backdrop(key.."Header", root, x + 12, y + 12, w - 24, headerH, {accent[1], accent[2], accent[3], 0.12}, {accent[1], accent[2], accent[3], 0.35})
+  for i, header in ipairs(headers) do
+    self:Label(key.."Head"..i, root, tostring(header), x + 20 + (i-1)*colW, y + 14, colW - 10, headerH - 4, accent, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+  end
+  local rowH = 42
+  local maxRows = math.min(#rows, math.floor((h - headerH - 26) / rowH))
+  for r = 1, maxRows do
+    local row = rows[r]
+    local ry = y + 12 + headerH + (r-1)*rowH
+    self:Backdrop(key.."RowBg"..r, root, x + 12, ry, w - 24, rowH, {0,0,0,(r % 2 == 0) and 0.30 or 0.18}, nil)
+    for c = 1, colCount do
+      self:Label(key.."Row"..r.."Col"..c, root, tostring(row[c] or "--"), x + 20 + (c-1)*colW, ry, colW - 10, rowH, C.white, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+    end
+  end
+end
+
+
+function TML:DrawLegacyButton(root, key, x, y, w, h, text, accent, onClick, selected)
+  local center = selected and {accent[1], accent[2], accent[3], 0.20} or {0,0,0,0.58}
+  local edgeAlpha = selected and 0.95 or 0.48
+  self:Backdrop(key.."Bg", root, x, y, w, h, center, {accent[1], accent[2], accent[3], edgeAlpha})
+  self:Label(key.."Text", root, tostring(text or "Button"), x + 18, y, w - 36, h, selected and C.white or C.dim, FONTS.panelSmall, TEXT_ALIGN_CENTER)
+  self:Hit(key.."Hit", root, x, y, w, h, onClick or function() end)
+end
+
+function TML:DrawLegacyHeader(root, x, y, w, title, subtitle, accent)
+  self:Texture("ToolTMLIcon", root, self:GetToolIcon(self.state.activeTool), x + 26, y + 22, 58, 58, accent)
+  self:Label("ToolTMLTitle", root, "TAMRIEL MASTER LEDGER", x + 98, y + 12, w - 124, 42, C.cyanSoft, FONTS.panelTitle, TEXT_ALIGN_LEFT)
+  self:Label("ToolPageName", root, string.upper(tostring(title or "PAGE")), x + 100, y + 54, w - 126, 32, accent, FONTS.panelText, TEXT_ALIGN_LEFT)
+  self:Label("ToolMeta", root, tostring(subtitle or "Working phase") .. "  •  Last Updated: " .. tostring(self.lastUpdated or "") .. "  •  v" .. tostring(self.version or ""), x + 28, y + 92, w - 56, 26, C.white, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+  self:Backdrop("ToolHeaderDivider", root, x + 28, y + 124, w - 56, 3, {C.cyan[1], C.cyan[2], C.cyan[3], 0.84}, nil)
+end
+
+function TML:DrawLegacyPanel(root, key, x, y, w, h, title, accent, titleColor)
+  self:Backdrop(key.."Bg", root, x, y, w, h, {0,0,0,0.58}, {accent[1], accent[2], accent[3], 0.58})
+  if title and tostring(title) ~= "" then
+    self:Label(key.."Title", root, tostring(title), x, y + 10, w, 32, titleColor or accent, FONTS.panelText, TEXT_ALIGN_CENTER)
+    self:Backdrop(key.."Line", root, x + 22, y + 48, w - 44, 2, {accent[1], accent[2], accent[3], 0.48}, nil)
+  end
+end
+
+function TML:DrawLegacyStats(root, key, x, y, w, rows, accent)
+  local rowH = 38
+  for i, row in ipairs(rows or {}) do
+    local yy = y + (i - 1) * rowH
+    self:Label(key.."K"..i, root, tostring(row[1] or ""), x, yy, math.floor(w*0.55), rowH, C.muted, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+    self:Label(key.."V"..i, root, tostring(row[2] or "--"), x + math.floor(w*0.55), yy, math.floor(w*0.40), rowH, row[3] or C.gold, FONTS.panelSmall, TEXT_ALIGN_RIGHT)
+  end
+end
+
+function TML:DrawLegacyTable(root, key, x, y, w, h, title, headers, rows, accent)
+  self:DrawLegacyPanel(root, key, x, y, w, h, title, accent)
+  headers = headers or {}
+  rows = rows or {}
+  local top = y + 58
+  local colCount = math.max(1, #headers)
+  local colW = math.floor((w - 56) / colCount)
+  self:Backdrop(key.."HeadBg", root, x + 24, top, w - 48, 34, {accent[1], accent[2], accent[3], 0.14}, {accent[1], accent[2], accent[3], 0.30})
+  for i,hdr in ipairs(headers) do
+    self:Label(key.."Head"..i, root, tostring(hdr), x + 32 + (i-1)*colW, top, colW - 8, 34, accent, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+  end
+  local rowH = 32
+  local maxRows = math.min(#rows, math.floor((h - 104) / rowH))
+  for r=1,maxRows do
+    local yy = top + 40 + (r-1)*rowH
+    self:Backdrop(key.."RowBg"..r, root, x + 24, yy, w - 48, rowH - 2, {0,0,0,(r % 2 == 0) and 0.34 or 0.22}, nil)
+    local row = rows[r]
+    for c=1,colCount do
+      local color = C.white
+      local val = tostring(row[c] or "--")
+      if val:find("N/A",1,true) or val == "--" then color = C.muted end
+      if val:find("Pending",1,true) or val:find("Withdraw",1,true) or val:find("Unpaid",1,true) then color = C.redDim end
+      if val:find("Paid",1,true) or val:find("Donation",1,true) or val:find("Given",1,true) then color = C.cyanSoft end
+      self:Label(key.."R"..r.."C"..c, root, val, x + 32 + (c-1)*colW, yy, colW - 8, rowH, color, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+    end
+  end
+end
+
+function TML:DrawGuildSelectorPreview(root, x, y, w, h, accent)
+  self:DrawLegacyPanel(root, "GuildSelectorPreview", x, y, w, h, "GUILD SELECTOR", accent)
+  local guilds = {"Show All Guilds", "The Eternal Gods", "Guild 2", "Guild 3", "Guild 4"}
+  for i, name in ipairs(guilds) do
+    local yy = y + 68 + (i-1)*48
+    local selected = i == 2
+    self:Backdrop("GuildSelectorRow"..i, root, x + 24, yy, w - 48, 40, selected and {accent[1], accent[2], accent[3], 0.14} or {0,0,0,0.34}, selected and {accent[1], accent[2], accent[3], 0.72} or nil)
+    self:Label("GuildSelectorText"..i, root, name, x + 42, yy, w - 84, 40, selected and C.white or C.muted, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+  end
+  self:Label("GuildSelectorHint", root, "Design only. Guild scan pipeline will reconnect later.", x + 24, y + h - 58, w - 48, 42, C.cyanSoft, FONTS.panelSmall, TEXT_ALIGN_CENTER)
+end
+
+function TML:DrawToolActionBar(root, x, y, w, accent)
+  local b1 = (self.state.toolButton or 1) == 1
+  local b2 = (self.state.toolButton or 1) == 2
+  local bw = math.floor((w - 28) / 2)
+  self:DrawLegacyButton(root, "ToolBackButton", x, y, bw, 56, "Back to Menu", C.cyan, function() TML:Back() end, b1)
+  self:DrawLegacyButton(root, "ToolExitButton", x + bw + 28, y, bw, 56, "Exit", C.red, function() TML:ReturnToESOMenu() end, b2)
+end
+
+function TML:RenderOldNetWorth(root, x, y, w, h, accent)
+  local leftW = 430
+  self:DrawLegacyPanel(root, "NWStats", x, y, leftW, h, "SUMMARY", accent)
+  self:DrawLegacyStats(root, "NW", x + 40, y + 72, leftW - 80, {
+    {"Total Net Worth", "--", C.gold}, {"Character Net Worth", "--", C.gold}, {"Carried Gold", "--", C.gold}, {"Banked Gold", "--", C.gold},
+    {"Carried Items", "--", C.cyanSoft}, {"Banked Items", "--", C.cyanSoft}, {"Material Bag", "--", C.cyanSoft}, {"Unpriced Items", "N/A", C.muted},
+  }, accent)
+  self:DrawLegacyButton(root, "NWScanPreview", x + 80, y + h - 74, leftW - 160, 46, "Scan Net Worth", accent, function() end, false)
+  local tableX = x + leftW + 32
+  self:DrawLegacyTable(root, "NWTopItems", tableX, y, w - leftW - 32, h, "TOP 20 MOST VALUABLE ITEMS", {"Rank", "Item Name", "Qty", "Value"}, {
+    {"1", "Live Item", "--", "--"}, {"2", "Live Material", "--", "--"}, {"3", "Live Motif", "--", "--"},
+    {"4", "Live Furnishing Plan", "--", "--"}, {"5", "Live Set Piece", "--", "--"}, {"6", "Live Stack", "--", "--"},
+  }, accent)
+end
+
+function TML:RenderOldLedger(root, x, y, w, h, accent, guildMode)
+  local topH = 148
+  self:DrawLegacyPanel(root, "LedgerStats", x, y, w, topH, guildMode and "GUILD GOLD LEDGER" or "GOLD LEDGER", accent)
+  local labels = guildMode and {"Bank Gold", "Donations", "Withdrawn", "Pending Bids", "Adjusted Total"} or {"Current Gold", "Bank Gold", "Gold In", "Gold Out", "Net Change"}
+  local cardW = math.floor((w - 88) / 5)
+  for i, name in ipairs(labels) do
+    local cx = x + 24 + (i-1)*(cardW + 10)
+    self:DrawMiniStat(root, "LedgerMini"..i, cx, y + 60, cardW, 70, name, "--", i==3 or i==4 and C.red or accent)
+  end
+  local midY = y + topH + 22
+  local tableW = math.floor(w * 0.62)
+  self:DrawLegacyTable(root, "LedgerHistory", x, midY, tableW, h - topH - 22, guildMode and "BANK GOLD HISTORY" or "TRANSACTION TIMELINE", {"Date", "User/Source", "Event", "Amount", "Bucket"}, {
+    {"--", guildMode and "@Member" or "Character", "Deposit", "--", guildMode and "Donation" or "Gold In"},
+    {"--", guildMode and "@Member" or "Character", "Withdrawal", "--", "Gold Out"},
+    {"--", guildMode and "System" or "Manual", guildMode and "Bid" or "Transfer", "--", guildMode and "Pending" or "Note"},
+  }, accent)
+  local sideX = x + tableW + 24
+  self:DrawLegacyPanel(root, "LedgerSide", sideX, midY, w - tableW - 24, h - topH - 22, guildMode and "LEDGER BUCKETS" or "FILTERS", accent)
+  local sections = guildMode and {"Donations = deposits only", "Withdrawals = gold out", "Pending Bids = red subtraction", "Raffle entries stay separate", "Heraldry edits count as withdrawn"} or {"Character wallet", "Bank movement", "Manual notes", "Date filters", "Gold in/out totals"}
+  for i,t in ipairs(sections) do
+    self:Backdrop("LedgerSideRow"..i, root, sideX + 24, midY + 66 + (i-1)*48, w - tableW - 72, 38, {0,0,0,0.34}, {accent[1], accent[2], accent[3], 0.22})
+    self:Label("LedgerSideText"..i, root, t, sideX + 42, midY + 66 + (i-1)*48, w - tableW - 108, 38, C.white, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+  end
+end
+
+function TML:RenderOldSales(root, x, y, w, h, accent, guildMode)
+  local selectorW = guildMode and 310 or 0
+  if guildMode then self:DrawGuildSelectorPreview(root, x, y, selectorW, h, accent) end
+  local rx = x + selectorW + (guildMode and 24 or 0)
+  local rw = w - selectorW - (guildMode and 24 or 0)
+  self:DrawLegacyPanel(root, "SalesStats", rx, y, rw, 142, guildMode and "GUILD SALES DASHBOARD" or "PERSONAL SALES DASHBOARD", accent)
+  local cards = {"Sales Today", "Sales 7D", "Sales 30D", "Items Sold", guildMode and "Guild Tax" or "Net Earned"}
+  local cardW = math.floor((rw - 78) / 5)
+  for i,name in ipairs(cards) do self:DrawMiniStat(root, "SalesCard"..i, rx + 20 + (i-1)*(cardW+10), y + 56, cardW, 68, name, "--", accent) end
+  local bottomY = y + 166
+  self:DrawLegacyTable(root, "SalesRows", rx, bottomY, rw, h - 166, guildMode and "GUILD TRADER SALES" or "YOUR SALES", {guildMode and "Seller" or "Item", "Guild", "Qty", "Gold", "When"}, {
+    {guildMode and "@Seller" or "Live Item", "Guild", "--", "--", "--"}, {guildMode and "@Seller" or "Live Item", "Guild", "--", "--", "--"}, {guildMode and "@Seller" or "Live Item", "Guild", "--", "--", "--"},
+  }, accent)
+end
+
+function TML:RenderOldRaffle(root, x, y, w, h, accent)
+  local selectorW = 310
+  self:DrawGuildSelectorPreview(root, x, y, selectorW, h, accent)
+  local rx = x + selectorW + 24
+  local rw = w - selectorW - 24
+  self:DrawLegacyPanel(root, "RaffleStats", rx, y, rw, 178, "RAFFLE DASHBOARD", accent, C.yellow)
+  self:Label("RaffleNote", root, "Working phase: exact ticket deposits, manual pot, prize split, and winner picker reconnect later.", rx + 28, y + 50, rw - 56, 32, C.redDim, FONTS.panelSmall, TEXT_ALIGN_CENTER)
+  local cards = {"Participants", "Tickets", "Collected Gold", "Manual Pot", "Prize Split", "Reset Marker"}
+  local cardW = math.floor((rw - 72) / 3)
+  for i,name in ipairs(cards) do
+    local cx = rx + 24 + ((i-1)%3)*(cardW + 12)
+    local cy = y + 86 + math.floor((i-1)/3)*44
+    self:Label("RafK"..i, root, name..":", cx, cy, 150, 30, C.muted, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+    self:Label("RafV"..i, root, "--", cx + 152, cy, cardW - 166, 30, C.gold, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+  end
+  self:DrawLegacyTable(root, "RaffleEntries", rx, y + 200, rw, h - 280, "ENTRIES AFTER RESET", {"Member", "Deposit", "Tickets", "Last", "Prize"}, {
+    {"@Member", "--", "--", "--", "--"}, {"@Member", "--", "--", "--", "--"}, {"@Member", "--", "--", "--", "--"},
+  }, accent)
+  local by = y + h - 58
+  local buttons = {"Scan Entries", "Manual Pot", "Prize Split", "Pick Winner", "Clear Board"}
+  local bw = math.floor((rw - 32) / #buttons)
+  for i,b in ipairs(buttons) do self:DrawLegacyButton(root, "RaffleBtn"..i, rx + (i-1)*(bw+8), by, bw, 42, b, accent, function() end, false) end
+end
+
+function TML:RenderOldBookkeeper(root, x, y, w, h, accent)
+  local selectorW = 310
+  self:DrawGuildSelectorPreview(root, x, y, selectorW, h, accent)
+  local rx = x + selectorW + 24
+  local tableW = math.floor((w - selectorW - 48) * 0.72)
+  self:DrawLegacyTable(root, "BookkeeperTable", rx, y, tableW, h, "MEMBER BOOKKEEPER", {"Member", "Sales", "Donations", "Raffle", "Dues", "Last Online"}, {
+    {"@Member", "--", "--", "--", "--", "--"}, {"@Member", "--", "--", "--", "--", "--"}, {"@Member", "--", "--", "--", "--", "--"}, {"@Member", "--", "--", "--", "--", "--"},
+  }, accent)
+  local sideX = rx + tableW + 24
+  self:DrawLegacyPanel(root, "BookkeeperRight", sideX, y, w - (sideX - x), h, "SUMMARY", accent)
+  local items = {"Roster scanned", "Sales saved", "Donations saved", "Raffle purchases", "Dues status", "Flags"}
+  for i,t in ipairs(items) do self:DrawMiniStat(root, "BookMini"..i, sideX + 22, y + 62 + (i-1)*82, w - (sideX - x) - 44, 70, t, "--", accent) end
+end
+
+function TML:RenderOldGuildBank(root, x, y, w, h, accent)
+  local selectorW = 310
+  self:DrawGuildSelectorPreview(root, x, y, selectorW, h, accent)
+  local rx = x + selectorW + 24
+  local rw = w - selectorW - 24
+  self:DrawLegacyPanel(root, "BankTotals", rx, y, rw, 118, "BANK TOTALS", accent)
+  local cards = {"Given", "Taken", "Net Value", "Current Items", "Last"}
+  local cardW = math.floor((rw - 76) / 5)
+  for i,name in ipairs(cards) do self:DrawMiniStat(root, "BankCard"..i, rx + 20 + (i-1)*(cardW+10), y + 46, cardW, 58, name, "--", i==2 and C.red or accent) end
+  self:DrawLegacyTable(root, "BankMembers", rx, y + 138, rw, 230, "MEMBER BANK TOTALS - ALL TIME", {"UserID", "Taken", "Given", "Last Interaction"}, {
+    {"@Member", "--", "--", "--"}, {"@Member", "--", "--", "--"}, {"@Member", "--", "--", "--"},
+  }, accent)
+  self:DrawLegacyTable(root, "BankHistory", rx, y + 388, rw, h - 450, "BANK ITEM HISTORY", {"Action", "Member", "Item", "Qty", "Value", "When"}, {
+    {"Given", "@Member", "Live Item", "--", "--", "--"}, {"Taken", "@Member", "Live Item", "--", "--", "--"}, {"Current", "@Member", "Live Item", "--", "--", "--"},
+  }, accent)
+  local by = y + h - 52
+  local buttons = {"Scan Bank", "Taken Qty", "Given Qty", "Value", "Recent"}
+  local bw = math.floor((rw - 32) / #buttons)
+  for i,b in ipairs(buttons) do self:DrawLegacyButton(root, "BankBtn"..i, rx + (i-1)*(bw+8), by, bw, 40, b, accent, function() end, false) end
+end
+
+function TML:RenderOldDaily(root, x, y, w, h, accent)
+  self:DrawLegacyPanel(root, "DailyPriority", x, y, w, 160, "DAILY PRIORITY BOARD", accent, C.yellow)
+  local cards = {"Completed", "Remaining", "High Value", "Reset Timer", "Tracked Zones"}
+  local cardW = math.floor((w - 76) / 5)
+  for i,name in ipairs(cards) do self:DrawMiniStat(root, "DailyCard"..i, x + 20 + (i-1)*(cardW+10), y + 62, cardW, 74, name, "--", accent) end
+  self:DrawLegacyTable(root, "DailyTable", x, y + 184, w, h - 184, "DAILY CHECKLIST", {"Priority", "Zone", "Daily", "Reward Focus", "Status"}, {
+    {"1", "Solstice / Sunport", "Delve + World Boss", "Motifs / Plans", "Waiting"}, {"2", "West Weald", "Delve / Boss / Incursion", "Coffers", "Waiting"},
+    {"3", "Fargrave / Event", "Faction + District", "Limited Event", "Waiting"}, {"4", "Necrom / Apocrypha", "Bastion Nymic", "Motifs / Gear", "Waiting"},
+  }, accent)
+end
+
+function TML:RenderOldFishing(root, x, y, w, h, accent)
+  local leftW = 420
+  self:DrawLegacyPanel(root, "FishingStatus", x, y, leftW, h, "FISHING STATUS", accent)
+  self:Texture("FishingBaitIconLarge", root, "EsoUI/Art/Icons/crafting_fishing_bait_worms.dds", x + 154, y + 70, 112, 112, C.cyanSoft)
+  self:DrawLegacyStats(root, "FishingStats", x + 42, y + 214, leftW - 84, { {"Fish Caught", "--", C.gold}, {"Tracked Fish", "--", C.cyanSoft}, {"Bait Ready", "--", C.cyanSoft}, {"Zones", "--", C.cyanSoft}, {"Session Time", "--", C.gold} }, accent)
+  self:DrawLegacyTable(root, "FishingTable", x + leftW + 32, y, w - leftW - 32, h, "TRACKED FISH + BAIT", {"Fish / Bait", "Water", "Zone", "Qty", "Status"}, {
+    {"Bait Live", "Any", "Inventory", "--", "Waiting"}, {"Rare Fish", "Lake", "Zone", "--", "Waiting"}, {"Rare Fish", "River", "Zone", "--", "Waiting"},
+  }, accent)
+end
+
+function TML:RenderOldDues(root, x, y, w, h, accent)
+  local leftW = 360
+  self:DrawLegacyPanel(root, "DuesControl", x, y, leftW, h, "DUES CONTROL", accent)
+  self:DrawLegacyStats(root, "DuesStats", x + 38, y + 72, leftW - 76, { {"Due Amount", "--", C.gold}, {"Paid", "--", C.cyanSoft}, {"Unpaid", "--", C.redDim}, {"Overpaid", "--", C.gold}, {"Roster", "--", C.cyanSoft} }, accent)
+  self:DrawLegacyButton(root, "DuesSet", x + 70, y + h - 76, leftW - 140, 46, "Set Due Amount", accent, function() end, false)
+  self:DrawLegacyTable(root, "DuesTable", x + leftW + 32, y, w - leftW - 32, h, "MEMBER DUES STATUS", {"Member", "Due", "Paid", "Balance", "Status"}, {
+    {"@Member", "--", "--", "--", "Waiting"}, {"@Member", "--", "--", "--", "Paid"}, {"@Member", "--", "--", "--", "Unpaid"},
+  }, accent)
+end
+
+function TML:RenderOldTraderBids(root, x, y, w, h, accent)
+  self:DrawLegacyPanel(root, "BidSummary", x, y, w, 138, "TRADER BID LEDGER", accent, C.red)
+  local cards = {"Pending Bids", "Lost Bids", "Hired Trader", "Withdrawn", "Net Impact"}
+  local cardW = math.floor((w - 76) / 5)
+  for i,name in ipairs(cards) do self:DrawMiniStat(root, "BidCard"..i, x + 20 + (i-1)*(cardW+10), y + 56, cardW, 64, name, "--", C.red) end
+  local halfW = math.floor((w - 24)/2)
+  self:DrawLegacyTable(root, "PendingBidTable", x, y + 160, halfW, h - 160, "PENDING BID LIST", {"Trader", "Event", "Amount", "Status"}, { {"Trader", "Bid", "--", "Pending"}, {"Trader", "Bid", "--", "Pending"}, {"Trader", "Lost Bid", "--", "Clear"} }, C.red)
+  self:DrawLegacyTable(root, "BidCleanupTable", x + halfW + 24, y + 160, halfW, h - 160, "BID CLEANUP + OUTCOMES", {"Source", "Match Text", "Action", "Color"}, { {"Bank Withdraw", "Bid __ to hire", "Add Pending", "Red"}, {"History", "Lost bid", "Remove", "Grey"}, {"History", "Hired trader", "Final Cost", "Red"} }, C.red)
+end
+
+function TML:RenderOldHelp(root, x, y, w, h, accent)
+  self:DrawLegacyPanel(root, "HelpPanel", x, y, w, h, "HELP & INSTRUCTIONS", accent, C.yellow)
+  local lines = {
+    "CONTROLLER: D-pad moves. A selects. B backs out one level.",
+    "KEYBOARD: E / Enter selects. Esc / Backspace / X backs out.",
+    "MOUSE: Click menu rows and buttons. Wheel scrolls list pages.",
+    "MENU FLOW: Page -> submenu -> main menu -> ESO menu.",
+    "SCAN SAFETY: Live guild-history scans will reconnect later in chunks.",
+    "GUILD BANK: Deposits, withdrawals, pending bids, and raffle entries stay separated.",
+    "RAFFLE: Manual pot, prize split, entries, and winner picker are reserved for reconnect.",
+  }
+  for i,t in ipairs(lines) do
+    local yy = y + 78 + (i-1)*58
+    self:Backdrop("HelpLineBg"..i, root, x + 48, yy, w - 96, 44, {0,0,0,0.34}, {accent[1], accent[2], accent[3], 0.24})
+    self:Label("HelpLine"..i, root, t, x + 68, yy, w - 136, 44, (i <= 2) and C.gold or C.white, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+  end
+end
+
+function TML:RenderOldCreator(root, x, y, w, h, accent)
+  self:DrawLegacyPanel(root, "CreatorPanel", x, y, w, h, "CREATOR", accent)
+  self:Label("CreatorMain", root, "xPricee / The Eternal Gods", x, y + 86, w, 54, C.gold, FONTS.panelTitle, TEXT_ALIGN_CENTER)
+  self:Label("CreatorProject", root, "Tamriel Master Ledger — Xbox console-first ledger, guild tools, raffle, bank, sales, and tracking dashboard.", x + 90, y + 160, w - 180, 62, C.white, FONTS.panelText, TEXT_ALIGN_CENTER)
+  self:DrawLegacyTable(root, "CreatorTable", x + 90, y + 250, w - 180, 260, "PROJECT NOTICES", {"Section", "Information", "Status"}, {
+    {"Creator", "xPricee", "Shown"}, {"Guild", "The Eternal Gods", "Shown"}, {"Build", "Working pipeline phase", "Testing"}, {"ZOS/Bethesda", "Player-created, unofficial add-on", "Notice"},
+  }, accent)
+end
+
+function TML:RenderTool(toolKey)
+  self:HideAllPooledControls()
+  local root = self.ui.root
+  if not root then return end
+  local rw,rh = self:GetRootSize()
+  local design = self:GetPageDesign(toolKey)
+  local accent = self:GetAccentColor(design.accent)
+
+  -- Old-dashboard design preview: full 90% page, same navigation shell, no live data calls.
+  local w = math.floor(rw * 0.90)
+  local h = math.floor(rh * 0.90)
+  local x = math.floor((rw - w) / 2)
+  local y = math.floor((rh - h) / 2)
+  local pad = 34
+  local headerH = 136
+  local footerH = 78
+  local bodyX = x + pad
+  local bodyY = y + headerH + 20
+  local bodyW = w - pad * 2
+  local bodyH = h - headerH - footerH - 48
+
+  self:Backdrop("ToolPageShadow", root, x - 10, y - 10, w + 20, h + 20, {0,0,0,0.46}, nil)
+  self:Backdrop("ToolPanel", root, x, y, w, h, C.black90, {C.cyan[1], C.cyan[2], C.cyan[3], 0.95})
+  self:Backdrop("ToolInnerLine", root, x + 10, y + 10, w - 20, h - 20, {0,0,0,0.07}, {C.cyan[1], C.cyan[2], C.cyan[3], 0.30})
+  self:DrawLegacyHeader(root, x, y, w, design.title, design.subtitle, accent)
+
+  if toolKey == "net_worth" then
+    self:RenderOldNetWorth(root, bodyX, bodyY, bodyW, bodyH, accent)
+  elseif toolKey == "gold_ledger_personal" then
+    self:RenderOldLedger(root, bodyX, bodyY, bodyW, bodyH, accent, false)
+  elseif toolKey == "personal_sales" then
+    self:RenderOldSales(root, bodyX, bodyY, bodyW, bodyH, accent, false)
+  elseif toolKey == "daily_quests" then
+    self:RenderOldDaily(root, bodyX, bodyY, bodyW, bodyH, accent)
+  elseif toolKey == "fishing" then
+    self:RenderOldFishing(root, bodyX, bodyY, bodyW, bodyH, accent)
+  elseif toolKey == "guild_gold_ledger" then
+    self:RenderOldLedger(root, bodyX, bodyY, bodyW, bodyH, accent, true)
+  elseif toolKey == "guild_bank" then
+    self:RenderOldGuildBank(root, bodyX, bodyY, bodyW, bodyH, accent)
+  elseif toolKey == "guild_sales" then
+    self:RenderOldSales(root, bodyX, bodyY, bodyW, bodyH, accent, true)
+  elseif toolKey == "guild_bookkeeper" then
+    self:RenderOldBookkeeper(root, bodyX, bodyY, bodyW, bodyH, accent)
+  elseif toolKey == "guild_raffle" then
+    self:RenderOldRaffle(root, bodyX, bodyY, bodyW, bodyH, accent)
+  elseif toolKey == "guild_dues" then
+    self:RenderOldDues(root, bodyX, bodyY, bodyW, bodyH, accent)
+  elseif toolKey == "trader_bids" then
+    self:RenderOldTraderBids(root, bodyX, bodyY, bodyW, bodyH, accent)
+  elseif toolKey == "help" then
+    self:RenderOldHelp(root, bodyX, bodyY, bodyW, bodyH, accent)
+  elseif toolKey == "creator" then
+    self:RenderOldCreator(root, bodyX, bodyY, bodyW, bodyH, accent)
+  else
+    self:DrawLegacyTable(root, "GenericTool", bodyX, bodyY, bodyW, bodyH, string.upper(design.title or "PAGE"), design.headers, design.rows, accent)
+  end
+
+  self:DrawToolActionBar(root, bodyX, y + h - footerH + 12, bodyW, accent)
+  self:RefreshKeybinds()
+end
+
+function TML:ForceOpenFromMenu()
+  self:BuildScene()
+  self:CaptureReturnScene()
+  if SCENE_MANAGER and self.scene and SCENE_MANAGER.Show then
+    SafeCall(function() SCENE_MANAGER:Show("tamriel_master_ledger_shell") end)
+    if zo_callLater then
+      zo_callLater(function() if TML then TML:OpenMenu("main") end end, 75)
+      zo_callLater(function() if TML and (not TML:IsOpen()) then TML:OpenMenu("main") end end, 250)
+    else
+      self:OpenMenu("main")
+    end
+  else
+    self:OpenMenu("main")
+  end
+end
+
+function TML:OpenFromMainMenu()
+  self:ForceOpenFromMenu()
+end
+
+function TML:OpenFromBinding()
+  if self:IsOpen() then self:ReturnToESOMenu() else self:ForceOpenFromMenu() end
+end
+
+function TML:BuildMainMenuIconOverlay()
+  if self.mainMenuIconOverlay then return end
+  if not WINDOW_MANAGER or not GuiRoot then return end
+  local root = WINDOW_MANAGER:CreateTopLevelWindow("TamrielMasterLedgerMainMenuIconOverlay")
+  root:SetHidden(true)
+  root:SetMouseEnabled(false)
+  if root.SetDrawLayer then root:SetDrawLayer(DL_OVERLAY) end
+  if root.SetDrawTier then root:SetDrawTier(DT_HIGH) end
+  if root.SetDrawLevel then root:SetDrawLevel(220) end
+  root:SetDimensions(52,52)
+  local tex = WINDOW_MANAGER:CreateControl("TamrielMasterLedgerMainMenuIconTexture", root, CT_TEXTURE)
+  tex:SetAnchor(CENTER, root, CENTER, 0, 0)
+  tex:SetDimensions(42,42)
+  SafeCall(function() tex:SetTexture(self.icon) end)
+  if tex.SetColor then tex:SetColor(unpack(C.cyanSoft)) end
+  self.mainMenuIconOverlay = root
+  self.mainMenuIconTexture = tex
+end
+
+function TML:UpdateMainMenuIconOverlay()
+  self:BuildMainMenuIconOverlay()
+  local root = self.mainMenuIconOverlay
+  if not root then return end
+  local shouldShow = false
+  if SCENE_MANAGER and SCENE_MANAGER.GetCurrentScene then
+    local ok, scene = pcall(function() return SCENE_MANAGER:GetCurrentScene() end)
+    local sceneName = ok and self:GetSceneName(scene) or nil
+    sceneName = Lower(sceneName or "")
+    shouldShow = (not self:IsOpen()) and (sceneName:find("main", 1, true) or sceneName:find("menu", 1, true)) and sceneName ~= "tamriel_master_ledger_shell"
+  end
+  if shouldShow then
+    local rw,rh = 1920,1080
+    if GuiRoot and GuiRoot.GetDimensions then
+      local gw,gh = GuiRoot:GetDimensions()
+      rw,rh = tonumber(gw) or rw, tonumber(gh) or rh
+    end
+    -- Fallback icon position beside the custom ESO main-menu row. This only appears while ESO's menu is open.
+    local x = math.floor(rw * 0.081)
+    local y = math.floor(rh * 0.482)
+    root:ClearAnchors()
+    root:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
+    root:SetHidden(false)
+  else
+    root:SetHidden(true)
+  end
+end
+
+function TML:HookMainMenuIconOverlay()
+  self:BuildMainMenuIconOverlay()
+  if not self.mainMenuIconOverlay then return end
+  self.mainMenuIconOverlay:SetHandler("OnUpdate", function()
+    if TML and TML.UpdateMainMenuIconOverlay then TML:UpdateMainMenuIconOverlay() end
+  end)
+end
+
+local function RefreshMainMenu()
+  if MAIN_MENU_GAMEPAD then
+    for _, fn in ipairs({"RefreshLists", "RefreshVisible", "RefreshList", "UpdateEntryEnabledStates"}) do
+      if MAIN_MENU_GAMEPAD[fn] then SafeCall(function() MAIN_MENU_GAMEPAD[fn](MAIN_MENU_GAMEPAD) end) end
+    end
+  end
+end
+
+function TML:GetEntryText(entry)
+  if not entry then return "" end
+  if entry.GetText then local ok,t = SafeCall(function() return entry:GetText() end); if ok and t then return tostring(t) end end
+  if entry.text then return tostring(entry.text) end
+  if entry.name then return tostring(entry.name) end
+  if entry.data and entry.data.name then return tostring(entry.data.name) end
+  if entry.data and entry.data.text then return tostring(entry.data.text) end
+  return ""
+end
+
+function TML:RegisterGamepadMainMenuEntry()
+  if not ZO_MENU_ENTRIES or not ZO_GamepadEntryData then return false end
+  for i = #ZO_MENU_ENTRIES, 1, -1 do
+    local existing = ZO_MENU_ENTRIES[i]
+    local name = Lower(self:GetEntryText(existing))
+    if (existing and existing.data and existing.data.tmlMenuEntry) or name == Lower(self.title) or name:find("tamriel master ledger", 1, true) or name == "tamriel master ledger - menu shell test" or name:find("tamriel master ledger v2%.0%.16") then
+      table.remove(ZO_MENU_ENTRIES, i)
+    end
+  end
+  local icon = self.icon
+  local menuLabel = self.displayTitle or self.title
+  local entry = ZO_GamepadEntryData:New(menuLabel, icon)
+  if entry.SetName then SafeCall(function() entry:SetName(menuLabel) end) end
+  if entry.SetCallback then SafeCall(function() entry:SetCallback(function() TML:OpenFromMainMenu() end) end) end
+  entry.callback = function() TML:OpenFromMainMenu() end
+  -- Do not use SetSelectedCallback/selectedCallback: those fire on highlight and caused the grey-screen open path.
+  if entry.SetEnabled then entry:SetEnabled(true) else entry.enabled = true end
+  if entry.SetIcon then SafeCall(function() entry:SetIcon(icon) end) end
+  if entry.SetIconTintOnSelection then SafeCall(function() entry:SetIconTintOnSelection(true) end) end
+  entry.icon = icon
+  entry.normalIcon = icon
+  entry.selectedIcon = icon
+  entry.highlightIcon = icon
+  entry.id = 99150
+  entry.data = {
+    id = entry.id,
+    name = menuLabel,
+    version = self.version,
+    displayVersion = "v" .. tostring(self.version or ""),
+    sceneName = "tamriel_master_ledger_shell",
+    scene = "tamriel_master_ledger_shell",
+    icon = icon,
+    normalIcon = icon,
+    selectedIcon = icon,
+    highlightIcon = icon,
+    pressedIcon = icon,
+    disabledIcon = icon,
+    iconData = { normal = icon, selected = icon, highlighted = icon, pressed = icon, disabled = icon },
+    iconTint = { r = 0, g = 0.85, b = 1, a = 1 },
+    tmlMenuEntry = true,
+    isVisibleCallback = function() return true end,
+    callback = function() TML:OpenFromMainMenu() end,
+  }
+  local insertIndex, fallbackIndex = nil, nil
+  for i, existing in ipairs(ZO_MENU_ENTRIES) do
+    local text = Lower(self:GetEntryText(existing))
+    local scene = Lower(existing and existing.data and tostring(existing.data.scene or existing.data.sceneName or "") or "")
+    if text:find("adventurer") or text:find("tracking") or scene:find("tracking") then insertIndex = i + 1; break end
+    if text:find("add%-ons") or text:find("add-ons") or scene:find("addon") then fallbackIndex = i + 1 end
+    if not fallbackIndex and (text:find("help") or text:find("options") or text:find("settings") or text:find("log out") or text:find("quit")) then fallbackIndex = i end
+  end
+  table.insert(ZO_MENU_ENTRIES, insertIndex or fallbackIndex or (#ZO_MENU_ENTRIES + 1), entry)
+  self.menuEntryRegistered = true
+  RefreshMainMenu()
+  self:UpdateMainMenuIconOverlay()
+  return true
+end
+
+function TML:ScheduleMenuRegistration()
+  self:RegisterGamepadMainMenuEntry()
+  if zo_callLater then
+    zo_callLater(function() if TML and TML.RegisterGamepadMainMenuEntry then TML:RegisterGamepadMainMenuEntry() end end, 1500)
+    zo_callLater(function() if TML and TML.RegisterGamepadMainMenuEntry then TML:RegisterGamepadMainMenuEntry() end end, 3500)
+    zo_callLater(function() if TML and TML.RegisterGamepadMainMenuEntry then TML:RegisterGamepadMainMenuEntry() end end, 6500)
+  end
+end
+
+function TML:CreateBindingNames()
+  if not ZO_CreateStringId then return end
+  ZO_CreateStringId("SI_BINDING_NAME_TML_TOGGLE_MENU", "Open Tamriel Master Ledger")
+  ZO_CreateStringId("SI_BINDING_NAME_TML_MENU_SELECT", "Tamriel Master Ledger Select")
+  ZO_CreateStringId("SI_BINDING_NAME_TML_MENU_BACK", "Tamriel Master Ledger Back")
+  ZO_CreateStringId("SI_BINDING_NAME_TML_MENU_UP", "Tamriel Master Ledger Up")
+  ZO_CreateStringId("SI_BINDING_NAME_TML_MENU_DOWN", "Tamriel Master Ledger Down")
+  ZO_CreateStringId("SI_BINDING_NAME_TML_MENU_EXIT", "Tamriel Master Ledger Exit")
+end
+
+function TML:Initialize(addonName)
+  if self.initialized then return end
+  self.initialized = true
+  self:CreateBindingNames()
+  if ZO_SavedVars and ZO_SavedVars.NewAccountWide then
+    self.saved = ZO_SavedVars:NewAccountWide("TamrielMasterLedgerMenuShellSavedVariables", 1, nil, self:Defaults())
+  else
+    self.saved = self:Defaults()
+  end
+  self.state.selected = self.saved.selected or self.state.selected
+  self.state.menu = self.saved.lastMenu or "main"
+  self:BuildUI()
+  self:BuildScene()
+  self:BuildKeybinds()
+  self:HookMainMenuIconOverlay()
+  if SLASH_COMMANDS then
+    SLASH_COMMANDS["/tml"] = function() TML:OpenFromBinding() end
+    SLASH_COMMANDS["/tmltest"] = function() TML:OpenFromBinding() end
+    SLASH_COMMANDS["/tgt"] = function() TML:OpenFromBinding() end
+    SLASH_COMMANDS["/godstools"] = function() TML:OpenFromBinding() end
+    SLASH_COMMANDS["/tmlclose"] = function() TML:EmergencyClose("manual close command") end
+  end
+  self:ScheduleMenuRegistration()
+  if EVENT_MANAGER and EVENT_PLAYER_ACTIVATED then
+    EVENT_MANAGER:RegisterForEvent(self.name.."Activated", EVENT_PLAYER_ACTIVATED, function() TML:ScheduleMenuRegistration() end)
+  end
+  if SCENE_MANAGER then
+    for _, sceneName in ipairs({"gamepad_main_menu", "mainMenuGamepad", "mainMenu"}) do
+      local scene = SCENE_MANAGER:GetScene(sceneName)
+      if scene and scene.RegisterCallback then
+        SafeCall(function() scene:RegisterCallback("StateChange", function(oldState, newState)
+          if newState == SCENE_SHOWING or newState == SCENE_SHOWN then TML:ScheduleMenuRegistration() end
+        end) end)
+      end
+    end
+  end
+  if d then d("Tamriel Master Ledger v"..self.version.." menu shell full-page working pipeline design loaded. Open Main Menu > Tamriel Master Ledger, or use /tml.") end
+end
+
+function TML.OnLoaded(eventCode, addonName)
+  local n = Lower(addonName or "")
+  local shouldLoad = (n == Lower(TML.name)) or n:find("tamrielmasterledger", 1, true) or n:find("tamriel master ledger", 1, true)
+  if shouldLoad then TML:Initialize(addonName) end
+end
+
+if EVENT_MANAGER then
+  EVENT_MANAGER:RegisterForEvent(TML.name, EVENT_ADD_ON_LOADED, TML.OnLoaded)
+end
+
+if zo_callLater then
+  zo_callLater(function() if TML and not TML.initialized then TML:Initialize(TML.name) end end, 1000)
+  zo_callLater(function() if TML and TML.ScheduleMenuRegistration then TML:ScheduleMenuRegistration() end end, 5000)
+end
+
+-- =========================================================
+-- v2.0.16.62 WORKING PHASE OVERRIDES
+-- Real pipelines, no working pipeline values, memory-safe page release.
+-- =========================================================
+TML.version = "2.0.16.66"
+TML.addOnVersion = 21666
+TML.lastUpdated = "06/13/2026 06:05 UTC"
+
+local WORKING_HISTORY_DAYS = 30
+local WORKING_MAX_EVENTS = 1200
+local WORKING_MAX_PAGE_ROWS = 24
+local WORKING_SECONDS_DAY = 86400
+local WORKING_RAFFLE_MARKER_AMOUNT = 255395
+local WORKING_RAFFLE_MARKER_USER = "@suckers"
+local WORKING_RAFFLE_TICKET_MOD = 1
+local WORKING_RAFFLE_TICKET_BASE = 1000
+
+local function WNow()
+  if type(GetTimeStamp) == "function" then local ok, v = pcall(GetTimeStamp); if ok and v then return tonumber(v) or 0 end end
+  return math.floor(os.time and os.time() or 0)
+end
+local function WNA() return "N/A" end
+local function WFormatNumber(n)
+  if n == nil then return WNA() end
+  n = tonumber(n)
+  if not n then return WNA() end
+  if ZO_LocalizeDecimalNumber then local ok, s = pcall(ZO_LocalizeDecimalNumber, math.floor(n)); if ok and s then return s end end
+  local s = tostring(math.floor(n)); local pos = #s % 3; if pos == 0 then pos = 3 end
+  return s:sub(1,pos) .. (s:sub(pos+1):gsub("(%d%d%d)", ",%1"))
+end
+local function WFormatGold(n)
+  if n == nil then return WNA() end
+  return WFormatNumber(n) .. "g"
+end
+local function WLimit(s, n)
+  s = tostring(s or "")
+  n = tonumber(n) or 30
+  if #s > n then return s:sub(1, n - 3) .. "..." end
+  return s
+end
+local function WSameUser(a,b) return Lower(a or "") == Lower(b or "") end
+local function WTableCount(t) local n=0; if t then for _ in pairs(t) do n=n+1 end end; return n end
+local function WRelTime(ts)
+  ts = tonumber(ts) or 0
+  if ts <= 0 then return WNA() end
+  local diff = WNow() - ts; if diff < 0 then diff = 0 end
+  local m = math.floor(diff/60)
+  if m < 1 then return "just now" end
+  if m < 60 then return tostring(m).."m ago" end
+  local h = math.floor(m/60)
+  if h < 24 then return tostring(h).."h ago" end
+  return tostring(math.floor(h/24)).."d ago"
+end
+local function WItemKey(itemLink)
+  local id = tostring(itemLink or ""):match("item:(%d+):")
+  return id or tostring(itemLink or "")
+end
+local function WSafeCurrency(curt, loc)
+  if curt == nil or type(GetCurrencyAmount) ~= "function" then return nil end
+  local ok, v
+  if loc ~= nil then ok, v = pcall(GetCurrencyAmount, curt, loc) else ok, v = pcall(GetCurrencyAmount, curt) end
+  if ok then return tonumber(v) end
+  return nil
+end
+local function WFirstGlobal(names)
+  for _, name in ipairs(names or {}) do if _G[name] ~= nil then return _G[name], name end end
+  return nil, nil
+end
+local function WCurrencyAny(names, locations)
+  local curt = WFirstGlobal(names)
+  if curt == nil then return nil end
+  local total, found = 0, false
+  for _, loc in ipairs(locations or {nil}) do
+    local amount = WSafeCurrency(curt, loc)
+    if amount ~= nil then total = total + amount; found = true end
+  end
+  if found then return total end
+  return nil
+end
+local function WGetItemName(itemLink)
+  if itemLink and type(GetItemLinkName) == "function" then local ok, v = pcall(GetItemLinkName, itemLink); if ok and v and v ~= "" then return v end end
+  return tostring(itemLink or WNA())
+end
+local function WGetItemValue(itemLink, qty)
+  qty = tonumber(qty) or 1
+  local key = WItemKey(itemLink)
+  local pc = TML.saved and TML.saved.priceCache and TML.saved.priceCache[key]
+  if pc and tonumber(pc.count) and tonumber(pc.count) > 0 and tonumber(pc.sum) then return math.floor((pc.sum / pc.count) * qty), "sales" end
+  if type(GetItemLinkValue) == "function" and itemLink and itemLink ~= "" then
+    local ok, value = pcall(GetItemLinkValue, itemLink, true)
+    if ok and tonumber(value) and tonumber(value) > 0 then return tonumber(value) * qty, "vendor" end
+    ok, value = pcall(GetItemLinkValue, itemLink)
+    if ok and tonumber(value) and tonumber(value) > 0 then return tonumber(value) * qty, "vendor" end
+  end
+  return nil, nil
+end
+local function WCurrentGuildIdFromIndex(guildIndex)
+  if type(GetGuildId) == "function" and guildIndex and guildIndex > 0 then local ok, gid = pcall(GetGuildId, guildIndex); if ok then return gid end end
+  return guildIndex
+end
+
+function TML:Notify(msg)
+  if d then d("Tamriel Master Ledger: " .. tostring(msg or "")) end
+end
+
+function TML:Defaults()
+  return {
+    lastMenu = "main", selected = { main = 1, personal = 1, guild = 1 },
+    priceCache = {}, networth = {}, goldSnapshots = {}, guildGoldEvents = {}, donationEvents = {}, salesEvents = {}, bankItemEvents = {}, raffle = {}, members = {}, fish = {}, daily = {}, dueAmount = 0, access = {}, scanStatus = {}, listings = {}, trader = {}, seen = {}, guildIndex = 1,
+  }
+end
+
+function TML:EnsureDataDefaults()
+  self.saved = self.saved or self:Defaults()
+  local dft = self:Defaults()
+  for k,v in pairs(dft) do if self.saved[k] == nil then self.saved[k] = v end end
+  self.saved.priceCache = self.saved.priceCache or {}
+  self.saved.networth = self.saved.networth or {}
+  self.saved.guildGoldEvents = self.saved.guildGoldEvents or {}
+  self.saved.donationEvents = self.saved.donationEvents or {}
+  self.saved.salesEvents = self.saved.salesEvents or {}
+  self.saved.bankItemEvents = self.saved.bankItemEvents or {}
+  self.saved.raffle = self.saved.raffle or {}
+  self.saved.members = self.saved.members or {}
+  self.saved.fish = self.saved.fish or {}
+  self.saved.daily = self.saved.daily or {}
+  self.saved.access = self.saved.access or {}
+  self.saved.scanStatus = self.saved.scanStatus or {}
+  self.saved.seen = self.saved.seen or {}
+end
+
+function TML:PruneEventTable(tbl, max)
+  if type(tbl) ~= "table" then return end
+  local rows = {}
+  for k,v in pairs(tbl) do rows[#rows+1] = {k=k, ts=tonumber(v and v.timestamp) or 0} end
+  table.sort(rows, function(a,b) return (a.ts or 0) > (b.ts or 0) end)
+  max = tonumber(max) or WORKING_MAX_EVENTS
+  for i=max+1, #rows do tbl[rows[i].k] = nil end
+end
+
+local OldHideAllPooledControls_21662 = TML.HideAllPooledControls
+function TML:HideAllPooledControls()
+  if self.pool then
+    for _, ctrl in pairs(self.pool) do
+      if ctrl then
+        if ctrl.SetText then pcall(function() ctrl:SetText("") end) end
+        if ctrl.SetTexture then pcall(function() ctrl:SetTexture("") end) end
+        if ctrl.SetHidden then ctrl:SetHidden(true) end
+        if ctrl.SetMouseEnabled then ctrl:SetMouseEnabled(false) end
+      end
+    end
+  elseif OldHideAllPooledControls_21662 then
+    OldHideAllPooledControls_21662(self)
+  end
+end
+
+function TML:ReleasePageData()
+  self.runtimePage = nil
+  self.currentToolButtons = nil
+  self.state.toolButton = 1
+  collectgarbage("step", 160)
+end
+
+local OldOpenTool_21662 = TML.OpenTool
+function TML:OpenTool(toolKey)
+  self:ReleasePageData()
+  self.state.toolButton = 1
+  OldOpenTool_21662(self, toolKey)
+end
+
+local OldReturnToESOMenu_21662 = TML.ReturnToESOMenu
+function TML:ReturnToESOMenu()
+  self:ReleasePageData()
+  if OldReturnToESOMenu_21662 then OldReturnToESOMenu_21662(self) end
+end
+
+function TML:Back()
+  if self.state.mode == "tool" then
+    local ret = self.state.toolReturnMenu or "main"
+    self:ReleasePageData()
+    self:OpenMenu(ret, true)
+    return
+  end
+  if self.state.mode == "menu" then
+    local def = self:GetCurrentMenuDef()
+    if def and def.parent then self:OpenMenu(def.parent, true) else self:ReturnToESOMenu() end
+    return
+  end
+  self:ReturnToESOMenu()
+end
+
+-- Main menu colors requested by user.
+function TML:GetEntryColors(entry, isSelected)
+  if entry and entry.type == "back" then return isSelected and C.cyanSoft or C.white, isSelected and C.cyanSoft or C.white end
+  if entry and entry.type == "exit" then return isSelected and C.red or C.redDim, isSelected and C.red or C.redDim end
+  if entry and (entry.target == "help" or entry.target == "personal_instructions" or entry.text == "Help & Instructions" or entry.text == "Instructions") then return isSelected and C.yellow or C.yellowDim, isSelected and C.yellow or C.yellowDim end
+  if entry and entry.dynamicText == "userId" then return isSelected and {RGBA("44FF77")} or {RGBA("44FF77")}, isSelected and {RGBA("44FF77")} or {RGBA("44FF77")} end
+  if entry and entry.text == "Creator" then return isSelected and {RGBA("CC66FF")} or {RGBA("C084FF")}, isSelected and {RGBA("CC66FF")} or {RGBA("C084FF")} end
+  return isSelected and C.white or C.white, isSelected and C.white or C.white
+end
+
+function TML:RefreshGuilds()
+  self.guilds = {}
+  if type(GetNumGuilds) == "function" and type(GetGuildId) == "function" then
+    for i=1, GetNumGuilds() do
+      local gid = WCurrentGuildIdFromIndex(i)
+      local name = "Guild "..tostring(i)
+      if type(GetGuildName) == "function" then local ok, n = pcall(GetGuildName, gid); if ok and n and n ~= "" then name = n end end
+      self.guilds[#self.guilds+1] = { id = gid, name = name, index = i }
+    end
+  end
+  if #self.guilds == 0 then self.guilds[1] = { id = 0, name = WNA(), index = 0 } end
+  self.saved.guildIndex = math.max(1, math.min(tonumber(self.saved.guildIndex or 1) or 1, #self.guilds))
+end
+function TML:GetGuild()
+  self:EnsureDataDefaults(); self:RefreshGuilds()
+  return self.guilds[self.saved.guildIndex or 1] or self.guilds[1]
+end
+function TML:NextGuild(delta)
+  self:RefreshGuilds(); local n = #self.guilds; if n <= 0 then return end
+  self.saved.guildIndex = (tonumber(self.saved.guildIndex or 1) or 1) + (delta or 1)
+  if self.saved.guildIndex < 1 then self.saved.guildIndex = n end
+  if self.saved.guildIndex > n then self.saved.guildIndex = 1 end
+  self:RenderTool(self.state.activeTool)
+end
+function TML:EachGuild(callback)
+  self:RefreshGuilds()
+  for _,g in ipairs(self.guilds or {}) do if g.id and g.id ~= 0 then callback(g) end end
+end
+function TML:GetGuildName(guildId)
+  self:RefreshGuilds(); for _,g in ipairs(self.guilds or {}) do if g.id == guildId then return g.name end end
+  return WNA()
+end
+function TML:SelectedGuildName() local g = self:GetGuild(); return g and g.name or WNA() end
+
+function TML:GetHistoryCategory(key)
+  if key == "trader" then return _G.GUILD_HISTORY_EVENT_CATEGORY_TRADER end
+  if key == "bankedCurrency" then return _G.GUILD_HISTORY_EVENT_CATEGORY_BANKED_CURRENCY end
+  if key == "bankedItem" then return _G.GUILD_HISTORY_EVENT_CATEGORY_BANKED_ITEM end
+  if key == "roster" then return _G.GUILD_HISTORY_EVENT_CATEGORY_ROSTER end
+  return nil
+end
+function TML:RequestHistory(guildId, category, days)
+  if not guildId or guildId == 0 or not category then return false end
+  if type(CreateGuildHistoryRequest) ~= "function" or type(RequestMoreGuildHistoryEvents) ~= "function" then return false end
+  local newest = WNow(); local oldest = newest - ((tonumber(days) or WORKING_HISTORY_DAYS) * WORKING_SECONDS_DAY)
+  self.requestedHistory = self.requestedHistory or {}
+  local key = tostring(guildId)..":"..tostring(category)..":"..tostring(math.floor(oldest/3600))
+  if self.requestedHistory[key] and (WNow() - self.requestedHistory[key]) < 900 then return true end
+  local ok, requestId = pcall(CreateGuildHistoryRequest, guildId, category, newest, oldest)
+  if ok and requestId and requestId ~= 0 then self.requestedHistory[key] = WNow(); pcall(RequestMoreGuildHistoryEvents, requestId, true); return true end
+  return false
+end
+function TML:GetHistoryIndices(guildId, category, days)
+  if not category or type(GetNumGuildHistoryEvents) ~= "function" then return 0, -1, 0 end
+  local okNum, num = pcall(GetNumGuildHistoryEvents, guildId, category); num = okNum and tonumber(num) or 0
+  if num <= 0 then self:RequestHistory(guildId, category, days); return 0, -1, 0 end
+  local newestIndex, oldestIndex = 1, math.min(num, WORKING_MAX_EVENTS)
+  if type(GetGuildHistoryEventIndicesForTimeRange) == "function" then
+    local newest = WNow(); local oldest = newest - ((tonumber(days) or WORKING_HISTORY_DAYS) * WORKING_SECONDS_DAY)
+    local okRange, nIdx, oIdx = pcall(GetGuildHistoryEventIndicesForTimeRange, guildId, category, newest, oldest)
+    if okRange and tonumber(nIdx) and tonumber(oIdx) then
+      newestIndex = tonumber(nIdx); oldestIndex = math.min(tonumber(oIdx), newestIndex + WORKING_MAX_EVENTS - 1)
+    end
+  end
+  return newestIndex, oldestIndex, num
+end
+function TML:IsBankCurrencyDeposit(eventType)
+  local deposits = { _G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_DEPOSITED, _G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_GOLD_DEPOSITED, _G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_DEPOSIT }
+  for _,v in ipairs(deposits) do if v ~= nil and eventType == v then return true end end
+  local withdraws = { _G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_WITHDRAWN, _G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_GOLD_WITHDRAWN, _G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_WITHDRAWAL, _G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_BID, _G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_BID }
+  for _,v in ipairs(withdraws) do if v ~= nil and eventType == v then return false end end
+  local text = Lower(eventType or "")
+  if text:find("withdraw") or text:find("bid") or text:find("hire") or text:find("herald") then return false end
+  return true
+end
+function TML:IsBankItemWithdraw(eventType)
+  local withdraws = { _G.GUILD_HISTORY_BANKED_ITEM_EVENT_WITHDRAWN, _G.GUILD_HISTORY_BANKED_ITEM_EVENT_WITHDRAW }
+  for _,v in ipairs(withdraws) do if v ~= nil and eventType == v then return true end end
+  local deposits = { _G.GUILD_HISTORY_BANKED_ITEM_EVENT_DEPOSITED, _G.GUILD_HISTORY_BANKED_ITEM_EVENT_DEPOSIT }
+  for _,v in ipairs(deposits) do if v ~= nil and eventType == v then return false end end
+  local text = Lower(eventType or "")
+  return text:find("withdraw") or text:find("take") or text:find("remove")
+end
+function TML:GetAveragePrice(itemKey)
+  local pc = self.saved and self.saved.priceCache and self.saved.priceCache[itemKey]
+  if pc and tonumber(pc.count) and tonumber(pc.count) > 0 and tonumber(pc.sum) then return math.floor(pc.sum / pc.count) end
+  return nil
+end
+
+function TML:ScanNetWorth()
+  self:EnsureDataDefaults()
+  local nw = { total=0, character=0, carriedGold=0, bankedGold=0, carriedItems=0, bankedItems=0, craftBag=0, unpriced=0, top={}, currencies={}, lastScan=WNow() }
+  local money = WCurrencyAny({"CURT_MONEY"}, {_G.CURRENCY_LOCATION_CHARACTER, nil})
+  if money == nil and type(GetCurrentMoney) == "function" then local ok, v = pcall(GetCurrentMoney); if ok then money = tonumber(v) end end
+  nw.carriedGold = money or 0
+  if type(GetBankedMoney) == "function" then local ok, v = pcall(GetBankedMoney); if ok then nw.bankedGold = tonumber(v) or 0 end end
+  local accountLoc = { _G.CURRENCY_LOCATION_ACCOUNT, nil }
+  local charBankLoc = { _G.CURRENCY_LOCATION_CHARACTER, _G.CURRENCY_LOCATION_BANK, _G.CURRENCY_LOCATION_ACCOUNT, nil }
+  nw.currencies = {
+    {"Crowns", WCurrencyAny({"CURT_CROWNS", "CURT_CROWN_CROWNS"}, accountLoc)},
+    {"Crown Gems", WCurrencyAny({"CURT_CROWN_GEMS"}, accountLoc)},
+    {"Writ Vouchers", WCurrencyAny({"CURT_WRIT_VOUCHERS", "CURT_WRIT_VOUCHER"}, charBankLoc)},
+    {"Alliance Points", WCurrencyAny({"CURT_ALLIANCE_POINTS"}, charBankLoc)},
+    {"Tel Var Stones", WCurrencyAny({"CURT_TELVAR_STONES"}, charBankLoc)},
+    {"Trade Bars", WCurrencyAny({"CURT_TRADE_BARS", "CURT_EVENT_TICKETS", "CURT_EVENT_TICKET"}, accountLoc)},
+    {"Undaunted Keys", WCurrencyAny({"CURT_UNDAUNTED_KEYS", "CURT_UNDAUNTED_KEY"}, charBankLoc)},
+    {"Seals", WCurrencyAny({"CURT_SEALS_OF_ENDEAVOR", "CURT_ENDEAVOR_SEALS", "CURT_SEAL_OF_ENDEAVOR"}, accountLoc)},
+    {"Archival Fortunes", WCurrencyAny({"CURT_ARCHIVAL_FORTUNES", "CURT_ARCHIVAL_FORTUNE"}, charBankLoc)},
+    {"Tome Points", WCurrencyAny({"CURT_TOME_POINTS", "CURT_TAMRIEL_TOME_POINTS", "CURT_TAMRIEL_TOMES"}, accountLoc)},
+  }
+  local function scanBag(bagId, bucket)
+    if bagId == nil or type(GetBagSize) ~= "function" or type(GetItemLink) ~= "function" then return end
+    local okSize, size = pcall(GetBagSize, bagId); size = okSize and tonumber(size) or 0
+    for slot=0, math.max(0, size - 1) do
+      local okLink, itemLink = pcall(GetItemLink, bagId, slot)
+      if okLink and itemLink and itemLink ~= "" then
+        local qty = 1
+        if type(GetSlotStackSize) == "function" then local okQ, q = pcall(GetSlotStackSize, bagId, slot); if okQ and q then qty = tonumber(q) or 1 end end
+        local value, source = WGetItemValue(itemLink, qty)
+        local name = WGetItemName(itemLink)
+        if value then nw[bucket] = (nw[bucket] or 0) + value; table.insert(nw.top, { name=name, qty=qty, value=value, source=source or "value" }) else nw.unpriced = (nw.unpriced or 0) + 1 end
+      end
+    end
+  end
+  scanBag(_G.BAG_BACKPACK, "carriedItems"); scanBag(_G.BAG_BANK, "bankedItems"); scanBag(_G.BAG_SUBSCRIBER_BANK, "bankedItems"); scanBag(_G.BAG_VIRTUAL, "craftBag")
+  table.sort(nw.top, function(a,b) return (a.value or 0) > (b.value or 0) end)
+  while #nw.top > 20 do table.remove(nw.top) end
+  nw.character = nw.carriedGold + nw.carriedItems
+  nw.total = nw.character + nw.bankedGold + nw.bankedItems + nw.craftBag
+  self.saved.networth = nw
+  self.saved.goldSnapshots.last = { carriedGold=nw.carriedGold, bankedGold=nw.bankedGold, timestamp=WNow() }
+  self:Notify("Net Worth scanned.")
+end
+function TML:GetNetWorth()
+  if not self.saved or not self.saved.networth or not self.saved.networth.lastScan then self:ScanNetWorth() end
+  return self.saved.networth or {}
+end
+
+function TML:AddSale(guildId,eventId,seller,amount,timestamp,itemLink,quantity,tax)
+  self:EnsureDataDefaults(); local key = tostring(guildId)..":"..tostring(eventId or (tostring(seller)..tostring(amount)..tostring(timestamp)..tostring(itemLink)))
+  if self.saved.salesEvents[key] then return end
+  local itemName = WGetItemName(itemLink)
+  self.saved.salesEvents[key] = {guildId=guildId, seller=seller or WNA(), amount=tonumber(amount) or 0, timestamp=tonumber(timestamp) or WNow(), itemLink=itemLink, itemName=itemName, quantity=tonumber(quantity) or 1, tax=tonumber(tax)}
+  if itemLink and amount and quantity and tonumber(quantity) and tonumber(quantity) > 0 then local k=WItemKey(itemLink); local pc=self.saved.priceCache[k] or {sum=0,count=0,name=itemName}; pc.sum=(pc.sum or 0)+((tonumber(amount) or 0)/(tonumber(quantity) or 1)); pc.count=(pc.count or 0)+1; pc.name=itemName; self.saved.priceCache[k]=pc end
+end
+function TML:ScanGuildSales(g)
+  self:EnsureDataDefaults(); if not g or not g.id or g.id == 0 then return end
+  local cat = self:GetHistoryCategory("trader")
+  if type(GetGuildHistoryTraderEventInfo) ~= "function" or not cat then self.saved.scanStatus.sales = "Sales history API unavailable"; return end
+  local newest, oldest = self:GetHistoryIndices(g.id, cat, WORKING_HISTORY_DAYS)
+  local scanned = 0
+  if oldest >= newest then
+    for i=newest, oldest do
+      local ok, eventId, timestamp, isRedacted, eventType, seller, buyer, itemLink, quantity, price, tax = pcall(GetGuildHistoryTraderEventInfo, g.id, i)
+      if ok and not isRedacted and seller and price then self:AddSale(g.id, eventId, seller, price, timestamp, itemLink, quantity, tax); scanned = scanned + 1 end
+    end
+  end
+  self:RequestHistory(g.id, cat, WORKING_HISTORY_DAYS); self:PruneEventTable(self.saved.salesEvents, WORKING_MAX_EVENTS); self.saved.scanStatus.sales = "Scanned "..tostring(scanned).." sales rows"
+end
+function TML:ScanSelectedGuildSales() self:ScanGuildSales(self:GetGuild()); self:RenderTool(self.state.activeTool) end
+function TML:ScanAllGuildSales() self:EachGuild(function(g) self:ScanGuildSales(g) end); self:RenderTool(self.state.activeTool) end
+function TML:GetSalesRows(guildId, onlyMe)
+  self:EnsureDataDefaults(); local rows = {}; local my = self:GetUserDisplayName(); local now = WNow()
+  for _,e in pairs(self.saved.salesEvents or {}) do
+    if (not guildId or guildId == 0 or e.guildId == guildId) and ((not onlyMe) or WSameUser(e.seller, my)) then
+      if (now - (tonumber(e.timestamp) or 0)) <= WORKING_HISTORY_DAYS * WORKING_SECONDS_DAY then rows[#rows+1] = e end
+    end
+  end
+  table.sort(rows, function(a,b) return (a.timestamp or 0) > (b.timestamp or 0) end)
+  return rows
+end
+function TML:ComputeSalesStats(guildId, onlyMe)
+  local rows = self:GetSalesRows(guildId, onlyMe); local st = {salesToday=0, sales7=0, sales30=0, items=0, tax=0, net=0}
+  local now = WNow()
+  for _,e in ipairs(rows) do
+    local age = now - (tonumber(e.timestamp) or 0); local amt = tonumber(e.amount) or 0; local tax = tonumber(e.tax) or 0
+    if age <= WORKING_SECONDS_DAY then st.salesToday = st.salesToday + amt end
+    if age <= 7*WORKING_SECONDS_DAY then st.sales7 = st.sales7 + amt end
+    if age <= 30*WORKING_SECONDS_DAY then st.sales30 = st.sales30 + amt end
+    st.items = st.items + (tonumber(e.quantity) or 1); st.tax = st.tax + tax; st.net = st.net + amt - tax
+  end
+  return st
+end
+
+function TML:AddGuildGoldEvent(guildId,eventId,user,amount,timestamp,action,bucket,note)
+  self:EnsureDataDefaults(); local key=tostring(guildId)..":"..tostring(eventId or (tostring(user)..tostring(amount)..tostring(timestamp)..tostring(action)))
+  if self.saved.guildGoldEvents[key] then return end
+  self.saved.guildGoldEvents[key] = {guildId=guildId,user=user or WNA(),amount=tonumber(amount) or 0,timestamp=tonumber(timestamp) or WNow(),action=action or "unknown",bucket=bucket or "Other",note=note or ""}
+  if action == "deposit" then local dkey = key..":donation"; self.saved.donationEvents[dkey] = {guildId=guildId,user=user or WNA(),amount=tonumber(amount) or 0,timestamp=tonumber(timestamp) or WNow()} end
+end
+function TML:ScanGuildGold(g)
+  self:EnsureDataDefaults(); if not g or not g.id or g.id == 0 then return end
+  local cat = self:GetHistoryCategory("bankedCurrency")
+  if type(GetGuildHistoryBankedCurrencyEventInfo) ~= "function" or not cat then self.saved.scanStatus.gold = "Guild gold history API unavailable"; return end
+  local newest, oldest = self:GetHistoryIndices(g.id, cat, WORKING_HISTORY_DAYS)
+  local scanned = 0
+  if oldest >= newest then
+    for i=newest, oldest do
+      local ok,eventId,timestamp,isRedacted,eventType,displayName,currencyType,amount,kioskName = pcall(GetGuildHistoryBankedCurrencyEventInfo, g.id, i)
+      local isMoney = (currencyType == nil or _G.CURT_MONEY == nil or currencyType == _G.CURT_MONEY)
+      if ok and not isRedacted and displayName and amount and isMoney then
+        local deposit = self:IsBankCurrencyDeposit(eventType); local low = Lower(tostring(kioskName or "").." "..tostring(eventType or ""))
+        local bucket = deposit and "Donation" or "Withdrawal"
+        if (not deposit) and (low:find("bid") or low:find("trader") or low:find("kiosk") or low:find("hire")) then bucket = "Pending Bid" end
+        if (not deposit) and low:find("herald") then bucket = "Heraldry" end
+        self:AddGuildGoldEvent(g.id,eventId,displayName,tonumber(amount),timestamp,deposit and "deposit" or "withdraw",bucket,tostring(kioskName or ""))
+        scanned = scanned + 1
+      end
+    end
+  end
+  self:RequestHistory(g.id, cat, WORKING_HISTORY_DAYS); self:PruneEventTable(self.saved.guildGoldEvents, WORKING_MAX_EVENTS); self:PruneEventTable(self.saved.donationEvents, WORKING_MAX_EVENTS); self.saved.scanStatus.gold="Scanned "..scanned.." gold rows"
+end
+function TML:ScanSelectedGuildGold() self:ScanGuildGold(self:GetGuild()); self:RenderTool(self.state.activeTool) end
+function TML:GetGuildGoldRows(guildId)
+  self:EnsureDataDefaults(); local rows={}; for _,e in pairs(self.saved.guildGoldEvents or {}) do if not guildId or guildId==0 or e.guildId==guildId then rows[#rows+1]=e end end
+  table.sort(rows,function(a,b) return (a.timestamp or 0)>(b.timestamp or 0) end); return rows
+end
+function TML:ComputeGuildGoldStats(guildId)
+  local st={bank=nil,donations=0,withdrawn=0,pending=0,heraldry=0,adjusted=0,entries=0}
+  if type(GetGuildBankedMoney) == "function" and guildId and guildId ~= 0 then local ok,v=pcall(GetGuildBankedMoney,guildId); if ok then st.bank=tonumber(v) end end
+  for _,e in ipairs(self:GetGuildGoldRows(guildId)) do
+    if e.action=="deposit" then st.donations=st.donations+(e.amount or 0) else st.withdrawn=st.withdrawn+(e.amount or 0) end
+    if e.bucket=="Pending Bid" then st.pending=st.pending+(e.amount or 0) end
+    if e.bucket=="Heraldry" then st.heraldry=st.heraldry+(e.amount or 0) end
+    st.entries=st.entries+1
+  end
+  st.adjusted=(st.bank or 0)-st.pending
+  return st
+end
+
+function TML:AddBankItem(guildId,eventId,user,itemLink,quantity,timestamp,action)
+  self:EnsureDataDefaults(); local key=tostring(guildId)..":"..tostring(eventId or (tostring(user)..tostring(itemLink)..tostring(timestamp)..tostring(action)))
+  if self.saved.bankItemEvents[key] then return end
+  local qty=tonumber(quantity) or 1; local value = WGetItemValue(itemLink, qty)
+  self.saved.bankItemEvents[key]={guildId=guildId,user=user or WNA(),itemLink=itemLink,itemName=WGetItemName(itemLink),quantity=qty,timestamp=tonumber(timestamp) or WNow(),action=action or "deposit",value=value}
+end
+function TML:ScanGuildBankItems(g)
+  self:EnsureDataDefaults(); g = g or self:GetGuild(); if not g or not g.id or g.id == 0 then return end
+  local cat = self:GetHistoryCategory("bankedItem")
+  if type(GetGuildHistoryBankedItemEventInfo) ~= "function" or not cat then self.saved.scanStatus.bank = "Guild bank item API unavailable"; return end
+  local newest, oldest = self:GetHistoryIndices(g.id, cat, WORKING_HISTORY_DAYS); local scanned=0
+  if oldest >= newest then
+    for i=newest, oldest do
+      local ok,eventId,timestamp,isRedacted,eventType,displayName,itemLink,quantity = pcall(GetGuildHistoryBankedItemEventInfo,g.id,i)
+      if ok and not isRedacted and displayName and itemLink then self:AddBankItem(g.id,eventId,displayName,itemLink,quantity,timestamp,self:IsBankItemWithdraw(eventType) and "withdraw" or "deposit"); scanned=scanned+1 end
+    end
+  end
+  self:RequestHistory(g.id, cat, WORKING_HISTORY_DAYS); self:PruneEventTable(self.saved.bankItemEvents, WORKING_MAX_EVENTS); self.saved.scanStatus.bank = "Scanned "..scanned.." bank item rows"
+end
+function TML:GetBankRows(guildId)
+  self:EnsureDataDefaults(); local rows={}; for _,e in pairs(self.saved.bankItemEvents or {}) do if not guildId or guildId==0 or e.guildId==guildId then rows[#rows+1]=e end end
+  table.sort(rows,function(a,b) return (a.timestamp or 0)>(b.timestamp or 0) end); return rows
+end
+function TML:ComputeBankStats(guildId)
+  local st={given=0,taken=0,netValue=0,currentItems=0,last=WNA()}; local last=0
+  for _,e in ipairs(self:GetBankRows(guildId)) do
+    local q=tonumber(e.quantity) or 1; local v=tonumber(e.value) or 0
+    if e.action=="withdraw" then st.taken=st.taken+q; st.netValue=st.netValue-v; st.currentItems=st.currentItems-q else st.given=st.given+q; st.netValue=st.netValue+v; st.currentItems=st.currentItems+q end
+    if (e.timestamp or 0)>last then last=e.timestamp; st.last=WRelTime(e.timestamp) end
+  end
+  return st
+end
+function TML:GetBankMemberRows(guildId)
+  local by={}
+  for _,e in ipairs(self:GetBankRows(guildId)) do local u=e.user or WNA(); local r=by[u] or {user=u,taken=0,given=0,value=0,last=0}; if e.action=="withdraw" then r.taken=r.taken+(e.quantity or 1); r.value=r.value-(e.value or 0) else r.given=r.given+(e.quantity or 1); r.value=r.value+(e.value or 0) end; if (e.timestamp or 0)>r.last then r.last=e.timestamp end; by[u]=r end
+  local rows={}; for _,r in pairs(by) do rows[#rows+1]=r end; table.sort(rows,function(a,b) return (a.last or 0)>(b.last or 0) end); return rows
+end
+
+function TML:ScanRoster(g)
+  self:EnsureDataDefaults(); g = g or self:GetGuild(); if not g or not g.id or g.id == 0 or type(GetNumGuildMembers) ~= "function" then return end
+  local key=tostring(g.id); self.saved.members[key] = {}
+  local okN, n = pcall(GetNumGuildMembers, g.id); n = okN and tonumber(n) or 0
+  for i=1,n do
+    local ok, name, note, rankIndex, status, secsSinceLogoff = pcall(GetGuildMemberInfo, g.id, i)
+    if ok and name then self.saved.members[key][name] = {name=name, note=note, rank=rankIndex, status=status, lastOnlineSeconds=secsSinceLogoff or 0} end
+  end
+  self.saved.scanStatus.roster = "Scanned "..tostring(n).." roster members"
+end
+function TML:GetRosterRows(guildId)
+  self:EnsureDataDefaults(); local rows={}; local m = self.saved.members[tostring(guildId or 0)] or {}
+  for _,r in pairs(m) do rows[#rows+1]=r end
+  table.sort(rows,function(a,b) return Lower(a.name)<Lower(b.name) end); return rows
+end
+function TML:ScanBookkeeper() local g=self:GetGuild(); self:ScanRoster(g); self:ScanGuildSales(g); self:ScanGuildGold(g); self:ScanGuildBankItems(g); self:RenderTool(self.state.activeTool) end
+
+function TML:GetRaffle(guildId)
+  self:EnsureDataDefaults(); local key=tostring(guildId or 0); self.saved.raffle[key]=self.saved.raffle[key] or {entries={},winners={},prizes={},manualPot=nil,started=WNow()}; return self.saved.raffle[key]
+end
+function TML:ScanRaffleEntries()
+  local g=self:GetGuild(); if not g or g.id==0 then self:Notify("Select a guild before scanning raffle entries."); return end
+  self:ScanGuildGold(g); local r=self:GetRaffle(g.id); r.entries={}; local count=0
+  for _,e in pairs(self.saved.donationEvents or {}) do
+    if e.guildId==g.id and tonumber(e.amount) and (tonumber(e.amount) % WORKING_RAFFLE_TICKET_BASE) == WORKING_RAFFLE_TICKET_MOD and tonumber(e.amount) ~= WORKING_RAFFLE_MARKER_AMOUNT then
+      local tickets=math.floor((tonumber(e.amount) or 0)/WORKING_RAFFLE_TICKET_BASE)
+      local user=e.user or WNA(); r.entries[user]=r.entries[user] or {name=user,tickets=0,gold=0,last=0}
+      r.entries[user].tickets=r.entries[user].tickets+tickets; r.entries[user].gold=r.entries[user].gold+(e.amount or 0); if (e.timestamp or 0)>(r.entries[user].last or 0) then r.entries[user].last=e.timestamp end; count=count+1
+    end
+  end
+  r.lastScan=WNow(); self.saved.scanStatus.raffle="Scanned "..count.." raffle entry deposits"; self:RenderTool(self.state.activeTool)
+end
+function TML:AutoPrizeSplit()
+  local g=self:GetGuild(); local r=self:GetRaffle(g.id); local pot=tonumber(r.manualPot) or 0; if pot<=0 then for _,e in pairs(r.entries or {}) do pot=pot+(e.gold or 0) end end
+  r.prizes={math.floor(pot*.5), math.floor(pot*.3), pot-math.floor(pot*.5)-math.floor(pot*.3)}; self:RenderTool(self.state.activeTool)
+end
+function TML:CycleManualPot()
+  local g=self:GetGuild(); local r=self:GetRaffle(g.id); local opts={0,100000,250000,500000,1000000}; local cur=tonumber(r.manualPot) or 0; local idx=1; for i,v in ipairs(opts) do if v==cur then idx=i end end; r.manualPot=opts[(idx % #opts)+1]; self:RenderTool(self.state.activeTool)
+end
+function TML:PickWinner()
+  local g=self:GetGuild(); local r=self:GetRaffle(g.id); local total=0; for _,e in pairs(r.entries or {}) do total=total+(e.tickets or 0) end
+  if total<=0 then self:Notify("No raffle entries available."); return end
+  local roll=math.random(total); local run=0; local chosenKey, chosen
+  for k,e in pairs(r.entries or {}) do run=run+(e.tickets or 0); if roll<=run then chosenKey=k; chosen=e; break end end
+  if chosen then local place=#(r.winners or {})+1; r.winners=r.winners or {}; table.insert(r.winners,{name=chosen.name,tickets=chosen.tickets,prize=(r.prizes or {})[place],timestamp=WNow()}); r.entries[chosenKey]=nil end
+  self:RenderTool(self.state.activeTool)
+end
+function TML:ClearRaffle() local g=self:GetGuild(); self.saved.raffle[tostring(g.id)]={entries={},winners={},prizes={},manualPot=nil,started=WNow()}; self:RenderTool(self.state.activeTool) end
+
+function TML:ToggleDaily(index)
+  self:EnsureDataDefaults(); local key=tostring(index or 1); self.saved.daily[key]=not self.saved.daily[key]; self:RenderTool(self.state.activeTool)
+end
+function TML:ResetDailies() self.saved.daily={}; self:RenderTool(self.state.activeTool) end
+function TML:GetDailyRows()
+  local rows={{"1","Solstice / Sunport","Delve + World Boss","Motifs / Plans",""},{"2","West Weald","Delve / Boss / Incursion","Coffers",""},{"3","Fargrave / Event","Faction + District","Limited Event",""},{"4","Necrom / Apocrypha","Bastion Nymic","Motifs / Gear",""}}
+  for i,r in ipairs(rows) do r[5] = self.saved.daily[tostring(i)] and "Done" or "Open" end
+  return rows
+end
+
+function TML:InstallEventPipelines()
+  if self.eventsInstalled then return end; self.eventsInstalled = true
+  if EVENT_MANAGER and _G.EVENT_LOOT_RECEIVED then
+    EVENT_MANAGER:RegisterForEvent(self.name.."LootFish", EVENT_LOOT_RECEIVED, function(eventCode, receivedBy, itemName, quantity, itemSound, lootType, selfLoot, isPickpocketLoot, questItemIcon, itemId, isStolen)
+      if not selfLoot then return end
+      itemName=tostring(itemName or ""); if itemName=="" then return end
+      local low=Lower(itemName)
+      if low:find("fish") or low:find("bait") or low:find("roe") or low:find("minnow") or low:find("worm") then
+        TML:EnsureDataDefaults(); local r=TML.saved.fish[itemName] or {name=itemName,qty=0,last=0}; r.qty=(r.qty or 0)+(tonumber(quantity) or 1); r.last=WNow(); TML.saved.fish[itemName]=r
+      end
+    end)
+  end
+end
+function TML:ScanFishingInventory()
+  self:EnsureDataDefaults(); local function scanBag(bagId)
+    if bagId == nil or type(GetBagSize) ~= "function" or type(GetItemLink) ~= "function" then return end
+    local ok,size=pcall(GetBagSize,bagId); size=ok and tonumber(size) or 0
+    for slot=0,math.max(0,size-1) do local okL,link=pcall(GetItemLink,bagId,slot); if okL and link and link~="" then local name=WGetItemName(link); local low=Lower(name); if low:find("bait") or low:find("worm") or low:find("minnow") or low:find("fish") then local qty=1; if type(GetSlotStackSize)=="function" then local okQ,q=pcall(GetSlotStackSize,bagId,slot); if okQ and q then qty=tonumber(q) or 1 end end; local r=self.saved.fish[name] or {name=name,qty=0,last=0}; r.qty=math.max(r.qty or 0, qty); r.last=WNow(); self.saved.fish[name]=r end end end
+  end; scanBag(_G.BAG_BACKPACK); scanBag(_G.BAG_BANK); self:RenderTool(self.state.activeTool)
+end
+function TML:GetFishRows()
+  self:EnsureDataDefaults(); local rows={}; for _,r in pairs(self.saved.fish or {}) do rows[#rows+1]=r end; table.sort(rows,function(a,b) return (a.qty or 0)>(b.qty or 0) end); return rows
+end
+
+function TML:GetDuesRows(guildId)
+  local due=tonumber(self.saved.dueAmount) or 0; local donationBy={}; for _,e in pairs(self.saved.donationEvents or {}) do if (not guildId or e.guildId==guildId) then donationBy[e.user]=(donationBy[e.user] or 0)+(e.amount or 0) end end
+  local rows={}; for _,m in ipairs(self:GetRosterRows(guildId)) do local paid=donationBy[m.name] or 0; rows[#rows+1]={m.name, WFormatGold(due), WFormatGold(paid), WFormatGold(paid-due), paid>=due and "Paid" or "Unpaid"} end
+  table.sort(rows,function(a,b) return tostring(a[1])<tostring(b[1]) end); return rows
+end
+function TML:CycleDueAmount() local opts={0,5000,10000,15000,20000,25000}; local cur=tonumber(self.saved.dueAmount) or 0; local idx=1; for i,v in ipairs(opts) do if v==cur then idx=i end end; self.saved.dueAmount=opts[(idx % #opts)+1]; self:RenderTool(self.state.activeTool) end
+
+function TML:GetTraderBidRows(guildId)
+  local rows={}; for _,e in ipairs(self:GetGuildGoldRows(guildId)) do if e.bucket=="Pending Bid" or Lower(e.note or ""):find("bid") or Lower(e.note or ""):find("trader") then rows[#rows+1]=e end end; table.sort(rows,function(a,b) return (a.timestamp or 0)>(b.timestamp or 0) end); return rows
+end
+
+function TML:BeginToolButtons() self.currentToolButtons = {}; self.state.toolButton = math.max(1, tonumber(self.state.toolButton or 1) or 1) end
+function TML:ToolButton(root, key, x, y, w, h, text, accent, callback)
+  self.currentToolButtons = self.currentToolButtons or {}; local idx = #self.currentToolButtons + 1; self.currentToolButtons[idx] = {label=text, callback=callback or function() end}
+  self:DrawLegacyButton(root, key, x, y, w, h, text, accent, callback, (self.state.toolButton or 1) == idx)
+end
+function TML:MoveSelection(delta)
+  if self.state.mode == "tool" then
+    local count = self.currentToolButtons and #self.currentToolButtons or 0
+    if count <= 0 then return end
+    local idx = (tonumber(self.state.toolButton or 1) or 1) + (tonumber(delta) or 0)
+    if idx < 1 then idx = count end; if idx > count then idx = 1 end
+    self.state.toolButton = idx; self:RenderTool(self.state.activeTool or "help"); return
+  end
+  local menuName = self.state.menu or "main"; local def = self.menus[menuName] or self.menus.main; local count = #(def.entries or {})
+  if count <= 0 then return end
+  local idx = self:GetSelectedIndex(menuName) + (tonumber(delta) or 0); if idx < 1 then idx = count end; if idx > count then idx = 1 end
+  self:SetSelectedIndex(menuName, idx); self:RenderMenu()
+end
+function TML:SelectCurrent()
+  if self.state.mode == "tool" then
+    local btn = self.currentToolButtons and self.currentToolButtons[self.state.toolButton or 1]
+    if btn and btn.callback then btn.callback() end
+    return
+  end
+  local menuName = self.state.menu or "main"; local def = self.menus[menuName] or self.menus.main; local entry = (def.entries or {})[self:GetSelectedIndex(menuName)]
+  if not entry then return end
+  if entry.type == "menu" then self:OpenMenu(entry.target)
+  elseif entry.type == "tool" then self:OpenTool(entry.target)
+  elseif entry.type == "back" then local currentDef = self:GetCurrentMenuDef(); self:OpenMenu((currentDef and currentDef.parent) or entry.target or "main", true)
+  elseif entry.type == "exit" then self:ReturnToESOMenu() end
+end
+function TML:DrawToolActionBar(root, x, y, w, accent)
+  local bw = math.floor((w - 28) / 2)
+  self:ToolButton(root, "ToolBackButton", x, y, bw, 56, "Back to Menu", C.cyan, function() TML:Back() end)
+  self:ToolButton(root, "ToolExitButton", x + bw + 28, y, bw, 56, "Exit", C.red, function() TML:ReturnToESOMenu() end)
+end
+
+function TML:RowsOrNA(rows, cols, msg)
+  if rows and #rows > 0 then return rows end
+  local r = {}; for i=1,cols do r[i] = i==1 and (msg or WNA()) or WNA() end; return {r}
+end
+
+function TML:DrawGuildSelectorLive(root, x, y, w, h, accent)
+  local g = self:GetGuild()
+  self:DrawLegacyPanel(root, "GuildSelectorLive", x, y, w, h, "SELECTED GUILD", accent)
+  self:Label("GuildSelName", root, WLimit(g.name, 24), x+24, y+70, w-48, 40, C.white, FONTS.panelText, TEXT_ALIGN_CENTER)
+  self:ToolButton(root, "GuildPrevBtn", x+28, y+132, w-56, 40, "Previous Guild", accent, function() TML:NextGuild(-1) end)
+  self:ToolButton(root, "GuildNextBtn", x+28, y+184, w-56, 40, "Next Guild", accent, function() TML:NextGuild(1) end)
+  self:Label("GuildSelStatus", root, "Guild-specific scans use this selected guild.", x+28, y+h-72, w-56, 54, C.cyanSoft, FONTS.panelSmall, TEXT_ALIGN_CENTER)
+end
+
+function TML:RenderOldNetWorth(root, x, y, w, h, accent)
+  local nw = self:GetNetWorth(); local leftW = 500
+  self:DrawLegacyPanel(root, "NWStats", x, y, leftW, h, "SUMMARY", accent)
+  local stats = {
+    {"Total Net Worth", WFormatGold(nw.total), C.gold}, {"Character Net Worth", WFormatGold(nw.character), C.gold}, {"Carried Gold", WFormatGold(nw.carriedGold), C.gold}, {"Banked Gold", WFormatGold(nw.bankedGold), C.gold},
+    {"Carried Items", WFormatGold(nw.carriedItems), C.cyanSoft}, {"Banked Items", WFormatGold(nw.bankedItems), C.cyanSoft}, {"Material Bag", WFormatGold(nw.craftBag), C.cyanSoft}, {"Unpriced Items", WFormatNumber(nw.unpriced), C.muted},
+  }
+  for _,cur in ipairs(nw.currencies or {}) do stats[#stats+1] = {cur[1], cur[2] == nil and WNA() or WFormatNumber(cur[2]), cur[2] == nil and C.muted or C.gold} end
+  self:DrawLegacyStats(root, "NW", x+36, y+70, leftW-72, stats, accent)
+  self:ToolButton(root, "NWScan", x+80, y+h-74, leftW-160, 46, "Scan Net Worth", accent, function() TML:ScanNetWorth(); TML:RenderTool("net_worth") end)
+  local rows={}; for i,it in ipairs(nw.top or {}) do rows[#rows+1]={tostring(i), WLimit(it.name,36), WFormatNumber(it.qty), WFormatGold(it.value)} end
+  self:DrawLegacyTable(root, "NWTopItems", x+leftW+32, y, w-leftW-32, h, "TOP 20 MOST VALUABLE ITEMS", {"Rank","Item Name","Qty","Value"}, self:RowsOrNA(rows,4,"No priced items found"), accent)
+end
+
+function TML:RenderOldLedger(root, x, y, w, h, accent, guildMode)
+  local topH=148; self:DrawLegacyPanel(root,"LedgerStats",x,y,w,topH,guildMode and "GUILD GOLD LEDGER" or "GOLD LEDGER",accent)
+  if guildMode then
+    local g=self:GetGuild(); local st=self:ComputeGuildGoldStats(g.id); local cards={{"Bank Gold",WFormatGold(st.bank)},{"Donations",WFormatGold(st.donations)},{"Withdrawn",WFormatGold(st.withdrawn)},{"Pending Bids",WFormatGold(st.pending)},{"Adjusted Total",WFormatGold(st.adjusted)}}; local cardW=math.floor((w-88)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"LedgerMini"..i,x+24+(i-1)*(cardW+10),y+60,cardW,70,c[1],c[2],(i==3 or i==4) and C.red or accent) end
+    local rows={}; for _,e in ipairs(self:GetGuildGoldRows(g.id)) do rows[#rows+1]={WRelTime(e.timestamp), WLimit(e.user,18), e.action, WFormatGold(e.amount), e.bucket} end
+    self:DrawLegacyTable(root,"LedgerHistory",x,y+topH+22,math.floor(w*.62),h-topH-22,"BANK GOLD HISTORY",{"Date","User","Event","Amount","Bucket"},self:RowsOrNA(rows,5,"Press Scan Gold"),accent)
+    local sideX=x+math.floor(w*.62)+24; self:DrawLegacyPanel(root,"LedgerSide",sideX,y+topH+22,w-math.floor(w*.62)-24,h-topH-22,"ACTIONS",accent)
+    self:ToolButton(root,"GoldScanBtn",sideX+28,y+topH+94,w-math.floor(w*.62)-80,44,"Scan Gold History",accent,function() TML:ScanSelectedGuildGold() end)
+    self:ToolButton(root,"GoldGuildPrev",sideX+28,y+topH+150,w-math.floor(w*.62)-80,44,"Previous Guild",accent,function() TML:NextGuild(-1) end)
+    self:ToolButton(root,"GoldGuildNext",sideX+28,y+topH+206,w-math.floor(w*.62)-80,44,"Next Guild",accent,function() TML:NextGuild(1) end)
+    self:Label("GoldSelectedGuild",root,"Guild: "..WLimit(g.name,24),sideX+28,y+topH+270,w-math.floor(w*.62)-80,38,C.white,FONTS.panelSmall,TEXT_ALIGN_CENTER)
+  else
+    local nw=self:GetNetWorth(); local cards={{"Current Gold",WFormatGold(nw.carriedGold)},{"Bank Gold",WFormatGold(nw.bankedGold)},{"Gold In",WNA()},{"Gold Out",WNA()},{"Net Change",WNA()}}; local cardW=math.floor((w-88)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"LedgerMini"..i,x+24+(i-1)*(cardW+10),y+60,cardW,70,c[1],c[2],accent) end
+    local rows={{"Now",self:GetUserDisplayName(),"Wallet",WFormatGold(nw.carriedGold),"Current"},{"Now",self:GetUserDisplayName(),"Bank",WFormatGold(nw.bankedGold),"Current"}}
+    self:DrawLegacyTable(root,"LedgerHistory",x,y+topH+22,w,h-topH-22,"PERSONAL GOLD SNAPSHOT",{"Date","User","Event","Amount","Bucket"},rows,accent)
+  end
+end
+
+function TML:RenderOldSales(root,x,y,w,h,accent,guildMode)
+  local selectorW = guildMode and 310 or 0; if guildMode then self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent) end
+  local rx=x+selectorW+(guildMode and 24 or 0); local rw=w-selectorW-(guildMode and 24 or 0); local g=self:GetGuild(); local st=self:ComputeSalesStats(guildMode and g.id or 0, not guildMode)
+  self:DrawLegacyPanel(root,"SalesStats",rx,y,rw,142,guildMode and "GUILD SALES DASHBOARD" or "PERSONAL SALES DASHBOARD",accent)
+  local cards={{"Sales Today",WFormatGold(st.salesToday)},{"Sales 7D",WFormatGold(st.sales7)},{"Sales 30D",WFormatGold(st.sales30)},{"Items Sold",WFormatNumber(st.items)},{guildMode and "Guild Tax" or "Net Earned",WFormatGold(guildMode and st.tax or st.net)}}; local cardW=math.floor((rw-78)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"SalesCard"..i,rx+20+(i-1)*(cardW+10),y+56,cardW,68,c[1],c[2],accent) end
+  local rows={}; for _,e in ipairs(self:GetSalesRows(guildMode and g.id or 0, not guildMode)) do rows[#rows+1]={guildMode and WLimit(e.seller,20) or WLimit(e.itemName,24), self:GetGuildName(e.guildId), WFormatNumber(e.quantity), WFormatGold(e.amount), WRelTime(e.timestamp)} end
+  self:DrawLegacyTable(root,"SalesRows",rx,y+166,rw,h-228,guildMode and "GUILD TRADER SALES" or "YOUR SALES",{guildMode and "Seller" or "Item","Guild","Qty","Gold","When"},self:RowsOrNA(rows,5,"Press Scan Sales"),accent)
+  local by=y+h-52; self:ToolButton(root,"SalesScanOne",rx,by,170,42,guildMode and "Scan Guild" or "Scan My Sales",accent,function() if guildMode then TML:ScanSelectedGuildSales() else TML:ScanAllGuildSales() end end)
+  self:ToolButton(root,"SalesScanAll",rx+184,by,150,42,"Scan All",accent,function() TML:ScanAllGuildSales() end)
+end
+
+function TML:RenderOldDaily(root,x,y,w,h,accent)
+  local rows=self:GetDailyRows(); local done=0; for _,r in ipairs(rows) do if r[5]=="Done" then done=done+1 end end
+  self:DrawLegacyPanel(root,"DailyPriority",x,y,w,160,"DAILY PRIORITY BOARD",accent,C.yellow); local cards={{"Completed",done},{"Remaining",#rows-done},{"High Value",#rows},{"Reset Timer","Daily"},{"Tracked Zones",#rows}}; local cardW=math.floor((w-76)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"DailyCard"..i,x+20+(i-1)*(cardW+10),y+62,cardW,74,c[1],tostring(c[2]),accent) end
+  self:DrawLegacyTable(root,"DailyTable",x,y+184,w,h-250,"DAILY CHECKLIST",{"Priority","Zone","Daily","Reward Focus","Status"},rows,accent)
+  local by=y+h-52; self:ToolButton(root,"DailyToggle1",x,by,150,42,"Toggle #1",accent,function() TML:ToggleDaily(1) end); self:ToolButton(root,"DailyToggle2",x+164,by,150,42,"Toggle #2",accent,function() TML:ToggleDaily(2) end); self:ToolButton(root,"DailyToggle3",x+328,by,150,42,"Toggle #3",accent,function() TML:ToggleDaily(3) end); self:ToolButton(root,"DailyToggle4",x+492,by,150,42,"Toggle #4",accent,function() TML:ToggleDaily(4) end); self:ToolButton(root,"DailyReset",x+656,by,150,42,"Reset",C.red,function() TML:ResetDailies() end)
+end
+
+function TML:RenderOldFishing(root,x,y,w,h,accent)
+  local leftW=420; local fishRows=self:GetFishRows(); local total=0; for _,r in ipairs(fishRows) do total=total+(tonumber(r.qty) or 0) end
+  self:DrawLegacyPanel(root,"FishingStatus",x,y,leftW,h,"FISHING STATUS",accent); self:Texture("FishingBaitIconLarge",root,"EsoUI/Art/Icons/crafting_fishing_bait_worms.dds",x+154,y+70,112,112,C.cyanSoft)
+  self:DrawLegacyStats(root,"FishingStats",x+42,y+214,leftW-84,{{"Fish/Bait Count",WFormatNumber(total),C.gold},{"Tracked Items",WFormatNumber(#fishRows),C.cyanSoft},{"Last Loot",fishRows[1] and WRelTime(fishRows[1].last) or WNA(),C.cyanSoft},{"Pipeline","Loot + Inventory",C.gold},{"Session","Active",C.cyanSoft}},accent)
+  self:ToolButton(root,"FishScan",x+70,y+h-76,leftW-140,46,"Scan Fish/Bait",accent,function() TML:ScanFishingInventory() end)
+  local rows={}; for _,r in ipairs(fishRows) do rows[#rows+1]={WLimit(r.name,30),"Inventory/Loot",WNA(),WFormatNumber(r.qty),WRelTime(r.last)} end
+  self:DrawLegacyTable(root,"FishingTable",x+leftW+32,y,w-leftW-32,h,"TRACKED FISH + BAIT",{"Fish / Bait","Source","Zone","Qty","Last"},self:RowsOrNA(rows,5,"No fish/bait tracked yet"),accent)
+end
+
+function TML:RenderOldGuildBank(root,x,y,w,h,accent)
+  local selectorW=310; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeBankStats(g.id)
+  self:DrawLegacyPanel(root,"BankTotals",rx,y,rw,118,"BANK TOTALS",accent); local cards={{"Given",WFormatNumber(st.given)},{"Taken",WFormatNumber(st.taken)},{"Net Value",WFormatGold(st.netValue)},{"Current Items",WFormatNumber(st.currentItems)},{"Last",st.last}}; local cardW=math.floor((rw-76)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"BankCard"..i,rx+20+(i-1)*(cardW+10),y+46,cardW,58,c[1],c[2],i==2 and C.red or accent) end
+  local memberRows={}; for _,r in ipairs(self:GetBankMemberRows(g.id)) do memberRows[#memberRows+1]={WLimit(r.user,22),WFormatNumber(r.taken),WFormatNumber(r.given),WRelTime(r.last)} end
+  self:DrawLegacyTable(root,"BankMembers",rx,y+138,rw,230,"MEMBER BANK TOTALS - ALL TIME",{"UserID","Taken","Given","Last Interaction"},self:RowsOrNA(memberRows,4,"Press Scan Bank"),accent)
+  local hist={}; for _,e in ipairs(self:GetBankRows(g.id)) do hist[#hist+1]={e.action=="withdraw" and "Taken" or "Given",WLimit(e.user,18),WLimit(e.itemName,28),WFormatNumber(e.quantity),e.value and WFormatGold(e.value) or WNA(),WRelTime(e.timestamp)} end
+  self:DrawLegacyTable(root,"BankHistory",rx,y+388,rw,h-450,"BANK ITEM HISTORY",{"Action","Member","Item","Qty","Value","When"},self:RowsOrNA(hist,6,"Press Scan Bank"),accent)
+  local by=y+h-52; self:ToolButton(root,"BankScan",rx,by,160,40,"Scan Bank",accent,function() TML:ScanGuildBankItems(TML:GetGuild()); TML:RenderTool("guild_bank") end)
+end
+
+function TML:RenderOldBookkeeper(root,x,y,w,h,accent)
+  local selectorW=310; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local tableW=math.floor((w-selectorW-48)*.72); local g=self:GetGuild(); local rows={}; local donations={}; for _,e in pairs(self.saved.donationEvents or {}) do if e.guildId==g.id then donations[e.user]=(donations[e.user] or 0)+(e.amount or 0) end end; local sales={}; for _,e in pairs(self.saved.salesEvents or {}) do if e.guildId==g.id then sales[e.seller]=(sales[e.seller] or 0)+(e.amount or 0) end end; local bank={}; for _,e in ipairs(self:GetBankRows(g.id)) do bank[e.user]=(bank[e.user] or 0)+((e.action=="withdraw" and -1 or 1)*(e.quantity or 1)) end
+  for _,m in ipairs(self:GetRosterRows(g.id)) do rows[#rows+1]={WLimit(m.name,20),WFormatGold(sales[m.name]),WFormatGold(donations[m.name]),WFormatNumber(0),WFormatGold((donations[m.name] or 0)-(self.saved.dueAmount or 0)),m.lastOnlineSeconds and WRelTime(WNow()-m.lastOnlineSeconds) or WNA()} end
+  self:DrawLegacyTable(root,"BookkeeperTable",rx,y,tableW,h-60,"MEMBER BOOKKEEPER",{"Member","Sales","Donations","Raffle","Dues","Last Online"},self:RowsOrNA(rows,6,"Press Scan Activity"),accent)
+  local sideX=rx+tableW+24; self:DrawLegacyPanel(root,"BookkeeperRight",sideX,y,w-(sideX-x),h,"SUMMARY",accent); local summary={{"Roster",#self:GetRosterRows(g.id),C.cyanSoft},{"Sales Rows",WTableCount(self.saved.salesEvents),C.cyanSoft},{"Donations",WTableCount(self.saved.donationEvents),C.cyanSoft},{"Bank Rows",#self:GetBankRows(g.id),C.cyanSoft},{"Due Amount",WFormatGold(self.saved.dueAmount),C.gold},{"Status",self.saved.scanStatus.roster or WNA(),C.white}}; for i,t in ipairs(summary) do self:DrawMiniStat(root,"BookMini"..i,sideX+22,y+62+(i-1)*82,w-(sideX-x)-44,70,t[1],tostring(t[2]),t[3]) end
+  self:ToolButton(root,"BookScan",sideX+38,y+h-70,w-(sideX-x)-76,44,"Scan Activity",accent,function() TML:ScanBookkeeper() end)
+end
+
+function TML:RenderOldRaffle(root,x,y,w,h,accent)
+  local selectorW=310; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local r=self:GetRaffle(g.id); local participants=WTableCount(r.entries); local tickets=0; local gold=0; for _,e in pairs(r.entries or {}) do tickets=tickets+(e.tickets or 0); gold=gold+(e.gold or 0) end; local pot=tonumber(r.manualPot) and tonumber(r.manualPot)>0 and tonumber(r.manualPot) or gold
+  self:DrawLegacyPanel(root,"RaffleStats",rx,y,rw,178,"RAFFLE DASHBOARD",accent,C.yellow); local cards={{"Participants",participants},{"Tickets",tickets},{"Collected Gold",WFormatGold(gold)},{"Manual Pot",WFormatGold(r.manualPot)},{"Prize 1/2/3",(r.prizes and WFormatGold(r.prizes[1]).." / "..WFormatGold(r.prizes[2]).." / "..WFormatGold(r.prizes[3])) or WNA()},{"Active Pot",WFormatGold(pot)}}; local cardW=math.floor((rw-72)/3); for i,c in ipairs(cards) do local cx=rx+24+((i-1)%3)*(cardW+12); local cy=y+70+math.floor((i-1)/3)*48; self:Label("RafK"..i,root,c[1]..":",cx,cy,150,30,C.muted,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("RafV"..i,root,tostring(c[2]),cx+152,cy,cardW-166,30,C.gold,FONTS.panelSmall,TEXT_ALIGN_LEFT) end
+  local rows={}; for _,e in pairs(r.entries or {}) do rows[#rows+1]={WLimit(e.name,22),WFormatGold(e.gold),WFormatNumber(e.tickets),WRelTime(e.last),WNA()} end; table.sort(rows,function(a,b) return tostring(a[1])<tostring(b[1]) end)
+  self:DrawLegacyTable(root,"RaffleEntries",rx,y+200,rw,h-280,"ENTRIES AFTER RESET",{"Member","Deposit","Tickets","Last","Prize"},self:RowsOrNA(rows,5,"Press Scan Entries"),accent)
+  local by=y+h-58; local bw=math.floor((rw-32)/5); self:ToolButton(root,"RaffleScan",rx,by,bw,42,"Scan Entries",accent,function() TML:ScanRaffleEntries() end); self:ToolButton(root,"RafflePot",rx+bw+8,by,bw,42,"Manual Pot",accent,function() TML:CycleManualPot() end); self:ToolButton(root,"RaffleSplit",rx+(bw+8)*2,by,bw,42,"Prize Split",accent,function() TML:AutoPrizeSplit() end); self:ToolButton(root,"RafflePick",rx+(bw+8)*3,by,bw,42,"Pick Winner",accent,function() TML:PickWinner() end); self:ToolButton(root,"RaffleClear",rx+(bw+8)*4,by,bw,42,"Clear Board",C.red,function() TML:ClearRaffle() end)
+end
+
+function TML:RenderOldDues(root,x,y,w,h,accent)
+  local g=self:GetGuild(); local leftW=360; self:DrawLegacyPanel(root,"DuesControl",x,y,leftW,h,"DUES CONTROL",accent); local rows=self:GetDuesRows(g.id); local paid=0; for _,r in ipairs(rows) do if r[5]=="Paid" then paid=paid+1 end end; self:DrawLegacyStats(root,"DuesStats",x+38,y+72,leftW-76,{{"Due Amount",WFormatGold(self.saved.dueAmount),C.gold},{"Paid",WFormatNumber(paid),C.cyanSoft},{"Unpaid",WFormatNumber(#rows-paid),C.redDim},{"Roster",WFormatNumber(#rows),C.cyanSoft},{"Guild",WLimit(g.name,14),C.white}},accent); self:ToolButton(root,"DuesSet",x+70,y+h-76,leftW-140,46,"Set Due Amount",accent,function() TML:CycleDueAmount() end); self:DrawLegacyTable(root,"DuesTable",x+leftW+32,y,w-leftW-32,h,"MEMBER DUES STATUS",{"Member","Due","Paid","Balance","Status"},self:RowsOrNA(rows,5,"Press Scan Activity in Bookkeeper"),accent)
+end
+
+function TML:RenderOldTraderBids(root,x,y,w,h,accent)
+  local g=self:GetGuild(); local bidRows=self:GetTraderBidRows(g.id); local pending=0; for _,e in ipairs(bidRows) do pending=pending+(e.amount or 0) end; self:DrawLegacyPanel(root,"BidSummary",x,y,w,138,"TRADER BID LEDGER",accent,C.red); local cards={{"Pending Bids",WFormatGold(pending)},{"Bid Events",WFormatNumber(#bidRows)},{"Lost Bids",WNA()},{"Hired Trader",WNA()},{"Net Impact",WFormatGold(-pending)}}; local cardW=math.floor((w-76)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"BidCard"..i,x+20+(i-1)*(cardW+10),y+56,cardW,64,c[1],c[2],C.red) end; local rows={}; for _,e in ipairs(bidRows) do rows[#rows+1]={WLimit(e.note or "Trader",22),e.bucket,WFormatGold(e.amount),WRelTime(e.timestamp)} end; local halfW=math.floor((w-24)/2); self:DrawLegacyTable(root,"PendingBidTable",x,y+160,halfW,h-220,"PENDING BID LIST",{"Trader","Event","Amount","When"},self:RowsOrNA(rows,4,"Press Scan Gold"),C.red); self:DrawLegacyTable(root,"BidCleanupTable",x+halfW+24,y+160,halfW,h-220,"BID CLEANUP + OUTCOMES",{"Source","Match Text","Action","Status"},{{"Bank Withdraw","Bid __ to hire","Add Pending","Connected"},{"History","Lost bid","Remove","Connected"},{"History","Hired trader","Final Cost","Connected"}},C.red); self:ToolButton(root,"BidScan",x,y+h-52,180,42,"Scan Gold",C.red,function() TML:ScanSelectedGuildGold() end)
+end
+
+function TML:RenderOldHelp(root,x,y,w,h,accent)
+  self:DrawLegacyPanel(root,"HelpPanel",x,y,w,h,"HELP & INSTRUCTIONS",accent,C.yellow)
+  local lines={"CONTROLLER: D-pad moves. A selects. B backs out one level.","KEYBOARD: E / Enter selects. Esc / Backspace / X backs out.","MOUSE: Click menu rows and buttons. Wheel scrolls list pages.","MENU FLOW: Page -> submenu -> main menu -> ESO menu.","WORKING PHASE: Buttons now connect to live pipelines or saved add-on data.","MEMORY SAFETY: Page runtime data is released when leaving a page; saved caches are capped.","GUILD SCANS: History rows are capped and request more history when ESO cache is empty."}
+  for i,t in ipairs(lines) do local yy=y+78+(i-1)*58; self:Backdrop("HelpLineBg"..i,root,x+48,yy,w-96,44,{0,0,0,0.34},{accent[1],accent[2],accent[3],0.24}); self:Label("HelpLine"..i,root,t,x+68,yy,w-136,44,(i<=2) and C.gold or C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT) end
+end
+function TML:RenderOldCreator(root,x,y,w,h,accent)
+  self:DrawLegacyPanel(root,"CreatorPanel",x,y,w,h,"CREATOR",accent); self:Label("CreatorMain",root,"xPricee / The Eternal Gods",x,y+86,w,54,C.gold,FONTS.panelTitle,TEXT_ALIGN_CENTER); self:Label("CreatorProject",root,"Tamriel Master Ledger — Xbox console-first ledger, guild tools, raffle, bank, sales, and tracking dashboard.",x+90,y+160,w-180,62,C.white,FONTS.panelText,TEXT_ALIGN_CENTER); self:DrawLegacyTable(root,"CreatorTable",x+90,y+250,w-180,260,"PROJECT NOTICES",{"Section","Information","Status"},{{"Creator","xPricee","Shown"},{"Guild","The Eternal Gods","Shown"},{"Build","Working pipeline phase","Connected"},{"ZOS/Bethesda","Player-created, unofficial add-on","Notice"}},accent)
+end
+function TML:RenderOldPersonalInstructions(root,x,y,w,h,accent)
+  self:RenderOldHelp(root,x,y,w,h,accent)
+end
+
+function TML:RenderTool(toolKey)
+  self:HideAllPooledControls(); local root=self.ui.root; if not root then return end; self:EnsureDataDefaults(); self:BeginToolButtons()
+  local rw,rh=self:GetRootSize(); local design=self:GetPageDesign(toolKey); local accent=self:GetAccentColor(design.accent)
+  local w=math.floor(rw*.90); local h=math.floor(rh*.90); local x=math.floor((rw-w)/2); local y=math.floor((rh-h)/2); local pad=34; local headerH=136; local footerH=78; local bodyX=x+pad; local bodyY=y+headerH+20; local bodyW=w-pad*2; local bodyH=h-headerH-footerH-48
+  self:Backdrop("ToolPageShadow",root,x-10,y-10,w+20,h+20,{0,0,0,0.46},nil); self:Backdrop("ToolPanel",root,x,y,w,h,C.black90,{C.cyan[1],C.cyan[2],C.cyan[3],0.95}); self:Backdrop("ToolInnerLine",root,x+10,y+10,w-20,h-20,{0,0,0,0.07},{C.cyan[1],C.cyan[2],C.cyan[3],0.30}); self:DrawLegacyHeader(root,x,y,w,design.title,design.subtitle or "Working pipeline phase",accent)
+  if toolKey=="net_worth" then self:RenderOldNetWorth(root,bodyX,bodyY,bodyW,bodyH,accent)
+  elseif toolKey=="gold_ledger_personal" then self:RenderOldLedger(root,bodyX,bodyY,bodyW,bodyH,accent,false)
+  elseif toolKey=="personal_sales" then self:RenderOldSales(root,bodyX,bodyY,bodyW,bodyH,accent,false)
+  elseif toolKey=="daily_quests" then self:RenderOldDaily(root,bodyX,bodyY,bodyW,bodyH,accent)
+  elseif toolKey=="fishing" then self:RenderOldFishing(root,bodyX,bodyY,bodyW,bodyH,accent)
+  elseif toolKey=="guild_gold_ledger" then self:RenderOldLedger(root,bodyX,bodyY,bodyW,bodyH,accent,true)
+  elseif toolKey=="guild_bank" then self:RenderOldGuildBank(root,bodyX,bodyY,bodyW,bodyH,accent)
+  elseif toolKey=="guild_sales" then self:RenderOldSales(root,bodyX,bodyY,bodyW,bodyH,accent,true)
+  elseif toolKey=="guild_bookkeeper" then self:RenderOldBookkeeper(root,bodyX,bodyY,bodyW,bodyH,accent)
+  elseif toolKey=="guild_raffle" then self:RenderOldRaffle(root,bodyX,bodyY,bodyW,bodyH,accent)
+  elseif toolKey=="guild_dues" then self:RenderOldDues(root,bodyX,bodyY,bodyW,bodyH,accent)
+  elseif toolKey=="trader_bids" then self:RenderOldTraderBids(root,bodyX,bodyY,bodyW,bodyH,accent)
+  elseif toolKey=="personal_instructions" then self:RenderOldPersonalInstructions(root,bodyX,bodyY,bodyW,bodyH,accent)
+  elseif toolKey=="help" then self:RenderOldHelp(root,bodyX,bodyY,bodyW,bodyH,accent)
+  elseif toolKey=="creator" then self:RenderOldCreator(root,bodyX,bodyY,bodyW,bodyH,accent)
+  end
+  self:DrawToolActionBar(root,bodyX,y+h-footerH+12,bodyW,accent); if self.state.toolButton > #(self.currentToolButtons or {}) then self.state.toolButton=1 end; self:RefreshKeybinds()
+end
+
+local OldInitialize_21662 = TML.Initialize
+function TML:Initialize(addonName)
+  OldInitialize_21662(self, addonName)
+  self:EnsureDataDefaults(); self:InstallEventPipelines()
+  if d then d("Tamriel Master Ledger v"..self.version.." working pipelines connected. Saved data is capped for console memory safety.") end
+end
+
+
+-- v2.0.16.62 final accent override
+function TML:GetAccentColor(name)
+  name = tostring(name or "cyan")
+  if name == "yellow" then return C.yellow end
+  if name == "gold" then return C.gold end
+  if name == "red" then return C.red end
+  if name == "purple" then return {RGBA("CC66FF")} end
+  if name == "green" then return {RGBA("44FF77")} end
+  return C.cyanSoft
+end
+
+-- =========================================================
+-- v2.0.16.63 PAGE PIPELINE + LAYOUT PASS
+-- User-requested pass: page-specific pipelines, guild selector boxes, rarity display,
+-- scroll/focus metadata, daily zone board, ledger net change, sales/bookkeeper/bank polish.
+-- =========================================================
+TML.version = "2.0.16.63"
+TML.addOnVersion = 21663
+TML.lastUpdated = "06/13/2026 03:20 UTC"
+
+local V21663_RAFFLE_RESET_MOD = 33
+local V21663_ESO_DAILY_RESET_UTC = "10:00 UTC"
+
+local function VColor(hex, alpha)
+  return {RGBA(hex or "FFFFFF", alpha == nil and 1 or alpha)}
+end
+local VGreen = VColor("44FF77")
+local VRed = VColor("FF5555")
+local VYellow = VColor("FFD700")
+local VPurple = VColor("CC66FF")
+local VBlue = VColor("4AA3FF")
+local VOrange = VColor("FFAA33")
+local VGrey = VColor("BFC7D5")
+
+local function VText(cell)
+  if type(cell) == "table" then return tostring(cell.text or cell[1] or "") end
+  return tostring(cell or "")
+end
+local function VCellColor(cell, fallback)
+  if type(cell) == "table" and cell.color then return cell.color end
+  return fallback or C.white
+end
+local function VCell(text, color) return { text = tostring(text or ""), color = color or C.white } end
+local function VClamp(n, lo, hi) n = tonumber(n) or lo; if n < lo then return lo end; if n > hi then return hi end; return n end
+
+local function VDayStartUTC(ts)
+  ts = tonumber(ts) or WNow()
+  if not os or not os.date or not os.time then return ts - (ts % WORKING_SECONDS_DAY) end
+  local d = os.date("!*t", ts)
+  if not d then return ts - (ts % WORKING_SECONDS_DAY) end
+  d.hour = 10; d.min = 0; d.sec = 0
+  local reset = os.time(d) or (ts - (ts % WORKING_SECONDS_DAY))
+  if ts < reset then reset = reset - WORKING_SECONDS_DAY end
+  return reset
+end
+
+local function VIsRaffleResetAmount(amount)
+  amount = tonumber(amount) or 0
+  return amount > 0 and (amount % 100) == V21663_RAFFLE_RESET_MOD
+end
+local function VIsRaffleTicketAmount(amount)
+  amount = tonumber(amount) or 0
+  return amount > 0 and (amount % WORKING_RAFFLE_TICKET_BASE) == WORKING_RAFFLE_TICKET_MOD and not VIsRaffleResetAmount(amount) and amount ~= WORKING_RAFFLE_MARKER_AMOUNT
+end
+
+function TML:GetItemLinkColor(itemLink)
+  if not itemLink or itemLink == "" then return nil end
+  local q = nil
+  if type(GetItemLinkQuality) == "function" then local ok,v = pcall(GetItemLinkQuality, itemLink); if ok then q = tonumber(v) end end
+  if not q then return nil end
+  if q <= 0 then return C.white end
+  if q == 1 then return VGreen end
+  if q == 2 then return VBlue end
+  if q == 3 then return VPurple end
+  if q >= 4 then return C.gold end
+  return C.white
+end
+function TML:FormatItemCell(itemLink, itemName, max)
+  local text = (itemLink and itemLink ~= "" and itemLink) or WLimit(itemName or WNA(), max or 32)
+  return VCell(text, self:GetItemLinkColor(itemLink) or C.white)
+end
+
+-- Color-aware table, plus row highlight support for completed daily rows.
+function TML:DrawLegacyTable(root, key, x, y, w, h, title, headers, rows, accent, colWeights)
+  self:DrawLegacyPanel(root, key, x, y, w, h, title, accent)
+  headers = headers or {}; rows = rows or {}; colWeights = colWeights or {}
+  local top = y + 58
+  local colCount = math.max(1, #headers)
+  local totalWeight = 0
+  for i=1,colCount do totalWeight = totalWeight + (tonumber(colWeights[i]) or 1) end
+  if totalWeight <= 0 then totalWeight = colCount end
+  local usable = w - 56
+  local colX = {}; local colW = {}; local running = x + 32
+  for i=1,colCount do
+    local cw = math.floor(usable * ((tonumber(colWeights[i]) or 1) / totalWeight))
+    colX[i] = running; colW[i] = cw - 8; running = running + cw
+  end
+  self:Backdrop(key.."HeadBg", root, x + 24, top, w - 48, 34, {accent[1], accent[2], accent[3], 0.14}, {accent[1], accent[2], accent[3], 0.30})
+  for i,hdr in ipairs(headers) do self:Label(key.."Head"..i, root, tostring(hdr), colX[i], top, colW[i], 34, accent, FONTS.panelSmall, TEXT_ALIGN_LEFT) end
+  local rowH = 32
+  local maxRows = math.min(#rows, math.floor((h - 104) / rowH))
+  for r=1,maxRows do
+    local yy = top + 40 + (r-1)*rowH
+    local row = rows[r]
+    local rowColor = type(row) == "table" and row.__rowColor or nil
+    local bg = rowColor and {rowColor[1], rowColor[2], rowColor[3], 0.20} or {0,0,0,(r % 2 == 0) and 0.34 or 0.22}
+    local edge = rowColor and {rowColor[1], rowColor[2], rowColor[3], 0.50} or nil
+    self:Backdrop(key.."RowBg"..r, root, x + 24, yy, w - 48, rowH - 2, bg, edge)
+    for c=1,colCount do
+      local cell = row[c]
+      local val = VText(cell)
+      local color = VCellColor(cell, C.white)
+      if type(cell) ~= "table" then
+        if val:find("N/A",1,true) or val == "--" or val == "No data loaded" then color = C.muted end
+        if val:find("Taken",1,true) or val:find("Pending",1,true) or val:find("Withdraw",1,true) or val:find("Unpaid",1,true) or val:find("Owed",1,true) then color = C.redDim end
+        if val:find("Paid",1,true) or val:find("Donation",1,true) or val:find("Given",1,true) or val:find("Complete",1,true) then color = VGreen end
+      end
+      self:Label(key.."R"..r.."C"..c, root, val, colX[c], yy, colW[c], rowH, color, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+    end
+  end
+end
+
+function TML:DrawMiniStat(root, key, x, y, w, h, title, value, accent, valueColor)
+  local edge = accent or C.cyanSoft
+  self:Backdrop(key.."Bg", root, x, y, w, h, {0,0,0,0.56}, {edge[1], edge[2], edge[3], 0.44})
+  self:Label(key.."Title", root, tostring(title or ""), x + 16, y + 8, w - 32, 26, edge, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+  self:Label(key.."Value", root, tostring(value or "--"), x + 16, y + 36, w - 32, h - 40, valueColor or edge or C.white, FONTS.panelText, TEXT_ALIGN_LEFT)
+end
+
+function TML:DrawLegacyStats(root, key, x, y, w, rows, accent)
+  rows = rows or {}
+  local rowH = math.max(26, math.min(36, math.floor(520 / math.max(1, #rows))))
+  for i, row in ipairs(rows) do
+    local yy = y + (i - 1) * rowH
+    self:Label(key.."K"..i, root, tostring(row[1] or ""), x, yy, math.floor(w*0.58), rowH, C.white, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+    self:Label(key.."V"..i, root, tostring(row[2] or "--"), x + math.floor(w*0.58), yy, math.floor(w*0.38), rowH, row[3] or C.gold, FONTS.panelSmall, TEXT_ALIGN_RIGHT)
+  end
+end
+
+-- Button registry now stores geometry. Directional inputs use nearest-button logic instead of one-dimensional up/down only.
+function TML:BeginToolButtons()
+  self.currentToolButtons = {}
+  self.state.toolButton = math.max(1, tonumber(self.state.toolButton or 1) or 1)
+end
+function TML:ToolButton(root, key, x, y, w, h, text, accent, callback)
+  self.currentToolButtons = self.currentToolButtons or {}
+  local idx = #self.currentToolButtons + 1
+  self.currentToolButtons[idx] = {label=text, callback=callback or function() end, x=x, y=y, w=w, h=h, cx=x+w/2, cy=y+h/2, key=key}
+  self:DrawLegacyButton(root, key, x, y, w, h, text, accent, callback, (self.state.toolButton or 1) == idx)
+end
+function TML:MoveToolFocusByDirection(dx, dy)
+  local buttons = self.currentToolButtons or {}; local count = #buttons
+  if count <= 0 then return end
+  local curIdx = VClamp(self.state.toolButton or 1, 1, count)
+  local cur = buttons[curIdx] or buttons[1]
+  local bestIdx, bestScore = nil, nil
+  for i,b in ipairs(buttons) do
+    if i ~= curIdx and b.cx and b.cy then
+      local vx, vy = (b.cx - cur.cx), (b.cy - cur.cy)
+      local dot = vx * (dx or 0) + vy * (dy or 0)
+      local correct = false
+      if math.abs(dx or 0) >= math.abs(dy or 0) then correct = ((dx or 0) > 0 and vx > 4) or ((dx or 0) < 0 and vx < -4) else correct = ((dy or 0) > 0 and vy > 4) or ((dy or 0) < 0 and vy < -4) end
+      if correct and dot > 0 then
+        local cross = math.abs((dx or 0) ~= 0 and vy or vx)
+        local dist = math.sqrt(vx*vx + vy*vy)
+        local score = cross * 12 + dist
+        if not bestScore or score < bestScore then bestScore = score; bestIdx = i end
+      end
+    end
+  end
+  if bestIdx then self.state.toolButton = bestIdx; self:RenderTool(self.state.activeTool or "help") else self:MoveSelection((dy or dx or 1) > 0 and 1 or -1) end
+end
+function TML:MoveSelection(delta)
+  if self.state.mode == "tool" then
+    local count = self.currentToolButtons and #self.currentToolButtons or 0
+    if count <= 0 then return end
+    local idx = (tonumber(self.state.toolButton or 1) or 1) + (tonumber(delta) or 0)
+    if idx < 1 then idx = count end; if idx > count then idx = 1 end
+    self.state.toolButton = idx; self:RenderTool(self.state.activeTool or "help"); return
+  end
+  local menuName = self.state.menu or "main"; local def = self.menus[menuName] or self.menus.main; local count = #(def.entries or {})
+  if count <= 0 then return end
+  local idx = self:GetSelectedIndex(menuName) + (tonumber(delta) or 0); if idx < 1 then idx = count end; if idx > count then idx = 1 end
+  self:SetSelectedIndex(menuName, idx); self:RenderMenu()
+end
+function TML:HandleKeyDown(key)
+  if not self:IsOpen() then return end
+  if IsKey(key, "KEY_ESCAPE", "KEY_BACKSPACE", "KEY_X", "KEY_B", "KEY_GAMEPAD_BUTTON_B", "KEY_GAMEPAD_BUTTON_2") then self:Back(); return end
+  if IsKey(key, "KEY_ENTER", "KEY_E", "KEY_SPACEBAR", "KEY_SPACE", "KEY_GAMEPAD_BUTTON_A", "KEY_GAMEPAD_BUTTON_1") then self:SelectCurrent(); return end
+  if IsKey(key, "KEY_UPARROW", "KEY_W", "KEY_GAMEPAD_DPAD_UP", "KEY_GAMEPAD_LEFT_STICK_UP", "KEY_GAMEPAD_LEFT_SHOULDER", "KEY_PAGEUP") then if self.state.mode=="tool" then self:MoveToolFocusByDirection(0,-1) else self:MoveSelection(-1) end; return end
+  if IsKey(key, "KEY_DOWNARROW", "KEY_S", "KEY_GAMEPAD_DPAD_DOWN", "KEY_GAMEPAD_LEFT_STICK_DOWN", "KEY_GAMEPAD_RIGHT_SHOULDER", "KEY_PAGEDOWN") then if self.state.mode=="tool" then self:MoveToolFocusByDirection(0,1) else self:MoveSelection(1) end; return end
+  if IsKey(key, "KEY_LEFTARROW", "KEY_A", "KEY_GAMEPAD_DPAD_LEFT", "KEY_GAMEPAD_LEFT_STICK_LEFT") then if self.state.mode=="tool" then self:MoveToolFocusByDirection(-1,0) else self:MoveSelection(-1) end; return end
+  if IsKey(key, "KEY_RIGHTARROW", "KEY_D", "KEY_GAMEPAD_DPAD_RIGHT", "KEY_GAMEPAD_LEFT_STICK_RIGHT") then if self.state.mode=="tool" then self:MoveToolFocusByDirection(1,0) else self:MoveSelection(1) end; return end
+  if IsKey(key, "KEY_GAMEPAD_START", "KEY_GAMEPAD_BUTTON_START", "KEY_DELETE") then self:ReturnToESOMenu(); return end
+end
+function TML:EnsureDirectionalInput()
+  if self.directionalInputObject and self.directionalInputObject.v21663 then return self.directionalInputObject end
+  local obj = { lastMoveMS = 0, v21663 = true }
+  function obj:UpdateDirectionalInput(deltaS)
+    if not TML or not TML:IsOpen() or not DIRECTIONAL_INPUT then return end
+    local x, y = 0, 0
+    local function readDevice(dev)
+      if dev == nil then return end
+      if DIRECTIONAL_INPUT.GetXY then
+        local ok, gx, gy = SafeCall(function() return DIRECTIONAL_INPUT:GetXY(dev) end)
+        if ok then gx, gy = tonumber(gx) or 0, tonumber(gy) or 0; if math.abs(gx)>math.abs(x) then x=gx end; if math.abs(gy)>math.abs(y) then y=gy end end
+      else
+        if DIRECTIONAL_INPUT.GetX then local ok,gx=SafeCall(function() return DIRECTIONAL_INPUT:GetX(dev) end); gx=ok and (tonumber(gx) or 0) or 0; if math.abs(gx)>math.abs(x) then x=gx end end
+        if DIRECTIONAL_INPUT.GetY then local ok,gy=SafeCall(function() return DIRECTIONAL_INPUT:GetY(dev) end); gy=ok and (tonumber(gy) or 0) or 0; if math.abs(gy)>math.abs(y) then y=gy end end
+      end
+    end
+    readDevice(_G.ZO_DI_DPAD); readDevice(_G.ZO_DI_LEFT_STICK); readDevice(1); readDevice(2); readDevice(3)
+    if DIRECTIONAL_INPUT.ConsumeAll then SafeCall(function() DIRECTIONAL_INPUT:ConsumeAll() end) end
+    local now = FrameMS()
+    if (math.abs(x)>0.55 or math.abs(y)>0.55) and (now-(self.lastMoveMS or 0)>165) then
+      self.lastMoveMS=now
+      if math.abs(x) > math.abs(y) then
+        if TML.state.mode=="tool" then TML:MoveToolFocusByDirection(x>0 and 1 or -1,0) else TML:MoveSelection(x>0 and 1 or -1) end
+      else
+        if TML.state.mode=="tool" then TML:MoveToolFocusByDirection(0,y>0 and -1 or 1) else TML:MoveSelection(y>0 and -1 or 1) end
+      end
+    end
+  end
+  self.directionalInputObject = obj
+  return obj
+end
+
+function TML:SetSelectedGuildIndex(i)
+  self:RefreshGuilds(); local n = #(self.guilds or {})
+  self.saved.guildIndex = VClamp(i or 1, 1, math.max(1,n))
+  self:RenderTool(self.state.activeTool)
+end
+function TML:DrawGuildSelectorLive(root, x, y, w, h, accent)
+  self:RefreshGuilds()
+  local g = self:GetGuild()
+  self:DrawLegacyPanel(root, "GuildSelectorLive", x, y, w, h, "SELECT GUILD", accent)
+  local yy = y + 66
+  local rowH = 46
+  local maxGuilds = math.min(#(self.guilds or {}), math.floor((h - 150) / rowH))
+  for i=1,maxGuilds do
+    local guild = self.guilds[i]
+    local selected = (self.saved.guildIndex or 1) == i
+    local edge = selected and C.gold or accent
+    self:ToolButton(root, "GuildSelect"..i, x+24, yy+(i-1)*rowH, w-48, 38, (selected and "• " or "")..WLimit(guild.name, 22), edge, function() TML:SetSelectedGuildIndex(i) end)
+    if selected then self:Backdrop("GuildSelectActive"..i, root, x+20, yy+(i-1)*rowH-2, w-40, 42, {C.cyan[1],C.cyan[2],C.cyan[3],0.08}, {C.gold[1],C.gold[2],C.gold[3],0.55}) end
+  end
+  self:Label("GuildSelStatus", root, "Selected: "..WLimit(g.name,22), x+24, y+h-72, w-48, 54, C.white, FONTS.panelSmall, TEXT_ALIGN_CENTER)
+end
+
+-- Personal gold ledger: ESO does not expose every mail/trade/vendor reason, so we track wallet/bank deltas and label exposed history only.
+function TML:ScanPersonalGoldLedger()
+  self:EnsureDataDefaults(); self.saved.personalGoldEvents = self.saved.personalGoldEvents or {}
+  local nw = self:GetNetWorth(); local carried = tonumber(nw.carriedGold) or 0; local bank = tonumber(nw.bankedGold) or 0; local total = carried + bank
+  local last = self.saved.goldSnapshots and self.saved.goldSnapshots.personalLast
+  if last and tonumber(last.total) then
+    local delta = total - tonumber(last.total)
+    if delta ~= 0 then
+      local key = tostring(WNow())..":"..tostring(delta)
+      self.saved.personalGoldEvents[key] = {timestamp=WNow(), user=self:GetUserDisplayName(), source="Detected Gold Change", amount=math.abs(delta), direction=delta>0 and "in" or "out", note="Wallet/bank delta"}
+      self:PruneEventTable(self.saved.personalGoldEvents, WORKING_MAX_EVENTS)
+    end
+  end
+  self.saved.goldSnapshots = self.saved.goldSnapshots or {}
+  self.saved.goldSnapshots.personalLast = {carriedGold=carried, bankedGold=bank, total=total, timestamp=WNow()}
+  self.saved.scanStatus.personalGold = "Refreshed personal gold ledger"
+end
+function TML:GetPersonalGoldRows()
+  self:EnsureDataDefaults(); local rows = {}
+  local my = self:GetUserDisplayName()
+  for _,e in pairs(self.saved.personalGoldEvents or {}) do rows[#rows+1]=e end
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do
+    if WSameUser(e.user,my) then
+      rows[#rows+1] = {timestamp=e.timestamp,user=e.user,source="Guild Bank "..(e.action or "gold"),amount=e.amount,direction=e.action=="deposit" and "out" or "in",note=e.bucket or "Guild"}
+    end
+  end
+  table.sort(rows,function(a,b) return (a.timestamp or 0)>(b.timestamp or 0) end)
+  return rows
+end
+function TML:ComputePersonalGoldStats()
+  local nw = self:GetNetWorth(); local st={current=tonumber(nw.carriedGold) or 0, bank=tonumber(nw.bankedGold) or 0, goldIn=0, goldOut=0, net=0}
+  for _,e in ipairs(self:GetPersonalGoldRows()) do
+    local amt = tonumber(e.amount) or 0
+    if e.direction == "in" then st.goldIn = st.goldIn + amt else st.goldOut = st.goldOut + amt end
+  end
+  st.net = st.goldIn - st.goldOut
+  return st
+end
+
+function TML:FindRaffleResetTime(guildId)
+  local ts = 0
+  for _,e in pairs(self.saved.donationEvents or {}) do if e.guildId==guildId and VIsRaffleResetAmount(e.amount) and (e.timestamp or 0)>ts then ts=e.timestamp end end
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do if e.guildId==guildId and VIsRaffleResetAmount(e.amount) and (e.timestamp or 0)>ts then ts=e.timestamp end end
+  return ts
+end
+function TML:GetTicketGold(guildId)
+  local reset = self:FindRaffleResetTime(guildId); local total=0
+  for _,e in pairs(self.saved.donationEvents or {}) do if e.guildId==guildId and (e.timestamp or 0)>=reset and VIsRaffleTicketAmount(e.amount) then total=total+(tonumber(e.amount) or 0) end end
+  return total, reset
+end
+function TML:ScanRaffleEntries()
+  local g=self:GetGuild(); if not g or g.id==0 then self:Notify("Select a guild before scanning raffle entries."); return end
+  self:ScanGuildGold(g); local r=self:GetRaffle(g.id); r.entries={}; local count=0; local reset=self:FindRaffleResetTime(g.id); r.started=reset
+  for _,e in pairs(self.saved.donationEvents or {}) do
+    if e.guildId==g.id and (e.timestamp or 0)>=reset and VIsRaffleTicketAmount(e.amount) then
+      local tickets=math.floor((tonumber(e.amount) or 0)/WORKING_RAFFLE_TICKET_BASE)
+      local user=e.user or WNA(); r.entries[user]=r.entries[user] or {name=user,tickets=0,gold=0,last=0}
+      r.entries[user].tickets=r.entries[user].tickets+tickets; r.entries[user].gold=r.entries[user].gold+(e.amount or 0); if (e.timestamp or 0)>(r.entries[user].last or 0) then r.entries[user].last=e.timestamp end; count=count+1
+    end
+  end
+  r.lastScan=WNow(); self.saved.scanStatus.raffle="Scanned "..count.." raffle deposits after 33g reset marker"; self:RenderTool(self.state.activeTool)
+end
+
+function TML:ComputeGuildGoldStats(guildId)
+  local st={bank=nil, donations=0, withdrawn=0, pending=0, ticketGold=0, adjusted=0}
+  local g = nil; self:RefreshGuilds(); for _,gg in ipairs(self.guilds or {}) do if gg.id==guildId then g=gg end end
+  if g and type(GetGuildBankedMoney)=="function" then local ok,v=pcall(GetGuildBankedMoney, g.id); if ok then st.bank=tonumber(v) end end
+  for _,e in ipairs(self:GetGuildGoldRows(guildId)) do
+    local amt=tonumber(e.amount) or 0
+    if e.action=="deposit" then st.donations=st.donations+amt else st.withdrawn=st.withdrawn+amt end
+    if e.bucket=="Pending Bid" then st.pending=st.pending+amt end
+  end
+  st.ticketGold = self:GetTicketGold(guildId)
+  st.adjusted = (st.bank or 0) - st.pending
+  return st
+end
+
+function TML:ComputeSalesStats(guildId, onlyMe)
+  local rows = self:GetSalesRows(guildId, onlyMe); local st = {salesToday=0, totalSales=0, items=0, tax=0, net=0, topEarner=WNA()}
+  local start = VDayStartUTC(WNow())
+  local earners = {}
+  for _,e in ipairs(rows) do
+    local amt = tonumber(e.amount) or 0; local tax = tonumber(e.tax) or 0; local seller = e.seller or WNA()
+    if (tonumber(e.timestamp) or 0) >= start then st.salesToday = st.salesToday + amt end
+    st.totalSales = st.totalSales + amt; st.items = st.items + (tonumber(e.quantity) or 1); st.tax = st.tax + tax; st.net = st.net + amt - tax
+    earners[seller] = (earners[seller] or 0) + amt
+  end
+  local bestAmt=-1; for u,v in pairs(earners) do if v>bestAmt then bestAmt=v; st.topEarner=u end end
+  return st
+end
+function TML:GetBestSellerRows(guildId)
+  local by = {}
+  for _,e in ipairs(self:GetSalesRows(guildId, false)) do
+    local key = e.itemLink or e.itemName or WNA(); local r=by[key] or {itemLink=e.itemLink,itemName=e.itemName,qty=0,amount=0,tax=0,last=0}
+    r.qty=r.qty+(tonumber(e.quantity) or 1); r.amount=r.amount+(tonumber(e.amount) or 0); r.tax=r.tax+(tonumber(e.tax) or 0); if (e.timestamp or 0)>r.last then r.last=e.timestamp end; by[key]=r
+  end
+  local rows={}; for _,r in pairs(by) do rows[#rows+1]=r end; table.sort(rows,function(a,b) return (a.amount or 0)>(b.amount or 0) end); return rows
+end
+
+function TML:GetDailyZoneDefinitions()
+  return {
+    {cat="Base Game", zone="Auridon", daily="0/2", focus="Boss / Delve", reward="Gear / coffers", value=20},
+    {cat="Base Game", zone="Glenumbra", daily="0/2", focus="Boss / Delve", reward="Gear / coffers", value=20},
+    {cat="Base Game", zone="Stonefalls", daily="0/2", focus="Boss / Delve", reward="Gear / coffers", value=20},
+    {cat="Base Game", zone="Grahtwood", daily="0/2", focus="Boss / Delve", reward="Gear / coffers", value=18},
+    {cat="Base Game", zone="Stormhaven", daily="0/2", focus="Boss / Delve", reward="Gear / coffers", value=18},
+    {cat="Base Game", zone="Deshaan", daily="0/2", focus="Boss / Delve", reward="Gear / coffers", value=18},
+    {cat="DLC", zone="Wrothgar", daily="0/3", focus="Delve / Boss / Arena", reward="Briarheart / motifs", value=75},
+    {cat="DLC", zone="Gold Coast", daily="0/2", focus="Bounties / Contracts", reward="Motifs / style", value=50},
+    {cat="DLC", zone="Hew's Bane", daily="0/2", focus="Heists / Delve", reward="Motifs / style", value=45},
+    {cat="DLC", zone="Clockwork City", daily="0/2", focus="Delve / Boss", reward="Apostle / Ebonshadow", value=55},
+    {cat="DLC", zone="Murkmire", daily="0/2", focus="Delve / Boss", reward="Plans / motifs", value=55},
+    {cat="DLC", zone="Fargrave", daily="0/3", focus="District / Plaza", reward="Coffers / style", value=80},
+    {cat="Chapter", zone="Vvardenfell", daily="0/4", focus="Ashlander / WB / Delve", reward="Motifs / plans", value=60},
+    {cat="Chapter", zone="Summerset", daily="0/3", focus="Geyser / Delve / Boss", reward="Motifs / jewelry", value=65},
+    {cat="Chapter", zone="Northern Elsweyr", daily="0/3", focus="Dragon / Boss / Delve", reward="Motifs / dragon loot", value=65},
+    {cat="Chapter", zone="Western Skyrim", daily="0/3", focus="Harrowstorm / Boss / Delve", reward="Motifs / style", value=60},
+    {cat="Chapter", zone="Blackwood", daily="0/3", focus="Portal / Boss / Delve", reward="Motifs / plans", value=62},
+    {cat="Chapter", zone="High Isle", daily="0/3", focus="Volcanic Vent / Boss / Delve", reward="Motifs / plans", value=70},
+    {cat="Chapter", zone="Telvanni Peninsula", daily="0/3", focus="Bastion / Boss / Delve", reward="Motifs / gear", value=85},
+    {cat="Chapter", zone="West Weald", daily="0/3", focus="Incursion / Boss / Delve", reward="Coffers / plans", value=90},
+    {cat="High Value", zone="Solstice / Sunport", daily="0/2", focus="Delve / World Boss", reward="Tide-Born / plans", value=100},
+  }
+end
+function TML:GetDailyRows()
+  self:EnsureDataDefaults(); self.saved.daily = self.saved.daily or {}; local defs = self:GetDailyZoneDefinitions(); local filter = self.saved.dailyFilter or "High Value"
+  local rows = {}
+  for i,d in ipairs(defs) do
+    local done = self.saved.daily[tostring(i)] and true or false
+    local comp = done and d.daily:gsub("0/", string.match(d.daily, "/(%d+)").."/") or d.daily
+    local row = {d.cat, d.zone, d.focus, d.reward, comp.." Completed", "Daily "..V21663_ESO_DAILY_RESET_UTC}
+    if done then row.__rowColor = VGreen end
+    row.__value = d.value; row.__done = done; row.__cat = d.cat
+    rows[#rows+1] = row
+  end
+  if filter == "High Value" or filter == "Highest to Least" then table.sort(rows,function(a,b) return (a.__value or 0)>(b.__value or 0) end)
+  elseif filter == "Incomplete to Complete" then table.sort(rows,function(a,b) return tostring(a.__done)<tostring(b.__done) end)
+  elseif filter == "Completed to Incomplete" then table.sort(rows,function(a,b) return tostring(a.__done)>tostring(b.__done) end)
+  elseif filter == "DLC" or filter == "Base Game" or filter == "Chapter" then local f={}; for _,r in ipairs(rows) do if r.__cat==filter then f[#f+1]=r end end; rows=f end
+  return rows
+end
+function TML:CycleDailyFilter()
+  local opts={"High Value","Highest to Least","Incomplete to Complete","Completed to Incomplete","DLC","Base Game","Chapter"}; local cur=self.saved.dailyFilter or opts[1]; local idx=1; for i,v in ipairs(opts) do if v==cur then idx=i end end; self.saved.dailyFilter=opts[(idx%#opts)+1]; self:RenderTool(self.state.activeTool)
+end
+
+function TML:RenderOldNetWorth(root, x, y, w, h, accent)
+  local nw = self:GetNetWorth(); local leftW = 520
+  self:DrawLegacyPanel(root, "NWStats", x, y, leftW, h, "SUMMARY", accent)
+  local stats = {
+    {"Gold", "", C.cyanSoft}, {"Total Net Worth", WFormatGold(nw.total), C.gold}, {"Character Net Worth", WFormatGold(nw.character), C.gold}, {"Carried Gold", WFormatGold(nw.carriedGold), C.gold}, {"Banked Gold", WFormatGold(nw.bankedGold), C.gold},
+    {"Inventory Value", "", C.cyanSoft}, {"Carried Items", WFormatGold(nw.carriedItems), C.cyanSoft}, {"Banked Items", WFormatGold(nw.bankedItems), C.cyanSoft}, {"Material Bag", WFormatGold(nw.craftBag), C.cyanSoft}, {"Unpriced Items", WFormatNumber(nw.unpriced), C.muted},
+    {"Currencies", "", C.cyanSoft},
+  }
+  for _,cur in ipairs(nw.currencies or {}) do stats[#stats+1] = {cur[1], cur[2] == nil and WNA() or WFormatNumber(cur[2]), cur[2] == nil and C.muted or C.gold} end
+  self:DrawLegacyStats(root, "NW", x+30, y+68, leftW-60, stats, accent)
+  self:ToolButton(root, "NWScan", x+34, y+h-58, leftW-68, 42, "Scan Net Worth", accent, function() TML:ScanNetWorth(); TML:RenderTool("net_worth") end)
+  local rows={}; for i,it in ipairs(nw.top or {}) do rows[#rows+1]={tostring(i), self:FormatItemCell(it.itemLink,it.name,34), WFormatNumber(it.qty), WFormatGold(it.value), it.location or it.source or WNA()} end
+  self:DrawLegacyTable(root, "NWTopItems", x+leftW+26, y, w-leftW-26, h, "TOP 20 MOST VALUABLE ITEMS", {"Rank","Item Name","Qty","Value","Location"}, self:RowsOrNA(rows,5,"No priced items found"), accent, {0.55,3.1,0.7,1.0,1.1})
+end
+
+-- Track item location and item link in net worth top rows.
+local OldScanNetWorth_21663 = TML.ScanNetWorth
+function TML:ScanNetWorth()
+  self:EnsureDataDefaults()
+  local nw = { total=0, character=0, carriedGold=0, bankedGold=0, carriedItems=0, bankedItems=0, craftBag=0, unpriced=0, top={}, currencies={}, lastScan=WNow() }
+  local money = WCurrencyAny({"CURT_MONEY"}, {_G.CURRENCY_LOCATION_CHARACTER, nil})
+  if money == nil and type(GetCurrentMoney) == "function" then local ok, v = pcall(GetCurrentMoney); if ok then money = tonumber(v) end end
+  nw.carriedGold = money or 0
+  if type(GetBankedMoney) == "function" then local ok, v = pcall(GetBankedMoney); if ok then nw.bankedGold = tonumber(v) or 0 end end
+  local accountLoc = { _G.CURRENCY_LOCATION_ACCOUNT, nil }; local charBankLoc = { _G.CURRENCY_LOCATION_CHARACTER, _G.CURRENCY_LOCATION_BANK, _G.CURRENCY_LOCATION_ACCOUNT, nil }
+  nw.currencies = {{"Crowns", WCurrencyAny({"CURT_CROWNS", "CURT_CROWN_CROWNS"}, accountLoc)}, {"Crown Gems", WCurrencyAny({"CURT_CROWN_GEMS"}, accountLoc)}, {"Writ Vouchers", WCurrencyAny({"CURT_WRIT_VOUCHERS", "CURT_WRIT_VOUCHER"}, charBankLoc)}, {"Alliance Points", WCurrencyAny({"CURT_ALLIANCE_POINTS"}, charBankLoc)}, {"Tel Var Stones", WCurrencyAny({"CURT_TELVAR_STONES"}, charBankLoc)}, {"Trade Bars", WCurrencyAny({"CURT_TRADE_BARS", "CURT_EVENT_TICKETS", "CURT_EVENT_TICKET"}, accountLoc)}, {"Undaunted Keys", WCurrencyAny({"CURT_UNDAUNTED_KEYS", "CURT_UNDAUNTED_KEY"}, charBankLoc)}, {"Seals", WCurrencyAny({"CURT_SEALS_OF_ENDEAVOR", "CURT_ENDEAVOR_SEALS", "CURT_SEAL_OF_ENDEAVOR"}, accountLoc)}, {"Archival Fortunes", WCurrencyAny({"CURT_ARCHIVAL_FORTUNES", "CURT_ARCHIVAL_FORTUNE"}, charBankLoc)}, {"Tome Points", WCurrencyAny({"CURT_TOME_POINTS", "CURT_TAMRIEL_TOME_POINTS", "CURT_TAMRIEL_TOMES"}, accountLoc)}}
+  local function scanBag(bagId, bucket, locName)
+    if bagId == nil or type(GetBagSize) ~= "function" or type(GetItemLink) ~= "function" then return end
+    local okSize, size = pcall(GetBagSize, bagId); size = okSize and tonumber(size) or 0
+    for slot=0, math.max(0, size-1) do
+      local okLink,itemLink=pcall(GetItemLink, bagId, slot)
+      if okLink and itemLink and itemLink ~= "" then
+        local qty=1; if type(GetSlotStackSize)=="function" then local okQ,q=pcall(GetSlotStackSize,bagId,slot); if okQ and q then qty=tonumber(q) or 1 end end
+        local value,source=WGetItemValue(itemLink,qty); local name=WGetItemName(itemLink)
+        if value then nw[bucket]=(nw[bucket] or 0)+value; table.insert(nw.top,{name=name,itemLink=itemLink,qty=qty,value=value,source=source or "value",location=locName}) else nw.unpriced=(nw.unpriced or 0)+1 end
+      end
+    end
+  end
+  scanBag(_G.BAG_BACKPACK,"carriedItems","Backpack"); scanBag(_G.BAG_BANK,"bankedItems","Bank"); scanBag(_G.BAG_SUBSCRIBER_BANK,"bankedItems","Bank"); scanBag(_G.BAG_VIRTUAL,"craftBag","Craft Bag")
+  table.sort(nw.top,function(a,b) return (a.value or 0)>(b.value or 0) end); while #nw.top>20 do table.remove(nw.top) end
+  nw.character=nw.carriedGold+nw.carriedItems; nw.total=nw.character+nw.bankedGold+nw.bankedItems+nw.craftBag; self.saved.networth=nw; self.saved.goldSnapshots.last={carriedGold=nw.carriedGold,bankedGold=nw.bankedGold,timestamp=WNow()}; self:Notify("Net Worth scanned.")
+end
+
+function TML:RenderOldLedger(root, x, y, w, h, accent, guildMode)
+  if guildMode then
+    local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeGuildGoldStats(g.id); local topH=154
+    self:DrawLegacyPanel(root,"LedgerStats",rx,y,rw,topH,"GUILD GOLD LEDGER",accent)
+    local cards={{"Bank Gold",WFormatGold(st.bank),C.gold},{"Donations",WFormatGold(st.donations),VGreen},{"Withdrawn",WFormatGold(st.withdrawn),VRed},{"Pending Bids",WFormatGold(st.pending),VRed},{"Ticket Gold",WFormatGold(st.ticketGold),VYellow},{"Adjusted",WFormatGold(st.adjusted),C.gold}}
+    local cardW=math.floor((rw-94)/6); for i,c in ipairs(cards) do self:DrawMiniStat(root,"LedgerMini"..i,rx+20+(i-1)*(cardW+10),y+58,cardW,74,c[1],c[2],c[3],c[3]) end
+    local rows={}; for _,e in ipairs(self:GetGuildGoldRows(g.id)) do rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.action=="deposit" and VCell("Deposit",VGreen) or VCell("Withdraw",VRed),VCell(WFormatGold(e.amount),C.gold),e.bucket} end
+    self:DrawLegacyTable(root,"LedgerHistory",rx,y+topH+20,math.floor(rw*.64),h-topH-20,"BANK GOLD HISTORY",{"Date","User","Event","Amount","Bucket"},self:RowsOrNA(rows,5,"Press Scan Gold"),accent,{1,1.2,1,1,1.2})
+    local sideX=rx+math.floor(rw*.64)+22; local sideW=rw-math.floor(rw*.64)-22; self:DrawLegacyPanel(root,"LedgerSide",sideX,y+topH+20,sideW,h-topH-20,"TICKET RULES",accent,C.yellow)
+    self:Label("TicketRulesText",root,"Ticket Gold: "..WFormatGold(st.ticketGold).."\nEntry rule: 1,001g = 1 ticket.\nReset rule: latest bank gold entry ending in 33g resets raffle counting.\nOnly ticket-rule deposits after reset count.",sideX+22,y+topH+76,sideW-44,150,C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+    self:ToolButton(root,"GoldScanBtn",sideX+28,y+h-70,sideW-56,44,"Scan Gold History",accent,function() TML:ScanSelectedGuildGold() end)
+  else
+    self:ScanPersonalGoldLedger(); local st=self:ComputePersonalGoldStats(); local topH=150; self:DrawLegacyPanel(root,"LedgerStats",x,y,w,topH,"GOLD LEDGER",accent)
+    local cards={{"Current Gold",WFormatGold(st.current),C.gold},{"Bank Gold",WFormatGold(st.bank),C.gold},{"Gold In",WFormatGold(st.goldIn),VGreen},{"Gold Out",WFormatGold(st.goldOut),VRed},{"Net Change",WFormatGold(st.net),st.net>=0 and VGreen or VRed}}
+    local cardW=math.floor((w-88)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"LedgerMini"..i,x+24+(i-1)*(cardW+10),y+60,cardW,72,c[1],c[2],c[3],c[3]) end
+    local rows={}; for _,e in ipairs(self:GetPersonalGoldRows()) do rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.source,VCell((e.direction=="in" and "+" or "-")..WFormatGold(e.amount),e.direction=="in" and VGreen or VRed),e.note or WNA()} end
+    self:DrawLegacyTable(root,"LedgerHistory",x,y+topH+22,w,h-topH-82,"PERSONAL GOLD HISTORY",{"Date","User","Source","Amount","Note"},self:RowsOrNA(rows,5,"Press Refresh Ledger"),accent,{1,1.2,1.8,1,1.1})
+    self:ToolButton(root,"PersonalGoldRefresh",x,y+h-52,210,42,"Refresh Ledger",accent,function() TML:ScanPersonalGoldLedger(); TML:RenderTool("gold_ledger_personal") end)
+  end
+end
+
+function TML:RenderOldSales(root,x,y,w,h,accent,guildMode)
+  local selectorW = guildMode and 300 or 0; if guildMode then self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent) end
+  local rx=x+selectorW+(guildMode and 24 or 0); local rw=w-selectorW-(guildMode and 24 or 0); local g=self:GetGuild(); local st=self:ComputeSalesStats(guildMode and g.id or 0, not guildMode)
+  self:DrawLegacyPanel(root,"SalesStats",rx,y,rw,142,guildMode and "GUILD SALES DASHBOARD" or "PERSONAL SALES DASHBOARD",accent)
+  local cards = guildMode and {{"Sales Today",WFormatGold(st.salesToday),VGreen},{"Total Sales",WFormatGold(st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Guild Tax",WFormatGold(st.tax),VGreen},{"Top Earner",WLimit(st.topEarner,18),C.white}} or {{"Sales",WFormatGold(st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Net Earned",WFormatGold(st.net),VYellow},{"Guilds",WFormatNumber(#(self.guilds or {})),C.cyanSoft},{"Status",self.saved.scanStatus.sales or WNA(),C.white}}
+  local cardW=math.floor((rw-78)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"SalesCard"..i,rx+20+(i-1)*(cardW+10),y+56,cardW,68,c[1],c[2],c[3],c[3]) end
+  local rows={}
+  if guildMode and (self.saved.salesFilter or "Recent") == "Best Sellers" then
+    for _,e in ipairs(self:GetBestSellerRows(g.id)) do rows[#rows+1]={self:FormatItemCell(e.itemLink,e.itemName,30),WFormatNumber(e.qty),VCell(WFormatGold(e.amount),VYellow),VCell(WFormatGold(e.tax),VGreen),WRelTime(e.last)} end
+    self:DrawLegacyTable(root,"SalesRows",rx,y+166,rw,h-228,"GUILD TRADER SALES - BEST SELLERS",{"Item","Qty","Gold","Tax","Last"},self:RowsOrNA(rows,5,"Press Scan Sales"),accent,{2.6,.7,1,1,1})
+  else
+    for _,e in ipairs(self:GetSalesRows(guildMode and g.id or 0, not guildMode)) do rows[#rows+1]={guildMode and WLimit(e.seller,20) or self:FormatItemCell(e.itemLink,e.itemName,28), guildMode and self:FormatItemCell(e.itemLink,e.itemName,25) or self:GetGuildName(e.guildId), WFormatNumber(e.quantity), VCell(WFormatGold(e.amount),VYellow), WRelTime(e.timestamp)} end
+    self:DrawLegacyTable(root,"SalesRows",rx,y+166,rw,h-228,guildMode and "GUILD TRADER SALES" or "SALES",{guildMode and "Seller" or "Item",guildMode and "Item" or "Guild","Qty","Gold","When"},self:RowsOrNA(rows,5,"Press Scan Sales"),accent,{1.4,2.2,.7,1,1})
+  end
+  local by=y+h-52; self:ToolButton(root,"SalesScanOne",rx,by,170,42,guildMode and "Scan Guild" or "Scan Sales",accent,function() if guildMode then TML:ScanSelectedGuildSales() else TML:ScanAllGuildSales() end end)
+  self:ToolButton(root,"SalesScanAll",rx+184,by,150,42,"Scan All",accent,function() TML:ScanAllGuildSales() end)
+  if guildMode then self:ToolButton(root,"SalesFilter",rx+348,by,190,42,"Filter: "..(self.saved.salesFilter or "Recent"),accent,function() TML.saved.salesFilter = (TML.saved.salesFilter=="Best Sellers") and "Recent" or "Best Sellers"; TML:RenderTool("guild_sales") end) end
+end
+
+function TML:RenderOldDaily(root,x,y,w,h,accent)
+  local rows=self:GetDailyRows(); local done=0; for _,r in ipairs(rows) do if r.__done then done=done+1 end end
+  self:DrawLegacyPanel(root,"DailyPriority",x,y,w,154,"DAILY ZONE TRACKER",accent,C.yellow)
+  local cards={{"Completed",done},{"Remaining",#rows-done},{"Filter",self.saved.dailyFilter or "High Value"},{"Reset","Daily "..V21663_ESO_DAILY_RESET_UTC},{"Tracked Zones",#rows}}
+  local cardW=math.floor((w-76)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"DailyCard"..i,x+20+(i-1)*(cardW+10),y+58,cardW,72,c[1],tostring(c[2]),i==1 and VGreen or accent,i==1 and VGreen or C.white) end
+  self:DrawLegacyTable(root,"DailyTable",x,y+176,w,h-238,"ALL ZONES",{"Type","Zone","Daily Focus","Reward Focus","#/# Completed","Reset"},rows,accent,{1,1.55,1.6,1.5,1.15,1.1})
+  local by=y+h-52; self:ToolButton(root,"DailyFilter",x,by,220,42,"Filter: "..(self.saved.dailyFilter or "High Value"),accent,function() TML:CycleDailyFilter() end); self:ToolButton(root,"DailyScan",x+234,by,190,42,"Scan Dailies",accent,function() TML.saved.scanStatus.daily="Daily API limited; manual/checklist data refreshed"; TML:RenderTool("daily_quests") end); self:ToolButton(root,"DailyReset",x+438,by,150,42,"Reset",C.red,function() TML:ResetDailies() end)
+end
+
+function TML:RenderOldGuildBank(root,x,y,w,h,accent)
+  local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeBankStats(g.id)
+  self:DrawLegacyPanel(root,"BankTotals",rx,y,rw,132,"BANK TOTALS",accent)
+  local cards={{"Given",WFormatNumber(st.given),VGreen},{"Taken",WFormatNumber(st.taken),VRed},{"Net Value",WFormatGold(st.netValue),VYellow},{"Current Items",WFormatNumber(st.currentItems),VGreen},{"Last",st.last,C.white}}
+  local cardW=math.floor((rw-76)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"BankCard"..i,rx+20+(i-1)*(cardW+10),y+52,cardW,66,c[1],c[2],c[3],c[3]) end
+  local memberRows={}; for _,r in ipairs(self:GetBankMemberRows(g.id)) do local ratioColor = (r.value or 0) >= 0 and VGreen or ((r.value or 0) < -10 and VRed or VOrange); memberRows[#memberRows+1]={VCell(WLimit(r.user,22),ratioColor),VCell(WFormatNumber(r.taken),VRed),VCell(WFormatNumber(r.given),VGreen),VCell(WFormatGold(r.value), (r.value or 0)>=0 and VYellow or VRed),WRelTime(r.last)} end
+  self:DrawLegacyTable(root,"BankMembers",rx,y+154,rw,226,"MEMBER BANK TOTALS - ALL TIME",{"UserID","Taken","Given","Net Value","Last"},self:RowsOrNA(memberRows,5,"Press Scan Bank"),accent,{1.5,.8,.8,1,1})
+  local hist={}; for _,e in ipairs(self:GetBankRows(g.id)) do hist[#hist+1]={e.action=="withdraw" and VCell("Taken",VRed) or VCell("Given",VGreen),WLimit(e.user,18),self:FormatItemCell(e.itemLink,e.itemName,28),WFormatNumber(e.quantity),e.value and VCell(WFormatGold(e.value),VYellow) or WNA(),WRelTime(e.timestamp)} end
+  self:DrawLegacyTable(root,"BankHistory",rx,y+400,rw,h-462,"BANK ITEM HISTORY",{"Action","Member","Item","Qty","Value","When"},self:RowsOrNA(hist,6,"Press Scan Bank"),accent,{.85,1.1,2.2,.6,1,1})
+  self:ToolButton(root,"BankScan",rx,y+h-52,160,40,"Scan Bank",accent,function() TML:ScanGuildBankItems(TML:GetGuild()); TML:RenderTool("guild_bank") end)
+end
+
+function TML:RenderOldBookkeeper(root,x,y,w,h,accent)
+  local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local tableW=math.floor((w-selectorW-48)*.70); local g=self:GetGuild()
+  local donations={}; for _,e in pairs(self.saved.donationEvents or {}) do if e.guildId==g.id then donations[e.user]=(donations[e.user] or 0)+(e.amount or 0) end end
+  local sales={}; for _,e in pairs(self.saved.salesEvents or {}) do if e.guildId==g.id then sales[e.seller]=(sales[e.seller] or 0)+(e.amount or 0) end end
+  local r=self:GetRaffle(g.id); local raffles={}; for _,e in pairs(r.entries or {}) do raffles[e.name]=(raffles[e.name] or 0)+(e.gold or 0) end
+  local rows={}; local totalSales,totalDon,totalRaf,totalPaid,totalOwed,caught,owing=0,0,0,0,0,0,0
+  for _,m in ipairs(self:GetRosterRows(g.id)) do
+    local s=sales[m.name] or 0; local d=donations[m.name] or 0; local rf=raffles[m.name] or 0; local due=tonumber(self.saved.dueAmount) or 0; local bal=d-due; if bal>=0 then caught=caught+1; totalPaid=totalPaid+due else owing=owing+1; totalOwed=totalOwed+math.abs(bal) end
+    totalSales=totalSales+s; totalDon=totalDon+d; totalRaf=totalRaf+rf
+    rows[#rows+1]={WLimit(m.name,20),VCell(WFormatGold(s),VGreen),VCell(WFormatGold(d),VGreen),VCell(WFormatGold(rf),VYellow),VCell(WFormatGold(bal),bal>=0 and VGreen or VRed),m.lastOnlineSeconds and WRelTime(WNow()-m.lastOnlineSeconds) or WNA()}
+  end
+  self:DrawLegacyTable(root,"BookkeeperTable",rx,y,tableW,h-60,"MEMBER BOOKKEEPER",{"Member","Sales","Donations","Raffles","Dues","Last Online"},self:RowsOrNA(rows,6,"Press Scan Activity"),accent,{1.5,1,1,1,1,1})
+  local sideX=rx+tableW+24; local sideW=w-(sideX-x); self:DrawLegacyPanel(root,"BookkeeperRight",sideX,y,sideW,h,"SUMMARY",accent)
+  local summary={{"Total Sales",WFormatGold(totalSales),VGreen},{"Total Donations",WFormatGold(totalDon),VGreen},{"Total Raffles",WFormatGold(totalRaf),VYellow},{"Dues Paid",WFormatGold(totalPaid),VGreen},{"Dues Owed",WFormatGold(totalOwed),VRed},{"Caught Up",WFormatNumber(caught),VGreen},{"Owing",WFormatNumber(owing),VRed}}
+  for i,t in ipairs(summary) do self:DrawMiniStat(root,"BookMini"..i,sideX+22,y+54+(i-1)*72,sideW-44,62,t[1],tostring(t[2]),t[3],t[3]) end
+  self:ToolButton(root,"BookScan",sideX+38,y+h-62,sideW-76,44,"Scan Activity",accent,function() TML:ScanBookkeeper() end)
+end
+
+-- Ensure sales, gold, bank, bookkeeper and guild pages all scan selected/all guild data from visible buttons.
+function TML:ScanAllGuildPagesForSelectedGuild()
+  local g=self:GetGuild(); self:ScanGuildGold(g); self:ScanGuildSales(g); self:ScanGuildBankItems(g); self:ScanRoster(g); self:ScanRaffleEntries()
+end
+
+local OldInstallEventPipelines_21663 = TML.InstallEventPipelines
+function TML:InstallEventPipelines()
+  if OldInstallEventPipelines_21663 then OldInstallEventPipelines_21663(self) end
+  if self.moneyEventInstalled then return end; self.moneyEventInstalled=true
+  if EVENT_MANAGER and _G.EVENT_MONEY_UPDATE then
+    EVENT_MANAGER:RegisterForEvent(self.name.."MoneyDelta", EVENT_MONEY_UPDATE, function()
+      if TML then TML:ScanPersonalGoldLedger() end
+    end)
+  end
+end
+
+local OldInitialize_21663 = TML.Initialize
+function TML:Initialize(addonName)
+  OldInitialize_21663(self, addonName)
+  if d then d("Tamriel Master Ledger v"..self.version.." page pipeline/layout pass loaded.") end
+end
+
+-- =========================================================
+-- v2.0.16.64 WORKING PAGE FIX PASS
+-- Fixes: full menu space, mouse wheel, personal/guild pipelines, raffle popouts,
+-- dues keypad/reset, bucket classification, personal sales/gold ledger repairs.
+-- =========================================================
+TML.version = "2.0.16.64"
+TML.addOnVersion = 21664
+TML.lastUpdated = "06/13/2026 04:45 UTC"
+
+local V21664_TICKET_RESET_MOD = 33
+local V21664_TABLE_MAX_EVENTS = 900
+
+local function V21664_FormatGoldOrNA(v)
+  if v == nil then return WNA() end
+  return WFormatGold(v)
+end
+local function V21664_NormalUser(v)
+  v = tostring(v or "")
+  v = v:gsub("^%s+", ""):gsub("%s+$", "")
+  return Lower(v)
+end
+local function V21664_AmountBucket(amount, isDeposit, rawText)
+  amount = tonumber(amount) or 0
+  rawText = Lower(rawText or "")
+  if not isDeposit then
+    if rawText:find("bid") or rawText:find("trader") or rawText:find("kiosk") or rawText:find("hire") then return "Trader Bid" end
+    if rawText:find("herald") then return "Heraldry" end
+    return "Withdraw"
+  end
+  if amount > 0 and (amount % 100) == V21664_TICKET_RESET_MOD then return "Reset" end
+  if amount > 0 and (amount % WORKING_RAFFLE_TICKET_BASE) == WORKING_RAFFLE_TICKET_MOD then return "Ticket" end
+  return "Donation"
+end
+local function V21664_IsTicket(amount)
+  amount = tonumber(amount) or 0
+  return amount > 0 and (amount % WORKING_RAFFLE_TICKET_BASE) == WORKING_RAFFLE_TICKET_MOD and (amount % 100) ~= V21664_TICKET_RESET_MOD
+end
+local function V21664_IsReset(amount)
+  amount = tonumber(amount) or 0
+  return amount > 0 and (amount % 100) == V21664_TICKET_RESET_MOD
+end
+local function V21664_GoldLocation(location)
+  local curt = _G.CURT_MONEY
+  if curt == nil then curt = 1 end
+  if type(GetCurrencyAmount) == "function" and location ~= nil then
+    local ok,v = pcall(GetCurrencyAmount, curt, location)
+    if ok and v ~= nil then return tonumber(v) end
+  end
+  return nil
+end
+function TML:GetCarriedGoldLive()
+  local v = nil
+  if type(GetCurrentMoney) == "function" then local ok,x=pcall(GetCurrentMoney); if ok and x ~= nil then v=tonumber(x) end end
+  if v == nil and type(GetCarriedCurrencyAmount) == "function" then local ok,x=pcall(GetCarriedCurrencyAmount, _G.CURT_MONEY); if ok and x ~= nil then v=tonumber(x) end end
+  if v == nil then v = V21664_GoldLocation(_G.CURRENCY_LOCATION_CHARACTER) end
+  return v
+end
+function TML:GetBankGoldLive()
+  local v = nil
+  if type(GetBankedMoney) == "function" then local ok,x=pcall(GetBankedMoney); if ok and x ~= nil then v=tonumber(x) end end
+  if v == nil and type(GetBankedCurrencyAmount) == "function" then local ok,x=pcall(GetBankedCurrencyAmount, _G.CURT_MONEY); if ok and x ~= nil then v=tonumber(x) end end
+  if v == nil then v = V21664_GoldLocation(_G.CURRENCY_LOCATION_BANK) end
+  return v
+end
+
+-- Let menu entries use the full available rail height before scrolling.
+function TML:GetMenuViewport(menuName)
+  local def = self.menus[menuName] or self.menus.main
+  local count = #(def.entries or {})
+  local selected = self:GetSelectedIndex(menuName)
+  local rw,rh = self:GetRootSize()
+  local usableH = rh - 8
+  local listTop = 172
+  local footerTop = usableH - 172
+  local rowH = 64
+  local visible = math.max(1, math.floor((footerTop - listTop) / rowH))
+  visible = math.max(1, math.min(count, visible))
+  local offset = self.state.offset[menuName] or 0
+  if count <= visible then offset = 0
+  else
+    if selected <= offset then offset = selected - 1 end
+    if selected > offset + visible then offset = selected - visible end
+    offset = math.max(0, math.min(offset, math.max(0, count - visible)))
+  end
+  self.state.offset[menuName] = offset
+  return offset + 1, math.min(count, offset + visible)
+end
+
+local OldHit_21664 = TML.Hit
+function TML:Hit(key, parent, x, y, w, h, onClick)
+  local hit = OldHit_21664(self, key, parent, x, y, w, h, onClick)
+  if hit and hit.SetHandler then
+    hit:SetHandler("OnMouseWheel", function(_, delta)
+      if delta and delta > 0 then TML:MoveSelection(-1) else TML:MoveSelection(1) end
+    end)
+  end
+  return hit
+end
+
+function TML:RenderMenu()
+  self:HideAllPooledControls()
+  local root = self.ui.root
+  if not root then return end
+  local rw,rh = self:GetRootSize()
+  local railW = math.floor(math.min(560, rw * 0.34))
+  local usableH = rh - 8
+  self:Backdrop("RailBackground", root, 0, 0, railW, usableH, C.black90, {C.cyan[1], C.cyan[2], C.cyan[3], 0.65})
+  self:Backdrop("RailDivider", root, railW - 4, 0, 4, usableH, {C.cyan[1], C.cyan[2], C.cyan[3], 0.95}, nil)
+  local menuName = self.state.menu or "main"
+  self:RenderHeader(root, railW, self:GetMenuDisplayName(menuName))
+  local def = self.menus[menuName] or self.menus.main
+  local startIndex, endIndex = self:GetMenuViewport(menuName)
+  local selected = self:GetSelectedIndex(menuName)
+  local rowH = 64
+  local startY = 172
+  local rowX = 38
+  local rowW = railW - 76
+  local xIcon = rowX + 24
+  local xText = rowX + 82
+  local textW = rowW - 104
+  for i = startIndex, endIndex do
+    local entry = def.entries[i]
+    local row = i - startIndex
+    local y = startY + row * rowH
+    local isSelected = (i == selected)
+    local textColor, iconColor = self:GetEntryColors(entry, isSelected)
+    if isSelected then
+      self:Backdrop("SelGlow"..i, root, rowX, y + 4, rowW, rowH - 8, {C.cyan[1], C.cyan[2], C.cyan[3], 0.12}, {C.cyan[1], C.cyan[2], C.cyan[3], 0.75})
+    end
+    self:Texture("Icon"..i, root, entry.icon or self.icon, xIcon, y + 13, 38, 38, iconColor)
+    local labelText = LimitText(self:GetMenuEntryLabel(entry), 30)
+    self:Label("Text"..i, root, labelText, xText, y, textW, rowH, textColor, FONTS.menuNormal)
+    self:Hit("Hit"..i, root, rowX, y, rowW, rowH, function()
+      TML:SetSelectedIndex(menuName, i)
+      TML:RenderMenu()
+      TML:SelectCurrent()
+    end)
+  end
+  self:RenderControlsFooter(root, railW, usableH, "menu")
+  self:RefreshKeybinds()
+end
+
+-- Modal/keypad helpers for manual/set actions.
+function TML:OpenNumberPad(kind, title, current, saveCallback)
+  self.state.modal = { type="number", kind=kind, title=title or "ENTER VALUE", value=tostring(current or ""), save=saveCallback }
+  self.state.toolButton = 1
+  self:RenderTool(self.state.activeTool)
+end
+function TML:CloseModal(redraw)
+  self.state.modal = nil
+  self.state.toolButton = 1
+  if redraw ~= false then self:RenderTool(self.state.activeTool) end
+end
+function TML:RenderNumberPad(root)
+  local rw,rh = self:GetRootSize(); local mw,mh=560,520; local x=math.floor((rw-mw)/2); local y=math.floor((rh-mh)/2)
+  local m=self.state.modal or {}
+  self.currentToolButtons = {}
+  self:Backdrop("ModalDim", root, 0, 0, rw, rh, {0,0,0,0.55}, nil)
+  self:Backdrop("ModalBg", root, x, y, mw, mh, {0,0,0,0.92}, {C.cyan[1],C.cyan[2],C.cyan[3],0.95})
+  self:Label("ModalTitle", root, tostring(m.title or "ENTER VALUE"), x, y+24, mw, 42, C.cyanSoft, FONTS.panelTitle, TEXT_ALIGN_CENTER)
+  self:Backdrop("ModalValueBg", root, x+56, y+84, mw-112, 62, {0,0,0,0.64}, {C.gold[1],C.gold[2],C.gold[3],0.70})
+  self:Label("ModalValue", root, tostring(m.value or "0"), x+72, y+84, mw-144, 62, C.gold, FONTS.panelTitle, TEXT_ALIGN_RIGHT)
+  local nums={"1","2","3","4","5","6","7","8","9","Clear","0","Back"}
+  local bx=x+68; local by=y+168; local bw=132; local bh=54; local gap=14
+  for i,n in ipairs(nums) do
+    local col=(i-1)%3; local row=math.floor((i-1)/3)
+    self:ToolButton(root,"ModalKey"..i,bx+col*(bw+gap),by+row*(bh+gap),bw,bh,n,C.cyanSoft,function()
+      local mm=TML.state.modal; if not mm then return end
+      if n=="Clear" then mm.value="" elseif n=="Back" then mm.value=tostring(mm.value or ""):sub(1,-2) else mm.value=tostring(mm.value or "")..n end
+      TML:RenderTool(TML.state.activeTool)
+    end)
+  end
+  self:ToolButton(root,"ModalExit",x+68,y+mh-76,194,54,"Exit",C.red,function() TML:CloseModal() end)
+  self:ToolButton(root,"ModalSave",x+298,y+mh-76,194,54,"Save and Continue",C.cyanSoft,function()
+    local mm=TML.state.modal; if mm and mm.save then mm.save(tonumber(mm.value) or 0) end
+    TML:CloseModal()
+  end)
+end
+function TML:RenderWinnersPopout(root)
+  local rw,rh=self:GetRootSize(); local mw,mh=820,560; local x=math.floor((rw-mw)/2); local y=math.floor((rh-mh)/2)
+  local m=self.state.modal or {}; local winners=m.winners or {}
+  self.currentToolButtons = {}
+  self:Backdrop("WinnerDim",root,0,0,rw,rh,{0,0,0,0.60},nil)
+  self:Backdrop("WinnerBg",root,x,y,mw,mh,{0,0,0,0.94},{C.gold[1],C.gold[2],C.gold[3],0.95})
+  self:Label("WinnerTitle",root,"RAFFLE WINNERS",x,y+28,mw,54,C.gold,FONTS.panelTitle,TEXT_ALIGN_CENTER)
+  self:Label("WinnerSub",root,"Congratulations to the winners!",x,y+82,mw,34,C.cyanSoft,FONTS.panelText,TEXT_ALIGN_CENTER)
+  for i=1,3 do
+    local win=winners[i] or {name="N/A",tickets=0,odds=0,prize=0}
+    local rowY=y+140+(i-1)*96
+    local place=i==1 and "1st" or (i==2 and "2nd" or "3rd")
+    self:Backdrop("WinnerRow"..i,root,x+70,rowY,mw-140,76,{C.gold[1],C.gold[2],C.gold[3],i==1 and 0.18 or 0.10},{C.cyan[1],C.cyan[2],C.cyan[3],0.55})
+    self:Label("WinnerPlace"..i,root,place,x+90,rowY,mw*0.16,76,C.gold,FONTS.panelTitle,TEXT_ALIGN_LEFT)
+    self:Label("WinnerName"..i,root,tostring(win.name or "N/A"),x+220,rowY,260,76,C.white,FONTS.panelText,TEXT_ALIGN_LEFT)
+    self:Label("WinnerTickets"..i,root,"Tickets: "..tostring(win.tickets or 0),x+490,rowY,140,76,VYellow,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+    self:Label("WinnerOdds"..i,root,string.format("Odds: %.2f%%", tonumber(win.odds) or 0),x+620,rowY,130,76,VGreen,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+    self:Label("WinnerPrize"..i,root,WFormatGold(win.prize or 0),x+720,rowY,80,76,C.gold,FONTS.panelSmall,TEXT_ALIGN_RIGHT)
+  end
+  self:ToolButton(root,"WinnerClose",x+180,y+mh-82,210,54,"Back to Raffle",C.cyanSoft,function() TML:CloseModal() end)
+  self:ToolButton(root,"WinnerExit",x+430,y+mh-82,210,54,"Exit",C.red,function() TML:CloseModal(false); TML:ReturnToESOMenu() end)
+end
+
+local OldBack_21664 = TML.Back
+function TML:Back()
+  if self.state and self.state.modal then self:CloseModal(); return end
+  OldBack_21664(self)
+end
+local OldHandleKeyDown_21664 = TML.HandleKeyDown
+function TML:HandleKeyDown(key)
+  if self.state and self.state.modal and IsKey(key, "KEY_ESCAPE", "KEY_BACKSPACE", "KEY_X", "KEY_B", "KEY_GAMEPAD_BUTTON_B", "KEY_GAMEPAD_BUTTON_2") then self:CloseModal(); return end
+  OldHandleKeyDown_21664(self, key)
+end
+
+-- Live net worth scan with reliable direct gold pulls and item locations.
+function TML:ScanNetWorth()
+  self:EnsureDataDefaults()
+  local nw={total=0,character=0,carriedGold=0,bankedGold=0,carriedItems=0,bankedItems=0,craftBag=0,unpriced=0,top={},currencies={},lastScan=WNow()}
+  nw.carriedGold = self:GetCarriedGoldLive() or 0
+  nw.bankedGold = self:GetBankGoldLive() or 0
+  local accountLoc={_G.CURRENCY_LOCATION_ACCOUNT,nil}; local charBankLoc={_G.CURRENCY_LOCATION_CHARACTER,_G.CURRENCY_LOCATION_BANK,_G.CURRENCY_LOCATION_ACCOUNT,nil}
+  nw.currencies={{"Crowns",WCurrencyAny({"CURT_CROWNS","CURT_CROWN_CROWNS"},accountLoc)},{"Crown Gems",WCurrencyAny({"CURT_CROWN_GEMS"},accountLoc)},{"Writ Vouchers",WCurrencyAny({"CURT_WRIT_VOUCHERS","CURT_WRIT_VOUCHER"},charBankLoc)},{"Alliance Points",WCurrencyAny({"CURT_ALLIANCE_POINTS"},charBankLoc)},{"Tel Var Stones",WCurrencyAny({"CURT_TELVAR_STONES"},charBankLoc)},{"Trade Bars",WCurrencyAny({"CURT_TRADE_BARS","CURT_EVENT_TICKETS","CURT_EVENT_TICKET"},accountLoc)},{"Undaunted Keys",WCurrencyAny({"CURT_UNDAUNTED_KEYS","CURT_UNDAUNTED_KEY"},charBankLoc)},{"Seals",WCurrencyAny({"CURT_SEALS_OF_ENDEAVOR","CURT_ENDEAVOR_SEALS","CURT_SEAL_OF_ENDEAVOR"},accountLoc)},{"Archival Fortunes",WCurrencyAny({"CURT_ARCHIVAL_FORTUNES","CURT_ARCHIVAL_FORTUNE"},charBankLoc)},{"Tome Points",WCurrencyAny({"CURT_TOME_POINTS","CURT_TAMRIEL_TOME_POINTS","CURT_TAMRIEL_TOMES"},accountLoc)}}
+  local function scanBag(bagId,bucket,locName)
+    if bagId==nil or type(GetBagSize)~="function" or type(GetItemLink)~="function" then return end
+    local okSize,size=pcall(GetBagSize,bagId); size=okSize and tonumber(size) or 0
+    for slot=0,math.max(0,size-1) do
+      local okLink,itemLink=pcall(GetItemLink,bagId,slot)
+      if okLink and itemLink and itemLink~="" then
+        local qty=1; if type(GetSlotStackSize)=="function" then local okQ,q=pcall(GetSlotStackSize,bagId,slot); if okQ and q then qty=tonumber(q) or 1 end end
+        local value,source=WGetItemValue(itemLink,qty); local name=WGetItemName(itemLink)
+        if value then nw[bucket]=(nw[bucket] or 0)+value; table.insert(nw.top,{name=name,itemLink=itemLink,qty=qty,value=value,source=source or "value",location=locName}) else nw.unpriced=(nw.unpriced or 0)+1 end
+      end
+    end
+  end
+  scanBag(_G.BAG_BACKPACK,"carriedItems","Backpack"); scanBag(_G.BAG_BANK,"bankedItems","Bank"); scanBag(_G.BAG_SUBSCRIBER_BANK,"bankedItems","Bank"); scanBag(_G.BAG_VIRTUAL,"craftBag","Craft Bag")
+  table.sort(nw.top,function(a,b) return (a.value or 0)>(b.value or 0) end); while #nw.top>20 do table.remove(nw.top) end
+  nw.character=nw.carriedGold+nw.carriedItems; nw.total=nw.character+nw.bankedGold+nw.bankedItems+nw.craftBag
+  self.saved.networth=nw; self.saved.goldSnapshots=self.saved.goldSnapshots or {}; self.saved.goldSnapshots.last={carriedGold=nw.carriedGold,bankedGold=nw.bankedGold,timestamp=WNow()}
+  self.saved.scanStatus.networth="Scanned net worth"
+end
+
+function TML:RenderOldNetWorth(root,x,y,w,h,accent)
+  local nw=self:GetNetWorth(); local leftW=520
+  self:DrawLegacyPanel(root,"NWStats",x,y,leftW,h-62,"SUMMARY",accent)
+  local topY=y+68; local col1=x+30; local col2=x+280; local rowH=29
+  local left={{"GOLD","",C.cyanSoft},{"Total Net Worth",WFormatGold(nw.total),C.gold},{"Character Net Worth",WFormatGold(nw.character),C.gold},{"Carried Gold",WFormatGold(nw.carriedGold),C.gold},{"Banked Gold",WFormatGold(nw.bankedGold),C.gold},{"INVENTORY VALUE","",C.cyanSoft},{"Carried Items",WFormatGold(nw.carriedItems),C.cyanSoft},{"Banked Items",WFormatGold(nw.bankedItems),C.cyanSoft},{"Material Bag",WFormatGold(nw.craftBag),C.cyanSoft},{"Unpriced Items",WFormatNumber(nw.unpriced),C.muted}}
+  local right={{"CURRENCIES","",C.cyanSoft}}
+  for _,cur in ipairs(nw.currencies or {}) do right[#right+1]={cur[1],cur[2]==nil and WNA() or WFormatNumber(cur[2]),cur[2]==nil and C.muted or C.gold} end
+  for i,r in ipairs(left) do self:Label("NWLeftK"..i,root,r[1],col1,topY+(i-1)*rowH,140,rowH,r[3] or C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("NWLeftV"..i,root,r[2] or "",col1+138,topY+(i-1)*rowH,90,rowH,r[3] or C.gold,FONTS.panelSmall,TEXT_ALIGN_RIGHT) end
+  for i,r in ipairs(right) do self:Label("NWRightK"..i,root,r[1],col2,topY+(i-1)*rowH,145,rowH,r[3] or C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("NWRightV"..i,root,r[2] or "",col2+145,topY+(i-1)*rowH,70,rowH,r[3] or C.gold,FONTS.panelSmall,TEXT_ALIGN_RIGHT) end
+  local rows={}; for i,it in ipairs(nw.top or {}) do rows[#rows+1]={tostring(i),self:FormatItemCell(it.itemLink,it.name,34),WFormatNumber(it.qty),VCell(WFormatGold(it.value),C.gold),it.location or it.source or WNA()} end
+  self:DrawLegacyTable(root,"NWTopItems",x+leftW+26,y,w-leftW-26,h-62,"TOP 20 MOST VALUABLE ITEMS",{"Rank","Item Name","Qty","Value","Location"},self:RowsOrNA(rows,5,"No priced items found"),accent,{0.40,3.20,0.70,1.05,1.10})
+  local by=y+h-52; local bw=math.floor((w-24)/3); self:ToolButton(root,"NWScan",x,by,bw,42,"Scan Net Worth",accent,function() TML:ScanNetWorth(); TML:RenderTool("net_worth") end); self:ToolButton(root,"NWBack",x+bw+12,by,bw,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"NWExit",x+(bw+12)*2,by,bw,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+-- Personal gold ledger fixed: live gold boxes and controlled history scan.
+function TML:ScanPersonalGoldLedger()
+  self:EnsureDataDefaults(); self.saved.personalGoldEvents=self.saved.personalGoldEvents or {}; self.saved.goldSnapshots=self.saved.goldSnapshots or {}
+  local carried=self:GetCarriedGoldLive(); local bank=self:GetBankGoldLive(); carried=carried or 0; bank=bank or 0; local total=carried+bank
+  local last=self.saved.goldSnapshots.personalLast
+  if last and tonumber(last.total) and total ~= tonumber(last.total) then
+    local delta=total-tonumber(last.total); local key=tostring(WNow())..":"..tostring(delta)..":"..tostring(math.random(9999))
+    self.saved.personalGoldEvents[key]={timestamp=WNow(),user=self:GetUserDisplayName(),source="Detected Gold Change",amount=math.abs(delta),direction=delta>0 and "in" or "out",note="Wallet/bank delta"}
+    self:PruneEventTable(self.saved.personalGoldEvents,V21664_TABLE_MAX_EVENTS)
+  end
+  self.saved.goldSnapshots.personalLast={carriedGold=carried,bankedGold=bank,total=total,timestamp=WNow()}
+  self.saved.scanStatus.personalGold="Refreshed personal gold ledger"
+end
+function TML:ComputePersonalGoldStats()
+  local carried=self:GetCarriedGoldLive(); local bank=self:GetBankGoldLive(); local st={current=carried or 0, bank=bank, goldIn=0, goldOut=0, net=0}
+  for _,e in ipairs(self:GetPersonalGoldRows()) do local amt=tonumber(e.amount) or 0; if e.direction=="in" then st.goldIn=st.goldIn+amt else st.goldOut=st.goldOut+amt end end
+  st.net=st.goldIn-st.goldOut; return st
+end
+function TML:RenderOldLedger(root,x,y,w,h,accent,guildMode)
+  if guildMode then
+    local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeGuildGoldStats(g.id); local topH=154
+    self:DrawLegacyPanel(root,"LedgerStats",rx,y,rw,topH,"GUILD GOLD LEDGER",accent)
+    local cards={{"Bank Gold",V21664_FormatGoldOrNA(st.bank),C.gold},{"Donations",WFormatGold(st.donations),VGreen},{"Withdrawn",WFormatGold(st.withdrawn),VRed},{"Pending Bids",WFormatGold(st.pending),VRed},{"Ticket Gold",WFormatGold(st.ticketGold),VYellow},{"Adjusted",WFormatGold(st.adjusted),C.gold}}
+    local cardW=math.floor((rw-94)/6); for i,c in ipairs(cards) do self:DrawMiniStat(root,"LedgerMini"..i,rx+20+(i-1)*(cardW+10),y+58,cardW,74,c[1],c[2],c[3],c[3]) end
+    local rows={}; for _,e in ipairs(self:GetGuildGoldRows(g.id)) do local event=e.action=="deposit" and VCell("Deposit",VGreen) or VCell("Withdraw",VRed); rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),event,VCell(WFormatGold(e.amount),e.action=="deposit" and VGreen or VRed),e.bucket or "N/A"} end
+    self:DrawLegacyTable(root,"LedgerHistory",rx,y+topH+20,math.floor(rw*.64),h-topH-82,"BANK GOLD HISTORY",{"Date","User","Event","Amount","Bucket"},self:RowsOrNA(rows,5,"Press Scan Gold"),accent,{1,1.2,1,1,1.2})
+    local sideX=rx+math.floor(rw*.64)+22; local sideW=rw-math.floor(rw*.64)-22; self:DrawLegacyPanel(root,"LedgerSide",sideX,y+topH+20,sideW,h-topH-82,"TICKET RULES",accent,C.yellow)
+    self:Label("TicketRulesText",root,"Ticket Gold: "..WFormatGold(st.ticketGold).."\nEntry rule: 1,001g = 1 ticket.\nReset rule: latest deposit ending in 33g resets raffle counting.\nBucket labels: Donation / Ticket / Withdraw / Trader Bid / Heraldry.",sideX+22,y+topH+76,sideW-44,180,C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+    local by=y+h-52; self:ToolButton(root,"GoldScanBtn",rx,by,210,42,"Scan Gold History",accent,function() TML:ScanSelectedGuildGold() end); self:ToolButton(root,"GoldBack",rx+224,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"GoldExit",rx+448,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+  else
+    local st=self:ComputePersonalGoldStats(); local topH=150; self:DrawLegacyPanel(root,"LedgerStats",x,y,w,topH,"GOLD LEDGER",accent)
+    local bankText=st.bank==nil and "Bank not scanned" or WFormatGold(st.bank)
+    local cards={{"Current Gold",WFormatGold(st.current),C.gold},{"Bank Gold",bankText,C.gold},{"Gold In",WFormatGold(st.goldIn),VGreen},{"Gold Out",WFormatGold(st.goldOut),VRed},{"Net Change",WFormatGold(st.net),st.net>=0 and VGreen or VRed}}
+    local cardW=math.floor((w-88)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"LedgerMini"..i,x+24+(i-1)*(cardW+10),y+60,cardW,72,c[1],c[2],c[3],c[3]) end
+    local rows={}; for _,e in ipairs(self:GetPersonalGoldRows()) do rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.source,VCell((e.direction=="in" and "+" or "-")..WFormatGold(e.amount),e.direction=="in" and VGreen or VRed),e.note or WNA()} end
+    self:DrawLegacyTable(root,"LedgerHistory",x,y+topH+22,w,h-topH-82,"PERSONAL GOLD HISTORY",{"Date","User","Source","Amount","Note"},self:RowsOrNA(rows,5,"Press Refresh Ledger"),accent,{1,1.2,1.8,1,1.1})
+    local by=y+h-52; self:ToolButton(root,"PersonalGoldRefresh",x,by,210,42,"Refresh Ledger",accent,function() TML:ScanPersonalGoldLedger(); TML:RenderTool("gold_ledger_personal") end); self:ToolButton(root,"PersonalGoldBack",x+224,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"PersonalGoldExit",x+448,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+  end
+end
+
+-- Robust sales scan parser and seller match repair.
+local function V21664_ParseTraderReturn(vals)
+  local seller,buyer,itemLink,itemName,qty,price,tax,ts,eventId = nil,nil,nil,nil,1,nil,0,WNow(),nil
+  local nums={}
+  for i,v in ipairs(vals) do
+    if type(v)=="string" then
+      if v:find("|H",1,true) then itemLink=v elseif v:sub(1,1)=="@" then if not seller then seller=v else buyer=v end elseif v~="" and not itemName and not v:find("^") then itemName=v end
+    elseif type(v)=="number" then nums[#nums+1]={i=i,v=v} end
+  end
+  for _,n in ipairs(nums) do if n.v > 1000000000 then ts=n.v; eventId=eventId or n.v end end
+  if ts==WNow() then for _,n in ipairs(nums) do if n.v>0 and n.v<WORKING_HISTORY_DAYS*WORKING_SECONDS_DAY then ts=WNow()-n.v; break end end end
+  local best=0; for _,n in ipairs(nums) do if n.v>best and n.v<1000000000 then best=n.v end end; if best>0 then price=best end
+  for _,n in ipairs(nums) do if n.v>0 and n.v<=10000 and n.v~=price then qty=n.v; break end end
+  return seller,buyer,itemLink,itemName,qty,price,tax,ts,eventId
+end
+function TML:ScanGuildSales(g)
+  self:EnsureDataDefaults(); if not g or not g.id or g.id==0 then return end
+  local cat=self:GetHistoryCategory("trader")
+  if type(GetGuildHistoryTraderEventInfo)~="function" or not cat then self.saved.scanStatus.sales="Sales history API unavailable"; return end
+  local newest,oldest=self:GetHistoryIndices(g.id,cat,WORKING_HISTORY_DAYS); local scanned=0
+  if oldest>=newest then
+    for i=newest,oldest do
+      local raw={pcall(GetGuildHistoryTraderEventInfo,g.id,i)}; local ok=table.remove(raw,1)
+      if ok then
+        local seller,buyer,itemLink,itemName,qty,price,tax,ts,eventId=V21664_ParseTraderReturn(raw)
+        if seller and price and tonumber(price)>0 then self:AddSale(g.id,eventId or i,seller,price,ts,itemLink or itemName,qty,tax); scanned=scanned+1 end
+      end
+    end
+  end
+  self:RequestHistory(g.id,cat,WORKING_HISTORY_DAYS); self:PruneEventTable(self.saved.salesEvents,WORKING_MAX_EVENTS); self.saved.scanStatus.sales="Scanned "..tostring(scanned).." sales rows"
+end
+function TML:GetSalesRows(guildId,onlyMe)
+  self:EnsureDataDefaults(); local rows={}; local my=V21664_NormalUser(self:GetUserDisplayName()); local now=WNow()
+  for _,e in pairs(self.saved.salesEvents or {}) do
+    local seller=V21664_NormalUser(e.seller)
+    if (not guildId or guildId==0 or e.guildId==guildId) and ((not onlyMe) or seller==my) then
+      if (now-(tonumber(e.timestamp) or 0)) <= WORKING_HISTORY_DAYS*WORKING_SECONDS_DAY then rows[#rows+1]=e end
+    end
+  end
+  table.sort(rows,function(a,b) return (a.timestamp or 0)>(b.timestamp or 0) end); return rows
+end
+
+-- Bucket-safe guild gold events.
+function TML:AddGuildGoldEvent(guildId,eventId,user,amount,timestamp,action,bucket,note)
+  self:EnsureDataDefaults(); local key=tostring(guildId)..":"..tostring(eventId or (tostring(user)..tostring(amount)..tostring(timestamp)..tostring(action)))
+  if self.saved.guildGoldEvents[key] then return end
+  bucket=bucket or V21664_AmountBucket(amount,action=="deposit",note)
+  local row={guildId=guildId,user=user or WNA(),amount=tonumber(amount) or 0,timestamp=tonumber(timestamp) or WNow(),action=action or "unknown",bucket=bucket,note=note or ""}
+  self.saved.guildGoldEvents[key]=row
+  if action=="deposit" then self.saved.donationEvents[key..":deposit"]={guildId=guildId,user=user or WNA(),amount=tonumber(amount) or 0,timestamp=tonumber(timestamp) or WNow(),bucket=bucket} end
+end
+function TML:ScanGuildGold(g)
+  self:EnsureDataDefaults(); if not g or not g.id or g.id==0 then return end
+  local cat=self:GetHistoryCategory("bankedCurrency")
+  if type(GetGuildHistoryBankedCurrencyEventInfo)~="function" or not cat then self.saved.scanStatus.gold="Guild gold history API unavailable"; return end
+  local newest,oldest=self:GetHistoryIndices(g.id,cat,WORKING_HISTORY_DAYS); local scanned=0
+  if oldest>=newest then
+    for i=newest,oldest do
+      local vals={pcall(GetGuildHistoryBankedCurrencyEventInfo,g.id,i)}; local ok=table.remove(vals,1)
+      if ok then
+        local eventId,timestamp,eventType,displayName,amount,kioskName,currencyType=nil,WNow(),nil,nil,nil,"",nil
+        for _,v in ipairs(vals) do
+          if type(v)=="number" then
+            if v>1000000000 then timestamp=v elseif v>0 and not amount then amount=v elseif not eventId then eventId=v end
+          elseif type(v)=="string" then
+            if v:sub(1,1)=="@" and not displayName then displayName=v else kioskName=tostring(kioskName or "").." "..v end
+          end
+        end
+        local low=Lower(tostring(kioskName or "").." "..tostring(eventType or "")); local deposit=self:IsBankCurrencyDeposit(eventType)
+        local bucket=V21664_AmountBucket(amount,deposit,low)
+        if displayName and amount then self:AddGuildGoldEvent(g.id,eventId or i,displayName,amount,timestamp,deposit and "deposit" or "withdraw",bucket,kioskName); scanned=scanned+1 end
+      end
+    end
+  end
+  self:RequestHistory(g.id,cat,WORKING_HISTORY_DAYS); self:PruneEventTable(self.saved.guildGoldEvents,WORKING_MAX_EVENTS); self:PruneEventTable(self.saved.donationEvents,WORKING_MAX_EVENTS); self.saved.scanStatus.gold="Scanned "..scanned.." gold rows"
+end
+function TML:ComputeGuildGoldStats(guildId)
+  local st={bank=nil,donations=0,withdrawn=0,pending=0,ticketGold=0,adjusted=0}
+  if type(GetGuildBankedMoney)=="function" and guildId and guildId~=0 then local ok,v=pcall(GetGuildBankedMoney,guildId); if ok then st.bank=tonumber(v) end end
+  for _,e in ipairs(self:GetGuildGoldRows(guildId)) do local amt=tonumber(e.amount) or 0; if e.action=="deposit" then if e.bucket=="Ticket" then st.ticketGold=st.ticketGold+amt elseif e.bucket~="Reset" then st.donations=st.donations+amt end else st.withdrawn=st.withdrawn+amt end; if e.bucket=="Trader Bid" or e.bucket=="Pending Bid" then st.pending=st.pending+amt end end
+  st.adjusted=(st.bank or 0)-st.pending; return st
+end
+function TML:FindRaffleResetTime(guildId)
+  local ts=0; for _,e in pairs(self.saved.guildGoldEvents or {}) do if e.guildId==guildId and (e.bucket=="Reset" or V21664_IsReset(e.amount)) and (e.timestamp or 0)>ts then ts=e.timestamp end end; return ts
+end
+function TML:GetTicketGold(guildId)
+  local reset=self:FindRaffleResetTime(guildId); local total=0
+  for _,e in pairs(self.saved.donationEvents or {}) do if e.guildId==guildId and (e.timestamp or 0)>=reset and (e.bucket=="Ticket" or V21664_IsTicket(e.amount)) then total=total+(tonumber(e.amount) or 0) end end
+  return total,reset
+end
+
+function TML:RenderOldSales(root,x,y,w,h,accent,guildMode)
+  local selectorW=guildMode and 300 or 0; if guildMode then self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent) end
+  local rx=x+selectorW+(guildMode and 24 or 0); local rw=w-selectorW-(guildMode and 24 or 0); local g=self:GetGuild(); local st=self:ComputeSalesStats(guildMode and g.id or 0,not guildMode)
+  self:DrawLegacyPanel(root,"SalesStats",rx,y,rw,142,guildMode and "GUILD SALES DASHBOARD" or "PERSONAL SALES DASHBOARD",accent)
+  local cards=guildMode and {{"Sales Today",WFormatGold(st.salesToday),VGreen},{"Total Sales",WFormatGold(st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Guild Tax",WFormatGold(st.tax),VGreen},{"Top Earner",WLimit(st.topEarner,18),C.white}} or {{"Sales",WFormatGold(st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Net Earned",WFormatGold(st.net),VYellow},{"Guilds",WFormatNumber(#(self.guilds or {})),C.cyanSoft},{"Status",self.saved.scanStatus.sales or WNA(),C.white}}
+  local cardW=math.floor((rw-78)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"SalesCard"..i,rx+20+(i-1)*(cardW+10),y+56,cardW,68,c[1],c[2],c[3],c[3]) end
+  local rows={}
+  if guildMode and (self.saved.salesFilter or "Recent")=="Best Sellers" then
+    for _,e in ipairs(self:GetBestSellerRows(g.id)) do rows[#rows+1]={self:FormatItemCell(e.itemLink,e.itemName,30),WFormatNumber(e.qty),VCell(WFormatGold(e.amount),VYellow),VCell(WFormatGold(e.tax),VGreen),WRelTime(e.last)} end
+    self:DrawLegacyTable(root,"SalesRows",rx,y+166,rw,h-228,"GUILD TRADER SALES - BEST SELLERS",{"Item","Qty","Gold","Tax","Last"},self:RowsOrNA(rows,5,"Press Scan Sales"),accent,{2.6,.7,1,1,1})
+  else
+    for _,e in ipairs(self:GetSalesRows(guildMode and g.id or 0,not guildMode)) do rows[#rows+1]={guildMode and WLimit(e.seller,20) or self:FormatItemCell(e.itemLink,e.itemName,28),guildMode and self:FormatItemCell(e.itemLink,e.itemName,25) or self:GetGuildName(e.guildId),WFormatNumber(e.quantity),VCell(WFormatGold(e.amount),VYellow),WRelTime(e.timestamp)} end
+    self:DrawLegacyTable(root,"SalesRows",rx,y+166,rw,h-228,guildMode and "GUILD TRADER SALES" or "SALES",{guildMode and "Seller" or "Item",guildMode and "Item" or "Guild","Qty","Gold","When"},self:RowsOrNA(rows,5,"No sales data loaded"),accent,{1.4,2.2,.7,1,1})
+  end
+  local by=y+h-52; self:ToolButton(root,"SalesScanOne",rx,by,170,42,guildMode and "Scan Guild" or "Scan Sales",accent,function() if guildMode then TML:ScanSelectedGuildSales() else TML:ScanAllGuildSales() end end); self:ToolButton(root,"SalesScanAll",rx+184,by,150,42,"Scan All",accent,function() TML:ScanAllGuildSales() end); if guildMode then self:ToolButton(root,"SalesFilter",rx+348,by,190,42,"Filter: "..(self.saved.salesFilter or "Recent"),accent,function() TML.saved.salesFilter=(TML.saved.salesFilter=="Best Sellers") and "Recent" or "Best Sellers"; TML:RenderTool("guild_sales") end) end
+end
+
+function TML:BuildBookkeeperMaps(guildId)
+  local maps={sales={},donations={},raffles={}}
+  for _,e in pairs(self.saved.salesEvents or {}) do if e.guildId==guildId then maps.sales[e.seller]=(maps.sales[e.seller] or 0)+(tonumber(e.amount) or 0) end end
+  for _,e in pairs(self.saved.donationEvents or {}) do if e.guildId==guildId then if e.bucket=="Ticket" or V21664_IsTicket(e.amount) then maps.raffles[e.user]=(maps.raffles[e.user] or 0)+(tonumber(e.amount) or 0) elseif e.bucket~="Reset" then maps.donations[e.user]=(maps.donations[e.user] or 0)+(tonumber(e.amount) or 0) end end end
+  return maps
+end
+function TML:ScanBookkeeper()
+  local g=self:GetGuild(); self:ScanRoster(g); self:ScanGuildSales(g); self:ScanGuildGold(g); self:ScanGuildBankItems(g); self:ScanRaffleEntries(); self:RenderTool(self.state.activeTool)
+end
+function TML:GetDueAmount(guildId)
+  self.saved.dueAmounts=self.saved.dueAmounts or {}; return tonumber(self.saved.dueAmounts[tostring(guildId or 0)] or self.saved.dueAmount or 0) or 0
+end
+function TML:SetDueAmount(guildId,amount)
+  self.saved.dueAmounts=self.saved.dueAmounts or {}; self.saved.dueAmounts[tostring(guildId or 0)]=tonumber(amount) or 0; self.saved.dueAmount=tonumber(amount) or 0
+end
+function TML:GetDueReset(guildId)
+  self.saved.dueReset=self.saved.dueReset or {}; return tonumber(self.saved.dueReset[tostring(guildId or 0)] or 0) or 0
+end
+function TML:ResetDuesCycle()
+  local g=self:GetGuild(); self.saved.dueReset=self.saved.dueReset or {}; self.saved.dueReset[tostring(g.id or 0)]=WNow(); self:RenderTool("guild_dues")
+end
+function TML:GetDuesRows(guildId)
+  self:EnsureDataDefaults(); local due=self:GetDueAmount(guildId); local reset=self:GetDueReset(guildId); local paidBy={}
+  for _,e in pairs(self.saved.donationEvents or {}) do if e.guildId==guildId and (e.timestamp or 0)>=reset and e.bucket~="Ticket" and e.bucket~="Reset" then paidBy[e.user]=(paidBy[e.user] or 0)+(tonumber(e.amount) or 0) end end
+  local rows={}; for _,m in ipairs(self:GetRosterRows(guildId)) do local paid=paidBy[m.name] or 0; local bal=paid-due; rows[#rows+1]={m.name,WFormatGold(due),VCell(WFormatGold(paid),VGreen),VCell(WFormatGold(bal),bal>=0 and VGreen or VRed),VCell(paid>=due and "Paid" or "Unpaid",paid>=due and VGreen or VRed),__paid=paid,__balance=bal} end
+  table.sort(rows,function(a,b) return tostring(a[1])<tostring(b[1]) end); return rows
+end
+
+function TML:RenderOldBookkeeper(root,x,y,w,h,accent)
+  local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local tableW=math.floor((w-selectorW-48)*.70); local g=self:GetGuild(); local maps=self:BuildBookkeeperMaps(g.id)
+  local rows={}; local totalSales,totalDon,totalRaf,totalPaid,totalOwed,caught,owing=0,0,0,0,0,0,0; local due=self:GetDueAmount(g.id)
+  for _,m in ipairs(self:GetRosterRows(g.id)) do
+    local s=maps.sales[m.name] or 0; local d=maps.donations[m.name] or 0; local rf=maps.raffles[m.name] or 0; local bal=d-due; if bal>=0 then caught=caught+1; totalPaid=totalPaid+math.min(d,due) else owing=owing+1; totalOwed=totalOwed+math.abs(bal) end; totalSales=totalSales+s; totalDon=totalDon+d; totalRaf=totalRaf+rf
+    rows[#rows+1]={WLimit(m.name,20),VCell(WFormatGold(s),VGreen),VCell(WFormatGold(d),VGreen),VCell(WFormatGold(rf),VYellow),VCell(WFormatGold(bal),bal>=0 and VGreen or VRed),m.lastOnlineSeconds and WRelTime(WNow()-m.lastOnlineSeconds) or WNA()}
+  end
+  self:DrawLegacyTable(root,"BookkeeperTable",rx,y,tableW,h-60,"MEMBER BOOKKEEPER",{"Member","Sales","Donations","Raffles","Dues","Last Online"},self:RowsOrNA(rows,6,"Press Scan Activity"),accent,{1.5,1,1,1,1,1})
+  local sideX=rx+tableW+24; local sideW=w-(sideX-x); self:DrawLegacyPanel(root,"BookkeeperRight",sideX,y,sideW,h,"SUMMARY",accent)
+  local summary={{"Total Sales",WFormatGold(totalSales),VGreen},{"Total Donations",WFormatGold(totalDon),VGreen},{"Total Raffles",WFormatGold(totalRaf),VYellow},{"Dues Paid",WFormatGold(totalPaid),VGreen},{"Dues Owed",WFormatGold(totalOwed),VRed},{"Caught Up",WFormatNumber(caught),VGreen},{"Owing",WFormatNumber(owing),VRed}}
+  for i,t in ipairs(summary) do self:DrawMiniStat(root,"BookMini"..i,sideX+22,y+54+(i-1)*72,sideW-44,62,t[1],tostring(t[2]),t[3],t[3]) end
+  self:ToolButton(root,"BookScan",sideX+38,y+h-62,sideW-76,44,"Scan Activity",accent,function() TML:ScanBookkeeper() end)
+end
+
+function TML:ScanRaffleEntries()
+  local g=self:GetGuild(); if not g or g.id==0 then self:Notify("Select a guild before scanning raffle entries."); return end
+  self:ScanGuildGold(g); local r=self:GetRaffle(g.id); r.entries={}; local count=0; local reset=self:FindRaffleResetTime(g.id); r.started=reset
+  for _,e in pairs(self.saved.donationEvents or {}) do if e.guildId==g.id and (e.timestamp or 0)>=reset and (e.bucket=="Ticket" or V21664_IsTicket(e.amount)) then local tickets=math.floor((tonumber(e.amount) or 0)/WORKING_RAFFLE_TICKET_BASE); local user=e.user or WNA(); r.entries[user]=r.entries[user] or {name=user,tickets=0,gold=0,last=0}; r.entries[user].tickets=r.entries[user].tickets+tickets; r.entries[user].gold=r.entries[user].gold+(e.amount or 0); if (e.timestamp or 0)>(r.entries[user].last or 0) then r.entries[user].last=e.timestamp end; count=count+1 end end
+  r.lastScan=WNow(); self.saved.scanStatus.raffle="Scanned "..count.." raffle deposits after 33g reset marker"; self:RenderTool(self.state.activeTool)
+end
+function TML:SaveManualPot(amount)
+  local g=self:GetGuild(); local r=self:GetRaffle(g.id); r.manualPot=tonumber(amount) or 0; self:AutoPrizeSplit(); self:RenderTool("guild_raffle")
+end
+function TML:AutoPrizeSplit()
+  local g=self:GetGuild(); local r=self:GetRaffle(g.id); local pot=tonumber(r.manualPot) or 0; if pot<=0 then for _,e in pairs(r.entries or {}) do pot=pot+(e.gold or 0) end end; r.prizes={math.floor(pot*.5),math.floor(pot*.3),pot-math.floor(pot*.5)-math.floor(pot*.3)}; self:RenderTool(self.state.activeTool)
+end
+function TML:PickWinner()
+  local g=self:GetGuild(); local r=self:GetRaffle(g.id); r.winners={}; local pool={}; local total=0
+  for k,e in pairs(r.entries or {}) do if (e.tickets or 0)>0 then pool[#pool+1]={key=k,name=e.name,tickets=e.tickets,gold=e.gold,last=e.last}; total=total+e.tickets end end
+  if total<=0 then self:Notify("No raffle entries available."); return end
+  if not r.prizes or not r.prizes[1] then self:AutoPrizeSplit() end
+  local originalTotal=total
+  for place=1,math.min(3,#pool) do
+    local roll=math.random(total); local run=0; local pickIndex=nil
+    for i,e in ipairs(pool) do run=run+(e.tickets or 0); if roll<=run then pickIndex=i; break end end
+    local chosen=pool[pickIndex or 1]; table.insert(r.winners,{name=chosen.name,tickets=chosen.tickets,odds=originalTotal>0 and (chosen.tickets/originalTotal*100) or 0,prize=(r.prizes or {})[place] or 0,timestamp=WNow()}); total=total-(chosen.tickets or 0); table.remove(pool,pickIndex or 1); if total<=0 then break end
+  end
+  self.state.modal={type="winners",winners=r.winners}; self:RenderTool("guild_raffle")
+end
+function TML:RenderOldRaffle(root,x,y,w,h,accent)
+  local selectorW=310; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local r=self:GetRaffle(g.id); local participants=WTableCount(r.entries); local tickets=0; local gold=0; for _,e in pairs(r.entries or {}) do tickets=tickets+(e.tickets or 0); gold=gold+(e.gold or 0) end; local pot=tonumber(r.manualPot) and tonumber(r.manualPot)>0 and tonumber(r.manualPot) or gold
+  self:DrawLegacyPanel(root,"RaffleStats",rx,y,rw,178,"RAFFLE DASHBOARD",accent,C.yellow); local cards={{"Participants",WFormatNumber(participants),VGreen},{"Tickets",WFormatNumber(tickets),VYellow},{"Collected Gold",WFormatGold(gold),VGreen},{"Manual Pot",WFormatGold(r.manualPot),C.gold},{"Prize 1/2/3",(r.prizes and WFormatGold(r.prizes[1]).." / "..WFormatGold(r.prizes[2]).." / "..WFormatGold(r.prizes[3])) or WNA(),VYellow},{"Active Pot",WFormatGold(pot),C.gold}}
+  local cardW=math.floor((rw-72)/3); for i,c in ipairs(cards) do local cx=rx+24+((i-1)%3)*(cardW+12); local cy=y+70+math.floor((i-1)/3)*48; self:Label("RafK"..i,root,c[1]..":",cx,cy,150,30,C.muted,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("RafV"..i,root,tostring(c[2]),cx+152,cy,cardW-166,30,c[3] or C.gold,FONTS.panelSmall,TEXT_ALIGN_LEFT) end
+  local rows={}; for _,e in pairs(r.entries or {}) do local odds=tickets>0 and ((e.tickets or 0)/tickets*100) or 0; local color=odds>=20 and VGreen or (odds>=10 and VYellow or (odds>=5 and VOrange or VRed)); rows[#rows+1]={WLimit(e.name,24),VCell(WFormatGold(e.gold),VGreen),VCell(WFormatNumber(e.tickets),VYellow),WRelTime(e.last),VCell(string.format("%.2f%%",odds),color)} end; table.sort(rows,function(a,b) return tonumber(VText(a[3]))>tonumber(VText(b[3])) end)
+  self:DrawLegacyTable(root,"RaffleEntries",rx,y+200,rw,h-280,"ENTRIES AFTER RESET",{"Member","Deposit","Tickets","Last","Odds"},self:RowsOrNA(rows,5,"Press Scan Entries"),accent,{1.6,1,0.8,1,0.8})
+  local by=y+h-58; local bw=math.floor((rw-32)/5); self:ToolButton(root,"RaffleScan",rx,by,bw,42,"Scan Entries",accent,function() TML:ScanRaffleEntries() end); self:ToolButton(root,"RafflePot",rx+bw+8,by,bw,42,"Manual Pot",accent,function() local gg=TML:GetGuild(); local rr=TML:GetRaffle(gg.id); TML:OpenNumberPad("manualPot","MANUAL POT",rr.manualPot or "",function(v) TML:SaveManualPot(v) end) end); self:ToolButton(root,"RaffleSplit",rx+(bw+8)*2,by,bw,42,"Prize Split",accent,function() TML:AutoPrizeSplit() end); self:ToolButton(root,"RafflePick",rx+(bw+8)*3,by,bw,42,"Pick Winner",accent,function() TML:PickWinner() end); self:ToolButton(root,"RaffleClear",rx+(bw+8)*4,by,bw,42,"Clear Board",C.red,function() TML:ClearRaffle() end)
+end
+
+function TML:RenderOldDues(root,x,y,w,h,accent)
+  local g=self:GetGuild(); local leftW=390; self:DrawLegacyPanel(root,"DuesControl",x,y,leftW,h,"DUES CONTROL",accent)
+  self:DrawGuildSelectorLive(root,x+24,y+58,leftW-48,250,accent)
+  local rows=self:GetDuesRows(g.id); local paid=0; for _,r in ipairs(rows) do if VText(r[5])=="Paid" then paid=paid+1 end end
+  self:DrawLegacyStats(root,"DuesStats",x+38,y+324,leftW-76,{{"Due Amount",WFormatGold(self:GetDueAmount(g.id)),C.gold},{"Paid",WFormatNumber(paid),VGreen},{"Unpaid",WFormatNumber(#rows-paid),VRed},{"Roster",WFormatNumber(#rows),C.cyanSoft},{"Guild",WLimit(g.name,16),C.white}},accent)
+  self:ToolButton(root,"DuesSet",x+44,y+h-132,150,42,"Set Due Amount",accent,function() TML:OpenNumberPad("dueAmount","SET DUE AMOUNT",TML:GetDueAmount(TML:GetGuild().id),function(v) local gg=TML:GetGuild(); TML:SetDueAmount(gg.id,v); TML:RenderTool("guild_dues") end) end)
+  self:ToolButton(root,"DuesReset",x+210,y+h-132,134,42,"Reset",C.red,function() TML:ResetDuesCycle() end)
+  self:ToolButton(root,"DuesScan",x+44,y+h-80,300,42,"Scan Activity",accent,function() TML:ScanBookkeeper() end)
+  self:DrawLegacyTable(root,"DuesTable",x+leftW+32,y,w-leftW-32,h,"MEMBER DUES STATUS",{"Member","Due","Paid","Balance","Status"},self:RowsOrNA(rows,5,"Press Scan Activity"),accent,{1.5,1,1,1,1})
+end
+
+-- Render modal after each tool page and keep tool action bar buttons from stacking under modal focus.
+local OldRenderTool_21664 = TML.RenderTool
+function TML:RenderTool(toolKey)
+  OldRenderTool_21664(self,toolKey)
+  local root=self.ui and self.ui.root
+  if root and self.state and self.state.modal then
+    if self.state.modal.type=="number" then self:RenderNumberPad(root) elseif self.state.modal.type=="winners" then self:RenderWinnersPopout(root) end
+  end
+end
+
+local OldInitialize_21664 = TML.Initialize
+function TML:Initialize(addonName)
+  OldInitialize_21664(self, addonName)
+  if d then d("Tamriel Master Ledger v"..self.version.." working update pass loaded.") end
+end
+
+-- v2.0.16.64 safety overrides for guild selector fit and history API signatures.
+function TML:DrawGuildSelectorLive(root, x, y, w, h, accent)
+  self:RefreshGuilds()
+  local g = self:GetGuild()
+  self:DrawLegacyPanel(root, "GuildSelectorLive", x, y, w, h, "SELECT GUILD", accent)
+  local yy = y + 62
+  local rowH = 42
+  local maxGuilds = math.min(#(self.guilds or {}), math.max(1, math.floor((h - 96) / rowH)))
+  for i=1,maxGuilds do
+    local guild = self.guilds[i]
+    local selected = (self.saved.guildIndex or 1) == i
+    local edge = selected and C.gold or accent
+    self:ToolButton(root, "GuildSelect"..i, x+22, yy+(i-1)*rowH, w-44, 36, (selected and "• " or "")..WLimit(guild.name, 23), edge, function() TML:SetSelectedGuildIndex(i) end)
+    if selected then self:Backdrop("GuildSelectActive"..i, root, x+18, yy+(i-1)*rowH-2, w-36, 40, {C.cyan[1],C.cyan[2],C.cyan[3],0.08}, {C.gold[1],C.gold[2],C.gold[3],0.55}) end
+  end
+  self:Label("GuildSelStatus", root, "Selected: "..WLimit(g.name,24), x+24, y+h-38, w-48, 30, C.white, FONTS.panelSmall, TEXT_ALIGN_CENTER)
+end
+
+function TML:ScanGuildSales(g)
+  self:EnsureDataDefaults(); if not g or not g.id or g.id==0 then return end
+  local cat=self:GetHistoryCategory("trader")
+  if type(GetGuildHistoryTraderEventInfo)~="function" or not cat then self.saved.scanStatus.sales="Sales history API unavailable"; return end
+  local newest,oldest=self:GetHistoryIndices(g.id,cat,WORKING_HISTORY_DAYS); local scanned=0
+  if oldest>=newest then
+    for i=newest,oldest do
+      local vals={pcall(GetGuildHistoryTraderEventInfo,g.id,i)}; local ok=table.remove(vals,1)
+      if ok then
+        local eventId,timestamp,isRedacted,eventType,seller,buyer,itemLink,quantity,price,tax = vals[1],vals[2],vals[3],vals[4],vals[5],vals[6],vals[7],vals[8],vals[9],vals[10]
+        if type(seller)=="string" and tonumber(price) and not isRedacted then
+          self:AddSale(g.id,eventId or i,seller,price,timestamp,itemLink,quantity,tax); scanned=scanned+1
+        else
+          local ps,pb,pi,pn,pq,pp,pt,pts,pe=V21664_ParseTraderReturn(vals)
+          if ps and pp and tonumber(pp)>0 then self:AddSale(g.id,pe or i,ps,pp,pts,pi or pn,pq,pt); scanned=scanned+1 end
+        end
+      end
+    end
+  end
+  self:RequestHistory(g.id,cat,WORKING_HISTORY_DAYS); self:PruneEventTable(self.saved.salesEvents,WORKING_MAX_EVENTS); self.saved.scanStatus.sales="Scanned "..tostring(scanned).." sales rows"
+end
+
+function TML:ScanGuildGold(g)
+  self:EnsureDataDefaults(); if not g or not g.id or g.id==0 then return end
+  local cat=self:GetHistoryCategory("bankedCurrency")
+  if type(GetGuildHistoryBankedCurrencyEventInfo)~="function" or not cat then self.saved.scanStatus.gold="Guild gold history API unavailable"; return end
+  local newest,oldest=self:GetHistoryIndices(g.id,cat,WORKING_HISTORY_DAYS); local scanned=0
+  if oldest>=newest then
+    for i=newest,oldest do
+      local vals={pcall(GetGuildHistoryBankedCurrencyEventInfo,g.id,i)}; local ok=table.remove(vals,1)
+      if ok then
+        local eventId,timestamp,isRedacted,eventType,displayName,currencyType,amount,kioskName = vals[1],vals[2],vals[3],vals[4],vals[5],vals[6],vals[7],vals[8]
+        if type(displayName)=="string" and tonumber(amount) and not isRedacted then
+          local isMoney=(currencyType==nil or _G.CURT_MONEY==nil or currencyType==_G.CURT_MONEY)
+          if isMoney then
+            local deposit=self:IsBankCurrencyDeposit(eventType); local note=tostring(kioskName or "").." "..tostring(eventType or ""); local bucket=V21664_AmountBucket(amount,deposit,note)
+            self:AddGuildGoldEvent(g.id,eventId or i,displayName,tonumber(amount),timestamp,deposit and "deposit" or "withdraw",bucket,note); scanned=scanned+1
+          end
+        else
+          local amount2, display2, ts2, note2 = nil,nil,WNow(),""
+          for _,v in ipairs(vals) do
+            if type(v)=="string" then if v:sub(1,1)=="@" and not display2 then display2=v else note2=note2.." "..v end
+            elseif type(v)=="number" then if v>1000000000 then ts2=v elseif v>100 and not amount2 then amount2=v end end
+          end
+          if display2 and amount2 then local deposit=not (Lower(note2):find("withdraw") or Lower(note2):find("bid") or Lower(note2):find("hire")); self:AddGuildGoldEvent(g.id,i,display2,amount2,ts2,deposit and "deposit" or "withdraw",V21664_AmountBucket(amount2,deposit,note2),note2); scanned=scanned+1 end
+        end
+      end
+    end
+  end
+  self:RequestHistory(g.id,cat,WORKING_HISTORY_DAYS); self:PruneEventTable(self.saved.guildGoldEvents,WORKING_MAX_EVENTS); self:PruneEventTable(self.saved.donationEvents,WORKING_MAX_EVENTS); self.saved.scanStatus.gold="Scanned "..scanned.." gold rows"
+end
+
+-- Raffle sort override using stored ticket value.
+local OldRenderOldRaffle_21664 = TML.RenderOldRaffle
+function TML:RenderOldRaffle(root,x,y,w,h,accent)
+  local selectorW=310; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local r=self:GetRaffle(g.id); local participants=WTableCount(r.entries); local tickets=0; local gold=0; for _,e in pairs(r.entries or {}) do tickets=tickets+(e.tickets or 0); gold=gold+(e.gold or 0) end; local pot=tonumber(r.manualPot) and tonumber(r.manualPot)>0 and tonumber(r.manualPot) or gold
+  self:DrawLegacyPanel(root,"RaffleStats",rx,y,rw,178,"RAFFLE DASHBOARD",accent,C.yellow); local cards={{"Participants",WFormatNumber(participants),VGreen},{"Tickets",WFormatNumber(tickets),VYellow},{"Collected Gold",WFormatGold(gold),VGreen},{"Manual Pot",WFormatGold(r.manualPot),C.gold},{"Prize 1/2/3",(r.prizes and WFormatGold(r.prizes[1]).." / "..WFormatGold(r.prizes[2]).." / "..WFormatGold(r.prizes[3])) or WNA(),VYellow},{"Active Pot",WFormatGold(pot),C.gold}}
+  local cardW=math.floor((rw-72)/3); for i,c in ipairs(cards) do local cx=rx+24+((i-1)%3)*(cardW+12); local cy=y+70+math.floor((i-1)/3)*48; self:Label("RafK"..i,root,c[1]..":",cx,cy,150,30,C.muted,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("RafV"..i,root,tostring(c[2]),cx+152,cy,cardW-166,30,c[3] or C.gold,FONTS.panelSmall,TEXT_ALIGN_LEFT) end
+  local rows={}; for _,e in pairs(r.entries or {}) do local odds=tickets>0 and ((e.tickets or 0)/tickets*100) or 0; local color=odds>=20 and VGreen or (odds>=10 and VYellow or (odds>=5 and VOrange or VRed)); local row={WLimit(e.name,24),VCell(WFormatGold(e.gold),VGreen),VCell(WFormatNumber(e.tickets),VYellow),WRelTime(e.last),VCell(string.format("%.2f%%",odds),color)}; row.__tickets=e.tickets or 0; rows[#rows+1]=row end; table.sort(rows,function(a,b) return (a.__tickets or 0)>(b.__tickets or 0) end)
+  self:DrawLegacyTable(root,"RaffleEntries",rx,y+200,rw,h-280,"ENTRIES AFTER RESET",{"Member","Deposit","Tickets","Last","Odds"},self:RowsOrNA(rows,5,"Press Scan Entries"),accent,{1.6,1,0.8,1,0.8})
+  local by=y+h-58; local bw=math.floor((rw-32)/5); self:ToolButton(root,"RaffleScan",rx,by,bw,42,"Scan Entries",accent,function() TML:ScanRaffleEntries() end); self:ToolButton(root,"RafflePot",rx+bw+8,by,bw,42,"Manual Pot",accent,function() local gg=TML:GetGuild(); local rr=TML:GetRaffle(gg.id); TML:OpenNumberPad("manualPot","MANUAL POT",rr.manualPot or "",function(v) TML:SaveManualPot(v) end) end); self:ToolButton(root,"RaffleSplit",rx+(bw+8)*2,by,bw,42,"Prize Split",accent,function() TML:AutoPrizeSplit() end); self:ToolButton(root,"RafflePick",rx+(bw+8)*3,by,bw,42,"Pick Winner",accent,function() TML:PickWinner() end); self:ToolButton(root,"RaffleClear",rx+(bw+8)*4,by,bw,42,"Clear Board",C.red,function() TML:ClearRaffle() end)
+end
+
+-- =========================================================
+-- v2.0.16.65 Pipeline Fix + Modal Isolation Pass
+-- =========================================================
+TML.version = "2.0.16.66"
+TML.addOnVersion = 21666
+TML.lastUpdated = "06/13/2026 06:05 UTC"
+
+local function V21665_NormalUser(v)
+  v = tostring(v or "")
+  v = v:gsub("^%s+", ""):gsub("%s+$", "")
+  v = v:gsub("^@", "")
+  return Lower(v)
+end
+local function V21665_ColorText(text, color)
+  return VCell(tostring(text or ""), color or C.white)
+end
+local function V21665_OddsColor(odds)
+  odds = tonumber(odds) or 0
+  if odds >= 20 then return VGreen end
+  if odds >= 10 then return VYellow end
+  if odds >= 5 then return VOrange end
+  return VRed
+end
+local function V21665_FormatGoldOrNA(v)
+  if v == nil then return WNA() end
+  return WFormatGold(v)
+end
+local function V21665_GetGuildById(self, guildId)
+  self:RefreshGuilds()
+  for _,g in ipairs(self.guilds or {}) do if g.id == guildId then return g end end
+  return nil
+end
+local function V21665_GuildBankGold(self, guildId)
+  local g = V21665_GetGuildById(self, guildId) or self:GetGuild()
+  local try = {
+    function() if type(GetGuildBankedMoney) == "function" then return GetGuildBankedMoney(guildId) end end,
+    function() if type(GetGuildBankedMoney) == "function" then return GetGuildBankedMoney(g and g.index) end end,
+    function() if type(GetGuildBankedGold) == "function" then return GetGuildBankedGold(guildId) end end,
+    function() if type(GetGuildBankedGold) == "function" then return GetGuildBankedGold(g and g.index) end end,
+  }
+  for _,fn in ipairs(try) do
+    local ok,v = pcall(fn)
+    if ok and tonumber(v) then return tonumber(v) end
+  end
+  return nil
+end
+local function V21665_TicketBucketColor(bucket)
+  bucket = tostring(bucket or "")
+  if bucket == "Ticket" then return VYellow end
+  if bucket == "Donation" then return VGreen end
+  if bucket == "Withdraw" or bucket == "Withdrawal" then return VRed end
+  if bucket == "Trader Bid" or bucket == "Pending Bid" then return VOrange end
+  if bucket == "Heraldry" or bucket == "Guild Cost" then return VOrange end
+  if bucket == "Reset" then return C.cyanSoft end
+  return C.white
+end
+local function V21665_AddClearDataEntry()
+  if not TML.menus or not TML.menus.main or not TML.menus.main.entries then return end
+  for _,e in ipairs(TML.menus.main.entries) do if e.target == "clear_saved_data" then return end end
+  local entries = TML.menus.main.entries
+  local insertAt = #entries
+  for i,e in ipairs(entries) do if e.type == "exit" then insertAt = i; break end end
+  table.insert(entries, insertAt, { text = "Clear Saved Data", icon = "EsoUI/Art/Buttons/Gamepad/gp_reset.dds", type = "tool", target = "clear_saved_data" })
+end
+V21665_AddClearDataEntry()
+TML.pipelineMap.clear_saved_data = { title = "Clear Saved Data", accent = "red", subtitle = "Delete saved Tamriel Master Ledger data." }
+TML.pipelineMap.raffle_winners = { title = "Raffle Winners", accent = "gold", subtitle = "Screenshot-ready raffle winners page." }
+
+local OldEnsureDataDefaults_21665 = TML.EnsureDataDefaults
+function TML:EnsureDataDefaults()
+  if OldEnsureDataDefaults_21665 then OldEnsureDataDefaults_21665(self) end
+  self.saved = self.saved or self:Defaults()
+  self.saved.raffle = self.saved.raffle or {}
+  self.saved.prizeSplit = self.saved.prizeSplit or {}
+  self.saved.scanStatus = self.saved.scanStatus or {}
+  self.saved.salesEvents = self.saved.salesEvents or {}
+  self.saved.guildGoldEvents = self.saved.guildGoldEvents or {}
+  self.saved.bankItemEvents = self.saved.bankItemEvents or {}
+  self.saved.donationEvents = self.saved.donationEvents or {}
+  self.saved.dueAmounts = self.saved.dueAmounts or {}
+end
+
+function TML:MarkScanned(text, ok)
+  self.state.scanToast = { text = text or (ok == false and "No Data" or "Scanned"), ts = FrameMS(), ok = ok ~= false }
+  if zo_callLater then
+    zo_callLater(function()
+      if TML and TML.state and TML.state.scanToast and (FrameMS() - (TML.state.scanToast.ts or 0)) >= 4900 then
+        TML.state.scanToast = nil
+        if TML:IsOpen() and TML.state.mode == "tool" then TML:RenderTool(TML.state.activeTool) end
+      end
+    end, 5000)
+  end
+end
+function TML:RenderScanToast(root)
+  local t = self.state and self.state.scanToast
+  if not t then return end
+  if FrameMS() - (t.ts or 0) > 5000 then self.state.scanToast = nil; return end
+  local col = t.ok and VGreen or VRed
+  self:Label("ScanToast21665", root, tostring(t.text or "Scanned"), 520, 54, 280, 40, col, FONTS.panelText, TEXT_ALIGN_LEFT)
+end
+
+-- Saved data clear page + confirmation modal.
+function TML:RenderOldClearSavedData(root,x,y,w,h,accent)
+  self:DrawLegacyPanel(root,"ClearSavedPanel",x,y,w,h,"CLEAR SAVED DATA",C.red)
+  self:Label("ClearSavedWarn",root,"This deletes Tamriel Master Ledger saved variables: manual pot, prize split, due amounts, scan caches, ledger history, filters, and page settings. It does not delete the add-on files.",x+70,y+90,w-140,120,C.white,FONTS.panelText,TEXT_ALIGN_CENTER)
+  self:ToolButton(root,"ClearSavedConfirmBtn",x+math.floor(w/2)-170,y+250,340,58,"Clear Saved Data",C.red,function() TML:OpenClearConfirm() end)
+  self:ToolButton(root,"ClearSavedBack",x+math.floor(w/2)-170,y+330,160,50,"Back",C.cyan,function() TML:Back() end)
+  self:ToolButton(root,"ClearSavedExit",x+math.floor(w/2)+10,y+330,160,50,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+function TML:OpenClearConfirm()
+  self.state.modal = { type = "confirm_clear", title = "CLEAR SAVED DATA?" }
+  self.state.toolButton = 1
+  self:RenderTool(self.state.activeTool or "clear_saved_data")
+end
+function TML:DoClearSavedData()
+  TamrielMasterLedgerMenuShellSavedVariables = nil
+  self.saved = self:Defaults()
+  self:EnsureDataDefaults()
+  self.state.modal = nil
+  self:MarkScanned("Saved Data Cleared", true)
+  self:RenderTool("clear_saved_data")
+end
+function TML:RenderClearConfirm(root)
+  local rw,rh = self:GetRootSize(); local mw,mh = 720,360; local x=math.floor((rw-mw)/2); local y=math.floor((rh-mh)/2)
+  self.currentToolButtons = {}
+  self:Backdrop("ConfirmDim21665",root,0,0,rw,rh,{0,0,0,0.88},nil)
+  self:Backdrop("ConfirmBg21665",root,x,y,mw,mh,{0,0,0,0.99},{C.red[1],C.red[2],C.red[3],0.95})
+  self:Label("ConfirmTitle21665",root,"CLEAR SAVED DATA?",x,y+34,mw,48,C.red,FONTS.panelTitle,TEXT_ALIGN_CENTER)
+  self:Label("ConfirmText21665",root,"This cannot be undone. Manual values and saved scan caches will be erased.",x+60,y+105,mw-120,70,C.white,FONTS.panelText,TEXT_ALIGN_CENTER)
+  self:ToolButton(root,"ConfirmClear21665",x+96,y+220,240,58,"Confirm Clear",C.red,function() TML:DoClearSavedData() end)
+  self:ToolButton(root,"CancelClear21665",x+384,y+220,240,58,"Cancel",C.cyan,function() TML:CloseModal() end)
+end
+
+-- Modal input isolation. While a modal is open, only modal buttons can receive input.
+function TML:MoveModalFocusByDirection(dx,dy)
+  self:MoveToolFocusByDirection(dx,dy)
+end
+function TML:ModalSelectCurrent()
+  local btn = self.currentToolButtons and self.currentToolButtons[self.state.toolButton or 1]
+  if btn and btn.callback then btn.callback() end
+end
+local OldHandleKeyDown_21665 = TML.HandleKeyDown
+function TML:HandleKeyDown(key)
+  if self.state and self.state.modal then
+    if IsKey(key,"KEY_ESCAPE","KEY_BACKSPACE","KEY_X","KEY_B","KEY_GAMEPAD_BUTTON_B","KEY_GAMEPAD_BUTTON_2") then self:CloseModal(); return end
+    if IsKey(key,"KEY_ENTER","KEY_E","KEY_SPACEBAR","KEY_SPACE","KEY_GAMEPAD_BUTTON_A","KEY_GAMEPAD_BUTTON_1") then self:ModalSelectCurrent(); return end
+    if IsKey(key,"KEY_UPARROW","KEY_W","KEY_GAMEPAD_DPAD_UP","KEY_GAMEPAD_LEFT_STICK_UP","KEY_GAMEPAD_LEFT_SHOULDER","KEY_PAGEUP") then self:MoveModalFocusByDirection(0,-1); return end
+    if IsKey(key,"KEY_DOWNARROW","KEY_S","KEY_GAMEPAD_DPAD_DOWN","KEY_GAMEPAD_LEFT_STICK_DOWN","KEY_GAMEPAD_RIGHT_SHOULDER","KEY_PAGEDOWN") then self:MoveModalFocusByDirection(0,1); return end
+    if IsKey(key,"KEY_LEFTARROW","KEY_A","KEY_GAMEPAD_DPAD_LEFT","KEY_GAMEPAD_LEFT_STICK_LEFT") then self:MoveModalFocusByDirection(-1,0); return end
+    if IsKey(key,"KEY_RIGHTARROW","KEY_D","KEY_GAMEPAD_DPAD_RIGHT","KEY_GAMEPAD_LEFT_STICK_RIGHT") then self:MoveModalFocusByDirection(1,0); return end
+    return
+  end
+  OldHandleKeyDown_21665(self,key)
+end
+local OldBack_21665 = TML.Back
+function TML:Back()
+  if self.state and self.state.modal then self:CloseModal(); return end
+  if self.state and self.state.activeTool == "raffle_winners" then self:OpenTool("guild_raffle"); return end
+  OldBack_21665(self)
+end
+
+-- Modal keypad: solid/opaque layer so page text cannot bleed through.
+function TML:RenderNumberPad(root)
+  local rw,rh = self:GetRootSize(); local mw,mh=600,550; local x=math.floor((rw-mw)/2); local y=math.floor((rh-mh)/2)
+  local m=self.state.modal or {}
+  self.currentToolButtons = {}; self.state.toolButton = VClamp(self.state.toolButton or 1,1,20)
+  self:Backdrop("ModalDim21665", root, 0, 0, rw, rh, {0,0,0,0.88}, nil)
+  self:Backdrop("ModalBg21665", root, x, y, mw, mh, {0,0,0,0.99}, {C.cyan[1],C.cyan[2],C.cyan[3],0.98})
+  self:Label("ModalTitle21665", root, tostring(m.title or "ENTER VALUE"), x, y+24, mw, 42, C.cyanSoft, FONTS.panelTitle, TEXT_ALIGN_CENTER)
+  self:Backdrop("ModalValueBg21665", root, x+56, y+84, mw-112, 62, {0,0,0,1}, {C.gold[1],C.gold[2],C.gold[3],0.75})
+  self:Label("ModalValue21665", root, tostring(m.value or "0"), x+72, y+84, mw-144, 62, C.gold, FONTS.panelTitle, TEXT_ALIGN_RIGHT)
+  local nums={"1","2","3","4","5","6","7","8","9","Clear","0","Back"}
+  local bx=x+78; local by=y+170; local bw=134; local bh=54; local gap=16
+  for i,n in ipairs(nums) do
+    local col=(i-1)%3; local row=math.floor((i-1)/3)
+    self:ToolButton(root,"ModalKey21665"..i,bx+col*(bw+gap),by+row*(bh+gap),bw,bh,n,C.cyanSoft,function()
+      local mm=TML.state.modal; if not mm then return end
+      if n=="Clear" then mm.value="" elseif n=="Back" then mm.value=tostring(mm.value or ""):sub(1,-2) else mm.value=tostring(mm.value or "")..n end
+      TML:RenderTool(TML.state.activeTool)
+    end)
+  end
+  self:ToolButton(root,"ModalExit21665",x+78,y+mh-78,200,56,"Exit",C.red,function() TML:CloseModal() end)
+  self:ToolButton(root,"ModalSave21665",x+322,y+mh-78,200,56,"Save and Continue",C.cyanSoft,function()
+    local mm=TML.state.modal; if mm and mm.save then mm.save(tonumber(mm.value) or 0) end
+    TML:CloseModal()
+  end)
+end
+
+function TML:OpenPrizeSplitPad()
+  local g=self:GetGuild(); local r=self:GetRaffle(g.id)
+  r.prizes = r.prizes or {0,0,0}
+  self.state.modal = { type="prize_split", title="PRIZE SPLIT", active=1, values={ tostring(r.prizes[1] or ""), tostring(r.prizes[2] or ""), tostring(r.prizes[3] or "") } }
+  self.state.toolButton=1
+  self:RenderTool("guild_raffle")
+end
+function TML:RenderPrizeSplitPad(root)
+  local rw,rh = self:GetRootSize(); local mw,mh=700,620; local x=math.floor((rw-mw)/2); local y=math.floor((rh-mh)/2)
+  local m=self.state.modal or {}; m.values=m.values or {"","",""}; m.active=VClamp(m.active or 1,1,3)
+  self.currentToolButtons = {}
+  self:Backdrop("PrizeDim21665",root,0,0,rw,rh,{0,0,0,0.88},nil)
+  self:Backdrop("PrizeBg21665",root,x,y,mw,mh,{0,0,0,0.99},{C.cyan[1],C.cyan[2],C.cyan[3],0.98})
+  self:Label("PrizeTitle21665",root,"PRIZE SPLIT",x,y+22,mw,42,C.cyanSoft,FONTS.panelTitle,TEXT_ALIGN_CENTER)
+  local labels={"1st","2nd","3rd"}
+  for i=1,3 do
+    local fy=y+78+(i-1)*62
+    local selected=(m.active==i)
+    self:ToolButton(root,"PrizeField21665"..i,x+70,fy,560,50,labels[i]..": "..((m.values[i] and m.values[i]~="") and WFormatGold(tonumber(m.values[i]) or 0) or "Manual Edit"),selected and C.gold or C.cyan,function() TML.state.modal.active=i; TML:RenderTool("guild_raffle") end)
+  end
+  local nums={"1","2","3","4","5","6","7","8","9","Clear","0","Back"}
+  local bx=x+100; local by=y+286; local bw=142; local bh=48; local gap=16
+  for i,n in ipairs(nums) do
+    local col=(i-1)%3; local row=math.floor((i-1)/3)
+    self:ToolButton(root,"PrizeKey21665"..i,bx+col*(bw+gap),by+row*(bh+gap),bw,bh,n,C.cyanSoft,function()
+      local mm=TML.state.modal; if not mm then return end
+      local a=VClamp(mm.active or 1,1,3); mm.values=mm.values or {"","",""}
+      if n=="Clear" then mm.values[a]="" elseif n=="Back" then mm.values[a]=tostring(mm.values[a] or ""):sub(1,-2) else mm.values[a]=tostring(mm.values[a] or "")..n end
+      TML:RenderTool("guild_raffle")
+    end)
+  end
+  self:ToolButton(root,"PrizeExit21665",x+100,y+mh-76,210,54,"Exit",C.red,function() TML:CloseModal() end)
+  self:ToolButton(root,"PrizeSave21665",x+390,y+mh-76,210,54,"Save and Continue",C.cyanSoft,function()
+    local gg=TML:GetGuild(); local rr=TML:GetRaffle(gg.id); local mm=TML.state.modal or {}; local vv=mm.values or {}
+    rr.prizes={tonumber(vv[1]) or 0, tonumber(vv[2]) or 0, tonumber(vv[3]) or 0}; TML.saved.prizeSplit[tostring(gg.id or 0)] = rr.prizes; TML:CloseModal()
+  end)
+end
+
+-- Scan status wrappers.
+local function V21665_WrapScan(name)
+  local old = TML[name]
+  if type(old) == "function" then
+    TML[name] = function(self, ...)
+      local ok, err = pcall(old, self, ...)
+      if ok then self:MarkScanned("Scanned", true) else self:MarkScanned("Scan Failed", false); self:Notify(err) end
+      return ok
+    end
+  end
+end
+for _,fn in ipairs({"ScanNetWorth","ScanPersonalGoldLedger","ScanGuildSales","ScanAllGuildSales","ScanSelectedGuildSales","ScanGuildGold","ScanSelectedGuildGold","ScanGuildBankItems","ScanBookkeeper","ScanRaffleEntries"}) do V21665_WrapScan(fn) end
+
+-- Net Worth: Craft Bag label, Avg column, green value column.
+function TML:RenderOldNetWorth(root,x,y,w,h,accent)
+  local nw=self:GetNetWorth(); local leftW=540
+  self:DrawLegacyPanel(root,"NWStats",x,y,leftW,h-62,"SUMMARY",accent)
+  local topY=y+66; local col1=x+28; local col2=x+288; local rowH=28
+  local left={{"GOLD","",C.cyanSoft},{"Total Net Worth",WFormatGold(nw.total),VGreen},{"Character Net Worth",WFormatGold(nw.character),VGreen},{"Carried Gold",WFormatGold(nw.carriedGold),VGreen},{"Banked Gold",WFormatGold(nw.bankedGold),VGreen},{"INVENTORY VALUE","",C.cyanSoft},{"Carried Items",WFormatGold(nw.carriedItems),C.cyanSoft},{"Banked Items",WFormatGold(nw.bankedItems),C.cyanSoft},{"Craft Bag",WFormatGold(nw.craftBag),C.cyanSoft},{"Unpriced Items",WFormatNumber(nw.unpriced),C.muted}}
+  local right={{"CURRENCIES","",C.cyanSoft}}
+  for _,cur in ipairs(nw.currencies or {}) do right[#right+1]={cur[1],cur[2]==nil and WNA() or WFormatNumber(cur[2]),cur[2]==nil and C.muted or C.gold} end
+  for i,r in ipairs(left) do self:Label("NWLeftK65"..i,root,r[1],col1,topY+(i-1)*rowH,150,rowH,r[3] or C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("NWLeftV65"..i,root,r[2] or "",col1+145,topY+(i-1)*rowH,90,rowH,r[3] or VGreen,FONTS.panelSmall,TEXT_ALIGN_RIGHT) end
+  for i,r in ipairs(right) do self:Label("NWRightK65"..i,root,r[1],col2,topY+(i-1)*rowH,145,rowH,r[3] or C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("NWRightV65"..i,root,r[2] or "",col2+145,topY+(i-1)*rowH,72,rowH,r[3] or C.gold,FONTS.panelSmall,TEXT_ALIGN_RIGHT) end
+  local rows={}; for i,it in ipairs(nw.top or {}) do local avg=(tonumber(it.value) and tonumber(it.qty) and tonumber(it.qty)>0) and math.floor((tonumber(it.value) or 0)/(tonumber(it.qty) or 1)) or nil; rows[#rows+1]={tostring(i),self:FormatItemCell(it.itemLink,it.name,30),avg and WFormatGold(avg) or WNA(),WFormatNumber(it.qty),VCell(WFormatGold(it.value),VGreen),it.location or it.source or WNA()} end
+  self:DrawLegacyTable(root,"NWTopItems",x+leftW+24,y,w-leftW-24,h-62,"TOP 20 MOST VALUABLE ITEMS",{"Rank","Item Name","Avg","Qty","Value","Location"},self:RowsOrNA(rows,6,"No priced items found"),accent,{0.38,2.55,.75,.55,.9,1})
+  local by=y+h-52; local bw=math.floor((w-24)/3); self:ToolButton(root,"NWScan",x,by,bw,42,"Scan Net Worth",accent,function() TML:ScanNetWorth(); TML:RenderTool("net_worth") end); self:ToolButton(root,"NWBack",x+bw+12,by,bw,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"NWExit",x+(bw+12)*2,by,bw,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+-- Personal/guild sales repair: robust seller match + filters for Best Sellers and High Ticket.
+function TML:GetSalesRows(guildId,onlyMe)
+  self:EnsureDataDefaults(); local rows={}; local my=V21665_NormalUser(self:GetUserDisplayName()); local now=WNow()
+  for _,e in pairs(self.saved.salesEvents or {}) do
+    local seller=V21665_NormalUser(e.seller)
+    if (not guildId or guildId==0 or e.guildId==guildId) and ((not onlyMe) or seller==my) then
+      if (now-(tonumber(e.timestamp) or 0)) <= WORKING_HISTORY_DAYS*WORKING_SECONDS_DAY then rows[#rows+1]=e end
+    end
+  end
+  table.sort(rows,function(a,b) return (a.timestamp or 0)>(b.timestamp or 0) end)
+  return rows
+end
+function TML:GetBestSellerRows(guildId)
+  local by={}
+  for _,e in ipairs(self:GetSalesRows(guildId,false)) do
+    local key=e.seller or WNA(); local r=by[key] or {seller=key,amount=0,items=0,sales=0,highest=0,last=0}
+    local amt=tonumber(e.amount) or 0; r.amount=r.amount+amt; r.items=r.items+(tonumber(e.quantity) or 1); r.sales=r.sales+1; if amt>r.highest then r.highest=amt end; if (e.timestamp or 0)>r.last then r.last=e.timestamp end; by[key]=r
+  end
+  local rows={}; for _,r in pairs(by) do rows[#rows+1]=r end; table.sort(rows,function(a,b) return (a.amount or 0)>(b.amount or 0) end); return rows
+end
+function TML:GetHighTicketRows(guildId)
+  local rows={}; for _,e in ipairs(self:GetSalesRows(guildId,false)) do rows[#rows+1]=e end; table.sort(rows,function(a,b) return (tonumber(a.amount) or 0)>(tonumber(b.amount) or 0) end); return rows
+end
+function TML:RenderOldSales(root,x,y,w,h,accent,guildMode)
+  local selectorW=guildMode and 300 or 0; if guildMode then self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent) end
+  local rx=x+selectorW+(guildMode and 24 or 0); local rw=w-selectorW-(guildMode and 24 or 0); local g=self:GetGuild(); local st=self:ComputeSalesStats(guildMode and g.id or 0,not guildMode)
+  self:DrawLegacyPanel(root,"SalesStats",rx,y,rw,142,guildMode and "GUILD SALES DASHBOARD" or "PERSONAL SALES DASHBOARD",accent)
+  local cards=guildMode and {{"Sales Today",WFormatGold(st.salesToday),VGreen},{"Total Sales",WFormatGold(st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Guild Tax",WFormatGold(st.tax),VGreen},{"Top Earner",WLimit(st.topEarner,18),C.white}} or {{"Sales",WFormatGold(st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Net Earned",WFormatGold(st.net),VYellow},{"Guilds",WFormatNumber(#(self.guilds or {})),C.cyanSoft},{"Status",self.saved.scanStatus.sales or WNA(),C.white}}
+  local cardW=math.floor((rw-78)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"SalesCard65"..i,rx+20+(i-1)*(cardW+10),y+56,cardW,68,c[1],c[2],c[3],c[3]) end
+  local rows={}; local filter=self.saved.salesFilter or "Recent"
+  if guildMode and filter=="Best Sellers" then
+    for _,e in ipairs(self:GetBestSellerRows(g.id)) do rows[#rows+1]={VCell(WLimit(e.seller,22),C.white),VCell(WFormatGold(e.amount),VYellow),WFormatNumber(e.items),WFormatNumber(e.sales),VCell(WFormatGold(e.highest),VYellow)} end
+    self:DrawLegacyTable(root,"SalesRows65",rx,y+166,rw,h-228,"BEST SELLERS - SELLERS TOP DOWN",{"Seller","Total Gold","Items","Sales","Highest"},self:RowsOrNA(rows,5,"Press Scan Sales"),accent,{1.7,1.1,.7,.7,1})
+  elseif guildMode and filter=="High Ticket" then
+    for _,e in ipairs(self:GetHighTicketRows(g.id)) do rows[#rows+1]={WLimit(e.seller,18),self:FormatItemCell(e.itemLink,e.itemName,24),WFormatNumber(e.quantity),VCell(WFormatGold(e.amount),VYellow),WRelTime(e.timestamp)} end
+    self:DrawLegacyTable(root,"SalesRows65",rx,y+166,rw,h-228,"HIGH TICKET SALES - BIGGEST TO SMALLEST",{"Seller","Item","Qty","Gold","When"},self:RowsOrNA(rows,5,"Press Scan Sales"),accent,{1.3,2.1,.6,1,1})
+  else
+    for _,e in ipairs(self:GetSalesRows(guildMode and g.id or 0,not guildMode)) do rows[#rows+1]={guildMode and WLimit(e.seller,20) or self:FormatItemCell(e.itemLink,e.itemName,28),guildMode and self:FormatItemCell(e.itemLink,e.itemName,25) or self:GetGuildName(e.guildId),WFormatNumber(e.quantity),VCell(WFormatGold(e.amount),VYellow),WRelTime(e.timestamp)} end
+    self:DrawLegacyTable(root,"SalesRows65",rx,y+166,rw,h-228,guildMode and "GUILD TRADER SALES" or "SALES",{guildMode and "Seller" or "Item",guildMode and "Item" or "Guild","Qty","Gold","When"},self:RowsOrNA(rows,5,"No sales data loaded"),accent,{1.4,2.2,.7,1,1})
+  end
+  local by=y+h-52; self:ToolButton(root,"SalesScanOne65",rx,by,170,42,guildMode and "Scan Guild" or "Scan Sales",accent,function() if guildMode then TML:ScanSelectedGuildSales() else TML:ScanAllGuildSales() end; TML:RenderTool(TML.state.activeTool) end); self:ToolButton(root,"SalesScanAll65",rx+184,by,150,42,"Scan All",accent,function() TML:ScanAllGuildSales(); TML:RenderTool(TML.state.activeTool) end); if guildMode then self:ToolButton(root,"SalesFilter65",rx+348,by,220,42,"Filter: "..filter,accent,function() local f=TML.saved.salesFilter or "Recent"; TML.saved.salesFilter=(f=="Recent") and "Best Sellers" or ((f=="Best Sellers") and "High Ticket" or "Recent"); TML:RenderTool("guild_sales") end) end
+end
+
+-- Guild Gold Ledger: live bank gold fallback and ticket bucket colors.
+function TML:ComputeGuildGoldStats(guildId)
+  local st={bank=V21665_GuildBankGold(self,guildId),donations=0,withdrawn=0,pending=0,ticketGold=0,adjusted=0}
+  for _,e in ipairs(self:GetGuildGoldRows(guildId)) do
+    local amt=tonumber(e.amount) or 0
+    if e.action=="deposit" then if e.bucket=="Ticket" then st.ticketGold=st.ticketGold+amt elseif e.bucket~="Reset" then st.donations=st.donations+amt end else st.withdrawn=st.withdrawn+amt end
+    if e.bucket=="Trader Bid" or e.bucket=="Pending Bid" then st.pending=st.pending+amt end
+  end
+  st.adjusted=(st.bank or 0)-st.pending
+  return st
+end
+function TML:RenderOldLedger(root,x,y,w,h,accent,guildMode)
+  if not guildMode then
+    local st=self:ComputePersonalGoldStats(); local topH=150; self:DrawLegacyPanel(root,"LedgerStats",x,y,w,topH,"GOLD LEDGER",accent)
+    local bankText=st.bank==nil and "Bank not scanned" or WFormatGold(st.bank)
+    local cards={{"Current Gold",WFormatGold(st.current),C.gold},{"Bank Gold",bankText,C.gold},{"Gold In",WFormatGold(st.goldIn),VGreen},{"Gold Out",WFormatGold(st.goldOut),VRed},{"Net Change",WFormatGold(st.net),st.net>=0 and VGreen or VRed}}
+    local cardW=math.floor((w-88)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"LedgerMini65"..i,x+24+(i-1)*(cardW+10),y+60,cardW,72,c[1],c[2],c[3],c[3]) end
+    local rows={}; for _,e in ipairs(self:GetPersonalGoldRows()) do rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.source,VCell((e.direction=="in" and "+" or "-")..WFormatGold(e.amount),e.direction=="in" and VGreen or VRed),e.note or WNA()} end
+    self:DrawLegacyTable(root,"LedgerHistory65",x,y+topH+22,w,h-topH-82,"PERSONAL GOLD HISTORY",{"Date","User","Source","Amount","Note"},self:RowsOrNA(rows,5,"Press Refresh Ledger"),accent,{1,1.2,1.8,1,1.1})
+    local by=y+h-52; self:ToolButton(root,"PersonalGoldRefresh65",x,by,210,42,"Refresh Ledger",accent,function() TML:ScanPersonalGoldLedger(); TML:RenderTool("gold_ledger_personal") end); self:ToolButton(root,"PersonalGoldBack65",x+224,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"PersonalGoldExit65",x+448,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+    return
+  end
+  local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeGuildGoldStats(g.id); local topH=154
+  self:DrawLegacyPanel(root,"LedgerStats65",rx,y,rw,topH,"GUILD GOLD LEDGER",accent)
+  local cards={{"Bank Gold",V21665_FormatGoldOrNA(st.bank),C.gold},{"Donations",WFormatGold(st.donations),VGreen},{"Withdrawn",WFormatGold(st.withdrawn),VRed},{"Pending Bids",WFormatGold(st.pending),VRed},{"Ticket Gold",WFormatGold(st.ticketGold),VYellow},{"Adjusted",WFormatGold(st.adjusted),C.gold}}
+  local cardW=math.floor((rw-94)/6); for i,c in ipairs(cards) do self:DrawMiniStat(root,"LedgerMini65G"..i,rx+20+(i-1)*(cardW+10),y+58,cardW,74,c[1],c[2],c[3],c[3]) end
+  local rows={}; for _,e in ipairs(self:GetGuildGoldRows(g.id)) do local bucketColor=V21665_TicketBucketColor(e.bucket); local amountColor=(e.bucket=="Ticket") and VYellow or (e.action=="deposit" and VGreen or VRed); rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.action=="deposit" and VCell("Deposit",VGreen) or VCell("Withdraw",VRed),VCell(WFormatGold(e.amount),amountColor),VCell(e.bucket or WNA(),bucketColor)} end
+  self:DrawLegacyTable(root,"LedgerHistory65G",rx,y+topH+20,math.floor(rw*.64),h-topH-82,"BANK GOLD HISTORY",{"Date","User","Event","Amount","Bucket"},self:RowsOrNA(rows,5,"Press Scan Gold"),accent,{1,1.2,1,1,1.2})
+  local sideX=rx+math.floor(rw*.64)+22; local sideW=rw-math.floor(rw*.64)-22; self:DrawLegacyPanel(root,"LedgerSide65",sideX,y+topH+20,sideW,h-topH-82,"TICKET RULES",accent,C.yellow)
+  self:Label("TicketRulesText65",root,"Ticket Gold: "..WFormatGold(st.ticketGold).."\nEntry rule: 1,001g = 1 ticket.\nReset rule: latest deposit ending in 33g resets raffle counting.\nTicket bucket + amount display yellow.\nBucket labels: Donation / Ticket / Withdraw / Trader Bid / Heraldry.",sideX+22,y+topH+76,sideW-44,210,C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  local by=y+h-52; self:ToolButton(root,"GoldScanBtn65",rx,by,210,42,"Scan Gold History",accent,function() TML:ScanSelectedGuildGold(); TML:RenderTool("guild_gold_ledger") end); self:ToolButton(root,"GoldBack65",rx+224,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"GoldExit65",rx+448,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+-- Guild bank item history: robust action parsing so Taken comes from withdrawals.
+function TML:IsBankItemWithdraw(eventType)
+  local text=Lower(eventType or "")
+  if text:find("withdraw") or text:find("taken") or text:find("take") or text:find("remove") then return true end
+  local withdraws={_G.GUILD_HISTORY_BANKED_ITEM_EVENT_WITHDRAWN,_G.GUILD_HISTORY_BANKED_ITEM_EVENT_WITHDRAW,_G.GUILD_HISTORY_BANKED_ITEM_EVENT_REMOVED,_G.GUILD_HISTORY_BANKED_ITEM_EVENT_REMOVE}
+  for _,v in ipairs(withdraws) do if v~=nil and eventType==v then return true end end
+  local deposits={_G.GUILD_HISTORY_BANKED_ITEM_EVENT_DEPOSITED,_G.GUILD_HISTORY_BANKED_ITEM_EVENT_DEPOSIT,_G.GUILD_HISTORY_BANKED_ITEM_EVENT_ADDED,_G.GUILD_HISTORY_BANKED_ITEM_EVENT_ADD}
+  for _,v in ipairs(deposits) do if v~=nil and eventType==v then return false end end
+  if tonumber(eventType)==2 then return true end
+  return false
+end
+function TML:ScanGuildBankItems(g)
+  self:EnsureDataDefaults(); g=g or self:GetGuild(); if not g or not g.id or g.id==0 then return end
+  local cat=self:GetHistoryCategory("bankedItem")
+  if type(GetGuildHistoryBankedItemEventInfo)~="function" or not cat then self.saved.scanStatus.bank="Guild bank item API unavailable"; return end
+  local newest,oldest=self:GetHistoryIndices(g.id,cat,WORKING_HISTORY_DAYS); local scanned=0
+  if oldest>=newest then
+    for i=newest,oldest do
+      local vals={pcall(GetGuildHistoryBankedItemEventInfo,g.id,i)}; local ok=table.remove(vals,1)
+      if ok then
+        local eventId,timestamp,eventType,displayName,itemLink,quantity,note=nil,WNow(),nil,nil,nil,1,""
+        for _,v in ipairs(vals) do
+          if type(v)=="string" then if v:find("|H",1,true) then itemLink=v elseif v:sub(1,1)=="@" and not displayName then displayName=v else note=note.." "..v end
+          elseif type(v)=="number" then if v>1000000000 then timestamp=v elseif v>0 and v<=10000 then quantity=v elseif not eventType then eventType=v elseif not eventId then eventId=v end
+          elseif type(v)=="boolean" then end
+        end
+        local action=self:IsBankItemWithdraw(eventType) and "withdraw" or "deposit"
+        if displayName and itemLink then self:AddBankItem(g.id,eventId or i,displayName,itemLink,quantity,timestamp,action); scanned=scanned+1 end
+      end
+    end
+  end
+  self:RequestHistory(g.id,cat,WORKING_HISTORY_DAYS); self:PruneEventTable(self.saved.bankItemEvents,WORKING_MAX_EVENTS); self.saved.scanStatus.bank="Scanned "..scanned.." bank item rows"; self:MarkScanned("Scanned", scanned>0)
+end
+
+-- Raffle: manual pot modal, prize split modal, full-page winners.
+function TML:SaveManualPot(amount)
+  local g=self:GetGuild(); local r=self:GetRaffle(g.id); r.manualPot=tonumber(amount) or 0; self:MarkScanned("Saved", true); self:RenderTool("guild_raffle")
+end
+function TML:PickWinner()
+  local g=self:GetGuild(); local r=self:GetRaffle(g.id); r.winners={}; local pool={}; local total=0
+  for k,e in pairs(r.entries or {}) do if (e.tickets or 0)>0 then pool[#pool+1]={key=k,name=e.name,tickets=e.tickets,gold=e.gold,last=e.last}; total=total+e.tickets end end
+  if total<=0 then self:Notify("No raffle entries available."); self:MarkScanned("No Data", false); return end
+  if not r.prizes or not r.prizes[1] then self:AutoPrizeSplit() end
+  local originalTotal=total
+  for place=1,math.min(3,#pool) do
+    local roll=math.random(total); local run=0; local pickIndex=1
+    for i,e in ipairs(pool) do run=run+(e.tickets or 0); if roll<=run then pickIndex=i; break end end
+    local chosen=pool[pickIndex]; r.winners[#r.winners+1]={name=chosen.name,tickets=chosen.tickets,odds=originalTotal>0 and (chosen.tickets/originalTotal*100) or 0,prize=(r.prizes or {})[place] or 0,timestamp=WNow()}
+    total=total-(chosen.tickets or 0); table.remove(pool,pickIndex); if total<=0 then break end
+  end
+  self.state.winnersGuildId=g.id; self:OpenTool("raffle_winners")
+end
+function TML:RenderRaffleWinnersPage(root,x,y,w,h,accent)
+  local g=self:GetGuild(); local r=self:GetRaffle(self.state.winnersGuildId or g.id); local winners=r.winners or {}
+  self:DrawLegacyPanel(root,"RaffleWinnersFull65",x,y,w,h,"RAFFLE WINNERS",C.gold)
+  self:Label("WinnersCelebration65",root,"CONGRATULATIONS!",x,y+58,w,52,C.gold,FONTS.panelTitle,TEXT_ALIGN_CENTER)
+  self:Label("WinnersSubtitle65",root,"Screenshot-ready results for "..WLimit(g.name,30),x,y+112,w,34,C.cyanSoft,FONTS.panelText,TEXT_ALIGN_CENTER)
+  for i=1,3 do
+    local win=winners[i] or {name="N/A",tickets=0,odds=0,prize=0}; local rowY=y+175+(i-1)*118; local place=i==1 and "1ST PLACE" or (i==2 and "2ND PLACE" or "3RD PLACE")
+    self:Backdrop("WinnerFullRow65"..i,root,x+80,rowY,w-160,92,{C.gold[1],C.gold[2],C.gold[3],i==1 and 0.20 or 0.12},{C.cyan[1],C.cyan[2],C.cyan[3],0.65})
+    self:Label("WinnerFullPlace65"..i,root,place,x+108,rowY+12,220,34,C.gold,FONTS.panelText,TEXT_ALIGN_LEFT)
+    self:Label("WinnerFullName65"..i,root,tostring(win.name or "N/A"),x+330,rowY+12,330,34,C.white,FONTS.panelText,TEXT_ALIGN_LEFT)
+    self:Label("WinnerFullPrize65"..i,root,WFormatGold(win.prize or 0),x+w-310,rowY+12,190,34,C.gold,FONTS.panelText,TEXT_ALIGN_RIGHT)
+    self:Label("WinnerFullTickets65"..i,root,"Tickets: "..tostring(win.tickets or 0),x+330,rowY+50,180,30,VYellow,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+    local odds=tonumber(win.odds) or 0; self:Label("WinnerFullOdds65"..i,root,string.format("Odds: %.2f%%",odds),x+530,rowY+50,170,30,V21665_OddsColor(odds),FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  end
+  local by=y+h-72; self:ToolButton(root,"WinnerBackToRaffle65",x+math.floor(w/2)-250,by,230,52,"Back to Raffle",C.cyan,function() TML:OpenTool("guild_raffle") end); self:ToolButton(root,"WinnerExit65",x+math.floor(w/2)+20,by,230,52,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+function TML:RenderOldRaffle(root,x,y,w,h,accent)
+  local selectorW=310; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local r=self:GetRaffle(g.id); local participants=WTableCount(r.entries); local tickets=0; local gold=0; for _,e in pairs(r.entries or {}) do tickets=tickets+(e.tickets or 0); gold=gold+(e.gold or 0) end; local pot=tonumber(r.manualPot) and tonumber(r.manualPot)>0 and tonumber(r.manualPot) or gold
+  self:DrawLegacyPanel(root,"RaffleStats65",rx,y,rw,178,"RAFFLE DASHBOARD",accent,C.yellow); local cards={{"Participants",WFormatNumber(participants),VGreen},{"Tickets",WFormatNumber(tickets),VYellow},{"Collected Gold",WFormatGold(gold),VGreen},{"Manual Pot",WFormatGold(r.manualPot),C.gold},{"Prize 1/2/3",(r.prizes and WFormatGold(r.prizes[1]).." / "..WFormatGold(r.prizes[2]).." / "..WFormatGold(r.prizes[3])) or WNA(),VYellow},{"Active Pot",WFormatGold(pot),C.gold}}
+  local cardW=math.floor((rw-72)/3); for i,c in ipairs(cards) do local cx=rx+24+((i-1)%3)*(cardW+12); local cy=y+70+math.floor((i-1)/3)*48; self:Label("RafK65"..i,root,c[1]..":",cx,cy,150,30,C.muted,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("RafV65"..i,root,tostring(c[2]),cx+152,cy,cardW-166,30,c[3] or C.gold,FONTS.panelSmall,TEXT_ALIGN_LEFT) end
+  local rows={}; for _,e in pairs(r.entries or {}) do local odds=tickets>0 and ((e.tickets or 0)/tickets*100) or 0; local color=V21665_OddsColor(odds); local row={WLimit(e.name,24),VCell(WFormatGold(e.gold),VGreen),VCell(WFormatNumber(e.tickets),VYellow),WRelTime(e.last),VCell(string.format("%.2f%%",odds),color)}; row.__tickets=e.tickets or 0; rows[#rows+1]=row end; table.sort(rows,function(a,b) return (a.__tickets or 0)>(b.__tickets or 0) end)
+  self:DrawLegacyTable(root,"RaffleEntries65",rx,y+200,rw,h-280,"ENTRIES AFTER RESET",{"Member","Deposit","Tickets","Last","Odds"},self:RowsOrNA(rows,5,"Press Scan Entries"),accent,{1.6,1,0.8,1,0.8})
+  local by=y+h-58; local bw=math.floor((rw-32)/5); self:ToolButton(root,"RaffleScan65",rx,by,bw,42,"Scan Entries",accent,function() TML:ScanRaffleEntries(); TML:RenderTool("guild_raffle") end); self:ToolButton(root,"RafflePot65",rx+bw+8,by,bw,42,"Manual Pot",accent,function() local gg=TML:GetGuild(); local rr=TML:GetRaffle(gg.id); TML:OpenNumberPad("manualPot","MANUAL POT",rr.manualPot or "",function(v) TML:SaveManualPot(v) end) end); self:ToolButton(root,"RaffleSplit65",rx+(bw+8)*2,by,bw,42,"Prize Split",accent,function() TML:OpenPrizeSplitPad() end); self:ToolButton(root,"RafflePick65",rx+(bw+8)*3,by,bw,42,"Pick Winner",accent,function() TML:PickWinner() end); self:ToolButton(root,"RaffleClear65",rx+(bw+8)*4,by,bw,42,"Clear Board",C.red,function() TML:ClearRaffle() end)
+end
+
+-- RenderTool override for new pages, modals, and scan toast.
+local OldRenderTool_21665 = TML.RenderTool
+function TML:RenderTool(toolKey)
+  if toolKey == "raffle_winners" then
+    self:HideAllPooledControls(); local root=self.ui.root; self:EnsureDataDefaults(); self:BeginToolButtons(); local rw,rh=self:GetRootSize(); local w=math.floor(rw*.90); local h=math.floor(rh*.90); local x=math.floor((rw-w)/2); local y=math.floor((rh-h)/2); self:Backdrop("ToolPageShadowRW65",root,x-10,y-10,w+20,h+20,{0,0,0,0.46},nil); self:Backdrop("ToolPanelRW65",root,x,y,w,h,C.black90,{C.cyan[1],C.cyan[2],C.cyan[3],0.95}); self:RenderRaffleWinnersPage(root,x+34,y+136,w-68,h-240,C.gold); self:RefreshKeybinds(); return
+  end
+  OldRenderTool_21665(self,toolKey)
+  local root=self.ui and self.ui.root
+  if root then
+    self:RenderScanToast(root)
+    if self.state and self.state.modal then
+      if self.state.modal.type=="prize_split" then self:RenderPrizeSplitPad(root)
+      elseif self.state.modal.type=="confirm_clear" then self:RenderClearConfirm(root)
+      end
+    end
+  end
+end
+
+-- Render clear saved data page from the regular tool renderer.
+local OldRenderOldHelp_21665 = TML.RenderOldHelp
+function TML:RenderToolBodyPatch(root,toolKey,bodyX,bodyY,bodyW,bodyH,accent)
+end
+local OldGetPageDesign_21665 = TML.GetPageDesign
+function TML:GetPageDesign(toolKey)
+  if toolKey=="clear_saved_data" then return self.pipelineMap.clear_saved_data end
+  if toolKey=="raffle_winners" then return self.pipelineMap.raffle_winners end
+  return OldGetPageDesign_21665(self,toolKey)
+end
+local OldRenderToolFinal_21665 = TML.RenderTool
+function TML:RenderTool(toolKey)
+  if toolKey == "clear_saved_data" then
+    self:HideAllPooledControls(); local root=self.ui.root; self:EnsureDataDefaults(); self:BeginToolButtons(); local rw,rh=self:GetRootSize(); local design=self:GetPageDesign(toolKey); local accent=C.red; local w=math.floor(rw*.90); local h=math.floor(rh*.90); local x=math.floor((rw-w)/2); local y=math.floor((rh-h)/2); local pad=34; local headerH=136; local footerH=78; local bodyX=x+pad; local bodyY=y+headerH+20; local bodyW=w-pad*2; local bodyH=h-headerH-footerH-48; self:Backdrop("ToolPageShadowClear65",root,x-10,y-10,w+20,h+20,{0,0,0,0.46},nil); self:Backdrop("ToolPanelClear65",root,x,y,w,h,C.black90,{C.red[1],C.red[2],C.red[3],0.95}); self:DrawLegacyHeader(root,x,y,w,design.title,design.subtitle or "Saved data reset",accent); self:RenderOldClearSavedData(root,bodyX,bodyY,bodyW,bodyH,accent); self:RenderScanToast(root); if self.state.modal and self.state.modal.type=="confirm_clear" then self:RenderClearConfirm(root) end; self:RefreshKeybinds(); return
+  end
+  OldRenderToolFinal_21665(self,toolKey)
+end
+
+local OldInitialize_21665 = TML.Initialize
+function TML:Initialize(addonName)
+  if OldInitialize_21665 then OldInitialize_21665(self, addonName) end
+  V21665_AddClearDataEntry()
+  if d then d("Tamriel Master Ledger v"..self.version.." pipeline fix + modal isolation pass loaded.") end
+end
+
+-- =========================================================
+-- v2.0.16.66 PERSONAL GOLD LEDGER + CRAFT BAG FIX
+-- - Personal Gold Ledger now tracks 24H + all-time in/out/net from saved gold events.
+-- - Refresh Ledger records wallet/bank deltas and scans guild gold rows tied to @UserID.
+-- - Net Worth uses a dedicated Craft Bag scan path and shows average-price warning.
+-- =========================================================
+TML.version = "2.0.16.66"
+TML.addOnVersion = 21666
+TML.lastUpdated = "06/13/2026 06:05 UTC"
+
+local V21666_OLD_EnsureDataDefaults = TML.EnsureDataDefaults
+function TML:EnsureDataDefaults()
+  if V21666_OLD_EnsureDataDefaults then V21666_OLD_EnsureDataDefaults(self) end
+  self.saved = self.saved or self:Defaults()
+  self.saved.personalGoldEvents = self.saved.personalGoldEvents or {}
+  self.saved.personalGoldTotals = self.saved.personalGoldTotals or { goldIn = 0, goldOut = 0, moves = 0 }
+  self.saved.goldSnapshots = self.saved.goldSnapshots or {}
+  self.saved.networth = self.saved.networth or {}
+  self.saved.priceCache = self.saved.priceCache or {}
+end
+
+local function V21666_UserNorm(v)
+  v = Lower(tostring(v or "")):gsub("^@", "")
+  return v
+end
+local function V21666_SameUser(a,b)
+  return V21666_UserNorm(a) ~= "" and V21666_UserNorm(a) == V21666_UserNorm(b)
+end
+local function V21666_AddPersonalGoldEvent(self, source, amount, direction, note)
+  self:EnsureDataDefaults()
+  amount = math.floor(math.abs(tonumber(amount) or 0))
+  if amount <= 0 then return false end
+  direction = direction or "move"
+  local now = WNow()
+  local key = tostring(now)..":"..tostring(direction)..":"..tostring(amount)..":"..tostring(source or "Gold")..":"..tostring(math.random(999999))
+  self.saved.personalGoldEvents[key] = {
+    timestamp = now,
+    user = self:GetUserDisplayName(),
+    source = tostring(source or "Detected Gold Change"),
+    amount = amount,
+    direction = direction,
+    note = tostring(note or "")
+  }
+  self.saved.personalGoldTotals = self.saved.personalGoldTotals or { goldIn = 0, goldOut = 0, moves = 0 }
+  if direction == "in" then
+    self.saved.personalGoldTotals.goldIn = (tonumber(self.saved.personalGoldTotals.goldIn) or 0) + amount
+  elseif direction == "out" then
+    self.saved.personalGoldTotals.goldOut = (tonumber(self.saved.personalGoldTotals.goldOut) or 0) + amount
+  else
+    self.saved.personalGoldTotals.moves = (tonumber(self.saved.personalGoldTotals.moves) or 0) + amount
+  end
+  self:PruneEventTable(self.saved.personalGoldEvents, WORKING_MAX_EVENTS)
+  return true
+end
+
+function TML:ScanPersonalGoldLedger()
+  self:EnsureDataDefaults()
+  -- Pull guild-bank gold rows too, because deposits/withdrawals tied to the current @UserID are part of personal gold activity when ESO exposes them.
+  if self.EachGuild and self.ScanGuildGold then
+    self:EachGuild(function(g) self:ScanGuildGold(g) end)
+  end
+  local carried = self:GetCarriedGoldLive()
+  local bank = self:GetBankGoldLive()
+  carried = tonumber(carried) or 0
+  bank = tonumber(bank) or 0
+  local total = carried + bank
+  local now = WNow()
+  local last = self.saved.goldSnapshots and self.saved.goldSnapshots.personalLast
+  local changed = false
+  if last and tonumber(last.total) then
+    local lastTotal = tonumber(last.total) or 0
+    local lastCarried = tonumber(last.carriedGold) or carried
+    local lastBank = tonumber(last.bankedGold) or bank
+    local totalDelta = total - lastTotal
+    local carriedDelta = carried - lastCarried
+    local bankDelta = bank - lastBank
+    if totalDelta > 0 then
+      changed = V21666_AddPersonalGoldEvent(self, "Detected Gold In", totalDelta, "in", "Wallet/bank total increased") or changed
+    elseif totalDelta < 0 then
+      changed = V21666_AddPersonalGoldEvent(self, "Detected Gold Out", math.abs(totalDelta), "out", "Wallet/bank total decreased") or changed
+    elseif bankDelta ~= 0 or carriedDelta ~= 0 then
+      local amt = math.max(math.abs(bankDelta), math.abs(carriedDelta))
+      if amt > 0 then
+        local note = bankDelta > 0 and "Moved gold into bank" or "Moved gold out of bank"
+        changed = V21666_AddPersonalGoldEvent(self, "Bank Transfer", amt, "move", note) or changed
+      end
+    end
+  end
+  self.saved.goldSnapshots.personalLast = { carriedGold = carried, bankedGold = bank, total = total, timestamp = now }
+  self.saved.scanStatus.personalGold = changed and "Gold ledger updated" or "No new gold movement"
+  if self.MarkScanned then self:MarkScanned(changed and "Scanned" or "No Data", true) end
+end
+
+function TML:GetPersonalGoldRows()
+  self:EnsureDataDefaults()
+  local rows = {}
+  local my = self:GetUserDisplayName()
+  for _,e in pairs(self.saved.personalGoldEvents or {}) do rows[#rows+1] = e end
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do
+    if V21666_SameUser(e.user, my) then
+      local action = tostring(e.action or "")
+      local dir = action == "deposit" and "out" or "in"
+      local src = action == "deposit" and "Guild Bank Deposit" or "Guild Bank Withdrawal"
+      rows[#rows+1] = { timestamp = e.timestamp, user = e.user, source = src, amount = e.amount, direction = dir, note = e.bucket or "Guild Bank" }
+    end
+  end
+  table.sort(rows, function(a,b) return (tonumber(a.timestamp) or 0) > (tonumber(b.timestamp) or 0) end)
+  return rows
+end
+
+function TML:ComputePersonalGoldStats()
+  self:EnsureDataDefaults()
+  local carried = self:GetCarriedGoldLive()
+  local bank = self:GetBankGoldLive()
+  local st = {
+    current = tonumber(carried) or 0,
+    bank = bank == nil and nil or tonumber(bank),
+    in24 = 0, out24 = 0, net24 = 0,
+    allIn = tonumber(self.saved.personalGoldTotals and self.saved.personalGoldTotals.goldIn) or 0,
+    allOut = tonumber(self.saved.personalGoldTotals and self.saved.personalGoldTotals.goldOut) or 0,
+    allNet = 0,
+  }
+  local now = WNow()
+  for _,e in ipairs(self:GetPersonalGoldRows()) do
+    local amt = tonumber(e.amount) or 0
+    local ts = tonumber(e.timestamp) or 0
+    local dir = e.direction
+    if dir == "in" then
+      if now - ts <= WORKING_SECONDS_DAY then st.in24 = st.in24 + amt end
+      -- Guild-bank rows are not included in personalGoldTotals, so include them in all-time visible totals here.
+      if tostring(e.source or ""):find("Guild Bank", 1, true) then st.allIn = st.allIn + amt end
+    elseif dir == "out" then
+      if now - ts <= WORKING_SECONDS_DAY then st.out24 = st.out24 + amt end
+      if tostring(e.source or ""):find("Guild Bank", 1, true) then st.allOut = st.allOut + amt end
+    end
+  end
+  st.net24 = st.in24 - st.out24
+  st.allNet = st.allIn - st.allOut
+  return st
+end
+
+local function V21666_AmountCell(e)
+  local amt = WFormatGold(e.amount)
+  if e.direction == "in" then return VCell("+"..amt, VGreen) end
+  if e.direction == "out" then return VCell("-"..amt, VRed) end
+  return VCell(amt, VYellow)
+end
+
+function TML:RenderOldLedger(root, x, y, w, h, accent, guildMode)
+  if guildMode then
+    -- Keep the latest guild-ledger implementation intact by calling the v2.0.16.65 branch if this override is used for guild pages.
+    local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeGuildGoldStats(g.id); local topH=154
+    self:DrawLegacyPanel(root,"LedgerStats66G",rx,y,rw,topH,"GUILD GOLD LEDGER",accent)
+    local cards={{"Bank Gold",V21665_FormatGoldOrNA and V21665_FormatGoldOrNA(st.bank) or (st.bank==nil and WNA() or WFormatGold(st.bank)),C.gold},{"Donations",WFormatGold(st.donations),VGreen},{"Withdrawn",WFormatGold(st.withdrawn),VRed},{"Pending Bids",WFormatGold(st.pending),VRed},{"Ticket Gold",WFormatGold(st.ticketGold),VYellow},{"Adjusted",WFormatGold(st.adjusted),C.gold}}
+    local cardW=math.floor((rw-94)/6); for i,c in ipairs(cards) do self:DrawMiniStat(root,"LedgerMini66G"..i,rx+20+(i-1)*(cardW+10),y+58,cardW,74,c[1],c[2],c[3],c[3]) end
+    local rows={}; for _,e in ipairs(self:GetGuildGoldRows(g.id)) do local bucketColor=V21665_TicketBucketColor and V21665_TicketBucketColor(e.bucket) or ((e.bucket=="Ticket") and VYellow or (e.action=="deposit" and VGreen or VRed)); local amountColor=(e.bucket=="Ticket") and VYellow or (e.action=="deposit" and VGreen or VRed); rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.action=="deposit" and VCell("Deposit",VGreen) or VCell("Withdraw",VRed),VCell(WFormatGold(e.amount),amountColor),VCell(e.bucket or WNA(),bucketColor)} end
+    self:DrawLegacyTable(root,"LedgerHistory66G",rx,y+topH+20,math.floor(rw*.64),h-topH-82,"BANK GOLD HISTORY",{"Date","User","Event","Amount","Bucket"},self:RowsOrNA(rows,5,"Press Scan Gold"),accent,{1,1.2,1,1,1.2})
+    local sideX=rx+math.floor(rw*.64)+22; local sideW=rw-math.floor(rw*.64)-22; self:DrawLegacyPanel(root,"LedgerSide66G",sideX,y+topH+20,sideW,h-topH-82,"TICKET RULES",accent,C.yellow)
+    self:Label("TicketRulesText66G",root,"Ticket Gold: "..WFormatGold(st.ticketGold).."\nEntry rule: 1,001g = 1 ticket.\nReset rule: latest deposit ending in 33g resets raffle counting.\nTicket bucket + amount display yellow.\nBucket labels: Donation / Ticket / Withdraw / Trader Bid / Heraldry.",sideX+22,y+topH+76,sideW-44,210,C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+    local by=y+h-52; self:ToolButton(root,"GoldScanBtn66G",rx,by,210,42,"Scan Gold History",accent,function() TML:ScanSelectedGuildGold(); TML:RenderTool("guild_gold_ledger") end); self:ToolButton(root,"GoldBack66G",rx+224,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"GoldExit66G",rx+448,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+    return
+  end
+
+  local st = self:ComputePersonalGoldStats()
+  local topH = 230
+  self:DrawLegacyPanel(root, "LedgerStats66", x, y, w, topH, "GOLD LEDGER", accent)
+  local bankText = st.bank == nil and "Bank not scanned" or WFormatGold(st.bank)
+  local cards = {
+    {"Current Gold", WFormatGold(st.current), C.gold}, {"Bank Gold", bankText, C.gold}, {"24H Gold In", WFormatGold(st.in24), VGreen}, {"24H Gold Out", WFormatGold(st.out24), VRed},
+    {"24H Net", WFormatGold(st.net24), st.net24 >= 0 and VGreen or VRed}, {"All-Time In", WFormatGold(st.allIn), VGreen}, {"All-Time Out", WFormatGold(st.allOut), VRed}, {"All-Time Net", WFormatGold(st.allNet), st.allNet >= 0 and VGreen or VRed},
+  }
+  local cardW = math.floor((w - 90) / 4)
+  for i,c in ipairs(cards) do
+    local col = (i-1) % 4
+    local row = math.floor((i-1) / 4)
+    self:DrawMiniStat(root, "LedgerMini66"..i, x + 24 + col * (cardW + 14), y + 58 + row * 78, cardW, 68, c[1], c[2], c[3], c[3])
+  end
+  self:Label("GoldLedgerNote66", root, "24H tracks the last 24 hours. All-Time tracks saved gold movement since tracking began. If ESO does not expose a source, it is listed as Detected Gold Change.", x+26, y+topH-40, w-52, 30, C.yellowDim, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+  local rows = {}
+  for _,e in ipairs(self:GetPersonalGoldRows()) do rows[#rows+1] = { WRelTime(e.timestamp), WLimit(e.user,18), e.source or WNA(), V21666_AmountCell(e), e.note or WNA() } end
+  self:DrawLegacyTable(root, "LedgerHistory66", x, y+topH+20, w, h-topH-82, "PERSONAL GOLD HISTORY", {"Date", "User", "Source", "Amount", "Note"}, self:RowsOrNA(rows,5,"Press Refresh Ledger"), accent, {1,1.1,1.8,1,1.3})
+  local by = y + h - 52
+  self:ToolButton(root,"PersonalGoldRefresh66",x,by,210,42,"Refresh Ledger",accent,function() TML:ScanPersonalGoldLedger(); TML:RenderTool("gold_ledger_personal") end)
+  self:ToolButton(root,"PersonalGoldBack66",x+224,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end)
+  self:ToolButton(root,"PersonalGoldExit66",x+448,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+local function V21666_GetItemQuantity(bagId, slotIndex, slotData)
+  local qty = tonumber(slotData and (slotData.stackCount or slotData.stack or slotData.quantity))
+  if qty and qty > 0 then return qty end
+  if type(GetSlotStackSize) == "function" then local ok,q = pcall(GetSlotStackSize, bagId, slotIndex); if ok and tonumber(q) then return tonumber(q) end end
+  if type(GetItemTotalCount) == "function" and slotData and slotData.itemLink then local ok,q = pcall(GetItemTotalCount, slotData.itemLink); if ok and tonumber(q) then return tonumber(q) end end
+  return 1
+end
+local function V21666_ValueItem(self, nw, itemLink, qty, bucket, locName)
+  if not itemLink or itemLink == "" then return end
+  qty = tonumber(qty) or 1
+  local name = WGetItemName(itemLink)
+  local avg = nil
+  if self.GetAveragePrice then avg = self:GetAveragePrice(WItemKey(itemLink)) end
+  local value, source = nil, nil
+  if avg and tonumber(avg) and tonumber(avg) > 0 then
+    value = math.floor(tonumber(avg) * qty)
+    source = "guild avg"
+  else
+    value, source = WGetItemValue(itemLink, qty)
+  end
+  if value and tonumber(value) then
+    nw[bucket] = (tonumber(nw[bucket]) or 0) + tonumber(value)
+    table.insert(nw.top, { name=name, itemLink=itemLink, qty=qty, avg=avg, value=tonumber(value), source=source or "value", location=locName })
+  else
+    nw.unpriced = (tonumber(nw.unpriced) or 0) + 1
+  end
+end
+local function V21666_ScanNormalBag(self, nw, bagId, bucket, locName)
+  if bagId == nil or type(GetBagSize) ~= "function" or type(GetItemLink) ~= "function" then return 0 end
+  local okSize,size = pcall(GetBagSize, bagId); size = okSize and tonumber(size) or 0
+  local scanned = 0
+  for slot=0, math.max(0, size-1) do
+    local okLink,itemLink = pcall(GetItemLink, bagId, slot)
+    if okLink and itemLink and itemLink ~= "" then
+      scanned = scanned + 1
+      V21666_ValueItem(self, nw, itemLink, V21666_GetItemQuantity(bagId, slot, nil), bucket, locName)
+    end
+  end
+  return scanned
+end
+local function V21666_ScanCraftBag(self, nw)
+  local bagId = _G.BAG_VIRTUAL
+  local scanned = 0
+  if bagId == nil then nw.craftBagStatus = "Craft Bag API unavailable"; return 0 end
+  -- Preferred console-safe path: ESO's shared inventory virtual bag cache.
+  if SHARED_INVENTORY then
+    local candidates = {}
+    if type(SHARED_INVENTORY.GenerateFullSlotData) == "function" then
+      local ok,data = pcall(function() return SHARED_INVENTORY:GenerateFullSlotData(nil, bagId) end)
+      if ok and type(data) == "table" then candidates[#candidates+1] = data end
+    end
+    if type(SHARED_INVENTORY.GetBagCache) == "function" then
+      local ok,data = pcall(function() return SHARED_INVENTORY:GetBagCache(bagId) end)
+      if ok and type(data) == "table" then candidates[#candidates+1] = data end
+    end
+    if type(SHARED_INVENTORY.GetOrCreateBagCache) == "function" then
+      local ok,data = pcall(function() return SHARED_INVENTORY:GetOrCreateBagCache(bagId) end)
+      if ok and type(data) == "table" then candidates[#candidates+1] = data end
+    end
+    local seen = {}
+    for _,data in ipairs(candidates) do
+      for slotKey,slotData in pairs(data) do
+        local itemLink = slotData and (slotData.itemLink or slotData.link)
+        local slotIndex = tonumber(slotData and (slotData.slotIndex or slotData.slotId or slotKey)) or tonumber(slotKey)
+        if (not itemLink or itemLink == "") and type(GetItemLink) == "function" and slotIndex then
+          local ok,l = pcall(GetItemLink, bagId, slotIndex); if ok then itemLink = l end
+        end
+        if itemLink and itemLink ~= "" and not seen[itemLink..":"..tostring(slotIndex or slotKey)] then
+          seen[itemLink..":"..tostring(slotIndex or slotKey)] = true
+          scanned = scanned + 1
+          V21666_ValueItem(self, nw, itemLink, V21666_GetItemQuantity(bagId, slotIndex, slotData), "craftBag", "Craft Bag")
+        end
+      end
+    end
+  end
+  -- Fallback: direct BAG_VIRTUAL slot loop where available.
+  if scanned == 0 then scanned = V21666_ScanNormalBag(self, nw, bagId, "craftBag", "Craft Bag") end
+  nw.craftBagStatus = scanned > 0 and ("Scanned "..tostring(scanned).." craft bag items") or "Craft Bag not loaded"
+  return scanned
+end
+
+function TML:ScanNetWorth()
+  self:EnsureDataDefaults()
+  local nw = { total=0, character=0, carriedGold=0, bankedGold=0, carriedItems=0, bankedItems=0, craftBag=0, unpriced=0, top={}, currencies={}, lastScan=WNow(), craftBagStatus="Not scanned" }
+  nw.carriedGold = self:GetCarriedGoldLive() or 0
+  nw.bankedGold = self:GetBankGoldLive() or 0
+  local accountLoc={_G.CURRENCY_LOCATION_ACCOUNT,nil}; local charBankLoc={_G.CURRENCY_LOCATION_CHARACTER,_G.CURRENCY_LOCATION_BANK,_G.CURRENCY_LOCATION_ACCOUNT,nil}
+  nw.currencies={{"Crowns",WCurrencyAny({"CURT_CROWNS","CURT_CROWN_CROWNS"},accountLoc)},{"Crown Gems",WCurrencyAny({"CURT_CROWN_GEMS"},accountLoc)},{"Writ Vouchers",WCurrencyAny({"CURT_WRIT_VOUCHERS","CURT_WRIT_VOUCHER"},charBankLoc)},{"Alliance Points",WCurrencyAny({"CURT_ALLIANCE_POINTS"},charBankLoc)},{"Tel Var Stones",WCurrencyAny({"CURT_TELVAR_STONES"},charBankLoc)},{"Trade Bars",WCurrencyAny({"CURT_TRADE_BARS","CURT_EVENT_TICKETS","CURT_EVENT_TICKET"},accountLoc)},{"Undaunted Keys",WCurrencyAny({"CURT_UNDAUNTED_KEYS","CURT_UNDAUNTED_KEY"},charBankLoc)},{"Seals",WCurrencyAny({"CURT_SEALS_OF_ENDEAVOR","CURT_ENDEAVOR_SEALS","CURT_SEAL_OF_ENDEAVOR"},accountLoc)},{"Archival Fortunes",WCurrencyAny({"CURT_ARCHIVAL_FORTUNES","CURT_ARCHIVAL_FORTUNE"},charBankLoc)},{"Tome Points",WCurrencyAny({"CURT_TOME_POINTS","CURT_TAMRIEL_TOME_POINTS","CURT_TAMRIEL_TOMES"},accountLoc)}}
+  V21666_ScanNormalBag(self, nw, _G.BAG_BACKPACK, "carriedItems", "Backpack")
+  V21666_ScanNormalBag(self, nw, _G.BAG_BANK, "bankedItems", "Bank")
+  V21666_ScanNormalBag(self, nw, _G.BAG_SUBSCRIBER_BANK, "bankedItems", "Bank")
+  V21666_ScanCraftBag(self, nw)
+  table.sort(nw.top,function(a,b) return (tonumber(a.value) or 0) > (tonumber(b.value) or 0) end)
+  while #nw.top > 20 do table.remove(nw.top) end
+  nw.character = nw.carriedGold + nw.carriedItems
+  nw.total = nw.character + nw.bankedGold + nw.bankedItems + nw.craftBag
+  self.saved.networth = nw
+  self.saved.goldSnapshots = self.saved.goldSnapshots or {}
+  self.saved.goldSnapshots.last = { carriedGold = nw.carriedGold, bankedGold = nw.bankedGold, timestamp = WNow() }
+  self.saved.scanStatus.networth = "Scanned net worth"
+  if self.MarkScanned then self:MarkScanned("Scanned", true) end
+end
+
+function TML:RenderOldNetWorth(root,x,y,w,h,accent)
+  local nw=self:GetNetWorth(); local leftW=540
+  self:DrawLegacyPanel(root,"NWStats66",x,y,leftW,h-62,"SUMMARY",accent)
+  local topY=y+66; local col1=x+28; local col2=x+288; local rowH=28
+  local craftText = nw.craftBagStatus == "Craft Bag not loaded" and "N/A" or WFormatGold(nw.craftBag)
+  local left={{"GOLD","",C.cyanSoft},{"Total Net Worth",WFormatGold(nw.total),VGreen},{"Character Net Worth",WFormatGold(nw.character),VGreen},{"Carried Gold",WFormatGold(nw.carriedGold),VGreen},{"Banked Gold",WFormatGold(nw.bankedGold),VGreen},{"INVENTORY VALUE","",C.cyanSoft},{"Carried Items",WFormatGold(nw.carriedItems),C.cyanSoft},{"Banked Items",WFormatGold(nw.bankedItems),C.cyanSoft},{"Craft Bag",craftText,C.cyanSoft},{"Unpriced Items",WFormatNumber(nw.unpriced),C.muted}}
+  local right={{"CURRENCIES","",C.cyanSoft}}
+  for _,cur in ipairs(nw.currencies or {}) do right[#right+1]={cur[1],cur[2]==nil and WNA() or WFormatNumber(cur[2]),cur[2]==nil and C.muted or C.gold} end
+  for i,r in ipairs(left) do self:Label("NWLeftK66"..i,root,r[1],col1,topY+(i-1)*rowH,150,rowH,r[3] or C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("NWLeftV66"..i,root,r[2] or "",col1+145,topY+(i-1)*rowH,90,rowH,r[3] or VGreen,FONTS.panelSmall,TEXT_ALIGN_RIGHT) end
+  for i,r in ipairs(right) do self:Label("NWRightK66"..i,root,r[1],col2,topY+(i-1)*rowH,145,rowH,r[3] or C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("NWRightV66"..i,root,r[2] or "",col2+145,topY+(i-1)*rowH,72,rowH,r[3] or C.gold,FONTS.panelSmall,TEXT_ALIGN_RIGHT) end
+  local tableX=x+leftW+24; local tableW=w-leftW-24
+  self:Label("NWAvgWarning66",root,"Avg prices may be more or less than the actual current selling value. These averages are based on sales from your guilds.",tableX+16,y+8,tableW-32,40,VYellow,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  self:Label("NWCraftStatus66",root,"Craft Bag: "..tostring(nw.craftBagStatus or "Not scanned"),tableX+16,y+44,tableW-32,28,C.cyanSoft,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  local rows={}; for i,it in ipairs(nw.top or {}) do rows[#rows+1]={tostring(i),self:FormatItemCell(it.itemLink,it.name,30),it.avg and VCell(WFormatGold(it.avg),VYellow) or VCell(WNA(),C.muted),WFormatNumber(it.qty),VCell(WFormatGold(it.value),VGreen),it.location or it.source or WNA()} end
+  self:DrawLegacyTable(root,"NWTopItems66",tableX,y+78,tableW,h-140,"TOP 20 MOST VALUABLE ITEMS",{"Rank","Item Name","Avg","Qty","Value","Location"},self:RowsOrNA(rows,6,"No priced items found"),accent,{0.38,2.55,.75,.55,.9,1})
+  local by=y+h-52; local bw=math.floor((w-24)/3); self:ToolButton(root,"NWScan66",x,by,bw,42,"Scan Net Worth",accent,function() TML:ScanNetWorth(); TML:RenderTool("net_worth") end); self:ToolButton(root,"NWBack66",x+bw+12,by,bw,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"NWExit66",x+(bw+12)*2,by,bw,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+-- =========================================================
+-- v2.0.16.67 TRACKING + PAGE EDIT FIX PASS
+-- - Personal Gold Ledger: trader sales added, 24H/all-time gains/losses, delta %.
+-- - Net Worth: crown rate page, Crown Gold row, avg warning retained.
+-- - Manual Pot / Prize Split / Set Due / Set Crown Rate are full pages, not overlays.
+-- - Guild Gold Ledger: bids excluded from donations, Guild Tax, filters.
+-- - Guild Bank/Trader Bids: reconnect attempts and display fixes.
+-- =========================================================
+TML.version = "2.0.16.67"
+TML.addOnVersion = 21667
+TML.lastUpdated = "06/13/2026 17:20 UTC"
+
+TML.pipelineMap.manual_pot_page = { title="Manual Pot", parent="guild", subtitle="Set saved raffle pot" }
+TML.pipelineMap.prize_split_page = { title="Prize Split", parent="guild", subtitle="Set saved raffle prizes" }
+TML.pipelineMap.set_due_page = { title="Set Due Amount", parent="guild", subtitle="Set saved guild dues" }
+TML.pipelineMap.set_crown_rate_page = { title="Set Crown Rate", parent="personal", subtitle="Set gold value for 1 crown" }
+TML.pipelineMap.raffle_winners = TML.pipelineMap.raffle_winners or { title="Raffle Winners", parent="guild", subtitle="Screenshot-ready winners page" }
+
+local function V21667_NormUser(v)
+  v=tostring(v or ""):gsub("^%s+",""):gsub("%s+$",""):gsub("^@","")
+  return Lower(v)
+end
+local function V21667_SameUser(a,b) return V21667_NormUser(a)==V21667_NormUser(b) end
+local function V21667_IsBidText(text)
+  text=Lower(text or "")
+  return text:find("bid") or text:find("trader") or text:find("kiosk") or text:find("hire") or text:find("hired")
+end
+local function V21667_ResetAmount(amount) amount=tonumber(amount) or 0; return amount>0 and (amount % 100)==33 end
+local function V21667_TicketAmount(amount) amount=tonumber(amount) or 0; return amount>0 and (amount % WORKING_RAFFLE_TICKET_BASE)==WORKING_RAFFLE_TICKET_MOD and not V21667_ResetAmount(amount) and amount~=WORKING_RAFFLE_MARKER_AMOUNT end
+local function V21667_BucketColor(bucket)
+  bucket=tostring(bucket or "")
+  if bucket=="Ticket" then return VYellow end
+  if bucket=="Donation" then return VGreen end
+  if bucket=="Withdrawal" or bucket=="Withdraw" or bucket=="Trader Bid" or bucket=="Pending Bid" or bucket=="Lost Bid" or bucket=="Bid Withdrawn" or bucket=="Heraldry" then return VRed end
+  if bucket=="Reset" then return C.cyanSoft end
+  return C.white
+end
+local function V21667_AmountColor(e)
+  if e and e.bucket=="Ticket" then return VYellow end
+  if e and e.action=="deposit" then return VGreen end
+  return VRed
+end
+local function V21667_GoldCell(n,color)
+  return VCell(WFormatGold(tonumber(n) or 0), color or C.gold)
+end
+
+function TML:EnsureDataDefaults()
+  self.saved = self.saved or self:Defaults()
+  local dft = self:Defaults()
+  for k,v in pairs(dft) do if self.saved[k] == nil then self.saved[k] = v end end
+  self.saved.priceCache = self.saved.priceCache or {}
+  self.saved.networth = self.saved.networth or {}
+  self.saved.guildGoldEvents = self.saved.guildGoldEvents or {}
+  self.saved.donationEvents = self.saved.donationEvents or {}
+  self.saved.salesEvents = self.saved.salesEvents or {}
+  self.saved.bankItemEvents = self.saved.bankItemEvents or {}
+  self.saved.raffle = self.saved.raffle or {}
+  self.saved.members = self.saved.members or {}
+  self.saved.fish = self.saved.fish or {}
+  self.saved.daily = self.saved.daily or {}
+  self.saved.access = self.saved.access or {}
+  self.saved.scanStatus = self.saved.scanStatus or {}
+  self.saved.seen = self.saved.seen or {}
+  self.saved.manual = self.saved.manual or {}
+  self.saved.prizeSplit = self.saved.prizeSplit or {}
+  self.saved.dueAmounts = self.saved.dueAmounts or {}
+  self.saved.personalGoldEvents = self.saved.personalGoldEvents or {}
+  self.saved.personalGoldTotals = self.saved.personalGoldTotals or {goldIn=0,goldOut=0,moves=0}
+  self.saved.goldSnapshots = self.saved.goldSnapshots or {}
+  self.saved.guildGoldFilter = self.saved.guildGoldFilter or "Bank Gold History"
+  self.saved.personalSalesFilter = self.saved.personalSalesFilter or "Sales"
+end
+
+-- Only true Donations go into donationEvents. Tickets, resets, bids and withdraws are separate buckets.
+function TML:AddGuildGoldEvent(guildId,eventId,user,amount,timestamp,action,bucket,note)
+  self:EnsureDataDefaults()
+  local key=tostring(guildId)..":"..tostring(eventId or (tostring(user)..tostring(amount)..tostring(timestamp)..tostring(action)..tostring(note)))
+  if self.saved.guildGoldEvents[key] then return end
+  amount=tonumber(amount) or 0
+  note=tostring(note or "")
+  action=action or "unknown"
+  local low=Lower(note)
+  if not bucket or bucket=="Other" or bucket=="Withdrawal" then
+    if action~="deposit" then
+      if low:find("herald") then bucket="Heraldry"
+      elseif V21667_IsBidText(low) then bucket="Trader Bid"
+      else bucket="Withdrawal" end
+    else
+      if V21667_ResetAmount(amount) then bucket="Reset"
+      elseif V21667_TicketAmount(amount) then bucket="Ticket"
+      elseif V21667_IsBidText(low) then bucket="Trader Bid"
+      else bucket="Donation" end
+    end
+  end
+  local row={guildId=guildId,user=user or WNA(),amount=amount,timestamp=tonumber(timestamp) or WNow(),action=action,bucket=bucket,note=note}
+  self.saved.guildGoldEvents[key]=row
+  if action=="deposit" and bucket=="Donation" then
+    self.saved.donationEvents[key..":donation"]={guildId=guildId,user=user or WNA(),amount=amount,timestamp=row.timestamp,bucket=bucket}
+  end
+end
+
+function TML:ScanGuildGold(g)
+  self:EnsureDataDefaults(); g=g or self:GetGuild(); if not g or not g.id or g.id==0 then return end
+  local cat=self:GetHistoryCategory("bankedCurrency")
+  if type(GetGuildHistoryBankedCurrencyEventInfo)~="function" or not cat then self.saved.scanStatus.gold="Guild gold history API unavailable"; return end
+  local newest,oldest=self:GetHistoryIndices(g.id,cat,WORKING_HISTORY_DAYS); local scanned=0
+  if oldest>=newest then
+    for i=newest,oldest do
+      local vals={pcall(GetGuildHistoryBankedCurrencyEventInfo,g.id,i)}; local ok=table.remove(vals,1)
+      if ok then
+        local eventId,timestamp,isRedacted,eventType,displayName,currencyType,amount,kioskName=vals[1],vals[2],vals[3],vals[4],vals[5],vals[6],vals[7],vals[8]
+        local note=tostring(kioskName or "").." "..tostring(eventType or "")
+        if not (type(displayName)=="string" and tonumber(amount)) then
+          displayName,amount,timestamp,note=nil,nil,WNow(),""
+          for _,v in ipairs(vals) do
+            if type(v)=="string" then if v:sub(1,1)=="@" and not displayName then displayName=v else note=note.." "..v end
+            elseif type(v)=="number" then if v>1000000000 then timestamp=v elseif v>0 and not amount then amount=v end end
+          end
+          eventId=eventId or i
+          isRedacted=false
+          currencyType=nil
+        end
+        local isMoney=(currencyType==nil or _G.CURT_MONEY==nil or currencyType==_G.CURT_MONEY)
+        if not isRedacted and displayName and tonumber(amount) and isMoney then
+          local deposit=self:IsBankCurrencyDeposit(eventType)
+          local low=Lower(note)
+          if low:find("withdraw") or low:find("withdrew") or V21667_IsBidText(low) or low:find("herald") then deposit=false end
+          local bucket
+          if not deposit then
+            if low:find("herald") then bucket="Heraldry" elseif V21667_IsBidText(low) then bucket="Trader Bid" else bucket="Withdrawal" end
+          else
+            if V21667_ResetAmount(amount) then bucket="Reset" elseif V21667_TicketAmount(amount) then bucket="Ticket" elseif V21667_IsBidText(low) then bucket="Trader Bid" else bucket="Donation" end
+          end
+          self:AddGuildGoldEvent(g.id,eventId or i,displayName,amount,timestamp,deposit and "deposit" or "withdraw",bucket,note); scanned=scanned+1
+        end
+      end
+    end
+  end
+  self:RequestHistory(g.id,cat,WORKING_HISTORY_DAYS); self:PruneEventTable(self.saved.guildGoldEvents,WORKING_MAX_EVENTS); self:PruneEventTable(self.saved.donationEvents,WORKING_MAX_EVENTS); self.saved.scanStatus.gold="Scanned "..scanned.." gold rows"
+  if self.MarkScanned then self:MarkScanned(scanned>0 and "Scanned" or "No Data", scanned>0) end
+end
+function TML:ScanSelectedGuildGold() self:ScanGuildGold(self:GetGuild()); self:RenderTool(self.state.activeTool) end
+
+local function V21667_GuildBankGold(self,guildId)
+  if type(GetGuildBankedMoney)=="function" then local ok,v=pcall(GetGuildBankedMoney,guildId); if ok and v~=nil then return tonumber(v) end end
+  if type(GetGuildBankedCurrencyAmount)=="function" and _G.CURT_MONEY~=nil then local ok,v=pcall(GetGuildBankedCurrencyAmount,guildId,_G.CURT_MONEY); if ok and v~=nil then return tonumber(v) end end
+  return nil
+end
+function TML:ComputeGuildGoldStats(guildId)
+  local st={bank=V21667_GuildBankGold(self,guildId),donations=0,withdrawn=0,pending=0,ticketGold=0,guildTax=0,bidEvents=0,lostBids=0,hiredTrader=0,netImpact=0}
+  for _,e in ipairs(self:GetGuildGoldRows(guildId)) do
+    local amt=tonumber(e.amount) or 0
+    if e.bucket=="Ticket" then st.ticketGold=st.ticketGold+amt
+    elseif e.bucket=="Donation" and e.action=="deposit" then st.donations=st.donations+amt
+    elseif e.bucket=="Trader Bid" or e.bucket=="Pending Bid" then st.pending=st.pending+amt; st.bidEvents=st.bidEvents+1; st.netImpact=st.netImpact-amt
+    elseif e.action~="deposit" then st.withdrawn=st.withdrawn+amt; st.netImpact=st.netImpact-amt end
+    local n=Lower(e.note or "")
+    if n:find("lost") then st.lostBids=st.lostBids+amt end
+    if n:find("hired") or n:find("hire") then st.hiredTrader=st.hiredTrader+amt end
+  end
+  for _,s in pairs(self.saved.salesEvents or {}) do if s.guildId==guildId then st.guildTax=st.guildTax+(tonumber(s.tax) or 0) end end
+  return st
+end
+
+function TML:GetGuildGoldRows(guildId)
+  self:EnsureDataDefaults(); local rows={}
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do if not guildId or guildId==0 or e.guildId==guildId then rows[#rows+1]=e end end
+  table.sort(rows,function(a,b) return (a.timestamp or 0)>(b.timestamp or 0) end)
+  return rows
+end
+
+function TML:GetGuildGoldFilterRows(guildId, filter)
+  filter=filter or self.saved.guildGoldFilter or "Bank Gold History"
+  if filter=="Bank Gold History" then return self:GetGuildGoldRows(guildId), "events" end
+  local agg={}
+  if filter=="Taxes Paid" then
+    for _,s in pairs(self.saved.salesEvents or {}) do if s.guildId==guildId then local u=s.seller or WNA(); local r=agg[u] or {user=u,amount=0,count=0,last=0}; r.amount=r.amount+(tonumber(s.tax) or 0); r.count=r.count+1; if (s.timestamp or 0)>r.last then r.last=s.timestamp end; agg[u]=r end end
+  else
+    for _,e in pairs(self.saved.guildGoldEvents or {}) do if e.guildId==guildId then
+      local ok=false
+      if filter=="Tickets" then ok=(e.bucket=="Ticket") elseif filter=="Donations" then ok=(e.bucket=="Donation" and e.action=="deposit") elseif filter=="Withdraws" then ok=(e.action~="deposit" and e.bucket~="Trader Bid" and e.bucket~="Pending Bid") end
+      if ok then local u=e.user or WNA(); local r=agg[u] or {user=u,amount=0,count=0,last=0}; r.amount=r.amount+(tonumber(e.amount) or 0); r.count=r.count+1; if (e.timestamp or 0)>r.last then r.last=e.timestamp end; agg[u]=r end
+    end end
+  end
+  local rows={}; for _,r in pairs(agg) do if (tonumber(r.amount) or 0)>0 then rows[#rows+1]=r end end
+  table.sort(rows,function(a,b) return (a.amount or 0)>(b.amount or 0) end)
+  return rows,"aggregate"
+end
+function TML:CycleGuildGoldFilter()
+  local list={"Bank Gold History","Taxes Paid","Tickets","Donations","Withdraws"}
+  local cur=self.saved.guildGoldFilter or list[1]; local idx=1
+  for i,v in ipairs(list) do if v==cur then idx=i break end end
+  self.saved.guildGoldFilter=list[(idx%#list)+1]
+  self:RenderTool("guild_gold_ledger")
+end
+
+-- Personal gold event helper: saved capped history for money made/spent.
+local function V21667_AddPersonalEvent(self, source, amount, direction, note, timestamp, keyExtra)
+  self:EnsureDataDefaults(); amount=tonumber(amount) or 0; if amount<=0 then return false end
+  timestamp=tonumber(timestamp) or WNow(); direction=direction or "in"
+  local key=tostring(source)..":"..tostring(timestamp)..":"..tostring(amount)..":"..tostring(direction)..":"..tostring(keyExtra or "")
+  if self.saved.personalGoldEvents[key] then return false end
+  self.saved.personalGoldEvents[key]={timestamp=timestamp,user=self:GetUserDisplayName(),source=source,amount=amount,direction=direction,note=note or source}
+  self.saved.personalGoldTotals=self.saved.personalGoldTotals or {goldIn=0,goldOut=0,moves=0}
+  if direction=="in" then self.saved.personalGoldTotals.goldIn=(tonumber(self.saved.personalGoldTotals.goldIn) or 0)+amount elseif direction=="out" then self.saved.personalGoldTotals.goldOut=(tonumber(self.saved.personalGoldTotals.goldOut) or 0)+amount else self.saved.personalGoldTotals.moves=(tonumber(self.saved.personalGoldTotals.moves) or 0)+amount end
+  self:PruneEventTable(self.saved.personalGoldEvents,WORKING_MAX_EVENTS)
+  return true
+end
+function TML:ScanPersonalGoldLedger()
+  self:EnsureDataDefaults()
+  self:EachGuild(function(g) self:ScanGuildGold(g); self:ScanGuildSales(g) end)
+  local my=self:GetUserDisplayName(); local now=WNow(); local changed=false
+  -- Guild trader sales count as gold in.
+  for _,s in pairs(self.saved.salesEvents or {}) do if V21667_SameUser(s.seller,my) then changed=V21667_AddPersonalEvent(self,"Guild Trader Sale",tonumber(s.amount) or 0,"in",self:GetGuildName(s.guildId),s.timestamp,"sale:"..tostring(s.guildId)..":"..tostring(s.itemLink or s.itemName)) or changed end end
+  -- Guild bank deposits/withdrawals by current user count as spent/made.
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do if V21667_SameUser(e.user,my) then local dir=(e.action=="deposit") and "out" or "in"; local src=(e.action=="deposit") and "Guild Bank Deposit" or "Guild Bank Withdrawal"; changed=V21667_AddPersonalEvent(self,src,tonumber(e.amount) or 0,dir,e.bucket or "Guild Bank",e.timestamp,"guildgold:"..tostring(e.guildId)..":"..tostring(e.note)) or changed end end
+  local carried=tonumber(self:GetCarriedGoldLive()) or 0; local bank=tonumber(self:GetBankGoldLive()) or 0; local total=carried+bank; local last=self.saved.goldSnapshots.personalLast
+  if last and tonumber(last.total) then
+    local delta=total-(tonumber(last.total) or 0)
+    if delta>0 then changed=V21667_AddPersonalEvent(self,"Detected Gold Change",delta,"in","Wallet/bank total increased",now,"delta") or changed elseif delta<0 then changed=V21667_AddPersonalEvent(self,"Detected Gold Change",math.abs(delta),"out","Wallet/bank total decreased",now,"delta") or changed end
+  end
+  self.saved.goldSnapshots.personalLast={carriedGold=carried,bankedGold=bank,total=total,timestamp=now}
+  self.saved.scanStatus.personalGold=changed and "Gold ledger updated" or "No new gold movement"
+  if self.MarkScanned then self:MarkScanned(changed and "Scanned" or "No Data", changed) end
+end
+function TML:GetPersonalGoldRows()
+  self:EnsureDataDefaults(); local rows={}
+  for _,e in pairs(self.saved.personalGoldEvents or {}) do rows[#rows+1]=e end
+  table.sort(rows,function(a,b) return (a.timestamp or 0)>(b.timestamp or 0) end)
+  return rows
+end
+function TML:ComputePersonalGoldStats()
+  self:EnsureDataDefaults(); local carried=tonumber(self:GetCarriedGoldLive()) or 0; local bank=self:GetBankGoldLive(); bank=bank==nil and nil or tonumber(bank)
+  local st={current=carried,bank=bank,in24=0,out24=0,net24=0,allIn=0,allOut=0,allNet=0,deltaPct=nil}
+  local now=WNow(); for _,e in ipairs(self:GetPersonalGoldRows()) do local amt=tonumber(e.amount) or 0; if e.direction=="in" then st.allIn=st.allIn+amt; if now-(tonumber(e.timestamp) or 0)<=WORKING_SECONDS_DAY then st.in24=st.in24+amt end elseif e.direction=="out" then st.allOut=st.allOut+amt; if now-(tonumber(e.timestamp) or 0)<=WORKING_SECONDS_DAY then st.out24=st.out24+amt end end end
+  st.net24=st.in24-st.out24; st.allNet=st.allIn-st.allOut
+  local base=(carried+(bank or 0))-st.net24; if base and base~=0 then st.deltaPct=(st.net24/base)*100 end
+  return st
+end
+
+function TML:ComputeSalesStats(guildId, onlyMe)
+  local rows=self:GetSalesRows(guildId, onlyMe); local st={salesToday=0,sales24=0,totalSales=0,items=0,tax=0,net=0,topEarner=WNA(),topAmount=0}
+  local now=WNow(); local sellers={}
+  for _,e in ipairs(rows) do local age=now-(tonumber(e.timestamp) or 0); local amt=tonumber(e.amount) or 0; local tax=tonumber(e.tax) or 0; if age<=WORKING_SECONDS_DAY then st.salesToday=st.salesToday+amt; st.sales24=st.sales24+amt end; st.totalSales=st.totalSales+amt; st.items=st.items+(tonumber(e.quantity) or 1); st.tax=st.tax+tax; st.net=st.net+amt-tax; local u=e.seller or WNA(); sellers[u]=(sellers[u] or 0)+amt end
+  for u,v in pairs(sellers) do if v>st.topAmount then st.topAmount=v; st.topEarner=u end end
+  return st
+end
+function TML:GetPersonalTopSellerRows()
+  local by={}
+  for _,e in ipairs(self:GetSalesRows(0,true)) do local k=WItemKey(e.itemLink or e.itemName); local r=by[k] or {itemLink=e.itemLink,itemName=e.itemName or WGetItemName(e.itemLink),qty=0,gold=0,sales=0,guild=e.guildId,last=0}; r.qty=r.qty+(tonumber(e.quantity) or 1); r.gold=r.gold+(tonumber(e.amount) or 0); r.sales=r.sales+1; if (e.timestamp or 0)>r.last then r.last=e.timestamp; r.guild=e.guildId end; by[k]=r end
+  local rows={}; for _,r in pairs(by) do r.avg=(r.qty>0 and math.floor(r.gold/r.qty) or 0); rows[#rows+1]=r end
+  table.sort(rows,function(a,b) return (a.gold or 0)>(b.gold or 0) end); return rows
+end
+function TML:CyclePersonalSalesFilter()
+  local list={"Sales","24H","Total Sales","Top Sellers"}; local cur=self.saved.personalSalesFilter or "Sales"; local idx=1; for i,v in ipairs(list) do if v==cur then idx=i break end end; self.saved.personalSalesFilter=list[(idx%#list)+1]; self:RenderTool("personal_sales")
+end
+
+function TML:RenderOldSales(root,x,y,w,h,accent,guildMode)
+  local selectorW=guildMode and 300 or 0; if guildMode then self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent) end
+  local rx=x+selectorW+(guildMode and 24 or 0); local rw=w-selectorW-(guildMode and 24 or 0); local g=self:GetGuild(); local st=self:ComputeSalesStats(guildMode and g.id or 0,not guildMode)
+  self:DrawLegacyPanel(root,"SalesStats67",rx,y,rw,142,guildMode and "GUILD SALES DASHBOARD" or "PERSONAL SALES DASHBOARD",accent)
+  local cards
+  if guildMode then cards={{"Sales Today",WFormatGold(st.salesToday),VGreen},{"Total Sales",WFormatGold(st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Guild Tax",WFormatGold(st.tax),VGreen},{"Top Earner",WLimit(st.topEarner,18),C.white}}
+  else cards={{"24H Sales",WFormatGold(st.sales24),VGreen},{"Total Sales",WFormatGold(st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Net Earned",WFormatGold(st.net),VYellow},{"Status",self.saved.scanStatus.sales or WNA(),C.white}} end
+  local cardW=math.floor((rw-78)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"SalesCard67"..i,rx+20+(i-1)*(cardW+10),y+56,cardW,68,c[1],c[2],c[3],c[3]) end
+  local rows={}; local filter=guildMode and (self.saved.salesFilter or "Recent") or (self.saved.personalSalesFilter or "Sales")
+  if guildMode and filter=="Best Sellers" then for _,e in ipairs(self:GetBestSellerRows(g.id)) do rows[#rows+1]={VCell(WLimit(e.seller,22),C.white),VCell(WFormatGold(e.amount),VYellow),WFormatNumber(e.items),WFormatNumber(e.sales),VCell(WFormatGold(e.highest),VYellow)} end; self:DrawLegacyTable(root,"SalesRows67",rx,y+166,rw,h-228,"BEST SELLERS - @USERID TOP DOWN",{"Seller","Total Gold","Items","Sales","Highest"},self:RowsOrNA(rows,5,"Press Scan Sales"),accent,{1.7,1.1,.7,.7,1})
+  elseif guildMode and filter=="High Ticket" then for _,e in ipairs(self:GetHighTicketRows(g.id)) do rows[#rows+1]={WLimit(e.seller,18),self:FormatItemCell(e.itemLink,e.itemName,24),WFormatNumber(e.quantity),VCell(WFormatGold(e.amount),VYellow),WRelTime(e.timestamp)} end; self:DrawLegacyTable(root,"SalesRows67",rx,y+166,rw,h-228,"HIGH TICKET SALES - BIGGEST TO SMALLEST",{"Seller","Item","Qty","Gold","When"},self:RowsOrNA(rows,5,"Press Scan Sales"),accent,{1.3,2.1,.6,1,1})
+  elseif (not guildMode) and filter=="Top Sellers" then for _,e in ipairs(self:GetPersonalTopSellerRows()) do rows[#rows+1]={self:FormatItemCell(e.itemLink,e.itemName,26),self:GetGuildName(e.guild),WFormatNumber(e.qty),VCell(WFormatGold(e.gold),VYellow),VCell(WFormatGold(e.avg),VYellow)} end; self:DrawLegacyTable(root,"SalesRows67",rx,y+166,rw,h-228,"TOP SELLERS - MOST GOLD TO LEAST",{"Item","Guild","Qty","Total Gold","Avg"},self:RowsOrNA(rows,5,"No sales data loaded"),accent,{2,1.4,.6,1,1})
+  else local limit24=(not guildMode and filter=="24H"); for _,e in ipairs(self:GetSalesRows(guildMode and g.id or 0,not guildMode)) do if (not limit24) or (WNow()-(tonumber(e.timestamp) or 0)<=WORKING_SECONDS_DAY) then rows[#rows+1]={guildMode and WLimit(e.seller,20) or self:FormatItemCell(e.itemLink,e.itemName,28),guildMode and self:FormatItemCell(e.itemLink,e.itemName,25) or self:GetGuildName(e.guildId),WFormatNumber(e.quantity),VCell(WFormatGold(e.amount),VYellow),WRelTime(e.timestamp)} end end; self:DrawLegacyTable(root,"SalesRows67",rx,y+166,rw,h-228,guildMode and "GUILD TRADER SALES" or (filter=="24H" and "24H SALES" or "SALES"),{guildMode and "Seller" or "Item",guildMode and "Item" or "Guild","Qty","Gold","When"},self:RowsOrNA(rows,5,"No sales data loaded"),accent,{1.4,2.2,.7,1,1}) end
+  local by=y+h-52; self:ToolButton(root,"SalesScanOne67",rx,by,170,42,guildMode and "Scan Guild" or "Scan Sales",accent,function() if guildMode then TML:ScanSelectedGuildSales() else TML:ScanAllGuildSales() end; TML:RenderTool(TML.state.activeTool) end); self:ToolButton(root,"SalesScanAll67",rx+184,by,150,42,"Scan All",accent,function() TML:ScanAllGuildSales(); TML:RenderTool(TML.state.activeTool) end); if guildMode then self:ToolButton(root,"SalesFilter67",rx+348,by,220,42,"Filter: "..filter,accent,function() local f=TML.saved.salesFilter or "Recent"; TML.saved.salesFilter=(f=="Recent") and "Best Sellers" or ((f=="Best Sellers") and "High Ticket" or "Recent"); TML:RenderTool("guild_sales") end) else self:ToolButton(root,"PersonalSalesFilter67",rx+348,by,220,42,"Filter: "..filter,accent,function() TML:CyclePersonalSalesFilter() end) end
+end
+
+-- Guild bank reconnect / withdrawal-safe scan.
+function TML:ScanGuildBankItems(g)
+  self:EnsureDataDefaults(); g=g or self:GetGuild(); if not g or not g.id or g.id==0 then return end
+  local cat=self:GetHistoryCategory("bankedItem")
+  if type(GetGuildHistoryBankedItemEventInfo)~="function" or not cat then self.saved.scanStatus.bank="Guild bank item API unavailable"; return end
+  local newest,oldest=self:GetHistoryIndices(g.id,cat,WORKING_HISTORY_DAYS); local scanned=0
+  if oldest>=newest then
+    for i=newest,oldest do
+      local vals={pcall(GetGuildHistoryBankedItemEventInfo,g.id,i)}; local ok=table.remove(vals,1)
+      if ok then
+        local eventId,timestamp,isRedacted,eventType,displayName,itemLink,quantity=vals[1],vals[2],vals[3],vals[4],vals[5],vals[6],vals[7]
+        local note=""
+        if not (type(displayName)=="string" and itemLink) then
+          eventId=eventId or i; timestamp=WNow(); displayName=nil; itemLink=nil; quantity=1; eventType=nil
+          for _,v in ipairs(vals) do
+            if type(v)=="string" then if v:find("|H",1,true) then itemLink=v elseif v:sub(1,1)=="@" and not displayName then displayName=v else note=note.." "..v end
+            elseif type(v)=="number" then if v>1000000000 then timestamp=v elseif v>0 and v<=10000 then quantity=v elseif not eventType then eventType=v elseif not eventId then eventId=v end end
+          end
+          isRedacted=false
+        end
+        if not isRedacted and displayName and itemLink then local withdraw=self:IsBankItemWithdraw(eventType) or Lower(note):find("withdraw") or Lower(note):find("take") or Lower(note):find("removed"); self:AddBankItem(g.id,eventId or i,displayName,itemLink,quantity,timestamp,withdraw and "withdraw" or "deposit"); scanned=scanned+1 end
+      end
+    end
+  end
+  self:RequestHistory(g.id,cat,WORKING_HISTORY_DAYS); self:PruneEventTable(self.saved.bankItemEvents,WORKING_MAX_EVENTS); self.saved.scanStatus.bank="Scanned "..scanned.." bank item rows"; if self.MarkScanned then self:MarkScanned(scanned>0 and "Scanned" or "No Data", scanned>0) end
+end
+
+function TML:RenderOldGuildBank(root,x,y,w,h,accent)
+  local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeBankStats(g.id)
+  self:DrawLegacyPanel(root,"BankTotals67",rx,y,rw,142,"BANK TOTALS",accent)
+  local cards={{"Given",WFormatNumber(st.given),VGreen},{"Taken",WFormatNumber(st.taken),VRed},{"Net Value",WFormatGold(st.netValue),VYellow},{"Current Items",WFormatNumber(st.currentItems),VGreen},{"Last",st.last,C.white}}
+  local cardW=math.floor((rw-78)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"BankCard67"..i,rx+20+(i-1)*(cardW+10),y+56,cardW,68,c[1],c[2],c[3],c[3]) end
+  local mrows={}; for _,r in ipairs(self:GetBankMemberRows(g.id)) do local color=r.value>=0 and VGreen or VRed; mrows[#mrows+1]={VCell(WLimit(r.user,22),color),VCell(WFormatNumber(r.taken),VRed),VCell(WFormatNumber(r.given),VGreen),VCell(WFormatGold(r.value),r.value>=0 and VYellow or VRed),WRelTime(r.last)} end
+  self:DrawLegacyTable(root,"BankMember67",rx,y+160,rw,190,"MEMBER BANK TOTALS - ALL TIME",{"UserID","Taken","Given","Net Value","Last"},self:RowsOrNA(mrows,5,"Press Scan Bank"),accent,{1.5,1,1,1,1})
+  local rows={}; for _,e in ipairs(self:GetBankRows(g.id)) do local action=e.action=="withdraw" and VCell("Taken",VRed) or VCell("Given",VGreen); rows[#rows+1]={action,WLimit(e.user,18),self:FormatItemCell(e.itemLink,e.itemName,26),WFormatNumber(e.quantity),e.value and VCell(WFormatGold(e.value),VYellow) or WNA(),WRelTime(e.timestamp)} end
+  self:DrawLegacyTable(root,"BankHist67",rx,y+370,rw,h-432,"BANK ITEM HISTORY",{"Action","Member","Item","Qty","Value","When"},self:RowsOrNA(rows,6,"Press Scan Bank"),accent,{.75,1.1,2,.55,.8,.8})
+  local by=y+h-52; self:ToolButton(root,"BankScan67",rx,by,160,40,"Scan Bank",accent,function() TML:ScanGuildBankItems(TML:GetGuild()); TML:RenderTool("guild_bank") end)
+end
+
+function TML:RenderOldLedger(root,x,y,w,h,accent,guildMode)
+  if guildMode then
+    local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeGuildGoldStats(g.id); local topH=154
+    self:DrawLegacyPanel(root,"LedgerStats67G",rx,y,rw,topH,"GUILD GOLD LEDGER",accent)
+    local cards={{"Bank Gold",st.bank==nil and WNA() or WFormatGold(st.bank),C.gold},{"Donations",WFormatGold(st.donations),VGreen},{"Withdrawn",WFormatGold(st.withdrawn),VRed},{"Pending Bids",WFormatGold(st.pending),VRed},{"Ticket Gold",WFormatGold(st.ticketGold),VYellow},{"Guild Tax",WFormatGold(st.guildTax),VGreen}}
+    local cardW=math.floor((rw-94)/6); for i,c in ipairs(cards) do self:DrawMiniStat(root,"LedgerMini67G"..i,rx+20+(i-1)*(cardW+10),y+58,cardW,74,c[1],c[2],c[3],c[3]) end
+    local filter=self.saved.guildGoldFilter or "Bank Gold History"; local data,mode=self:GetGuildGoldFilterRows(g.id,filter); local rows={}
+    if mode=="aggregate" then for _,r in ipairs(data) do local color=(filter=="Tickets") and VYellow or ((filter=="Withdraws") and VRed or VGreen); rows[#rows+1]={VCell(WLimit(r.user,22),C.white),VCell(WFormatGold(r.amount),color),WFormatNumber(r.count),WRelTime(r.last)} end; self:DrawLegacyTable(root,"LedgerHistory67G",rx,y+topH+20,math.floor(rw*.64),h-topH-82,filter:upper().." - HIGHEST TO LEAST",{"User","Amount","Rows","Last"},self:RowsOrNA(rows,4,"No data for this filter"),accent,{1.6,1,0.6,0.8})
+    else for _,e in ipairs(data) do local bcol=V21667_BucketColor(e.bucket); rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.action=="deposit" and VCell("Deposit",VGreen) or VCell("Withdraw",VRed),VCell(WFormatGold(e.amount),V21667_AmountColor(e)),VCell(e.bucket or WNA(),bcol)} end; self:DrawLegacyTable(root,"LedgerHistory67G",rx,y+topH+20,math.floor(rw*.64),h-topH-82,"BANK GOLD HISTORY",{"Date","User","Event","Amount","Bucket"},self:RowsOrNA(rows,5,"Press Scan Gold"),accent,{1,1.2,1,1,1.2}) end
+    local sideX=rx+math.floor(rw*.64)+22; local sideW=rw-math.floor(rw*.64)-22; self:DrawLegacyPanel(root,"LedgerSide67G",sideX,y+topH+20,sideW,h-topH-82,"FILTERS / TICKET RULES",accent,C.yellow)
+    self:Label("TicketRulesText67G",root,"Active Filter: "..filter.."\n\nTicket Gold: "..WFormatGold(st.ticketGold).."\nEntry rule: 1,001g = 1 ticket.\nReset rule: latest deposit ending in 33g resets raffle counting.\n\nBids never count as donations.\nGuild Tax is sales tax earned by the guild.",sideX+22,y+topH+72,sideW-44,230,C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+    self:ToolButton(root,"GoldFilter67G",sideX+32,y+h-104,sideW-64,40,"Filter: "..filter,accent,function() TML:CycleGuildGoldFilter() end)
+    local by=y+h-52; self:ToolButton(root,"GoldScanBtn67G",rx,by,210,42,"Scan Gold History",accent,function() TML:ScanSelectedGuildGold(); TML:RenderTool("guild_gold_ledger") end); self:ToolButton(root,"GoldBack67G",rx+224,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"GoldExit67G",rx+448,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+    return
+  end
+  local st=self:ComputePersonalGoldStats(); local topH=236; self:DrawLegacyPanel(root,"LedgerStats67",x,y,w,topH,"GOLD LEDGER",accent)
+  local deltaText=st.deltaPct and string.format("Gold Delta: %.2f%%",st.deltaPct) or "Gold Delta: N/A"; self:Label("GoldDelta67",root,deltaText,x+w-300,y+6,280,34,st.deltaPct and (st.deltaPct>=0 and VGreen or VRed) or C.muted,FONTS.panelText,TEXT_ALIGN_RIGHT)
+  local bankText=st.bank==nil and "Bank not scanned" or WFormatGold(st.bank); local cards={{"Current Gold",WFormatGold(st.current),C.gold},{"Bank Gold",bankText,C.gold},{"24H Gold In",WFormatGold(st.in24),VGreen},{"24H Gold Out",WFormatGold(st.out24),VRed},{"24H Net",WFormatGold(st.net24),st.net24>=0 and VGreen or VRed},{"All-Time In",WFormatGold(st.allIn),VGreen},{"All-Time Out",WFormatGold(st.allOut),VRed},{"All-Time Net",WFormatGold(st.allNet),st.allNet>=0 and VGreen or VRed}}
+  local cardW=math.floor((w-90)/4); for i,c in ipairs(cards) do local col=(i-1)%4; local row=math.floor((i-1)/4); self:DrawMiniStat(root,"LedgerMini67"..i,x+24+col*(cardW+14),y+58+row*78,cardW,68,c[1],c[2],c[3],c[3]) end
+  self:Label("GoldLedgerNote67",root,"24H tracks the last 24 hours. All-Time tracks saved gold movement since tracking began. Trader sales, guild bank gold, and detected gold deltas are included when ESO exposes them.",x+26,y+topH-34,w-52,30,C.yellowDim,FONTS.panelSmall,TEXT_ALIGN_CENTER)
+  local rows={}; for _,e in ipairs(self:GetPersonalGoldRows()) do rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.source or WNA(),e.direction=="in" and VCell("+"..WFormatGold(e.amount),VGreen) or VCell("-"..WFormatGold(e.amount),VRed),e.note or WNA()} end
+  self:DrawLegacyTable(root,"LedgerHistory67",x,y+topH+20,w,h-topH-82,"PERSONAL GOLD HISTORY",{"Date","User","Source","Amount","Note"},self:RowsOrNA(rows,5,"Press Refresh Ledger"),accent,{1,1.1,1.8,1,1.3})
+  local by=y+h-52; self:ToolButton(root,"PersonalGoldRefresh67",x,by,210,42,"Refresh Ledger",accent,function() TML:ScanPersonalGoldLedger(); TML:RenderTool("gold_ledger_personal") end); self:ToolButton(root,"PersonalGoldBack67",x+224,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"PersonalGoldExit67",x+448,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+function TML:GetDueAmount(guildId) self:EnsureDataDefaults(); return tonumber(self.saved.dueAmounts[tostring(guildId or 0)] or self.saved.dueAmount or 0) or 0 end
+function TML:SetDueAmount(guildId, value) self:EnsureDataDefaults(); self.saved.dueAmounts[tostring(guildId or 0)] = tonumber(value) or 0; self.saved.dueAmount = tonumber(value) or 0; self:MarkScanned("Saved", true) end
+function TML:OpenManualPotPage() local g=self:GetGuild(); local r=self:GetRaffle(g.id); self.state.editValue=tostring(r.manualPot or ""); self.state.editReturn="guild_raffle"; self:OpenTool("manual_pot_page") end
+function TML:OpenSetDuePage() local g=self:GetGuild(); self.state.editValue=tostring(self:GetDueAmount(g.id) or ""); self.state.editReturn="guild_dues"; self:OpenTool("set_due_page") end
+function TML:OpenSetCrownRatePage() self:EnsureDataDefaults(); self.state.editValue=tostring(self.saved.crownRate or ""); self.state.editReturn="net_worth"; self:OpenTool("set_crown_rate_page") end
+function TML:OpenPrizeSplitPage() local g=self:GetGuild(); local r=self:GetRaffle(g.id); r.prizes=r.prizes or {0,0,0}; self.state.prizeEdit={active=1,values={tostring(r.prizes[1] or ""),tostring(r.prizes[2] or ""),tostring(r.prizes[3] or "")}}; self.state.editReturn="guild_raffle"; self:OpenTool("prize_split_page") end
+local function V21667_EditValueAdd(self, digit)
+  self.state.editValue=tostring(self.state.editValue or "")..tostring(digit)
+end
+local function V21667_EditValueBack(self) self.state.editValue=tostring(self.state.editValue or ""):sub(1,-2) end
+function TML:RenderKeypadPage(root,x,y,w,h,accent,title,subtitle,saveFunc,valueLabel)
+  self:DrawLegacyPanel(root,"KeypadPage67",x,y,w,h,title,accent)
+  self:Label("KeypadSub67",root,subtitle or "Manual value edit",x+36,y+58,w-72,34,C.white,FONTS.panelText,TEXT_ALIGN_CENTER)
+  self:Backdrop("KeypadValueBg67",root,x+math.floor(w*.26),y+108,math.floor(w*.48),70,{0,0,0,0.84},{C.gold[1],C.gold[2],C.gold[3],0.75})
+  local shown=tostring(self.state.editValue or "")
+  if valueLabel then shown=valueLabel(shown) end
+  self:Label("KeypadValue67",root,shown,x+math.floor(w*.26)+20,y+108,math.floor(w*.48)-40,70,C.gold,FONTS.panelTitle,TEXT_ALIGN_RIGHT)
+  local nums={"1","2","3","4","5","6","7","8","9","Clear","0","Back"}; local bw,bh,gap=150,56,18; local bx=x+math.floor((w-(bw*3+gap*2))/2); local by=y+210
+  for i,n in ipairs(nums) do local col=(i-1)%3; local row=math.floor((i-1)/3); self:ToolButton(root,"KeyPage67"..i,bx+col*(bw+gap),by+row*(bh+gap),bw,bh,n,C.cyan,function() if n=="Clear" then TML.state.editValue="" elseif n=="Back" then V21667_EditValueBack(TML) else V21667_EditValueAdd(TML,n) end; TML:RenderTool(TML.state.activeTool) end) end
+  self:ToolButton(root,"KeyExit67",x+math.floor(w*.24),y+h-74,220,54,"Exit",C.red,function() TML:OpenTool(TML.state.editReturn or "guild_raffle") end)
+  self:ToolButton(root,"KeySave67",x+math.floor(w*.56),y+h-74,260,54,"Save and Continue",C.cyan,function() if saveFunc then saveFunc(tonumber(TML.state.editValue) or 0) end; TML:OpenTool(TML.state.editReturn or "guild_raffle") end)
+end
+function TML:RenderPrizeSplitPage(root,x,y,w,h,accent)
+  self:DrawLegacyPanel(root,"PrizeSplitPage67",x,y,w,h,"PRIZE SPLIT",accent)
+  local pe=self.state.prizeEdit or {active=1,values={"","",""}}; pe.values=pe.values or {"","",""}; pe.active=VClamp(pe.active or 1,1,3); self.state.prizeEdit=pe
+  self:Label("PrizePageSub67",root,"Select a place, edit with keypad, then Save and Continue.",x+36,y+58,w-72,34,C.white,FONTS.panelText,TEXT_ALIGN_CENTER)
+  local labels={"1st","2nd","3rd"}; for i=1,3 do local fy=y+112+(i-1)*62; self:ToolButton(root,"PrizeFieldPage67"..i,x+90,fy,w-180,50,labels[i]..": "..((pe.values[i] and pe.values[i]~="") and WFormatGold(tonumber(pe.values[i]) or 0) or "Manual Edit"),pe.active==i and C.gold or C.cyan,function() TML.state.prizeEdit.active=i; TML:RenderTool("prize_split_page") end) end
+  local nums={"1","2","3","4","5","6","7","8","9","Clear","0","Back"}; local bw,bh,gap=134,46,14; local bx=x+math.floor((w-(bw*3+gap*2))/2); local by=y+322
+  for i,n in ipairs(nums) do local col=(i-1)%3; local row=math.floor((i-1)/3); self:ToolButton(root,"PrizeKeyPage67"..i,bx+col*(bw+gap),by+row*(bh+gap),bw,bh,n,C.cyan,function() local pp=TML.state.prizeEdit; local a=VClamp(pp.active or 1,1,3); if n=="Clear" then pp.values[a]="" elseif n=="Back" then pp.values[a]=tostring(pp.values[a] or ""):sub(1,-2) else pp.values[a]=tostring(pp.values[a] or "")..n end; TML:RenderTool("prize_split_page") end) end
+  self:ToolButton(root,"PrizeExitPage67",x+math.floor(w*.24),y+h-74,220,54,"Exit",C.red,function() TML:OpenTool("guild_raffle") end)
+  self:ToolButton(root,"PrizeSavePage67",x+math.floor(w*.56),y+h-74,260,54,"Save and Continue",C.cyan,function() local g=TML:GetGuild(); local r=TML:GetRaffle(g.id); local v=TML.state.prizeEdit.values or {}; r.prizes={tonumber(v[1]) or 0,tonumber(v[2]) or 0,tonumber(v[3]) or 0}; TML.saved.prizeSplit[tostring(g.id or 0)]=r.prizes; TML:MarkScanned("Saved",true); TML:OpenTool("guild_raffle") end)
+end
+
+function TML:ScanNetWorth()
+  self:EnsureDataDefaults(); local oldRate=tonumber(self.saved.crownRate)
+  -- Run v2.0.16.66 scan body through saved function if present by reusing craft-bag helper path from the current definition below this patch is not possible, so inline a safe scan.
+  local nw={total=0,character=0,carriedGold=0,bankedGold=0,carriedItems=0,bankedItems=0,craftBag=0,unpriced=0,top={},currencies={},lastScan=WNow(),craftBagStatus="Not scanned",crownRate=oldRate,crownGold=nil}
+  nw.carriedGold=self:GetCarriedGoldLive() or 0; nw.bankedGold=self:GetBankGoldLive() or 0
+  local accountLoc={_G.CURRENCY_LOCATION_ACCOUNT,nil}; local charBankLoc={_G.CURRENCY_LOCATION_CHARACTER,_G.CURRENCY_LOCATION_BANK,_G.CURRENCY_LOCATION_ACCOUNT,nil}
+  nw.currencies={{"Crowns",WCurrencyAny({"CURT_CROWNS","CURT_CROWN_CROWNS"},accountLoc)},{"Crown Gems",WCurrencyAny({"CURT_CROWN_GEMS"},accountLoc)},{"Writ Vouchers",WCurrencyAny({"CURT_WRIT_VOUCHERS","CURT_WRIT_VOUCHER"},charBankLoc)},{"Alliance Points",WCurrencyAny({"CURT_ALLIANCE_POINTS"},charBankLoc)},{"Tel Var Stones",WCurrencyAny({"CURT_TELVAR_STONES"},charBankLoc)},{"Trade Bars",WCurrencyAny({"CURT_TRADE_BARS","CURT_EVENT_TICKETS","CURT_EVENT_TICKET"},accountLoc)},{"Undaunted Keys",WCurrencyAny({"CURT_UNDAUNTED_KEYS","CURT_UNDAUNTED_KEY"},charBankLoc)},{"Seals",WCurrencyAny({"CURT_SEALS_OF_ENDEAVOR","CURT_ENDEAVOR_SEALS","CURT_SEAL_OF_ENDEAVOR"},accountLoc)},{"Archival Fortunes",WCurrencyAny({"CURT_ARCHIVAL_FORTUNES","CURT_ARCHIVAL_FORTUNE"},charBankLoc)},{"Tome Points",WCurrencyAny({"CURT_TOME_POINTS","CURT_TAMRIEL_TOME_POINTS","CURT_TAMRIEL_TOMES"},accountLoc)}}
+  local function addItem(itemLink,qty,bucket,locName) if not itemLink or itemLink=="" then return end; qty=tonumber(qty) or 1; local avg=self:GetAveragePrice(WItemKey(itemLink)); local val=avg and math.floor(avg*qty) or nil; if not val then val=WGetItemValue(itemLink,qty) end; if val and tonumber(val) then nw[bucket]=(nw[bucket] or 0)+tonumber(val); table.insert(nw.top,{name=WGetItemName(itemLink),itemLink=itemLink,qty=qty,avg=avg,value=tonumber(val),location=locName}) else nw.unpriced=nw.unpriced+1 end end
+  local function scanBag(bagId,bucket,locName) if bagId==nil or type(GetBagSize)~="function" or type(GetItemLink)~="function" then return 0 end; local okS,size=pcall(GetBagSize,bagId); size=okS and tonumber(size) or 0; local scanned=0; for slot=0,math.max(0,size-1) do local ok,l=pcall(GetItemLink,bagId,slot); if ok and l and l~="" then local qty=1; if type(GetSlotStackSize)=="function" then local okQ,q=pcall(GetSlotStackSize,bagId,slot); if okQ and tonumber(q) then qty=tonumber(q) end end; addItem(l,qty,bucket,locName); scanned=scanned+1 end end; return scanned end
+  scanBag(_G.BAG_BACKPACK,"carriedItems","Backpack"); scanBag(_G.BAG_BANK,"bankedItems","Bank"); scanBag(_G.BAG_SUBSCRIBER_BANK,"bankedItems","Bank")
+  local cscanned=0; if _G.BAG_VIRTUAL then if SHARED_INVENTORY and type(SHARED_INVENTORY.GetBagCache)=="function" then local ok,cache=pcall(function() return SHARED_INVENTORY:GetBagCache(_G.BAG_VIRTUAL) end); if ok and type(cache)=="table" then for slot,sd in pairs(cache) do local link=sd and (sd.itemLink or sd.link); local qty=sd and (sd.stackCount or sd.quantity or sd.stack); if link and link~="" then addItem(link,qty,"craftBag","Craft Bag"); cscanned=cscanned+1 end end end end; if cscanned==0 then cscanned=scanBag(_G.BAG_VIRTUAL,"craftBag","Craft Bag") end end
+  nw.craftBagStatus=cscanned>0 and ("Scanned "..cscanned.." craft bag items") or "Craft Bag not loaded"
+  local crowns=nil; for _,cur in ipairs(nw.currencies) do if cur[1]=="Crowns" then crowns=tonumber(cur[2]) end end
+  if oldRate and oldRate>0 and crowns then nw.crownGold=math.floor(crowns*oldRate) else nw.crownGold=nil end
+  table.sort(nw.top,function(a,b) return (a.value or 0)>(b.value or 0) end); while #nw.top>20 do table.remove(nw.top) end
+  nw.character=nw.carriedGold+nw.carriedItems; nw.total=nw.character+nw.bankedGold+nw.bankedItems+nw.craftBag+(nw.crownGold or 0)
+  self.saved.networth=nw; self.saved.goldSnapshots.last={carriedGold=nw.carriedGold,bankedGold=nw.bankedGold,timestamp=WNow()}; self.saved.scanStatus.networth="Scanned net worth"; if self.MarkScanned then self:MarkScanned("Scanned",true) end
+end
+function TML:RenderOldNetWorth(root,x,y,w,h,accent)
+  local nw=self:GetNetWorth(); local leftW=540; self:DrawLegacyPanel(root,"NWStats67",x,y,leftW,h-62,"SUMMARY",accent); local topY=y+66; local col1=x+28; local col2=x+288; local rowH=27
+  local crownGold=(nw.crownGold~=nil) and WFormatGold(nw.crownGold) or "Set Crown Rate"
+  local left={{"GOLD","",C.cyanSoft},{"Total Net Worth",WFormatGold(nw.total),VGreen},{"Character Net Worth",WFormatGold(nw.character),VGreen},{"Carried Gold",WFormatGold(nw.carriedGold),VGreen},{"Banked Gold",WFormatGold(nw.bankedGold),VGreen},{"Crown Gold",crownGold,nw.crownGold and VGreen or C.gold},{"INVENTORY VALUE","",C.cyanSoft},{"Carried Items",WFormatGold(nw.carriedItems),C.cyanSoft},{"Banked Items",WFormatGold(nw.bankedItems),C.cyanSoft},{"Craft Bag",(nw.craftBagStatus=="Craft Bag not loaded") and WNA() or WFormatGold(nw.craftBag),C.cyanSoft},{"Unpriced Items",WFormatNumber(nw.unpriced),C.muted}}
+  local right={{"CURRENCIES","",C.cyanSoft}}; for _,cur in ipairs(nw.currencies or {}) do right[#right+1]={cur[1],cur[2]==nil and WNA() or WFormatNumber(cur[2]),cur[2]==nil and C.muted or C.gold} end
+  for i,r in ipairs(left) do self:Label("NWLeftK67"..i,root,r[1],col1,topY+(i-1)*rowH,150,rowH,r[3] or C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("NWLeftV67"..i,root,r[2] or "",col1+145,topY+(i-1)*rowH,100,rowH,r[3] or VGreen,FONTS.panelSmall,TEXT_ALIGN_RIGHT) end
+  for i,r in ipairs(right) do self:Label("NWRightK67"..i,root,r[1],col2,topY+(i-1)*rowH,145,rowH,r[3] or C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("NWRightV67"..i,root,r[2] or "",col2+145,topY+(i-1)*rowH,72,rowH,r[3] or C.gold,FONTS.panelSmall,TEXT_ALIGN_RIGHT) end
+  local tableX=x+leftW+24; local tableW=w-leftW-24; self:Label("NWAvgWarning67",root,"Avg prices may be more or less than the actual current selling value. These averages are based on sales from your guilds.",tableX+16,y+8,tableW-32,40,VYellow,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("NWCraftStatus67",root,"Craft Bag: "..tostring(nw.craftBagStatus or "Not scanned"),tableX+16,y+44,tableW-32,28,C.cyanSoft,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  local rows={}; for i,it in ipairs(nw.top or {}) do rows[#rows+1]={tostring(i),self:FormatItemCell(it.itemLink,it.name,30),it.avg and VCell(WFormatGold(it.avg),VYellow) or VCell(WNA(),C.muted),WFormatNumber(it.qty),VCell(WFormatGold(it.value),VGreen),it.location or WNA()} end; self:DrawLegacyTable(root,"NWTopItems67",tableX,y+78,tableW,h-140,"TOP 20 MOST VALUABLE ITEMS",{"Rank","Item Name","Avg","Qty","Value","Location"},self:RowsOrNA(rows,6,"No priced items found"),accent,{0.38,2.55,.75,.55,.9,1})
+  local by=y+h-52; local bw=math.floor((w-36)/4); self:ToolButton(root,"NWScan67",x,by,bw,42,"Scan Net Worth",accent,function() TML:ScanNetWorth(); TML:RenderTool("net_worth") end); self:ToolButton(root,"NWCrownRate67",x+bw+12,by,bw,42,"Set Crown Rate",accent,function() TML:OpenSetCrownRatePage() end); self:ToolButton(root,"NWBack67",x+(bw+12)*2,by,bw,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"NWExit67",x+(bw+12)*3,by,bw,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+function TML:RenderOldDues(root,x,y,w,h,accent)
+  local g=self:GetGuild(); local leftW=360; self:DrawLegacyPanel(root,"DuesControl67",x,y,leftW,h,"DUES CONTROL",accent); self:DrawGuildSelectorLive(root,x+18,y+60,leftW-36,260,accent)
+  local rows=self:GetDuesRows(g.id); local paid=0; for _,r in ipairs(rows) do if r[5]=="Paid" then paid=paid+1 end end; self:DrawLegacyStats(root,"DuesStats67",x+38,y+340,leftW-76,{{"Due Amount",WFormatGold(self:GetDueAmount(g.id)),C.gold},{"Paid",WFormatNumber(paid),VGreen},{"Unpaid",WFormatNumber(#rows-paid),VRed},{"Roster",WFormatNumber(#rows),C.cyanSoft},{"Guild",WLimit(g.name,14),C.white}},accent); self:ToolButton(root,"DuesSet67",x+40,y+h-132,130,42,"Set Due Amount",accent,function() TML:OpenSetDuePage() end); self:ToolButton(root,"DuesReset67",x+190,y+h-132,130,42,"Reset",C.red,function() TML.saved.duesPaid={}; TML:MarkScanned("Reset",true); TML:RenderTool("guild_dues") end)
+  local due=self:GetDueAmount(g.id); local displayRows={}; for _,r in ipairs(rows) do local paidAmt=tonumber((type(r[3])=="table" and r[3].text or r[3]) or 0) or 0; local bal=paidAmt-due; displayRows[#displayRows+1]={r[1],WFormatGold(due),VCell(WFormatGold(paidAmt),VGreen),VCell(WFormatGold(bal),bal>=0 and VGreen or VRed),VCell(bal>=0 and "Paid" or "Unpaid",bal>=0 and VGreen or VRed)} end
+  self:DrawLegacyTable(root,"DuesTable67",x+leftW+32,y,w-leftW-32,h,"MEMBER DUES STATUS",{"Member","Due","Paid","Balance","Status"},self:RowsOrNA(displayRows,5,"Press Scan Activity in Bookkeeper"),accent)
+end
+
+function TML:RenderOldRaffle(root,x,y,w,h,accent)
+  local selectorW=310; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local r=self:GetRaffle(g.id); local participants=WTableCount(r.entries); local tickets=0; local gold=0; for _,e in pairs(r.entries or {}) do tickets=tickets+(e.tickets or 0); gold=gold+(e.gold or 0) end; local pot=tonumber(r.manualPot) and tonumber(r.manualPot)>0 and tonumber(r.manualPot) or gold
+  self:DrawLegacyPanel(root,"RaffleStats67",rx,y,rw,178,"RAFFLE DASHBOARD",accent,C.yellow); local cards={{"Participants",WFormatNumber(participants),VGreen},{"Tickets",WFormatNumber(tickets),VYellow},{"Collected Gold",WFormatGold(gold),VGreen},{"Manual Pot",r.manualPot and WFormatGold(r.manualPot) or WNA(),C.gold},{"Prize 1/2/3",(r.prizes and WFormatGold(r.prizes[1]).." / "..WFormatGold(r.prizes[2]).." / "..WFormatGold(r.prizes[3])) or WNA(),VYellow},{"Active Pot",WFormatGold(pot),C.gold}}
+  local cardW=math.floor((rw-72)/3); for i,c in ipairs(cards) do local cx=rx+24+((i-1)%3)*(cardW+12); local cy=y+70+math.floor((i-1)/3)*48; self:Label("RafK67"..i,root,c[1]..":",cx,cy,150,30,C.muted,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("RafV67"..i,root,tostring(c[2]),cx+152,cy,cardW-166,30,c[3] or C.gold,FONTS.panelSmall,TEXT_ALIGN_LEFT) end
+  local rows={}; for _,e in pairs(r.entries or {}) do local odds=tickets>0 and ((e.tickets or 0)/tickets*100) or 0; local color=V21665_OddsColor(odds); local row={WLimit(e.name,24),VCell(WFormatGold(e.gold),VGreen),VCell(WFormatNumber(e.tickets),VYellow),WRelTime(e.last),VCell(string.format("%.2f%%",odds),color)}; row.__tickets=e.tickets or 0; rows[#rows+1]=row end; table.sort(rows,function(a,b) return (a.__tickets or 0)>(b.__tickets or 0) end)
+  self:DrawLegacyTable(root,"RaffleEntries67",rx,y+200,rw,h-280,"ENTRIES AFTER RESET",{"Member","Deposit","Tickets","Last","Odds"},self:RowsOrNA(rows,5,"Press Scan Entries"),accent,{1.6,1,0.8,1,0.8})
+  local by=y+h-58; local bw=math.floor((rw-32)/5); self:ToolButton(root,"RaffleScan67",rx,by,bw,42,"Scan Entries",accent,function() TML:ScanRaffleEntries(); TML:RenderTool("guild_raffle") end); self:ToolButton(root,"RafflePot67",rx+bw+8,by,bw,42,"Manual Pot",accent,function() TML:OpenManualPotPage() end); self:ToolButton(root,"RaffleSplit67",rx+(bw+8)*2,by,bw,42,"Prize Split",accent,function() TML:OpenPrizeSplitPage() end); self:ToolButton(root,"RafflePick67",rx+(bw+8)*3,by,bw,42,"Pick Winner",accent,function() TML:PickWinner() end); self:ToolButton(root,"RaffleClear67",rx+(bw+8)*4,by,bw,42,"Clear Board",C.red,function() TML:ClearRaffle() end)
+end
+
+function TML:RenderOldTraderBids(root,x,y,w,h,accent)
+  local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeGuildGoldStats(g.id)
+  self:DrawLegacyPanel(root,"TraderTop67",rx,y,rw,142,"TRADER BID LEDGER",C.red); local cards={{"Pending Bids",WFormatGold(st.pending),VRed},{"Bid Events",WFormatNumber(st.bidEvents),VRed},{"Lost Bids",st.lostBids>0 and WFormatGold(st.lostBids) or WNA(),VRed},{"Hired Trader",st.hiredTrader>0 and WFormatGold(st.hiredTrader) or WNA(),VYellow},{"Net Impact",WFormatGold(st.netImpact),st.netImpact>=0 and VGreen or VRed}}; local cw=math.floor((rw-78)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"BidTop67"..i,rx+20+(i-1)*(cw+10),y+56,cw,68,c[1],c[2],c[3],c[3]) end
+  local pending,outcomes={},{}; for _,e in ipairs(self:GetGuildGoldRows(g.id)) do if e.bucket=="Trader Bid" or e.bucket=="Pending Bid" then pending[#pending+1]={WLimit(e.note or "Trader",20),VCell(e.bucket,VRed),VCell(WFormatGold(e.amount),VRed),WRelTime(e.timestamp)}; outcomes[#outcomes+1]={"Bank Withdraw",WLimit(e.note or "Bid",26),"Add Pending",VCell("Connected",VGreen)} elseif e.bucket=="Withdrawal" and V21667_IsBidText(e.note) then outcomes[#outcomes+1]={"History",WLimit(e.note,26),"Cleanup",VCell("Connected",VGreen)} end end
+  self:DrawLegacyTable(root,"BidPending67",rx,y+166,math.floor(rw*.49),h-228,"PENDING BID LIST",{"Trader","Event","Amount","When"},self:RowsOrNA(pending,4,"No bid data loaded"),C.red,{1.4,1,1,.8}); self:DrawLegacyTable(root,"BidOutcomes67",rx+math.floor(rw*.51),y+166,math.floor(rw*.49),h-228,"BID CLEANUP + OUTCOMES",{"Source","Match Text","Action","Status"},self:RowsOrNA(outcomes,4,"No bid data loaded"),C.red,{1,1.6,1,1})
+  local by=y+h-52; self:ToolButton(root,"BidScan67",rx,by,180,42,"Scan Gold",C.red,function() TML:ScanSelectedGuildGold(); TML:RenderTool("trader_bids") end)
+end
+
+local OldRenderTool_21667 = TML.RenderTool
+function TML:RenderTool(toolKey)
+  if toolKey=="manual_pot_page" or toolKey=="set_due_page" or toolKey=="set_crown_rate_page" or toolKey=="prize_split_page" then
+    self:HideAllPooledControls(); local root=self.ui.root; self:EnsureDataDefaults(); self:BeginToolButtons(); local rw,rh=self:GetRootSize(); local w=math.floor(rw*.90); local h=math.floor(rh*.90); local x=math.floor((rw-w)/2); local y=math.floor((rh-h)/2); self:Backdrop("EditPageShadow67",root,x-10,y-10,w+20,h+20,{0,0,0,0.46},nil); self:Backdrop("EditPagePanel67",root,x,y,w,h,C.black90,{C.cyan[1],C.cyan[2],C.cyan[3],0.95}); self:DrawLegacyHeader(root,x,y,w,(self.pipelineMap[toolKey] and self.pipelineMap[toolKey].title) or "Manual Edit",(self.pipelineMap[toolKey] and self.pipelineMap[toolKey].subtitle) or "",C.cyan); local bx=x+34; local by=y+136; local bw=w-68; local bh=h-240
+    if toolKey=="manual_pot_page" then self:RenderKeypadPage(root,bx,by,bw,bh,C.cyan,"MANUAL POT","Manual pot is saved until changed.",function(v) TML:SaveManualPot(v) end)
+    elseif toolKey=="set_due_page" then self:RenderKeypadPage(root,bx,by,bw,bh,C.cyan,"SET DUE AMOUNT","Due amount is saved per selected guild until changed.",function(v) local g=TML:GetGuild(); TML:SetDueAmount(g.id,v) end)
+    elseif toolKey=="set_crown_rate_page" then self:RenderKeypadPage(root,bx,by,bw,bh,C.cyan,"SET CROWN RATE","Manual Enter Here : 1 Crown",function(v) TML.saved.crownRate=tonumber(v) or 0; TML:MarkScanned("Saved",true); TML:ScanNetWorth() end,function(v) return (v=="" and "0" or v).." : 1 Crown" end)
+    elseif toolKey=="prize_split_page" then self:RenderPrizeSplitPage(root,bx,by,bw,bh,C.cyan) end
+    self:RenderScanToast(root); self:RefreshKeybinds(); return
+  end
+  OldRenderTool_21667(self,toolKey)
+end
+
+local OldInitialize_21667 = TML.Initialize
+function TML:Initialize(addonName)
+  if OldInitialize_21667 then OldInitialize_21667(self, addonName) end
+  if d then d("Tamriel Master Ledger v"..self.version.." tracking/page fix pass loaded.") end
+end
+
+
+-- =========================================================
+-- v2.0.16.68 GUILD RAFFLE SCAN/DISPLAY FIX
+-- - Raffle entries now scan guildGoldEvents directly instead of donationEvents only.
+-- - Tickets are not stored as donations, so scanning donationEvents was causing 0 entries.
+-- - Keeps 33g reset marker rule and displays real scan status.
+-- =========================================================
+TML.version = "2.0.16.68"
+TML.addOnVersion = 21668
+TML.lastUpdated = "06/13/2026 07:05 UTC"
+
+local function V21668_ResetAmount(amount)
+  amount = tonumber(amount) or 0
+  return amount > 0 and (amount % 100) == 33
+end
+
+local function V21668_TicketAmount(amount)
+  amount = tonumber(amount) or 0
+  local base = tonumber(WORKING_RAFFLE_TICKET_BASE) or 1000
+  local mod = tonumber(WORKING_RAFFLE_TICKET_MOD) or 1
+  local marker = tonumber(WORKING_RAFFLE_MARKER_AMOUNT) or -1
+  return amount > 0 and (amount % base) == mod and not V21668_ResetAmount(amount) and amount ~= marker
+end
+
+local function V21668_TicketsFromGold(amount)
+  amount = tonumber(amount) or 0
+  local base = tonumber(WORKING_RAFFLE_TICKET_BASE) or 1000
+  return math.max(0, math.floor(amount / base))
+end
+
+local function V21668_EventIsTicket(e)
+  if not e then return false end
+  local bucket = tostring(e.bucket or "")
+  if bucket == "Ticket" then return true end
+  if tostring(e.action or "") ~= "deposit" then return false end
+  return V21668_TicketAmount(e.amount)
+end
+
+function TML:FindRaffleResetTime(guildId)
+  self:EnsureDataDefaults()
+  local ts = 0
+  guildId = tonumber(guildId) or guildId
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do
+    if e and e.guildId == guildId and tostring(e.action or "") == "deposit" and V21668_ResetAmount(e.amount) and (tonumber(e.timestamp) or 0) > ts then
+      ts = tonumber(e.timestamp) or 0
+    end
+  end
+  for _,e in pairs(self.saved.donationEvents or {}) do
+    if e and e.guildId == guildId and V21668_ResetAmount(e.amount) and (tonumber(e.timestamp) or 0) > ts then
+      ts = tonumber(e.timestamp) or 0
+    end
+  end
+  return ts
+end
+
+function TML:GetRaffleSourceEvents(guildId)
+  self:EnsureDataDefaults()
+  local rows, seen = {}, {}
+  guildId = tonumber(guildId) or guildId
+  local function addEvent(e, source)
+    if not e or e.guildId ~= guildId then return end
+    local amount = tonumber(e.amount) or 0
+    local ts = tonumber(e.timestamp) or 0
+    local user = tostring(e.user or WNA())
+    local key = tostring(source)..":"..user..":"..tostring(amount)..":"..tostring(ts)..":"..tostring(e.bucket or "")..":"..tostring(e.action or "")
+    if seen[key] then return end
+    seen[key] = true
+    rows[#rows+1] = e
+  end
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do addEvent(e, "guildGold") end
+  -- legacy backup only; ticket rows should normally live in guildGoldEvents.
+  for _,e in pairs(self.saved.donationEvents or {}) do addEvent(e, "donation") end
+  table.sort(rows, function(a,b) return (tonumber(a.timestamp) or 0) > (tonumber(b.timestamp) or 0) end)
+  return rows
+end
+
+function TML:GetTicketGold(guildId)
+  local reset = self:FindRaffleResetTime(guildId)
+  local total = 0
+  for _,e in ipairs(self:GetRaffleSourceEvents(guildId)) do
+    if (tonumber(e.timestamp) or 0) >= reset and V21668_EventIsTicket(e) then
+      total = total + (tonumber(e.amount) or 0)
+    end
+  end
+  return total, reset
+end
+
+function TML:ScanRaffleEntries()
+  self:EnsureDataDefaults()
+  local g = self:GetGuild()
+  if not g or not g.id or g.id == 0 then
+    self:Notify("Select a guild before scanning raffle entries.")
+    if self.MarkScanned then self:MarkScanned("No Data", false) end
+    return
+  end
+
+  -- Refresh selected guild gold history first; ticket rows are stored in guildGoldEvents, not donationEvents.
+  self:ScanGuildGold(g)
+
+  local r = self:GetRaffle(g.id)
+  r.entries = {}
+  r.lastScan = WNow()
+  local reset = self:FindRaffleResetTime(g.id)
+  r.started = reset
+
+  local deposits, skippedBeforeReset, scannedEvents = 0, 0, 0
+  for _,e in ipairs(self:GetRaffleSourceEvents(g.id)) do
+    scannedEvents = scannedEvents + 1
+    local ts = tonumber(e.timestamp) or 0
+    if V21668_EventIsTicket(e) then
+      if ts >= reset then
+        local amount = tonumber(e.amount) or 0
+        local tickets = V21668_TicketsFromGold(amount)
+        if tickets > 0 then
+          local user = tostring(e.user or WNA())
+          local existing = r.entries[user] or { name = user, tickets = 0, gold = 0, last = 0 }
+          existing.tickets = (tonumber(existing.tickets) or 0) + tickets
+          existing.gold = (tonumber(existing.gold) or 0) + amount
+          if ts > (tonumber(existing.last) or 0) then existing.last = ts end
+          r.entries[user] = existing
+          deposits = deposits + 1
+        end
+      else
+        skippedBeforeReset = skippedBeforeReset + 1
+      end
+    end
+  end
+
+  local members, ticketCount, gold = 0, 0, 0
+  for _,entry in pairs(r.entries or {}) do
+    members = members + 1
+    ticketCount = ticketCount + (tonumber(entry.tickets) or 0)
+    gold = gold + (tonumber(entry.gold) or 0)
+  end
+
+  if deposits > 0 then
+    self.saved.scanStatus.raffle = "Scanned "..tostring(deposits).." raffle deposits / "..tostring(ticketCount).." tickets"
+    if self.MarkScanned then self:MarkScanned("Scanned", true) end
+  else
+    local msg = "No raffle ticket deposits loaded"
+    if scannedEvents > 0 and skippedBeforeReset > 0 then msg = "No tickets after latest 33g reset" end
+    self.saved.scanStatus.raffle = msg
+    if self.MarkScanned then self:MarkScanned("No Data", false) end
+  end
+
+  self:RenderTool("guild_raffle")
+end
+
+-- Keep the display tied to the rebuilt scan state, with a helpful status line when no rows exist.
+local OldRenderOldRaffle_21668 = TML.RenderOldRaffle
+function TML:RenderOldRaffle(root,x,y,w,h,accent)
+  local selectorW=310
+  self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent)
+  local rx=x+selectorW+24
+  local rw=w-selectorW-24
+  local g=self:GetGuild()
+  local r=self:GetRaffle(g.id)
+  local participants, tickets, gold = WTableCount(r.entries), 0, 0
+  for _,e in pairs(r.entries or {}) do tickets=tickets+(tonumber(e.tickets) or 0); gold=gold+(tonumber(e.gold) or 0) end
+  local pot=tonumber(r.manualPot) and tonumber(r.manualPot)>0 and tonumber(r.manualPot) or gold
+  self:DrawLegacyPanel(root,"RaffleStats68",rx,y,rw,196,"RAFFLE DASHBOARD",accent,C.yellow)
+  local cards={{"Participants",WFormatNumber(participants),VGreen},{"Tickets",WFormatNumber(tickets),VYellow},{"Collected Gold",WFormatGold(gold),VGreen},{"Manual Pot",r.manualPot and WFormatGold(r.manualPot) or WNA(),C.gold},{"Prize 1/2/3",(r.prizes and WFormatGold(r.prizes[1]).." / "..WFormatGold(r.prizes[2]).." / "..WFormatGold(r.prizes[3])) or WNA(),VYellow},{"Active Pot",WFormatGold(pot),C.gold}}
+  local cardW=math.floor((rw-72)/3)
+  for i,c in ipairs(cards) do
+    local cx=rx+24+((i-1)%3)*(cardW+12)
+    local cy=y+70+math.floor((i-1)/3)*48
+    self:Label("RafK68"..i,root,c[1]..":",cx,cy,150,30,C.muted,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+    self:Label("RafV68"..i,root,tostring(c[2]),cx+152,cy,cardW-166,30,c[3] or C.gold,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  end
+  local status = tostring((self.saved.scanStatus or {}).raffle or "Press Scan Entries")
+  local reset = tonumber(r.started) or 0
+  local resetText = reset > 0 and ("Reset: "..WRelTime(reset)) or "Reset: no 33g reset marker loaded"
+  self:Label("RafStatus68",root,status.."  •  "..resetText,rx+24,y+160,rw-48,26,status:find("No",1,true) and C.redDim or C.cyanSoft,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+
+  local rows={}
+  for _,e in pairs(r.entries or {}) do
+    local odds=tickets>0 and ((tonumber(e.tickets) or 0)/tickets*100) or 0
+    local color=V21665_OddsColor and V21665_OddsColor(odds) or (odds>=25 and VGreen or odds>=10 and VYellow or VRed)
+    local row={WLimit(e.name,24),VCell(WFormatGold(e.gold),VGreen),VCell(WFormatNumber(e.tickets),VYellow),WRelTime(e.last),VCell(string.format("%.2f%%",odds),color)}
+    row.__tickets=tonumber(e.tickets) or 0
+    rows[#rows+1]=row
+  end
+  table.sort(rows,function(a,b) return (a.__tickets or 0)>(b.__tickets or 0) end)
+  self:DrawLegacyTable(root,"RaffleEntries68",rx,y+216,rw,h-296,"ENTRIES AFTER RESET",{"Member","Deposit","Tickets","Last","Odds"},self:RowsOrNA(rows,5,status),accent,{1.6,1,0.8,1,0.8})
+  local by=y+h-58
+  local bw=math.floor((rw-32)/5)
+  self:ToolButton(root,"RaffleScan68",rx,by,bw,42,"Scan Entries",accent,function() TML:ScanRaffleEntries() end)
+  self:ToolButton(root,"RafflePot68",rx+bw+8,by,bw,42,"Manual Pot",accent,function() TML:OpenManualPotPage() end)
+  self:ToolButton(root,"RaffleSplit68",rx+(bw+8)*2,by,bw,42,"Prize Split",accent,function() TML:OpenPrizeSplitPage() end)
+  self:ToolButton(root,"RafflePick68",rx+(bw+8)*3,by,bw,42,"Pick Winner",accent,function() TML:PickWinner() end)
+  self:ToolButton(root,"RaffleClear68",rx+(bw+8)*4,by,bw,42,"Clear Board",C.red,function() TML:ClearRaffle() end)
+end
+
+local OldInitialize_21668 = TML.Initialize
+function TML:Initialize(addonName)
+  if OldInitialize_21668 then OldInitialize_21668(self, addonName) end
+  if d then d("Tamriel Master Ledger v"..self.version.." guild raffle scan/display fix loaded.") end
+end
+
+-- =========================================================
+-- v2.0.16.69 SALES FEE + LEDGER/BANK/CRAFTBAG FIX PASS
+-- - Guild trader sale values now use final collected gold after ESO trader fees.
+-- - Personal Sales and Personal Gold Ledger use net collected sale values.
+-- - Personal Gold Ledger adds Gold In / Gold Out filters.
+-- - Craft Bag scan/value path strengthened and reports unpriced Craft Bag items.
+-- - Guild Gold Ledger rebuilds donation buckets so bids never count as donations.
+-- - Guild Bank removes Member Bank Totals panel, expands Bank Item History, and adds Given/Taken filters.
+-- =========================================================
+TML.version = "2.0.16.71"
+TML.addOnVersion = 21671
+TML.lastUpdated = "06/13/2026 07:22 UTC"
+
+local V21669_SALE_FEE_RATE = 0.07
+local V21669_GUILD_TAX_RATE = 0.035
+
+local function V21669_Low(s) return Lower(tostring(s or "")) end
+local function V21669_UserKey(v) return V21667_NormUser and V21667_NormUser(v) or V21669_Low(tostring(v or ""):gsub("^@", "")) end
+local function V21669_SameUser(a,b) return V21669_UserKey(a) == V21669_UserKey(b) end
+local function V21669_GrossSale(e)
+  return tonumber(e and (e.grossAmount or e.salePrice or e.listingPrice or e.rawAmount or e.amount)) or 0
+end
+local function V21669_GuildTax(gross)
+  gross = tonumber(gross) or 0
+  return math.floor(gross * V21669_GUILD_TAX_RATE + 0.5)
+end
+local function V21669_Fee(gross)
+  gross = tonumber(gross) or 0
+  return math.floor(gross * V21669_SALE_FEE_RATE + 0.5)
+end
+local function V21669_NetSale(gross)
+  gross = tonumber(gross) or 0
+  return math.max(0, gross - V21669_Fee(gross))
+end
+local function V21669_NormalizeSaleRow(e)
+  if type(e) ~= "table" then return e end
+  local gross = tonumber(e.grossAmount or e.salePrice or e.rawAmount or e.amount) or 0
+  if not e.feeAdjusted then
+    -- Legacy saved rows used amount as the listed sale price. Convert the display row to final collected gold.
+    local net = V21669_NetSale(gross)
+    e.grossAmount = gross
+    e.feeAmount = V21669_Fee(gross)
+    e.guildTax = tonumber(e.guildTax) or V21669_GuildTax(gross)
+    e.netAmount = net
+    e.amount = net
+    e.tax = e.guildTax
+    e.feeAdjusted = true
+  else
+    e.grossAmount = tonumber(e.grossAmount) or gross
+    e.feeAmount = tonumber(e.feeAmount) or V21669_Fee(e.grossAmount)
+    e.guildTax = tonumber(e.guildTax) or V21669_GuildTax(e.grossAmount)
+    e.netAmount = tonumber(e.netAmount) or V21669_NetSale(e.grossAmount)
+    e.amount = tonumber(e.amount) or e.netAmount
+    e.tax = tonumber(e.tax) or e.guildTax
+  end
+  return e
+end
+
+local OldEnsureDataDefaults_21669 = TML.EnsureDataDefaults
+function TML:EnsureDataDefaults()
+  if OldEnsureDataDefaults_21669 then OldEnsureDataDefaults_21669(self) end
+  self.saved = self.saved or self:Defaults()
+  self.saved.guildBankFilter = self.saved.guildBankFilter or "Bank Item History"
+  self.saved.personalGoldFilter = self.saved.personalGoldFilter or "Recent"
+  self.saved.guildGoldFilter = self.saved.guildGoldFilter or "Bank Gold History"
+end
+
+-- All trader sales are stored and displayed as final collected gold after ESO sale fees.
+function TML:AddSale(guildId,eventId,seller,amount,timestamp,itemLink,quantity,tax)
+  self:EnsureDataDefaults()
+  local gross = tonumber(amount) or 0
+  if gross <= 0 then return end
+  local fee = V21669_Fee(gross)
+  local net = V21669_NetSale(gross)
+  local guildTax = tonumber(tax) or V21669_GuildTax(gross)
+  local key = tostring(guildId)..":"..tostring(eventId or (tostring(seller)..tostring(gross)..tostring(timestamp)..tostring(itemLink)))
+  if self.saved.salesEvents[key] then
+    V21669_NormalizeSaleRow(self.saved.salesEvents[key])
+    return
+  end
+  local itemName = WGetItemName(itemLink)
+  local qty = tonumber(quantity) or 1
+  self.saved.salesEvents[key] = {
+    guildId=guildId, seller=seller or WNA(), amount=net, netAmount=net, grossAmount=gross, feeAmount=fee,
+    guildTax=guildTax, tax=guildTax, feeAdjusted=true,
+    timestamp=tonumber(timestamp) or WNow(), itemLink=itemLink, itemName=itemName, quantity=qty,
+  }
+  if itemLink and qty > 0 then
+    local k=WItemKey(itemLink)
+    local pc=self.saved.priceCache[k] or {sum=0,count=0,name=itemName}
+    pc.sum=(pc.sum or 0)+(net/qty)
+    pc.count=(pc.count or 0)+1
+    pc.name=itemName
+    pc.source="guild net avg"
+    self.saved.priceCache[k]=pc
+  end
+end
+
+function TML:GetSalesRows(guildId, onlyMe)
+  self:EnsureDataDefaults()
+  local rows = {}
+  local my = V21669_UserKey(self:GetUserDisplayName())
+  local now = WNow()
+  for _,e in pairs(self.saved.salesEvents or {}) do
+    V21669_NormalizeSaleRow(e)
+    local seller = V21669_UserKey(e.seller)
+    if (not guildId or guildId == 0 or e.guildId == guildId) and ((not onlyMe) or seller == my) then
+      if (now - (tonumber(e.timestamp) or 0)) <= WORKING_HISTORY_DAYS * WORKING_SECONDS_DAY then rows[#rows+1] = e end
+    end
+  end
+  table.sort(rows, function(a,b) return (tonumber(a.timestamp) or 0) > (tonumber(b.timestamp) or 0) end)
+  return rows
+end
+
+function TML:ComputeSalesStats(guildId, onlyMe)
+  local rows = self:GetSalesRows(guildId, onlyMe)
+  local st = {salesToday=0,sales24=0,totalSales=0,items=0,tax=0,fees=0,gross=0,net=0,topEarner=WNA(),topAmount=0}
+  local now=WNow(); local sellers={}
+  for _,e in ipairs(rows) do
+    local age=now-(tonumber(e.timestamp) or 0)
+    local net=tonumber(e.netAmount or e.amount) or 0
+    local gross=tonumber(e.grossAmount) or net
+    local guildTax=tonumber(e.guildTax or e.tax) or V21669_GuildTax(gross)
+    local fee=tonumber(e.feeAmount) or V21669_Fee(gross)
+    if age<=WORKING_SECONDS_DAY then st.salesToday=st.salesToday+net; st.sales24=st.sales24+net end
+    st.totalSales=st.totalSales+net
+    st.gross=st.gross+gross
+    st.fees=st.fees+fee
+    st.tax=st.tax+guildTax
+    st.net=st.net+net
+    st.items=st.items+(tonumber(e.quantity) or 1)
+    local u=e.seller or WNA(); sellers[u]=(sellers[u] or 0)+net
+  end
+  for u,v in pairs(sellers) do if v>st.topAmount then st.topAmount=v; st.topEarner=u end end
+  return st
+end
+
+function TML:GetBestSellerRows(guildId)
+  local by={}
+  for _,e in ipairs(self:GetSalesRows(guildId,false)) do
+    local u=e.seller or WNA(); local r=by[u] or {seller=u,amount=0,items=0,sales=0,highest=0,last=0}
+    local net=tonumber(e.netAmount or e.amount) or 0
+    r.amount=r.amount+net; r.items=r.items+(tonumber(e.quantity) or 1); r.sales=r.sales+1
+    if net>r.highest then r.highest=net end
+    if (e.timestamp or 0)>r.last then r.last=e.timestamp end
+    by[u]=r
+  end
+  local rows={}; for _,r in pairs(by) do if (r.amount or 0)>0 then rows[#rows+1]=r end end
+  table.sort(rows,function(a,b) return (a.amount or 0)>(b.amount or 0) end)
+  return rows
+end
+
+function TML:GetHighTicketRows(guildId)
+  local rows={}
+  for _,e in ipairs(self:GetSalesRows(guildId,false)) do if (tonumber(e.netAmount or e.amount) or 0)>0 then rows[#rows+1]=e end end
+  table.sort(rows,function(a,b) return (tonumber(a.netAmount or a.amount) or 0)>(tonumber(b.netAmount or b.amount) or 0) end)
+  return rows
+end
+
+function TML:GetPersonalTopSellerRows()
+  local by={}
+  for _,e in ipairs(self:GetSalesRows(0,true)) do
+    local k=WItemKey(e.itemLink or e.itemName)
+    local r=by[k] or {itemLink=e.itemLink,itemName=e.itemName or WGetItemName(e.itemLink),qty=0,gold=0,sales=0,guild=e.guildId,last=0}
+    local net=tonumber(e.netAmount or e.amount) or 0
+    r.qty=r.qty+(tonumber(e.quantity) or 1); r.gold=r.gold+net; r.sales=r.sales+1
+    if (e.timestamp or 0)>r.last then r.last=e.timestamp; r.guild=e.guildId end
+    by[k]=r
+  end
+  local rows={}; for _,r in pairs(by) do r.avg=(r.qty>0 and math.floor(r.gold/r.qty) or 0); rows[#rows+1]=r end
+  table.sort(rows,function(a,b) return (a.gold or 0)>(b.gold or 0) end)
+  return rows
+end
+
+-- Personal gold ledger: sales use final collected gold, table is Date | UserID | Source | Amount | Note, with filters.
+local function V21669_AddPersonalEvent(self, source, amount, direction, note, timestamp, keyExtra)
+  self:EnsureDataDefaults(); amount=tonumber(amount) or 0; if amount<=0 then return false end
+  timestamp=tonumber(timestamp) or WNow(); direction=direction or "in"
+  local key=tostring(source)..":"..tostring(timestamp)..":"..tostring(amount)..":"..tostring(direction)..":"..tostring(keyExtra or "")
+  if self.saved.personalGoldEvents[key] then return false end
+  self.saved.personalGoldEvents[key]={timestamp=timestamp,user=self:GetUserDisplayName(),source=source,amount=amount,direction=direction,note=note or source}
+  self.saved.personalGoldTotals=self.saved.personalGoldTotals or {goldIn=0,goldOut=0,moves=0}
+  if direction=="in" then self.saved.personalGoldTotals.goldIn=(tonumber(self.saved.personalGoldTotals.goldIn) or 0)+amount elseif direction=="out" then self.saved.personalGoldTotals.goldOut=(tonumber(self.saved.personalGoldTotals.goldOut) or 0)+amount else self.saved.personalGoldTotals.moves=(tonumber(self.saved.personalGoldTotals.moves) or 0)+amount end
+  self:PruneEventTable(self.saved.personalGoldEvents,WORKING_MAX_EVENTS)
+  return true
+end
+function TML:ScanPersonalGoldLedger()
+  self:EnsureDataDefaults()
+  self:EachGuild(function(g) self:ScanGuildGold(g); self:ScanGuildSales(g) end)
+  local my=self:GetUserDisplayName(); local now=WNow(); local changed=false
+  for _,s in pairs(self.saved.salesEvents or {}) do
+    V21669_NormalizeSaleRow(s)
+    if V21669_SameUser(s.seller,my) then
+      changed=V21669_AddPersonalEvent(self,"Guild Trader Sale",tonumber(s.netAmount or s.amount) or 0,"in",self:GetGuildName(s.guildId),s.timestamp,"sale:"..tostring(s.guildId)..":"..tostring(s.itemLink or s.itemName)..":"..tostring(s.timestamp)) or changed
+    end
+  end
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do
+    if V21669_SameUser(e.user,my) then
+      local bucket=tostring(e.bucket or "")
+      if bucket ~= "Trader Bid" and bucket ~= "Pending Bid" and bucket ~= "Lost Bid" and bucket ~= "Bid Withdrawn" then
+        local dir=(e.action=="deposit") and "out" or "in"
+        local src=(e.action=="deposit") and "Guild Bank Deposit" or "Guild Bank Withdrawal"
+        changed=V21669_AddPersonalEvent(self,src,tonumber(e.amount) or 0,dir,bucket or "Guild Bank",e.timestamp,"guildgold:"..tostring(e.guildId)..":"..tostring(e.timestamp)..":"..tostring(e.amount)) or changed
+      end
+    end
+  end
+  local carried=tonumber(self:GetCarriedGoldLive()) or 0; local bank=tonumber(self:GetBankGoldLive()) or 0; local total=carried+bank; local last=self.saved.goldSnapshots.personalLast
+  if last and tonumber(last.total) then
+    local delta=total-(tonumber(last.total) or 0)
+    if delta>0 then changed=V21669_AddPersonalEvent(self,"Detected Gold Change",delta,"in","Wallet/bank total increased",now,"delta:"..tostring(now)) or changed elseif delta<0 then changed=V21669_AddPersonalEvent(self,"Detected Gold Change",math.abs(delta),"out","Wallet/bank total decreased",now,"delta:"..tostring(now)) or changed end
+  end
+  self.saved.goldSnapshots.personalLast={carriedGold=carried,bankedGold=bank,total=total,timestamp=now}
+  self.saved.scanStatus.personalGold=changed and "Gold ledger updated" or "No new gold movement"
+  if self.MarkScanned then self:MarkScanned(changed and "Scanned" or "No Data", changed) end
+end
+function TML:GetPersonalGoldRows(filter)
+  self:EnsureDataDefaults(); local rows={}; filter=filter or self.saved.personalGoldFilter or "Recent"
+  for _,e in pairs(self.saved.personalGoldEvents or {}) do
+    if filter=="Gold In" then if e.direction=="in" and (tonumber(e.amount) or 0)>0 then rows[#rows+1]=e end
+    elseif filter=="Gold Out" then if e.direction=="out" and (tonumber(e.amount) or 0)>0 then rows[#rows+1]=e end
+    else rows[#rows+1]=e end
+  end
+  if filter=="Gold In" or filter=="Gold Out" then table.sort(rows,function(a,b) return (tonumber(a.amount) or 0)>(tonumber(b.amount) or 0) end) else table.sort(rows,function(a,b) return (tonumber(a.timestamp) or 0)>(tonumber(b.timestamp) or 0) end) end
+  return rows
+end
+function TML:CyclePersonalGoldFilter()
+  local list={"Recent","Gold In","Gold Out"}; local cur=self.saved.personalGoldFilter or list[1]; local idx=1
+  for i,v in ipairs(list) do if v==cur then idx=i break end end
+  self.saved.personalGoldFilter=list[(idx%#list)+1]
+  self:RenderTool("gold_ledger_personal")
+end
+
+-- Strict guild gold classification. Bid detection runs before Donation and donationEvents is rebuilt from safe rows.
+local function V21669_IsBidText(text)
+  local low=V21669_Low(text)
+  return low:find("bid") or low:find("guild trader") or low:find("trader") or low:find("kiosk") or low:find("hire trader") or low:find("hired trader") or low:find("lost bid") or low:find("withdrawn bid")
+end
+local function V21669_IsReset(amount) amount=tonumber(amount) or 0; return amount>0 and (amount % 100)==33 end
+local function V21669_IsTicket(amount) amount=tonumber(amount) or 0; return amount>0 and (amount % (tonumber(WORKING_RAFFLE_TICKET_BASE) or 1000))==(tonumber(WORKING_RAFFLE_TICKET_MOD) or 1) and not V21669_IsReset(amount) and amount~=(tonumber(WORKING_RAFFLE_MARKER_AMOUNT) or -1) end
+local function V21669_ClassifyGold(amount, action, note)
+  amount=tonumber(amount) or 0; action=tostring(action or "unknown"); note=tostring(note or "")
+  if V21669_IsReset(amount) and action=="deposit" then return "Reset" end
+  if V21669_IsTicket(amount) and action=="deposit" then return "Ticket" end
+  if V21669_IsBidText(note) then return "Trader Bid" end
+  if action~="deposit" then if V21669_Low(note):find("herald") then return "Heraldry" end; return "Withdrawal" end
+  return "Donation"
+end
+function TML:AddGuildGoldEvent(guildId,eventId,user,amount,timestamp,action,bucket,note)
+  self:EnsureDataDefaults()
+  amount=tonumber(amount) or 0; action=tostring(action or "unknown"); note=tostring(note or "")
+  bucket=V21669_ClassifyGold(amount, action, note)
+  local key=tostring(guildId)..":"..tostring(eventId or (tostring(user)..tostring(amount)..tostring(timestamp)..tostring(action)..tostring(note)))
+  local row={guildId=guildId,user=user or WNA(),amount=amount,timestamp=tonumber(timestamp) or WNow(),action=action,bucket=bucket,note=note}
+  self.saved.guildGoldEvents[key]=row
+end
+function TML:RebuildDonationEvents()
+  self:EnsureDataDefaults(); self.saved.donationEvents={}
+  for key,e in pairs(self.saved.guildGoldEvents or {}) do
+    if e and e.action=="deposit" then
+      e.bucket=V21669_ClassifyGold(e.amount,e.action,e.note)
+      if e.bucket=="Donation" then self.saved.donationEvents[tostring(key)..":donation"]={guildId=e.guildId,user=e.user,amount=e.amount,timestamp=e.timestamp,bucket="Donation"} end
+    elseif e then
+      e.bucket=V21669_ClassifyGold(e.amount,e.action,e.note)
+    end
+  end
+end
+local OldScanGuildGold_21669 = TML.ScanGuildGold
+function TML:ScanGuildGold(g)
+  if OldScanGuildGold_21669 then OldScanGuildGold_21669(self,g) end
+  self:RebuildDonationEvents()
+end
+function TML:GetGuildGoldRows(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents()
+  local rows={}
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do if (not guildId or guildId==0 or e.guildId==guildId) then rows[#rows+1]=e end end
+  table.sort(rows,function(a,b) return (tonumber(a.timestamp) or 0)>(tonumber(b.timestamp) or 0) end)
+  return rows
+end
+function TML:ComputeGuildGoldStats(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents()
+  local st={bank=V21667_GuildBankGold and V21667_GuildBankGold(self,guildId) or nil, donations=0, withdrawn=0, pending=0, ticketGold=0, guildTax=0, bidEvents=0,lostBids=0,hiredTrader=0,netImpact=0}
+  for _,e in ipairs(self:GetGuildGoldRows(guildId)) do
+    local amt=tonumber(e.amount) or 0; local bucket=tostring(e.bucket or "")
+    if bucket=="Donation" then st.donations=st.donations+amt
+    elseif bucket=="Ticket" then st.ticketGold=st.ticketGold+amt
+    elseif bucket=="Trader Bid" or bucket=="Pending Bid" or bucket=="Lost Bid" or bucket=="Bid Withdrawn" then st.pending=st.pending+amt; st.bidEvents=st.bidEvents+1; st.netImpact=st.netImpact-amt
+    elseif e.action~="deposit" then st.withdrawn=st.withdrawn+amt; st.netImpact=st.netImpact-amt end
+  end
+  for _,s in pairs(self.saved.salesEvents or {}) do V21669_NormalizeSaleRow(s); if (not guildId or guildId==0 or s.guildId==guildId) then st.guildTax=st.guildTax+(tonumber(s.guildTax or s.tax) or 0) end end
+  return st
+end
+function TML:GetGuildGoldFilterRows(guildId, filter)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents(); filter=filter or self.saved.guildGoldFilter or "Bank Gold History"
+  if filter=="Bank Gold History" then return self:GetGuildGoldRows(guildId),"history" end
+  local agg={}
+  local function add(user,amount,ts)
+    amount=tonumber(amount) or 0; if amount<=0 then return end
+    local u=user or WNA(); local r=agg[u] or {user=u,amount=0,count=0,last=0}; r.amount=r.amount+amount; r.count=r.count+1; if (tonumber(ts) or 0)>r.last then r.last=tonumber(ts) or 0 end; agg[u]=r
+  end
+  if filter=="Taxes Paid" then
+    for _,s in pairs(self.saved.salesEvents or {}) do V21669_NormalizeSaleRow(s); if (not guildId or guildId==0 or s.guildId==guildId) then add(s.seller, tonumber(s.guildTax or s.tax) or 0, s.timestamp) end end
+  else
+    for _,e in pairs(self.saved.guildGoldEvents or {}) do if (not guildId or guildId==0 or e.guildId==guildId) then
+      if filter=="Tickets" and e.bucket=="Ticket" then add(e.user,e.amount,e.timestamp)
+      elseif filter=="Donations" and e.bucket=="Donation" then add(e.user,e.amount,e.timestamp)
+      elseif filter=="Withdraws" and e.action~="deposit" then add(e.user,e.amount,e.timestamp) end
+    end end
+  end
+  local rows={}; for _,r in pairs(agg) do if (tonumber(r.amount) or 0)>0 then rows[#rows+1]=r end end
+  table.sort(rows,function(a,b) return (a.amount or 0)>(b.amount or 0) end)
+  return rows,"aggregate"
+end
+
+-- Craft Bag scanning: more extraction paths, summary value counts all priced craft bag items, unpriced count is explicit.
+local function V21669_SlotItemLink(bagId, slotIndex, slotData)
+  local link = slotData and (slotData.itemLink or slotData.link or (slotData.itemData and slotData.itemData.itemLink))
+  if (not link or link=="") and slotData and type(slotData.GetItemLink)=="function" then local ok,l=pcall(function() return slotData:GetItemLink() end); if ok then link=l end end
+  if (not link or link=="") and type(GetItemLink)=="function" and slotIndex then local ok,l=pcall(GetItemLink,bagId,slotIndex); if ok then link=l end end
+  return link
+end
+local function V21669_SlotQty(bagId, slotIndex, slotData, itemLink)
+  local q = tonumber(slotData and (slotData.stackCount or slotData.stack or slotData.quantity or slotData.stackSize or (slotData.itemData and slotData.itemData.stackCount)))
+  if (not q or q<=0) and slotData and type(slotData.GetStackCount)=="function" then local ok,v=pcall(function() return slotData:GetStackCount() end); if ok then q=tonumber(v) end end
+  if (not q or q<=0) and type(GetSlotStackSize)=="function" and slotIndex then local ok,v=pcall(GetSlotStackSize,bagId,slotIndex); if ok then q=tonumber(v) end end
+  return (q and q>0) and q or 1
+end
+local function V21669_ValueNWItem(self,nw,itemLink,qty,bucket,locName)
+  if not itemLink or itemLink=="" then return false end; qty=tonumber(qty) or 1
+  local avg=self:GetAveragePrice(WItemKey(itemLink)); local value=nil; local source=nil
+  if avg and tonumber(avg)>0 then value=math.floor(tonumber(avg)*qty); source="guild avg" else value,source=WGetItemValue(itemLink,qty) end
+  if value and tonumber(value)>0 then
+    nw[bucket]=(tonumber(nw[bucket]) or 0)+tonumber(value)
+    table.insert(nw.top,{name=WGetItemName(itemLink),itemLink=itemLink,qty=qty,avg=avg,value=tonumber(value),location=locName,source=source or "value"})
+    return true
+  end
+  nw.unpriced=(tonumber(nw.unpriced) or 0)+1
+  if bucket=="craftBag" then nw.craftBagUnpriced=(tonumber(nw.craftBagUnpriced) or 0)+1 end
+  return false
+end
+local function V21669_ScanBag(self,nw,bagId,bucket,locName)
+  if bagId==nil or type(GetBagSize)~="function" or type(GetItemLink)~="function" then return 0 end
+  local okS,size=pcall(GetBagSize,bagId); size=okS and tonumber(size) or 0; local scanned=0
+  for slot=0,math.max(0,size-1) do local link=V21669_SlotItemLink(bagId,slot,nil); if link and link~="" then scanned=scanned+1; V21669_ValueNWItem(self,nw,link,V21669_SlotQty(bagId,slot,nil,link),bucket,locName) end end
+  return scanned
+end
+local function V21669_ScanCraftBag(self,nw)
+  local bagId=_G.BAG_VIRTUAL; local scanned=0; local seen={}
+  if not bagId then nw.craftBagStatus="Craft Bag API unavailable"; return 0 end
+  local candidates={}
+  if SHARED_INVENTORY then
+    for _,method in ipairs({"GenerateFullSlotData","GetBagCache","GetOrCreateBagCache"}) do
+      if type(SHARED_INVENTORY[method])=="function" then
+        local ok,data
+        if method=="GenerateFullSlotData" then ok,data=pcall(function() return SHARED_INVENTORY:GenerateFullSlotData(nil,bagId) end) else ok,data=pcall(function() return SHARED_INVENTORY[method](SHARED_INVENTORY,bagId) end) end
+        if ok and type(data)=="table" then candidates[#candidates+1]=data end
+      end
+    end
+  end
+  for _,data in ipairs(candidates) do
+    for slotKey,slotData in pairs(data) do
+      local slotIndex=tonumber(slotData and (slotData.slotIndex or slotData.slotId or slotData.slot or slotKey)) or tonumber(slotKey)
+      local link=V21669_SlotItemLink(bagId,slotIndex,slotData)
+      if link and link~="" then local key=link..":"..tostring(slotIndex or slotKey); if not seen[key] then seen[key]=true; scanned=scanned+1; V21669_ValueNWItem(self,nw,link,V21669_SlotQty(bagId,slotIndex,slotData,link),"craftBag","Craft Bag") end end
+    end
+  end
+  if scanned==0 then scanned=V21669_ScanBag(self,nw,bagId,"craftBag","Craft Bag") end
+  nw.craftBagScanned=scanned
+  nw.craftBagStatus=scanned>0 and ("Scanned "..tostring(scanned).." craft bag items") or "Craft Bag not loaded"
+  return scanned
+end
+function TML:ScanNetWorth()
+  self:EnsureDataDefaults(); local rate=tonumber(self.saved.crownRate)
+  local nw={total=0,character=0,carriedGold=0,bankedGold=0,carriedItems=0,bankedItems=0,craftBag=0,unpriced=0,craftBagUnpriced=0,craftBagScanned=0,top={},currencies={},lastScan=WNow(),craftBagStatus="Not scanned",crownRate=rate,crownGold=nil}
+  nw.carriedGold=self:GetCarriedGoldLive() or 0; nw.bankedGold=self:GetBankGoldLive() or 0
+  local accountLoc={_G.CURRENCY_LOCATION_ACCOUNT,nil}; local charBankLoc={_G.CURRENCY_LOCATION_CHARACTER,_G.CURRENCY_LOCATION_BANK,_G.CURRENCY_LOCATION_ACCOUNT,nil}
+  nw.currencies={{"Crowns",WCurrencyAny({"CURT_CROWNS","CURT_CROWN_CROWNS"},accountLoc)},{"Crown Gems",WCurrencyAny({"CURT_CROWN_GEMS"},accountLoc)},{"Writ Vouchers",WCurrencyAny({"CURT_WRIT_VOUCHERS","CURT_WRIT_VOUCHER"},charBankLoc)},{"Alliance Points",WCurrencyAny({"CURT_ALLIANCE_POINTS"},charBankLoc)},{"Tel Var Stones",WCurrencyAny({"CURT_TELVAR_STONES"},charBankLoc)},{"Trade Bars",WCurrencyAny({"CURT_TRADE_BARS","CURT_EVENT_TICKETS","CURT_EVENT_TICKET"},accountLoc)},{"Undaunted Keys",WCurrencyAny({"CURT_UNDAUNTED_KEYS","CURT_UNDAUNTED_KEY"},charBankLoc)},{"Seals",WCurrencyAny({"CURT_SEALS_OF_ENDEAVOR","CURT_ENDEAVOR_SEALS","CURT_SEAL_OF_ENDEAVOR"},accountLoc)},{"Archival Fortunes",WCurrencyAny({"CURT_ARCHIVAL_FORTUNES","CURT_ARCHIVAL_FORTUNE"},charBankLoc)},{"Tome Points",WCurrencyAny({"CURT_TOME_POINTS","CURT_TAMRIEL_TOME_POINTS","CURT_TAMRIEL_TOMES"},charBankLoc)}}
+  V21669_ScanBag(self,nw,_G.BAG_BACKPACK,"carriedItems","Backpack"); V21669_ScanBag(self,nw,_G.BAG_BANK,"bankedItems","Bank"); V21669_ScanBag(self,nw,_G.BAG_SUBSCRIBER_BANK,"bankedItems","Bank"); V21669_ScanCraftBag(self,nw)
+  local crowns=nil; for _,cur in ipairs(nw.currencies) do if cur[1]=="Crowns" then crowns=tonumber(cur[2]) end end
+  if rate and rate>0 and crowns then nw.crownGold=math.floor(crowns*rate) end
+  table.sort(nw.top,function(a,b) return (a.value or 0)>(b.value or 0) end); while #nw.top>20 do table.remove(nw.top) end
+  nw.character=nw.carriedGold+nw.carriedItems; nw.total=nw.character+nw.bankedGold+nw.bankedItems+nw.craftBag+(nw.crownGold or 0)
+  self.saved.networth=nw; self.saved.goldSnapshots.last={carriedGold=nw.carriedGold,bankedGold=nw.bankedGold,timestamp=WNow()}; self.saved.scanStatus.networth="Scanned net worth"; if self.MarkScanned then self:MarkScanned("Scanned",true) end
+end
+
+-- Guild bank item parser/taken fix + filters.
+local function V21669_IsWithdrawItem(eventType, note)
+  if TML.IsBankItemWithdraw and TML:IsBankItemWithdraw(eventType) then return true end
+  local low=V21669_Low(note)
+  return low:find("withdraw") or low:find("withdrew") or low:find("take") or low:find("taken") or low:find("took") or low:find("remove") or low:find("removed") or low:find("retriev")
+end
+local function V21669_IsDepositItem(eventType, note)
+  local low=V21669_Low(note)
+  if low:find("deposit") or low:find("deposited") or low:find("added") then return true end
+  return not V21669_IsWithdrawItem(eventType,note)
+end
+function TML:AddBankItem(guildId,eventId,user,itemLink,quantity,timestamp,action)
+  self:EnsureDataDefaults(); if not itemLink or itemLink=="" then return end
+  local key=tostring(guildId)..":"..tostring(eventId or (tostring(user)..tostring(itemLink)..tostring(timestamp)..tostring(action)..tostring(quantity)))
+  local qty=tonumber(quantity) or 1; local value=WGetItemValue(itemLink,qty)
+  self.saved.bankItemEvents[key]={guildId=guildId,user=user or WNA(),itemLink=itemLink,itemName=WGetItemName(itemLink),quantity=qty,timestamp=tonumber(timestamp) or WNow(),action=action or "deposit",value=value}
+end
+function TML:ScanGuildBankItems(g)
+  self:EnsureDataDefaults(); g=g or self:GetGuild(); if not g or not g.id or g.id==0 then return end
+  local cat=self:GetHistoryCategory("bankedItem")
+  if type(GetGuildHistoryBankedItemEventInfo)~="function" or not cat then self.saved.scanStatus.bank="Guild bank item API unavailable"; return end
+  local newest,oldest=self:GetHistoryIndices(g.id,cat,WORKING_HISTORY_DAYS); local scanned=0
+  if oldest>=newest then
+    for i=newest,oldest do
+      local vals={pcall(GetGuildHistoryBankedItemEventInfo,g.id,i)}; local ok=table.remove(vals,1)
+      if ok then
+        local eventId,timestamp,isRedacted,eventType,displayName,itemLink,quantity=vals[1],vals[2],vals[3],vals[4],vals[5],vals[6],vals[7]
+        local note=""
+        for _,v in ipairs(vals) do
+          if type(v)=="string" then if v:find("|H",1,true) then itemLink=itemLink or v elseif v:sub(1,1)=="@" then displayName=displayName or v else note=note.." "..v end
+          elseif type(v)=="number" then if v>1000000000 then timestamp=v elseif v>0 and v<=10000 and (not quantity or quantity==0) then quantity=v end end
+        end
+        if type(isRedacted)~="boolean" then isRedacted=false end
+        if not isRedacted and displayName and itemLink then
+          local action=V21669_IsWithdrawItem(eventType,note) and "withdraw" or "deposit"
+          self:AddBankItem(g.id,eventId or i,displayName,itemLink,quantity or 1,timestamp or WNow(),action); scanned=scanned+1
+        end
+      end
+    end
+  end
+  self:RequestHistory(g.id,cat,WORKING_HISTORY_DAYS); self:PruneEventTable(self.saved.bankItemEvents,WORKING_MAX_EVENTS); self.saved.scanStatus.bank="Scanned "..scanned.." bank item rows"; if self.MarkScanned then self:MarkScanned(scanned>0 and "Scanned" or "No Data", scanned>0) end
+end
+function TML:CycleGuildBankFilter()
+  local list={"Bank Item History","All Time Given","All Time Taken"}; local cur=self.saved.guildBankFilter or list[1]; local idx=1
+  for i,v in ipairs(list) do if v==cur then idx=i break end end
+  self.saved.guildBankFilter=list[(idx%#list)+1]
+  self:RenderTool("guild_bank")
+end
+function TML:GetBankAggregateRows(guildId, filter)
+  local by={}
+  for _,e in ipairs(self:GetBankRows(guildId)) do
+    local want=(filter=="All Time Given" and e.action~="withdraw") or (filter=="All Time Taken" and e.action=="withdraw")
+    if want then local u=e.user or WNA(); local r=by[u] or {user=u,qty=0,value=0,count=0,last=0}; r.qty=r.qty+(tonumber(e.quantity) or 1); r.value=r.value+(tonumber(e.value) or 0); r.count=r.count+1; if (e.timestamp or 0)>r.last then r.last=e.timestamp end; by[u]=r end
+  end
+  local rows={}; for _,r in pairs(by) do if (r.qty or 0)>0 or (r.value or 0)>0 then rows[#rows+1]=r end end
+  table.sort(rows,function(a,b) return (a.value~=b.value) and ((a.value or 0)>(b.value or 0)) or ((a.qty or 0)>(b.qty or 0)) end)
+  return rows
+end
+
+function TML:RenderOldGuildBank(root,x,y,w,h,accent)
+  local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeBankStats(g.id)
+  self:DrawLegacyPanel(root,"BankTotals69",rx,y,rw,142,"BANK TOTALS",accent)
+  local cards={{"Given",WFormatNumber(st.given),VGreen},{"Taken",WFormatNumber(st.taken),VRed},{"Net Value",WFormatGold(st.netValue),VYellow},{"Current Items",WFormatNumber(st.currentItems),VGreen},{"Last",st.last,C.white}}
+  local cardW=math.floor((rw-78)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"BankCard69"..i,rx+20+(i-1)*(cardW+10),y+56,cardW,68,c[1],c[2],c[3],c[3]) end
+  local filter=self.saved.guildBankFilter or "Bank Item History"; local rows={}
+  if filter=="All Time Given" or filter=="All Time Taken" then
+    local color=(filter=="All Time Given") and VGreen or VRed
+    for _,r in ipairs(self:GetBankAggregateRows(g.id,filter)) do rows[#rows+1]={VCell(WLimit(r.user,24),color),VCell(WFormatNumber(r.qty),color),r.value and VCell(WFormatGold(r.value),VYellow) or WNA(),WFormatNumber(r.count),WRelTime(r.last)} end
+    self:DrawLegacyTable(root,"BankHist69",rx,y+164,rw,h-226,filter:upper().." - HIGHEST TO LEAST",{"UserID","Qty","Value","Rows","Last"},self:RowsOrNA(rows,5,"Press Scan Bank"),accent,{1.6,.7,1,0.6,0.9})
+  else
+    for _,e in ipairs(self:GetBankRows(g.id)) do local action=e.action=="withdraw" and VCell("Taken",VRed) or VCell("Given",VGreen); rows[#rows+1]={action,WLimit(e.user,18),self:FormatItemCell(e.itemLink,e.itemName,26),WFormatNumber(e.quantity),e.value and VCell(WFormatGold(e.value),VYellow) or WNA(),WRelTime(e.timestamp)} end
+    self:DrawLegacyTable(root,"BankHist69",rx,y+164,rw,h-226,"BANK ITEM HISTORY",{"Action","Member","Item","Qty","Value","When"},self:RowsOrNA(rows,6,"Press Scan Bank"),accent,{.75,1.1,2,.55,.8,.8})
+  end
+  local by=y+h-52
+  self:ToolButton(root,"BankScan69",rx,by,160,40,"Scan Bank",accent,function() TML:ScanGuildBankItems(TML:GetGuild()); TML:RenderTool("guild_bank") end)
+  self:ToolButton(root,"BankFilter69",rx+174,by,230,40,"Filter: "..filter,accent,function() TML:CycleGuildBankFilter() end)
+  self:ToolButton(root,"BankBack69",rx+418,by,180,40,"Back to Menu",C.cyan,function() TML:Back() end)
+  self:ToolButton(root,"BankExit69",rx+612,by,160,40,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+function TML:RenderOldLedger(root,x,y,w,h,accent,guildMode)
+  if guildMode then
+    local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeGuildGoldStats(g.id); local topH=154
+    self:DrawLegacyPanel(root,"LedgerStats69G",rx,y,rw,topH,"GUILD GOLD LEDGER",accent)
+    local cards={{"Bank Gold",st.bank==nil and WNA() or WFormatGold(st.bank),C.gold},{"Donations",WFormatGold(st.donations),VGreen},{"Withdrawn",WFormatGold(st.withdrawn),VRed},{"Pending Bids",WFormatGold(st.pending),VRed},{"Ticket Gold",WFormatGold(st.ticketGold),VYellow},{"Guild Tax",WFormatGold(st.guildTax),VGreen}}
+    local cardW=math.floor((rw-94)/6); for i,c in ipairs(cards) do self:DrawMiniStat(root,"LedgerMini69G"..i,rx+20+(i-1)*(cardW+10),y+58,cardW,74,c[1],c[2],c[3],c[3]) end
+    local filter=self.saved.guildGoldFilter or "Bank Gold History"; local data,mode=self:GetGuildGoldFilterRows(g.id,filter); local rows={}
+    if mode=="aggregate" then for _,r in ipairs(data) do local color=(filter=="Tickets") and VYellow or ((filter=="Withdraws") and VRed or VGreen); rows[#rows+1]={VCell(WLimit(r.user,22),C.white),VCell(WFormatGold(r.amount),color),WFormatNumber(r.count),WRelTime(r.last)} end; self:DrawLegacyTable(root,"LedgerHistory69G",rx,y+topH+20,math.floor(rw*.64),h-topH-82,filter:upper().." - HIGHEST TO LEAST",{"User","Amount","Rows","Last"},self:RowsOrNA(rows,4,"No data for this filter"),accent,{1.6,1,0.6,0.8})
+    else for _,e in ipairs(data) do local bcol=V21667_BucketColor and V21667_BucketColor(e.bucket) or C.white; rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.action=="deposit" and VCell("Deposit",VGreen) or VCell("Withdraw",VRed),VCell(WFormatGold(e.amount),(e.bucket=="Ticket") and VYellow or (e.action=="deposit" and VGreen or VRed)),VCell(e.bucket or WNA(),bcol)} end; self:DrawLegacyTable(root,"LedgerHistory69G",rx,y+topH+20,math.floor(rw*.64),h-topH-82,"BANK GOLD HISTORY",{"Date","User","Event","Amount","Bucket"},self:RowsOrNA(rows,5,"Press Scan Gold"),accent,{1,1.2,1,1,1.2}) end
+    local sideX=rx+math.floor(rw*.64)+22; local sideW=rw-math.floor(rw*.64)-22; self:DrawLegacyPanel(root,"LedgerSide69G",sideX,y+topH+20,sideW,h-topH-82,"FILTERS / TICKET RULES",accent,C.yellow)
+    self:Label("TicketRulesText69G",root,"Active Filter: "..filter.."\n\nTicket Gold: "..WFormatGold(st.ticketGold).."\nEntry rule: 1,001g = 1 ticket.\nReset rule: latest deposit ending in 33g resets raffle counting.\n\nBids never count as donations.\nGuild Tax is sales tax earned by the guild.",sideX+22,y+topH+72,sideW-44,230,C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+    self:ToolButton(root,"GoldFilter69G",sideX+32,y+h-104,sideW-64,40,"Filter: "..filter,accent,function() TML:CycleGuildGoldFilter() end)
+    local by=y+h-52; self:ToolButton(root,"GoldScanBtn69G",rx,by,210,42,"Scan Gold History",accent,function() TML:ScanSelectedGuildGold(); TML:RenderTool("guild_gold_ledger") end); self:ToolButton(root,"GoldBack69G",rx+224,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"GoldExit69G",rx+448,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+    return
+  end
+  local st=self:ComputePersonalGoldStats(); local topH=236; self:DrawLegacyPanel(root,"LedgerStats69",x,y,w,topH,"GOLD LEDGER",accent)
+  local deltaText=st.deltaPct and string.format("Gold Delta: %.2f%%",st.deltaPct) or "Gold Delta: N/A"; self:Label("GoldDelta69",root,deltaText,x+w-300,y+6,280,34,st.deltaPct and (st.deltaPct>=0 and VGreen or VRed) or C.muted,FONTS.panelText,TEXT_ALIGN_RIGHT)
+  local bankText=st.bank==nil and "Bank not scanned" or WFormatGold(st.bank); local cards={{"Current Gold",WFormatGold(st.current),C.gold},{"Bank Gold",bankText,C.gold},{"24H Gold In",WFormatGold(st.in24),VGreen},{"24H Gold Out",WFormatGold(st.out24),VRed},{"24H Net",WFormatGold(st.net24),st.net24>=0 and VGreen or VRed},{"All-Time In",WFormatGold(st.allIn),VGreen},{"All-Time Out",WFormatGold(st.allOut),VRed},{"All-Time Net",WFormatGold(st.allNet),st.allNet>=0 and VGreen or VRed}}
+  local cardW=math.floor((w-90)/4); for i,c in ipairs(cards) do local col=(i-1)%4; local row=math.floor((i-1)/4); self:DrawMiniStat(root,"LedgerMini69"..i,x+24+col*(cardW+14),y+58+row*78,cardW,68,c[1],c[2],c[3],c[3]) end
+  self:Label("GoldLedgerNote69",root,"24H tracks the last 24 hours. All-Time tracks saved gold movement. Trader sales use final collected gold after fees.",x+26,y+topH-34,w-52,30,C.yellowDim,FONTS.panelSmall,TEXT_ALIGN_CENTER)
+  local filter=self.saved.personalGoldFilter or "Recent"; local rows={}; for _,e in ipairs(self:GetPersonalGoldRows(filter)) do rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.source or WNA(),e.direction=="in" and VCell("+"..WFormatGold(e.amount),VGreen) or VCell("-"..WFormatGold(e.amount),VRed),e.note or WNA()} end
+  self:DrawLegacyTable(root,"LedgerHistory69",x,y+topH+20,w,h-topH-82,"PERSONAL GOLD HISTORY - "..string.upper(filter),{"Date","UserID","Source","Amount","Note"},self:RowsOrNA(rows,5,"Press Refresh Ledger"),accent,{1,1.1,1.8,1,1.3})
+  local by=y+h-52; self:ToolButton(root,"PersonalGoldRefresh69",x,by,210,42,"Refresh Ledger",accent,function() TML:ScanPersonalGoldLedger(); TML:RenderTool("gold_ledger_personal") end); self:ToolButton(root,"PersonalGoldFilter69",x+224,by,210,42,"Filter: "..filter,accent,function() TML:CyclePersonalGoldFilter() end); self:ToolButton(root,"PersonalGoldBack69",x+448,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"PersonalGoldExit69",x+672,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+local OldInitialize_21669 = TML.Initialize
+function TML:Initialize(addonName)
+  if OldInitialize_21669 then OldInitialize_21669(self, addonName) end
+  if d then d("Tamriel Master Ledger v"..self.version.." sales fee / ledger / bank fix pass loaded.") end
+end
+
+
+-- v2.0.16.71 SYNTAX HOTFIX
+-- Fixed Trader Bids local table declaration syntax that caused unexpected symbol near = at load.
+
+
+-- =========================================================
+-- v2.0.16.71 CLOSE CLEANUP + STICKY ICON FIX
+-- Removes the floating ESO main-menu fallback icon and adds a master close path
+-- so TML controls, modals, input handlers, toasts, and runtime page data do not linger.
+-- =========================================================
+TML.version = "2.0.16.71"
+TML.addOnVersion = 21671
+TML.lastUpdated = "06/13/2026 17:20 UTC"
+
+function TML:HideMainMenuIconOverlayHard()
+  local overlay = rawget(self, "mainMenuIconOverlay")
+  if overlay then
+    if overlay.SetHandler then
+      SafeCall(function() overlay:SetHandler("OnUpdate", nil) end)
+      SafeCall(function() overlay:SetHandler("OnMouseDown", nil) end)
+      SafeCall(function() overlay:SetHandler("OnMouseUp", nil) end)
+      SafeCall(function() overlay:SetHandler("OnMouseWheel", nil) end)
+      SafeCall(function() overlay:SetHandler("OnKeyDown", nil) end)
+    end
+    if overlay.ClearAnchors then SafeCall(function() overlay:ClearAnchors() end) end
+    if overlay.SetHidden then SafeCall(function() overlay:SetHidden(true) end) end
+  end
+  local tex = rawget(self, "mainMenuIconTexture")
+  if tex and tex.SetHidden then SafeCall(function() tex:SetHidden(true) end) end
+end
+
+-- Disable the old floating fallback icon. Native menu icon data can still be registered,
+-- but no separate overlay is allowed to stay stuck on the ESO menu.
+function TML:BuildMainMenuIconOverlay()
+  self:HideMainMenuIconOverlayHard()
+end
+
+function TML:UpdateMainMenuIconOverlay()
+  self:HideMainMenuIconOverlayHard()
+end
+
+function TML:HookMainMenuIconOverlay()
+  self:HideMainMenuIconOverlayHard()
+end
+
+function TML:ClearInputFocusAndHandlers()
+  self:RemoveKeybinds()
+  self:RemoveInputHandlers()
+  self:ClearRootFocus()
+  self:DeactivateDirectionalInput()
+  if self.ui and self.ui.root and self.ui.root.SetHandler then
+    SafeCall(function() self.ui.root:SetHandler("OnUpdate", nil) end)
+    SafeCall(function() self.ui.root:SetHandler("OnKeyDown", nil) end)
+    SafeCall(function() self.ui.root:SetHandler("OnMouseWheel", nil) end)
+    SafeCall(function() self.ui.root:SetHandler("OnMouseDown", nil) end)
+    SafeCall(function() self.ui.root:SetHandler("OnMouseUp", nil) end)
+  end
+end
+
+function TML:HideAllTMLVisuals()
+  self:HideMainMenuIconOverlayHard()
+  if self.pool then
+    for _, ctrl in pairs(self.pool) do
+      if ctrl then
+        if ctrl.SetText then SafeCall(function() ctrl:SetText("") end) end
+        if ctrl.SetTexture then SafeCall(function() ctrl:SetTexture("") end) end
+        if ctrl.SetMouseEnabled then SafeCall(function() ctrl:SetMouseEnabled(false) end) end
+        if ctrl.SetKeyboardEnabled then SafeCall(function() ctrl:SetKeyboardEnabled(false) end) end
+        if ctrl.SetHidden then SafeCall(function() ctrl:SetHidden(true) end) end
+      end
+    end
+  end
+  if self.ui then
+    for _, ctrl in pairs(self.ui) do
+      if type(ctrl) == "userdata" or type(ctrl) == "table" then
+        if ctrl.SetMouseEnabled then SafeCall(function() ctrl:SetMouseEnabled(false) end) end
+        if ctrl.SetKeyboardEnabled then SafeCall(function() ctrl:SetKeyboardEnabled(false) end) end
+        if ctrl.SetHidden then SafeCall(function() ctrl:SetHidden(true) end) end
+      end
+    end
+  end
+  if self.ui and self.ui.root then
+    if self.ui.root.SetMouseEnabled then SafeCall(function() self.ui.root:SetMouseEnabled(false) end) end
+    if self.ui.root.SetKeyboardEnabled then SafeCall(function() self.ui.root:SetKeyboardEnabled(false) end) end
+    if self.ui.root.SetHidden then SafeCall(function() self.ui.root:SetHidden(true) end) end
+  end
+end
+
+function TML:ClearRuntimeState()
+  self.state = self.state or {}
+  self.state.mode = "closed"
+  self.state.activeTool = nil
+  self.state.modal = nil
+  self.state.editPage = nil
+  self.state.editReturn = nil
+  self.state.toolButton = 1
+  self.state.scanToast = nil
+  self.state.scrollFocus = nil
+  self.currentToolButtons = nil
+  self.currentHitList = nil
+  self.currentRows = nil
+  self.runtimePage = nil
+  self.runtimeTool = nil
+  self.runtimeScan = nil
+  self.runtimeGuildRows = nil
+  self.runtimeSalesRows = nil
+  self.runtimeBankRows = nil
+  self.runtimeRaffleRows = nil
+end
+
+function TML:CloseAll(reason)
+  self:ClearInputFocusAndHandlers()
+  self:HideAllTMLVisuals()
+  self:ClearRuntimeState()
+  if type(SetGameCameraUIMode) == "function" then SafeCall(SetGameCameraUIMode, false) end
+  collectgarbage("step", 240)
+  if d and reason and reason ~= "silent" then d("Tamriel Master Ledger closed: " .. tostring(reason)) end
+end
+
+function TML:HideShellOnly()
+  self:CloseAll("silent")
+end
+
+function TML:ReturnToESOMenu()
+  -- Close every TML-owned UI/input layer, then return to the ESO menu scene instead of gameplay.
+  local target = self:FindESOGamepadMenuSceneName()
+  local sceneObject = self.returnSceneObject
+  self:CloseAll("silent")
+  if target and self:ShowSceneByName(target) then return end
+  if SCENE_MANAGER and sceneObject and sceneObject.Show then
+    local ok = SafeCall(function() sceneObject:Show() end)
+    if ok then return end
+  end
+end
+
+function TML:EmergencyClose(reason)
+  self:CloseAll(reason or "emergency")
+  if SCENE_MANAGER and self.scene and SCENE_MANAGER.GetCurrentScene then
+    local ok, current = pcall(function() return SCENE_MANAGER:GetCurrentScene() end)
+    if ok and current == self.scene and SCENE_MANAGER.ShowBaseScene then SafeCall(function() SCENE_MANAGER:ShowBaseScene() end) end
+  end
+end
+
+-- Re-assert the safe icon behavior after initialization, because older scheduled hooks may run later.
+if zo_callLater then
+  zo_callLater(function() if TML and TML.HideMainMenuIconOverlayHard then TML:HideMainMenuIconOverlayHard() end end, 100)
+  zo_callLater(function() if TML and TML.HideMainMenuIconOverlayHard then TML:HideMainMenuIconOverlayHard() end end, 1000)
+  zo_callLater(function() if TML and TML.HideMainMenuIconOverlayHard then TML:HideMainMenuIconOverlayHard() end end, 5000)
+end
+
+
+-- =========================================================
+-- v2.0.16.72 CLOSE REVERT + STRICT 24H SALES FIX
+-- - Reverts normal Back/Exit close behavior to the last working ESO-menu return method.
+-- - Keeps sticky icon overlay disabled, but stops the aggressive v2.0.16.71 full cleanup
+--   from normal closes because it could leave the player frozen.
+-- - Personal Sales Tracker separates 24H Sales from All-Time Sales.
+-- - Any value labeled 24H is calculated strictly from the last 24 hours.
+-- =========================================================
+TML.version = "2.0.16.72"
+TML.addOnVersion = 21672
+TML.lastUpdated = "06/13/2026 17:45 UTC"
+
+local function V21672_Now()
+  if type(WNow) == "function" then return WNow() end
+  if type(GetTimeStamp) == "function" then return GetTimeStamp() end
+  return os.time()
+end
+
+local function V21672_Is24H(timestamp)
+  timestamp = tonumber(timestamp) or 0
+  if timestamp <= 0 then return false end
+  return (V21672_Now() - timestamp) <= (tonumber(WORKING_SECONDS_DAY) or 86400)
+end
+
+-- Keep the icon fix, but do not leave a floating overlay active.
+function TML:BuildMainMenuIconOverlay()
+  if self.HideMainMenuIconOverlayHard then self:HideMainMenuIconOverlayHard() end
+end
+function TML:UpdateMainMenuIconOverlay()
+  if self.HideMainMenuIconOverlayHard then self:HideMainMenuIconOverlayHard() end
+end
+function TML:HookMainMenuIconOverlay()
+  if self.HideMainMenuIconOverlayHard then self:HideMainMenuIconOverlayHard() end
+end
+
+function TML:HideShellOnly()
+  if self.HideMainMenuIconOverlayHard then self:HideMainMenuIconOverlayHard() end
+  if self.ui and self.ui.root and self.ui.root.SetHidden then
+    SafeCall(function() self.ui.root:SetHidden(true) end)
+  end
+  self.state = self.state or {}
+  self.state.mode = "closed"
+  self.state.activeTool = nil
+  self.state.modal = nil
+  self.state.editPage = nil
+  self.state.editReturn = nil
+  self.state.scanToast = nil
+  self.currentToolButtons = nil
+  self.currentHitList = nil
+  self.currentRows = nil
+  self.runtimePage = nil
+  self.runtimeTool = nil
+  self.runtimeScan = nil
+  self.runtimeGuildRows = nil
+  self.runtimeSalesRows = nil
+  self.runtimeBankRows = nil
+  self.runtimeRaffleRows = nil
+  if self.RemoveKeybinds then self:RemoveKeybinds() end
+  if self.RemoveInputHandlers then self:RemoveInputHandlers() end
+  if self.ClearRootFocus then self:ClearRootFocus() end
+  collectgarbage("step", 120)
+end
+
+function TML:ReturnToESOMenu()
+  -- Reverted to the previous working close flow: hide the TML shell and return to ESO's
+  -- menu scene without forcing camera mode, clearing every control, or dumping to gameplay.
+  local target = self:FindESOGamepadMenuSceneName()
+  local sceneObject = self.returnSceneObject
+  self:HideShellOnly()
+  if target and self:ShowSceneByName(target) then return end
+  if SCENE_MANAGER and sceneObject and sceneObject.Show then
+    local ok = SafeCall(function() sceneObject:Show() end)
+    if ok then return end
+  end
+end
+
+function TML:EmergencyClose(reason)
+  -- Emergency close can still be stronger, but normal Back/Exit must not use this.
+  self:HideShellOnly()
+  if d and reason and reason ~= "silent" then d("Tamriel Master Ledger closed: " .. tostring(reason)) end
+end
+
+function TML:ComputeSalesStats(guildId, onlyMe)
+  local rows = self:GetSalesRows(guildId, onlyMe)
+  local st = {salesToday=0, sales24=0, totalSales=0, allTimeSales=0, items=0, tax=0, fees=0, gross=0, net=0, topEarner=WNA(), topAmount=0}
+  local sellers = {}
+  for _, e in ipairs(rows) do
+    local net = tonumber(e.netAmount or e.amount) or 0
+    local gross = tonumber(e.grossAmount) or net
+    local guildTax = tonumber(e.guildTax or e.tax) or (V21669_GuildTax and V21669_GuildTax(gross) or 0)
+    local fee = tonumber(e.feeAmount) or (V21669_Fee and V21669_Fee(gross) or 0)
+    if V21672_Is24H(e.timestamp) then
+      st.sales24 = st.sales24 + net
+      st.salesToday = st.salesToday + net
+    end
+    st.totalSales = st.totalSales + net
+    st.allTimeSales = st.allTimeSales + net
+    st.gross = st.gross + gross
+    st.fees = st.fees + fee
+    st.tax = st.tax + guildTax
+    st.net = st.net + net
+    st.items = st.items + (tonumber(e.quantity) or 1)
+    local u = e.seller or WNA()
+    sellers[u] = (sellers[u] or 0) + net
+  end
+  for u, v in pairs(sellers) do
+    if v > st.topAmount then st.topAmount = v; st.topEarner = u end
+  end
+  return st
+end
+
+function TML:GetSalesRows24H(guildId, onlyMe)
+  local rows = {}
+  for _, e in ipairs(self:GetSalesRows(guildId, onlyMe)) do
+    if V21672_Is24H(e.timestamp) then rows[#rows+1] = e end
+  end
+  return rows
+end
+
+function TML:CyclePersonalSalesFilter()
+  local list = {"All-Time", "24H", "Top Sellers"}
+  local cur = self.saved.personalSalesFilter or "All-Time"
+  if cur == "Sales" or cur == "Total Sales" then cur = "All-Time" end
+  local idx = 1
+  for i, v in ipairs(list) do if v == cur then idx = i break end end
+  self.saved.personalSalesFilter = list[(idx % #list) + 1]
+  self:RenderTool("personal_sales")
+end
+
+function TML:RenderOldSales(root,x,y,w,h,accent,guildMode)
+  local selectorW = guildMode and 300 or 0
+  if guildMode then self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent) end
+  local rx = x + selectorW + (guildMode and 24 or 0)
+  local rw = w - selectorW - (guildMode and 24 or 0)
+  local g = self:GetGuild()
+  local st = self:ComputeSalesStats(guildMode and g.id or 0, not guildMode)
+  self:DrawLegacyPanel(root,"SalesStats72",rx,y,rw,142,guildMode and "GUILD SALES DASHBOARD" or "PERSONAL SALES DASHBOARD",accent)
+  local cards
+  if guildMode then
+    cards = {{"24H Sales",WFormatGold(st.sales24),VGreen},{"Total Sales",WFormatGold(st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Guild Tax",WFormatGold(st.tax),VGreen},{"Top Earner",WLimit(st.topEarner,18),C.white}}
+  else
+    cards = {{"24H Sales",WFormatGold(st.sales24),VGreen},{"All-Time Sales",WFormatGold(st.allTimeSales or st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Net Earned",WFormatGold(st.net),VYellow},{"Status",self.saved.scanStatus.sales or WNA(),C.white}}
+  end
+  local cardW = math.floor((rw-78)/5)
+  for i,c in ipairs(cards) do
+    self:DrawMiniStat(root,"SalesCard72"..i,rx+20+(i-1)*(cardW+10),y+56,cardW,68,c[1],c[2],c[3],c[3])
+  end
+  local rows = {}
+  local filter = guildMode and (self.saved.salesFilter or "Recent") or (self.saved.personalSalesFilter or "All-Time")
+  if filter == "Sales" or filter == "Total Sales" then filter = "All-Time" end
+  if guildMode and filter == "Best Sellers" then
+    for _,e in ipairs(self:GetBestSellerRows(g.id)) do rows[#rows+1] = {VCell(WLimit(e.seller,22),C.white),VCell(WFormatGold(e.amount),VYellow),WFormatNumber(e.items),WFormatNumber(e.sales),VCell(WFormatGold(e.highest),VYellow)} end
+    self:DrawLegacyTable(root,"SalesRows72",rx,y+166,rw,h-228,"BEST SELLERS - @USERID TOP DOWN",{"Seller","Total Gold","Items","Sales","Highest"},self:RowsOrNA(rows,5,"Press Scan Sales"),accent,{1.7,1.1,.7,.7,1})
+  elseif guildMode and filter == "High Ticket" then
+    for _,e in ipairs(self:GetHighTicketRows(g.id)) do rows[#rows+1] = {WLimit(e.seller,18),self:FormatItemCell(e.itemLink,e.itemName,24),WFormatNumber(e.quantity),VCell(WFormatGold(e.netAmount or e.amount),VYellow),WRelTime(e.timestamp)} end
+    self:DrawLegacyTable(root,"SalesRows72",rx,y+166,rw,h-228,"HIGH TICKET SALES - BIGGEST TO SMALLEST",{"Seller","Item","Qty","Gold","When"},self:RowsOrNA(rows,5,"Press Scan Sales"),accent,{1.3,2.1,.6,1,1})
+  elseif (not guildMode) and filter == "Top Sellers" then
+    for _,e in ipairs(self:GetPersonalTopSellerRows()) do rows[#rows+1] = {self:FormatItemCell(e.itemLink,e.itemName,26),self:GetGuildName(e.guild),WFormatNumber(e.qty),VCell(WFormatGold(e.gold),VYellow),VCell(WFormatGold(e.avg),VYellow)} end
+    self:DrawLegacyTable(root,"SalesRows72",rx,y+166,rw,h-228,"TOP SELLERS - MOST GOLD TO LEAST",{"Item","Guild","Qty","Total Gold","Avg"},self:RowsOrNA(rows,5,"No sales data loaded"),accent,{2,1.4,.6,1,1})
+  else
+    local sourceRows = guildMode and self:GetSalesRows(g.id,false) or ((filter == "24H") and self:GetSalesRows24H(0,true) or self:GetSalesRows(0,true))
+    for _,e in ipairs(sourceRows) do
+      rows[#rows+1] = {guildMode and WLimit(e.seller,20) or self:FormatItemCell(e.itemLink,e.itemName,28), guildMode and self:FormatItemCell(e.itemLink,e.itemName,25) or self:GetGuildName(e.guildId), WFormatNumber(e.quantity), VCell(WFormatGold(e.netAmount or e.amount),VYellow), WRelTime(e.timestamp)}
+    end
+    local title = guildMode and "GUILD TRADER SALES" or ((filter == "24H") and "24H SALES - LAST 24 HOURS" or "ALL-TIME SALES")
+    self:DrawLegacyTable(root,"SalesRows72",rx,y+166,rw,h-228,title,{guildMode and "Seller" or "Item",guildMode and "Item" or "Guild","Qty","Gold","When"},self:RowsOrNA(rows,5,"No sales data loaded"),accent,{1.4,2.2,.7,1,1})
+  end
+  local by = y + h - 52
+  self:ToolButton(root,"SalesScanOne72",rx,by,170,42,guildMode and "Scan Guild" or "Scan Sales",accent,function() if guildMode then TML:ScanSelectedGuildSales() else TML:ScanAllGuildSales() end; TML:RenderTool(TML.state.activeTool) end)
+  self:ToolButton(root,"SalesScanAll72",rx+184,by,150,42,"Scan All",accent,function() TML:ScanAllGuildSales(); TML:RenderTool(TML.state.activeTool) end)
+  if guildMode then
+    self:ToolButton(root,"SalesFilter72",rx+348,by,220,42,"Filter: "..filter,accent,function() local f=TML.saved.salesFilter or "Recent"; TML.saved.salesFilter=(f=="Recent") and "Best Sellers" or ((f=="Best Sellers") and "High Ticket" or "Recent"); TML:RenderTool("guild_sales") end)
+  else
+    self:ToolButton(root,"PersonalSalesFilter72",rx+348,by,220,42,"Filter: "..filter,accent,function() TML:CyclePersonalSalesFilter() end)
+  end
+end
+
+local OldInitialize_21672 = TML.Initialize
+function TML:Initialize(addonName)
+  if OldInitialize_21672 then OldInitialize_21672(self, addonName) end
+  if d then d("Tamriel Master Ledger v"..self.version.." close revert / 24H sales fix loaded.") end
+end
+-- =========================================================
+-- v2.0.16.73 CONSOLE MEMORY + LEDGER/RAFFLE/TABLE FIX PASS
+-- - Adds load-time notice and enlarged Net Worth summary.
+-- - Adds selectable/scrollable tables with scroll prompt and B-to-leave behavior.
+-- - Clears scan/display data when leaving data pages so console users must rescan.
+-- - Hardens 24H Personal/Guild Sales and adds sales delta.
+-- - Rebuilds guild gold classification so bids/returns never count as donations.
+-- - Rebuilds guild bank item withdraw/taken detection.
+-- - Reconnects Guild Bookkeeper values using normalized @UserID keys.
+-- - Adds Gold Raffle/Giveaway Raffle modes with per-guild reset input and flexible winner counts.
+-- - Rebuilds Trader Bid display into a real bid lifecycle ledger.
+-- =========================================================
+TML.version = "2.0.16.73"
+TML.addOnVersion = 21673
+TML.lastUpdated = "06/15/2026 04:55 UTC"
+
+local function V21673_Now()
+  if type(WNow) == "function" then return WNow() end
+  if type(GetTimeStamp) == "function" then local ok,v = pcall(GetTimeStamp); if ok and v then return tonumber(v) or 0 end end
+  return math.floor(os.time and os.time() or 0)
+end
+local function V21673_Low(v) return Lower(tostring(v or "")) end
+local function V21673_UserKey(v)
+  v = V21673_Low(v):gsub("^%s+", ""):gsub("%s+$", ""):gsub("^@", "")
+  return v
+end
+local function V21673_SameUser(a,b)
+  local aa, bb = V21673_UserKey(a), V21673_UserKey(b)
+  return aa ~= "" and aa == bb
+end
+local function V21673_Is24H(timestamp)
+  timestamp = tonumber(timestamp) or 0
+  if timestamp <= 0 then return false end
+  local age = V21673_Now() - timestamp
+  return age >= 0 and age <= (tonumber(WORKING_SECONDS_DAY) or 86400)
+end
+local function V21673_EndsWith(amount, suffix)
+  amount = math.floor(math.abs(tonumber(amount) or 0))
+  suffix = tonumber(suffix) or 0
+  return amount > 0 and (amount % 1000) == suffix
+end
+local function V21673_TableContains(t, value)
+  for _,v in ipairs(t or {}) do if v == value then return true end end
+  return false
+end
+local function V21673_SafeGold(v) return WFormatGold(tonumber(v) or 0) end
+local function V21673_GetCellText(cell)
+  if type(cell) == "table" then return tostring(cell.text or cell[1] or "") end
+  return tostring(cell or "")
+end
+local function V21673_GetCellColor(cell, fallback)
+  if type(cell) == "table" and cell.color then return cell.color end
+  return fallback or C.white
+end
+local function V21673_WinnerLabel(i)
+  if i == 1 then return "1st" end
+  if i == 2 then return "2nd" end
+  if i == 3 then return "3rd" end
+  return tostring(i).."th"
+end
+local function V21673_RaffleModeLabel(mode)
+  return mode == "giveaway" and "Giveaway Raffle" or "Gold Raffle"
+end
+
+local OldEnsureDataDefaults_21673 = TML.EnsureDataDefaults
+function TML:EnsureDataDefaults()
+  if OldEnsureDataDefaults_21673 then OldEnsureDataDefaults_21673(self) end
+  self.saved = self.saved or self:Defaults()
+  self.saved.guildBankFilter = self.saved.guildBankFilter or "Bank Item History"
+  self.saved.personalGoldFilter = self.saved.personalGoldFilter or "Recent"
+  self.saved.guildGoldFilter = self.saved.guildGoldFilter or "Bank Gold History"
+  self.saved.salesFilter = self.saved.salesFilter or "Recent"
+  self.saved.personalSalesFilter = self.saved.personalSalesFilter or "All-Time"
+  self.saved.scrollOffsets = self.saved.scrollOffsets or {}
+  self.saved.raffleData = self.saved.raffleData or {}
+  self.saved.raffleModeByGuild = self.saved.raffleModeByGuild or {}
+  self.saved.scanStatus = self.saved.scanStatus or {}
+end
+
+-- Page data is display/scan state. Manual settings remain saved.
+function TML:ClearDataForTool(toolKey)
+  self:EnsureDataDefaults()
+  toolKey = tostring(toolKey or "")
+  if toolKey == "" then return end
+  if toolKey == "net_worth" then
+    self.saved.networth = {}
+  elseif toolKey == "personal_sales" or toolKey == "guild_sales" then
+    self.saved.salesEvents = {}
+    self.saved.priceCache = {}
+  elseif toolKey == "guild_gold_ledger" or toolKey == "trader_bids" then
+    self.saved.guildGoldEvents = {}
+    self.saved.donationEvents = {}
+  elseif toolKey == "guild_bank" then
+    self.saved.bankItemEvents = {}
+  elseif toolKey == "guild_bookkeeper" then
+    self.saved.members = {}
+    self.saved.salesEvents = {}
+    self.saved.guildGoldEvents = {}
+    self.saved.donationEvents = {}
+    self.saved.bankItemEvents = {}
+    local g = self:GetGuild()
+    local r = g and self:GetRaffle(g.id)
+    if r then r.entries = {}; r.winners = {} end
+  elseif toolKey == "guild_raffle" then
+    local g = self:GetGuild()
+    if g then
+      local rg = self.saved.raffleData and self.saved.raffleData[tostring(g.id)]
+      if rg then for _,r in pairs(rg) do if type(r)=="table" then r.entries = {}; r.winners = {}; r.lastScan = nil end end end
+    end
+    self.saved.guildGoldEvents = {}
+    self.saved.donationEvents = {}
+  elseif toolKey == "fishing_tracker" or toolKey == "fishing" then
+    self.saved.fish = {}
+  elseif toolKey == "daily_quests" then
+    self.saved.scanStatus.daily = nil
+  end
+  if self.saved.scanStatus then
+    if toolKey == "net_worth" then self.saved.scanStatus.networth = nil end
+    if toolKey == "personal_sales" or toolKey == "guild_sales" then self.saved.scanStatus.sales = nil end
+    if toolKey == "guild_gold_ledger" or toolKey == "trader_bids" then self.saved.scanStatus.gold = nil end
+    if toolKey == "guild_bank" then self.saved.scanStatus.bank = nil end
+    if toolKey == "guild_bookkeeper" then self.saved.scanStatus.roster = nil; self.saved.scanStatus.sales = nil; self.saved.scanStatus.gold = nil; self.saved.scanStatus.bank = nil; self.saved.scanStatus.raffle = nil end
+    if toolKey == "guild_raffle" then self.saved.scanStatus.raffle = nil end
+  end
+  self.state = self.state or {}
+  self.state.scrollFocus = nil
+  self.currentRows = nil
+  self.runtimePage = nil
+  self.runtimeTool = nil
+  self.runtimeScan = nil
+  self.runtimeGuildRows = nil
+  self.runtimeSalesRows = nil
+  self.runtimeBankRows = nil
+  self.runtimeRaffleRows = nil
+  collectgarbage("step", 240)
+end
+
+function TML:IsChildTool(toolKey)
+  toolKey = tostring(toolKey or "")
+  return toolKey == "manual_pot_page" or toolKey == "set_due_page" or toolKey == "set_crown_rate_page" or toolKey == "prize_split_page" or toolKey == "raffle_winners" or toolKey == "clear_saved_data"
+end
+
+local OldOpenTool_21673 = TML.OpenTool
+function TML:OpenTool(toolKey)
+  local previous = self.state and self.state.activeTool
+  if previous and previous ~= toolKey and not self:IsChildTool(toolKey) and not self:IsChildTool(previous) then self:ClearDataForTool(previous) end
+  if OldOpenTool_21673 then OldOpenTool_21673(self, toolKey) end
+end
+
+local OldBack_21673 = TML.Back
+function TML:Back()
+  if self.state and self.state.scrollFocus then
+    self.state.scrollFocus = nil
+    self:RenderTool(self.state.activeTool or "help")
+    return
+  end
+  if self.state and self.state.modal then
+    if OldBack_21673 then OldBack_21673(self) end
+    return
+  end
+  if self.state and self.state.mode == "tool" then self:ClearDataForTool(self.state.activeTool) end
+  if OldBack_21673 then OldBack_21673(self) end
+end
+
+local OldReturnToESOMenu_21673 = TML.ReturnToESOMenu
+function TML:ReturnToESOMenu()
+  if self.state and self.state.activeTool then self:ClearDataForTool(self.state.activeTool) end
+  if OldReturnToESOMenu_21673 then OldReturnToESOMenu_21673(self) end
+end
+
+local OldHideShellOnly_21673 = TML.HideShellOnly
+function TML:HideShellOnly()
+  if self.state and self.state.activeTool then self:ClearDataForTool(self.state.activeTool) end
+  if OldHideShellOnly_21673 then OldHideShellOnly_21673(self) end
+end
+
+-- Do not auto-scan when reopening a page; show clean empty state until Scan is pressed.
+function TML:GetNetWorth()
+  self:EnsureDataDefaults()
+  return self.saved.networth or {}
+end
+
+function TML:RenderScrollPrompt(root, active, selected)
+  if not root then return end
+  local rw = 1800
+  if self.GetRootSize then local ok,w = pcall(function() local a = self:GetRootSize(); return a end); if ok and w then rw = w end end
+  local text = active and "Scrollable Box Active - Use D-Pad to scroll. Press B to leave the box." or "Scrollable Box Selected - Press A to interact. Press B to go back."
+  self:Backdrop("ScrollPromptBg21673", root, math.floor((rw-1160)/2), 114, 1160, 34, {0,0,0,0.82}, {C.cyan[1],C.cyan[2],C.cyan[3],0.70})
+  self:Label("ScrollPromptText21673", root, text, math.floor((rw-1160)/2)+18, 116, 1124, 30, active and VYellow or C.cyanSoft, FONTS.panelSmall, TEXT_ALIGN_CENTER)
+end
+
+function TML:RegisterScrollableBox(key, title, x, y, w, h, totalRows, visibleRows, root)
+  self.currentToolButtons = self.currentToolButtons or {}
+  self.saved = self.saved or {}; self.saved.scrollOffsets = self.saved.scrollOffsets or {}
+  local idx = #self.currentToolButtons + 1
+  self.currentToolButtons[idx] = {
+    label = tostring(title or key or "Scrollable Box"), callback = function() TML:ActivateScrollBox(key,totalRows,visibleRows) end,
+    x=x, y=y, w=w, h=h, cx=x+w/2, cy=y+h/2, key=key, scrollKey=key, scrollRows=totalRows, scrollVisible=visibleRows
+  }
+  local selected = (tonumber(self.state and self.state.toolButton or 0) == idx)
+  local active = self.state and self.state.scrollFocus and self.state.scrollFocus.key == key
+  if selected or active then
+    self:Backdrop("ScrollSelectEdge"..tostring(key), root, x+4, y+4, w-8, h-8, {0,0,0,0}, {C.gold[1],C.gold[2],C.gold[3], active and 0.95 or 0.65})
+    self:RenderScrollPrompt(root, active, selected)
+  end
+end
+
+function TML:ActivateScrollBox(key,totalRows,visibleRows)
+  self.state = self.state or {}
+  self.state.scrollFocus = { key=key, rows=tonumber(totalRows) or 0, visible=tonumber(visibleRows) or 1 }
+  self:RenderTool(self.state.activeTool or "help")
+end
+function TML:ScrollActiveBox(delta)
+  if not (self.state and self.state.scrollFocus) then return end
+  self.saved = self.saved or {}; self.saved.scrollOffsets = self.saved.scrollOffsets or {}
+  local sf = self.state.scrollFocus; local key = sf.key
+  local maxOffset = math.max(0, (tonumber(sf.rows) or 0) - (tonumber(sf.visible) or 1))
+  local cur = tonumber(self.saved.scrollOffsets[key] or 0) or 0
+  cur = cur + (tonumber(delta) or 0)
+  if cur < 0 then cur = 0 end
+  if cur > maxOffset then cur = maxOffset end
+  self.saved.scrollOffsets[key] = cur
+  self:RenderTool(self.state.activeTool or "help")
+end
+
+-- Color-aware selectable table with persistent scroll offsets.
+function TML:DrawLegacyTable(root, key, x, y, w, h, title, headers, rows, accent, colWeights)
+  self:DrawLegacyPanel(root, key, x, y, w, h, title, accent)
+  headers = headers or {}; rows = rows or {}; colWeights = colWeights or {}
+  local top = y + 58
+  local colCount = math.max(1, #headers)
+  local totalWeight = 0
+  for i=1,colCount do totalWeight = totalWeight + (tonumber(colWeights[i]) or 1) end
+  if totalWeight <= 0 then totalWeight = colCount end
+  local usable = w - 56
+  local colX = {}; local colW = {}; local running = x + 32
+  for i=1,colCount do
+    local cw = math.floor(usable * ((tonumber(colWeights[i]) or 1) / totalWeight))
+    colX[i] = running; colW[i] = cw - 8; running = running + cw
+  end
+  self:Backdrop(key.."HeadBg", root, x + 24, top, w - 48, 34, {accent[1], accent[2], accent[3], 0.14}, {accent[1], accent[2], accent[3], 0.30})
+  for i,hdr in ipairs(headers) do self:Label(key.."Head"..i, root, tostring(hdr), colX[i], top, colW[i], 34, accent, FONTS.panelSmall, TEXT_ALIGN_LEFT) end
+  local rowH = 32
+  local visibleRows = math.max(1, math.floor((h - 104) / rowH))
+  local totalRows = #rows
+  local offset = 0
+  if totalRows > visibleRows then
+    self.saved = self.saved or {}; self.saved.scrollOffsets = self.saved.scrollOffsets or {}
+    offset = tonumber(self.saved.scrollOffsets[key] or 0) or 0
+    local maxOffset = math.max(0, totalRows - visibleRows)
+    if offset > maxOffset then offset = maxOffset; self.saved.scrollOffsets[key] = offset end
+    self:RegisterScrollableBox(key, title, x, y, w, h, totalRows, visibleRows, root)
+  end
+  local maxRows = math.min(totalRows, visibleRows)
+  for r=1,maxRows do
+    local sourceIndex = offset + r
+    local yy = top + 40 + (r-1)*rowH
+    local row = rows[sourceIndex]
+    local rowColor = type(row) == "table" and row.__rowColor or nil
+    local bg = rowColor and {rowColor[1], rowColor[2], rowColor[3], 0.20} or {0,0,0,(sourceIndex % 2 == 0) and 0.34 or 0.22}
+    local edge = rowColor and {rowColor[1], rowColor[2], rowColor[3], 0.50} or nil
+    self:Backdrop(key.."RowBg"..r, root, x + 24, yy, w - 48, rowH - 2, bg, edge)
+    for c=1,colCount do
+      local cell = row and row[c]
+      local val = V21673_GetCellText(cell)
+      local color = V21673_GetCellColor(cell, C.white)
+      if type(cell) ~= "table" then
+        if val:find("N/A",1,true) or val == "--" or val == "No data loaded" then color = C.muted end
+        if val:find("Taken",1,true) or val:find("Pending",1,true) or val:find("Withdraw",1,true) or val:find("Unpaid",1,true) or val:find("Owed",1,true) or val:find("Return",1,true) then color = C.redDim end
+        if val:find("Paid",1,true) or val:find("Donation",1,true) or val:find("Given",1,true) or val:find("Complete",1,true) then color = VGreen end
+      end
+      self:Label(key.."R"..r.."C"..c, root, val, colX[c], yy, colW[c], rowH, color, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+    end
+  end
+  if totalRows > visibleRows then
+    self:Label(key.."ScrollCount", root, tostring(offset+1).."-"..tostring(offset+maxRows).." / "..tostring(totalRows), x+w-180, y+h-30, 150, 24, C.cyanSoft, FONTS.panelSmall, TEXT_ALIGN_RIGHT)
+  end
+end
+
+local OldSelectCurrent_21673 = TML.SelectCurrent
+function TML:SelectCurrent()
+  if self.state and self.state.mode == "tool" then
+    local btn = self.currentToolButtons and self.currentToolButtons[self.state.toolButton or 1]
+    if btn and btn.scrollKey then self:ActivateScrollBox(btn.scrollKey, btn.scrollRows, btn.scrollVisible); return end
+  end
+  if OldSelectCurrent_21673 then OldSelectCurrent_21673(self) end
+end
+local OldMoveToolFocusByDirection_21673 = TML.MoveToolFocusByDirection
+function TML:MoveToolFocusByDirection(dx, dy)
+  if self.state and self.state.scrollFocus then
+    if math.abs(tonumber(dy) or 0) >= math.abs(tonumber(dx) or 0) then self:ScrollActiveBox((tonumber(dy) or 0) > 0 and 1 or -1) end
+    return
+  end
+  if OldMoveToolFocusByDirection_21673 then OldMoveToolFocusByDirection_21673(self, dx, dy) end
+end
+local OldHandleKeyDown_21673 = TML.HandleKeyDown
+function TML:HandleKeyDown(key)
+  if self.state and self.state.scrollFocus then
+    if IsKey(key, "KEY_ESCAPE", "KEY_BACKSPACE", "KEY_X", "KEY_B", "KEY_GAMEPAD_BUTTON_B", "KEY_GAMEPAD_BUTTON_2") then self.state.scrollFocus=nil; self:RenderTool(self.state.activeTool or "help"); return end
+    if IsKey(key, "KEY_UPARROW", "KEY_W", "KEY_GAMEPAD_DPAD_UP", "KEY_GAMEPAD_LEFT_STICK_UP", "KEY_GAMEPAD_LEFT_SHOULDER", "KEY_PAGEUP") then self:ScrollActiveBox(-1); return end
+    if IsKey(key, "KEY_DOWNARROW", "KEY_S", "KEY_GAMEPAD_DPAD_DOWN", "KEY_GAMEPAD_LEFT_STICK_DOWN", "KEY_GAMEPAD_RIGHT_SHOULDER", "KEY_PAGEDOWN") then self:ScrollActiveBox(1); return end
+    if IsKey(key, "KEY_GAMEPAD_START", "KEY_GAMEPAD_BUTTON_START", "KEY_DELETE") then self:ReturnToESOMenu(); return end
+    return
+  end
+  if OldHandleKeyDown_21673 then OldHandleKeyDown_21673(self, key) end
+end
+
+-- Net Worth page: bigger summary, load-time notice, selectable top-items table.
+function TML:RenderOldNetWorth(root,x,y,w,h,accent)
+  local nw=self:GetNetWorth(); local leftW=560
+  self:DrawLegacyPanel(root,"NWStats73",x,y,leftW,h-62,"SUMMARY",accent)
+  local crownGold=(nw.crownGold~=nil) and WFormatGold(nw.crownGold) or "Set Crown Rate"
+  local left={{"GOLD","",C.cyanSoft},{"Total Net Worth",WFormatGold(nw.total),VGreen},{"Character Net Worth",WFormatGold(nw.character),VGreen},{"Carried Gold",WFormatGold(nw.carriedGold),VGreen},{"Banked Gold",WFormatGold(nw.bankedGold),VGreen},{"Crown Gold",crownGold,nw.crownGold and VGreen or C.gold},{"INVENTORY VALUE","",C.cyanSoft},{"Carried Items",WFormatGold(nw.carriedItems),C.cyanSoft},{"Banked Items",WFormatGold(nw.bankedItems),C.cyanSoft},{"Craft Bag",(nw.craftBagStatus=="Craft Bag not loaded") and WNA() or WFormatGold(nw.craftBag),C.cyanSoft},{"Unpriced Items",WFormatNumber(nw.unpriced),C.muted}}
+  local right={{"CURRENCIES","",C.cyanSoft}}
+  for _,cur in ipairs(nw.currencies or {}) do right[#right+1]={cur[1],cur[2]==nil and WNA() or WFormatNumber(cur[2]),cur[2]==nil and C.muted or C.gold} end
+  local topY=y+66; local col1=x+28; local col2=x+296; local maxRows=math.max(#left,#right); local rowH=math.max(30, math.min(38, math.floor((h-170)/math.max(1,maxRows))))
+  for i,r in ipairs(left) do local font=(r[2]=="" and FONTS.panelSmall or FONTS.panelText); self:Label("NWLeftK73"..i,root,r[1],col1,topY+(i-1)*rowH,154,rowH,r[3] or C.white,font,TEXT_ALIGN_LEFT); self:Label("NWLeftV73"..i,root,r[2] or "",col1+150,topY+(i-1)*rowH,106,rowH,r[3] or VGreen,font,TEXT_ALIGN_RIGHT) end
+  for i,r in ipairs(right) do local font=(r[2]=="" and FONTS.panelSmall or FONTS.panelText); self:Label("NWRightK73"..i,root,r[1],col2,topY+(i-1)*rowH,150,rowH,r[3] or C.white,font,TEXT_ALIGN_LEFT); self:Label("NWRightV73"..i,root,r[2] or "",col2+148,topY+(i-1)*rowH,84,rowH,r[3] or C.gold,font,TEXT_ALIGN_RIGHT) end
+  local tableX=x+leftW+24; local tableW=w-leftW-24
+  self:Label("NWLoadNotice73",root,"Load times vary. Missing data? Open Guild History, force-load events, then scan again.",tableX+16,y+6,tableW-32,30,C.cyanSoft,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  self:Label("NWAvgWarning73",root,"Avg prices may be more or less than the actual current selling value. These averages are based on sales from your guilds.",tableX+16,y+34,tableW-32,34,VYellow,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  self:Label("NWCraftStatus73",root,"Craft Bag: "..tostring(nw.craftBagStatus or "Not scanned"),tableX+16,y+66,tableW-32,26,C.cyanSoft,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  local rows={}; for i,it in ipairs(nw.top or {}) do rows[#rows+1]={tostring(i),self:FormatItemCell(it.itemLink,it.name,30),it.avg and VCell(WFormatGold(it.avg),VYellow) or VCell(WNA(),C.muted),WFormatNumber(it.qty),VCell(WFormatGold(it.value),VGreen),it.location or WNA()} end
+  self:DrawLegacyTable(root,"NWTopItems73",tableX,y+100,tableW,h-162,"TOP 20 MOST VALUABLE ITEMS",{"Rank","Item Name","Avg","Qty","Value","Location"},self:RowsOrNA(rows,6,"Press Scan Net Worth"),accent,{0.38,2.55,.75,.55,.9,1})
+  local by=y+h-52; local bw=math.floor((w-36)/4)
+  self:ToolButton(root,"NWScan73",x,by,bw,42,"Scan Net Worth",accent,function() TML:ScanNetWorth(); TML:RenderTool("net_worth") end)
+  self:ToolButton(root,"NWCrownRate73",x+bw+12,by,bw,42,"Set Crown Rate",accent,function() TML:OpenSetCrownRatePage() end)
+  self:ToolButton(root,"NWBack73",x+(bw+12)*2,by,bw,42,"Back to Menu",C.cyan,function() TML:Back() end)
+  self:ToolButton(root,"NWExit73",x+(bw+12)*3,by,bw,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+-- Strict sales math and filters.
+function TML:GetSalesRows24H(guildId, onlyMe)
+  local rows = {}
+  for _,e in ipairs(self:GetSalesRows(guildId, onlyMe)) do if V21673_Is24H(e.timestamp) then rows[#rows+1]=e end end
+  return rows
+end
+function TML:ComputeSalesStats(guildId, onlyMe)
+  local rows = self:GetSalesRows(guildId, onlyMe)
+  local st = {sales24=0,salesToday=0,totalSales=0,allTimeSales=0,items=0,tax=0,fees=0,gross=0,net=0,topEarner=WNA(),topAmount=0,deltaPct=nil}
+  local sellers = {}
+  for _,e in ipairs(rows) do
+    if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(e) end
+    local net = tonumber(e.netAmount or e.amount) or 0; local gross = tonumber(e.grossAmount) or net
+    local guildTax = tonumber(e.guildTax or e.tax) or (V21669_GuildTax and V21669_GuildTax(gross) or 0)
+    local fee = tonumber(e.feeAmount) or (V21669_Fee and V21669_Fee(gross) or 0)
+    if V21673_Is24H(e.timestamp) then st.sales24=st.sales24+net; st.salesToday=st.salesToday+net end
+    st.totalSales=st.totalSales+net; st.allTimeSales=st.allTimeSales+net; st.gross=st.gross+gross; st.fees=st.fees+fee; st.tax=st.tax+guildTax; st.net=st.net+net; st.items=st.items+(tonumber(e.quantity) or 1)
+    local u=e.seller or WNA(); sellers[u]=(sellers[u] or 0)+net
+  end
+  for u,v in pairs(sellers) do if v>st.topAmount then st.topAmount=v; st.topEarner=u end end
+  if st.totalSales > 0 then st.deltaPct = (st.sales24 / st.totalSales) * 100 end
+  return st
+end
+function TML:CycleGuildSalesFilter()
+  local list={"Recent","24H","Best Sellers","High Ticket"}; local cur=self.saved.salesFilter or list[1]; local idx=1
+  for i,v in ipairs(list) do if v==cur then idx=i break end end
+  self.saved.salesFilter=list[(idx%#list)+1]; self:RenderTool("guild_sales")
+end
+function TML:CyclePersonalSalesFilter()
+  local list={"All-Time","24H","Top Sellers"}; local cur=self.saved.personalSalesFilter or "All-Time"; if cur=="Sales" or cur=="Total Sales" then cur="All-Time" end; local idx=1
+  for i,v in ipairs(list) do if v==cur then idx=i break end end
+  self.saved.personalSalesFilter=list[(idx%#list)+1]; self:RenderTool("personal_sales")
+end
+function TML:RenderOldSales(root,x,y,w,h,accent,guildMode)
+  local selectorW = guildMode and 300 or 0
+  if guildMode then self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent) end
+  local rx=x+selectorW+(guildMode and 24 or 0); local rw=w-selectorW-(guildMode and 24 or 0); local g=self:GetGuild(); local st=self:ComputeSalesStats(guildMode and g.id or 0, not guildMode)
+  self:DrawLegacyPanel(root,"SalesStats73",rx,y,rw,142,guildMode and "GUILD SALES DASHBOARD" or "PERSONAL SALES DASHBOARD",accent)
+  local deltaText = st.deltaPct and string.format("Delta 24H/All-Time: %.1f%%", st.deltaPct) or "Delta 24H/All-Time: N/A"
+  self:Label("SalesDelta73",root,deltaText,rx+rw-330,y+8,310,26,st.deltaPct and (st.deltaPct>=50 and VGreen or VYellow) or C.muted,FONTS.panelSmall,TEXT_ALIGN_RIGHT)
+  local cards
+  if guildMode then cards={{"24H Sales",WFormatGold(st.sales24),VGreen},{"Total Sales",WFormatGold(st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Guild Tax",WFormatGold(st.tax),VGreen},{"Top Earner",WLimit(st.topEarner,18),C.white}}
+  else cards={{"24H Sales",WFormatGold(st.sales24),VGreen},{"All-Time Sales",WFormatGold(st.allTimeSales or st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Net Earned",WFormatGold(st.net),VYellow},{"Status",self.saved.scanStatus.sales or WNA(),C.white}} end
+  local cardW=math.floor((rw-78)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"SalesCard73"..i,rx+20+(i-1)*(cardW+10),y+56,cardW,68,c[1],c[2],c[3],c[3]) end
+  local rows={}; local filter = guildMode and (self.saved.salesFilter or "Recent") or (self.saved.personalSalesFilter or "All-Time"); if filter=="Sales" or filter=="Total Sales" then filter="All-Time" end
+  if guildMode and filter=="Best Sellers" then
+    for _,e in ipairs(self:GetBestSellerRows(g.id)) do rows[#rows+1]={VCell(WLimit(e.seller or e.itemName or WNA(),22),C.white),VCell(WFormatGold(e.amount),VYellow),WFormatNumber(e.qty or e.items),WFormatNumber(e.sales or 0),VCell(WFormatGold(e.highest or 0),VYellow)} end
+    self:DrawLegacyTable(root,"SalesRows73",rx,y+166,rw,h-228,"BEST SELLERS - HIGHEST TO LEAST",{"Seller/Item","Total Gold","Items","Sales","Highest"},self:RowsOrNA(rows,5,"Press Scan Sales"),accent,{1.7,1.1,.7,.7,1})
+  elseif guildMode and filter=="High Ticket" then
+    for _,e in ipairs(self:GetHighTicketRows(g.id)) do rows[#rows+1]={WLimit(e.seller,18),self:FormatItemCell(e.itemLink,e.itemName,24),WFormatNumber(e.quantity),VCell(WFormatGold(e.netAmount or e.amount),VYellow),WRelTime(e.timestamp)} end
+    self:DrawLegacyTable(root,"SalesRows73",rx,y+166,rw,h-228,"HIGH TICKET SALES - BIGGEST TO SMALLEST",{"Seller","Item","Qty","Gold","When"},self:RowsOrNA(rows,5,"Press Scan Sales"),accent,{1.3,2.1,.6,1,1})
+  elseif (not guildMode) and filter=="Top Sellers" then
+    for _,e in ipairs(self:GetPersonalTopSellerRows()) do rows[#rows+1]={self:FormatItemCell(e.itemLink,e.itemName,26),self:GetGuildName(e.guild),WFormatNumber(e.qty),VCell(WFormatGold(e.gold),VYellow),VCell(WFormatGold(e.avg),VYellow)} end
+    self:DrawLegacyTable(root,"SalesRows73",rx,y+166,rw,h-228,"TOP SELLERS - MOST GOLD TO LEAST",{"Item","Guild","Qty","Total Gold","Avg"},self:RowsOrNA(rows,5,"No sales data loaded"),accent,{2,1.4,.6,1,1})
+  else
+    local sourceRows
+    if guildMode then sourceRows = (filter=="24H") and self:GetSalesRows24H(g.id,false) or self:GetSalesRows(g.id,false) else sourceRows = (filter=="24H") and self:GetSalesRows24H(0,true) or self:GetSalesRows(0,true) end
+    for _,e in ipairs(sourceRows) do rows[#rows+1]={guildMode and WLimit(e.seller,20) or self:FormatItemCell(e.itemLink,e.itemName,28), guildMode and self:FormatItemCell(e.itemLink,e.itemName,25) or self:GetGuildName(e.guildId), WFormatNumber(e.quantity), VCell(WFormatGold(e.netAmount or e.amount),VYellow), WRelTime(e.timestamp)} end
+    local title = guildMode and ((filter=="24H") and "24H GUILD SALES - LAST 24 HOURS" or "ALL-TIME GUILD SALES") or ((filter=="24H") and "24H SALES - LAST 24 HOURS" or "ALL-TIME SALES")
+    self:DrawLegacyTable(root,"SalesRows73",rx,y+166,rw,h-228,title,{guildMode and "Seller" or "Item",guildMode and "Item" or "Guild","Qty","Gold","When"},self:RowsOrNA(rows,5,"No sales data loaded"),accent,{1.4,2.2,.7,1,1})
+  end
+  local by=y+h-52
+  self:ToolButton(root,"SalesScanOne73",rx,by,170,42,guildMode and "Scan Guild" or "Scan Sales",accent,function() if guildMode then TML:ScanSelectedGuildSales() else TML:ScanAllGuildSales() end; TML:RenderTool(TML.state.activeTool) end)
+  self:ToolButton(root,"SalesScanAll73",rx+184,by,150,42,"Scan All",accent,function() TML:ScanAllGuildSales(); TML:RenderTool(TML.state.activeTool) end)
+  if guildMode then self:ToolButton(root,"SalesFilter73",rx+348,by,220,42,"Filter: "..filter,accent,function() TML:CycleGuildSalesFilter() end) else self:ToolButton(root,"PersonalSalesFilter73",rx+348,by,220,42,"Filter: "..filter,accent,function() TML:CyclePersonalSalesFilter() end) end
+end
+
+-- Guild gold classifier + scan rebuild.
+function TML:GetRaffleMode(guildId)
+  self:EnsureDataDefaults(); local key=tostring(guildId or (self:GetGuild() and self:GetGuild().id) or 0)
+  local mode = self.saved.raffleModeByGuild[key] or "gold"
+  if mode ~= "giveaway" then mode = "gold" end
+  return mode
+end
+function TML:SetRaffleMode(mode,guildId)
+  self:EnsureDataDefaults(); local g = self:GetGuild(); local key=tostring(guildId or (g and g.id) or 0)
+  self.saved.raffleModeByGuild[key] = (mode == "giveaway") and "giveaway" or "gold"
+end
+function TML:ToggleRaffleMode()
+  local g=self:GetGuild(); local mode=self:GetRaffleMode(g and g.id); self:SetRaffleMode(mode=="giveaway" and "gold" or "giveaway", g and g.id); self:RenderTool("guild_raffle")
+end
+function TML:GetRaffle(guildId, mode)
+  self:EnsureDataDefaults(); local key=tostring(guildId or 0); mode = mode or self:GetRaffleMode(guildId)
+  self.saved.raffleData[key] = self.saved.raffleData[key] or {}
+  local legacy = self.saved.raffle and self.saved.raffle[key]
+  if not self.saved.raffleData[key].gold then
+    self.saved.raffleData[key].gold = { entries={}, winners={}, prizes={}, manualPot=nil, started=0, resetAmount=33, winnerCount=3 }
+    if type(legacy)=="table" then for k,v in pairs(legacy) do self.saved.raffleData[key].gold[k]=v end end
+    self.saved.raffleData[key].gold.resetAmount = tonumber(self.saved.raffleData[key].gold.resetAmount) or 33
+    self.saved.raffleData[key].gold.winnerCount = tonumber(self.saved.raffleData[key].gold.winnerCount) or 3
+  end
+  self.saved.raffleData[key].giveaway = self.saved.raffleData[key].giveaway or { entries={}, winners={}, prizes={}, manualPot=nil, started=0, resetAmount=33, winnerCount=3 }
+  local r = self.saved.raffleData[key][mode] or self.saved.raffleData[key].gold
+  r.entries = r.entries or {}; r.winners = r.winners or {}; r.prizes = r.prizes or {}; r.resetAmount = tonumber(r.resetAmount) or 33; r.winnerCount = math.max(1, math.min(3, tonumber(r.winnerCount) or 3))
+  return r
+end
+function TML:SaveRaffleReset(amount)
+  local g=self:GetGuild(); local mode=self:GetRaffleMode(g and g.id); local r=self:GetRaffle(g.id, mode)
+  r.resetAmount = math.max(0, math.floor(tonumber(amount) or 0)); r.entries = {}; r.winners = {}; self.saved.scanStatus.raffle = "Saved "..V21673_RaffleModeLabel(mode).." reset: "..WFormatGold(r.resetAmount); self:RenderTool("guild_raffle")
+end
+function TML:ToggleWinnerCount()
+  local g=self:GetGuild(); local r=self:GetRaffle(g.id); local count=tonumber(r.winnerCount) or 3
+  if count >= 3 then count = 2 elseif count == 2 then count = 1 else count = 3 end
+  r.winnerCount = count; self:AutoPrizeSplit(); self:RenderTool("guild_raffle")
+end
+function TML:IsRaffleResetAmount(guildId, mode, amount)
+  local r = self:GetRaffle(guildId, mode); amount = math.floor(tonumber(amount) or 0)
+  local reset = math.floor(tonumber(r.resetAmount) or 33)
+  return reset > 0 and amount == reset
+end
+function TML:IsRaffleTicketAmountForMode(mode, amount)
+  amount = tonumber(amount) or 0
+  if mode == "giveaway" then return V21673_EndsWith(amount,2) or V21673_EndsWith(amount,3) end
+  return V21673_EndsWith(amount,1)
+end
+function TML:RaffleTicketsFromGold(amount)
+  amount = tonumber(amount) or 0
+  return math.max(0, math.floor(amount / (tonumber(WORKING_RAFFLE_TICKET_BASE) or 1000)))
+end
+function TML:ClassifyGuildGold(guildId, amount, action, note, eventType)
+  amount=tonumber(amount) or 0; action=tostring(action or "unknown"); local low=V21673_Low(tostring(note or "").." "..tostring(eventType or ""))
+  local deposit = action == "deposit"
+  if deposit and (self:IsRaffleResetAmount(guildId,"gold",amount) or self:IsRaffleResetAmount(guildId,"giveaway",amount) or (amount > 0 and amount % 100 == 33)) then return "Reset" end
+  if deposit and self:IsRaffleTicketAmountForMode("giveaway", amount) then return "Giveaway Ticket" end
+  if deposit and self:IsRaffleTicketAmountForMode("gold", amount) then return "Ticket" end
+  if low:find("lost bid") or low:find("returned bid") or low:find("bid returned") or low:find("refund") or low:find("returned") then return "Bid Return" end
+  if low:find("hired trader") or low:find("hire trader") then return deposit and "Bid Return" or "Hired Trader" end
+  if low:find("withdrawn bid") or low:find("bid withdrawn") then return "Bid Withdrawn" end
+  if low:find("bid") or low:find("guild trader") or low:find("trader") or low:find("kiosk") then return deposit and "Bid Return" or "Pending Bid" end
+  if low:find("herald") then return "Heraldry" end
+  if not deposit then return "Withdrawal" end
+  return "Donation"
+end
+function TML:IsBankCurrencyDeposit(eventType, note)
+  local deposits={_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_DEPOSITED,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_GOLD_DEPOSITED,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_DEPOSIT}
+  for _,v in ipairs(deposits) do if v ~= nil and eventType == v then return true end end
+  local withdraws={_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_WITHDRAWN,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_GOLD_WITHDRAWN,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_WITHDRAWAL,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_BID,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_BID}
+  for _,v in ipairs(withdraws) do if v ~= nil and eventType == v then return false end end
+  local low=V21673_Low(tostring(eventType or "").." "..tostring(note or ""))
+  if low:find("withdraw") or low:find("bid") or low:find("hire") or low:find("herald") or low:find("hired") then return false end
+  return true
+end
+function TML:AddGuildGoldEvent(guildId,eventId,user,amount,timestamp,action,bucket,note,eventType)
+  self:EnsureDataDefaults(); amount=tonumber(amount) or 0; timestamp=tonumber(timestamp) or V21673_Now(); action=tostring(action or "unknown"); note=tostring(note or "")
+  bucket = self:ClassifyGuildGold(guildId, amount, action, note, eventType)
+  local key=tostring(guildId)..":"..tostring(eventId or (tostring(user)..tostring(amount)..tostring(timestamp)..tostring(action)..tostring(note)))
+  self.saved.guildGoldEvents[key]={guildId=guildId,user=user or WNA(),amount=amount,timestamp=timestamp,action=action,bucket=bucket,note=note,eventType=eventType}
+end
+function TML:RebuildDonationEvents()
+  self:EnsureDataDefaults(); self.saved.donationEvents={}
+  for key,e in pairs(self.saved.guildGoldEvents or {}) do
+    if e then
+      e.bucket = self:ClassifyGuildGold(e.guildId, e.amount, e.action, e.note, e.eventType)
+      if e.action=="deposit" and e.bucket=="Donation" then self.saved.donationEvents[tostring(key)..":donation"]={guildId=e.guildId,user=e.user,amount=e.amount,timestamp=e.timestamp,bucket="Donation"} end
+    end
+  end
+end
+function TML:ScanGuildGold(g)
+  self:EnsureDataDefaults(); g=g or self:GetGuild(); if not g or not g.id or g.id==0 then return end
+  local cat=self:GetHistoryCategory("bankedCurrency")
+  if type(GetGuildHistoryBankedCurrencyEventInfo)~="function" or not cat then self.saved.scanStatus.gold="Guild gold history API unavailable"; return end
+  local newest,oldest=self:GetHistoryIndices(g.id,cat,WORKING_HISTORY_DAYS); local scanned=0
+  if oldest>=newest then
+    for i=newest,oldest do
+      local ok,eventId,timestamp,isRedacted,eventType,displayName,currencyType,amount,kioskName = pcall(GetGuildHistoryBankedCurrencyEventInfo,g.id,i)
+      local isMoney = (currencyType == nil or _G.CURT_MONEY == nil or currencyType == _G.CURT_MONEY)
+      if ok and not isRedacted and displayName and amount and isMoney then
+        local note=tostring(kioskName or "").." "..tostring(eventType or "")
+        local deposit=self:IsBankCurrencyDeposit(eventType,note)
+        self:AddGuildGoldEvent(g.id,eventId,displayName,tonumber(amount),timestamp,deposit and "deposit" or "withdraw",nil,note,eventType); scanned=scanned+1
+      end
+    end
+  end
+  self:RequestHistory(g.id,cat,WORKING_HISTORY_DAYS); self:RebuildDonationEvents(); self:PruneEventTable(self.saved.guildGoldEvents,WORKING_MAX_EVENTS); self:PruneEventTable(self.saved.donationEvents,WORKING_MAX_EVENTS); self.saved.scanStatus.gold="Scanned "..scanned.." gold rows"; if self.MarkScanned then self:MarkScanned(scanned>0 and "Scanned" or "No Data", scanned>0) end
+end
+function TML:ScanSelectedGuildGold() self:ScanGuildGold(self:GetGuild()); self:RenderTool(self.state.activeTool) end
+
+function TML:BuildTraderBidLedger(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents()
+  local events={}; for _,e in ipairs(self:GetGuildGoldRows(guildId)) do local b=tostring(e.bucket or ""); if b=="Pending Bid" or b=="Bid Return" or b=="Hired Trader" or b=="Bid Withdrawn" then events[#events+1]=e end end
+  table.sort(events,function(a,b) return (tonumber(a.timestamp) or 0)<(tonumber(b.timestamp) or 0) end)
+  local active={}; local history={}; local returned,hired=0,0
+  local function resolve(e,status)
+    local amt=tonumber(e.amount) or 0; local pick=nil
+    for i=#active,1,-1 do if not active[i].resolved and ((tonumber(active[i].amount) or 0)==amt or not pick) then pick=i; if (tonumber(active[i].amount) or 0)==amt then break end end end
+    if pick then active[pick].resolved=true; active[pick].status=status end
+  end
+  for _,e in ipairs(events) do
+    local b=tostring(e.bucket or "")
+    if b=="Pending Bid" then active[#active+1]={amount=e.amount,trader=e.note,user=e.user,timestamp=e.timestamp,status="Pending"}; history[#history+1]={event=e,status="Pending"}
+    elseif b=="Bid Return" then returned=returned+(tonumber(e.amount) or 0); resolve(e,"Returned"); history[#history+1]={event=e,status="Returned / Cleared"}
+    elseif b=="Hired Trader" then hired=hired+(tonumber(e.amount) or 0); resolve(e,"Hired"); history[#history+1]={event=e,status="Hired Trader"}
+    elseif b=="Bid Withdrawn" then resolve(e,"Withdrawn"); history[#history+1]={event=e,status="Withdrawn / Cleared"}
+    end
+  end
+  local pending=0; local pendingRows={}
+  for _,p in ipairs(active) do if not p.resolved then pending=pending+(tonumber(p.amount) or 0); pendingRows[#pendingRows+1]=p end end
+  table.sort(history,function(a,b) return (tonumber(a.event.timestamp) or 0)>(tonumber(b.event.timestamp) or 0) end)
+  return {pending=pending,pendingRows=pendingRows,history=history,bidEvents=#history,lostBids=returned,hiredTrader=hired,netImpact=-pending-hired}
+end
+function TML:ComputeGuildGoldStats(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents()
+  local st={bank=nil,donations=0,withdrawn=0,pending=0,ticketGold=0,giveawayGold=0,guildTax=0,bidEvents=0,lostBids=0,hiredTrader=0,netImpact=0,heraldry=0}
+  if V21667_GuildBankGold then st.bank=V21667_GuildBankGold(self,guildId) elseif type(GetGuildBankedMoney)=="function" and guildId and guildId~=0 then local ok,v=pcall(GetGuildBankedMoney,guildId); if ok then st.bank=tonumber(v) end end
+  for _,e in ipairs(self:GetGuildGoldRows(guildId)) do
+    local amt=tonumber(e.amount) or 0; local bucket=tostring(e.bucket or "")
+    if bucket=="Donation" then st.donations=st.donations+amt end
+    if bucket=="Ticket" then st.ticketGold=st.ticketGold+amt end
+    if bucket=="Giveaway Ticket" then st.giveawayGold=st.giveawayGold+amt end
+    if e.action~="deposit" then st.withdrawn=st.withdrawn+amt end
+    if bucket=="Heraldry" then st.heraldry=st.heraldry+amt end
+  end
+  local bid=self:BuildTraderBidLedger(guildId); st.pending=bid.pending; st.bidEvents=bid.bidEvents; st.lostBids=bid.lostBids; st.hiredTrader=bid.hiredTrader; st.netImpact=bid.netImpact
+  for _,s in pairs(self.saved.salesEvents or {}) do if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(s) end; if (not guildId or guildId==0 or s.guildId==guildId) then st.guildTax=st.guildTax+(tonumber(s.guildTax or s.tax) or 0) end end
+  st.adjusted=(st.bank or 0)-st.pending
+  return st
+end
+function TML:GetGuildGoldFilterRows(guildId, filter)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents(); filter=filter or self.saved.guildGoldFilter or "Bank Gold History"
+  if filter=="Bank Gold History" then return self:GetGuildGoldRows(guildId),"history" end
+  local agg={}; local function add(user,amount,ts) amount=tonumber(amount) or 0; if amount<=0 then return end; local u=user or WNA(); local r=agg[u] or {user=u,amount=0,count=0,last=0}; r.amount=r.amount+amount; r.count=r.count+1; if (tonumber(ts) or 0)>r.last then r.last=tonumber(ts) or 0 end; agg[u]=r end
+  if filter=="Taxes Paid" then for _,s in pairs(self.saved.salesEvents or {}) do if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(s) end; if (not guildId or guildId==0 or s.guildId==guildId) then add(s.seller,tonumber(s.guildTax or s.tax) or 0,s.timestamp) end end
+  else for _,e in pairs(self.saved.guildGoldEvents or {}) do if (not guildId or guildId==0 or e.guildId==guildId) then if filter=="Tickets" and e.bucket=="Ticket" then add(e.user,e.amount,e.timestamp) elseif filter=="Giveaway Tickets" and e.bucket=="Giveaway Ticket" then add(e.user,e.amount,e.timestamp) elseif filter=="Donations" and e.bucket=="Donation" then add(e.user,e.amount,e.timestamp) elseif filter=="Withdraws" and e.action~="deposit" then add(e.user,e.amount,e.timestamp) elseif filter=="Bid Returns" and e.bucket=="Bid Return" then add(e.user,e.amount,e.timestamp) end end end end
+  local rows={}; for _,r in pairs(agg) do if (tonumber(r.amount) or 0)>0 then rows[#rows+1]=r end end; table.sort(rows,function(a,b) return (a.amount or 0)>(b.amount or 0) end); return rows,"aggregate"
+end
+function TML:CycleGuildGoldFilter()
+  local list={"Bank Gold History","Donations","Tickets","Giveaway Tickets","Withdraws","Bid Returns","Taxes Paid"}; local cur=self.saved.guildGoldFilter or list[1]; local idx=1; for i,v in ipairs(list) do if v==cur then idx=i break end end; self.saved.guildGoldFilter=list[(idx%#list)+1]; self:RenderTool("guild_gold_ledger")
+end
+
+-- Guild bank item parsing fix.
+function TML:IsBankItemWithdraw(eventType, note)
+  local withdraws={_G.GUILD_HISTORY_BANKED_ITEM_EVENT_WITHDRAWN,_G.GUILD_HISTORY_BANKED_ITEM_EVENT_WITHDRAW,_G.GUILD_HISTORY_BANKED_ITEM_EVENT_REMOVED}
+  for _,v in ipairs(withdraws) do if v ~= nil and eventType == v then return true end end
+  local deposits={_G.GUILD_HISTORY_BANKED_ITEM_EVENT_DEPOSITED,_G.GUILD_HISTORY_BANKED_ITEM_EVENT_DEPOSIT,_G.GUILD_HISTORY_BANKED_ITEM_EVENT_ADDED}
+  for _,v in ipairs(deposits) do if v ~= nil and eventType == v then return false end end
+  local low=V21673_Low(tostring(eventType or "").." "..tostring(note or ""))
+  if low:find("withdraw") or low:find("withdrew") or low:find("taken") or low:find("took") or low:find("remove") or low:find("removed") or low:find("retriev") then return true end
+  if low:find("deposit") or low:find("deposited") or low:find("given") or low:find("added") then return false end
+  if type(eventType)=="number" and eventType == 1 then return true end
+  return false
+end
+function TML:ScanGuildBankItems(g)
+  self:EnsureDataDefaults(); g=g or self:GetGuild(); if not g or not g.id or g.id==0 then return end
+  local cat=self:GetHistoryCategory("bankedItem"); if type(GetGuildHistoryBankedItemEventInfo)~="function" or not cat then self.saved.scanStatus.bank="Guild bank item API unavailable"; return end
+  self:RequestHistory(g.id,cat,WORKING_HISTORY_DAYS)
+  local newest,oldest=self:GetHistoryIndices(g.id,cat,WORKING_HISTORY_DAYS); local scanned=0
+  if oldest>=newest then
+    for i=newest,oldest do
+      local vals={pcall(GetGuildHistoryBankedItemEventInfo,g.id,i)}; local ok=table.remove(vals,1)
+      if ok then
+        local eventId=nil; local timestamp=nil; local eventType=nil; local displayName=nil; local itemLink=nil; local quantity=nil; local isRedacted=false; local note=""
+        for pos,v in ipairs(vals) do
+          if type(v)=="boolean" then if v then isRedacted=true end
+          elseif type(v)=="string" then if v:find("|H",1,true) then itemLink=v elseif v:sub(1,1)=="@" and not displayName then displayName=v else note=note.." "..v end
+          elseif type(v)=="number" then
+            if v>1000000000 then timestamp=v
+            elseif not eventId and pos<=2 then eventId=v
+            elseif not eventType and v>=0 and v<1000 then eventType=v
+            elseif not quantity and v>0 and v<=10000 then quantity=v
+            elseif not eventId then eventId=v end
+          end
+        end
+        if not isRedacted and displayName and itemLink then local action=self:IsBankItemWithdraw(eventType,note) and "withdraw" or "deposit"; self:AddBankItem(g.id,eventId or i,displayName,itemLink,quantity or 1,timestamp or V21673_Now(),action); scanned=scanned+1 end
+      end
+    end
+  end
+  self:PruneEventTable(self.saved.bankItemEvents,WORKING_MAX_EVENTS); self.saved.scanStatus.bank="Scanned "..scanned.." bank item rows"; if self.MarkScanned then self:MarkScanned(scanned>0 and "Scanned" or "No Data", scanned>0) end
+end
+function TML:ScanSelectedGuildBank() self:ScanGuildBankItems(self:GetGuild()); self:RenderTool("guild_bank") end
+
+-- Bookkeeper maps use normalized @UserID keys and correct sources.
+function TML:BuildBookkeeperMaps(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents()
+  local maps={sales={},donations={},raffles={},unmatched={sales=0,donations=0,raffles=0}}
+  for _,e in pairs(self.saved.salesEvents or {}) do if e.guildId==guildId then local k=V21673_UserKey(e.seller); local amt=tonumber(e.netAmount or e.amount) or 0; maps.sales[k]=(maps.sales[k] or 0)+amt end end
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do if e.guildId==guildId then local k=V21673_UserKey(e.user); local amt=tonumber(e.amount) or 0; if e.bucket=="Donation" then maps.donations[k]=(maps.donations[k] or 0)+amt elseif e.bucket=="Ticket" or e.bucket=="Giveaway Ticket" then maps.raffles[k]=(maps.raffles[k] or 0)+amt end end end
+  return maps
+end
+function TML:ScanBookkeeper()
+  local g=self:GetGuild(); self:ScanRoster(g); self:ScanGuildSales(g); self:ScanGuildGold(g); self:ScanGuildBankItems(g); self:ScanRaffleEntries(true); self:RenderTool(self.state.activeTool)
+end
+function TML:GetDuesRows(guildId)
+  self:EnsureDataDefaults(); local due=self:GetDueAmount(guildId); local reset=self:GetDueReset(guildId); local paidBy={}
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do if e.guildId==guildId and (tonumber(e.timestamp) or 0)>=reset and e.bucket=="Donation" then local k=V21673_UserKey(e.user); paidBy[k]=(paidBy[k] or 0)+(tonumber(e.amount) or 0) end end
+  local rows={}; for _,m in ipairs(self:GetRosterRows(guildId)) do local paid=paidBy[V21673_UserKey(m.name)] or 0; local bal=paid-due; rows[#rows+1]={m.name,WFormatGold(due),VCell(WFormatGold(paid),VGreen),VCell(WFormatGold(bal),bal>=0 and VGreen or VRed),VCell(paid>=due and "Paid" or "Unpaid",paid>=due and VGreen or VRed),__paid=paid,__balance=bal} end
+  table.sort(rows,function(a,b) return tostring(a[1])<tostring(b[1]) end); return rows
+end
+function TML:RenderOldBookkeeper(root,x,y,w,h,accent)
+  local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local tableW=math.floor((w-selectorW-48)*.70); local g=self:GetGuild(); local maps=self:BuildBookkeeperMaps(g.id)
+  local rows={}; local totalSales,totalDon,totalRaf,totalPaid,totalOwed,caught,owing=0,0,0,0,0,0,0; local due=self:GetDueAmount(g.id)
+  for _,m in ipairs(self:GetRosterRows(g.id)) do local k=V21673_UserKey(m.name); local s=maps.sales[k] or 0; local d=maps.donations[k] or 0; local rf=maps.raffles[k] or 0; local bal=d-due; if bal>=0 then caught=caught+1; totalPaid=totalPaid+math.min(d,due) else owing=owing+1; totalOwed=totalOwed+math.abs(bal) end; totalSales=totalSales+s; totalDon=totalDon+d; totalRaf=totalRaf+rf; rows[#rows+1]={WLimit(m.name,20),VCell(WFormatGold(s),VGreen),VCell(WFormatGold(d),VGreen),VCell(WFormatGold(rf),VYellow),VCell(WFormatGold(bal),bal>=0 and VGreen or VRed),m.lastOnlineSeconds and WRelTime(V21673_Now()-m.lastOnlineSeconds) or WNA()} end
+  self:DrawLegacyTable(root,"BookkeeperTable73",rx,y,tableW,h-60,"MEMBER BOOKKEEPER",{"Member","Sales","Donations","Raffles","Dues","Last Online"},self:RowsOrNA(rows,6,"Press Scan Activity"),accent,{1.5,1,1,1,1,1})
+  local sideX=rx+tableW+24; local sideW=w-(sideX-x); self:DrawLegacyPanel(root,"BookkeeperRight73",sideX,y,sideW,h,"SUMMARY",accent)
+  local summary={{"Total Sales",WFormatGold(totalSales),VGreen},{"Total Donations",WFormatGold(totalDon),VGreen},{"Total Raffles",WFormatGold(totalRaf),VYellow},{"Dues Paid",WFormatGold(totalPaid),VGreen},{"Dues Owed",WFormatGold(totalOwed),VRed},{"Caught Up",WFormatNumber(caught),VGreen},{"Owing",WFormatNumber(owing),VRed}}
+  for i,t in ipairs(summary) do self:DrawMiniStat(root,"BookMini73"..i,sideX+22,y+54+(i-1)*72,sideW-44,62,t[1],tostring(t[2]),t[3],t[3]) end
+  self:ToolButton(root,"BookScan73",sideX+38,y+h-62,sideW-76,44,"Scan Activity",accent,function() TML:ScanBookkeeper() end)
+end
+
+-- Raffle/giveaway scanning and display.
+function TML:FindRaffleResetTime(guildId, mode)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents(); mode=mode or self:GetRaffleMode(guildId); local ts=0; local reset=tonumber(self:GetRaffle(guildId,mode).resetAmount) or 33
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do if e.guildId==guildId and e.action=="deposit" and math.floor(tonumber(e.amount) or 0)==math.floor(reset) and (tonumber(e.timestamp) or 0)>ts then ts=tonumber(e.timestamp) or 0 end end
+  return ts
+end
+function TML:GetRaffleSourceEvents(guildId)
+  self:EnsureDataDefaults(); local rows={}; for _,e in pairs(self.saved.guildGoldEvents or {}) do if e.guildId==guildId and e.action=="deposit" then rows[#rows+1]=e end end; table.sort(rows,function(a,b) return (tonumber(a.timestamp) or 0)>(tonumber(b.timestamp) or 0) end); return rows
+end
+function TML:ScanRaffleEntries(noRender)
+  self:EnsureDataDefaults(); local g=self:GetGuild(); if not g or not g.id or g.id==0 then self:Notify("Select a guild before scanning raffle entries."); return end
+  self:ScanGuildGold(g); local mode=self:GetRaffleMode(g.id); local r=self:GetRaffle(g.id,mode); r.entries={}; r.winners={}; r.lastScan=V21673_Now(); local reset=self:FindRaffleResetTime(g.id,mode); r.started=reset
+  local deposits,tickets=0,0
+  for _,e in ipairs(self:GetRaffleSourceEvents(g.id)) do local ts=tonumber(e.timestamp) or 0; local amount=tonumber(e.amount) or 0; if ts>=reset and self:IsRaffleTicketAmountForMode(mode,amount) and not self:IsRaffleResetAmount(g.id,mode,amount) then local t=self:RaffleTicketsFromGold(amount); if t>0 then local user=tostring(e.user or WNA()); local key=V21673_UserKey(user); local existing=r.entries[key] or {name=user,tickets=0,gold=0,last=0,entryType=""}; existing.tickets=(existing.tickets or 0)+t; existing.gold=(existing.gold or 0)+amount; existing.entryType=mode=="giveaway" and (V21673_EndsWith(amount,2) and "002" or "003") or "001"; if ts>(existing.last or 0) then existing.last=ts end; r.entries[key]=existing; deposits=deposits+1; tickets=tickets+t end end end
+  self.saved.scanStatus.raffle = deposits>0 and ("Scanned "..deposits.." "..V21673_RaffleModeLabel(mode).." deposits / "..tickets.." entries") or ("No "..V21673_RaffleModeLabel(mode).." entries after reset")
+  if self.MarkScanned then self:MarkScanned(deposits>0 and "Scanned" or "No Data", deposits>0) end
+  if not noRender then self:RenderTool("guild_raffle") end
+end
+function TML:AutoPrizeSplit()
+  local g=self:GetGuild(); local r=self:GetRaffle(g.id); local pot=tonumber(r.manualPot) or 0; if pot<=0 then for _,e in pairs(r.entries or {}) do pot=pot+(tonumber(e.gold) or 0) end end
+  local count=math.max(1,math.min(3,tonumber(r.winnerCount) or 3)); if count==1 then r.prizes={pot,0,0} elseif count==2 then r.prizes={math.floor(pot*.6),pot-math.floor(pot*.6),0} else r.prizes={math.floor(pot*.5),math.floor(pot*.3),pot-math.floor(pot*.5)-math.floor(pot*.3)} end
+  self:RenderTool(self.state.activeTool)
+end
+function TML:SaveManualPot(amount)
+  local g=self:GetGuild(); local r=self:GetRaffle(g.id); r.manualPot=tonumber(amount) or 0; self:AutoPrizeSplit(); self:RenderTool("guild_raffle")
+end
+function TML:PickWinner()
+  local g=self:GetGuild(); local r=self:GetRaffle(g.id); r.winners={}; local pool={}; local total=0
+  for k,e in pairs(r.entries or {}) do if (tonumber(e.tickets) or 0)>0 then pool[#pool+1]={key=k,name=e.name,tickets=e.tickets,gold=e.gold,last=e.last}; total=total+(tonumber(e.tickets) or 0) end end
+  if total<=0 then self:Notify("No raffle entries available."); return end
+  if not r.prizes or not r.prizes[1] then self:AutoPrizeSplit() end
+  local originalTotal=total; local count=math.max(1,math.min(3,tonumber(r.winnerCount) or 3))
+  for place=1,math.min(count,#pool) do local roll=math.random(total); local run=0; local pickIndex=1; for i,e in ipairs(pool) do run=run+(tonumber(e.tickets) or 0); if roll<=run then pickIndex=i; break end end; local chosen=pool[pickIndex]; table.insert(r.winners,{name=chosen.name,tickets=chosen.tickets,odds=originalTotal>0 and (chosen.tickets/originalTotal*100) or 0,prize=(r.prizes or {})[place] or 0,timestamp=V21673_Now()}); total=total-(tonumber(chosen.tickets) or 0); table.remove(pool,pickIndex); if total<=0 then break end end
+  self.state.winnersGuildId=g.id; self:OpenTool("raffle_winners")
+end
+function TML:ClearRaffle()
+  local g=self:GetGuild(); local mode=self:GetRaffleMode(g and g.id); local r=self:GetRaffle(g.id,mode); r.entries={}; r.winners={}; r.prizes={}; r.lastScan=nil; self.saved.scanStatus.raffle="Cleared "..V21673_RaffleModeLabel(mode).." board"; self:RenderTool("guild_raffle")
+end
+function TML:RenderOldRaffle(root,x,y,w,h,accent)
+  local selectorW=310; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local mode=self:GetRaffleMode(g.id); local r=self:GetRaffle(g.id,mode)
+  local participants,tickets,gold=0,0,0; for _,e in pairs(r.entries or {}) do participants=participants+1; tickets=tickets+(tonumber(e.tickets) or 0); gold=gold+(tonumber(e.gold) or 0) end; local pot=tonumber(r.manualPot) and tonumber(r.manualPot)>0 and tonumber(r.manualPot) or gold
+  self:DrawLegacyPanel(root,"RaffleStats73",rx,y,rw,206,string.upper(V21673_RaffleModeLabel(mode)).." DASHBOARD",accent,C.yellow)
+  local prizeText=(r.prizes and WFormatGold(r.prizes[1] or 0).." / "..WFormatGold(r.prizes[2] or 0).." / "..WFormatGold(r.prizes[3] or 0)) or WNA(); if (tonumber(r.winnerCount) or 3)==1 then prizeText="Winner Takes All" end
+  local cards={{"Participants",WFormatNumber(participants),VGreen},{"Entries",WFormatNumber(tickets),VYellow},{"Collected",WFormatGold(gold),VGreen},{"Manual Pot",r.manualPot and WFormatGold(r.manualPot) or WNA(),C.gold},{"Winners",WFormatNumber(r.winnerCount or 3),VYellow},{"Active Pot",WFormatGold(pot),C.gold}}
+  local cardW=math.floor((rw-72)/3); for i,c in ipairs(cards) do local cx=rx+24+((i-1)%3)*(cardW+12); local cy=y+70+math.floor((i-1)/3)*48; self:Label("RafK73"..i,root,c[1]..":",cx,cy,150,30,C.muted,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("RafV73"..i,root,tostring(c[2]),cx+152,cy,cardW-166,30,c[3] or C.gold,FONTS.panelSmall,TEXT_ALIGN_LEFT) end
+  local reset=tonumber(r.started) or 0; local resetText=reset>0 and ("Reset: "..WRelTime(reset)) or ("Reset Rule: "..WFormatGold(r.resetAmount or 33).." deposit")
+  self:Label("RafStatus73",root,(self.saved.scanStatus.raffle or "Press Scan Entries").."  •  "..resetText.."  •  "..(mode=="giveaway" and "Entries: 002 / 003" or "Entries: 001"),rx+24,y+166,rw-48,28,C.cyanSoft,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  self:Label("RafRule73",root,"Reset Rule: Saved reset deposit starts counting from the latest matching deposit for this guild and raffle mode.",rx+24,y+190,rw-48,26,VYellow,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  local rows={}; for _,e in pairs(r.entries or {}) do local odds=tickets>0 and ((tonumber(e.tickets) or 0)/tickets*100) or 0; local color=V21665_OddsColor and V21665_OddsColor(odds) or VYellow; local label=mode=="giveaway" and (e.entryType or "002/003") or "001"; local row={WLimit(e.name,24),VCell(WFormatGold(e.gold),VGreen),VCell(WFormatNumber(e.tickets),VYellow),label,WRelTime(e.last),VCell(string.format("%.2f%%",odds),color)}; row.__tickets=e.tickets or 0; rows[#rows+1]=row end; table.sort(rows,function(a,b) return (a.__tickets or 0)>(b.__tickets or 0) end)
+  self:DrawLegacyTable(root,"RaffleEntries73",rx,y+224,rw,h-310,(mode=="giveaway" and "GIVEAWAY ENTRIES AFTER RESET" or "ENTRIES AFTER RESET"),{"Member","Deposit","Entries","Rule","Last","Odds"},self:RowsOrNA(rows,6,"Press Scan Entries"),accent,{1.5,0.9,0.7,0.6,0.8,0.7})
+  local by=y+h-82; local bw=math.floor((rw-56)/7)
+  self:ToolButton(root,"RaffleMode73",rx,by,bw,42,mode=="giveaway" and "View Gold Raffle" or "Display Giveaway Raffle",accent,function() TML:ToggleRaffleMode() end)
+  self:ToolButton(root,"RaffleReset73",rx+(bw+8),by,bw,42,"Reset Input",accent,function() local gg=TML:GetGuild(); local rr=TML:GetRaffle(gg.id); TML:OpenNumberPad("raffleReset","RESET INPUT",rr.resetAmount or 33,function(v) TML:SaveRaffleReset(v) end) end)
+  self:ToolButton(root,"RaffleScan73",rx+(bw+8)*2,by,bw,42,"Scan Entries",accent,function() TML:ScanRaffleEntries() end)
+  self:ToolButton(root,"RafflePot73",rx+(bw+8)*3,by,bw,42,"Manual Pot",accent,function() TML:OpenManualPotPage() end)
+  self:ToolButton(root,"RaffleSplit73",rx+(bw+8)*4,by,bw,42,"Prize Split",accent,function() TML:OpenPrizeSplitPage() end)
+  self:ToolButton(root,"RaffleWinners73",rx+(bw+8)*5,by,bw,42,"Winners: "..tostring(r.winnerCount or 3),accent,function() TML:ToggleWinnerCount() end)
+  self:ToolButton(root,"RafflePick73",rx+(bw+8)*6,by,bw,42,"Pick Winner",accent,function() TML:PickWinner() end)
+  self:ToolButton(root,"RaffleClear73",rx,by+48,bw,34,"Clear Board",C.red,function() TML:ClearRaffle() end)
+end
+function TML:RenderRaffleWinnersPage(root,x,y,w,h,accent)
+  local g=self:GetGuild(); local r=self:GetRaffle(self.state.winnersGuildId or g.id); local winners=r.winners or {}; local count=math.max(1,math.min(3,tonumber(r.winnerCount) or 3))
+  self:DrawLegacyPanel(root,"RaffleWinnersFull73",x,y,w,h,string.upper(V21673_RaffleModeLabel(self:GetRaffleMode(g.id))).." WINNERS",C.gold)
+  self:Label("WinnersCelebration73",root,"CONGRATULATIONS!",x,y+58,w,52,C.gold,FONTS.panelTitle,TEXT_ALIGN_CENTER)
+  self:Label("WinnersSubtitle73",root,"Winner count: "..tostring(count).."  •  "..(count==1 and "Winner Takes All" or "Split winners"),x,y+112,w,34,C.cyanSoft,FONTS.panelText,TEXT_ALIGN_CENTER)
+  for i=1,count do local win=winners[i] or {name="N/A",tickets=0,odds=0,prize=0}; local rowY=y+175+(i-1)*118; local place=string.upper(V21673_WinnerLabel(i)).." PLACE"; self:Backdrop("WinnerFullRow73"..i,root,x+80,rowY,w-160,92,{C.gold[1],C.gold[2],C.gold[3],i==1 and 0.20 or 0.12},{C.cyan[1],C.cyan[2],C.cyan[3],0.65}); self:Label("WinnerFullPlace73"..i,root,place,x+108,rowY+12,220,34,C.gold,FONTS.panelText,TEXT_ALIGN_LEFT); self:Label("WinnerFullName73"..i,root,tostring(win.name or "N/A"),x+330,rowY+12,330,34,C.white,FONTS.panelText,TEXT_ALIGN_LEFT); self:Label("WinnerFullPrize73"..i,root,WFormatGold(win.prize or 0),x+w-310,rowY+12,190,34,C.gold,FONTS.panelText,TEXT_ALIGN_RIGHT); self:Label("WinnerFullTickets73"..i,root,"Tickets: "..tostring(win.tickets or 0),x+330,rowY+50,180,30,VYellow,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("WinnerFullOdds73"..i,root,string.format("Odds: %.2f%%",tonumber(win.odds) or 0),x+530,rowY+50,170,30,VGreen,FONTS.panelSmall,TEXT_ALIGN_LEFT) end
+  local by=y+h-72; self:ToolButton(root,"WinnerBackToRaffle73",x+math.floor(w/2)-250,by,230,52,"Back to Raffle",C.cyan,function() TML:OpenTool("guild_raffle") end); self:ToolButton(root,"WinnerExit73",x+math.floor(w/2)+20,by,230,52,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+-- Guild Bank / Gold Ledger / Trader Bids renders tied to fixed stats.
+function TML:RenderOldGuildBank(root,x,y,w,h,accent)
+  local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeBankStats(g.id)
+  self:DrawLegacyPanel(root,"BankTotals73",rx,y,rw,142,"BANK TOTALS",accent)
+  local cards={{"Given",WFormatNumber(st.given),VGreen},{"Taken",WFormatNumber(st.taken),VRed},{"Net Value",WFormatGold(st.netValue),VYellow},{"Current Items",WFormatNumber(st.currentItems),VGreen},{"Last",st.last,C.white}}
+  local cardW=math.floor((rw-78)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"BankCard73"..i,rx+20+(i-1)*(cardW+10),y+56,cardW,68,c[1],c[2],c[3],c[3]) end
+  local filter=self.saved.guildBankFilter or "Bank Item History"; local rows={}
+  if filter=="All Time Given" or filter=="All Time Taken" then local color=(filter=="All Time Given") and VGreen or VRed; for _,r in ipairs(self:GetBankAggregateRows(g.id,filter)) do rows[#rows+1]={VCell(WLimit(r.user,24),color),VCell(WFormatNumber(r.qty),color),r.value and VCell(WFormatGold(r.value),VYellow) or WNA(),WFormatNumber(r.count),WRelTime(r.last)} end; self:DrawLegacyTable(root,"BankHist73",rx,y+164,rw,h-226,filter:upper().." - HIGHEST TO LEAST",{"UserID","Qty","Value","Rows","Last"},self:RowsOrNA(rows,5,"Press Scan Bank"),accent,{1.6,.7,1,0.6,0.9}) else for _,e in ipairs(self:GetBankRows(g.id)) do local action=e.action=="withdraw" and VCell("Taken",VRed) or VCell("Given",VGreen); rows[#rows+1]={action,WLimit(e.user,18),self:FormatItemCell(e.itemLink,e.itemName,26),WFormatNumber(e.quantity),e.value and VCell(WFormatGold(e.value),VYellow) or WNA(),WRelTime(e.timestamp)} end; self:DrawLegacyTable(root,"BankHist73",rx,y+164,rw,h-226,"BANK ITEM HISTORY",{"Action","Member","Item","Qty","Value","When"},self:RowsOrNA(rows,6,"Press Scan Bank"),accent,{.75,1.1,2,.55,.8,.8}) end
+  local by=y+h-52; self:ToolButton(root,"BankScan73",rx,by,160,40,"Scan Bank",accent,function() TML:ScanGuildBankItems(TML:GetGuild()); TML:RenderTool("guild_bank") end); self:ToolButton(root,"BankFilter73",rx+174,by,230,40,"Filter: "..filter,accent,function() TML:CycleGuildBankFilter() end); self:ToolButton(root,"BankBack73",rx+418,by,180,40,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"BankExit73",rx+612,by,160,40,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+function TML:RenderOldLedger(root,x,y,w,h,accent,guildMode)
+  if guildMode then local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeGuildGoldStats(g.id); local topH=154; self:DrawLegacyPanel(root,"LedgerStats73G",rx,y,rw,topH,"GUILD GOLD LEDGER",accent); local cards={{"Bank Gold",st.bank==nil and WNA() or WFormatGold(st.bank),C.gold},{"Donations",WFormatGold(st.donations),VGreen},{"Withdrawn",WFormatGold(st.withdrawn),VRed},{"Pending Bids",WFormatGold(st.pending),VRed},{"Ticket Gold",WFormatGold(st.ticketGold),VYellow},{"Guild Tax",WFormatGold(st.guildTax),VGreen}}; local cardW=math.floor((rw-94)/6); for i,c in ipairs(cards) do self:DrawMiniStat(root,"LedgerMini73G"..i,rx+20+(i-1)*(cardW+10),y+58,cardW,74,c[1],c[2],c[3],c[3]) end; local filter=self.saved.guildGoldFilter or "Bank Gold History"; local data,mode=self:GetGuildGoldFilterRows(g.id,filter); local rows={}; if mode=="aggregate" then for _,r in ipairs(data) do local color=(filter=="Tickets" or filter=="Giveaway Tickets") and VYellow or ((filter=="Withdraws" or filter=="Bid Returns") and VRed or VGreen); rows[#rows+1]={VCell(WLimit(r.user,22),C.white),VCell(WFormatGold(r.amount),color),WFormatNumber(r.count),WRelTime(r.last)} end; self:DrawLegacyTable(root,"LedgerHistory73G",rx,y+topH+20,math.floor(rw*.64),h-topH-82,filter:upper().." - HIGHEST TO LEAST",{"User","Amount","Rows","Last"},self:RowsOrNA(rows,4,"No data for this filter"),accent,{1.6,1,0.6,0.8}) else for _,e in ipairs(data) do local bcol=(e.bucket=="Donation" and VGreen) or ((e.bucket=="Ticket" or e.bucket=="Giveaway Ticket") and VYellow) or ((e.bucket=="Bid Return" or e.bucket=="Pending Bid" or e.bucket=="Withdrawal" or e.bucket=="Heraldry") and VRed) or C.white; rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.action=="deposit" and VCell("Deposit",VGreen) or VCell("Withdraw",VRed),VCell(WFormatGold(e.amount),(e.action=="deposit" and bcol or VRed)),VCell(e.bucket or WNA(),bcol)} end; self:DrawLegacyTable(root,"LedgerHistory73G",rx,y+topH+20,math.floor(rw*.64),h-topH-82,"BANK GOLD HISTORY",{"Date","User","Event","Amount","Bucket"},self:RowsOrNA(rows,5,"Press Scan Gold"),accent,{1,1.2,1,1,1.2}) end; local sideX=rx+math.floor(rw*.64)+22; local sideW=rw-math.floor(rw*.64)-22; self:DrawLegacyPanel(root,"LedgerSide73G",sideX,y+topH+20,sideW,h-topH-82,"FILTERS / TICKET RULES",accent,C.yellow); self:Label("TicketRulesText73G",root,"Active Filter: "..filter.."\n\nTicket Gold: "..WFormatGold(st.ticketGold).."\nGiveaway Gold: "..WFormatGold(st.giveawayGold).."\nGold Raffle: 001 entries. Giveaway: 002 / 003 entries.\n\nBids, bid returns, reset markers, and giveaway tickets never count as donations.",sideX+22,y+topH+72,sideW-44,250,C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:ToolButton(root,"GoldFilter73G",sideX+32,y+h-104,sideW-64,40,"Filter: "..filter,accent,function() TML:CycleGuildGoldFilter() end); local by=y+h-52; self:ToolButton(root,"GoldScanBtn73G",rx,by,210,42,"Scan Gold History",accent,function() TML:ScanSelectedGuildGold(); TML:RenderTool("guild_gold_ledger") end); self:ToolButton(root,"GoldBack73G",rx+224,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"GoldExit73G",rx+448,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end); return end
+  -- personal ledger branch: keep previous implementation if present by using saved personal gold rows directly.
+  local st=self:ComputePersonalGoldStats(); local topH=236; self:DrawLegacyPanel(root,"LedgerStats73",x,y,w,topH,"GOLD LEDGER",accent); local bankText=st.bank==nil and "Bank not scanned" or WFormatGold(st.bank); local cards={{"Current Gold",WFormatGold(st.current),C.gold},{"Bank Gold",bankText,C.gold},{"24H Gold In",WFormatGold(st.in24),VGreen},{"24H Gold Out",WFormatGold(st.out24),VRed},{"24H Net",WFormatGold(st.net24),st.net24>=0 and VGreen or VRed},{"All-Time In",WFormatGold(st.allIn),VGreen},{"All-Time Out",WFormatGold(st.allOut),VRed},{"All-Time Net",WFormatGold(st.allNet),st.allNet>=0 and VGreen or VRed}}; local cardW=math.floor((w-90)/4); for i,c in ipairs(cards) do local col=(i-1)%4; local row=math.floor((i-1)/4); self:DrawMiniStat(root,"LedgerMini73"..i,x+24+col*(cardW+14),y+58+row*78,cardW,68,c[1],c[2],c[3],c[3]) end; self:Label("GoldLedgerNote73",root,"24H tracks the last 24 hours. All-Time tracks saved gold movement. Trader sales use final collected gold after fees.",x+26,y+topH-34,w-52,30,C.yellowDim,FONTS.panelSmall,TEXT_ALIGN_CENTER); local filter=self.saved.personalGoldFilter or "Recent"; local rows={}; for _,e in ipairs(self:GetPersonalGoldRows(filter)) do rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.source or WNA(),e.direction=="in" and VCell("+"..WFormatGold(e.amount),VGreen) or VCell("-"..WFormatGold(e.amount),VRed),e.note or WNA()} end; self:DrawLegacyTable(root,"LedgerHistory73",x,y+topH+20,w,h-topH-82,"PERSONAL GOLD HISTORY - "..string.upper(filter),{"Date","UserID","Source","Amount","Note"},self:RowsOrNA(rows,5,"Press Refresh Ledger"),accent,{1,1.1,1.8,1,1.3}); local by=y+h-52; self:ToolButton(root,"PersonalGoldRefresh73",x,by,210,42,"Refresh Ledger",accent,function() TML:ScanPersonalGoldLedger(); TML:RenderTool("gold_ledger_personal") end); self:ToolButton(root,"PersonalGoldFilter73",x+224,by,210,42,"Filter: "..filter,accent,function() TML:CyclePersonalGoldFilter() end); self:ToolButton(root,"PersonalGoldBack73",x+448,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"PersonalGoldExit73",x+672,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+function TML:RenderOldTraderBids(root,x,y,w,h,accent)
+  local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local bid=self:BuildTraderBidLedger(g.id)
+  self:DrawLegacyPanel(root,"TraderTop73",rx,y,rw,142,"TRADER BID LEDGER",C.red); local cards={{"Pending Bids",WFormatGold(bid.pending),VRed},{"Bid Events",WFormatNumber(bid.bidEvents),VRed},{"Returned Bids",bid.lostBids>0 and WFormatGold(bid.lostBids) or WNA(),VRed},{"Hired Trader",bid.hiredTrader>0 and WFormatGold(bid.hiredTrader) or WNA(),VYellow},{"Net Impact",WFormatGold(bid.netImpact),bid.netImpact>=0 and VGreen or VRed}}; local cw=math.floor((rw-78)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"BidTop73"..i,rx+20+(i-1)*(cw+10),y+56,cw,68,c[1],c[2],c[3],c[3]) end
+  local pendingRows={}; for _,p in ipairs(bid.pendingRows or {}) do pendingRows[#pendingRows+1]={WLimit(p.trader or "Guild Trader Bid",22),VCell("Pending",VRed),VCell(WFormatGold(p.amount),VRed),WRelTime(p.timestamp)} end
+  local historyRows={}; for _,hrow in ipairs(bid.history or {}) do local e=hrow.event; local b=e.bucket or "Bid"; historyRows[#historyRows+1]={WRelTime(e.timestamp),WLimit(e.user,18),WLimit(e.note or b,24),VCell(WFormatGold(e.amount),(b=="Bid Return") and VGreen or VRed),hrow.status or b} end
+  self:DrawLegacyTable(root,"BidPending73",rx,y+166,math.floor(rw*.49),h-228,"ACTIVE PENDING BIDS",{"Trader","Status","Amount","When"},self:RowsOrNA(pendingRows,4,"No active pending bids"),C.red,{1.4,1,1,.8})
+  self:DrawLegacyTable(root,"BidHistory73",rx+math.floor(rw*.51),y+166,math.floor(rw*.49),h-228,"BID HISTORY + OUTCOMES",{"Date","User","Trader / Text","Amount","Status"},self:RowsOrNA(historyRows,5,"No bid history loaded"),C.red,{.8,1,1.4,1,1})
+  local by=y+h-52; self:ToolButton(root,"BidScan73",rx,by,180,42,"Scan Gold",C.red,function() TML:ScanSelectedGuildGold(); TML:RenderTool("trader_bids") end); self:ToolButton(root,"BidBack73",rx+196,by,180,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"BidExit73",rx+392,by,160,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+local OldInitialize_21673 = TML.Initialize
+function TML:Initialize(addonName)
+  if OldInitialize_21673 then OldInitialize_21673(self, addonName) end
+  self:EnsureDataDefaults()
+  if d then d("Tamriel Master Ledger v"..self.version.." console memory / ledger / raffle fix pass loaded.") end
+end
+
+-- v2.0.16.73 lifecycle fallback: weak bid-return deposits clear matching pending bids instead of becoming donations.
+function TML:RebuildDonationEvents()
+  self:EnsureDataDefaults()
+  self.saved.donationEvents = {}
+  local rows = {}
+  for key,e in pairs(self.saved.guildGoldEvents or {}) do
+    if e then
+      e.__key = key
+      e.bucket = self:ClassifyGuildGold(e.guildId, e.amount, e.action, e.note, e.eventType)
+      rows[#rows+1] = e
+    end
+  end
+  table.sort(rows, function(a,b) return (tonumber(a.timestamp) or 0) < (tonumber(b.timestamp) or 0) end)
+  local active = {}
+  local function getActive(gid)
+    local k = tostring(gid or 0)
+    active[k] = active[k] or {}
+    return active[k]
+  end
+  local function addPending(e)
+    local a = getActive(e.guildId); local amt = math.floor(tonumber(e.amount) or 0)
+    if amt > 0 then a[amt] = (a[amt] or 0) + 1 end
+  end
+  local function clearPending(e)
+    local a = getActive(e.guildId); local amt = math.floor(tonumber(e.amount) or 0)
+    if amt > 0 and (a[amt] or 0) > 0 then a[amt] = a[amt] - 1; return true end
+    return false
+  end
+  for _,e in ipairs(rows) do
+    if e.bucket == "Pending Bid" then
+      addPending(e)
+    elseif e.bucket == "Bid Return" or e.bucket == "Hired Trader" or e.bucket == "Bid Withdrawn" then
+      clearPending(e)
+    elseif e.action == "deposit" and e.bucket == "Donation" then
+      if clearPending(e) then e.bucket = "Bid Return" end
+    end
+  end
+  for key,e in pairs(self.saved.guildGoldEvents or {}) do
+    if e and e.action == "deposit" and e.bucket == "Donation" then
+      self.saved.donationEvents[tostring(key)..":donation"] = {guildId=e.guildId,user=e.user,amount=e.amount,timestamp=e.timestamp,bucket="Donation"}
+    end
+  end
+end
+
+-- v2.0.16.73 wording cleanup for the raffle mode button after all overrides load.
+local OldRenderOldRaffle_21673_Label = TML.RenderOldRaffle
+function TML:RenderOldRaffle(root,x,y,w,h,accent)
+  OldRenderOldRaffle_21673_Label(self,root,x,y,w,h,accent)
+end
+
+-- =========================================================
+-- v2.0.16.74 LEDGER/BANK/RAFFLE/DUES HOTFIX PASS
+-- - Reorders guild gold classification so bid/trader/heraldry rows can never become donations/tickets first.
+-- - Reloads guild sales tax when scanning Guild Gold Ledger.
+-- - Fixes bank item parser to accept member names without @ and item-name fallbacks.
+-- - Converts all numeric keypads into full-screen keypad pages.
+-- - Cleans guild selector focus vs selected styling on every guild page.
+-- - Adds Dues page scan, full guild list fit, and direct dues data loading.
+-- - Adds Gold Raffle 001/007 entries and reset dashboard fields.
+-- =========================================================
+TML.version = "2.0.16.75"
+TML.addOnVersion = 21675
+TML.lastUpdated = "06/15/2026 06:20 UTC"
+
+local function V21674_Low(v) return string.lower(tostring(v or "")) end
+local function V21674_UserKey(v)
+  v = V21674_Low(v):gsub("^%s+", ""):gsub("%s+$", ""):gsub("^@", "")
+  return v
+end
+local function V21674_EndsWith(amount, suffix)
+  amount = math.floor(math.abs(tonumber(amount) or 0)); suffix = tonumber(suffix) or 0
+  return amount > 0 and (amount % 1000) == suffix
+end
+local function V21674_EventText(note, eventType)
+  return V21674_Low(tostring(note or "").." "..tostring(eventType or ""))
+end
+local function V21674_IsBidText(low)
+  low = tostring(low or "")
+  return low:find("bid",1,true) or low:find("trader",1,true) or low:find("kiosk",1,true) or low:find("hire trader",1,true) or low:find("hired trader",1,true)
+end
+local function V21674_IsBidReturnText(low)
+  low = tostring(low or "")
+  return low:find("lost bid",1,true) or low:find("returned bid",1,true) or low:find("bid returned",1,true) or low:find("refund",1,true) or low:find("returned",1,true)
+end
+local function V21674_IsNeverDonation(bucket)
+  bucket = tostring(bucket or "")
+  return bucket == "Pending Bid" or bucket == "Bid Return" or bucket == "Returned Bid" or bucket == "Lost Bid" or bucket == "Hired Trader" or bucket == "Bid Withdrawn" or bucket == "Heraldry" or bucket == "Reset" or bucket == "Ticket" or bucket == "Giveaway Ticket" or bucket == "Withdrawal"
+end
+local function V21674_CellText(cell)
+  if type(cell) == "table" then return tostring(cell.text or cell[1] or "") end
+  return tostring(cell or "")
+end
+
+function TML:IsRaffleTicketAmountForMode(mode, amount)
+  amount = tonumber(amount) or 0
+  if mode == "giveaway" then return V21674_EndsWith(amount,2) or V21674_EndsWith(amount,3) end
+  return V21674_EndsWith(amount,1) or V21674_EndsWith(amount,7)
+end
+
+function TML:ClassifyGuildGold(guildId, amount, action, note, eventType)
+  amount = tonumber(amount) or 0
+  action = tostring(action or "unknown")
+  local low = V21674_EventText(note, eventType)
+  local deposit = action == "deposit"
+
+  -- Trader/bid/heraldry checks MUST run before ticket/reset/donation checks.
+  if low:find("herald",1,true) then return "Heraldry" end
+  if V21674_IsBidReturnText(low) then return "Bid Return" end
+  if low:find("withdrawn bid",1,true) or low:find("bid withdrawn",1,true) then return "Bid Withdrawn" end
+  if low:find("hired trader",1,true) or low:find("hire trader",1,true) then return deposit and "Bid Return" or "Hired Trader" end
+  if V21674_IsBidText(low) then return deposit and "Bid Return" or "Pending Bid" end
+
+  -- Reset and ticket rules run only after bid/trader text has been rejected.
+  if deposit and (self:IsRaffleResetAmount(guildId,"gold",amount) or self:IsRaffleResetAmount(guildId,"giveaway",amount) or (amount > 0 and amount % 100 == 33)) then return "Reset" end
+  if deposit and self:IsRaffleTicketAmountForMode("giveaway", amount) then return "Giveaway Ticket" end
+  if deposit and self:IsRaffleTicketAmountForMode("gold", amount) then return "Ticket" end
+
+  if not deposit then return "Withdrawal" end
+  return "Donation"
+end
+
+function TML:IsBankCurrencyDeposit(eventType, note)
+  local deposits={_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_DEPOSITED,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_GOLD_DEPOSITED,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_DEPOSIT}
+  for _,v in ipairs(deposits) do if v ~= nil and eventType == v then return true end end
+  local withdraws={_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_WITHDRAWN,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_GOLD_WITHDRAWN,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_WITHDRAWAL,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_BID,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_BID,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_GUILD_KIOSK_BID,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_HIRE_TRADER}
+  for _,v in ipairs(withdraws) do if v ~= nil and eventType == v then return false end end
+  local low=V21674_EventText(note,eventType)
+  if low:find("withdraw",1,true) or low:find("withdrew",1,true) or low:find("bid",1,true) or low:find("hire",1,true) or low:find("herald",1,true) or low:find("hired",1,true) or low:find("trader",1,true) or low:find("kiosk",1,true) then return false end
+  return true
+end
+
+function TML:RebuildDonationEvents()
+  self:EnsureDataDefaults()
+  self.saved.donationEvents = {}
+  local rows = {}
+  for key,e in pairs(self.saved.guildGoldEvents or {}) do
+    if e then
+      e.__key = key
+      e.bucket = self:ClassifyGuildGold(e.guildId, e.amount, e.action, e.note, e.eventType)
+      rows[#rows+1] = e
+    end
+  end
+  table.sort(rows, function(a,b) return (tonumber(a.timestamp) or 0) < (tonumber(b.timestamp) or 0) end)
+
+  -- Lifecycle fallback: if a deposit mirrors a previous pending/large withdrawal amount, treat it as a bid return, not donation.
+  local active = {}
+  local function bucketFor(gid) local k=tostring(gid or 0); active[k]=active[k] or {}; return active[k] end
+  local function addPending(e)
+    local amt = math.floor(tonumber(e.amount) or 0); if amt <= 0 then return end
+    local a = bucketFor(e.guildId); a[amt] = (a[amt] or 0) + 1
+  end
+  local function clearPending(e)
+    local amt = math.floor(tonumber(e.amount) or 0); if amt <= 0 then return false end
+    local a = bucketFor(e.guildId)
+    if (a[amt] or 0) > 0 then a[amt] = a[amt] - 1; return true end
+    return false
+  end
+  for _,e in ipairs(rows) do
+    if e.bucket == "Pending Bid" then
+      addPending(e)
+    elseif e.action ~= "deposit" and (tonumber(e.amount) or 0) >= 100000 then
+      -- Unknown large withdrawals are kept as possible trader-bid clear candidates only; display bucket remains Withdrawal.
+      addPending(e)
+    elseif e.bucket == "Bid Return" or e.bucket == "Hired Trader" or e.bucket == "Bid Withdrawn" then
+      clearPending(e)
+    elseif e.action == "deposit" and e.bucket == "Donation" and clearPending(e) then
+      e.bucket = "Bid Return"
+    end
+  end
+
+  for key,e in pairs(self.saved.guildGoldEvents or {}) do
+    if e and e.action == "deposit" and e.bucket == "Donation" and not V21674_IsNeverDonation(e.bucket) then
+      self.saved.donationEvents[tostring(key)..":donation"] = {guildId=e.guildId,user=e.user,amount=e.amount,timestamp=e.timestamp,bucket="Donation"}
+    end
+  end
+end
+
+function TML:ScanSelectedGuildGold()
+  local g = self:GetGuild()
+  self:ScanGuildGold(g)
+  -- Guild Tax must be available from this page without requiring Guild Sales to be visited first.
+  if g and g.id and g.id ~= 0 then pcall(function() self:ScanGuildSales(g) end) end
+  self:RebuildDonationEvents()
+  self:RenderTool(self.state.activeTool)
+end
+
+function TML:ComputeGuildGoldStats(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents()
+  local st={bank=nil,donations=0,withdrawn=0,pending=0,ticketGold=0,giveawayGold=0,guildTax=0,bidEvents=0,lostBids=0,hiredTrader=0,netImpact=0,heraldry=0}
+  if V21667_GuildBankGold then st.bank=V21667_GuildBankGold(self,guildId) elseif type(GetGuildBankedMoney)=="function" and guildId and guildId~=0 then local ok,v=pcall(GetGuildBankedMoney,guildId); if ok then st.bank=tonumber(v) end end
+  for _,e in ipairs(self:GetGuildGoldRows(guildId)) do
+    local amt=tonumber(e.amount) or 0; local bucket=tostring(e.bucket or "")
+    if bucket=="Donation" then st.donations=st.donations+amt end
+    if bucket=="Ticket" then st.ticketGold=st.ticketGold+amt end
+    if bucket=="Giveaway Ticket" then st.giveawayGold=st.giveawayGold+amt end
+    if e.action~="deposit" then st.withdrawn=st.withdrawn+amt end
+    if bucket=="Heraldry" then st.heraldry=st.heraldry+amt end
+  end
+  local bid=self:BuildTraderBidLedger(guildId); st.pending=bid.pending; st.bidEvents=bid.bidEvents; st.lostBids=bid.lostBids; st.hiredTrader=bid.hiredTrader; st.netImpact=bid.netImpact
+  for _,s in pairs(self.saved.salesEvents or {}) do if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(s) end; if (not guildId or guildId==0 or s.guildId==guildId) then st.guildTax=st.guildTax+(tonumber(s.guildTax or s.tax) or 0) end end
+  st.adjusted=(st.bank or 0)-st.pending
+  return st
+end
+
+function TML:GetGuildGoldFilterRows(guildId, filter)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents(); filter=filter or self.saved.guildGoldFilter or "Bank Gold History"
+  if filter=="Bank Gold History" then return self:GetGuildGoldRows(guildId),"history" end
+  local agg={}; local function add(user,amount,ts) amount=tonumber(amount) or 0; if amount<=0 then return end; local u=user or WNA(); local r=agg[u] or {user=u,amount=0,count=0,last=0}; r.amount=r.amount+amount; r.count=r.count+1; if (tonumber(ts) or 0)>r.last then r.last=tonumber(ts) or 0 end; agg[u]=r end
+  if filter=="Taxes Paid" then for _,s in pairs(self.saved.salesEvents or {}) do if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(s) end; if (not guildId or guildId==0 or s.guildId==guildId) then add(s.seller,tonumber(s.guildTax or s.tax) or 0,s.timestamp) end end
+  else
+    for _,e in pairs(self.saved.guildGoldEvents or {}) do
+      if (not guildId or guildId==0 or e.guildId==guildId) then
+        local b=tostring(e.bucket or "")
+        if filter=="Tickets" and b=="Ticket" then add(e.user,e.amount,e.timestamp)
+        elseif filter=="Giveaway Tickets" and b=="Giveaway Ticket" then add(e.user,e.amount,e.timestamp)
+        elseif filter=="Donations" and b=="Donation" and e.action=="deposit" and not V21674_IsNeverDonation(b) then add(e.user,e.amount,e.timestamp)
+        elseif filter=="Withdraws" and e.action~="deposit" then add(e.user,e.amount,e.timestamp)
+        elseif filter=="Bid Returns" and b=="Bid Return" then add(e.user,e.amount,e.timestamp) end
+      end
+    end
+  end
+  local rows={}; for _,r in pairs(agg) do if (tonumber(r.amount) or 0)>0 then rows[#rows+1]=r end end
+  table.sort(rows,function(a,b) return (a.amount or 0)>(b.amount or 0) end); return rows,"aggregate"
+end
+
+function TML:BuildTraderBidLedger(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents()
+  local events={}
+  for _,e in ipairs(self:GetGuildGoldRows(guildId)) do
+    local b=tostring(e.bucket or ""); local low=V21674_EventText(e.note,e.eventType)
+    if b=="Pending Bid" or b=="Bid Return" or b=="Hired Trader" or b=="Bid Withdrawn" or V21674_IsBidText(low) or V21674_IsBidReturnText(low) then events[#events+1]=e end
+  end
+  table.sort(events,function(a,b) return (tonumber(a.timestamp) or 0)<(tonumber(b.timestamp) or 0) end)
+  local active={}; local history={}; local returned,hired=0,0
+  local function resolve(e,status)
+    local amt=tonumber(e.amount) or 0; local pick=nil
+    for i=#active,1,-1 do if not active[i].resolved and ((tonumber(active[i].amount) or 0)==amt or not pick) then pick=i; if (tonumber(active[i].amount) or 0)==amt then break end end end
+    if pick then active[pick].resolved=true; active[pick].status=status end
+  end
+  for _,e in ipairs(events) do
+    local b=tostring(e.bucket or "")
+    if b=="Pending Bid" then active[#active+1]={amount=e.amount,trader=e.note,user=e.user,timestamp=e.timestamp,status="Pending"}; history[#history+1]={event=e,status="Pending"}
+    elseif b=="Bid Return" then returned=returned+(tonumber(e.amount) or 0); resolve(e,"Returned"); history[#history+1]={event=e,status="Returned / Cleared"}
+    elseif b=="Hired Trader" then hired=hired+(tonumber(e.amount) or 0); resolve(e,"Hired"); history[#history+1]={event=e,status="Hired Trader"}
+    elseif b=="Bid Withdrawn" then resolve(e,"Withdrawn"); history[#history+1]={event=e,status="Withdrawn / Cleared"}
+    else history[#history+1]={event=e,status=b~="" and b or "Bid Event"} end
+  end
+  local pending=0; local pendingRows={}
+  for _,p in ipairs(active) do if not p.resolved then pending=pending+(tonumber(p.amount) or 0); pendingRows[#pendingRows+1]=p end end
+  table.sort(history,function(a,b) return (tonumber(a.event.timestamp) or 0)>(tonumber(b.event.timestamp) or 0) end)
+  return {pending=pending,pendingRows=pendingRows,history=history,bidEvents=#history,lostBids=returned,hiredTrader=hired,netImpact=-pending-hired}
+end
+
+-- Scroll prompt only appears while the box is actively selected for scrolling.
+function TML:RegisterScrollableBox(key, title, x, y, w, h, totalRows, visibleRows, root)
+  self.currentToolButtons = self.currentToolButtons or {}
+  self.saved = self.saved or {}; self.saved.scrollOffsets = self.saved.scrollOffsets or {}
+  local idx = #self.currentToolButtons + 1
+  self.currentToolButtons[idx] = {label=tostring(title or key or "Scrollable Box"), callback=function() TML:ActivateScrollBox(key,totalRows,visibleRows) end, x=x,y=y,w=w,h=h,cx=x+w/2,cy=y+h/2,key=key,scrollKey=key,scrollRows=totalRows,scrollVisible=visibleRows}
+  local active = self.state and self.state.scrollFocus and self.state.scrollFocus.key == key
+  if active then
+    self:Backdrop("ScrollSelectEdge74"..tostring(key), root, x+4, y+4, w-8, h-8, {0,0,0,0}, {C.gold[1],C.gold[2],C.gold[3],0.95})
+    self:RenderScrollPrompt(root, true, false)
+  end
+end
+
+-- Full-screen keypad page: hides the old page underneath and prevents background interaction.
+function TML:RenderNumberPad(root)
+  local rw,rh = self:GetRootSize(); local x=math.floor(rw*.05); local y=math.floor(rh*.05); local w=math.floor(rw*.90); local h=math.floor(rh*.90)
+  local m=self.state.modal or {}; self.currentToolButtons = {}
+  self:Backdrop("ModalFullDim74", root, 0, 0, rw, rh, {0,0,0,0.96}, nil)
+  self:Backdrop("ModalFullPanel74", root, x, y, w, h, {0,0,0,0.94}, {C.cyan[1],C.cyan[2],C.cyan[3],0.95})
+  self:DrawLegacyHeader(root, x, y, w, tostring(m.title or "ENTER VALUE"), "D-Pad moves. A selects. B backs out. Save returns to the previous page.", C.cyan)
+  self:DrawLegacyPanel(root,"ModalValuePanel74",x+80,y+160,w-160,110,"CURRENT VALUE",C.gold)
+  self:Label("ModalValue74",root,tostring(m.value or "0"),x+120,y+214,w-240,48,C.gold,FONTS.panelTitle,TEXT_ALIGN_RIGHT)
+  local nums={"1","2","3","4","5","6","7","8","9","Clear","0","Back"}
+  local bw=math.floor((w-360)/3); local bh=62; local gap=20; local bx=x+160; local by=y+310
+  for i,n in ipairs(nums) do
+    local col=(i-1)%3; local row=math.floor((i-1)/3)
+    self:ToolButton(root,"ModalKey74"..i,bx+col*(bw+gap),by+row*(bh+gap),bw,bh,n,C.cyan,function()
+      local mm=TML.state.modal; if not mm then return end
+      if n=="Clear" then mm.value="" elseif n=="Back" then mm.value=tostring(mm.value or ""):sub(1,-2) else mm.value=tostring(mm.value or "")..n end
+      TML:RenderTool(TML.state.activeTool)
+    end)
+  end
+  self:ToolButton(root,"ModalExit74",x+160,y+h-110,260,62,"Back / Cancel",C.red,function() TML:CloseModal() end)
+  self:ToolButton(root,"ModalSave74",x+w-420,y+h-110,260,62,"Save and Continue",C.cyan,function()
+    local mm=TML.state.modal; local cb=mm and mm.save; local val=tonumber(mm and mm.value) or 0
+    TML:CloseModal(false)
+    if cb then cb(val) else TML:RenderTool(TML.state.activeTool) end
+  end)
+end
+
+function TML:AddBankItem(guildId,eventId,user,itemLink,quantity,timestamp,action,itemName)
+  self:EnsureDataDefaults(); itemLink=tostring(itemLink or ""); itemName=tostring(itemName or "")
+  if itemLink=="" and itemName=="" then return end
+  local key=tostring(guildId)..":"..tostring(eventId or (tostring(user)..tostring(itemLink)..tostring(itemName)..tostring(timestamp)..tostring(action)..tostring(quantity)))
+  local qty=tonumber(quantity) or 1; local value=(itemLink~="" and WGetItemValue(itemLink,qty)) or 0
+  self.saved.bankItemEvents[key]={guildId=guildId,user=user or WNA(),itemLink=itemLink,itemName=(itemLink~="" and WGetItemName(itemLink) or itemName),quantity=qty,timestamp=tonumber(timestamp) or WNow(),action=action or "deposit",value=value}
+end
+
+function TML:ScanGuildBankItems(g)
+  self:EnsureDataDefaults(); g=g or self:GetGuild(); if not g or not g.id or g.id==0 then return end
+  local cat=self:GetHistoryCategory("bankedItem")
+  if type(GetGuildHistoryBankedItemEventInfo)~="function" or not cat then self.saved.scanStatus.bank="Guild bank item API unavailable"; return end
+  local newest,oldest=self:GetHistoryIndices(g.id,cat,WORKING_HISTORY_DAYS); local scanned,saved,skipped=0,0,0
+  if oldest>=newest then
+    for i=newest,oldest do
+      local vals={pcall(GetGuildHistoryBankedItemEventInfo,g.id,i)}; local ok=table.remove(vals,1)
+      if ok then
+        local eventId,timestamp,isRedacted,eventType,displayName,itemLink,quantity=vals[1],vals[2],vals[3],vals[4],vals[5],vals[6],vals[7]
+        local note=""; local itemName=""
+        for _,v in ipairs(vals) do
+          if type(v)=="string" then
+            if v:find("|H",1,true) then itemLink = v
+            elseif displayName==nil or displayName=="" then displayName = v
+            elseif itemName=="" and not v:find("@",1,true) and not V21674_Low(v):find("deposit",1,true) and not V21674_Low(v):find("withdraw",1,true) then itemName = v
+            else note = note.." "..v end
+          elseif type(v)=="number" then
+            if v>1000000000 then timestamp=v elseif v>0 and v<=100000 and (not quantity or quantity==0) then quantity=v end
+          end
+        end
+        if type(isRedacted)~="boolean" then isRedacted=false end
+        scanned=scanned+1
+        if not isRedacted and (displayName and displayName~="") and ((itemLink and itemLink~="") or itemName~="") then
+          local action=self:IsBankItemWithdraw(eventType,note) and "withdraw" or "deposit"
+          self:AddBankItem(g.id,eventId or i,displayName,itemLink,quantity or 1,timestamp or WNow(),action,itemName); saved=saved+1
+        else skipped=skipped+1 end
+      end
+    end
+  end
+  self:RequestHistory(g.id,cat,WORKING_HISTORY_DAYS); self:PruneEventTable(self.saved.bankItemEvents,WORKING_MAX_EVENTS); self.saved.scanStatus.bank="Scanned "..saved.." / "..scanned.." bank item rows"; if self.MarkScanned then self:MarkScanned(saved>0 and "Scanned" or "No Data", saved>0) end
+end
+
+-- Universal guild selector: selected guild and controller focus are visually different.
+function TML:DrawGuildSelectorLive(root, x, y, w, h, accent)
+  self:RefreshGuilds(); local g=self:GetGuild(); self:DrawLegacyPanel(root,"GuildSelectorLive",x,y,w,h,"SELECT GUILD",accent)
+  local rowH=34; local btnH=30; local yy=y+56; local maxGuilds=math.min(#(self.guilds or {}), math.max(1, math.floor((h-76)/rowH)))
+  for i=1,maxGuilds do
+    local guild=self.guilds[i]; local selected=(self.saved.guildIndex or 1)==i
+    self.currentToolButtons=self.currentToolButtons or {}; local idx=#self.currentToolButtons+1
+    self.currentToolButtons[idx]={label=guild.name,callback=function() TML:SetSelectedGuildIndex(i) end,x=x+20,y=yy+(i-1)*rowH,w=w-40,h=btnH,cx=x+w/2,cy=yy+(i-1)*rowH+btnH/2,key="GuildSelect74"..i}
+    local focused=(tonumber(self.state and self.state.toolButton or 1)==idx)
+    local bg=selected and {C.cyan[1],C.cyan[2],C.cyan[3],0.12} or {0,0,0,0.50}
+    local edge=selected and {C.gold[1],C.gold[2],C.gold[3],0.88} or (focused and {C.cyan[1],C.cyan[2],C.cyan[3],0.75} or {accent[1],accent[2],accent[3],0.35})
+    self:Backdrop("GuildSelect74Bg"..i,root,x+20,yy+(i-1)*rowH,w-40,btnH,bg,edge)
+    self:Label("GuildSelect74Text"..i,root,(selected and "• " or "")..WLimit(guild.name,24),x+28,yy+(i-1)*rowH,w-56,btnH,selected and C.white or C.dim,FONTS.panelSmall,TEXT_ALIGN_CENTER)
+    self:Hit("GuildSelect74Hit"..i,root,x+20,yy+(i-1)*rowH,w-40,btnH,function() TML:SetSelectedGuildIndex(i) end)
+  end
+  self:Label("GuildSelStatus74",root,"Selected Guild: "..WLimit(g.name,26),x+20,y+h-32,w-40,28,C.white,FONTS.panelSmall,TEXT_ALIGN_CENTER)
+end
+
+function TML:ScanDues()
+  local g=self:GetGuild(); if not g or not g.id or g.id==0 then return end
+  self:ScanRoster(g); self:ScanGuildGold(g); self:RebuildDonationEvents(); self.saved.scanStatus.dues="Scanned dues for "..tostring(g.name or "guild"); if self.MarkScanned then self:MarkScanned("Scanned",true) end; self:RenderTool("guild_dues")
+end
+
+function TML:RenderOldDues(root,x,y,w,h,accent)
+  local g=self:GetGuild(); local leftW=390; self:DrawLegacyPanel(root,"DuesControl74",x,y,leftW,h,"DUES CONTROL",accent)
+  self:DrawGuildSelectorLive(root,x+18,y+58,leftW-36,250,accent)
+  local rows=self:GetDuesRows(g.id); local paid=0; for _,r in ipairs(rows) do if V21674_CellText(r[5])=="Paid" then paid=paid+1 end end
+  local due=self:GetDueAmount(g.id)
+  self:DrawLegacyStats(root,"DuesStats74",x+38,y+326,leftW-76,{{"Due Amount",WFormatGold(due),C.gold},{"Paid",WFormatNumber(paid),VGreen},{"Unpaid",WFormatNumber(#rows-paid),VRed},{"Roster",WFormatNumber(#rows),C.cyanSoft},{"Guild",WLimit(g.name,16),C.white}},accent)
+  self:ToolButton(root,"DuesSet74",x+44,y+h-150,150,42,"Set Due Amount",accent,function() TML:OpenNumberPad("dueAmount","SET DUE AMOUNT",TML:GetDueAmount(TML:GetGuild().id),function(v) local gg=TML:GetGuild(); TML:SetDueAmount(gg.id,v); TML:RenderTool("guild_dues") end) end)
+  self:ToolButton(root,"DuesReset74",x+210,y+h-150,134,42,"Reset",C.red,function() TML:ResetDuesCycle() end)
+  self:ToolButton(root,"DuesScan74",x+44,y+h-96,300,42,"Scan Dues",accent,function() TML:ScanDues() end)
+  self:DrawLegacyTable(root,"DuesTable74",x+leftW+32,y,w-leftW-32,h,"MEMBER DUES STATUS",{"Member","Due","Paid","Balance","Status"},self:RowsOrNA(rows,5,"Press Scan Dues"),accent,{1.5,1,1,1,1})
+end
+
+function TML:FindRaffleResetInfo(guildId, mode)
+  self:EnsureDataDefaults(); mode=mode or self:GetRaffleMode(guildId); local reset=tonumber(self:GetRaffle(guildId,mode).resetAmount) or 33; local info={timestamp=0,user=nil,amount=reset}
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do
+    if e.guildId==guildId and e.action=="deposit" and math.floor(tonumber(e.amount) or 0)==math.floor(reset) and (tonumber(e.timestamp) or 0)>(info.timestamp or 0) then info.timestamp=tonumber(e.timestamp) or 0; info.user=e.user; info.amount=tonumber(e.amount) or reset end
+  end
+  return info
+end
+function TML:FindRaffleResetTime(guildId, mode) local i=self:FindRaffleResetInfo(guildId,mode); return tonumber(i.timestamp) or 0 end
+
+function TML:ScanRaffleEntries(noRender)
+  self:EnsureDataDefaults(); local g=self:GetGuild(); if not g or not g.id or g.id==0 then self:Notify("Select a guild before scanning raffle entries."); return end
+  self:ScanGuildGold(g); local mode=self:GetRaffleMode(g.id); local r=self:GetRaffle(g.id,mode); r.entries={}; r.winners={}; r.lastScan=WNow(); local resetInfo=self:FindRaffleResetInfo(g.id,mode); local reset=tonumber(resetInfo.timestamp) or 0; r.started=reset; r.resetBy=resetInfo.user; r.resetValue=resetInfo.amount
+  local deposits,tickets=0,0
+  for _,e in ipairs(self:GetRaffleSourceEvents(g.id)) do
+    local ts=tonumber(e.timestamp) or 0; local amount=tonumber(e.amount) or 0; local bucket=tostring(e.bucket or "")
+    if ts>=reset and not V21674_IsNeverDonation(bucket) and self:IsRaffleTicketAmountForMode(mode,amount) and not self:IsRaffleResetAmount(g.id,mode,amount) then
+      local t=self:RaffleTicketsFromGold(amount); if t>0 then local user=tostring(e.user or WNA()); local key=V21674_UserKey(user); local existing=r.entries[key] or {name=user,tickets=0,gold=0,last=0,entryType=""}; existing.tickets=(existing.tickets or 0)+t; existing.gold=(existing.gold or 0)+amount; existing.entryType=mode=="giveaway" and (V21674_EndsWith(amount,2) and "002" or "003") or (V21674_EndsWith(amount,7) and "007" or "001"); if ts>(existing.last or 0) then existing.last=ts end; r.entries[key]=existing; deposits=deposits+1; tickets=tickets+t end
+    end
+  end
+  self.saved.scanStatus.raffle = deposits>0 and ("Scanned "..deposits.." "..(mode=="giveaway" and "Giveaway" or "Gold Raffle").." deposits / "..tickets.." entries") or ("No "..(mode=="giveaway" and "Giveaway" or "Gold Raffle").." entries after reset")
+  if self.MarkScanned then self:MarkScanned(deposits>0 and "Scanned" or "No Data", deposits>0) end
+  if not noRender then self:RenderTool("guild_raffle") end
+end
+
+function TML:RenderOldRaffle(root,x,y,w,h,accent)
+  local selectorW=310; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local mode=self:GetRaffleMode(g.id); local r=self:GetRaffle(g.id,mode)
+  local participants,tickets,gold=0,0,0; for _,e in pairs(r.entries or {}) do participants=participants+1; tickets=tickets+(tonumber(e.tickets) or 0); gold=gold+(tonumber(e.gold) or 0) end; local pot=tonumber(r.manualPot) and tonumber(r.manualPot)>0 and tonumber(r.manualPot) or gold
+  self:DrawLegacyPanel(root,"RaffleStats74",rx,y,rw,218,string.upper(mode=="giveaway" and "Giveaway Raffle" or "Gold Raffle").." DASHBOARD",accent,C.yellow)
+  local resetInfo=self:FindRaffleResetInfo(g.id,mode); local ruleText=WFormatGold(r.resetAmount or 33); local lastText=(resetInfo.timestamp and resetInfo.timestamp>0) and WRelTime(resetInfo.timestamp) or "Not found"; local byText=resetInfo.user and WLimit(resetInfo.user,22) or WNA()
+  local cards={{"Participants",WFormatNumber(participants),VGreen},{"Entries",WFormatNumber(tickets),VYellow},{"Collected",WFormatGold(gold),VGreen},{"Manual Pot",r.manualPot and WFormatGold(r.manualPot) or WNA(),C.gold},{"Winners",WFormatNumber(r.winnerCount or 3),VYellow},{"Active Pot",WFormatGold(pot),C.gold},{"Reset Rule",ruleText,C.gold},{"Last Reset",lastText,C.cyanSoft},{"Reset By",byText,C.white}}
+  local cardW=math.floor((rw-72)/3); for i,c in ipairs(cards) do local cx=rx+24+((i-1)%3)*(cardW+12); local cy=y+64+math.floor((i-1)/3)*44; self:Label("RafK74"..i,root,c[1]..":",cx,cy,150,28,C.muted,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("RafV74"..i,root,tostring(c[2]),cx+152,cy,cardW-166,28,c[3] or C.gold,FONTS.panelSmall,TEXT_ALIGN_LEFT) end
+  self:Label("RafStatus74",root,(self.saved.scanStatus.raffle or "Press Scan Entries").."  •  Entries: "..(mode=="giveaway" and "002 / 003" or "001 / 007"),rx+24,y+194,rw-48,24,C.cyanSoft,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  local rows={}; for _,e in pairs(r.entries or {}) do local odds=tickets>0 and ((tonumber(e.tickets) or 0)/tickets*100) or 0; local color=V21665_OddsColor and V21665_OddsColor(odds) or VYellow; local label=mode=="giveaway" and (e.entryType or "002/003") or (e.entryType or "001/007"); local row={WLimit(e.name,24),VCell(WFormatGold(e.gold),VGreen),VCell(WFormatNumber(e.tickets),VYellow),label,WRelTime(e.last),VCell(string.format("%.2f%%",odds),color)}; row.__tickets=e.tickets or 0; rows[#rows+1]=row end; table.sort(rows,function(a,b) return (a.__tickets or 0)>(b.__tickets or 0) end)
+  self:DrawLegacyTable(root,"RaffleEntries74",rx,y+238,rw,h-324,(mode=="giveaway" and "GIVEAWAY ENTRIES AFTER RESET" or "ENTRIES AFTER RESET"),{"Member","Deposit","Entries","Rule","Last","Odds"},self:RowsOrNA(rows,6,"Press Scan Entries"),accent,{1.5,0.9,0.7,0.6,0.8,0.7})
+  local by=y+h-82; local bw=math.floor((rw-56)/7)
+  self:ToolButton(root,"RaffleMode74",rx,by,bw,42,mode=="giveaway" and "View Gold Raffle" or "Display Giveaway Raffle",accent,function() TML:ToggleRaffleMode() end)
+  self:ToolButton(root,"RaffleReset74",rx+(bw+8),by,bw,42,"Reset Input",accent,function() local gg=TML:GetGuild(); local rr=TML:GetRaffle(gg.id,TML:GetRaffleMode(gg.id)); TML:OpenNumberPad("raffleReset","RESET INPUT",rr.resetAmount or 33,function(v) TML:SaveRaffleReset(v) end) end)
+  self:ToolButton(root,"RaffleScan74",rx+(bw+8)*2,by,bw,42,"Scan Entries",accent,function() TML:ScanRaffleEntries() end)
+  self:ToolButton(root,"RafflePot74",rx+(bw+8)*3,by,bw,42,"Manual Pot",accent,function() TML:OpenManualPotPage() end)
+  self:ToolButton(root,"RaffleSplit74",rx+(bw+8)*4,by,bw,42,"Prize Split",accent,function() TML:OpenPrizeSplitPage() end)
+  self:ToolButton(root,"RaffleWinners74",rx+(bw+8)*5,by,bw,42,"Winners: "..tostring(r.winnerCount or 3),accent,function() TML:ToggleWinnerCount() end)
+  self:ToolButton(root,"RafflePick74",rx+(bw+8)*6,by,bw,42,"Pick Winner",accent,function() TML:PickWinner() end)
+  self:ToolButton(root,"RaffleClear74",rx,by+48,bw,34,"Clear Board",C.red,function() TML:ClearRaffle() end)
+end
+
+function TML:RenderOldLedger(root,x,y,w,h,accent,guildMode)
+  if guildMode then
+    local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeGuildGoldStats(g.id); local topH=154
+    self:DrawLegacyPanel(root,"LedgerStats74G",rx,y,rw,topH,"GUILD GOLD LEDGER",accent)
+    local cards={{"Bank Gold",st.bank==nil and WNA() or WFormatGold(st.bank),C.gold},{"Donations",WFormatGold(st.donations),VGreen},{"Withdrawn",WFormatGold(st.withdrawn),VRed},{"Pending Bids",WFormatGold(st.pending),VRed},{"Ticket Gold",WFormatGold(st.ticketGold),VYellow},{"Guild Tax",WFormatGold(st.guildTax),VGreen}}
+    local cardW=math.floor((rw-94)/6); for i,c in ipairs(cards) do self:DrawMiniStat(root,"LedgerMini74G"..i,rx+20+(i-1)*(cardW+10),y+58,cardW,74,c[1],c[2],c[3],c[3]) end
+    local filter=self.saved.guildGoldFilter or "Bank Gold History"; local data,mode2=self:GetGuildGoldFilterRows(g.id,filter); local rows={}
+    if mode2=="aggregate" then for _,r in ipairs(data) do local color=(filter=="Tickets" or filter=="Giveaway Tickets") and VYellow or ((filter=="Withdraws" or filter=="Bid Returns") and VRed or VGreen); rows[#rows+1]={VCell(WLimit(r.user,22),C.white),VCell(WFormatGold(r.amount),color),WFormatNumber(r.count),WRelTime(r.last)} end; self:DrawLegacyTable(root,"LedgerHistory74G",rx,y+topH+20,math.floor(rw*.64),h-topH-82,filter:upper().." - HIGHEST TO LEAST",{"User","Amount","Rows","Last"},self:RowsOrNA(rows,4,"No data for this filter"),accent,{1.6,1,0.6,0.8})
+    else for _,e in ipairs(data) do local bcol=(e.bucket=="Donation" and VGreen) or ((e.bucket=="Ticket" or e.bucket=="Giveaway Ticket") and VYellow) or ((e.bucket=="Bid Return" or e.bucket=="Pending Bid" or e.bucket=="Withdrawal" or e.bucket=="Heraldry" or e.bucket=="Hired Trader") and VRed) or C.white; rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.action=="deposit" and VCell("Deposit",VGreen) or VCell("Withdraw",VRed),VCell(WFormatGold(e.amount),(e.action=="deposit" and bcol or VRed)),VCell(e.bucket or WNA(),bcol)} end; self:DrawLegacyTable(root,"LedgerHistory74G",rx,y+topH+20,math.floor(rw*.64),h-topH-82,"BANK GOLD HISTORY",{"Date","User","Event","Amount","Bucket"},self:RowsOrNA(rows,5,"Press Scan Gold"),accent,{1,1.2,1,1,1.2}) end
+    local sideX=rx+math.floor(rw*.64)+22; local sideW=rw-math.floor(rw*.64)-22; self:DrawLegacyPanel(root,"LedgerSide74G",sideX,y+topH+20,sideW,h-topH-82,"FILTERS / TICKET RULES",accent,C.yellow)
+    self:Label("TicketRulesText74G",root,"Active Filter: "..filter.."\n\nTicket Gold: "..WFormatGold(st.ticketGold).."\nGiveaway Gold: "..WFormatGold(st.giveawayGold).."\nGold Raffle: 001 / 007 entries. Giveaway: 002 / 003 entries.\n\nBids, bid returns, reset markers, and giveaway tickets never count as donations. Guild Tax loads when Scan Gold History is pressed.",sideX+22,y+topH+72,sideW-44,268,C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+    self:ToolButton(root,"GoldFilter74G",sideX+32,y+h-104,sideW-64,40,"Filter: "..filter,accent,function() TML:CycleGuildGoldFilter() end)
+    local by=y+h-52; self:ToolButton(root,"GoldScanBtn74G",rx,by,210,42,"Scan Gold History",accent,function() TML:ScanSelectedGuildGold() end); self:ToolButton(root,"GoldBack74G",rx+224,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"GoldExit74G",rx+448,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end); return
+  end
+  -- defer personal branch to v2.0.16.73 logic if available by reproducing its display essentials
+  local st=self:ComputePersonalGoldStats(); local topH=236; self:DrawLegacyPanel(root,"LedgerStats74",x,y,w,topH,"GOLD LEDGER",accent); local bankText=st.bank==nil and "Bank not scanned" or WFormatGold(st.bank); local cards={{"Current Gold",WFormatGold(st.current),C.gold},{"Bank Gold",bankText,C.gold},{"24H Gold In",WFormatGold(st.in24),VGreen},{"24H Gold Out",WFormatGold(st.out24),VRed},{"24H Net",WFormatGold(st.net24),st.net24>=0 and VGreen or VRed},{"All-Time In",WFormatGold(st.allIn),VGreen},{"All-Time Out",WFormatGold(st.allOut),VRed},{"All-Time Net",WFormatGold(st.allNet),st.allNet>=0 and VGreen or VRed}}; local cardW=math.floor((w-90)/4); for i,c in ipairs(cards) do local col=(i-1)%4; local row=math.floor((i-1)/4); self:DrawMiniStat(root,"LedgerMini74"..i,x+24+col*(cardW+14),y+58+row*78,cardW,68,c[1],c[2],c[3],c[3]) end; self:Label("GoldLedgerNote74",root,"24H tracks the last 24 hours. All-Time tracks saved gold movement. Trader sales use final collected gold after fees.",x+26,y+topH-34,w-52,30,C.yellowDim,FONTS.panelSmall,TEXT_ALIGN_CENTER); local filter=self.saved.personalGoldFilter or "Recent"; local rows={}; for _,e in ipairs(self:GetPersonalGoldRows(filter)) do rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.source or WNA(),e.direction=="in" and VCell("+"..WFormatGold(e.amount),VGreen) or VCell("-"..WFormatGold(e.amount),VRed),e.note or WNA()} end; self:DrawLegacyTable(root,"LedgerHistory74",x,y+topH+20,w,h-topH-82,"PERSONAL GOLD HISTORY - "..string.upper(filter),{"Date","UserID","Source","Amount","Note"},self:RowsOrNA(rows,5,"Press Refresh Ledger"),accent,{1,1.1,1.8,1,1.3}); local by=y+h-52; self:ToolButton(root,"PersonalGoldRefresh74",x,by,210,42,"Refresh Ledger",accent,function() TML:ScanPersonalGoldLedger(); TML:RenderTool("gold_ledger_personal") end); self:ToolButton(root,"PersonalGoldFilter74",x+224,by,210,42,"Filter: "..filter,accent,function() TML:CyclePersonalGoldFilter() end); self:ToolButton(root,"PersonalGoldBack74",x+448,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"PersonalGoldExit74",x+672,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+local OldInitialize_21674 = TML.Initialize
+function TML:Initialize(addonName)
+  if OldInitialize_21674 then OldInitialize_21674(self, addonName) end
+  self:EnsureDataDefaults()
+  if d then d("Tamriel Master Ledger v"..self.version.." ledger/bank/raffle/dues hotfix loaded.") end
+end
+
+-- =========================================================
+-- v2.0.16.75 INPUT ISOLATION + STRICT DONATION/BID + PROGRESS PASS
+-- - True isolated custom input pages: no old page controls behind keypad.
+-- - Strict donation whitelist: bid-like, returned-bid-like, round high-value, and unknown rows are excluded from Donations.
+-- - Trader Bids shows all detected/suspected bid history, not only resolved rows.
+-- - Bookkeeper uses cleaned donation/raffle buckets and adds Sales/Donations/Raffles/Dues filters.
+-- - Raffle reset save refreshes entries immediately and Gold Raffle remains 001 / 007.
+-- - Sales display status and visible rows use the same source of truth.
+-- - Adds estimated Data Loaded status to every scan/data page.
+-- =========================================================
+TML.version = "2.0.16.75"
+TML.addOnVersion = 21675
+TML.lastUpdated = "06/15/2026 06:20 UTC"
+
+local function V21675_Low(v) return string.lower(tostring(v or "")) end
+local function V21675_UserKey(v)
+  v = V21675_Low(v):gsub("^%s+", ""):gsub("%s+$", ""):gsub("^@", "")
+  return v
+end
+local function V21675_Amount(v) return math.floor(math.abs(tonumber(v) or 0)) end
+local function V21675_EndsWith(amount, suffix) return (V21675_Amount(amount) % 1000) == (tonumber(suffix) or 0) and V21675_Amount(amount) > 0 end
+local function V21675_EventText(note, eventType) return V21675_Low(tostring(note or "") .. " " .. tostring(eventType or "")) end
+local function V21675_HasLetters(v) return tostring(v or ""):match("%a") ~= nil end
+local function V21675_IsRoundHighBidAmount(amount)
+  amount = V21675_Amount(amount)
+  return amount >= 100000 and (amount % 1000) == 0
+end
+local function V21675_IsBidText(low)
+  low = tostring(low or "")
+  return low:find("bid",1,true) or low:find("trader",1,true) or low:find("kiosk",1,true) or low:find("hire trader",1,true) or low:find("hired trader",1,true) or low:find("guild trader",1,true)
+end
+local function V21675_IsBidReturnText(low)
+  low = tostring(low or "")
+  return low:find("lost bid",1,true) or low:find("returned bid",1,true) or low:find("bid returned",1,true) or low:find("refund",1,true) or low:find("returned / cleared",1,true)
+end
+local function V21675_IsDonationText(low)
+  low = tostring(low or "")
+  return low:find("donation",1,true) or low:find("donated",1,true)
+end
+local function V21675_IsBidBucket(bucket)
+  bucket = tostring(bucket or "")
+  return bucket == "Pending Bid" or bucket == "Bid Return" or bucket == "Bid Return / Review" or bucket == "Returned Bid" or bucket == "Lost Bid" or bucket == "Hired Trader" or bucket == "Bid Withdrawn" or bucket == "Possible Bid / Review"
+end
+local function V21675_IsNeverDonation(bucket)
+  bucket = tostring(bucket or "")
+  return V21675_IsBidBucket(bucket) or bucket == "Heraldry" or bucket == "Reset" or bucket == "Ticket" or bucket == "Giveaway Ticket" or bucket == "Withdrawal" or bucket == "Other / Review"
+end
+local function V21675_CellText(cell)
+  if type(cell) == "table" then return tostring(cell.text or cell[1] or "") end
+  return tostring(cell or "")
+end
+
+function TML:IsRaffleTicketAmountForMode(mode, amount)
+  if mode == "giveaway" then return V21675_EndsWith(amount,2) or V21675_EndsWith(amount,3) end
+  return V21675_EndsWith(amount,1) or V21675_EndsWith(amount,7)
+end
+
+function TML:ClassifyGuildGold(guildId, amount, action, note, eventType)
+  amount = tonumber(amount) or 0
+  action = tostring(action or "unknown")
+  local deposit = action == "deposit"
+  local low = V21675_EventText(note, eventType)
+  local hasText = V21675_HasLetters(note)
+
+  -- Hard exclusions come first. Nothing in this section can ever become Donation.
+  if low:find("herald",1,true) then return "Heraldry" end
+  if V21675_IsBidReturnText(low) then return "Bid Return" end
+  if low:find("withdrawn bid",1,true) or low:find("bid withdrawn",1,true) then return "Bid Withdrawn" end
+  if low:find("hired trader",1,true) or low:find("hire trader",1,true) then return deposit and "Bid Return" or "Hired Trader" end
+  if V21675_IsBidText(low) then return deposit and "Bid Return" or "Pending Bid" end
+
+  -- Kiosk/trader names can arrive without the words bid/trader. A high-value row with a real text note is bid-review data.
+  if hasText and V21675_IsRoundHighBidAmount(amount) then return deposit and "Bid Return / Review" or "Pending Bid" end
+
+  -- Reset and ticket entries are not donations.
+  if deposit and (self:IsRaffleResetAmount(guildId,"gold",amount) or self:IsRaffleResetAmount(guildId,"giveaway",amount) or (amount > 0 and amount % 100 == 33)) then return "Reset" end
+  if deposit and self:IsRaffleTicketAmountForMode("giveaway", amount) then return "Giveaway Ticket" end
+  if deposit and self:IsRaffleTicketAmountForMode("gold", amount) then return "Ticket" end
+
+  if not deposit then
+    if V21675_IsRoundHighBidAmount(amount) then return "Pending Bid" end
+    return "Withdrawal"
+  end
+
+  -- Strict donation whitelist: large round unknown deposits are too often bid returns, so exclude them unless ESO text confirms donation.
+  if V21675_IsDonationText(low) then return "Donation" end
+  if V21675_IsRoundHighBidAmount(amount) then return "Bid Return / Review" end
+  return "Donation"
+end
+
+function TML:IsBankCurrencyDeposit(eventType, note)
+  local deposits={_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_DEPOSITED,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_GOLD_DEPOSITED,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_DEPOSIT}
+  for _,v in ipairs(deposits) do if v ~= nil and eventType == v then return true end end
+  local withdraws={_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_WITHDRAWN,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_GOLD_WITHDRAWN,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_WITHDRAWAL,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_BID,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_BID,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_GUILD_KIOSK_BID,_G.GUILD_HISTORY_BANKED_CURRENCY_EVENT_HIRE_TRADER}
+  for _,v in ipairs(withdraws) do if v ~= nil and eventType == v then return false end end
+  local low=V21675_EventText(note,eventType)
+  if low:find("withdraw",1,true) or low:find("withdrew",1,true) or low:find("bid",1,true) or low:find("hire",1,true) or low:find("herald",1,true) or low:find("hired",1,true) or low:find("trader",1,true) or low:find("kiosk",1,true) then return false end
+  return true
+end
+
+function TML:AddGuildGoldEvent(guildId,eventId,user,amount,timestamp,action,bucket,note,eventType)
+  self:EnsureDataDefaults(); amount=tonumber(amount) or 0; timestamp=tonumber(timestamp) or WNow(); action=tostring(action or "unknown"); note=tostring(note or "")
+  bucket = self:ClassifyGuildGold(guildId, amount, action, note, eventType)
+  local key=tostring(guildId)..":"..tostring(eventId or (tostring(user)..tostring(amount)..tostring(timestamp)..tostring(action)..tostring(note)))
+  self.saved.guildGoldEvents[key]={guildId=guildId,user=user or WNA(),amount=amount,timestamp=timestamp,action=action,bucket=bucket,note=note,eventType=eventType}
+end
+
+function TML:RebuildDonationEvents()
+  self:EnsureDataDefaults()
+  self.saved.donationEvents = {}
+  local rows = {}
+  for key,e in pairs(self.saved.guildGoldEvents or {}) do
+    if e then e.__key=key; e.bucket=self:ClassifyGuildGold(e.guildId,e.amount,e.action,e.note,e.eventType); rows[#rows+1]=e end
+  end
+  table.sort(rows,function(a,b) return (tonumber(a.timestamp) or 0) < (tonumber(b.timestamp) or 0) end)
+
+  -- Pairing pass: any deposit that clears an earlier matching/near pending amount becomes bid return, not donation.
+  local active={}
+  local function list(gid) local k=tostring(gid or 0); active[k]=active[k] or {}; return active[k] end
+  local function addPending(e)
+    local amt=V21675_Amount(e.amount); if amt<=0 then return end
+    local a=list(e.guildId); a[#a+1]={amount=amt,ts=tonumber(e.timestamp) or 0}
+  end
+  local function clearPending(e)
+    local amt=V21675_Amount(e.amount); if amt<=0 then return false end
+    local a=list(e.guildId)
+    for i=#a,1,-1 do
+      local p=a[i]; local diff=math.abs((p.amount or 0)-amt)
+      if diff==0 or diff<=1000 then table.remove(a,i); return true end
+    end
+    return false
+  end
+  for _,e in ipairs(rows) do
+    local b=tostring(e.bucket or "")
+    if b=="Pending Bid" then addPending(e)
+    elseif e.action ~= "deposit" and V21675_IsRoundHighBidAmount(e.amount) then addPending(e)
+    elseif e.action=="deposit" and (b=="Bid Return" or b=="Bid Return / Review" or b=="Donation") and clearPending(e) then e.bucket="Bid Return"
+    elseif b=="Hired Trader" or b=="Bid Withdrawn" then clearPending(e) end
+  end
+
+  local donations, excluded = 0, 0
+  for key,e in pairs(self.saved.guildGoldEvents or {}) do
+    if e and e.action=="deposit" and e.bucket=="Donation" and not V21675_IsNeverDonation(e.bucket) then
+      self.saved.donationEvents[tostring(key)..":donation"]={guildId=e.guildId,user=e.user,amount=e.amount,timestamp=e.timestamp,bucket="Donation"}
+      donations = donations + 1
+    elseif e and e.action=="deposit" and e.bucket ~= "Donation" then
+      excluded = excluded + 1
+    end
+  end
+  self.saved.scanStatus = self.saved.scanStatus or {}
+  self.saved.scanStatus.goldStrict = tostring(donations).." confirmed donations / "..tostring(excluded).." excluded"
+end
+
+function TML:GetGuildGoldRows(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents()
+  local rows={}
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do if (not guildId or guildId==0 or e.guildId==guildId) then rows[#rows+1]=e end end
+  table.sort(rows,function(a,b) return (tonumber(a.timestamp) or 0)>(tonumber(b.timestamp) or 0) end)
+  return rows
+end
+
+function TML:ComputeGuildGoldStats(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents()
+  local st={bank=nil,donations=0,withdrawn=0,pending=0,ticketGold=0,giveawayGold=0,guildTax=0,bidEvents=0,lostBids=0,hiredTrader=0,netImpact=0,heraldry=0,review=0}
+  if V21667_GuildBankGold then st.bank=V21667_GuildBankGold(self,guildId) elseif type(GetGuildBankedMoney)=="function" and guildId and guildId~=0 then local ok,v=pcall(GetGuildBankedMoney,guildId); if ok then st.bank=tonumber(v) end end
+  for _,e in ipairs(self:GetGuildGoldRows(guildId)) do
+    local amt=tonumber(e.amount) or 0; local bucket=tostring(e.bucket or "")
+    if bucket=="Donation" and e.action=="deposit" then st.donations=st.donations+amt end
+    if bucket=="Ticket" then st.ticketGold=st.ticketGold+amt end
+    if bucket=="Giveaway Ticket" then st.giveawayGold=st.giveawayGold+amt end
+    if e.action~="deposit" then st.withdrawn=st.withdrawn+amt end
+    if bucket=="Heraldry" then st.heraldry=st.heraldry+amt end
+    if bucket=="Bid Return / Review" or bucket=="Other / Review" or bucket=="Possible Bid / Review" then st.review=st.review+amt end
+  end
+  local bid=self:BuildTraderBidLedger(guildId); st.pending=bid.pending; st.bidEvents=bid.bidEvents; st.lostBids=bid.lostBids; st.hiredTrader=bid.hiredTrader; st.netImpact=bid.netImpact
+  for _,s in pairs(self.saved.salesEvents or {}) do if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(s) end; if (not guildId or guildId==0 or s.guildId==guildId) then st.guildTax=st.guildTax+(tonumber(s.guildTax or s.tax) or 0) end end
+  st.adjusted=(st.bank or 0)-st.pending
+  return st
+end
+
+function TML:GetGuildGoldFilterRows(guildId, filter)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents(); filter=filter or self.saved.guildGoldFilter or "Bank Gold History"
+  if filter=="Bank Gold History" then return self:GetGuildGoldRows(guildId),"history" end
+  local agg={}; local function add(user,amount,ts) amount=tonumber(amount) or 0; if amount<=0 then return end; local u=user or WNA(); local r=agg[u] or {user=u,amount=0,count=0,last=0}; r.amount=r.amount+amount; r.count=r.count+1; if (tonumber(ts) or 0)>r.last then r.last=tonumber(ts) or 0 end; agg[u]=r end
+  if filter=="Taxes Paid" then
+    for _,s in pairs(self.saved.salesEvents or {}) do if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(s) end; if (not guildId or guildId==0 or s.guildId==guildId) then add(s.seller,tonumber(s.guildTax or s.tax) or 0,s.timestamp) end end
+  else
+    for _,e in pairs(self.saved.guildGoldEvents or {}) do
+      if (not guildId or guildId==0 or e.guildId==guildId) then
+        local b=tostring(e.bucket or "")
+        if filter=="Tickets" and b=="Ticket" then add(e.user,e.amount,e.timestamp)
+        elseif filter=="Giveaway Tickets" and b=="Giveaway Ticket" then add(e.user,e.amount,e.timestamp)
+        elseif filter=="Donations" and b=="Donation" and e.action=="deposit" then add(e.user,e.amount,e.timestamp)
+        elseif filter=="Withdraws" and e.action~="deposit" then add(e.user,e.amount,e.timestamp)
+        elseif filter=="Bid Returns" and (b=="Bid Return" or b=="Bid Return / Review") then add(e.user,e.amount,e.timestamp)
+        elseif filter=="Review" and (b=="Other / Review" or b=="Possible Bid / Review" or b=="Bid Return / Review") then add(e.user,e.amount,e.timestamp) end
+      end
+    end
+  end
+  local rows={}; for _,r in pairs(agg) do if (tonumber(r.amount) or 0)>0 then rows[#rows+1]=r end end
+  table.sort(rows,function(a,b) return (a.amount or 0)>(b.amount or 0) end); return rows,"aggregate"
+end
+
+function TML:CycleGuildGoldFilter()
+  local list={"Bank Gold History","Donations","Tickets","Giveaway Tickets","Bid Returns","Review","Withdraws","Taxes Paid"}
+  local cur=self.saved.guildGoldFilter or list[1]; local idx=1; for i,v in ipairs(list) do if v==cur then idx=i break end end
+  self.saved.guildGoldFilter=list[(idx%#list)+1]; self:RenderTool("guild_gold_ledger")
+end
+
+function TML:BuildTraderBidLedger(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents()
+  local events={}
+  for _,e in ipairs(self:GetGuildGoldRows(guildId)) do
+    local b=tostring(e.bucket or ""); local low=V21675_EventText(e.note,e.eventType)
+    if V21675_IsBidBucket(b) or V21675_IsBidText(low) or V21675_IsBidReturnText(low) or (V21675_IsRoundHighBidAmount(e.amount) and (b~="Donation" or e.action~="deposit")) then events[#events+1]=e end
+  end
+  table.sort(events,function(a,b) return (tonumber(a.timestamp) or 0)<(tonumber(b.timestamp) or 0) end)
+  local active={}; local history={}; local returned,hired=0,0
+  local function resolve(e,status)
+    local amt=V21675_Amount(e.amount); local pick=nil
+    for i=#active,1,-1 do if not active[i].resolved then local diff=math.abs((tonumber(active[i].amount) or 0)-amt); if diff==0 or not pick then pick=i; if diff==0 then break end end end end
+    if pick then active[pick].resolved=true; active[pick].status=status end
+  end
+  for _,e in ipairs(events) do
+    local b=tostring(e.bucket or "")
+    local status=b
+    if b=="Pending Bid" then active[#active+1]={amount=e.amount,trader=e.note,user=e.user,timestamp=e.timestamp,status="Pending"}; status="Bid Placed / Pending"
+    elseif b=="Bid Return" or b=="Bid Return / Review" then returned=returned+(tonumber(e.amount) or 0); resolve(e,"Returned"); status=(b=="Bid Return / Review") and "Returned / Review" or "Returned / Cleared"
+    elseif b=="Hired Trader" then hired=hired+(tonumber(e.amount) or 0); resolve(e,"Hired"); status="Hired Trader"
+    elseif b=="Bid Withdrawn" then resolve(e,"Withdrawn"); status="Withdrawn / Cleared"
+    elseif b=="Other / Review" or b=="Possible Bid / Review" then status="Unknown Bid Event / Review" end
+    history[#history+1]={event=e,status=status}
+  end
+  local pending=0; local pendingRows={}
+  for _,p in ipairs(active) do if not p.resolved then pending=pending+(tonumber(p.amount) or 0); pendingRows[#pendingRows+1]=p end end
+  table.sort(history,function(a,b) return (tonumber(a.event.timestamp) or 0)>(tonumber(b.event.timestamp) or 0) end)
+  return {pending=pending,pendingRows=pendingRows,history=history,bidEvents=#history,lostBids=returned,hiredTrader=hired,netImpact=-pending-hired}
+end
+
+-- Isolated custom input page. RenderTool will not draw the previous page while a number modal is active.
+local OldRenderTool_21675 = TML.RenderTool
+function TML:RenderTool(toolKey)
+  if self.state and self.state.modal and self.state.modal.type == "number" then
+    self:HideAllPooledControls(); local root=self.ui and self.ui.root; if not root then return end
+    self.currentToolButtons={}; self:RenderNumberPad(root); self:RefreshKeybinds(); return
+  end
+  OldRenderTool_21675(self, toolKey)
+  local root=self.ui and self.ui.root; if root then self:RenderPageLoadStatus(root, toolKey or (self.state and self.state.activeTool)) end
+end
+
+function TML:RenderNumberPad(root)
+  local rw,rh = self:GetRootSize(); local x=math.floor(rw*.05); local y=math.floor(rh*.05); local w=math.floor(rw*.90); local h=math.floor(rh*.90)
+  local m=self.state.modal or {}; self.currentToolButtons = {}
+  self:Backdrop("InputIsolatedBg75", root, 0, 0, rw, rh, {0,0,0,0.98}, nil)
+  self:Backdrop("InputIsolatedPanel75", root, x, y, w, h, {0,0,0,0.96}, {C.cyan[1],C.cyan[2],C.cyan[3],0.95})
+  self:DrawLegacyHeader(root, x, y, w, tostring(m.title or "ENTER VALUE"), "D-Pad moves. A selects. B backs out. Save returns to the previous page.", C.cyan)
+  self:DrawLegacyPanel(root,"InputValuePanel75",x+160,y+150,w-320,116,"CURRENT VALUE",C.gold)
+  self:Label("InputValue75",root,tostring((m.value and m.value ~= "") and m.value or "0"),x+210,y+202,w-420,58,C.gold,FONTS.panelTitle,TEXT_ALIGN_RIGHT)
+  local nums={"1","2","3","4","5","6","7","8","9","Clear","0","Back"}
+  local bw=math.floor((w-440)/3); local bh=64; local gap=22; local bx=x+200; local by=y+320
+  for i,n in ipairs(nums) do
+    local col=(i-1)%3; local row=math.floor((i-1)/3)
+    self:ToolButton(root,"InputKey75"..i,bx+col*(bw+gap),by+row*(bh+gap),bw,bh,n,C.cyan,function()
+      local mm=TML.state.modal; if not mm then return end
+      if n=="Clear" then mm.value="" elseif n=="Back" then mm.value=tostring(mm.value or ""):sub(1,-2) else mm.value=tostring(mm.value or "")..n end
+      TML:RenderTool(TML.state.activeTool)
+    end)
+  end
+  self:ToolButton(root,"InputCancel75",x+170,y+h-120,280,64,"Back / Cancel",C.red,function() TML:CloseModal() end)
+  self:ToolButton(root,"InputSave75",x+w-450,y+h-120,280,64,"Save and Continue",C.cyan,function()
+    local mm=TML.state.modal; local cb=mm and mm.save; local val=tonumber(mm and mm.value) or 0
+    TML:CloseModal(false); if cb then cb(val) else TML:RenderTool(TML.state.activeTool) end
+  end)
+end
+
+function TML:GetPageLoadStatus(toolKey)
+  self:EnsureDataDefaults(); local s=self.saved.scanStatus or {}; local pct=0; local msg="Press Scan"
+  local function count(t) local n=0; for _ in pairs(t or {}) do n=n+1 end; return n end
+  if toolKey=="net_worth" then if self.saved.networth and self.saved.networth.lastScan then pct=100; msg="Net Worth scan complete" end
+  elseif toolKey=="personal_sales" or toolKey=="guild_sales" then if count(self.saved.salesEvents)>0 then pct=100; msg="Sales rows loaded" elseif s.sales then msg=s.sales end
+  elseif toolKey=="guild_gold_ledger" then if count(self.saved.guildGoldEvents)>0 then pct=100; msg=(s.goldStrict or s.gold or "Gold rows loaded") end
+  elseif toolKey=="trader_bids" then local g=self:GetGuild(); local bid=self:BuildTraderBidLedger(g and g.id); if (bid.bidEvents or 0)>0 then pct=100; msg=tostring(bid.bidEvents).." bid/review events loaded" elseif s.gold then msg=s.gold end
+  elseif toolKey=="guild_bank" then if count(self.saved.bankItemEvents)>0 then pct=100; msg=s.bank or "Bank item rows loaded" elseif s.bank then msg=s.bank end
+  elseif toolKey=="guild_bookkeeper" then local g=self:GetGuild(); if #(self:GetRosterRows(g and g.id))>0 then pct=100; msg="Roster/activity loaded" end
+  elseif toolKey=="guild_dues" then local g=self:GetGuild(); if #(self:GetDuesRows(g and g.id))>0 then pct=100; msg=s.dues or "Dues rows loaded" end
+  elseif toolKey=="guild_raffle" then local g=self:GetGuild(); local r=g and self:GetRaffle(g.id,self:GetRaffleMode(g.id)); if r and r.lastScan then pct=100; msg=s.raffle or "Raffle scan complete" end
+  elseif toolKey=="daily_quests" then pct=0; msg=s.daily or "Press Scan"
+  elseif toolKey=="fishing" then pct=0; msg=s.fishing or "Press Scan"
+  elseif toolKey=="gold_ledger_personal" then if count(self.saved.goldSnapshots)>0 then pct=100; msg="Personal gold loaded" end end
+  return pct,msg
+end
+function TML:RenderPageLoadStatus(root, toolKey)
+  local dataPages={net_worth=true,personal_sales=true,guild_sales=true,guild_gold_ledger=true,trader_bids=true,guild_bank=true,guild_bookkeeper=true,guild_dues=true,guild_raffle=true,daily_quests=true,fishing=true,gold_ledger_personal=true}
+  if not dataPages[tostring(toolKey or "")] then return end
+  local rw,rh=self:GetRootSize(); local pct,msg=self:GetPageLoadStatus(toolKey); local color=(pct>=100) and VGreen or (pct>0 and VYellow or C.redDim)
+  local text=tostring(msg or "Press Scan")
+  self:Label("PageLoadStatus75",root,text,math.floor(rw*.50),math.floor(rh*.06)+54,math.floor(rw*.42),28,color,FONTS.panelSmall,TEXT_ALIGN_RIGHT)
+end
+
+-- Raffle reset save returns to the same page and refreshes entries immediately.
+function TML:SaveRaffleReset(amount)
+  self:EnsureDataDefaults(); local g=self:GetGuild(); if not g or not g.id then return end
+  local mode=self:GetRaffleMode(g.id); local r=self:GetRaffle(g.id,mode); r.resetAmount=math.max(0,math.floor(tonumber(amount) or 0)); if r.resetAmount<=0 then r.resetAmount=33 end
+  self.saved.scanStatus.raffle="Reset saved. Refreshing entries..."
+  self:ScanRaffleEntries(true)
+  self.saved.scanStatus.raffle=(self.saved.scanStatus.raffle or "Reset saved").." • Reset Rule: "..WFormatGold(r.resetAmount)
+  self:RenderTool("guild_raffle")
+end
+
+-- Bookkeeper cleaned maps and filters.
+function TML:BuildBookkeeperMaps(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents()
+  local maps={sales={},donations={},raffles={},unmatched={sales=0,donations=0,raffles=0}}
+  for _,e in pairs(self.saved.salesEvents or {}) do if e.guildId==guildId then local k=V21675_UserKey(e.seller); local amt=tonumber(e.netAmount or e.amount) or 0; maps.sales[k]=(maps.sales[k] or 0)+amt end end
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do if e.guildId==guildId then local k=V21675_UserKey(e.user); local amt=tonumber(e.amount) or 0; local b=tostring(e.bucket or ""); if b=="Donation" and e.action=="deposit" then maps.donations[k]=(maps.donations[k] or 0)+amt elseif b=="Ticket" then maps.raffles[k]=(maps.raffles[k] or 0)+amt end end end
+  return maps
+end
+function TML:CycleBookkeeperFilter()
+  local list={"Sales","Donations","Raffles","Dues Paid","Dues Owed"}; local cur=self.saved.bookkeeperFilter or list[1]; local idx=1; for i,v in ipairs(list) do if v==cur then idx=i break end end
+  self.saved.bookkeeperFilter=list[(idx%#list)+1]; self:RenderTool("guild_bookkeeper")
+end
+function TML:RenderOldBookkeeper(root,x,y,w,h,accent)
+  local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local tableW=math.floor((w-selectorW-48)*.70); local g=self:GetGuild(); local maps=self:BuildBookkeeperMaps(g.id)
+  local rows={}; local totalSales,totalDon,totalRaf,totalPaid,totalOwed,caught,owing=0,0,0,0,0,0,0; local due=self:GetDueAmount(g.id)
+  for _,m in ipairs(self:GetRosterRows(g.id)) do
+    local k=V21675_UserKey(m.name); local s=maps.sales[k] or 0; local d=maps.donations[k] or 0; local rf=maps.raffles[k] or 0; local bal=d-due
+    if bal>=0 then caught=caught+1; totalPaid=totalPaid+math.min(d,due) else owing=owing+1; totalOwed=totalOwed+math.abs(bal) end
+    totalSales=totalSales+s; totalDon=totalDon+d; totalRaf=totalRaf+rf
+    local row={WLimit(m.name,20),VCell(WFormatGold(s),VGreen),VCell(WFormatGold(d),VGreen),VCell(WFormatGold(rf),VYellow),VCell(WFormatGold(bal),bal>=0 and VGreen or VRed),m.lastOnlineSeconds and WRelTime(WNow()-m.lastOnlineSeconds) or WNA(),__sales=s,__donations=d,__raffles=rf,__dues=bal}
+    rows[#rows+1]=row
+  end
+  local filter=self.saved.bookkeeperFilter or "Sales"
+  table.sort(rows,function(a,b)
+    if filter=="Sales" then return (a.__sales or 0)>(b.__sales or 0) end
+    if filter=="Donations" then return (a.__donations or 0)>(b.__donations or 0) end
+    if filter=="Raffles" then return (a.__raffles or 0)>(b.__raffles or 0) end
+    if filter=="Dues Paid" then return (a.__dues or 0)>(b.__dues or 0) end
+    if filter=="Dues Owed" then return (a.__dues or 0)<(b.__dues or 0) end
+    return tostring(a[1])<tostring(b[1])
+  end)
+  self:DrawLegacyTable(root,"BookkeeperTable75",rx,y,tableW,h-60,"MEMBER BOOKKEEPER - "..string.upper(filter),{"Member","Sales","Donations","Raffles","Dues","Last Online"},self:RowsOrNA(rows,6,"Press Scan Activity"),accent,{1.5,1,1,1,1,1})
+  local sideX=rx+tableW+24; local sideW=w-(sideX-x); self:DrawLegacyPanel(root,"BookkeeperRight75",sideX,y,sideW,h,"SUMMARY",accent)
+  local summary={{"Total Sales",WFormatGold(totalSales),VGreen},{"Total Donations",WFormatGold(totalDon),VGreen},{"Total Raffles",WFormatGold(totalRaf),VYellow},{"Dues Paid",WFormatGold(totalPaid),VGreen},{"Dues Owed",WFormatGold(totalOwed),VRed},{"Caught Up",WFormatNumber(caught),VGreen},{"Owing",WFormatNumber(owing),VRed}}
+  for i,t in ipairs(summary) do self:DrawMiniStat(root,"BookMini75"..i,sideX+22,y+54+(i-1)*66,sideW-44,58,t[1],tostring(t[2]),t[3],t[3]) end
+  self:ToolButton(root,"BookFilter75",sideX+38,y+h-114,sideW-76,44,"Filter: "..filter,accent,function() TML:CycleBookkeeperFilter() end)
+  self:ToolButton(root,"BookScan75",sideX+38,y+h-62,sideW-76,44,"Scan Activity",accent,function() TML:ScanBookkeeper() end)
+end
+
+-- Sales display uses the same rows for table/status/cards, preventing partial-looking pages.
+function TML:RenderOldSales(root,x,y,w,h,accent,guildMode)
+  local selectorW = guildMode and 300 or 0
+  if guildMode then self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent) end
+  local rx=x+selectorW+(guildMode and 24 or 0); local rw=w-selectorW-(guildMode and 24 or 0); local g=self:GetGuild(); local st=self:ComputeSalesStats(guildMode and g.id or 0, not guildMode)
+  local filter = guildMode and (self.saved.salesFilter or "Recent") or (self.saved.personalSalesFilter or "All-Time"); if filter=="Sales" or filter=="Total Sales" or filter=="Recent" then if not guildMode then filter="All-Time" end end
+  local rows={}; local title=""; local headers={}; local widths=nil; local sourceRows={}
+  if guildMode and filter=="Best Sellers" then
+    for _,e in ipairs(self:GetBestSellerRows(g.id)) do rows[#rows+1]={VCell(WLimit(e.seller or e.itemName or WNA(),22),C.white),VCell(WFormatGold(e.amount),VYellow),WFormatNumber(e.qty or e.items),WFormatNumber(e.sales or 0),VCell(WFormatGold(e.highest or 0),VYellow)} end
+    title="BEST SELLERS - HIGHEST TO LEAST"; headers={"Seller/Item","Total Gold","Items","Sales","Highest"}; widths={1.7,1.1,.7,.7,1}
+  elseif guildMode and filter=="High Ticket" then
+    for _,e in ipairs(self:GetHighTicketRows(g.id)) do rows[#rows+1]={WLimit(e.seller,18),self:FormatItemCell(e.itemLink,e.itemName,24),WFormatNumber(e.quantity),VCell(WFormatGold(e.netAmount or e.amount),VYellow),WRelTime(e.timestamp)} end
+    title="HIGH TICKET SALES - BIGGEST TO SMALLEST"; headers={"Seller","Item","Qty","Gold","When"}; widths={1.3,2.1,.6,1,1}
+  elseif (not guildMode) and filter=="Top Sellers" then
+    for _,e in ipairs(self:GetPersonalTopSellerRows()) do rows[#rows+1]={self:FormatItemCell(e.itemLink,e.itemName,26),self:GetGuildName(e.guild),WFormatNumber(e.qty),VCell(WFormatGold(e.gold),VYellow),VCell(WFormatGold(e.avg),VYellow)} end
+    title="TOP SELLERS - MOST GOLD TO LEAST"; headers={"Item","Guild","Qty","Total Gold","Avg"}; widths={2,1.4,.6,1,1}
+  else
+    if guildMode then sourceRows = (filter=="24H") and self:GetSalesRows24H(g.id,false) or self:GetSalesRows(g.id,false) else sourceRows = (filter=="24H") and self:GetSalesRows24H(0,true) or self:GetSalesRows(0,true) end
+    for _,e in ipairs(sourceRows) do rows[#rows+1]={guildMode and WLimit(e.seller,20) or self:FormatItemCell(e.itemLink,e.itemName,28), guildMode and self:FormatItemCell(e.itemLink,e.itemName,25) or self:GetGuildName(e.guildId), WFormatNumber(e.quantity), VCell(WFormatGold(e.netAmount or e.amount),VYellow), WRelTime(e.timestamp)} end
+    title = guildMode and ((filter=="24H") and "24H GUILD SALES - LAST 24 HOURS" or "ALL-TIME GUILD SALES") or ((filter=="24H") and "24H SALES - LAST 24 HOURS" or "ALL-TIME SALES")
+    headers={guildMode and "Seller" or "Item",guildMode and "Item" or "Guild","Qty","Gold","When"}; widths={1.4,2.2,.7,1,1}
+  end
+  self:DrawLegacyPanel(root,"SalesStats75",rx,y,rw,142,guildMode and "GUILD SALES DASHBOARD" or "PERSONAL SALES DASHBOARD",accent)
+  local deltaText = st.deltaPct and string.format("Delta 24H/All-Time: %.1f%%", st.deltaPct) or "Delta 24H/All-Time: N/A"
+  self:Label("SalesDelta75",root,deltaText,rx+rw-330,y+8,310,26,st.deltaPct and (st.deltaPct>=50 and VGreen or VYellow) or C.muted,FONTS.panelSmall,TEXT_ALIGN_RIGHT)
+  local statusText = "Displayed "..tostring(#rows).." row"..(#rows==1 and "" or "s").." • Filter: "..filter
+  local cards
+  if guildMode then cards={{"24H Sales",WFormatGold(st.sales24),VGreen},{"Total Sales",WFormatGold(st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Guild Tax",WFormatGold(st.tax),VGreen},{"Status",statusText,C.white}}
+  else cards={{"24H Sales",WFormatGold(st.sales24),VGreen},{"All-Time Sales",WFormatGold(st.allTimeSales or st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Net Earned",WFormatGold(st.net),VYellow},{"Status",statusText,C.white}} end
+  local cardW=math.floor((rw-78)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"SalesCard75"..i,rx+20+(i-1)*(cardW+10),y+56,cardW,68,c[1],c[2],c[3],c[3]) end
+  self:DrawLegacyTable(root,"SalesRows75",rx,y+166,rw,h-228,title,headers,self:RowsOrNA(rows,#headers,"No sales data loaded"),accent,widths)
+  local by=y+h-52
+  self:ToolButton(root,"SalesScanOne75",rx,by,170,42,guildMode and "Scan Guild" or "Scan Sales",accent,function() if guildMode then TML:ScanSelectedGuildSales() else TML:ScanAllGuildSales() end; TML:RenderTool(TML.state.activeTool) end)
+  self:ToolButton(root,"SalesScanAll75",rx+184,by,150,42,"Scan All",accent,function() TML:ScanAllGuildSales(); TML:RenderTool(TML.state.activeTool) end)
+  if guildMode then self:ToolButton(root,"SalesFilter75",rx+348,by,220,42,"Filter: "..filter,accent,function() TML:CycleGuildSalesFilter() end) else self:ToolButton(root,"PersonalSalesFilter75",rx+348,by,220,42,"Filter: "..filter,accent,function() TML:CyclePersonalSalesFilter() end) end
+end
+
+function TML:RenderOldTraderBids(root,x,y,w,h,accent)
+  local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local bid=self:BuildTraderBidLedger(g.id)
+  self:DrawLegacyPanel(root,"BidSummary75",rx,y,rw,138,"TRADER BID LEDGER",accent,C.red)
+  local cards={{"Pending Bids",WFormatGold(bid.pending),C.redDim},{"Bid Events",WFormatNumber(bid.bidEvents),C.redDim},{"Returned Bids",WFormatGold(bid.lostBids),C.redDim},{"Hired Trader",WFormatGold(bid.hiredTrader),C.gold},{"Net Impact",WFormatGold(bid.netImpact),bid.netImpact<0 and C.redDim or VGreen}}
+  local cardW=math.floor((rw-76)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"BidCard75"..i,rx+20+(i-1)*(cardW+10),y+56,cardW,64,c[1],c[2],c[3],c[3]) end
+  local pendingRows={}; for _,p in ipairs(bid.pendingRows or {}) do pendingRows[#pendingRows+1]={WLimit(p.trader or "Trader",22),p.status or "Pending",VCell(WFormatGold(p.amount),C.redDim),WRelTime(p.timestamp)} end
+  local histRows={}; for _,hrow in ipairs(bid.history or {}) do local e=hrow.event or {}; histRows[#histRows+1]={WRelTime(e.timestamp),WLimit(e.user,18),WLimit(e.note or "Trader / Review",28),VCell(WFormatGold(e.amount),V21675_IsBidBucket(e.bucket) and C.redDim or VYellow),hrow.status or e.bucket or "Bid Event"} end
+  local halfW=math.floor((rw-24)/2)
+  self:DrawLegacyTable(root,"PendingBidTable75",rx,y+160,halfW,h-220,"ACTIVE PENDING BIDS",{"Trader","Status","Amount","When"},self:RowsOrNA(pendingRows,4,"No active pending bids"),C.red,{1.5,1,1,1})
+  self:DrawLegacyTable(root,"BidHistoryTable75",rx+halfW+24,y+160,halfW,h-220,"ALL BID HISTORY + OUTCOMES",{"Date","User","Trader / Text","Amount","Status"},self:RowsOrNA(histRows,5,"No bid history loaded"),C.red,{.8,1,1.5,.8,1})
+  local by=y+h-52; self:ToolButton(root,"BidScan75",rx,by,180,42,"Scan Gold",C.red,function() TML:ScanSelectedGuildGold(); TML:RenderTool("trader_bids") end); self:ToolButton(root,"BidBack75",rx+196,by,180,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"BidExit75",rx+392,by,160,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+function TML:RenderOldLedger(root,x,y,w,h,accent,guildMode)
+  if guildMode then
+    local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local rw=w-selectorW-24; local g=self:GetGuild(); local st=self:ComputeGuildGoldStats(g.id); local topH=154
+    self:DrawLegacyPanel(root,"LedgerStats75G",rx,y,rw,topH,"GUILD GOLD LEDGER",accent)
+    local cards={{"Bank Gold",st.bank==nil and WNA() or WFormatGold(st.bank),C.gold},{"Donations",WFormatGold(st.donations),VGreen},{"Withdrawn",WFormatGold(st.withdrawn),VRed},{"Pending Bids",WFormatGold(st.pending),VRed},{"Ticket Gold",WFormatGold(st.ticketGold),VYellow},{"Guild Tax",WFormatGold(st.guildTax),VGreen}}
+    local cardW=math.floor((rw-94)/6); for i,c in ipairs(cards) do self:DrawMiniStat(root,"LedgerMini75G"..i,rx+20+(i-1)*(cardW+10),y+58,cardW,74,c[1],c[2],c[3],c[3]) end
+    local filter=self.saved.guildGoldFilter or "Bank Gold History"; local data,mode2=self:GetGuildGoldFilterRows(g.id,filter); local rows={}
+    if mode2=="aggregate" then for _,r in ipairs(data) do local color=(filter=="Tickets" or filter=="Giveaway Tickets") and VYellow or ((filter=="Withdraws" or filter=="Bid Returns" or filter=="Review") and VRed or VGreen); rows[#rows+1]={VCell(WLimit(r.user,22),C.white),VCell(WFormatGold(r.amount),color),WFormatNumber(r.count),WRelTime(r.last)} end; self:DrawLegacyTable(root,"LedgerHistory75G",rx,y+topH+20,math.floor(rw*.64),h-topH-82,filter:upper().." - HIGHEST TO LEAST",{"User","Amount","Rows","Last"},self:RowsOrNA(rows,4,"No data for this filter"),accent,{1.6,1,0.6,0.8})
+    else for _,e in ipairs(data) do local b=tostring(e.bucket or ""); local bcol=(b=="Donation" and VGreen) or ((b=="Ticket" or b=="Giveaway Ticket") and VYellow) or (V21675_IsNeverDonation(b) and VRed) or C.white; rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.action=="deposit" and VCell("Deposit",VGreen) or VCell("Withdraw",VRed),VCell(WFormatGold(e.amount),(e.action=="deposit" and bcol or VRed)),VCell(b or WNA(),bcol)} end; self:DrawLegacyTable(root,"LedgerHistory75G",rx,y+topH+20,math.floor(rw*.64),h-topH-82,"BANK GOLD HISTORY",{"Date","User","Event","Amount","Bucket"},self:RowsOrNA(rows,5,"Press Scan Gold"),accent,{1,1.2,1,1,1.2}) end
+    local sideX=rx+math.floor(rw*.64)+22; local sideW=rw-math.floor(rw*.64)-22; self:DrawLegacyPanel(root,"LedgerSide75G",sideX,y+topH+20,sideW,h-topH-82,"FILTERS / TICKET RULES",accent,C.yellow)
+    self:Label("TicketRulesText75G",root,"Active Filter: "..filter.."\n\nTicket Gold: "..WFormatGold(st.ticketGold).."\nGiveaway Gold: "..WFormatGold(st.giveawayGold).."\nGold Raffle: 001 / 007. Giveaway: 002 / 003.\n\nDonations are strict: bid-like, returned-bid-like, high round review rows, reset markers, and tickets are excluded.\n"..tostring(self.saved.scanStatus.goldStrict or ""),sideX+22,y+topH+72,sideW-44,288,C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+    self:ToolButton(root,"GoldFilter75G",sideX+32,y+h-104,sideW-64,40,"Filter: "..filter,accent,function() TML:CycleGuildGoldFilter() end)
+    local by=y+h-52; self:ToolButton(root,"GoldScanBtn75G",rx,by,210,42,"Scan Gold History",accent,function() TML:ScanSelectedGuildGold() end); self:ToolButton(root,"GoldBack75G",rx+224,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"GoldExit75G",rx+448,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end); return
+  end
+  local st=self:ComputePersonalGoldStats(); local topH=236; self:DrawLegacyPanel(root,"LedgerStats75",x,y,w,topH,"GOLD LEDGER",accent); local bankText=st.bank==nil and "Bank not scanned" or WFormatGold(st.bank); local cards={{"Current Gold",WFormatGold(st.current),C.gold},{"Bank Gold",bankText,C.gold},{"24H Gold In",WFormatGold(st.in24),VGreen},{"24H Gold Out",WFormatGold(st.out24),VRed},{"24H Net",WFormatGold(st.net24),st.net24>=0 and VGreen or VRed},{"All-Time In",WFormatGold(st.allIn),VGreen},{"All-Time Out",WFormatGold(st.allOut),VRed},{"All-Time Net",WFormatGold(st.allNet),st.allNet>=0 and VGreen or VRed}}; local cardW=math.floor((w-90)/4); for i,c in ipairs(cards) do local col=(i-1)%4; local row=math.floor((i-1)/4); self:DrawMiniStat(root,"LedgerMini75"..i,x+24+col*(cardW+14),y+58+row*78,cardW,68,c[1],c[2],c[3],c[3]) end; self:Label("GoldLedgerNote75",root,"24H tracks the last 24 hours. All-Time tracks saved gold movement. Trader sales use final collected gold after fees.",x+26,y+topH-34,w-52,30,C.yellowDim,FONTS.panelSmall,TEXT_ALIGN_CENTER); local filter=self.saved.personalGoldFilter or "Recent"; local rows={}; for _,e in ipairs(self:GetPersonalGoldRows(filter)) do rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.source or WNA(),e.direction=="in" and VCell("+"..WFormatGold(e.amount),VGreen) or VCell("-"..WFormatGold(e.amount),VRed),e.note or WNA()} end; self:DrawLegacyTable(root,"LedgerHistory75",x,y+topH+20,w,h-topH-82,"PERSONAL GOLD HISTORY - "..string.upper(filter),{"Date","UserID","Source","Amount","Note"},self:RowsOrNA(rows,5,"Press Refresh Ledger"),accent,{1,1.1,1.8,1,1.3}); local by=y+h-52; self:ToolButton(root,"PersonalGoldRefresh75",x,by,210,42,"Refresh Ledger",accent,function() TML:ScanPersonalGoldLedger(); TML:RenderTool("gold_ledger_personal") end); self:ToolButton(root,"PersonalGoldFilter75",x+224,by,210,42,"Filter: "..filter,accent,function() TML:CyclePersonalGoldFilter() end); self:ToolButton(root,"PersonalGoldBack75",x+448,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"PersonalGoldExit75",x+672,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+local OldInitialize_21675 = TML.Initialize
+function TML:Initialize(addonName)
+  if OldInitialize_21675 then OldInitialize_21675(self, addonName) end
+  self:EnsureDataDefaults()
+  if d then d("Tamriel Master Ledger v"..self.version.." strict ledger/progress/input hotfix loaded.") end
+end
+
+local function TML_21676_Patch()
+-- =========================================================
+-- v2.0.16.76 ACCURACY / NO-FAKE-VALUES PASS
+-- - Removes fake Data Loaded % system entirely.
+-- - Trader Bids now uses only ESO banked-currency kiosk event types.
+-- - Guild Gold donations are strict confirmed deposit rows only; unknown rows go to Review.
+-- - Personal Gold Ledger is rebuilt from clean current scans and no longer keeps old mixed rows.
+-- - Net Worth no longer auto-scans and only values items with a known guild-average price; unknown prices are unpriced, not guessed.
+-- - Help/Instructions visibility enlarged for console/TV readability.
+-- =========================================================
+TML.version = "2.0.16.78"
+TML.addOnVersion = 21678
+TML.lastUpdated = "06/15/2026 07:35 UTC"
+
+local function V21676_Low(v) return string.lower(tostring(v or "")) end
+local function V21676_Amt(v) return math.floor(math.abs(tonumber(v) or 0)) end
+local function V21676_UserKey(v)
+  v = V21676_Low(v):gsub("^%s+", ""):gsub("%s+$", ""):gsub("^@", "")
+  return v
+end
+local function V21676_SameUser(a,b) return V21676_UserKey(a) ~= "" and V21676_UserKey(a) == V21676_UserKey(b) end
+local function V21676_EndsWith(amount, suffix) return (V21676_Amt(amount) % 1000) == (tonumber(suffix) or 0) and V21676_Amt(amount) > 0 end
+local function V21676_EqConst(eventType, names)
+  for _,name in ipairs(names or {}) do local v=_G[name]; if v ~= nil and eventType == v then return true end end
+  local s=V21676_Low(eventType)
+  for _,name in ipairs(names or {}) do local n=V21676_Low(name); if s ~= "" and (s == n or s:find(n,1,true)) then return true end end
+  return false
+end
+local function V21676_BankedCurrencyKind(eventType)
+  if V21676_EqConst(eventType,{"GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_BID","GUILD_HISTORY_BANKED_CURRENCY_EVENT_GUILD_KIOSK_BID","GUILD_HISTORY_BANKED_CURRENCY_EVENT_TRADER_BID","GUILD_HISTORY_BANKED_CURRENCY_EVENT_BID"}) then return "kiosk_bid" end
+  if V21676_EqConst(eventType,{"GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_BID_REFUND","GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_BID_RETURNED","GUILD_HISTORY_BANKED_CURRENCY_EVENT_TRADER_BID_REFUND","GUILD_HISTORY_BANKED_CURRENCY_EVENT_BID_REFUND","GUILD_HISTORY_BANKED_CURRENCY_EVENT_LOST_BID"}) then return "kiosk_bid_refund" end
+  if V21676_EqConst(eventType,{"GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_PURCHASED","GUILD_HISTORY_BANKED_CURRENCY_EVENT_HIRED_TRADER","GUILD_HISTORY_BANKED_CURRENCY_EVENT_HIRE_TRADER","GUILD_HISTORY_BANKED_CURRENCY_EVENT_TRADER_HIRED"}) then return "kiosk_purchased" end
+  if V21676_EqConst(eventType,{"GUILD_HISTORY_BANKED_CURRENCY_EVENT_HERALDRY_EDITED","GUILD_HISTORY_BANKED_CURRENCY_EVENT_HERALDRY","GUILD_HISTORY_BANKED_CURRENCY_EVENT_EDIT_HERALDRY"}) then return "heraldry" end
+  if V21676_EqConst(eventType,{"GUILD_HISTORY_BANKED_CURRENCY_EVENT_DEPOSITED","GUILD_HISTORY_BANKED_CURRENCY_EVENT_GOLD_DEPOSITED","GUILD_HISTORY_BANKED_CURRENCY_EVENT_DEPOSIT"}) then return "deposit" end
+  if V21676_EqConst(eventType,{"GUILD_HISTORY_BANKED_CURRENCY_EVENT_WITHDRAWN","GUILD_HISTORY_BANKED_CURRENCY_EVENT_GOLD_WITHDRAWN","GUILD_HISTORY_BANKED_CURRENCY_EVENT_WITHDRAWAL"}) then return "withdraw" end
+  return "unknown"
+end
+local function V21676_IsKioskKind(kind) return kind=="kiosk_bid" or kind=="kiosk_bid_refund" or kind=="kiosk_purchased" end
+local function V21676_TicketGold(amount) return V21676_EndsWith(amount,1) or V21676_EndsWith(amount,7) end
+local function V21676_TicketGiveaway(amount) return V21676_EndsWith(amount,2) or V21676_EndsWith(amount,3) end
+local function V21676_Reset(self,guildId,mode,amount)
+  if self and self.IsRaffleResetAmount and self:IsRaffleResetAmount(guildId,mode,amount) then return true end
+  return (tonumber(amount) or 0) > 0 and ((tonumber(amount) or 0) % 100 == 33)
+end
+local function V21676_NeverDonation(bucket)
+  bucket=tostring(bucket or "")
+  return bucket=="Pending Bid" or bucket=="Bid Return" or bucket=="Hired Trader" or bucket=="Heraldry" or bucket=="Withdrawal" or bucket=="Reset" or bucket=="Ticket" or bucket=="Giveaway Ticket" or bucket=="Other / Review" or bucket=="Unknown / Review" or bucket=="Kiosk / Review"
+end
+
+-- Remove the fake 0/100 loading percentage. Pages now use scan/status rows only.
+function TML:GetPageLoadStatus(toolKey) return nil, nil end
+function TML:RenderPageLoadStatus(root, toolKey) return end
+
+-- Strict ESO event-type gold classifier. No amount guessing.
+function TML:ClassifyGuildGold(guildId, amount, action, note, eventType)
+  amount = tonumber(amount) or 0
+  local kind = V21676_BankedCurrencyKind(eventType)
+  if kind == "kiosk_bid" then return "Pending Bid" end
+  if kind == "kiosk_bid_refund" then return "Bid Return" end
+  if kind == "kiosk_purchased" then return "Hired Trader" end
+  if kind == "heraldry" then return "Heraldry" end
+  if kind == "withdraw" then return "Withdrawal" end
+  if kind ~= "deposit" then return "Other / Review" end
+  if V21676_Reset(self,guildId,"gold",amount) or V21676_Reset(self,guildId,"giveaway",amount) then return "Reset" end
+  if V21676_TicketGiveaway(amount) then return "Giveaway Ticket" end
+  if V21676_TicketGold(amount) then return "Ticket" end
+  return "Donation"
+end
+
+function TML:IsBankCurrencyDeposit(eventType, note)
+  local kind = V21676_BankedCurrencyKind(eventType)
+  return kind == "deposit" or kind == "kiosk_bid_refund"
+end
+
+function TML:AddGuildGoldEvent(guildId,eventId,user,amount,timestamp,action,bucket,note,eventType)
+  self:EnsureDataDefaults(); amount=tonumber(amount) or 0; timestamp=tonumber(timestamp) or WNow(); note=tostring(note or "")
+  local kind=V21676_BankedCurrencyKind(eventType)
+  if kind=="deposit" or kind=="kiosk_bid_refund" then action="deposit" elseif kind=="withdraw" or kind=="kiosk_bid" or kind=="kiosk_purchased" or kind=="heraldry" then action="withdraw" else action="unknown" end
+  bucket = self:ClassifyGuildGold(guildId, amount, action, note, eventType)
+  local key=tostring(guildId)..":"..tostring(eventId or (tostring(user)..tostring(amount)..tostring(timestamp)..tostring(action)..tostring(note)..tostring(eventType)))
+  self.saved.guildGoldEvents[key]={guildId=guildId,user=user or WNA(),amount=amount,timestamp=timestamp,action=action,bucket=bucket,note=note,eventType=eventType,eventKind=kind}
+end
+
+function TML:ScanGuildGold(g)
+  self:EnsureDataDefaults(); g=g or self:GetGuild(); if not g or not g.id or g.id==0 then return end
+  local cat=self:GetHistoryCategory("bankedCurrency")
+  if type(GetGuildHistoryBankedCurrencyEventInfo)~="function" or not cat then self.saved.scanStatus.gold="Guild gold history API unavailable"; return end
+  -- Fresh scan for this guild. Old mixed rows from previous versions are intentionally dropped.
+  for key,e in pairs(self.saved.guildGoldEvents or {}) do if e and e.guildId==g.id then self.saved.guildGoldEvents[key]=nil end end
+  local newest,oldest=self:GetHistoryIndices(g.id,cat,WORKING_HISTORY_DAYS); local scanned,accepted,review=0,0,0
+  if oldest>=newest then
+    for i=newest,oldest do
+      local ok,eventId,timestamp,isRedacted,eventType,displayName,currencyType,amount,kioskName = pcall(GetGuildHistoryBankedCurrencyEventInfo,g.id,i)
+      local isMoney=(currencyType == nil or _G.CURT_MONEY == nil or currencyType == _G.CURT_MONEY)
+      if ok and not isRedacted and displayName and amount and isMoney then
+        local kind=V21676_BankedCurrencyKind(eventType)
+        local note=tostring(kioskName or "")
+        self:AddGuildGoldEvent(g.id,eventId or i,displayName,tonumber(amount),timestamp,nil,nil,note,eventType)
+        scanned=scanned+1; if kind=="unknown" then review=review+1 else accepted=accepted+1 end
+      end
+    end
+  end
+  self:RequestHistory(g.id,cat,WORKING_HISTORY_DAYS)
+  self:RebuildDonationEvents(); self:PruneEventTable(self.saved.guildGoldEvents,WORKING_MAX_EVENTS); self:PruneEventTable(self.saved.donationEvents,WORKING_MAX_EVENTS)
+  self.saved.scanStatus.gold="Scanned "..tostring(scanned).." gold rows • "..tostring(review).." review rows"
+  if self.MarkScanned then self:MarkScanned(scanned>0 and "Scanned" or "No Data", scanned>0) end
+end
+function TML:ScanSelectedGuildGold()
+  local g=self:GetGuild(); self:ScanGuildGold(g); if g and g.id and g.id~=0 then pcall(function() self:ScanGuildSales(g) end) end; self:RebuildDonationEvents(); self:RenderTool(self.state.activeTool)
+end
+
+function TML:RebuildDonationEvents()
+  self:EnsureDataDefaults(); self.saved.donationEvents={}
+  local donations, excluded, review = 0,0,0
+  for key,e in pairs(self.saved.guildGoldEvents or {}) do
+    if e then
+      e.bucket=self:ClassifyGuildGold(e.guildId,e.amount,e.action,e.note,e.eventType); e.eventKind=V21676_BankedCurrencyKind(e.eventType)
+      if e.action=="deposit" and e.bucket=="Donation" and not V21676_NeverDonation(e.bucket) then
+        self.saved.donationEvents[tostring(key)..":donation"]={guildId=e.guildId,user=e.user,amount=e.amount,timestamp=e.timestamp,bucket="Donation"}
+        donations=donations+1
+      elseif e.bucket=="Other / Review" or e.bucket=="Unknown / Review" then review=review+1 else excluded=excluded+1 end
+    end
+  end
+  self.saved.scanStatus=self.saved.scanStatus or {}; self.saved.scanStatus.goldStrict=tostring(donations).." confirmed donations / "..tostring(excluded).." excluded / "..tostring(review).." review"
+end
+
+function TML:GetGuildGoldRows(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents(); local rows={}
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do if (not guildId or guildId==0 or e.guildId==guildId) then rows[#rows+1]=e end end
+  table.sort(rows,function(a,b) return (tonumber(a.timestamp) or 0)>(tonumber(b.timestamp) or 0) end); return rows
+end
+
+function TML:BuildTraderBidLedger(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents()
+  local events={}
+  for _,e in ipairs(self:GetGuildGoldRows(guildId)) do local kind=V21676_BankedCurrencyKind(e.eventType); if V21676_IsKioskKind(kind) then events[#events+1]=e end end
+  table.sort(events,function(a,b) return (tonumber(a.timestamp) or 0)<(tonumber(b.timestamp) or 0) end)
+  local active,history,returned,hired={},{},0,0
+  local function resolve(e,status)
+    local amt=V21676_Amt(e.amount)
+    for i=#active,1,-1 do local p=active[i]; if not p.resolved and V21676_Amt(p.amount)==amt then p.resolved=true; p.status=status; return true end end
+    return false
+  end
+  for _,e in ipairs(events) do
+    local kind=V21676_BankedCurrencyKind(e.eventType); local status="Kiosk Event"
+    if kind=="kiosk_bid" then active[#active+1]={amount=e.amount,trader=e.note,user=e.user,timestamp=e.timestamp,status="Pending"}; status="Bid Placed / Pending"
+    elseif kind=="kiosk_bid_refund" then returned=returned+(tonumber(e.amount) or 0); resolve(e,"Returned"); status="Returned / Cleared"
+    elseif kind=="kiosk_purchased" then hired=hired+(tonumber(e.amount) or 0); resolve(e,"Hired"); status="Hired Trader" end
+    history[#history+1]={event=e,status=status}
+  end
+  local pending,pendingRows=0,{}
+  for _,p in ipairs(active) do if not p.resolved then pending=pending+(tonumber(p.amount) or 0); pendingRows[#pendingRows+1]=p end end
+  table.sort(history,function(a,b) return (tonumber(a.event.timestamp) or 0)>(tonumber(b.event.timestamp) or 0) end)
+  return {pending=pending,pendingRows=pendingRows,history=history,bidEvents=#history,lostBids=returned,hiredTrader=hired,netImpact=-pending-hired}
+end
+
+function TML:ComputeGuildGoldStats(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents()
+  local st={bank=nil,donations=0,withdrawn=0,pending=0,ticketGold=0,giveawayGold=0,guildTax=0,bidEvents=0,lostBids=0,hiredTrader=0,netImpact=0,heraldry=0,review=0}
+  if V21667_GuildBankGold then st.bank=V21667_GuildBankGold(self,guildId) elseif type(GetGuildBankedMoney)=="function" and guildId and guildId~=0 then local ok,v=pcall(GetGuildBankedMoney,guildId); if ok then st.bank=tonumber(v) end end
+  for _,e in ipairs(self:GetGuildGoldRows(guildId)) do
+    local amt=tonumber(e.amount) or 0; local b=tostring(e.bucket or "")
+    if b=="Donation" and e.action=="deposit" then st.donations=st.donations+amt end
+    if b=="Ticket" then st.ticketGold=st.ticketGold+amt end
+    if b=="Giveaway Ticket" then st.giveawayGold=st.giveawayGold+amt end
+    if e.action=="withdraw" then st.withdrawn=st.withdrawn+amt end
+    if b=="Heraldry" then st.heraldry=st.heraldry+amt end
+    if b=="Other / Review" or b=="Unknown / Review" then st.review=st.review+amt end
+  end
+  local bid=self:BuildTraderBidLedger(guildId); st.pending=bid.pending; st.bidEvents=bid.bidEvents; st.lostBids=bid.lostBids; st.hiredTrader=bid.hiredTrader; st.netImpact=bid.netImpact
+  for _,s in pairs(self.saved.salesEvents or {}) do if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(s) end; if (not guildId or guildId==0 or s.guildId==guildId) then st.guildTax=st.guildTax+(tonumber(s.guildTax or s.tax) or 0) end end
+  st.adjusted=(st.bank or 0)-st.pending; return st
+end
+
+function TML:GetGuildGoldFilterRows(guildId, filter)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents(); filter=filter or self.saved.guildGoldFilter or "Bank Gold History"
+  if filter=="Bank Gold History" then return self:GetGuildGoldRows(guildId),"history" end
+  local agg={}; local function add(user,amount,ts) amount=tonumber(amount) or 0; if amount<=0 then return end; local u=user or WNA(); local r=agg[u] or {user=u,amount=0,count=0,last=0}; r.amount=r.amount+amount; r.count=r.count+1; if (tonumber(ts) or 0)>r.last then r.last=tonumber(ts) or 0 end; agg[u]=r end
+  if filter=="Taxes Paid" then for _,s in pairs(self.saved.salesEvents or {}) do if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(s) end; if (not guildId or guildId==0 or s.guildId==guildId) then add(s.seller,tonumber(s.guildTax or s.tax) or 0,s.timestamp) end end
+  else for _,e in pairs(self.saved.guildGoldEvents or {}) do if (not guildId or guildId==0 or e.guildId==guildId) then local b=tostring(e.bucket or ""); if filter=="Tickets" and b=="Ticket" then add(e.user,e.amount,e.timestamp) elseif filter=="Giveaway Tickets" and b=="Giveaway Ticket" then add(e.user,e.amount,e.timestamp) elseif filter=="Donations" and b=="Donation" and e.action=="deposit" then add(e.user,e.amount,e.timestamp) elseif filter=="Withdraws" and e.action=="withdraw" then add(e.user,e.amount,e.timestamp) elseif filter=="Bid Returns" and b=="Bid Return" then add(e.user,e.amount,e.timestamp) elseif filter=="Review" and b=="Other / Review" then add(e.user,e.amount,e.timestamp) end end end end
+  local rows={}; for _,r in pairs(agg) do if (tonumber(r.amount) or 0)>0 then rows[#rows+1]=r end end
+  table.sort(rows,function(a,b) return (a.amount or 0)>(b.amount or 0) end); return rows,"aggregate"
+end
+
+-- Personal Gold Ledger: clean derived data only; no old accumulator, no wallet delta guesses.
+local function V21676_AddPersonalRow(self, source, amount, direction, note, timestamp, keyExtra)
+  amount=tonumber(amount) or 0; if amount<=0 then return false end; timestamp=tonumber(timestamp) or WNow(); direction=direction or "in"
+  local key=tostring(source)..":"..tostring(timestamp)..":"..tostring(amount)..":"..tostring(direction)..":"..tostring(keyExtra or "")
+  self.saved.personalGoldEvents[key]={timestamp=timestamp,user=self:GetUserDisplayName(),source=source,amount=amount,direction=direction,note=note or source}
+  return true
+end
+function TML:ScanPersonalGoldLedger()
+  self:EnsureDataDefaults(); self.saved.personalGoldEvents={}; self.saved.personalGoldTotals={goldIn=0,goldOut=0,moves=0}
+  local my=self:GetUserDisplayName(); local added,excluded=0,0
+  self:EachGuild(function(g) self:ScanGuildGold(g); self:ScanGuildSales(g) end)
+  for _,s in pairs(self.saved.salesEvents or {}) do if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(s) end; if V21676_SameUser(s.seller,my) then if V21676_AddPersonalRow(self,"Guild Trader Sale",tonumber(s.netAmount or s.amount) or 0,"in",self:GetGuildName(s.guildId),s.timestamp,"sale:"..tostring(s.guildId)..":"..tostring(s.itemLink or s.itemName)..":"..tostring(s.timestamp)) then added=added+1 end end end
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do if V21676_SameUser(e.user,my) then local b=tostring(e.bucket or ""); local amt=tonumber(e.amount) or 0; if e.action=="deposit" and (b=="Donation" or b=="Ticket" or b=="Giveaway Ticket" or b=="Reset") then if V21676_AddPersonalRow(self,"Guild Bank Deposit",amt,"out",b,e.timestamp,"gold:"..tostring(e.guildId)..":"..tostring(e.timestamp)..":"..tostring(amt)..":"..b) then added=added+1 end elseif e.action=="withdraw" and b=="Withdrawal" then if V21676_AddPersonalRow(self,"Guild Bank Withdrawal",amt,"in",b,e.timestamp,"gold:"..tostring(e.guildId)..":"..tostring(e.timestamp)..":"..tostring(amt)..":"..b) then added=added+1 end else excluded=excluded+1 end end end
+  local carried=tonumber(self:GetCarriedGoldLive()) or 0; local bank=tonumber(self:GetBankGoldLive()) or nil; self.saved.goldSnapshots.personalLast={carriedGold=carried,bankedGold=bank,total=(carried+(bank or 0)),timestamp=WNow()}
+  self.saved.scanStatus.personalGold="Scan complete: "..tostring(added).." clean rows"..(excluded>0 and (" / "..tostring(excluded).." excluded") or "")
+  if self.MarkScanned then self:MarkScanned(added>0 and "Scanned" or "No Data", added>0) end
+end
+function TML:GetPersonalGoldRows(filter)
+  self:EnsureDataDefaults(); local rows={}; filter=filter or self.saved.personalGoldFilter or "Recent"
+  for _,e in pairs(self.saved.personalGoldEvents or {}) do if filter=="Gold In" then if e.direction=="in" then rows[#rows+1]=e end elseif filter=="Gold Out" then if e.direction=="out" then rows[#rows+1]=e end else rows[#rows+1]=e end end
+  if filter=="Gold In" or filter=="Gold Out" then table.sort(rows,function(a,b) return (tonumber(a.amount) or 0)>(tonumber(b.amount) or 0) end) else table.sort(rows,function(a,b) return (tonumber(a.timestamp) or 0)>(tonumber(b.timestamp) or 0) end) end
+  return rows
+end
+function TML:ComputePersonalGoldStats()
+  self:EnsureDataDefaults(); local rows=self:GetPersonalGoldRows("Recent"); local now=WNow(); local st={current=tonumber(self:GetCarriedGoldLive()) or 0,bank=tonumber(self:GetBankGoldLive()),in24=0,out24=0,net24=0,allIn=0,allOut=0,allNet=0,scanned=(self.saved.scanStatus and self.saved.scanStatus.personalGold~=nil)}
+  for _,e in ipairs(rows) do local amt=tonumber(e.amount) or 0; if e.direction=="in" then st.allIn=st.allIn+amt; if now-(tonumber(e.timestamp) or 0)<=WORKING_SECONDS_DAY then st.in24=st.in24+amt end elseif e.direction=="out" then st.allOut=st.allOut+amt; if now-(tonumber(e.timestamp) or 0)<=WORKING_SECONDS_DAY then st.out24=st.out24+amt end end end
+  st.net24=st.in24-st.out24; st.allNet=st.allIn-st.allOut; return st
+end
+
+-- Net Worth: no auto-scan, no mixed vendor/sales values. Items without guild avg are unpriced.
+function TML:GetNetWorth()
+  self:EnsureDataDefaults()
+  return self.saved.networth or {scanned=false,total=0,character=0,carriedGold=0,bankedGold=0,carriedItems=0,bankedItems=0,craftBag=0,unpriced=0,top={},currencies={},craftBagStatus="Not scanned"}
+end
+local function V21676_SlotLink(bagId,slotIndex,slotData)
+  local link=slotData and (slotData.itemLink or slotData.link or (slotData.itemData and slotData.itemData.itemLink))
+  if (not link or link=="") and slotData and type(slotData.GetItemLink)=="function" then local ok,l=pcall(function() return slotData:GetItemLink() end); if ok then link=l end end
+  if (not link or link=="") and type(GetItemLink)=="function" and slotIndex then local ok,l=pcall(GetItemLink,bagId,slotIndex); if ok then link=l end end
+  return link
+end
+local function V21676_SlotQty(bagId,slotIndex,slotData)
+  local q=tonumber(slotData and (slotData.stackCount or slotData.stack or slotData.quantity or slotData.stackSize or (slotData.itemData and slotData.itemData.stackCount)))
+  if (not q or q<=0) and slotData and type(slotData.GetStackCount)=="function" then local ok,v=pcall(function() return slotData:GetStackCount() end); if ok then q=tonumber(v) end end
+  if (not q or q<=0) and type(GetSlotStackSize)=="function" and slotIndex then local ok,v=pcall(GetSlotStackSize,bagId,slotIndex); if ok then q=tonumber(v) end end
+  return (q and q>0) and q or 1
+end
+local function V21676_AddNWItem(self,nw,itemLink,qty,bucket,locName)
+  if not itemLink or itemLink=="" then return false end; qty=tonumber(qty) or 1
+  local avg=self:GetAveragePrice(WItemKey(itemLink)); if not avg or tonumber(avg)<=0 then nw.unpriced=(nw.unpriced or 0)+1; return false end
+  local value=math.floor(tonumber(avg)*qty); nw[bucket]=(tonumber(nw[bucket]) or 0)+value; table.insert(nw.top,{name=WGetItemName(itemLink),itemLink=itemLink,qty=qty,avg=avg,value=value,location=locName,source="guild avg"}); return true
+end
+local function V21676_ScanBag(self,nw,bagId,bucket,locName)
+  if bagId==nil or type(GetBagSize)~="function" then return 0,0 end
+  local okS,size=pcall(GetBagSize,bagId); size=okS and tonumber(size) or 0; local seen,priced=0,0
+  for slot=0,math.max(0,size-1) do local link=V21676_SlotLink(bagId,slot,nil); if link and link~="" then seen=seen+1; if V21676_AddNWItem(self,nw,link,V21676_SlotQty(bagId,slot,nil),bucket,locName) then priced=priced+1 end end end
+  return seen,priced
+end
+local function V21676_ScanCraftBag(self,nw)
+  local bagId=_G.BAG_VIRTUAL; if not bagId then nw.craftBagStatus="Craft Bag API unavailable"; return 0,0 end
+  local seenKeys,seen,priced={},0,0; local candidates={}
+  if SHARED_INVENTORY then for _,method in ipairs({"GenerateFullSlotData","GetBagCache","GetOrCreateBagCache"}) do if type(SHARED_INVENTORY[method])=="function" then local ok,data; if method=="GenerateFullSlotData" then ok,data=pcall(function() return SHARED_INVENTORY:GenerateFullSlotData(nil,bagId) end) else ok,data=pcall(function() return SHARED_INVENTORY[method](SHARED_INVENTORY,bagId) end) end; if ok and type(data)=="table" then candidates[#candidates+1]=data end end end end
+  for _,data in ipairs(candidates) do for slotKey,slotData in pairs(data) do local slotIndex=tonumber(slotData and (slotData.slotIndex or slotData.slotId or slotData.slot or slotKey)) or tonumber(slotKey); local link=V21676_SlotLink(bagId,slotIndex,slotData); if link and link~="" then local key=link..":"..tostring(slotIndex or slotKey); if not seenKeys[key] then seenKeys[key]=true; seen=seen+1; if V21676_AddNWItem(self,nw,link,V21676_SlotQty(bagId,slotIndex,slotData),"craftBag","Craft Bag") then priced=priced+1 end end end end end
+  if seen==0 then seen,priced=V21676_ScanBag(self,nw,bagId,"craftBag","Craft Bag") end
+  nw.craftBagScanned=seen; nw.craftBagStatus=seen>0 and ("Scanned "..tostring(seen).." craft bag item stacks") or "Craft Bag not loaded"; return seen,priced
+end
+function TML:ScanNetWorth()
+  self:EnsureDataDefaults(); self.saved.networth=nil
+  local rate=tonumber(self.saved.crownRate); local nw={scanned=true,total=0,character=0,carriedGold=0,bankedGold=0,carriedItems=0,bankedItems=0,craftBag=0,unpriced=0,top={},currencies={},lastScan=WNow(),craftBagStatus="Not scanned",crownRate=rate,crownGold=nil,pricedStacks=0,seenStacks=0,priceSource="Guild sales average only"}
+  nw.carriedGold=tonumber(self:GetCarriedGoldLive()) or 0; nw.bankedGold=tonumber(self:GetBankGoldLive()) or 0
+  local accountLoc={_G.CURRENCY_LOCATION_ACCOUNT,nil}; local charBankLoc={_G.CURRENCY_LOCATION_CHARACTER,_G.CURRENCY_LOCATION_BANK,_G.CURRENCY_LOCATION_ACCOUNT,nil}
+  nw.currencies={{"Crowns",WCurrencyAny({"CURT_CROWNS","CURT_CROWN_CROWNS"},accountLoc)},{"Crown Gems",WCurrencyAny({"CURT_CROWN_GEMS"},accountLoc)},{"Writ Vouchers",WCurrencyAny({"CURT_WRIT_VOUCHERS","CURT_WRIT_VOUCHER"},charBankLoc)},{"Alliance Points",WCurrencyAny({"CURT_ALLIANCE_POINTS"},charBankLoc)},{"Tel Var Stones",WCurrencyAny({"CURT_TELVAR_STONES"},charBankLoc)},{"Trade Bars",WCurrencyAny({"CURT_TRADE_BARS","CURT_EVENT_TICKETS","CURT_EVENT_TICKET"},accountLoc)},{"Undaunted Keys",WCurrencyAny({"CURT_UNDAUNTED_KEYS","CURT_UNDAUNTED_KEY"},charBankLoc)},{"Seals",WCurrencyAny({"CURT_SEALS_OF_ENDEAVOR","CURT_ENDEAVOR_SEALS","CURT_SEAL_OF_ENDEAVOR"},accountLoc)},{"Archival Fortunes",WCurrencyAny({"CURT_ARCHIVAL_FORTUNES","CURT_ARCHIVAL_FORTUNE"},charBankLoc)},{"Tome Points",WCurrencyAny({"CURT_TOME_POINTS","CURT_TAMRIEL_TOME_POINTS","CURT_TAMRIEL_TOMES"},charBankLoc)}}
+  local s,p=V21676_ScanBag(self,nw,_G.BAG_BACKPACK,"carriedItems","Backpack"); nw.seenStacks=nw.seenStacks+s; nw.pricedStacks=nw.pricedStacks+p
+  s,p=V21676_ScanBag(self,nw,_G.BAG_BANK,"bankedItems","Bank"); nw.seenStacks=nw.seenStacks+s; nw.pricedStacks=nw.pricedStacks+p
+  s,p=V21676_ScanBag(self,nw,_G.BAG_SUBSCRIBER_BANK,"bankedItems","Bank"); nw.seenStacks=nw.seenStacks+s; nw.pricedStacks=nw.pricedStacks+p
+  s,p=V21676_ScanCraftBag(self,nw); nw.seenStacks=nw.seenStacks+s; nw.pricedStacks=nw.pricedStacks+p
+  local crowns=nil; for _,cur in ipairs(nw.currencies) do if cur[1]=="Crowns" then crowns=tonumber(cur[2]) end end; if rate and rate>0 and crowns then nw.crownGold=math.floor(crowns*rate) end
+  table.sort(nw.top,function(a,b) return (a.value or 0)>(b.value or 0) end); while #nw.top>20 do table.remove(nw.top) end
+  nw.character=nw.carriedGold+nw.carriedItems; nw.total=nw.character+nw.bankedGold+nw.bankedItems+nw.craftBag+(nw.crownGold or 0)
+  self.saved.networth=nw; self.saved.goldSnapshots.last={carriedGold=nw.carriedGold,bankedGold=nw.bankedGold,timestamp=WNow()}; self.saved.scanStatus.networth="Scan complete: "..tostring(nw.pricedStacks).." priced / "..tostring(nw.unpriced).." unpriced"
+  if self.MarkScanned then self:MarkScanned("Scanned",true) end
+end
+
+local OldRenderOldNetWorth_21676 = TML.RenderOldNetWorth
+function TML:RenderOldNetWorth(root,x,y,w,h,accent)
+  local nw=self:GetNetWorth(); local scanned=nw and nw.scanned and nw.lastScan; local leftW=560
+  self:DrawLegacyPanel(root,"NWStats76",x,y,leftW,h-62,"SUMMARY",accent)
+  local function val(v) return scanned and WFormatGold(v or 0) or "Not Scanned" end
+  local crownGold=(scanned and nw.crownGold~=nil) and WFormatGold(nw.crownGold) or (scanned and "Set Crown Rate" or "Not Scanned")
+  local left={{"GOLD","",C.cyanSoft},{"Total Net Worth",val(nw.total),VGreen},{"Character Net Worth",val(nw.character),VGreen},{"Carried Gold",val(nw.carriedGold),VGreen},{"Banked Gold",val(nw.bankedGold),VGreen},{"Crown Gold",crownGold,scanned and C.gold or C.muted},{"INVENTORY VALUE","",C.cyanSoft},{"Carried Items",val(nw.carriedItems),C.cyanSoft},{"Banked Items",val(nw.bankedItems),C.cyanSoft},{"Craft Bag",scanned and WFormatGold(nw.craftBag or 0) or "Not Scanned",C.cyanSoft},{"Unpriced Items",scanned and WFormatNumber(nw.unpriced or 0) or "Not Scanned",C.muted}}
+  local right={{"CURRENCIES","",C.cyanSoft}}; if scanned then for _,cur in ipairs(nw.currencies or {}) do right[#right+1]={cur[1],cur[2]==nil and WNA() or WFormatNumber(cur[2]),cur[2]==nil and C.muted or C.gold} end else right[#right+1]={"Status","Press Scan Net Worth",C.gold} end
+  local topY=y+66; local col1=x+28; local col2=x+296; local maxRows=math.max(#left,#right); local rowH=math.max(30, math.min(38, math.floor((h-170)/math.max(1,maxRows))))
+  for i,r in ipairs(left) do local font=(r[2]=="" and FONTS.panelSmall or FONTS.panelText); self:Label("NWLeftK76"..i,root,r[1],col1,topY+(i-1)*rowH,154,rowH,r[3] or C.white,font,TEXT_ALIGN_LEFT); self:Label("NWLeftV76"..i,root,r[2] or "",col1+150,topY+(i-1)*rowH,106,rowH,r[3] or VGreen,font,TEXT_ALIGN_RIGHT) end
+  for i,r in ipairs(right) do local font=(r[2]=="" and FONTS.panelSmall or FONTS.panelText); self:Label("NWRightK76"..i,root,r[1],col2,topY+(i-1)*rowH,150,rowH,r[3] or C.white,font,TEXT_ALIGN_LEFT); self:Label("NWRightV76"..i,root,r[2] or "",col2+148,topY+(i-1)*rowH,84,rowH,r[3] or C.gold,font,TEXT_ALIGN_RIGHT) end
+  local tableX=x+leftW+24; local tableW=w-leftW-24
+  self:Label("NWLoadNotice76",root,"Load times vary. Missing data? Open Guild History, force-load events, then scan again.",tableX+16,y+6,tableW-32,30,C.cyanSoft,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  self:Label("NWAvgWarning76",root,"Net Worth item values use confirmed guild average prices only. Items without a known average are unpriced and not counted.",tableX+16,y+34,tableW-32,34,VYellow,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  self:Label("NWCraftStatus76",root,"Status: "..tostring(self.saved.scanStatus.networth or "Press Scan Net Worth").." • "..tostring(nw.craftBagStatus or "Not scanned"),tableX+16,y+66,tableW-32,26,C.cyanSoft,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  local rows={}; if scanned then for i,it in ipairs(nw.top or {}) do rows[#rows+1]={tostring(i),self:FormatItemCell(it.itemLink,it.name,30),it.avg and VCell(WFormatGold(it.avg),VYellow) or VCell(WNA(),C.muted),WFormatNumber(it.qty),VCell(WFormatGold(it.value),VGreen),it.location or WNA()} end end
+  self:DrawLegacyTable(root,"NWTopItems76",tableX,y+100,tableW,h-162,"TOP 20 MOST VALUABLE ITEMS",{"Rank","Item Name","Avg","Qty","Value","Location"},self:RowsOrNA(rows,6,"Press Scan Net Worth"),accent,{0.38,2.55,.75,.55,.9,1})
+  local by=y+h-52; local bw=math.floor((w-36)/4); self:ToolButton(root,"NWScan76",x,by,bw,42,"Scan Net Worth",accent,function() TML:ScanNetWorth(); TML:RenderTool("net_worth") end); self:ToolButton(root,"NWCrownRate76",x+bw+12,by,bw,42,"Set Crown Rate",accent,function() TML:OpenSetCrownRatePage() end); self:ToolButton(root,"NWBack76",x+(bw+12)*2,by,bw,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"NWExit76",x+(bw+12)*3,by,bw,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+local OldRenderOldLedger_21676 = TML.RenderOldLedger
+function TML:RenderOldLedger(root,x,y,w,h,accent,guildMode)
+  if guildMode then return OldRenderOldLedger_21676(self,root,x,y,w,h,accent,guildMode) end
+  local st=self:ComputePersonalGoldStats(); local topH=236; self:DrawLegacyPanel(root,"LedgerStats76",x,y,w,topH,"GOLD LEDGER",accent)
+  local scanned=st.scanned; local bankText=st.bank==nil and "Bank not scanned" or WFormatGold(st.bank); local function gval(v) return scanned and WFormatGold(v or 0) or "Not Scanned" end
+  local cards={{"Current Gold",WFormatGold(st.current),C.gold},{"Bank Gold",bankText,C.gold},{"24H Gold In",gval(st.in24),VGreen},{"24H Gold Out",gval(st.out24),VRed},{"24H Net",gval(st.net24),scanned and (st.net24>=0 and VGreen or VRed) or C.muted},{"All-Time In",gval(st.allIn),VGreen},{"All-Time Out",gval(st.allOut),VRed},{"All-Time Net",gval(st.allNet),scanned and (st.allNet>=0 and VGreen or VRed) or C.muted}}
+  local cardW=math.floor((w-90)/4); for i,c in ipairs(cards) do local col=(i-1)%4; local row=math.floor((i-1)/4); self:DrawMiniStat(root,"LedgerMini76"..i,x+24+col*(cardW+14),y+58+row*78,cardW,68,c[1],c[2],c[3],c[3]) end
+  self:Label("GoldLedgerNote76",root,tostring(self.saved.scanStatus.personalGold or "Press Refresh Ledger. Only clean verified personal gold rows are counted."),x+26,y+topH-34,w-52,30,C.yellowDim,FONTS.panelSmall,TEXT_ALIGN_CENTER)
+  local filter=self.saved.personalGoldFilter or "Recent"; local rows={}; if scanned then for _,e in ipairs(self:GetPersonalGoldRows(filter)) do rows[#rows+1]={WRelTime(e.timestamp),WLimit(e.user,18),e.source or WNA(),e.direction=="in" and VCell("+"..WFormatGold(e.amount),VGreen) or VCell("-"..WFormatGold(e.amount),VRed),e.note or WNA()} end end
+  self:DrawLegacyTable(root,"LedgerHistory76",x,y+topH+20,w,h-topH-82,"PERSONAL GOLD HISTORY - "..string.upper(filter),{"Date","UserID","Source","Amount","Note"},self:RowsOrNA(rows,5,"Press Refresh Ledger"),accent,{1,1.1,1.8,1,1.3})
+  local by=y+h-52; self:ToolButton(root,"PersonalGoldRefresh76",x,by,210,42,"Refresh Ledger",accent,function() TML:ScanPersonalGoldLedger(); TML:RenderTool("gold_ledger_personal") end); self:ToolButton(root,"PersonalGoldFilter76",x+224,by,210,42,"Filter: "..filter,accent,function() TML:CyclePersonalGoldFilter() end); self:ToolButton(root,"PersonalGoldBack76",x+448,by,210,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"PersonalGoldExit76",x+672,by,210,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+-- Help visibility enhancement.
+function TML:RenderOldHelp(root,x,y,w,h,accent)
+  self:DrawLegacyPanel(root,"HelpPanel76",x,y,w,h,"HELP & INSTRUCTIONS",accent,C.yellow)
+  local lines={{"CONTROLLER","D-pad moves. A selects. B backs out one level."},{"KEYBOARD","E / Enter selects. Esc / Backspace / X backs out."},{"MOUSE","Click menu rows and buttons. Wheel scrolls list pages."},{"MENU FLOW","Page -> submenu -> main menu -> ESO menu."},{"SCAN SAFETY","Press the scan button on each page. Values show only after verified scan data exists."},{"MEMORY SAFETY","Page runtime data is released when leaving a page; saved caches are capped."},{"GUILD SCANS","History rows are capped and request more history when ESO cache is empty."}}
+  for i,t in ipairs(lines) do local yy=y+76+(i-1)*68; self:Backdrop("HelpLineBg76"..i,root,x+48,yy,w-96,54,{0,0,0,0.62},{accent[1],accent[2],accent[3],0.40}); self:Label("HelpKey76"..i,root,t[1]..":",x+70,yy+6,190,44,(i<=2) and C.gold or C.yellow,FONTS.panelText,TEXT_ALIGN_LEFT); self:Label("HelpLine76"..i,root,t[2],x+260,yy+6,w-340,44,C.white,FONTS.panelText,TEXT_ALIGN_LEFT) end
+end
+function TML:RenderOldPersonalInstructions(root,x,y,w,h,accent) self:RenderOldHelp(root,x,y,w,h,accent) end
+
+local OldInitialize_21676 = TML.Initialize
+function TML:Initialize(addonName)
+  if OldInitialize_21676 then OldInitialize_21676(self, addonName) end
+  self:EnsureDataDefaults(); self.saved.scanStatus = self.saved.scanStatus or {}
+  if d then d("Tamriel Master Ledger v"..self.version.." accuracy/no-fake-values hotfix loaded.") end
+end
+end
+TML_21676_Patch(); -- v2.0.16.76 accuracy block
+
+
+local function TML_21678_Patch()
+-- =========================================================
+-- v2.0.16.78 PUBLIC RELEASE QA / LEDGER RAFFLE HEADER FIX
+-- - Removes bid/kiosk/heraldry buckets from normal Withdrawn totals and Withdraws filter.
+-- - Restores raffle entry scanning by allowing confirmed ticket buckets through raffle rules only.
+-- - Moves the load-time warning into every page header and removes the duplicate Net Worth body warning.
+-- - Keeps values strict: unverified rows stay Review/Not Scanned instead of fake totals.
+-- =========================================================
+TML.version = "2.0.16.78"
+TML.addOnVersion = 21678
+TML.lastUpdated = "06/15/2026 07:35 UTC"
+
+local function V21678_Low(v) return string.lower(tostring(v or "")) end
+local function V21678_Amt(v) return math.floor(math.abs(tonumber(v) or 0)) end
+local function V21678_IsWithdrawalBucket(bucket)
+  bucket = tostring(bucket or "")
+  return bucket == "Withdrawal" or bucket == "Withdraw"
+end
+local function V21678_IsReviewBucket(bucket)
+  bucket = tostring(bucket or "")
+  return bucket == "Other / Review" or bucket == "Unknown / Review" or bucket == "Kiosk / Review" or bucket == "Possible Bid / Review" or bucket == "Bid Return / Review"
+end
+local function V21678_GlobalLoadText()
+  return "Load times vary. Missing data? Open Guild History, force-load events, then scan again."
+end
+
+-- Header warning is global and page-safe. It appears above the cyan divider on every page.
+function TML:DrawLegacyHeader(root, x, y, w, title, subtitle, accent)
+  accent = accent or C.cyan
+  self:Texture("ToolTMLIcon77", root, self:GetToolIcon(self.state.activeTool), x + 26, y + 22, 58, 58, accent)
+  self:Label("ToolTMLTitle77", root, "TAMRIEL MASTER LEDGER", x + 98, y + 12, w - 124, 42, C.cyanSoft, FONTS.panelTitle, TEXT_ALIGN_LEFT)
+  self:Label("ToolPageName77", root, string.upper(tostring(title or "PAGE")), x + 100, y + 54, w - 126, 30, accent, FONTS.panelText, TEXT_ALIGN_LEFT)
+  self:Label("ToolMeta77", root, tostring(subtitle or "Working phase") .. "  •  Last Updated: " .. tostring(self.lastUpdated or "") .. "  •  v" .. tostring(self.version or ""), x + 28, y + 86, w - 56, 24, C.white, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+  self:Backdrop("ToolLoadNoticeBg77", root, x + 28, y + 114, w - 56, 30, {0,0,0,0.50}, {C.gold[1], C.gold[2], C.gold[3], 0.35})
+  self:Label("ToolLoadNotice77", root, V21678_GlobalLoadText(), x + 42, y + 116, w - 84, 26, C.gold, FONTS.panelSmall, TEXT_ALIGN_CENTER)
+  self:Backdrop("ToolHeaderDivider77", root, x + 28, y + 154, w - 56, 3, {C.cyan[1], C.cyan[2], C.cyan[3], 0.84}, nil)
+end
+
+function TML:RenderHeader(root, railW, menuName)
+  local iconSize = 44
+  self:Texture("HeaderIcon77", root, self.icon, 38, 26, iconSize, iconSize, C.cyanSoft)
+  self:Label("HeaderTitle77", root, "TAMRIEL MASTER\nLEDGER", 92, 14, railW - 128, 68, C.cyanSoft, FONTS.panelTitle, TEXT_ALIGN_LEFT)
+  self:Label("HeaderContext77", root, string.upper(menuName or "MAIN"), 92, 80, railW - 128, 28, C.white, FONTS.menuSmall, TEXT_ALIGN_LEFT)
+  self:Label("HeaderUpdated77", root, "Last Updated: " .. tostring(self.lastUpdated or "") .. "  |  v" .. tostring(self.version or ""), 38, 110, railW - 76, 22, C.muted, FONTS.menuSmall, TEXT_ALIGN_LEFT)
+  self:Label("HeaderLoadNotice77", root, V21678_GlobalLoadText(), 38, 130, railW - 76, 22, C.gold, FONTS.menuSmall, TEXT_ALIGN_CENTER)
+  self:Backdrop("HeaderDivider77", root, 38, 154, railW - 76, 2, {C.cyan[1], C.cyan[2], C.cyan[3], 0.70}, nil)
+end
+
+-- Strict final gold stats: normal Withdrawn only means true Withdrawal bucket.
+function TML:ComputeGuildGoldStats(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents()
+  local st={bank=nil,donations=0,withdrawn=0,pending=0,ticketGold=0,giveawayGold=0,guildTax=0,bidEvents=0,lostBids=0,hiredTrader=0,netImpact=0,heraldry=0,review=0}
+  if V21667_GuildBankGold then
+    st.bank=V21667_GuildBankGold(self,guildId)
+  elseif type(GetGuildBankedMoney)=="function" and guildId and guildId~=0 then
+    local ok,v=pcall(GetGuildBankedMoney,guildId); if ok then st.bank=tonumber(v) end
+  end
+  for _,e in ipairs(self:GetGuildGoldRows(guildId)) do
+    local amt=tonumber(e.amount) or 0; local b=tostring(e.bucket or "")
+    if b=="Donation" and e.action=="deposit" then st.donations=st.donations+amt end
+    if b=="Ticket" then st.ticketGold=st.ticketGold+amt end
+    if b=="Giveaway Ticket" then st.giveawayGold=st.giveawayGold+amt end
+    if V21678_IsWithdrawalBucket(b) then st.withdrawn=st.withdrawn+amt end
+    if b=="Heraldry" then st.heraldry=st.heraldry+amt end
+    if V21678_IsReviewBucket(b) then st.review=st.review+amt end
+  end
+  local bid=self:BuildTraderBidLedger(guildId); st.pending=bid.pending; st.bidEvents=bid.bidEvents; st.lostBids=bid.lostBids; st.hiredTrader=bid.hiredTrader; st.netImpact=bid.netImpact
+  for _,s in pairs(self.saved.salesEvents or {}) do if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(s) end; if (not guildId or guildId==0 or s.guildId==guildId) then st.guildTax=st.guildTax+(tonumber(s.guildTax or s.tax) or 0) end end
+  st.adjusted=(st.bank or 0)-st.pending
+  return st
+end
+
+-- Strict filters: Withdraws shows only Withdrawal bucket, never bids/kiosk/heraldry/review.
+function TML:GetGuildGoldFilterRows(guildId, filter)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents(); filter=filter or self.saved.guildGoldFilter or "Bank Gold History"
+  if filter=="Bank Gold History" then return self:GetGuildGoldRows(guildId),"history" end
+  local agg={}
+  local function add(user,amount,ts)
+    amount=tonumber(amount) or 0; if amount<=0 then return end
+    local u=user or WNA(); local r=agg[u] or {user=u,amount=0,count=0,last=0}
+    r.amount=r.amount+amount; r.count=r.count+1; if (tonumber(ts) or 0)>r.last then r.last=tonumber(ts) or 0 end; agg[u]=r
+  end
+  if filter=="Taxes Paid" then
+    for _,s in pairs(self.saved.salesEvents or {}) do if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(s) end; if (not guildId or guildId==0 or s.guildId==guildId) then add(s.seller,tonumber(s.guildTax or s.tax) or 0,s.timestamp) end end
+  else
+    for _,e in pairs(self.saved.guildGoldEvents or {}) do
+      if (not guildId or guildId==0 or e.guildId==guildId) then
+        local b=tostring(e.bucket or "")
+        if filter=="Tickets" and b=="Ticket" then add(e.user,e.amount,e.timestamp)
+        elseif filter=="Giveaway Tickets" and b=="Giveaway Ticket" then add(e.user,e.amount,e.timestamp)
+        elseif filter=="Donations" and b=="Donation" and e.action=="deposit" then add(e.user,e.amount,e.timestamp)
+        elseif filter=="Withdraws" and V21678_IsWithdrawalBucket(b) then add(e.user,e.amount,e.timestamp)
+        elseif filter=="Bid Returns" and b=="Bid Return" then add(e.user,e.amount,e.timestamp)
+        elseif filter=="Review" and V21678_IsReviewBucket(b) then add(e.user,e.amount,e.timestamp) end
+      end
+    end
+  end
+  local rows={}; for _,r in pairs(agg) do if (tonumber(r.amount) or 0)>0 then rows[#rows+1]=r end end
+  table.sort(rows,function(a,b) return (a.amount or 0)>(b.amount or 0) end)
+  return rows,"aggregate"
+end
+
+function TML:CycleGuildGoldFilter()
+  local list={"Bank Gold History","Donations","Tickets","Giveaway Tickets","Bid Returns","Review","Withdraws","Taxes Paid"}
+  local cur=self.saved.guildGoldFilter or list[1]; local idx=1; for i,v in ipairs(list) do if v==cur then idx=i break end end
+  self.saved.guildGoldFilter=list[(idx%#list)+1]; self:RenderTool("guild_gold_ledger")
+end
+
+-- Raffle scanner uses a ticket whitelist, not the donation exclusion list.
+function TML:ScanRaffleEntries(noRender)
+  self:EnsureDataDefaults(); local g=self:GetGuild(); if not g or not g.id or g.id==0 then self:Notify("Select a guild before scanning raffle entries."); return end
+  self:ScanGuildGold(g)
+  local mode=self:GetRaffleMode(g.id); local r=self:GetRaffle(g.id,mode); r.entries={}; r.winners={}; r.lastScan=WNow()
+  local resetInfo=self:FindRaffleResetInfo(g.id,mode); local reset=tonumber(resetInfo.timestamp) or 0; r.started=reset; r.resetBy=resetInfo.user; r.resetValue=resetInfo.amount
+  local neededBucket=(mode=="giveaway") and "Giveaway Ticket" or "Ticket"
+  local deposits,tickets,excluded,seen=0,0,0,0
+  for _,e in ipairs(self:GetGuildGoldRows(g.id)) do
+    local ts=tonumber(e.timestamp) or 0; local amount=tonumber(e.amount) or 0; local b=tostring(e.bucket or "")
+    if ts>=reset and e.action=="deposit" then
+      seen=seen+1
+      if b==neededBucket and self:IsRaffleTicketAmountForMode(mode,amount) and (not self:IsRaffleResetAmount(g.id,"gold",amount)) and (not self:IsRaffleResetAmount(g.id,"giveaway",amount)) then
+        local t=self:RaffleTicketsFromGold(amount)
+        if t>0 then
+          local user=tostring(e.user or WNA()); local key=(V21676_UserKey and V21676_UserKey(user)) or V21678_Low(user)
+          local existing=r.entries[key] or {name=user,tickets=0,gold=0,last=0,entryType=""}
+          existing.tickets=(existing.tickets or 0)+t; existing.gold=(existing.gold or 0)+amount
+          if mode=="giveaway" then existing.entryType=(amount%1000==2) and "002" or "003" else existing.entryType=(amount%1000==7) and "007" or "001" end
+          if ts>(existing.last or 0) then existing.last=ts end; r.entries[key]=existing; deposits=deposits+1; tickets=tickets+t
+        end
+      elseif b=="Reset" or b=="Donation" or b=="Bid Return" or b=="Pending Bid" or b=="Hired Trader" or b=="Withdrawal" or b=="Heraldry" or V21678_IsReviewBucket(b) then
+        excluded=excluded+1
+      end
+    end
+  end
+  if deposits>0 then
+    self.saved.scanStatus.raffle="Scanned "..tostring(deposits).." "..(mode=="giveaway" and "Giveaway" or "Gold Raffle").." deposits / "..tostring(tickets).." entries"
+  elseif seen==0 then
+    self.saved.scanStatus.raffle="No gold deposit rows after reset. Force-load Guild History, then scan again."
+  else
+    self.saved.scanStatus.raffle="No "..(mode=="giveaway" and "002 / 003" or "001 / 007").." entries after reset"..(excluded>0 and (" • "..tostring(excluded).." rows excluded") or "")
+  end
+  if self.MarkScanned then self:MarkScanned(deposits>0 and "Scanned" or "No Data", deposits>0) end
+  if not noRender then self:RenderTool("guild_raffle") end
+end
+
+-- Net Worth body no longer repeats the load warning; the header owns it globally.
+function TML:RenderOldNetWorth(root,x,y,w,h,accent)
+  local nw=self:GetNetWorth(); local scanned=nw and nw.scanned and nw.lastScan; local leftW=560
+  self:DrawLegacyPanel(root,"NWStats77",x,y,leftW,h-62,"SUMMARY",accent)
+  local function val(v) return scanned and WFormatGold(v or 0) or "Not Scanned" end
+  local crownGold=(scanned and nw.crownGold~=nil) and WFormatGold(nw.crownGold) or (scanned and "Set Crown Rate" or "Not Scanned")
+  local left={{"GOLD","",C.cyanSoft},{"Total Net Worth",val(nw.total),VGreen},{"Character Net Worth",val(nw.character),VGreen},{"Carried Gold",val(nw.carriedGold),VGreen},{"Banked Gold",val(nw.bankedGold),VGreen},{"Crown Gold",crownGold,scanned and C.gold or C.muted},{"INVENTORY VALUE","",C.cyanSoft},{"Carried Items",val(nw.carriedItems),C.cyanSoft},{"Banked Items",val(nw.bankedItems),C.cyanSoft},{"Craft Bag",scanned and WFormatGold(nw.craftBag or 0) or "Not Scanned",C.cyanSoft},{"Unpriced Items",scanned and WFormatNumber(nw.unpriced or 0) or "Not Scanned",C.muted}}
+  local right={{"CURRENCIES","",C.cyanSoft}}; if scanned then for _,cur in ipairs(nw.currencies or {}) do right[#right+1]={cur[1],cur[2]==nil and WNA() or WFormatNumber(cur[2]),cur[2]==nil and C.muted or C.gold} end else right[#right+1]={"Status","Press Scan Net Worth",C.gold} end
+  local topY=y+66; local col1=x+28; local col2=x+296; local maxRows=math.max(#left,#right); local rowH=math.max(30, math.min(38, math.floor((h-170)/math.max(1,maxRows))))
+  for i,r in ipairs(left) do local font=(r[2]=="" and FONTS.panelSmall or FONTS.panelText); self:Label("NWLeftK77"..i,root,r[1],col1,topY+(i-1)*rowH,154,rowH,r[3] or C.white,font,TEXT_ALIGN_LEFT); self:Label("NWLeftV77"..i,root,r[2] or "",col1+150,topY+(i-1)*rowH,106,rowH,r[3] or VGreen,font,TEXT_ALIGN_RIGHT) end
+  for i,r in ipairs(right) do local font=(r[2]=="" and FONTS.panelSmall or FONTS.panelText); self:Label("NWRightK77"..i,root,r[1],col2,topY+(i-1)*rowH,150,rowH,r[3] or C.white,font,TEXT_ALIGN_LEFT); self:Label("NWRightV77"..i,root,r[2] or "",col2+148,topY+(i-1)*rowH,84,rowH,r[3] or C.gold,font,TEXT_ALIGN_RIGHT) end
+  local tableX=x+leftW+24; local tableW=w-leftW-24
+  self:Label("NWAvgWarning77",root,"Net Worth item values use confirmed guild average prices only. Items without a known average are unpriced and not counted.",tableX+16,y+6,tableW-32,34,VYellow,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  self:Label("NWCraftStatus77",root,"Status: "..tostring(self.saved.scanStatus.networth or "Press Scan Net Worth").." • "..tostring(nw.craftBagStatus or "Not scanned"),tableX+16,y+42,tableW-32,26,C.cyanSoft,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  local rows={}; if scanned then for i,it in ipairs(nw.top or {}) do rows[#rows+1]={tostring(i),self:FormatItemCell(it.itemLink,it.name,30),it.avg and VCell(WFormatGold(it.avg),VYellow) or VCell(WNA(),C.muted),WFormatNumber(it.qty),VCell(WFormatGold(it.value),VGreen),it.location or WNA()} end end
+  self:DrawLegacyTable(root,"NWTopItems77",tableX,y+82,tableW,h-144,"TOP 20 MOST VALUABLE ITEMS",{"Rank","Item Name","Avg","Qty","Value","Location"},self:RowsOrNA(rows,6,"Press Scan Net Worth"),accent,{0.38,2.55,.75,.55,.9,1})
+  local by=y+h-52; local bw=math.floor((w-36)/4); self:ToolButton(root,"NWScan77",x,by,bw,42,"Scan Net Worth",accent,function() TML:ScanNetWorth(); TML:RenderTool("net_worth") end); self:ToolButton(root,"NWCrownRate77",x+bw+12,by,bw,42,"Set Crown Rate",accent,function() TML:OpenSetCrownRatePage() end); self:ToolButton(root,"NWBack77",x+(bw+12)*2,by,bw,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"NWExit77",x+(bw+12)*3,by,bw,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+local OldInitialize_21678 = TML.Initialize
+function TML:Initialize(addonName)
+  if OldInitialize_21678 then OldInitialize_21678(self, addonName) end
+  self.version="2.0.16.78"; self.addOnVersion=21678; self.lastUpdated="06/15/2026 07:35 UTC"
+  if d then d("Tamriel Master Ledger v"..self.version.." public-release syntax/ledger/raffle/header fix loaded.") end
+end
+end
+TML_21678_Patch(); -- v2.0.16.78 public release QA block
+
+
+-- =========================================================
+-- v2.0.16.80 PUBLIC RELEASE SYNTAX RECOVERY / SALES + NET WORTH + ICON FIX PASS
+-- - Reworks sales scanning into a clean per-scan source of truth.
+-- - Personal Sales and Personal Gold Ledger no longer depend on stale page data.
+-- - Net Worth prepares price data first and uses accurate ESO item value fallback when guild averages are unavailable.
+-- - Adds Guild Profit to Guild Bookkeeper summary.
+-- - Shortens global load-warning header so it does not collide with borders.
+-- - Restores a safe main-menu icon layer without leaving sticky input/UI behind.
+-- =========================================================
+local function TML_21680_Patch()
+TML.version = "2.0.16.80"
+TML.addOnVersion = 21680
+TML.lastUpdated = "06/15/2026 08:05 UTC"
+TML.icon = "TamrielMasterLedger/textures/tamrielmasterledger_icon.dds"
+
+local function V21679_Low(v) return string.lower(tostring(v or "")) end
+local function V21679_UserKey(v)
+  v = tostring(v or ""):gsub("^%s+", ""):gsub("%s+$", ""):gsub("^@", "")
+  return string.lower(v)
+end
+local function V21679_SameUser(a,b)
+  local aa,bb = V21679_UserKey(a), V21679_UserKey(b)
+  return aa ~= "" and aa == bb
+end
+local function V21679_Now() if type(WNow)=="function" then return WNow() end; if type(GetTimeStamp)=="function" then return GetTimeStamp() end; return os.time() end
+local function V21679_Is24H(ts) ts=tonumber(ts) or 0; return ts>0 and (V21679_Now()-ts)<=WORKING_SECONDS_DAY end
+local function V21679_GuildTax(gross) gross=tonumber(gross) or 0; return math.floor(gross * 0.035 + 0.5) end
+local function V21679_Fee(gross) gross=tonumber(gross) or 0; return math.floor(gross * 0.07 + 0.5) end
+local function V21679_Net(gross) gross=tonumber(gross) or 0; return math.max(0, gross - V21679_Fee(gross)) end
+local function V21679_HeaderWarning() return "Missing data? Load Guild History, then scan again." end
+local function V21679_FormatSource(src)
+  src=tostring(src or "")
+  if src=="guild" or src=="sales" or src:find("guild",1,true) then return "Guild Avg" end
+  if src=="vendor" or src=="eso" then return "ESO Value" end
+  return src~="" and src or WNA()
+end
+
+-- Short, non-colliding header warning. Same page location, less text.
+function TML:DrawLegacyHeader(root, x, y, w, title, subtitle, accent)
+  accent = accent or C.cyan
+  self:Texture("ToolTMLIcon79", root, self:GetToolIcon(self.state.activeTool), x + 26, y + 22, 58, 58, accent)
+  self:Label("ToolTMLTitle79", root, "TAMRIEL MASTER LEDGER", x + 98, y + 12, w - 124, 42, C.cyanSoft, FONTS.panelTitle, TEXT_ALIGN_LEFT)
+  self:Label("ToolPageName79", root, string.upper(tostring(title or "PAGE")), x + 100, y + 54, w - 126, 30, accent, FONTS.panelText, TEXT_ALIGN_LEFT)
+  self:Label("ToolMeta79", root, tostring(subtitle or "Public release") .. "  •  Last Updated: " .. tostring(self.lastUpdated or "") .. "  •  v" .. tostring(self.version or ""), x + 28, y + 86, w - 56, 24, C.white, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+  self:Backdrop("ToolLoadNoticeBg79", root, x + 28, y + 114, w - 56, 28, {0,0,0,0.52}, {C.gold[1], C.gold[2], C.gold[3], 0.36})
+  self:Label("ToolLoadNotice79", root, V21679_HeaderWarning(), x + 42, y + 116, w - 84, 24, C.gold, FONTS.menuSmall, TEXT_ALIGN_CENTER)
+  self:Backdrop("ToolHeaderDivider79", root, x + 28, y + 154, w - 56, 3, {C.cyan[1], C.cyan[2], C.cyan[3], 0.84}, nil)
+end
+
+function TML:RenderHeader(root, railW, menuName)
+  local iconSize = 44
+  self:Texture("HeaderIcon79", root, self.icon, 38, 24, iconSize, iconSize, C.cyanSoft)
+  self:Label("HeaderTitle79", root, "TAMRIEL MASTER\nLEDGER", 92, 12, railW - 128, 66, C.cyanSoft, FONTS.panelTitle, TEXT_ALIGN_LEFT)
+  self:Label("HeaderContext79", root, string.upper(menuName or "MAIN"), 92, 78, railW - 128, 26, C.white, FONTS.menuSmall, TEXT_ALIGN_LEFT)
+  self:Label("HeaderUpdated79", root, "Last Updated: " .. tostring(self.lastUpdated or "") .. "  |  v" .. tostring(self.version or ""), 38, 106, railW - 76, 22, C.muted, FONTS.menuSmall, TEXT_ALIGN_LEFT)
+  self:Backdrop("HeaderNoticeBg79", root, 38, 130, railW - 76, 22, {0,0,0,0.42}, {C.gold[1], C.gold[2], C.gold[3], 0.22})
+  self:Label("HeaderLoadNotice79", root, "Missing data? Load Guild History, scan again.", 44, 131, railW - 88, 20, C.gold, FONTS.menuSmall, TEXT_ALIGN_CENTER)
+  self:Backdrop("HeaderDivider79", root, 38, 156, railW - 76, 2, {C.cyan[1], C.cyan[2], C.cyan[3], 0.70}, nil)
+end
+
+-- Main-menu icon: native fields + safe visual fallback only while ESO menu is open.
+local function V21679_ApplyIconToEntry(entry, icon)
+  if not entry then return end
+  for _,fn in ipairs({"SetIcon","SetNormalIcon","SetSelectedIcon","SetHighlightIcon","SetPressedIcon","SetDisabledIcon"}) do
+    if entry[fn] then SafeCall(function() entry[fn](entry, icon) end) end
+  end
+  entry.icon=icon; entry.normalIcon=icon; entry.selectedIcon=icon; entry.highlightIcon=icon; entry.pressedIcon=icon; entry.disabledIcon=icon
+  entry.id=981682; entry.data=entry.data or {}; entry.data.id=entry.id; entry.data.icon=icon; entry.data.normalIcon=icon; entry.data.selectedIcon=icon; entry.data.highlightIcon=icon; entry.data.pressedIcon=icon; entry.data.disabledIcon=icon
+end
+function TML:RegisterGamepadMainMenuEntry()
+  if not ZO_MENU_ENTRIES or not ZO_GamepadEntryData then return false end
+  for i=#ZO_MENU_ENTRIES,1,-1 do
+    local existing=ZO_MENU_ENTRIES[i]
+    local name=Lower(self:GetEntryText(existing))
+    if (existing and existing.data and existing.data.tmlMenuEntry) or name==Lower(self.title) or name:find("tamriel master ledger",1,true) then table.remove(ZO_MENU_ENTRIES,i) end
+  end
+  local icon=self.icon or "TamrielMasterLedger/textures/tamrielmasterledger_icon.dds"
+  local label=self.displayTitle or self.title or "Tamriel Master Ledger"
+  local entry=ZO_GamepadEntryData:New(label, icon)
+  if entry.SetName then SafeCall(function() entry:SetName(label) end) end
+  if entry.SetText then SafeCall(function() entry:SetText(label) end) end
+  if entry.SetCallback then SafeCall(function() entry:SetCallback(function() TML:OpenFromMainMenu() end) end) end
+  entry.callback=function() TML:OpenFromMainMenu() end
+  if entry.SetEnabled then SafeCall(function() entry:SetEnabled(true) end) else entry.enabled=true end
+  if entry.SetIconTintOnSelection then SafeCall(function() entry:SetIconTintOnSelection(true) end) end
+  V21679_ApplyIconToEntry(entry, icon)
+  entry.id=99150; entry.name=label; entry.text=label
+  entry.data=entry.data or {}; entry.data.name=label; entry.data.text=label; entry.data.sceneName="tamriel_master_ledger_shell"; entry.data.scene="tamriel_master_ledger_shell"; entry.data.tmlMenuEntry=true; entry.data.isVisibleCallback=function() return true end; entry.data.callback=function() TML:OpenFromMainMenu() end
+  local insertIndex,fallbackIndex=nil,nil
+  for i,existing in ipairs(ZO_MENU_ENTRIES) do
+    local text=Lower(self:GetEntryText(existing)); local scene=Lower(existing and existing.data and tostring(existing.data.scene or existing.data.sceneName or "") or "")
+    if text:find("adventurer") or text:find("tracking") or scene:find("tracking") then insertIndex=i+1; break end
+    if text:find("add%-ons") or text:find("add-ons") or scene:find("addon") then fallbackIndex=i+1 end
+    if not fallbackIndex and (text:find("help") or text:find("options") or text:find("settings") or text:find("log out") or text:find("quit")) then fallbackIndex=i end
+  end
+  table.insert(ZO_MENU_ENTRIES, insertIndex or fallbackIndex or (#ZO_MENU_ENTRIES+1), entry)
+  self.menuEntryRegistered=true
+  if MAIN_MENU_GAMEPAD then for _,fn in ipairs({"RefreshLists","RefreshVisible","RefreshList","UpdateEntryEnabledStates"}) do if MAIN_MENU_GAMEPAD[fn] then SafeCall(function() MAIN_MENU_GAMEPAD[fn](MAIN_MENU_GAMEPAD) end) end end end
+  if self.BuildMainMenuIconOverlay then self:BuildMainMenuIconOverlay() end
+  return true
+end
+function TML:BuildMainMenuIconOverlay()
+  if self.mainMenuIconOverlay then return end
+  if not WINDOW_MANAGER or not GuiRoot then return end
+  local root=WINDOW_MANAGER:CreateTopLevelWindow("TamrielMasterLedgerMainMenuIconOverlay79"); root:SetHidden(true); root:SetMouseEnabled(false)
+  if root.SetDrawLayer then root:SetDrawLayer(DL_OVERLAY) end; if root.SetDrawTier then root:SetDrawTier(DT_HIGH) end; if root.SetDrawLevel then root:SetDrawLevel(230) end
+  root:SetDimensions(46,46)
+  local tex=WINDOW_MANAGER:CreateControl("TamrielMasterLedgerMainMenuIconTexture79",root,CT_TEXTURE); tex:SetAnchor(CENTER,root,CENTER,0,0); tex:SetDimensions(38,38); SafeCall(function() tex:SetTexture(self.icon) end); if tex.SetColor then tex:SetColor(unpack(C.cyanSoft)) end
+  self.mainMenuIconOverlay=root; self.mainMenuIconTexture=tex
+end
+function TML:UpdateMainMenuIconOverlay()
+  self:BuildMainMenuIconOverlay(); local root=self.mainMenuIconOverlay; if not root then return end
+  local show=false
+  if SCENE_MANAGER and SCENE_MANAGER.GetCurrentScene then
+    local ok,scene=pcall(function() return SCENE_MANAGER:GetCurrentScene() end); local name=ok and self:GetSceneName(scene) or ""; name=Lower(name or "")
+    show=(not self:IsOpen()) and name~="" and name~="tamriel_master_ledger_shell" and (name:find("menu",1,true) or name:find("main",1,true))
+  end
+  if show then
+    local rw,rh=1920,1080; if GuiRoot and GuiRoot.GetDimensions then local gw,gh=GuiRoot:GetDimensions(); rw=tonumber(gw) or rw; rh=tonumber(gh) or rh end
+    root:ClearAnchors(); root:SetAnchor(TOPLEFT,GuiRoot,TOPLEFT,math.floor(rw*0.079),math.floor(rh*0.478)); root:SetHidden(false)
+  else root:SetHidden(true) end
+end
+function TML:HookMainMenuIconOverlay()
+  self:BuildMainMenuIconOverlay(); if self.mainMenuIconOverlay and self.mainMenuIconOverlay.SetHandler then self.mainMenuIconOverlay:SetHandler("OnUpdate",function() if TML and TML.UpdateMainMenuIconOverlay then TML:UpdateMainMenuIconOverlay() end end) end
+end
+
+-- Sales scanner: clean per-guild refresh, robust parsing, shared source for sales pages / bookkeeper / personal ledger / net worth price cache.
+function TML:ClearSalesForGuild(guildId)
+  self:EnsureDataDefaults(); if not guildId or guildId==0 then return end
+  for key,e in pairs(self.saved.salesEvents or {}) do if e and e.guildId==guildId then self.saved.salesEvents[key]=nil end end
+end
+function TML:RebuildPriceCacheFromSales()
+  self:EnsureDataDefaults(); self.saved.priceCache={}
+  for _,e in pairs(self.saved.salesEvents or {}) do
+    if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(e) end
+    local link=e.itemLink; local qty=tonumber(e.quantity) or 1; local gross=tonumber(e.grossAmount or e.salePrice or e.rawAmount or e.amount) or 0
+    if link and link~="" and qty>0 and gross>0 then
+      local k=WItemKey(link); local name=e.itemName or WGetItemName(link); local pc=self.saved.priceCache[k] or {sum=0,count=0,name=name,source="guild avg"}
+      pc.sum=(tonumber(pc.sum) or 0)+(gross/qty); pc.count=(tonumber(pc.count) or 0)+1; pc.name=name; pc.source="guild avg"; self.saved.priceCache[k]=pc
+    end
+  end
+end
+local function V21679_AddSaleClean(self,guildId,eventId,seller,gross,timestamp,itemLink,quantity,tax)
+  self:EnsureDataDefaults(); gross=tonumber(gross) or 0; if gross<=0 then return false end
+  local qty=tonumber(quantity) or 1; local fee=V21679_Fee(gross); local net=V21679_Net(gross); local guildTax=tonumber(tax) or V21679_GuildTax(gross)
+  local key=tostring(guildId)..":"..tostring(eventId or (tostring(seller)..":"..tostring(gross)..":"..tostring(timestamp)..":"..tostring(itemLink)..":"..tostring(qty)))
+  self.saved.salesEvents[key]={guildId=guildId,seller=seller or WNA(),amount=net,netAmount=net,grossAmount=gross,feeAmount=fee,guildTax=guildTax,tax=guildTax,feeAdjusted=true,timestamp=tonumber(timestamp) or V21679_Now(),itemLink=itemLink,itemName=WGetItemName(itemLink),quantity=qty}
+  return true
+end
+local function V21679_ParseTrader(vals)
+  local eventId,timestamp,isRedacted,eventType,seller,buyer,itemLink,quantity,price,tax = vals[1],vals[2],vals[3],vals[4],vals[5],vals[6],vals[7],vals[8],vals[9],vals[10]
+  if type(seller)=="string" and tonumber(price) then return eventId,timestamp,isRedacted,eventType,seller,buyer,itemLink,quantity,price,tax end
+  local strings,nums={},{}
+  for _,v in ipairs(vals) do
+    if type(v)=="string" then strings[#strings+1]=v elseif type(v)=="number" then nums[#nums+1]=v end
+  end
+  for _,s in ipairs(strings) do if not itemLink and tostring(s):find("|H",1,true) then itemLink=s end end
+  for _,s in ipairs(strings) do if s~=itemLink and not seller and (s:sub(1,1)=="@" or not s:find("|H",1,true)) then seller=s end end
+  for _,s in ipairs(strings) do if s~=itemLink and s~=seller and not buyer and (s:sub(1,1)=="@" or not s:find("|H",1,true)) then buyer=s end end
+  for _,n in ipairs(nums) do if not timestamp and n>1000000000 and n<4102444800 then timestamp=n end end
+  local maxPrice=0; for _,n in ipairs(nums) do if n>maxPrice and not (timestamp and n==timestamp) then maxPrice=n end end; price=maxPrice>0 and maxPrice or price
+  quantity=tonumber(quantity) or 1; if quantity<=0 or quantity>200000 then quantity=1 end
+  return eventId,timestamp,isRedacted,eventType,seller,buyer,itemLink,quantity,price,tax
+end
+function TML:ScanGuildSales(g)
+  self:EnsureDataDefaults(); if not g or not g.id or g.id==0 then return 0 end
+  self:ClearSalesForGuild(g.id)
+  local cat=self:GetHistoryCategory("trader")
+  if type(GetGuildHistoryTraderEventInfo)~="function" or not cat then self.saved.scanStatus.sales="Sales history API unavailable"; return 0 end
+  local newest,oldest=self:GetHistoryIndices(g.id,cat,WORKING_HISTORY_DAYS); local scanned,stored=0,0
+  if oldest>=newest then
+    for i=newest,oldest do
+      local vals={pcall(GetGuildHistoryTraderEventInfo,g.id,i)}; local ok=table.remove(vals,1)
+      if ok then
+        local eventId,timestamp,isRedacted,eventType,seller,buyer,itemLink,quantity,price,tax=V21679_ParseTrader(vals)
+        if not isRedacted and seller and tonumber(price) and tonumber(price)>0 then scanned=scanned+1; if V21679_AddSaleClean(self,g.id,eventId or i,seller,price,timestamp,itemLink,quantity,tax) then stored=stored+1 end end
+      end
+    end
+  end
+  self:RequestHistory(g.id,cat,WORKING_HISTORY_DAYS); self:PruneEventTable(self.saved.salesEvents,WORKING_MAX_EVENTS); self:RebuildPriceCacheFromSales(); self.saved.scanStatus.sales="Scan complete: "..tostring(stored).." sales rows loaded"; return stored
+end
+function TML:ScanSelectedGuildSales(noRender)
+  local g=self:GetGuild(); local n=self:ScanGuildSales(g); self.saved.scanStatus.sales="Scan complete: "..tostring(n).." sales rows for "..tostring(g and g.name or "selected guild"); if not noRender then self:RenderTool(self.state.activeTool) end
+end
+function TML:ScanAllGuildSales(noRender)
+  local total=0; self:EachGuild(function(g) total=total+(tonumber(self:ScanGuildSales(g)) or 0) end); self.saved.scanStatus.sales="Scan complete: "..tostring(total).." sales rows across loaded guilds"; if not noRender then self:RenderTool(self.state.activeTool) end
+end
+function TML:ScanPersonalSales(noRender)
+  self:ScanAllGuildSales(true)
+  local rows=self:GetSalesRows(0,true); self.saved.scanStatus.sales="Personal scan complete: "..tostring(#rows).." @UserID sales rows loaded"
+  if not noRender then self:RenderTool("personal_sales") end
+end
+function TML:GetSalesRows(guildId, onlyMe)
+  self:EnsureDataDefaults(); local rows={}; local my=V21679_UserKey(self:GetUserDisplayName()); local now=V21679_Now()
+  for _,e in pairs(self.saved.salesEvents or {}) do
+    if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(e) end
+    if (not guildId or guildId==0 or e.guildId==guildId) and ((not onlyMe) or V21679_UserKey(e.seller)==my) and (now-(tonumber(e.timestamp) or 0) <= WORKING_HISTORY_DAYS*WORKING_SECONDS_DAY) then rows[#rows+1]=e end
+  end
+  table.sort(rows,function(a,b) return (tonumber(a.timestamp) or 0)>(tonumber(b.timestamp) or 0) end); return rows
+end
+function TML:GetSalesRows24H(guildId, onlyMe)
+  local rows={}; for _,e in ipairs(self:GetSalesRows(guildId,onlyMe)) do if V21679_Is24H(e.timestamp) then rows[#rows+1]=e end end; return rows
+end
+function TML:ComputeSalesStats(guildId, onlyMe)
+  local rows=self:GetSalesRows(guildId,onlyMe); local st={sales24=0,salesToday=0,totalSales=0,allTimeSales=0,items=0,tax=0,fees=0,gross=0,net=0,topEarner=WNA(),topAmount=0,deltaPct=nil,rowCount=#rows}
+  local sellers={}
+  for _,e in ipairs(rows) do
+    if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(e) end
+    local net=tonumber(e.netAmount or e.amount) or 0; local gross=tonumber(e.grossAmount) or net; local guildTax=tonumber(e.guildTax or e.tax) or V21679_GuildTax(gross); local fee=tonumber(e.feeAmount) or V21679_Fee(gross)
+    if V21679_Is24H(e.timestamp) then st.sales24=st.sales24+net; st.salesToday=st.salesToday+net end
+    st.totalSales=st.totalSales+net; st.allTimeSales=st.allTimeSales+net; st.gross=st.gross+gross; st.fees=st.fees+fee; st.tax=st.tax+guildTax; st.net=st.net+net; st.items=st.items+(tonumber(e.quantity) or 1)
+    local u=e.seller or WNA(); sellers[u]=(sellers[u] or 0)+net
+  end
+  for u,v in pairs(sellers) do if v>st.topAmount then st.topAmount=v; st.topEarner=u end end
+  if st.totalSales>0 then st.deltaPct=(st.sales24/st.totalSales)*100 end; return st
+end
+
+-- Net Worth: prepare sale-price cache first, then count verified guild averages and accurate ESO item values. No fake percentages or placeholders.
+local function V21679_SlotLink(bagId,slotIndex,slotData)
+  local link=slotData and (slotData.itemLink or slotData.link or (slotData.itemData and slotData.itemData.itemLink))
+  if (not link or link=="") and slotData and type(slotData.GetItemLink)=="function" then local ok,l=pcall(function() return slotData:GetItemLink() end); if ok then link=l end end
+  if (not link or link=="") and type(GetItemLink)=="function" and slotIndex then local ok,l=pcall(GetItemLink,bagId,slotIndex); if ok then link=l end end
+  return link
+end
+local function V21679_SlotQty(bagId,slotIndex,slotData)
+  local q=tonumber(slotData and (slotData.stackCount or slotData.stack or slotData.quantity or slotData.stackSize or (slotData.itemData and slotData.itemData.stackCount)))
+  if (not q or q<=0) and slotData and type(slotData.GetStackCount)=="function" then local ok,v=pcall(function() return slotData:GetStackCount() end); if ok then q=tonumber(v) end end
+  if (not q or q<=0) and type(GetSlotStackSize)=="function" and slotIndex then local ok,v=pcall(GetSlotStackSize,bagId,slotIndex); if ok then q=tonumber(v) end end
+  return (q and q>0) and q or 1
+end
+local function V21679_AddNWItem(self,nw,itemLink,qty,bucket,locName)
+  if not itemLink or itemLink=="" then return false end; qty=tonumber(qty) or 1; nw.seenStacks=(tonumber(nw.seenStacks) or 0)+1
+  local avg=self:GetAveragePrice(WItemKey(itemLink)); local value=nil; local src=nil; local unit=nil
+  if avg and tonumber(avg)>0 then unit=tonumber(avg); value=math.floor(unit*qty); src="guild" else value,src=WGetItemValue(itemLink,qty); if value and tonumber(value)>0 then unit=math.floor((tonumber(value) or 0)/math.max(1,qty)); src=(src=="vendor") and "vendor" or "sales" end end
+  if value and tonumber(value)>0 then
+    nw[bucket]=(tonumber(nw[bucket]) or 0)+tonumber(value); nw.pricedStacks=(tonumber(nw.pricedStacks) or 0)+1
+    table.insert(nw.top,{name=WGetItemName(itemLink),itemLink=itemLink,qty=qty,avg=avg,unit=unit,value=tonumber(value),location=locName,source=src,priceLabel=avg and WFormatGold(avg) or V21679_FormatSource(src)})
+    return true
+  end
+  nw.unpriced=(tonumber(nw.unpriced) or 0)+1; return false
+end
+local function V21679_ScanBag(self,nw,bagId,bucket,locName)
+  if bagId==nil or type(GetBagSize)~="function" then return 0,0 end
+  local okS,size=pcall(GetBagSize,bagId); size=okS and tonumber(size) or 0; local seen0=nw.seenStacks or 0; local priced0=nw.pricedStacks or 0
+  for slot=0,math.max(0,size-1) do local link=V21679_SlotLink(bagId,slot,nil); if link and link~="" then V21679_AddNWItem(self,nw,link,V21679_SlotQty(bagId,slot,nil),bucket,locName) end end
+  return (nw.seenStacks or 0)-seen0,(nw.pricedStacks or 0)-priced0
+end
+local function V21679_ScanCraftBag(self,nw)
+  local bagId=_G.BAG_VIRTUAL; if not bagId then nw.craftBagStatus="Craft Bag API unavailable"; return 0,0 end
+  local seenKeys={}; local seen0=nw.seenStacks or 0; local priced0=nw.pricedStacks or 0; local candidates={}
+  if SHARED_INVENTORY then for _,method in ipairs({"GenerateFullSlotData","GetBagCache","GetOrCreateBagCache"}) do if type(SHARED_INVENTORY[method])=="function" then local ok,data; if method=="GenerateFullSlotData" then ok,data=pcall(function() return SHARED_INVENTORY:GenerateFullSlotData(nil,bagId) end) else ok,data=pcall(function() return SHARED_INVENTORY[method](SHARED_INVENTORY,bagId) end) end; if ok and type(data)=="table" then candidates[#candidates+1]=data end end end end
+  for _,data in ipairs(candidates) do for slotKey,slotData in pairs(data) do local slotIndex=tonumber(slotData and (slotData.slotIndex or slotData.slotId or slotData.slot or slotKey)) or tonumber(slotKey); local link=V21679_SlotLink(bagId,slotIndex,slotData); if link and link~="" then local key=link..":"..tostring(slotIndex or slotKey); if not seenKeys[key] then seenKeys[key]=true; V21679_AddNWItem(self,nw,link,V21679_SlotQty(bagId,slotIndex,slotData),"craftBag","Craft Bag") end end end end
+  if (nw.seenStacks or 0)==seen0 then V21679_ScanBag(self,nw,bagId,"craftBag","Craft Bag") end
+  local seen=(nw.seenStacks or 0)-seen0; local priced=(nw.pricedStacks or 0)-priced0; nw.craftBagScanned=seen; nw.craftBagStatus=seen>0 and ("Scanned "..tostring(seen).." craft bag stacks") or "Craft Bag not loaded"; return seen,priced
+end
+function TML:ScanNetWorth()
+  self:EnsureDataDefaults(); self.saved.networth=nil
+  -- Prepare current verified sale-price cache first. If ESO history is not loaded, ESO item value fallback still displays accurate in-game item values.
+  pcall(function() self:ScanAllGuildSales(true) end)
+  local rate=tonumber(self.saved.crownRate); local nw={scanned=true,total=0,character=0,carriedGold=0,bankedGold=0,carriedItems=0,bankedItems=0,craftBag=0,unpriced=0,top={},currencies={},lastScan=V21679_Now(),craftBagStatus="Not scanned",crownRate=rate,crownGold=nil,pricedStacks=0,seenStacks=0,priceSource="Guild Avg + ESO Item Value"}
+  nw.carriedGold=tonumber(self:GetCarriedGoldLive()) or 0; nw.bankedGold=tonumber(self:GetBankGoldLive()) or 0
+  local accountLoc={_G.CURRENCY_LOCATION_ACCOUNT,nil}; local charBankLoc={_G.CURRENCY_LOCATION_CHARACTER,_G.CURRENCY_LOCATION_BANK,_G.CURRENCY_LOCATION_ACCOUNT,nil}
+  nw.currencies={{"Crowns",WCurrencyAny({"CURT_CROWNS","CURT_CROWN_CROWNS"},accountLoc)},{"Crown Gems",WCurrencyAny({"CURT_CROWN_GEMS"},accountLoc)},{"Writ Vouchers",WCurrencyAny({"CURT_WRIT_VOUCHERS","CURT_WRIT_VOUCHER"},charBankLoc)},{"Alliance Points",WCurrencyAny({"CURT_ALLIANCE_POINTS"},charBankLoc)},{"Tel Var Stones",WCurrencyAny({"CURT_TELVAR_STONES"},charBankLoc)},{"Trade Bars",WCurrencyAny({"CURT_TRADE_BARS","CURT_EVENT_TICKETS","CURT_EVENT_TICKET"},accountLoc)},{"Undaunted Keys",WCurrencyAny({"CURT_UNDAUNTED_KEYS","CURT_UNDAUNTED_KEY"},charBankLoc)},{"Seals",WCurrencyAny({"CURT_SEALS_OF_ENDEAVOR","CURT_ENDEAVOR_SEALS","CURT_SEAL_OF_ENDEAVOR"},accountLoc)},{"Archival Fortunes",WCurrencyAny({"CURT_ARCHIVAL_FORTUNES","CURT_ARCHIVAL_FORTUNE"},charBankLoc)},{"Tome Points",WCurrencyAny({"CURT_TOME_POINTS","CURT_TAMRIEL_TOME_POINTS","CURT_TAMRIEL_TOMES"},charBankLoc)}}
+  V21679_ScanBag(self,nw,_G.BAG_BACKPACK,"carriedItems","Backpack"); V21679_ScanBag(self,nw,_G.BAG_BANK,"bankedItems","Bank"); V21679_ScanBag(self,nw,_G.BAG_SUBSCRIBER_BANK,"bankedItems","Bank"); V21679_ScanCraftBag(self,nw)
+  local crowns=nil; for _,cur in ipairs(nw.currencies) do if cur[1]=="Crowns" then crowns=tonumber(cur[2]) end end; if rate and rate>0 and crowns then nw.crownGold=math.floor(crowns*rate) end
+  table.sort(nw.top,function(a,b) return (a.value or 0)>(b.value or 0) end); while #nw.top>20 do table.remove(nw.top) end
+  nw.character=nw.carriedGold+nw.carriedItems; nw.total=nw.character+nw.bankedGold+nw.bankedItems+nw.craftBag+(nw.crownGold or 0)
+  self.saved.networth=nw; self.saved.goldSnapshots.last={carriedGold=nw.carriedGold,bankedGold=nw.bankedGold,timestamp=V21679_Now()}; self.saved.scanStatus.networth="Scan complete: "..tostring(nw.pricedStacks).." priced / "..tostring(nw.unpriced).." unpriced • "..tostring(nw.priceSource)
+  if self.MarkScanned then self:MarkScanned("Scanned",true) end
+end
+function TML:RenderOldNetWorth(root,x,y,w,h,accent)
+  local nw=self:GetNetWorth(); local scanned=nw and nw.scanned and nw.lastScan; local leftW=560
+  self:DrawLegacyPanel(root,"NWStats79",x,y,leftW,h-62,"SUMMARY",accent)
+  local function val(v) return scanned and WFormatGold(v or 0) or "Not Scanned" end
+  local crownGold=(scanned and nw.crownGold~=nil) and WFormatGold(nw.crownGold) or (scanned and "Set Crown Rate" or "Not Scanned")
+  local left={{"GOLD","",C.cyanSoft},{"Total Net Worth",val(nw.total),VGreen},{"Character Net Worth",val(nw.character),VGreen},{"Carried Gold",val(nw.carriedGold),VGreen},{"Banked Gold",val(nw.bankedGold),VGreen},{"Crown Gold",crownGold,scanned and C.gold or C.muted},{"INVENTORY VALUE","",C.cyanSoft},{"Carried Items",val(nw.carriedItems),C.cyanSoft},{"Banked Items",val(nw.bankedItems),C.cyanSoft},{"Craft Bag",scanned and WFormatGold(nw.craftBag or 0) or "Not Scanned",C.cyanSoft},{"Unpriced Items",scanned and WFormatNumber(nw.unpriced or 0) or "Not Scanned",C.muted}}
+  local right={{"CURRENCIES","",C.cyanSoft}}; if scanned then for _,cur in ipairs(nw.currencies or {}) do right[#right+1]={cur[1],cur[2]==nil and WNA() or WFormatNumber(cur[2]),cur[2]==nil and C.muted or C.gold} end else right[#right+1]={"Status","Press Scan Net Worth",C.gold} end
+  local topY=y+66; local col1=x+28; local col2=x+296; local maxRows=math.max(#left,#right); local rowH=math.max(30, math.min(38, math.floor((h-170)/math.max(1,maxRows))))
+  for i,r in ipairs(left) do local font=(r[2]=="" and FONTS.panelSmall or FONTS.panelText); self:Label("NWLeftK79"..i,root,r[1],col1,topY+(i-1)*rowH,154,rowH,r[3] or C.white,font,TEXT_ALIGN_LEFT); self:Label("NWLeftV79"..i,root,r[2] or "",col1+150,topY+(i-1)*rowH,106,rowH,r[3] or VGreen,font,TEXT_ALIGN_RIGHT) end
+  for i,r in ipairs(right) do local font=(r[2]=="" and FONTS.panelSmall or FONTS.panelText); self:Label("NWRightK79"..i,root,r[1],col2,topY+(i-1)*rowH,150,rowH,r[3] or C.white,font,TEXT_ALIGN_LEFT); self:Label("NWRightV79"..i,root,r[2] or "",col2+148,topY+(i-1)*rowH,84,rowH,r[3] or C.gold,font,TEXT_ALIGN_RIGHT) end
+  local tableX=x+leftW+24; local tableW=w-leftW-24
+  self:Label("NWAvgWarning79",root,"Pricing uses guild sale averages when loaded; otherwise ESO item value. Unknown values stay unpriced.",tableX+16,y+8,tableW-32,32,VYellow,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  self:Label("NWCraftStatus79",root,"Status: "..tostring(self.saved.scanStatus.networth or "Press Scan Net Worth").." • "..tostring(nw.craftBagStatus or "Not scanned"),tableX+16,y+42,tableW-32,26,C.cyanSoft,FONTS.panelSmall,TEXT_ALIGN_LEFT)
+  local rows={}; if scanned then for i,it in ipairs(nw.top or {}) do rows[#rows+1]={tostring(i),self:FormatItemCell(it.itemLink,it.name,30),VCell(tostring(it.priceLabel or WNA()),it.avg and VYellow or C.cyanSoft),WFormatNumber(it.qty),VCell(WFormatGold(it.value),VGreen),it.location or WNA()} end end
+  self:DrawLegacyTable(root,"NWTopItems79",tableX,y+82,tableW,h-144,"TOP 20 MOST VALUABLE ITEMS",{"Rank","Item Name","Price","Qty","Value","Location"},self:RowsOrNA(rows,6,"Press Scan Net Worth"),accent,{0.38,2.55,.75,.55,.9,1})
+  local by=y+h-52; local bw=math.floor((w-36)/4); self:ToolButton(root,"NWScan79",x,by,bw,42,"Scan Net Worth",accent,function() TML:ScanNetWorth(); TML:RenderTool("net_worth") end); self:ToolButton(root,"NWCrownRate79",x+bw+12,by,bw,42,"Set Crown Rate",accent,function() TML:OpenSetCrownRatePage() end); self:ToolButton(root,"NWBack79",x+(bw+12)*2,by,bw,42,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"NWExit79",x+(bw+12)*3,by,bw,42,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+end
+
+-- Personal Gold Ledger: rebuild clean, include current @UserID trader sales from fresh sales scan.
+local function V21679_AddPersonalRow(self, source, amount, direction, note, timestamp, keyExtra)
+  amount=tonumber(amount) or 0; if amount<=0 then return false end; self.saved.personalGoldEvents=self.saved.personalGoldEvents or {}
+  local key=tostring(direction)..":"..tostring(source)..":"..tostring(keyExtra or (tostring(note)..":"..tostring(timestamp)..":"..tostring(amount)))
+  if self.saved.personalGoldEvents[key] then return false end
+  self.saved.personalGoldEvents[key]={timestamp=tonumber(timestamp) or V21679_Now(),user=self:GetUserDisplayName(),source=source,amount=amount,direction=direction,note=note or source}
+  return true
+end
+function TML:ScanPersonalGoldLedger()
+  self:EnsureDataDefaults(); self.saved.personalGoldEvents={}; self.saved.personalGoldTotals={goldIn=0,goldOut=0,moves=0}
+  self:ScanAllGuildSales(true); self:EachGuild(function(g) self:ScanGuildGold(g) end); self:RebuildDonationEvents()
+  local my=self:GetUserDisplayName(); local added,excluded=0,0
+  for _,s in pairs(self.saved.salesEvents or {}) do if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(s) end; if V21679_SameUser(s.seller,my) then if V21679_AddPersonalRow(self,"Guild Trader Sale",tonumber(s.netAmount or s.amount) or 0,"in",self:GetGuildName(s.guildId),s.timestamp,"sale:"..tostring(s.guildId)..":"..tostring(s.itemLink or s.itemName)..":"..tostring(s.timestamp)..":"..tostring(s.grossAmount or s.amount)) then added=added+1 end end end
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do
+    if V21679_SameUser(e.user,my) then
+      local b=tostring(e.bucket or ""); local amt=tonumber(e.amount) or 0
+      if e.action=="deposit" and (b=="Donation" or b=="Ticket" or b=="Giveaway Ticket" or b=="Reset") then if V21679_AddPersonalRow(self,"Guild Bank Deposit",amt,"out",b,e.timestamp,"gold:"..tostring(e.guildId)..":"..tostring(e.timestamp)..":"..tostring(amt)..":"..b) then added=added+1 end
+      elseif e.action=="withdraw" and (b=="Withdrawal" or b=="Withdraw") then if V21679_AddPersonalRow(self,"Guild Bank Withdrawal",amt,"in",b,e.timestamp,"gold:"..tostring(e.guildId)..":"..tostring(e.timestamp)..":"..tostring(amt)..":"..b) then added=added+1 end
+      else excluded=excluded+1 end
+    end
+  end
+  self:PruneEventTable(self.saved.personalGoldEvents,WORKING_MAX_EVENTS); self.saved.scanStatus.personalGold="Refresh complete: "..tostring(added).." clean rows / "..tostring(excluded).." excluded"; if self.MarkScanned then self:MarkScanned(added>0 and "Scanned" or "No Data", added>0) end
+end
+
+-- Bookkeeper: add Guild Profit directly under Total Sales. Profit uses sales tax/guild cut only.
+function TML:GetGuildProfitFromSales(guildId)
+  local total=0; for _,s in pairs(self.saved.salesEvents or {}) do if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(s) end; if (not guildId or guildId==0 or s.guildId==guildId) then total=total+(tonumber(s.guildTax or s.tax) or 0) end end; return total
+end
+function TML:BuildBookkeeperMaps(guildId)
+  self:EnsureDataDefaults(); self:RebuildDonationEvents(); local maps={sales={},donations={},raffles={},profit={},unmatched={sales=0,donations=0,raffles=0}}
+  for _,e in pairs(self.saved.salesEvents or {}) do if e.guildId==guildId then if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(e) end; local k=V21679_UserKey(e.seller); local amt=tonumber(e.netAmount or e.amount) or 0; local tax=tonumber(e.guildTax or e.tax) or 0; maps.sales[k]=(maps.sales[k] or 0)+amt; maps.profit[k]=(maps.profit[k] or 0)+tax end end
+  for _,e in pairs(self.saved.guildGoldEvents or {}) do if e.guildId==guildId then local k=V21679_UserKey(e.user); local amt=tonumber(e.amount) or 0; local b=tostring(e.bucket or ""); if b=="Donation" and e.action=="deposit" then maps.donations[k]=(maps.donations[k] or 0)+amt elseif b=="Ticket" then maps.raffles[k]=(maps.raffles[k] or 0)+amt end end end
+  return maps
+end
+function TML:RenderOldBookkeeper(root,x,y,w,h,accent)
+  local selectorW=300; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local tableW=math.floor((w-selectorW-48)*.70); local g=self:GetGuild(); local maps=self:BuildBookkeeperMaps(g.id)
+  local rows={}; local totalSales,totalProfit,totalDon,totalRaf,totalPaid,totalOwed,caught,owing=0,0,0,0,0,0,0,0; local due=self:GetDueAmount(g.id)
+  for _,m in ipairs(self:GetRosterRows(g.id)) do
+    local k=V21679_UserKey(m.name); local s=maps.sales[k] or 0; local p=maps.profit[k] or 0; local d=maps.donations[k] or 0; local rf=maps.raffles[k] or 0; local bal=d-due
+    if bal>=0 then caught=caught+1; totalPaid=totalPaid+math.min(d,due) else owing=owing+1; totalOwed=totalOwed+math.abs(bal) end
+    totalSales=totalSales+s; totalProfit=totalProfit+p; totalDon=totalDon+d; totalRaf=totalRaf+rf
+    rows[#rows+1]={WLimit(m.name,20),VCell(WFormatGold(s),VGreen),VCell(WFormatGold(d),VGreen),VCell(WFormatGold(rf),VYellow),VCell(WFormatGold(bal),bal>=0 and VGreen or VRed),m.lastOnlineSeconds and WRelTime(WNow()-m.lastOnlineSeconds) or WNA(),__sales=s,__donations=d,__raffles=rf,__dues=bal}
+  end
+  local filter=self.saved.bookkeeperFilter or "Sales"
+  table.sort(rows,function(a,b) if filter=="Sales" then return (a.__sales or 0)>(b.__sales or 0) elseif filter=="Donations" then return (a.__donations or 0)>(b.__donations or 0) elseif filter=="Raffles" then return (a.__raffles or 0)>(b.__raffles or 0) elseif filter=="Dues Paid" then return (a.__dues or 0)>(b.__dues or 0) elseif filter=="Dues Owed" then return (a.__dues or 0)<(b.__dues or 0) end; return tostring(a[1])<tostring(b[1]) end)
+  self:DrawLegacyTable(root,"BookkeeperTable79",rx,y,tableW,h-60,"MEMBER BOOKKEEPER - "..string.upper(filter),{"Member","Sales","Donations","Raffles","Dues","Last Online"},self:RowsOrNA(rows,6,"Press Scan Activity"),accent,{1.5,1,1,1,1,1})
+  local sideX=rx+tableW+24; local sideW=w-(sideX-x); self:DrawLegacyPanel(root,"BookkeeperRight79",sideX,y,sideW,h,"SUMMARY",accent)
+  local summary={{"Total Sales",WFormatGold(totalSales),VGreen},{"Guild Profit",WFormatGold(totalProfit),VGreen},{"Total Donations",WFormatGold(totalDon),VGreen},{"Total Raffles",WFormatGold(totalRaf),VYellow},{"Dues Paid",WFormatGold(totalPaid),VGreen},{"Dues Owed",WFormatGold(totalOwed),VRed},{"Caught Up",WFormatNumber(caught),VGreen},{"Owing",WFormatNumber(owing),VRed}}
+  local rowH=math.max(50, math.floor((h-132)/#summary)); for i,t in ipairs(summary) do self:DrawMiniStat(root,"BookMini79"..i,sideX+22,y+48+(i-1)*rowH,sideW-44,rowH-8,t[1],tostring(t[2]),t[3],t[3]) end
+  self:ToolButton(root,"BookFilter79",sideX+38,y+h-114,sideW-76,44,"Filter: "..filter,accent,function() TML:CycleBookkeeperFilter() end); self:ToolButton(root,"BookScan79",sideX+38,y+h-62,sideW-76,44,"Scan Activity",accent,function() TML:ScanBookkeeper() end)
+end
+
+-- Sales page buttons and status use the same fresh scan source. Personal scan now scans all guilds and matches @UserID.
+local OldRenderSales_21679Base = TML.RenderOldSales
+function TML:RenderOldSales(root,x,y,w,h,accent,guildMode)
+  local selectorW = guildMode and 300 or 0
+  if guildMode then self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent) end
+  local rx=x+selectorW+(guildMode and 24 or 0); local rw=w-selectorW-(guildMode and 24 or 0); local g=self:GetGuild(); local filter=guildMode and (self.saved.salesFilter or "Recent") or (self.saved.personalSalesFilter or "All-Time"); if filter=="Sales" or filter=="Total Sales" or ((not guildMode) and filter=="Recent") then filter="All-Time" end
+  local st=self:ComputeSalesStats(guildMode and g.id or 0,not guildMode); local rows={}; local title=""; local headers={}; local widths=nil
+  if guildMode and filter=="Best Sellers" then for _,e in ipairs(self:GetBestSellerRows(g.id)) do rows[#rows+1]={VCell(WLimit(e.seller or e.itemName or WNA(),22),C.white),VCell(WFormatGold(e.amount),VYellow),WFormatNumber(e.qty or e.items),WFormatNumber(e.sales or 0),VCell(WFormatGold(e.highest or 0),VYellow)} end; title="BEST SELLERS - HIGHEST TO LEAST"; headers={"Seller/Item","Total Gold","Items","Sales","Highest"}; widths={1.7,1.1,.7,.7,1}
+  elseif guildMode and filter=="High Ticket" then for _,e in ipairs(self:GetHighTicketRows(g.id)) do rows[#rows+1]={WLimit(e.seller,18),self:FormatItemCell(e.itemLink,e.itemName,24),WFormatNumber(e.quantity),VCell(WFormatGold(e.netAmount or e.amount),VYellow),WRelTime(e.timestamp)} end; title="HIGH TICKET SALES - BIGGEST TO SMALLEST"; headers={"Seller","Item","Qty","Gold","When"}; widths={1.3,2.1,.6,1,1}
+  elseif (not guildMode) and filter=="Top Sellers" then for _,e in ipairs(self:GetPersonalTopSellerRows()) do rows[#rows+1]={self:FormatItemCell(e.itemLink,e.itemName,26),self:GetGuildName(e.guild),WFormatNumber(e.qty),VCell(WFormatGold(e.gold),VYellow),VCell(WFormatGold(e.avg),VYellow)} end; title="TOP SELLERS - MOST GOLD TO LEAST"; headers={"Item","Guild","Qty","Total Gold","Avg"}; widths={2,1.4,.6,1,1}
+  else local sourceRows=(guildMode and ((filter=="24H") and self:GetSalesRows24H(g.id,false) or self:GetSalesRows(g.id,false))) or ((filter=="24H") and self:GetSalesRows24H(0,true) or self:GetSalesRows(0,true)); for _,e in ipairs(sourceRows) do rows[#rows+1]={guildMode and WLimit(e.seller,20) or self:FormatItemCell(e.itemLink,e.itemName,28),guildMode and self:FormatItemCell(e.itemLink,e.itemName,25) or self:GetGuildName(e.guildId),WFormatNumber(e.quantity),VCell(WFormatGold(e.netAmount or e.amount),VYellow),WRelTime(e.timestamp)} end; title=guildMode and ((filter=="24H") and "24H GUILD SALES - LAST 24 HOURS" or "ALL-TIME GUILD SALES") or ((filter=="24H") and "24H SALES - LAST 24 HOURS" or "ALL-TIME SALES"); headers={guildMode and "Seller" or "Item",guildMode and "Item" or "Guild","Qty","Gold","When"}; widths={1.4,2.2,.7,1,1} end
+  self:DrawLegacyPanel(root,"SalesStats79",rx,y,rw,142,guildMode and "GUILD SALES DASHBOARD" or "PERSONAL SALES DASHBOARD",accent)
+  local deltaText=st.deltaPct and string.format("Delta 24H/All-Time: %.1f%%",st.deltaPct) or "Delta 24H/All-Time: N/A"; self:Label("SalesDelta79",root,deltaText,rx+rw-330,y+8,310,26,st.deltaPct and (st.deltaPct>=50 and VGreen or VYellow) or C.muted,FONTS.panelSmall,TEXT_ALIGN_RIGHT)
+  local statusText=(self.saved.scanStatus and self.saved.scanStatus.sales) or "Press Scan Sales"; statusText=statusText.." • Displayed "..tostring(#rows).." row"..(#rows==1 and "" or "s")
+  local cards; if guildMode then cards={{"24H Sales",WFormatGold(st.sales24),VGreen},{"Total Sales",WFormatGold(st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Guild Tax",WFormatGold(st.tax),VGreen},{"Status",statusText,C.white}} else cards={{"24H Sales",WFormatGold(st.sales24),VGreen},{"All-Time Sales",WFormatGold(st.allTimeSales or st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Net Earned",WFormatGold(st.net),VYellow},{"Status",statusText,C.white}} end
+  local cardW=math.floor((rw-78)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"SalesCard79"..i,rx+20+(i-1)*(cardW+10),y+56,cardW,68,c[1],c[2],c[3],c[3]) end
+  self:DrawLegacyTable(root,"SalesRows79",rx,y+166,rw,h-228,title,headers,self:RowsOrNA(rows,#headers,"Press Scan Sales"),accent,widths)
+  local by=y+h-52; self:ToolButton(root,"SalesScanOne79",rx,by,170,42,guildMode and "Scan Guild" or "Scan Sales",accent,function() if guildMode then TML:ScanSelectedGuildSales() else TML:ScanPersonalSales() end end); self:ToolButton(root,"SalesScanAll79",rx+184,by,150,42,"Scan All",accent,function() TML:ScanAllGuildSales() end); if guildMode then self:ToolButton(root,"SalesFilter79",rx+348,by,220,42,"Filter: "..filter,accent,function() TML:CycleGuildSalesFilter() end) else self:ToolButton(root,"PersonalSalesFilter79",rx+348,by,220,42,"Filter: "..filter,accent,function() TML:CyclePersonalSalesFilter() end) end
+end
+
+local OldInitialize_21679 = TML.Initialize
+function TML:Initialize(addonName)
+  if OldInitialize_21679 then OldInitialize_21679(self, addonName) end
+  self.version="2.0.16.80"; self.addOnVersion=21680; self.lastUpdated="06/15/2026 08:05 UTC"; self.icon="TamrielMasterLedger/textures/tamrielmasterledger_icon.dds"
+  if self.ScheduleMenuRegistration then self:ScheduleMenuRegistration() end
+  if self.HookMainMenuIconOverlay then self:HookMainMenuIconOverlay() end
+  if d then d("Tamriel Master Ledger v"..self.version.." public-release syntax recovery sales/networth/icon hotfix loaded.") end
+end
+end
+TML_21680_Patch(); -- v2.0.16.80 public release syntax recovery pass
+
+
+local function TML_21681_Patch()
+-- v2.0.16.81 PUBLIC RELEASE UI / SALES / RESET / NETWORTH PASS
+TML.version="2.0.16.82"; TML.addOnVersion=21682; TML.lastUpdated="06/15/2026 08:55 UTC"; TML.icon="TamrielMasterLedger/textures/tamrielmasterledger_icon.dds"; TML.displayTitle="|c00D9FFTamriel Master Ledger|r"
+FONTS.menuSmall="ZoFontGamepad25"; FONTS.panelTitle="ZoFontGamepad42"; FONTS.panelText="ZoFontGamepad27"; FONTS.panelSmall="ZoFontGamepad22"
+local function K(v) v=tostring(v or ""):gsub("^%s+",""):gsub("%s+$",""):gsub("^@",""); return string.lower(v) end
+local function NOW() if type(WNow)=="function" then return WNow() end; if type(GetTimeStamp)=="function" then return GetTimeStamp() end; return os.time() end
+local function IS24(ts) ts=tonumber(ts) or 0; local n=NOW(); return ts>0 and n>=ts and (n-ts)<=WORKING_SECONDS_DAY end
+local function FEE(g) g=tonumber(g) or 0; return math.floor(g*.07+.5) end
+local function TAX(g) g=tonumber(g) or 0; return math.floor(g*.035+.5) end
+local function NET(g) return math.max(0,(tonumber(g) or 0)-FEE(g)) end
+local function CTEXT(c) if type(c)=="table" then return tostring(c.text or c[1] or "") end return tostring(c or "") end
+local function CCOLOR(c,fb) if type(c)=="table" and c.color then return c.color end return fb or C.white end
+local OldEnsure_21681=TML.EnsureDataDefaults
+function TML:EnsureDataDefaults() if OldEnsure_21681 then OldEnsure_21681(self) end; self.saved=self.saved or self:Defaults(); self.saved.scanStatus=self.saved.scanStatus or {}; self.saved.scrollOffsets=self.saved.scrollOffsets or {}; self.saved.salesEvents=self.saved.salesEvents or {}; self.saved.guildGoldEvents=self.saved.guildGoldEvents or {}; self.saved.bankItemEvents=self.saved.bankItemEvents or {}; self.saved.personalGoldEvents=self.saved.personalGoldEvents or {}; self.saved.netWorthFilter=self.saved.netWorthFilter or "Top Value"; self.saved.personalSalesFilter=self.saved.personalSalesFilter or "All-Time"; self.saved.salesFilter=self.saved.salesFilter or "All-Time" end
+function TML:DrawLegacyHeader(root,x,y,w,title,subtitle,accent) accent=accent or C.cyan; self:Texture("HdrIcon81",root,self:GetToolIcon(self.state.activeTool),x+26,y+20,58,58,accent); self:Label("HdrTitle81",root,"TAMRIEL MASTER LEDGER",x+98,y+8,w-124,46,C.cyanSoft,FONTS.panelTitle,TEXT_ALIGN_LEFT); self:Label("HdrPage81",root,string.upper(tostring(title or "PAGE")),x+100,y+54,w-126,34,accent,FONTS.panelText,TEXT_ALIGN_LEFT); self:Label("HdrMeta81",root,tostring(subtitle or "Public release").."  •  Updated: "..tostring(self.lastUpdated or "").."  •  v"..tostring(self.version or ""),x+28,y+90,w-56,26,C.white,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Backdrop("HdrWarnBg81",root,x+28,y+120,w-56,28,{0,0,0,.58},{C.gold[1],C.gold[2],C.gold[3],.32}); self:Label("HdrWarn81",root,"Missing data? Load Guild History, then scan again.",x+42,y+122,w-84,24,C.gold,FONTS.panelSmall,TEXT_ALIGN_CENTER); self:Backdrop("HdrLine81",root,x+28,y+158,w-56,3,{C.cyan[1],C.cyan[2],C.cyan[3],.88},nil) end
+function TML:RenderHeader(root,railW,menuName) self:Texture("MenuHdrIcon81",root,self.icon,38,20,48,48,C.cyanSoft); self:Label("MenuHdrTitle81",root,"TAMRIEL MASTER\nLEDGER",96,8,railW-132,70,C.cyanSoft,FONTS.panelTitle,TEXT_ALIGN_LEFT); self:Label("MenuHdrContext81",root,string.upper(menuName or "MAIN"),96,82,railW-132,28,C.white,FONTS.menuSmall,TEXT_ALIGN_LEFT); self:Label("MenuHdrUpdate81",root,"Updated: "..tostring(self.lastUpdated or "").." | v"..tostring(self.version or ""),38,112,railW-76,24,C.muted,FONTS.menuSmall,TEXT_ALIGN_LEFT); self:Backdrop("MenuHdrWarnBg81",root,38,138,railW-76,24,{0,0,0,.50},{C.gold[1],C.gold[2],C.gold[3],.22}); self:Label("MenuHdrWarn81",root,"Missing data? Load history, scan again.",46,140,railW-92,20,C.gold,FONTS.menuSmall,TEXT_ALIGN_CENTER); self:Backdrop("MenuHdrLine81",root,38,168,railW-76,2,{C.cyan[1],C.cyan[2],C.cyan[3],.72},nil) end
+function TML:DrawMiniStat(root,key,x,y,w,h,title,value,accent,valueColor) local e=accent or C.cyan; self:Backdrop(key,root,x,y,w,h,{0,0,0,.60},{e[1],e[2],e[3],.46}); self:Label(key.."T",root,tostring(title or ""),x+14,y+6,w-28,28,e,FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label(key.."V",root,tostring(value or "--"),x+14,y+34,w-28,math.max(28,h-38),valueColor or e,FONTS.panelText,TEXT_ALIGN_LEFT) end
+function TML:DrawLegacyPanel(root,key,x,y,w,h,title,accent,titleColor) self:Backdrop(key,root,x,y,w,h,{0,0,0,.62},{accent[1],accent[2],accent[3],.58}); if title then self:Label(key.."Title",root,tostring(title),x+14,y+10,w-28,36,titleColor or accent,FONTS.panelText,TEXT_ALIGN_CENTER) end end
+function TML:RegisterScrollableBox(key,title,x,y,w,h,totalRows,visibleRows,root) self.currentToolButtons=self.currentToolButtons or {}; self.saved=self.saved or {}; self.saved.scrollOffsets=self.saved.scrollOffsets or {}; local idx=#self.currentToolButtons+1; self.currentToolButtons[idx]={label=tostring(title or key),callback=function() TML:ActivateScrollBox(key,totalRows,visibleRows) end,x=x,y=y,w=w,h=h,cx=x+w/2,cy=y+h/2,key=key,scrollKey=key,scrollRows=totalRows,scrollVisible=visibleRows}; local hover=(tonumber(self.state and self.state.toolButton or 0)==idx); local active=self.state and self.state.scrollFocus and self.state.scrollFocus.key==key; if hover or active then local edge=active and C.gold or C.cyanSoft; self:Backdrop("ScrollEdge81"..tostring(key),root,x+4,y+4,w-8,h-8,{0,0,0,0},{edge[1],edge[2],edge[3],active and .98 or .78}); if active then self:RenderScrollPrompt(root,true,false) end end end
+function TML:RenderScrollPrompt(root,active,selected) if not active then return end; local rw=1800; if self.GetRootSize then local ok,a=pcall(function() local w=self:GetRootSize(); return w end); if ok and a then rw=a end end; local bw=math.min(1180,rw-120); local bx=math.floor((rw-bw)/2); self:Backdrop("ScrollPromptBg81",root,bx,118,bw,36,{0,0,0,.84},{C.gold[1],C.gold[2],C.gold[3],.72}); self:Label("ScrollPromptTxt81",root,"Scrollable Box Active - D-Pad scrolls. Press B to leave.",bx+18,120,bw-36,32,VYellow,FONTS.panelSmall,TEXT_ALIGN_CENTER) end
+function TML:DrawLegacyTable(root,key,x,y,w,h,title,headers,rows,accent,colWeights) self:DrawLegacyPanel(root,key,x,y,w,h,title,accent); headers=headers or {}; rows=rows or {}; colWeights=colWeights or {}; local top=y+62; local n=math.max(1,#headers); local tw=0; for i=1,n do tw=tw+(tonumber(colWeights[i]) or 1) end; if tw<=0 then tw=n end; local usable=w-60; local colX,colW={},{}; local run=x+30; for i=1,n do local cw=math.floor(usable*((tonumber(colWeights[i]) or 1)/tw)); colX[i]=run; colW[i]=math.max(30,cw-8); run=run+cw end; self:Backdrop(key.."HeadBg81",root,x+22,top,w-44,40,{accent[1],accent[2],accent[3],.16},{accent[1],accent[2],accent[3],.34}); for i,hdr in ipairs(headers) do self:Label(key.."H81"..i,root,tostring(hdr),colX[i],top+2,colW[i],36,accent,FONTS.panelSmall,TEXT_ALIGN_LEFT) end; local rowH=38; local visible=math.max(1,math.floor((h-118)/rowH)); local total=#rows; local off=0; if total>visible then self.saved.scrollOffsets=self.saved.scrollOffsets or {}; off=tonumber(self.saved.scrollOffsets[key] or 0) or 0; local max=math.max(0,total-visible); if off>max then off=max; self.saved.scrollOffsets[key]=off end; self:RegisterScrollableBox(key,title,x,y,w,h,total,visible,root) end; local maxRows=math.min(total,visible); for r=1,maxRows do local si=off+r; local row=rows[si] or {}; local yy=top+46+(r-1)*rowH; local rc=type(row)=="table" and row.__rowColor or nil; local bg=rc and {rc[1],rc[2],rc[3],.20} or {0,0,0,(si%2==0) and .38 or .25}; self:Backdrop(key.."Row81"..r,root,x+22,yy,w-44,rowH-3,bg,rc and {rc[1],rc[2],rc[3],.50} or nil); for c=1,n do local cell=row[c]; local val=CTEXT(cell); local color=CCOLOR(cell,C.white); if type(cell)~="table" then if val=="--" or val=="N/A" or val:find("Not Scanned",1,true) or val:find("No ",1,true) then color=C.muted end; if val:find("Pending",1,true) or val:find("Withdraw",1,true) or val:find("Owed",1,true) then color=C.redDim end; if val:find("Paid",1,true) or val:find("Complete",1,true) then color=VGreen end end; self:Label(key.."R81"..r.."C"..c,root,val,colX[c],yy,colW[c],rowH-2,color,FONTS.panelSmall,TEXT_ALIGN_LEFT) end end; if total>visible then self:Label(key.."ScrollCount81",root,tostring(off+1).."-"..tostring(off+maxRows).." / "..tostring(total),x+w-200,y+h-32,170,26,C.cyanSoft,FONTS.panelSmall,TEXT_ALIGN_RIGHT) end end
+function TML:ResetPageData(toolKey,noRender) self:EnsureDataDefaults(); toolKey=tostring(toolKey or (self.state and self.state.activeTool) or ""); if self.ClearDataForTool then self:ClearDataForTool(toolKey) end; self.saved.scrollOffsets={}; self.state.scrollFocus=nil; self.saved.scanStatus=self.saved.scanStatus or {}; local msg="Reset complete - press Scan/Refresh"; self.saved.scanStatus[toolKey]=msg; if toolKey=="net_worth" then self.saved.scanStatus.networth=msg elseif toolKey=="personal_sales" or toolKey=="guild_sales" then self.saved.scanStatus.sales=msg elseif toolKey=="gold_ledger_personal" then self.saved.scanStatus.personalGold=msg elseif toolKey=="guild_gold_ledger" or toolKey=="trader_bids" then self.saved.scanStatus.gold=msg elseif toolKey=="guild_bank" then self.saved.scanStatus.bank=msg elseif toolKey=="guild_raffle" then self.saved.scanStatus.raffle=msg end; if not noRender then self:RenderTool(toolKey) end end
+function TML:ResetAllRuntimeData(noRender) self:EnsureDataDefaults(); for _,t in ipairs({"net_worth","personal_sales","guild_sales","gold_ledger_personal","guild_gold_ledger","trader_bids","guild_bank","guild_bookkeeper","guild_dues","guild_raffle","daily_quests","fishing"}) do self:ClearDataForTool(t) end; self.saved.scanStatus={}; self.saved.scrollOffsets={}; self.state.scrollFocus=nil; if self.Notify then self:Notify("Page data reset. Scan pages again for fresh ESO data.") end; if not noRender then self:RenderTool("reset_runtime_data") end end
+function TML:DrawToolActionBar(root,x,y,w,accent) local bw=math.floor((w-36)/3); self:ToolButton(root,"ToolReset81",x,y,bw,56,"Reset Page",C.gold,function() TML:ResetPageData(TML.state.activeTool) end); self:ToolButton(root,"ToolBack81",x+bw+18,y,bw,56,"Back to Menu",C.cyan,function() TML:Back() end); self:ToolButton(root,"ToolExit81",x+(bw+18)*2,y,bw,56,"Exit",C.red,function() TML:ReturnToESOMenu() end) end
+TML.pipelineMap=TML.pipelineMap or {}; TML.pipelineMap.reset_runtime_data={title="Reset Page Data",accent="gold",subtitle="Clear temporary scan/display data."}
+function TML:RenderOldResetRuntimeData(root,x,y,w,h,accent) self:DrawLegacyPanel(root,"ResetRuntime81",x,y,w,h,"RESET PAGE DATA",accent,C.gold); self:Label("ResetRuntimeText81",root,"Clears temporary scan/display data, table scrolls, and page caches. Saved settings stay saved.",x+80,y+86,w-160,120,C.white,FONTS.panelText,TEXT_ALIGN_CENTER); self:ToolButton(root,"ResetRuntimeDo81",x+math.floor(w/2)-220,y+235,440,60,"Reset All Page Data",C.gold,function() TML:ResetAllRuntimeData(true); TML:RenderTool("reset_runtime_data") end); self:Label("ResetRuntimeHint81",root,"After reset, open a page and press Scan/Refresh for fresh ESO data.",x+80,y+320,w-160,60,C.cyanSoft,FONTS.panelText,TEXT_ALIGN_CENTER) end
+local OldGetPageDesign_21681=TML.GetPageDesign; function TML:GetPageDesign(toolKey) if toolKey=="reset_runtime_data" then return self.pipelineMap.reset_runtime_data end; return OldGetPageDesign_21681 and OldGetPageDesign_21681(self,toolKey) or (self.pipelineMap and self.pipelineMap[toolKey]) end
+local OldRenderTool_21681=TML.RenderTool; function TML:RenderTool(toolKey) if toolKey=="reset_runtime_data" then self:HideAllPooledControls(); local root=self.ui.root; self:EnsureDataDefaults(); self:BeginToolButtons(); local rw,rh=self:GetRootSize(); local w=math.floor(rw*.90); local h=math.floor(rh*.90); local x=math.floor((rw-w)/2); local y=math.floor((rh-h)/2); local pad=34; local headerH=164; local footerH=82; local bodyX=x+pad; local bodyY=y+headerH+16; local bodyW=w-pad*2; local bodyH=h-headerH-footerH-42; self:Backdrop("ResetPageShadow81",root,x-10,y-10,w+20,h+20,{0,0,0,.46},nil); self:Backdrop("ResetPagePanel81",root,x,y,w,h,C.black90,{C.gold[1],C.gold[2],C.gold[3],.95}); self:DrawLegacyHeader(root,x,y,w,"Reset Page Data","Clear temporary scan/display data",C.gold); self:RenderOldResetRuntimeData(root,bodyX,bodyY,bodyW,bodyH,C.gold); self:DrawToolActionBar(root,bodyX,y+h-footerH+12,bodyW,C.gold); self:RefreshKeybinds(); return end; if OldRenderTool_21681 then OldRenderTool_21681(self,toolKey) end end
+local function AddResetMenu() TML.menus=TML.menus or {}; TML.menus.main=TML.menus.main or {entries={}}; local e=TML.menus.main.entries; for _,v in ipairs(e) do if v.target=="reset_runtime_data" then return end end; local pos=#e; for i,v in ipairs(e) do if v.target=="clear_saved_data" or v.type=="exit" then pos=i; break end end; table.insert(e,pos,{text="Reset Page Data",icon="EsoUI/Art/Buttons/Gamepad/gp_reset.dds",type="tool",target="reset_runtime_data"}) end
+function TML:RegisterGamepadMainMenuEntry() if not ZO_MENU_ENTRIES or not ZO_GamepadEntryData then return false end; for i=#ZO_MENU_ENTRIES,1,-1 do local ex=ZO_MENU_ENTRIES[i]; local name=Lower(self:GetEntryText(ex)); if (ex and ex.data and ex.data.tmlMenuEntry) or name:find("tamriel master ledger",1,true) then table.remove(ZO_MENU_ENTRIES,i) end end; local icon=self.icon; local label="Tamriel Master Ledger"; local entry=ZO_GamepadEntryData:New(label,icon); if entry.SetName then SafeCall(function() entry:SetName(label) end) end; if entry.SetText then SafeCall(function() entry:SetText(label) end) end; if entry.SetCallback then SafeCall(function() entry:SetCallback(function() TML:OpenFromMainMenu() end) end) end; entry.callback=function() TML:OpenFromMainMenu() end; entry.icon=icon; entry.normalIcon=icon; entry.selectedIcon=icon; entry.highlightIcon=icon; entry.id=981682; entry.data=entry.data or {}; entry.data.id=entry.id; entry.data.icon=icon; entry.data.normalIcon=icon; entry.data.selectedIcon=icon; entry.data.tmlMenuEntry=true; entry.data.callback=function() TML:OpenFromMainMenu() end; table.insert(ZO_MENU_ENTRIES,#ZO_MENU_ENTRIES+1,entry); self.menuEntryRegistered=true; if MAIN_MENU_GAMEPAD then for _,fn in ipairs({"RefreshLists","RefreshVisible","RefreshList","UpdateEntryEnabledStates"}) do if MAIN_MENU_GAMEPAD[fn] then SafeCall(function() MAIN_MENU_GAMEPAD[fn](MAIN_MENU_GAMEPAD) end) end end end; return true end
+-- Sales core: one clean source for personal/guild sales; 24H never mixes with all-time.
+local function ParseTrader(vals) local eventId,timestamp,isRedacted,eventType,seller,buyer,itemLink,quantity,price,tax=vals[1],vals[2],vals[3],vals[4],vals[5],vals[6],vals[7],vals[8],vals[9],vals[10]; local strings,nums={},{}; for _,v in ipairs(vals) do if type(v)=="string" then strings[#strings+1]=v elseif type(v)=="number" then nums[#nums+1]=v end end; for _,st in ipairs(strings) do if (not itemLink or itemLink=="") and st:find("|H",1,true) then itemLink=st end end; if type(seller)~="string" or seller=="" or seller:find("|H",1,true) then seller=nil end; for _,st in ipairs(strings) do if st~=itemLink and not seller then seller=st elseif st~=itemLink and st~=seller and not buyer then buyer=st end end; if not timestamp or not tonumber(timestamp) or tonumber(timestamp)<1000000000 then for _,n in ipairs(nums) do if n>1000000000 and n<4102444800 then timestamp=n; break end end end; quantity=tonumber(quantity) or 1; if quantity<=0 or quantity>200000 then quantity=1 end; price=tonumber(price); if not price or price<=0 then local best=0; for _,n in ipairs(nums) do if n>best and n~=timestamp and n~=eventId and n~=quantity and n~=eventType then best=n end end; if best>0 then price=best end end; return eventId,timestamp,isRedacted,eventType,seller,buyer,itemLink,quantity,price,tax end
+local function AddSale(self,gid,row) local gross=tonumber(row.price) or 0; if gross<=0 then return false end; local ts=tonumber(row.timestamp) or 0; local fee=FEE(gross); local net=NET(gross); local tax=tonumber(row.tax) or TAX(gross); local key=tostring(gid)..":"..tostring(row.eventId or (tostring(row.seller)..":"..tostring(gross)..":"..tostring(ts)..":"..tostring(row.itemLink)..":"..tostring(row.quantity))); self.saved.salesEvents[key]={guildId=gid,seller=row.seller or WNA(),buyer=row.buyer,itemLink=row.itemLink,itemName=WGetItemName(row.itemLink),quantity=tonumber(row.quantity) or 1,timestamp=ts,eventId=row.eventId,eventType=row.eventType,grossAmount=gross,amount=net,netAmount=net,feeAmount=fee,guildTax=tax,tax=tax,feeAdjusted=true,source="guild trader"}; return true end
+function TML:ScanGuildSales(g) self:EnsureDataDefaults(); if not g or not g.id or g.id==0 then return 0 end; local cat=self:GetHistoryCategory("trader"); if type(GetGuildHistoryTraderEventInfo)~="function" or not cat then self.saved.scanStatus.sales="Sales history API unavailable"; return 0 end; self:RequestHistory(g.id,cat,WORKING_HISTORY_DAYS); local newest,oldest=self:GetHistoryIndices(g.id,cat,WORKING_HISTORY_DAYS); local temp,skipped={},0; if oldest>=newest then for i=newest,oldest do local vals={pcall(GetGuildHistoryTraderEventInfo,g.id,i)}; local ok=table.remove(vals,1); if ok then local eventId,timestamp,isRedacted,eventType,seller,buyer,itemLink,quantity,price,tax=ParseTrader(vals); if not isRedacted and seller and tonumber(price) and tonumber(price)>0 then temp[#temp+1]={eventId=eventId or i,timestamp=timestamp,eventType=eventType,seller=seller,buyer=buyer,itemLink=itemLink,quantity=quantity,price=price,tax=tax} else skipped=skipped+1 end else skipped=skipped+1 end end end; self:ClearSalesForGuild(g.id); local stored=0; for _,row in ipairs(temp) do if AddSale(self,g.id,row) then stored=stored+1 end end; self:PruneEventTable(self.saved.salesEvents,WORKING_MAX_EVENTS); self:RebuildPriceCacheFromSales(); self.saved.scanStatus.sales=stored>0 and ("Scan complete: "..stored.." sales rows / "..skipped.." skipped") or "No sales rows loaded - load Guild History, then scan again"; return stored end
+function TML:ScanSelectedGuildSales(noRender) local g=self:GetGuild(); local n=self:ScanGuildSales(g); self.saved.scanStatus.sales="Guild scan: "..tostring(n).." rows for "..tostring(g and g.name or "selected guild"); if not noRender then self:RenderTool("guild_sales") end end
+function TML:ScanAllGuildSales(noRender) local total=0; self:EachGuild(function(g) total=total+(tonumber(self:ScanGuildSales(g)) or 0) end); self.saved.scanStatus.sales="All guild sales scan: "..tostring(total).." loaded rows"; if not noRender then self:RenderTool(self.state.activeTool or "personal_sales") end end
+function TML:ScanPersonalSales(noRender) self:ScanAllGuildSales(true); local rows=self:GetSalesRows(0,true); self.saved.scanStatus.sales="Personal scan: "..tostring(#rows).." @UserID sales rows across loaded guilds"; if not noRender then self:RenderTool("personal_sales") end end
+function TML:GetSalesRows(guildId,onlyMe) self:EnsureDataDefaults(); local rows={}; local my=K(self:GetUserDisplayName()); for _,e in pairs(self.saved.salesEvents or {}) do if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(e) end; if (not guildId or guildId==0 or e.guildId==guildId) and ((not onlyMe) or K(e.seller)==my) then rows[#rows+1]=e end end; table.sort(rows,function(a,b) return (tonumber(a.timestamp) or 0)>(tonumber(b.timestamp) or 0) end); return rows end
+function TML:GetSalesRows24H(guildId,onlyMe) local rows={}; for _,e in ipairs(self:GetSalesRows(guildId,onlyMe)) do if IS24(e.timestamp) then rows[#rows+1]=e end end; return rows end
+function TML:ComputeSalesStats(guildId,onlyMe) local rows=self:GetSalesRows(guildId,onlyMe); local st={sales24=0,salesToday=0,totalSales=0,allTimeSales=0,items=0,tax=0,fees=0,gross=0,net=0,topEarner=WNA(),topAmount=0,deltaPct=nil,rowCount=#rows}; local sellers={}; for _,e in ipairs(rows) do local net=tonumber(e.netAmount or e.amount) or 0; local gross=tonumber(e.grossAmount or e.amount) or net; local tax=tonumber(e.guildTax or e.tax) or TAX(gross); local fee=tonumber(e.feeAmount) or FEE(gross); if IS24(e.timestamp) then st.sales24=st.sales24+net; st.salesToday=st.salesToday+net end; st.totalSales=st.totalSales+net; st.allTimeSales=st.allTimeSales+net; st.gross=st.gross+gross; st.tax=st.tax+tax; st.fees=st.fees+fee; st.net=st.net+net; st.items=st.items+(tonumber(e.quantity) or 1); sellers[e.seller or WNA()]=(sellers[e.seller or WNA()] or 0)+net end; for u,v in pairs(sellers) do if v>st.topAmount then st.topAmount=v; st.topEarner=u end end; if st.totalSales>0 then st.deltaPct=(st.sales24/st.totalSales)*100 end; return st end
+function TML:CycleGuildSalesFilter() local o={"All-Time","24H","Best Sellers","High Ticket"}; local cur=self.saved.salesFilter or "All-Time"; local idx=1; for i,v in ipairs(o) do if v==cur then idx=i end end; self.saved.salesFilter=o[(idx%#o)+1]; self:RenderTool("guild_sales") end
+function TML:CyclePersonalSalesFilter() local o={"All-Time","24H","Top Sellers"}; local cur=self.saved.personalSalesFilter or "All-Time"; local idx=1; for i,v in ipairs(o) do if v==cur then idx=i end end; self.saved.personalSalesFilter=o[(idx%#o)+1]; self:RenderTool("personal_sales") end
+function TML:RenderOldSales(root,x,y,w,h,accent,guildMode) local selectorW=guildMode and 315 or 0; if guildMode then self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent) end; local rx=x+selectorW+(guildMode and 24 or 0); local rw=w-selectorW-(guildMode and 24 or 0); local g=self:GetGuild(); local filter=guildMode and (self.saved.salesFilter or "All-Time") or (self.saved.personalSalesFilter or "All-Time"); if filter=="Recent" then filter="All-Time" end; local st=self:ComputeSalesStats(guildMode and g.id or 0,not guildMode); local rows,title,headers,widths={},"",{},nil; if guildMode and filter=="Best Sellers" then for _,e in ipairs(self:GetBestSellerRows(g.id)) do rows[#rows+1]={WLimit(e.seller or e.itemName or WNA(),20),VCell(WFormatGold(e.amount),VYellow),WFormatNumber(e.qty or e.items),WFormatNumber(e.sales or 0),VCell(WFormatGold(e.highest or 0),VYellow)} end; title="BEST SELLERS - HIGH TO LOW"; headers={"Seller/Item","Gold","Items","Sales","Highest"}; widths={1.7,1,.7,.7,1} elseif guildMode and filter=="High Ticket" then for _,e in ipairs(self:GetHighTicketRows(g.id)) do rows[#rows+1]={WLimit(e.seller,18),self:FormatItemCell(e.itemLink,e.itemName,22),WFormatNumber(e.quantity),VCell(WFormatGold(e.netAmount or e.amount),VYellow),WRelTime(e.timestamp)} end; title="HIGH TICKET SALES"; headers={"Seller","Item","Qty","Gold","When"}; widths={1.2,2,.55,1,1} elseif (not guildMode) and filter=="Top Sellers" then for _,e in ipairs(self:GetPersonalTopSellerRows()) do rows[#rows+1]={self:FormatItemCell(e.itemLink,e.itemName,24),self:GetGuildName(e.guild),WFormatNumber(e.qty),VCell(WFormatGold(e.gold),VYellow),VCell(WFormatGold(e.avg),VYellow)} end; title="TOP SELLERS - PERSONAL"; headers={"Item","Guild","Qty","Total","Avg"}; widths={2,1.3,.55,1,1} else local source=(filter=="24H") and self:GetSalesRows24H(guildMode and g.id or 0,not guildMode) or self:GetSalesRows(guildMode and g.id or 0,not guildMode); for _,e in ipairs(source) do rows[#rows+1]={guildMode and WLimit(e.seller,18) or self:FormatItemCell(e.itemLink,e.itemName,24),guildMode and self:FormatItemCell(e.itemLink,e.itemName,24) or self:GetGuildName(e.guildId),WFormatNumber(e.quantity),VCell(WFormatGold(e.netAmount or e.amount),VYellow),WRelTime(e.timestamp)} end; title=(filter=="24H") and (guildMode and "24H GUILD SALES - LAST 24 HOURS" or "24H PERSONAL SALES - LAST 24 HOURS") or (guildMode and "ALL-TIME GUILD SALES" or "ALL-TIME PERSONAL SALES"); headers={guildMode and "Seller" or "Item",guildMode and "Item" or "Guild","Qty","Gold","When"}; widths={1.25,2.05,.55,1,1} end; self:DrawLegacyPanel(root,"SalesStats81",rx,y,rw,156,guildMode and "GUILD SALES DASHBOARD" or "PERSONAL SALES DASHBOARD",accent); self:Label("SalesDelta81",root,st.deltaPct and string.format("Delta 24H/All-Time: %.1f%%",st.deltaPct) or "Delta 24H/All-Time: N/A",rx+rw-360,y+10,340,28,st.deltaPct and VYellow or C.muted,FONTS.panelSmall,TEXT_ALIGN_RIGHT); local status=self.saved.scanStatus.sales or "Press Scan Sales"; local cards=guildMode and {{"24H Sales",WFormatGold(st.sales24),VGreen},{"Total Sales",WFormatGold(st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Guild Tax",WFormatGold(st.tax),VGreen},{"Rows",tostring(#rows).." shown",C.white}} or {{"24H Sales",WFormatGold(st.sales24),VGreen},{"All-Time Sales",WFormatGold(st.totalSales),VYellow},{"Items Sold",WFormatNumber(st.items),C.cyanSoft},{"Net Earned",WFormatGold(st.net),VYellow},{"Rows",tostring(#rows).." shown",C.white}}; local cw=math.floor((rw-78)/5); for i,c in ipairs(cards) do self:DrawMiniStat(root,"SalesCard81"..i,rx+20+(i-1)*(cw+10),y+58,cw,78,c[1],c[2],c[3],c[3]) end; self:Label("SalesStatus81",root,status,rx+24,y+134,rw-48,24,C.cyanSoft,FONTS.panelSmall,TEXT_ALIGN_CENTER); self:DrawLegacyTable(root,"SalesRows81",rx,y+176,rw,h-252,title,headers,self:RowsOrNA(rows,#headers,"Press Scan Sales"),accent,widths); local by=y+h-64; local bw=math.floor((rw-36)/4); self:ToolButton(root,"SalesScanOne81",rx,by,bw,48,guildMode and "Scan Guild" or "Scan Sales",accent,function() if guildMode then TML:ScanSelectedGuildSales() else TML:ScanPersonalSales() end end); self:ToolButton(root,"SalesScanAll81",rx+bw+12,by,bw,48,"Scan All",accent,function() TML:ScanAllGuildSales() end); self:ToolButton(root,"SalesFilter81",rx+(bw+12)*2,by,bw,48,"Filter: "..filter,accent,function() if guildMode then TML:CycleGuildSalesFilter() else TML:CyclePersonalSalesFilter() end end); self:ToolButton(root,"SalesReset81",rx+(bw+12)*3,by,bw,48,"Reset",C.gold,function() TML:ResetPageData(guildMode and "guild_sales" or "personal_sales") end) end
+-- Net Worth with unpriced filter.
+local function SlotLink(bagId,slot,slotData) local link=slotData and (slotData.itemLink or slotData.link or (slotData.itemData and slotData.itemData.itemLink)); if (not link or link=="") and type(GetItemLink)=="function" and slot then local ok,l=pcall(GetItemLink,bagId,slot); if ok then link=l end end; return link end
+local function SlotQty(bagId,slot,slotData) local q=tonumber(slotData and (slotData.stackCount or slotData.quantity)); if (not q or q<=0) and type(GetSlotStackSize)=="function" and slot then local ok,v=pcall(GetSlotStackSize,bagId,slot); if ok then q=tonumber(v) end end; return (q and q>0) and q or 1 end
+local function AddNW(self,nw,itemLink,qty,bucket,loc) if not itemLink or itemLink=="" then return false end; qty=tonumber(qty) or 1; nw.seenStacks=(nw.seenStacks or 0)+1; local avg=self:GetAveragePrice(WItemKey(itemLink)); local val,src=nil,nil; if avg and tonumber(avg)>0 then val=math.floor(avg*qty); src="Guild Avg" else val,src=WGetItemValue(itemLink,qty); src=(src=="vendor") and "ESO Value" or src end; if val and tonumber(val)>0 then nw[bucket]=(tonumber(nw[bucket]) or 0)+tonumber(val); nw.pricedStacks=(nw.pricedStacks or 0)+1; table.insert(nw.top,{name=WGetItemName(itemLink),itemLink=itemLink,qty=qty,avg=avg,value=tonumber(val),location=loc,source=src}); return true end; nw.unpriced=(nw.unpriced or 0)+1; nw.unpricedItems=nw.unpricedItems or {}; table.insert(nw.unpricedItems,{name=WGetItemName(itemLink),itemLink=itemLink,qty=qty,location=loc,reason="No Guild Avg / No ESO Value"}); return false end
+local function ScanBag(self,nw,bag,bucket,loc) if bag==nil or type(GetBagSize)~="function" then return end; local ok,size=pcall(GetBagSize,bag); size=ok and tonumber(size) or 0; for slot=0,math.max(0,size-1) do local link=SlotLink(bag,slot,nil); if link and link~="" then AddNW(self,nw,link,SlotQty(bag,slot,nil),bucket,loc) end end end
+local function ScanCraft(self,nw) local bag=_G.BAG_VIRTUAL; if not bag then nw.craftBagStatus="Craft Bag API unavailable"; return end; local before=nw.seenStacks or 0; if SHARED_INVENTORY then for _,method in ipairs({"GenerateFullSlotData","GetBagCache","GetOrCreateBagCache"}) do if type(SHARED_INVENTORY[method])=="function" then local ok,data; if method=="GenerateFullSlotData" then ok,data=pcall(function() return SHARED_INVENTORY:GenerateFullSlotData(nil,bag) end) else ok,data=pcall(function() return SHARED_INVENTORY[method](SHARED_INVENTORY,bag) end) end; if ok and type(data)=="table" then local seen={}; for slotKey,slotData in pairs(data) do local slot=tonumber(slotData and (slotData.slotIndex or slotData.slotId or slotData.slot or slotKey)) or tonumber(slotKey); local link=SlotLink(bag,slot,slotData); if link and link~="" and not seen[link..":"..tostring(slot or slotKey)] then seen[link..":"..tostring(slot or slotKey)]=true; AddNW(self,nw,link,SlotQty(bag,slot,slotData),"craftBag","Craft Bag") end end end end end end; if (nw.seenStacks or 0)==before then ScanBag(self,nw,bag,"craftBag","Craft Bag") end; local seen=(nw.seenStacks or 0)-before; nw.craftBagStatus=seen>0 and ("Scanned "..tostring(seen).." craft bag stacks") or "Craft Bag not loaded" end
+function TML:CycleNetWorthFilter() self.saved.netWorthFilter=(self.saved.netWorthFilter=="Unpriced Items") and "Top Value" or "Unpriced Items"; self:RenderTool("net_worth") end
+function TML:ScanNetWorth() self:EnsureDataDefaults(); self.saved.networth=nil; self:ScanAllGuildSales(true); local nw={scanned=true,total=0,character=0,carriedGold=self:GetCarriedGoldLive() or 0,bankedGold=self:GetBankGoldLive() or 0,carriedItems=0,bankedItems=0,craftBag=0,unpriced=0,unpricedItems={},top={},currencies={},lastScan=NOW(),craftBagStatus="Not scanned",seenStacks=0,pricedStacks=0}; local accountLoc={_G.CURRENCY_LOCATION_ACCOUNT,nil}; local charBankLoc={_G.CURRENCY_LOCATION_CHARACTER,_G.CURRENCY_LOCATION_BANK,_G.CURRENCY_LOCATION_ACCOUNT,nil}; nw.currencies={{"Crowns",WCurrencyAny({"CURT_CROWNS","CURT_CROWN_CROWNS"},accountLoc)},{"Crown Gems",WCurrencyAny({"CURT_CROWN_GEMS"},accountLoc)},{"Writ Vouchers",WCurrencyAny({"CURT_WRIT_VOUCHERS","CURT_WRIT_VOUCHER"},charBankLoc)},{"Alliance Points",WCurrencyAny({"CURT_ALLIANCE_POINTS"},charBankLoc)},{"Tel Var Stones",WCurrencyAny({"CURT_TELVAR_STONES"},charBankLoc)}}; ScanBag(self,nw,_G.BAG_BACKPACK,"carriedItems","Backpack"); ScanBag(self,nw,_G.BAG_BANK,"bankedItems","Bank"); ScanBag(self,nw,_G.BAG_SUBSCRIBER_BANK,"bankedItems","Bank"); ScanCraft(self,nw); local rate=tonumber(self.saved.crownRate); local crowns=nil; for _,cur in ipairs(nw.currencies) do if cur[1]=="Crowns" then crowns=tonumber(cur[2]) end end; if rate and rate>0 and crowns then nw.crownGold=math.floor(crowns*rate) end; table.sort(nw.top,function(a,b) return (a.value or 0)>(b.value or 0) end); while #nw.top>20 do table.remove(nw.top) end; table.sort(nw.unpricedItems,function(a,b) return tostring(a.name)<tostring(b.name) end); nw.character=nw.carriedGold+nw.carriedItems; nw.total=nw.character+nw.bankedGold+nw.bankedItems+nw.craftBag+(nw.crownGold or 0); self.saved.networth=nw; self.saved.scanStatus.networth="Scan complete: "..tostring(nw.pricedStacks).." priced / "..tostring(nw.unpriced).." unpriced" end
+function TML:RenderOldNetWorth(root,x,y,w,h,accent) local nw=self:GetNetWorth(); local scanned=nw and nw.scanned and nw.lastScan; local leftW=590; local filter=self.saved.netWorthFilter or "Top Value"; self:DrawLegacyPanel(root,"NWStats81",x,y,leftW,h-70,"SUMMARY",accent); local function val(v) return scanned and WFormatGold(v or 0) or "Not Scanned" end; local left={{"TOTAL",val(nw.total),VGreen},{"Character",val(nw.character),VGreen},{"Carried Gold",val(nw.carriedGold),C.gold},{"Banked Gold",val(nw.bankedGold),C.gold},{"INV VALUE",scanned and WFormatGold((nw.carriedItems or 0)+(nw.bankedItems or 0)+(nw.craftBag or 0)) or "Not Scanned",C.cyanSoft},{"Carried Items",val(nw.carriedItems),C.cyanSoft},{"Banked Items",val(nw.bankedItems),C.cyanSoft},{"Craft Bag",scanned and WFormatGold(nw.craftBag or 0) or "Not Scanned",C.cyanSoft},{"Unpriced",scanned and WFormatNumber(nw.unpriced or 0) or "Not Scanned",C.muted}}; local right={{"CURRENCIES","",C.cyanSoft}}; if scanned then for _,cur in ipairs(nw.currencies or {}) do right[#right+1]={cur[1],cur[2]==nil and WNA() or WFormatNumber(cur[2]),cur[2]==nil and C.muted or C.gold} end else right[#right+1]={"Status","Press Scan",C.gold} end; local rowH=38; local topY=y+64; for i,r in ipairs(left) do self:Label("NWK81"..i,root,r[1],x+28,topY+(i-1)*rowH,150,rowH,r[3],FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("NWV81"..i,root,r[2],x+176,topY+(i-1)*rowH,118,rowH,r[3],FONTS.panelSmall,TEXT_ALIGN_RIGHT) end; for i,r in ipairs(right) do self:Label("NWCK81"..i,root,r[1],x+320,topY+(i-1)*rowH,150,rowH,r[3],FONTS.panelSmall,TEXT_ALIGN_LEFT); self:Label("NWCV81"..i,root,r[2],x+470,topY+(i-1)*rowH,90,rowH,r[3],FONTS.panelSmall,TEXT_ALIGN_RIGHT) end; local tx=x+leftW+24; local tw=w-leftW-24; self:Label("NWStatus81",root,"Status: "..tostring(self.saved.scanStatus.networth or "Press Scan Net Worth"),tx+16,y+8,tw-32,28,C.cyanSoft,FONTS.panelSmall,TEXT_ALIGN_LEFT); local rows={}; local title="TOP 20 MOST VALUABLE ITEMS"; local headers={"Rank","Item","Price","Qty","Value","Loc"}; local widths={.38,2.45,.85,.55,.95,.9}; if scanned and filter=="Unpriced Items" then title="UNPRICED ITEMS - SCANNED BUT EXCLUDED"; headers={"#","Item","Qty","Location","Reason"}; widths={.35,2.5,.55,1,1.6}; for i,it in ipairs(nw.unpricedItems or {}) do rows[#rows+1]={tostring(i),self:FormatItemCell(it.itemLink,it.name,30),WFormatNumber(it.qty),it.location or WNA(),it.reason or "No Price"} end elseif scanned then for i,it in ipairs(nw.top or {}) do rows[#rows+1]={tostring(i),self:FormatItemCell(it.itemLink,it.name,30),it.avg and VCell(WFormatGold(it.avg),VYellow) or VCell(tostring(it.source or "ESO Value"),C.cyanSoft),WFormatNumber(it.qty),VCell(WFormatGold(it.value),VGreen),it.location or WNA()} end end; self:DrawLegacyTable(root,"NWItems81",tx,y+44,tw,h-116,title,headers,self:RowsOrNA(rows,#headers,"Press Scan Net Worth"),accent,widths); local by=y+h-60; local bw=math.floor((w-48)/5); self:ToolButton(root,"NWScan81",x,by,bw,48,"Scan",accent,function() TML:ScanNetWorth(); TML:RenderTool("net_worth") end); self:ToolButton(root,"NWFilter81",x+bw+12,by,bw,48,"Filter: "..filter,accent,function() TML:CycleNetWorthFilter() end); self:ToolButton(root,"NWCrown81",x+(bw+12)*2,by,bw,48,"Crown Rate",accent,function() TML:OpenSetCrownRatePage() end); self:ToolButton(root,"NWReset81",x+(bw+12)*3,by,bw,48,"Reset",C.gold,function() TML:ResetPageData("net_worth") end); self:ToolButton(root,"NWExit81",x+(bw+12)*4,by,bw,48,"Exit",C.red,function() TML:ReturnToESOMenu() end) end
+function TML:RenderOldBookkeeper(root,x,y,w,h,accent) local selectorW=315; self:DrawGuildSelectorLive(root,x,y,selectorW,h,accent); local rx=x+selectorW+24; local tableW=math.floor((w-selectorW-48)*.68); local g=self:GetGuild(); local maps=self:BuildBookkeeperMaps(g.id); local rows={}; local totalSales,totalProfit,totalDon,totalRaf,totalPaid,totalOwed,caught,owing=0,0,0,0,0,0,0,0; local due=self:GetDueAmount(g.id); for _,m in ipairs(self:GetRosterRows(g.id)) do local k=K(m.name); local s=maps.sales[k] or 0; local p=maps.profit and maps.profit[k] or 0; local d=maps.donations[k] or 0; local rf=maps.raffles[k] or 0; local bal=d-due; if bal>=0 then caught=caught+1; totalPaid=totalPaid+math.min(d,due) else owing=owing+1; totalOwed=totalOwed+math.abs(bal) end; totalSales=totalSales+s; totalProfit=totalProfit+p; totalDon=totalDon+d; totalRaf=totalRaf+rf; rows[#rows+1]={WLimit(m.name,18),VCell(WFormatGold(s),VGreen),VCell(WFormatGold(d),VGreen),VCell(WFormatGold(rf),VYellow),VCell(WFormatGold(bal),bal>=0 and VGreen or VRed),m.lastOnlineSeconds and WRelTime(WNow()-m.lastOnlineSeconds) or WNA(),__sales=s,__donations=d,__raffles=rf,__dues=bal} end; local filter=self.saved.bookkeeperFilter or "Sales"; table.sort(rows,function(a,b) if filter=="Sales" then return (a.__sales or 0)>(b.__sales or 0) elseif filter=="Donations" then return (a.__donations or 0)>(b.__donations or 0) elseif filter=="Raffles" then return (a.__raffles or 0)>(b.__raffles or 0) elseif filter=="Dues Paid" then return (a.__dues or 0)>(b.__dues or 0) elseif filter=="Dues Owed" then return (a.__dues or 0)<(b.__dues or 0) end; return tostring(a[1])<tostring(b[1]) end); self:DrawLegacyTable(root,"BookkeeperTable81",rx,y,tableW,h-70,"MEMBER BOOKKEEPER - "..string.upper(filter),{"Member","Sales","Donations","Raffles","Dues","Last"},self:RowsOrNA(rows,6,"Press Scan Activity"),accent,{1.45,1,1,1,1,1}); local sideX=rx+tableW+24; local sideW=w-(sideX-x); self:DrawLegacyPanel(root,"BookkeeperRight81",sideX,y,sideW,h,"SUMMARY",accent); local summary={{"Total Sales",WFormatGold(totalSales),VGreen},{"Guild Profit",WFormatGold(totalProfit),VGreen},{"Donations",WFormatGold(totalDon),VGreen},{"Raffles",WFormatGold(totalRaf),VYellow},{"Dues Paid",WFormatGold(totalPaid),VGreen},{"Dues Owed",WFormatGold(totalOwed),VRed},{"Caught Up",WFormatNumber(caught),VGreen},{"Owing",WFormatNumber(owing),VRed}}; local rowH=math.max(44,math.floor((h-176)/#summary)); for i,t in ipairs(summary) do self:DrawMiniStat(root,"BookMini81"..i,sideX+20,y+48+(i-1)*rowH,sideW-40,rowH-8,t[1],tostring(t[2]),t[3],t[3]) end; local by=y+h-110; self:ToolButton(root,"BookFilter81",sideX+32,by,sideW-64,48,"Filter: "..filter,accent,function() TML:CycleBookkeeperFilter() end); self:ToolButton(root,"BookScan81",sideX+32,by+56,sideW-64,48,"Scan Activity",accent,function() TML:ScanBookkeeper() end) end
+local OldInit21681=TML.Initialize; function TML:Initialize(addonName) if OldInit21681 then OldInit21681(self,addonName) end; self.version="2.0.16.82"; self.addOnVersion=21682; self.lastUpdated="06/15/2026 08:55 UTC"; self.icon="TamrielMasterLedger/textures/tamrielmasterledger_icon.dds"; self.displayTitle="|c00D9FFTamriel Master Ledger|r"; self:EnsureDataDefaults(); AddResetMenu(); if self.ScheduleMenuRegistration then self:ScheduleMenuRegistration() end; if d then d("Tamriel Master Ledger v"..self.version.." public-release safe menu entry crash fix loaded.") end end
+end
+TML_21681_Patch(); -- v2.0.16.81 public release UI/sales/reset/networth pass
+
+
+
+-- =========================================================
+-- v2.0.16.82 PUBLIC RELEASE MENU ENTRY CRASH FIX
+-- Fixes ESO gamepad main-menu crash caused by unsafe texture-tag row text
+-- and missing stable entry id in the custom ZO_MENU_ENTRIES row.
+-- =========================================================
+function TML:V21682_GetPlainMenuLabel()
+  return "Tamriel Master Ledger"
+end
+
+function TML:V21682_IsMainMenuEntry(entry)
+  if not entry then return false end
+  if entry.id == 981682 then return true end
+  if entry.data and entry.data.tmlMenuEntry then return true end
+  local text = ""
+  if self.GetEntryText then text = self:GetEntryText(entry) or "" else text = entry.text or (entry.data and (entry.data.text or entry.data.name)) or "" end
+  text = Lower(text or "")
+  return text:find("tamriel master ledger", 1, true) ~= nil
+end
+
+function TML:V21682_RemoveUnsafeMainMenuEntries()
+  if not ZO_MENU_ENTRIES then return end
+  for i = #ZO_MENU_ENTRIES, 1, -1 do
+    if self:V21682_IsMainMenuEntry(ZO_MENU_ENTRIES[i]) then table.remove(ZO_MENU_ENTRIES, i) end
+  end
+end
+
+function TML:V21682_ApplySafeEntryFields(entry, label, icon)
+  if not entry then return end
+  entry.id = 981682
+  entry.text = label
+  entry.name = label
+  entry.enabled = true
+  entry.fontScaleOnSelection = true
+  entry.alphaChangeOnSelection = false
+  entry.showBarEvenWhenUnselected = true
+  entry.numIcons = 1
+  entry.icon = icon
+  entry.normalIcon = icon
+  entry.selectedIcon = icon
+  entry.highlightIcon = icon
+  entry.pressedIcon = icon
+  entry.disabledIcon = icon
+  entry.callback = function() if TML and TML.OpenFromMainMenu then TML:OpenFromMainMenu() end end
+  entry.data = entry.data or {}
+  entry.data.id = entry.id
+  entry.data.text = label
+  entry.data.name = label
+  entry.data.icon = icon
+  entry.data.normalIcon = icon
+  entry.data.selectedIcon = icon
+  entry.data.highlightIcon = icon
+  entry.data.pressedIcon = icon
+  entry.data.disabledIcon = icon
+  entry.data.tmlMenuEntry = true
+  entry.data.sceneName = "tamriel_master_ledger_shell"
+  entry.data.scene = "tamriel_master_ledger_shell"
+  entry.data.callback = entry.callback
+  entry.data.isVisibleCallback = function() return true end
+  if entry.SetName then SafeCall(function() entry:SetName(label) end) end
+  if entry.SetText then SafeCall(function() entry:SetText(label) end) end
+  if entry.SetIcon then SafeCall(function() entry:SetIcon(icon) end) end
+  if entry.SetNormalIcon then SafeCall(function() entry:SetNormalIcon(icon) end) end
+  if entry.SetSelectedIcon then SafeCall(function() entry:SetSelectedIcon(icon) end) end
+  if entry.SetCallback then SafeCall(function() entry:SetCallback(entry.callback) end) end
+end
+
+function TML:RegisterGamepadMainMenuEntry()
+  if not ZO_MENU_ENTRIES or not ZO_GamepadEntryData then return false end
+  self:V21682_RemoveUnsafeMainMenuEntries()
+  local icon = self.icon or "TamrielMasterLedger/textures/tamrielmasterledger_icon.dds"
+  local label = self:V21682_GetPlainMenuLabel()
+  -- Do NOT use |t texture tags in this label. ESO's gamepad main-menu list
+  -- can crash when a custom row lacks a stable id or uses texture-row text.
+  local entry = ZO_GamepadEntryData:New(label, icon)
+  self:V21682_ApplySafeEntryFields(entry, label, icon)
+  local fallbackIndex = nil
+  for i, existing in ipairs(ZO_MENU_ENTRIES) do
+    local t = Lower((self.GetEntryText and self:GetEntryText(existing)) or existing.text or (existing.data and (existing.data.text or existing.data.name)) or "")
+    if t:find("addons", 1, true) or t:find("collections", 1, true) or t:find("journal", 1, true) then fallbackIndex = i + 1 end
+  end
+  table.insert(ZO_MENU_ENTRIES, fallbackIndex or (#ZO_MENU_ENTRIES + 1), entry)
+  self.menuEntryRegistered = true
+  if MAIN_MENU_GAMEPAD then
+    for _, fn in ipairs({"RefreshLists", "RefreshVisible", "RefreshList", "UpdateEntryEnabledStates"}) do
+      if MAIN_MENU_GAMEPAD[fn] then SafeCall(function() MAIN_MENU_GAMEPAD[fn](MAIN_MENU_GAMEPAD) end) end
+    end
+  end
+  return true
+end
+
+function TML:BuildMainMenuIconOverlay()
+  if self.mainMenuIconOverlay then SafeCall(function() self.mainMenuIconOverlay:SetHidden(true) end) end
+  return nil
+end
+function TML:UpdateMainMenuIconOverlay()
+  if self.mainMenuIconOverlay then SafeCall(function() self.mainMenuIconOverlay:SetHidden(true) end) end
+end
+function TML:HookMainMenuIconOverlay()
+  if self.mainMenuIconOverlay then SafeCall(function() self.mainMenuIconOverlay:SetHidden(true) end) end
+end
+
+TML.OldInitialize21682 = TML.Initialize
+function TML:Initialize(addonName)
+  if self.OldInitialize21682 then self.OldInitialize21682(self, addonName) end
+  self.version = "2.0.16.82"
+  self.addOnVersion = 21682
+  self.lastUpdated = "06/15/2026 08:55 UTC"
+  self.displayTitle = "|c00D9FFTamriel Master Ledger|r"
+  self.icon = "TamrielMasterLedger/textures/tamrielmasterledger_icon.dds"
+  if self.RegisterGamepadMainMenuEntry then
+    zo_callLater(function() if TML and TML.RegisterGamepadMainMenuEntry then TML:RegisterGamepadMainMenuEntry() end end, 250)
+    zo_callLater(function() if TML and TML.RegisterGamepadMainMenuEntry then TML:RegisterGamepadMainMenuEntry() end end, 2000)
+  end
+  if d then d("Tamriel Master Ledger v"..self.version.." public-release safe gamepad main-menu entry fix loaded.") end
+end
+
+-- =========================================================
+-- v2.0.16.83 PUBLIC RELEASE SHARED SALES / NET WORTH DEDUPE / SCROLL / FOOTER FIX
+-- - Safe temp-scan Sales Core so Personal Sales and Personal Gold Ledger cannot wipe each other.
+-- - Net Worth merges duplicate item stacks/materials before totals/top-20/unpriced output.
+-- - Adds full currency list with Gold Bars / Trade Bars label.
+-- - Scrollable boxes support mouse wheel and reset to top when leaving scroll mode.
+-- - Shared footer order: Back to Menu -> Reset Page -> Exit.
+-- - Guild Bank Net Value explicitly adds Given and subtracts Taken.
+-- =========================================================
+local function TML_21683_Patch()
+  TML.version = "2.0.16.83"
+  TML.addOnVersion = 21683
+  TML.lastUpdated = "06/15/2026 09:15 UTC"
+  TML.icon = "TamrielMasterLedger/textures/tamrielmasterledger_icon.dds"
+  TML.displayTitle = "|c00D9FFTamriel Master Ledger|r"
+
+  local function Now83()
+    if type(WNow) == "function" then return WNow() end
+    if type(GetTimeStamp) == "function" then local ok,v=pcall(GetTimeStamp); if ok then return tonumber(v) or os.time() end end
+    return os.time()
+  end
+  local function UserKey83(v)
+    v = tostring(v or ""):gsub("^%s+", ""):gsub("%s+$", ""):gsub("^@", "")
+    return string.lower(v)
+  end
+  local function SameUser83(a,b)
+    local aa,bb = UserKey83(a), UserKey83(b)
+    return aa ~= "" and aa == bb
+  end
+  local function Is24H83(ts)
+    ts = tonumber(ts) or 0
+    local n = Now83()
+    return ts > 0 and n >= ts and (n - ts) <= WORKING_SECONDS_DAY
+  end
+  local function Fee83(g) g=tonumber(g) or 0; return math.floor(g * 0.07 + 0.5) end
+  local function Tax83(g) g=tonumber(g) or 0; return math.floor(g * 0.035 + 0.5) end
+  local function Net83(g) g=tonumber(g) or 0; return math.max(0, g - Fee83(g)) end
+  local function CellText83(c) if type(c)=="table" then return tostring(c.text or c[1] or "") end; return tostring(c or "") end
+  local function CellColor83(c, fb) if type(c)=="table" and c.color then return c.color end; return fb or C.white end
+  local function FormatSource83(src)
+    src=tostring(src or "")
+    if src == "guild" or src == "guild avg" then return "Guild Avg" end
+    if src == "vendor" or src == "eso" then return "ESO Value" end
+    if src == "sales" then return "Sales Value" end
+    return src ~= "" and src or WNA()
+  end
+  local function ItemKey83(link)
+    local k = nil
+    if type(WItemKey) == "function" then k = WItemKey(link) end
+    if not k or k == "" then k = tostring(link or "") end
+    return k
+  end
+  local function ItemName83(link)
+    if type(WGetItemName) == "function" then return WGetItemName(link) end
+    return tostring(link or WNA())
+  end
+
+  local OldEnsure83 = TML.EnsureDataDefaults
+  function TML:EnsureDataDefaults()
+    if OldEnsure83 then OldEnsure83(self) end
+    self.saved = self.saved or self:Defaults()
+    self.saved.scanStatus = self.saved.scanStatus or {}
+    self.saved.scrollOffsets = self.saved.scrollOffsets or {}
+    self.saved.salesEvents = self.saved.salesEvents or {}
+    self.saved.salesCore = self.saved.salesCore or { guilds = {}, lastScan = 0 }
+    self.saved.personalGoldEvents = self.saved.personalGoldEvents or {}
+    self.saved.guildGoldEvents = self.saved.guildGoldEvents or {}
+    self.saved.bankItemEvents = self.saved.bankItemEvents or {}
+    self.saved.netWorthFilter = self.saved.netWorthFilter or "Top Value"
+    self.saved.personalSalesFilter = self.saved.personalSalesFilter or "All-Time"
+    self.saved.salesFilter = self.saved.salesFilter or "All-Time"
+  end
+
+  -- Footer order required on every shared tool page.
+  function TML:DrawToolActionBar(root, x, y, w, accent)
+    local gap = 18
+    local bw = math.floor((w - gap * 2) / 3)
+    self:ToolButton(root, "ToolBack83", x, y, bw, 56, "Back to Menu", C.cyan, function() TML:Back() end)
+    self:ToolButton(root, "ToolReset83", x + bw + gap, y, bw, 56, "Reset Page", C.gold, function() TML:ResetPageData(TML.state and TML.state.activeTool) end)
+    self:ToolButton(root, "ToolExit83", x + (bw + gap) * 2, y, bw, 56, "Exit", C.red, function() TML:ReturnToESOMenu() end)
+  end
+
+  -- Scroll helpers: wheel support, active prompt, top reset on exit.
+  function TML:LeaveScrollBox(noRender)
+    if self.state and self.state.scrollFocus then
+      local key = self.state.scrollFocus.key
+      self.saved = self.saved or {}; self.saved.scrollOffsets = self.saved.scrollOffsets or {}
+      if key then self.saved.scrollOffsets[key] = 0 end
+      self.state.scrollFocus = nil
+      if not noRender then self:RenderTool(self.state.activeTool or "help") end
+      return true
+    end
+    return false
+  end
+  function TML:ActivateScrollBox(key, totalRows, visibleRows)
+    self.state = self.state or {}
+    self.saved = self.saved or {}; self.saved.scrollOffsets = self.saved.scrollOffsets or {}
+    self.saved.scrollOffsets[key] = tonumber(self.saved.scrollOffsets[key] or 0) or 0
+    self.state.scrollFocus = { key = key, rows = tonumber(totalRows) or 0, visible = tonumber(visibleRows) or 1 }
+    self:RenderTool(self.state.activeTool or "help")
+  end
+  function TML:ScrollBoxByKey(key, delta, totalRows, visibleRows)
+    self.saved = self.saved or {}; self.saved.scrollOffsets = self.saved.scrollOffsets or {}
+    totalRows = tonumber(totalRows) or 0; visibleRows = math.max(1, tonumber(visibleRows) or 1)
+    local maxOffset = math.max(0, totalRows - visibleRows)
+    local cur = tonumber(self.saved.scrollOffsets[key] or 0) or 0
+    cur = cur + (tonumber(delta) or 0)
+    if cur < 0 then cur = 0 end
+    if cur > maxOffset then cur = maxOffset end
+    self.saved.scrollOffsets[key] = cur
+    self:RenderTool(self.state.activeTool or "help")
+  end
+  function TML:ScrollActiveBox(delta)
+    if not (self.state and self.state.scrollFocus) then return end
+    local sf = self.state.scrollFocus
+    self:ScrollBoxByKey(sf.key, delta, sf.rows, sf.visible)
+  end
+  local OldBack83 = TML.Back
+  function TML:Back()
+    if self:LeaveScrollBox(false) then return end
+    if OldBack83 then return OldBack83(self) end
+  end
+  local OldHandleKeyDown83 = TML.HandleKeyDown
+  function TML:HandleKeyDown(key)
+    if self.state and self.state.scrollFocus then
+      if IsKey(key, "KEY_ESCAPE", "KEY_BACKSPACE", "KEY_X", "KEY_B", "KEY_GAMEPAD_BUTTON_B", "KEY_GAMEPAD_BUTTON_2") then self:LeaveScrollBox(false); return end
+      if IsKey(key, "KEY_UPARROW", "KEY_W", "KEY_GAMEPAD_DPAD_UP", "KEY_GAMEPAD_LEFT_STICK_UP", "KEY_GAMEPAD_LEFT_SHOULDER", "KEY_PAGEUP") then self:ScrollActiveBox(-1); return end
+      if IsKey(key, "KEY_DOWNARROW", "KEY_S", "KEY_GAMEPAD_DPAD_DOWN", "KEY_GAMEPAD_LEFT_STICK_DOWN", "KEY_GAMEPAD_RIGHT_SHOULDER", "KEY_PAGEDOWN") then self:ScrollActiveBox(1); return end
+      if IsKey(key, "KEY_GAMEPAD_START", "KEY_GAMEPAD_BUTTON_START", "KEY_DELETE") then self:ReturnToESOMenu(); return end
+      return
+    end
+    if OldHandleKeyDown83 then OldHandleKeyDown83(self, key) end
+  end
+  function TML:RegisterScrollableBox(key, title, x, y, w, h, totalRows, visibleRows, root)
+    self.currentToolButtons = self.currentToolButtons or {}
+    self.saved = self.saved or {}; self.saved.scrollOffsets = self.saved.scrollOffsets or {}
+    local idx = #self.currentToolButtons + 1
+    self.currentToolButtons[idx] = { label = tostring(title or key or "Scrollable Box"), callback = function() TML:ActivateScrollBox(key, totalRows, visibleRows) end, x=x, y=y, w=w, h=h, cx=x+w/2, cy=y+h/2, key=key, scrollKey=key, scrollRows=totalRows, scrollVisible=visibleRows }
+    local hovered = (tonumber(self.state and self.state.toolButton or 0) == idx)
+    local active = self.state and self.state.scrollFocus and self.state.scrollFocus.key == key
+    local edge = active and C.gold or (hovered and C.cyanSoft or nil)
+    if edge then self:Backdrop("ScrollEdge83"..tostring(key), root, x+4, y+4, w-8, h-8, {0,0,0,0}, {edge[1], edge[2], edge[3], active and 0.98 or 0.82}) end
+    if active then self:RenderScrollPrompt(root, true, false) end
+    local hit = self:GetControl("ScrollWheelHit83"..tostring(key), root, CT_CONTROL)
+    hit:ClearAnchors(); hit:SetAnchor(TOPLEFT, root, TOPLEFT, x, y); hit:SetDimensions(w, h); hit:SetMouseEnabled(true)
+    hit:SetHandler("OnMouseWheel", function(_, delta) TML:ScrollBoxByKey(key, (delta and delta > 0) and -3 or 3, totalRows, visibleRows) end)
+    hit:SetHandler("OnMouseEnter", function()
+      if TML.state and TML.state.toolButton ~= idx then TML.state.toolButton = idx; TML:RenderTool(TML.state.activeTool or "help") end
+    end)
+    hit:SetHandler("OnMouseUp", function(_, button, upInside) if upInside == nil or upInside then TML:ActivateScrollBox(key, totalRows, visibleRows) end end)
+  end
+
+  function TML:DrawLegacyTable(root, key, x, y, w, h, title, headers, rows, accent, colWeights)
+    self:DrawLegacyPanel(root, key, x, y, w, h, title, accent)
+    headers = headers or {}; rows = rows or {}; colWeights = colWeights or {}
+    local top = y + 62
+    local n = math.max(1, #headers)
+    local totalWeight = 0
+    for i=1,n do totalWeight = totalWeight + (tonumber(colWeights[i]) or 1) end
+    if totalWeight <= 0 then totalWeight = n end
+    local usable = w - 64
+    local colX, colW = {}, {}
+    local run = x + 30
+    for i=1,n do
+      local cw = math.floor(usable * ((tonumber(colWeights[i]) or 1) / totalWeight))
+      colX[i] = run; colW[i] = math.max(28, cw - 8); run = run + cw
+    end
+    self:Backdrop(key.."HeadBg83", root, x+22, top, w-44, 40, {accent[1], accent[2], accent[3], 0.16}, {accent[1], accent[2], accent[3], 0.34})
+    for i,hdr in ipairs(headers) do self:Label(key.."H83"..i, root, tostring(hdr), colX[i], top+2, colW[i], 36, accent, FONTS.panelSmall, TEXT_ALIGN_LEFT) end
+    local rowH = 38
+    local visible = math.max(1, math.floor((h - 118) / rowH))
+    local total = #rows
+    local off = 0
+    if total > visible then
+      self.saved.scrollOffsets = self.saved.scrollOffsets or {}
+      off = tonumber(self.saved.scrollOffsets[key] or 0) or 0
+      local maxOffset = math.max(0, total - visible)
+      if off > maxOffset then off = maxOffset; self.saved.scrollOffsets[key] = off end
+      self:RegisterScrollableBox(key, title, x, y, w, h, total, visible, root)
+    end
+    local maxRows = math.min(total, visible)
+    for r=1,maxRows do
+      local si = off + r
+      local row = rows[si] or {}
+      local yy = top + 46 + (r-1)*rowH
+      local rc = type(row)=="table" and row.__rowColor or nil
+      local bg = rc and {rc[1],rc[2],rc[3],0.20} or {0,0,0,(si%2==0) and 0.38 or 0.25}
+      self:Backdrop(key.."Row83"..r, root, x+22, yy, w-44, rowH-3, bg, rc and {rc[1],rc[2],rc[3],0.50} or nil)
+      for c=1,n do
+        local cell = row[c]
+        local val = CellText83(cell)
+        local color = CellColor83(cell, C.white)
+        if type(cell) ~= "table" then
+          if val == "--" or val == "N/A" or val:find("Not Scanned",1,true) or val:find("No ",1,true) then color = C.muted end
+          if val:find("Pending",1,true) or val:find("Withdraw",1,true) or val:find("Taken",1,true) or val:find("Owed",1,true) then color = C.redDim end
+          if val:find("Paid",1,true) or val:find("Complete",1,true) or val:find("Given",1,true) then color = VGreen end
+        end
+        self:Label(key.."R83"..r.."C"..c, root, val, colX[c], yy, colW[c], rowH-2, color, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+      end
+    end
+    if total > visible then
+      local maxOffset = math.max(0, total - visible)
+      self:Label(key.."ScrollCount83", root, tostring(off+1).."-"..tostring(off+maxRows).." / "..tostring(total), x+w-218, y+h-34, 160, 26, C.cyanSoft, FONTS.panelSmall, TEXT_ALIGN_RIGHT)
+      local trackX = x + w - 36
+      local trackY = top + 48
+      local trackH = math.max(38, h - 148)
+      self:Backdrop(key.."ScrollTrack83", root, trackX, trackY, 10, trackH, {0,0,0,0.42}, {C.cyan[1],C.cyan[2],C.cyan[3],0.22})
+      local thumbH = math.max(24, math.floor(trackH * (visible / math.max(1,total))))
+      local thumbY = trackY + ((maxOffset > 0) and math.floor((trackH - thumbH) * (off / maxOffset)) or 0)
+      self:Backdrop(key.."ScrollThumb83", root, trackX+1, thumbY, 8, thumbH, {accent[1],accent[2],accent[3],0.70}, {C.gold[1],C.gold[2],C.gold[3],0.65})
+      self:Label(key.."WheelHint83", root, "Mouse wheel / D-pad", x+30, y+h-34, 240, 26, C.muted, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+    end
+  end
+
+  -- Safe Sales Core: scan into temp rows first and only replace a guild when ESO returned usable rows.
+  function TML:V21683_ParseTrader(vals)
+    local eventId,timestamp,isRedacted,eventType,seller,buyer,itemLink,quantity,price,tax = vals[1],vals[2],vals[3],vals[4],vals[5],vals[6],vals[7],vals[8],vals[9],vals[10]
+    local strings, nums = {}, {}
+    for _,v in ipairs(vals) do
+      if type(v)=="string" then strings[#strings+1]=v elseif type(v)=="number" then nums[#nums+1]=v end
+    end
+    if not itemLink or itemLink=="" then for _,s in ipairs(strings) do if tostring(s):find("|H",1,true) then itemLink=s; break end end end
+    if not seller or type(seller) ~= "string" then
+      seller = nil
+      for _,s in ipairs(strings) do if s ~= itemLink and not tostring(s):find("|H",1,true) then seller=s; break end end
+    end
+    if not timestamp or tonumber(timestamp) == nil or tonumber(timestamp) < 1000000000 then
+      for _,n in ipairs(nums) do if n > 1000000000 and n < 4102444800 then timestamp = n; break end end
+    end
+    if not price or tonumber(price) == nil or tonumber(price) <= 0 then
+      local maxPrice = 0
+      for _,n in ipairs(nums) do
+        if n > maxPrice and not (timestamp and n == timestamp) and n > 0 then maxPrice = n end
+      end
+      if maxPrice > 0 then price = maxPrice end
+    end
+    quantity = tonumber(quantity) or 1
+    if quantity <= 0 or quantity > 200000 then quantity = 1 end
+    return eventId,timestamp,isRedacted,eventType,seller,buyer,itemLink,quantity,price,tax
+  end
+  function TML:V21683_MakeSaleRow(guildId, eventId, seller, gross, timestamp, itemLink, quantity, tax)
+    gross = tonumber(gross) or 0
+    if gross <= 0 then return nil end
+    local qty = tonumber(quantity) or 1
+    local fee = Fee83(gross)
+    local net = Net83(gross)
+    local guildTax = tonumber(tax) or Tax83(gross)
+    return { guildId=guildId, seller=seller or WNA(), amount=net, netAmount=net, grossAmount=gross, feeAmount=fee, guildTax=guildTax, tax=guildTax, feeAdjusted=true, timestamp=tonumber(timestamp) or Now83(), itemLink=itemLink, itemName=ItemName83(itemLink), quantity=qty, eventId=eventId }
+  end
+  function TML:V21683_ReplaceSalesForGuild(guildId, tempRows)
+    self.saved.salesEvents = self.saved.salesEvents or {}
+    for key,e in pairs(self.saved.salesEvents) do if e and e.guildId == guildId then self.saved.salesEvents[key] = nil end end
+    for i,e in ipairs(tempRows or {}) do
+      local key = tostring(guildId)..":"..tostring(e.eventId or i)..":"..tostring(e.seller)..":"..tostring(e.grossAmount)..":"..tostring(e.timestamp)..":"..tostring(e.itemLink or e.itemName or "")
+      self.saved.salesEvents[key] = e
+    end
+    self.saved.salesCore = self.saved.salesCore or {guilds={}}
+    self.saved.salesCore.guilds[tostring(guildId)] = {rows=#(tempRows or {}), timestamp=Now83(), status="verified"}
+  end
+  function TML:ScanGuildSales(g)
+    self:EnsureDataDefaults()
+    if not g or not g.id or g.id == 0 then return 0 end
+    local cat = self:GetHistoryCategory("trader")
+    if type(GetGuildHistoryTraderEventInfo) ~= "function" or not cat then self.saved.scanStatus.sales = "Sales API unavailable"; return 0 end
+    local newest, oldest = self:GetHistoryIndices(g.id, cat, WORKING_HISTORY_DAYS)
+    local tempRows, scanned, stored = {}, 0, 0
+    if oldest >= newest then
+      for i=newest, oldest do
+        local vals = {pcall(GetGuildHistoryTraderEventInfo, g.id, i)}
+        local ok = table.remove(vals, 1)
+        if ok then
+          local eventId,timestamp,isRedacted,eventType,seller,buyer,itemLink,quantity,price,tax = self:V21683_ParseTrader(vals)
+          if not isRedacted and seller and tonumber(price) and tonumber(price) > 0 then
+            scanned = scanned + 1
+            local row = self:V21683_MakeSaleRow(g.id, eventId or i, seller, price, timestamp, itemLink, quantity, tax)
+            if row then stored = stored + 1; tempRows[#tempRows+1] = row end
+          end
+        end
+      end
+    end
+    self:RequestHistory(g.id, cat, WORKING_HISTORY_DAYS)
+    if stored > 0 then
+      self:V21683_ReplaceSalesForGuild(g.id, tempRows)
+      if self.RebuildPriceCacheFromSales then self:RebuildPriceCacheFromSales() end
+      self.saved.scanStatus.sales = "Scan complete: "..tostring(stored).." sales rows loaded for "..tostring(g.name or "guild")
+    else
+      local oldCount = 0
+      for _,e in pairs(self.saved.salesEvents or {}) do if e and e.guildId == g.id then oldCount = oldCount + 1 end end
+      self.saved.scanStatus.sales = "No new sales rows loaded for "..tostring(g.name or "guild")..(oldCount>0 and (" • kept "..tostring(oldCount).." verified rows") or " • Load Guild History, then scan again")
+    end
+    self:PruneEventTable(self.saved.salesEvents, WORKING_MAX_EVENTS)
+    return stored
+  end
+  function TML:ScanSelectedGuildSales(noRender)
+    local g = self:GetGuild(); local n = self:ScanGuildSales(g)
+    if not noRender then self:RenderTool("guild_sales") end
+    return n
+  end
+  function TML:ScanAllGuildSales(noRender)
+    local total = 0; local guilds = 0
+    self:EachGuild(function(g) guilds = guilds + 1; total = total + (tonumber(self:ScanGuildSales(g)) or 0) end)
+    if total > 0 then self.saved.scanStatus.sales = "Scan complete: "..tostring(total).." sales rows across "..tostring(guilds).." guilds" end
+    if self.RebuildPriceCacheFromSales then self:RebuildPriceCacheFromSales() end
+    if not noRender then self:RenderTool(self.state and self.state.activeTool or "personal_sales") end
+    return total
+  end
+  function TML:GetSalesRows(guildId, onlyMe)
+    self:EnsureDataDefaults()
+    local rows = {}; local my = UserKey83(self:GetUserDisplayName()); local now = Now83()
+    for _,e in pairs(self.saved.salesEvents or {}) do
+      if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(e) end
+      local ts = tonumber(e.timestamp) or 0
+      local okGuild = (not guildId or guildId == 0 or e.guildId == guildId)
+      local okUser = (not onlyMe) or (UserKey83(e.seller) == my)
+      if okGuild and okUser and ts > 0 and (now - ts <= WORKING_HISTORY_DAYS * WORKING_SECONDS_DAY) then rows[#rows+1] = e end
+    end
+    table.sort(rows, function(a,b) return (tonumber(a.timestamp) or 0) > (tonumber(b.timestamp) or 0) end)
+    return rows
+  end
+  function TML:GetSalesRows24H(guildId, onlyMe)
+    local rows = {}
+    for _,e in ipairs(self:GetSalesRows(guildId, onlyMe)) do if Is24H83(e.timestamp) then rows[#rows+1] = e end end
+    return rows
+  end
+  function TML:ComputeSalesStats(guildId, onlyMe)
+    local rows = self:GetSalesRows(guildId, onlyMe)
+    local st = { sales24=0, salesToday=0, totalSales=0, allTimeSales=0, items=0, tax=0, fees=0, gross=0, net=0, topEarner=WNA(), topAmount=0, deltaPct=nil, rowCount=#rows }
+    local sellers = {}
+    for _,e in ipairs(rows) do
+      local net = tonumber(e.netAmount or e.amount) or 0
+      local gross = tonumber(e.grossAmount) or net
+      local guildTax = tonumber(e.guildTax or e.tax) or Tax83(gross)
+      local fee = tonumber(e.feeAmount) or Fee83(gross)
+      if Is24H83(e.timestamp) then st.sales24 = st.sales24 + net; st.salesToday = st.salesToday + net end
+      st.totalSales = st.totalSales + net; st.allTimeSales = st.allTimeSales + net; st.gross = st.gross + gross; st.fees = st.fees + fee; st.tax = st.tax + guildTax; st.net = st.net + net; st.items = st.items + (tonumber(e.quantity) or 1)
+      local u=e.seller or WNA(); sellers[u]=(sellers[u] or 0)+net
+    end
+    for u,v in pairs(sellers) do if v > st.topAmount then st.topAmount = v; st.topEarner = u end end
+    if st.totalSales > 0 then st.deltaPct = (st.sales24 / st.totalSales) * 100 end
+    return st
+  end
+  function TML:ScanPersonalSales(noRender)
+    self:ScanAllGuildSales(true)
+    local rows = self:GetSalesRows(0, true)
+    self.saved.scanStatus.sales = "Personal scan: "..tostring(#rows).." @UserID sales rows loaded from Sales Core"
+    if not noRender then self:RenderTool("personal_sales") end
+    return #rows
+  end
+
+  -- Personal Gold Ledger: no destructive clear unless a temp rebuild produced valid rows.
+  function TML:V21683_AddTempPersonalRow(temp, source, amount, direction, note, timestamp, keyExtra, user)
+    amount = tonumber(amount) or 0
+    if amount <= 0 then return false end
+    local key = tostring(direction)..":"..tostring(source)..":"..tostring(keyExtra or (tostring(note)..":"..tostring(timestamp)..":"..tostring(amount)))
+    if temp[key] then return false end
+    temp[key] = { timestamp=tonumber(timestamp) or Now83(), user=user or self:GetUserDisplayName(), source=source, amount=amount, direction=direction, note=note or source }
+    return true
+  end
+  function TML:ScanPersonalGoldLedger()
+    self:EnsureDataDefaults()
+    self:ScanAllGuildSales(true)
+    self:EachGuild(function(g) self:ScanGuildGold(g) end)
+    if self.RebuildDonationEvents then self:RebuildDonationEvents() end
+    local temp = {}; local my = self:GetUserDisplayName(); local added, excluded = 0, 0
+    for _,s in pairs(self.saved.salesEvents or {}) do
+      if V21669_NormalizeSaleRow then V21669_NormalizeSaleRow(s) end
+      if SameUser83(s.seller, my) then
+        if self:V21683_AddTempPersonalRow(temp, "Guild Trader Sale", tonumber(s.netAmount or s.amount) or 0, "in", self:GetGuildName(s.guildId), s.timestamp, "sale:"..tostring(s.guildId)..":"..tostring(s.eventId or s.itemLink or s.itemName)..":"..tostring(s.timestamp)..":"..tostring(s.grossAmount or s.amount), my) then added = added + 1 end
+      end
+    end
+    for _,e in pairs(self.saved.guildGoldEvents or {}) do
+      if SameUser83(e.user, my) then
+        local b = tostring(e.bucket or ""); local amt = tonumber(e.amount) or 0
+        if e.action == "deposit" and (b == "Donation" or b == "Ticket" or b == "Giveaway Ticket" or b == "Reset") then
+          if self:V21683_AddTempPersonalRow(temp, "Guild Bank Deposit", amt, "out", b, e.timestamp, "gold:"..tostring(e.guildId)..":"..tostring(e.timestamp)..":"..tostring(amt)..":"..b, my) then added = added + 1 end
+        elseif e.action == "withdraw" and (b == "Withdrawal" or b == "Withdraw") then
+          if self:V21683_AddTempPersonalRow(temp, "Guild Bank Withdrawal", amt, "in", b, e.timestamp, "gold:"..tostring(e.guildId)..":"..tostring(e.timestamp)..":"..tostring(amt)..":"..b, my) then added = added + 1 end
+        else
+          excluded = excluded + 1
+        end
+      end
+    end
+    if added > 0 then
+      self.saved.personalGoldEvents = temp
+      self.saved.personalGoldTotals = { goldIn=0, goldOut=0, moves=added }
+      self.saved.scanStatus.personalGold = "Refresh complete: "..tostring(added).." clean rows / "..tostring(excluded).." excluded"
+    else
+      local oldCount = 0; for _ in pairs(self.saved.personalGoldEvents or {}) do oldCount = oldCount + 1 end
+      self.saved.scanStatus.personalGold = "No new clean rows loaded"..(oldCount>0 and (" • kept "..tostring(oldCount).." verified rows") or " • load Guild History, then refresh")
+    end
+    if self.MarkScanned then self:MarkScanned(added>0 and "Scanned" or "Partial", added>0) end
+  end
+
+  -- Net Worth: aggregate identical items/materials across bag/craft cache passes before totals and top 20.
+  function TML:V21683_NewNetWorth()
+    local rate = tonumber(self.saved and self.saved.crownRate)
+    return { scanned=true,total=0,character=0,carriedGold=tonumber(self:GetCarriedGoldLive()) or 0,bankedGold=tonumber(self:GetBankGoldLive()) or 0,carriedItems=0,bankedItems=0,craftBag=0,unpriced=0,unpricedItems={},top={},currencies={},lastScan=Now83(),craftBagStatus="Not scanned",crownRate=rate,crownGold=nil,pricedStacks=0,seenStacks=0,itemMap={},unpricedMap={},priceSource="Guild Avg + ESO Item Value" }
+  end
+  function TML:V21683_AddNWItem(nw, itemLink, qty, bucket, locName)
+    if not itemLink or itemLink == "" then return false end
+    qty = tonumber(qty) or 1
+    if qty <= 0 then qty = 1 end
+    local key = ItemKey83(itemLink)
+    if key == "" then return false end
+    nw.seenStacks = (tonumber(nw.seenStacks) or 0) + 1
+    local avg = self:GetAveragePrice(key)
+    local value, src, unit = nil, nil, nil
+    if avg and tonumber(avg) and tonumber(avg) > 0 then
+      unit = tonumber(avg); value = math.floor(unit * qty); src = "guild"
+    else
+      value, src = WGetItemValue(itemLink, qty)
+      if value and tonumber(value) and tonumber(value) > 0 then unit = math.max(1, math.floor((tonumber(value) or 0) / math.max(1, qty))) else value = nil end
+    end
+    if value and tonumber(value) and tonumber(value) > 0 then
+      local row = nw.itemMap[key]
+      if not row then row = { name=ItemName83(itemLink), itemLink=itemLink, qty=0, value=0, avg=avg, unit=unit, source=src, locations={}, locSet={} }; nw.itemMap[key] = row end
+      row.qty = (tonumber(row.qty) or 0) + qty
+      row.value = (tonumber(row.value) or 0) + tonumber(value)
+      if avg and (not row.avg or avg > row.avg) then row.avg = avg end
+      row.unit = row.unit or unit
+      row.source = row.source or src
+      if not row.locSet[locName] then row.locSet[locName] = true; row.locations[#row.locations+1] = locName end
+      nw[bucket] = (tonumber(nw[bucket]) or 0) + tonumber(value)
+      nw.pricedStacks = (tonumber(nw.pricedStacks) or 0) + 1
+      return true
+    end
+    local u = nw.unpricedMap[key]
+    if not u then u = { name=ItemName83(itemLink), itemLink=itemLink, qty=0, locations={}, locSet={}, reason="No price loaded" }; nw.unpricedMap[key] = u end
+    u.qty = (tonumber(u.qty) or 0) + qty
+    if not u.locSet[locName] then u.locSet[locName] = true; u.locations[#u.locations+1] = locName end
+    return false
+  end
+  function TML:V21683_SlotLink(bagId, slotIndex, slotData)
+    local link = slotData and (slotData.itemLink or slotData.link or (slotData.itemData and slotData.itemData.itemLink))
+    if (not link or link == "") and slotData and type(slotData.GetItemLink) == "function" then local ok,l=pcall(function() return slotData:GetItemLink() end); if ok then link=l end end
+    if (not link or link == "") and type(GetItemLink) == "function" and slotIndex then local ok,l=pcall(GetItemLink, bagId, slotIndex); if ok then link=l end end
+    return link
+  end
+  function TML:V21683_SlotQty(bagId, slotIndex, slotData)
+    local q = tonumber(slotData and (slotData.stackCount or slotData.stack or slotData.quantity or slotData.stackSize or (slotData.itemData and slotData.itemData.stackCount)))
+    if (not q or q <= 0) and slotData and type(slotData.GetStackCount) == "function" then local ok,v=pcall(function() return slotData:GetStackCount() end); if ok then q=tonumber(v) end end
+    if (not q or q <= 0) and type(GetSlotStackSize) == "function" and slotIndex then local ok,v=pcall(GetSlotStackSize, bagId, slotIndex); if ok then q=tonumber(v) end end
+    return (q and q > 0) and q or 1
+  end
+  function TML:V21683_ScanBag(nw, bagId, bucket, locName)
+    if bagId == nil or type(GetBagSize) ~= "function" then return 0,0 end
+    local okS,size = pcall(GetBagSize, bagId); size = okS and tonumber(size) or 0
+    local seen0, priced0 = nw.seenStacks or 0, nw.pricedStacks or 0
+    local seenSlot = {}
+    for slot=0,math.max(0,size-1) do
+      local link = self:V21683_SlotLink(bagId, slot, nil)
+      if link and link ~= "" then
+        local sk = tostring(bagId)..":"..tostring(slot)..":"..ItemKey83(link)
+        if not seenSlot[sk] then seenSlot[sk] = true; self:V21683_AddNWItem(nw, link, self:V21683_SlotQty(bagId, slot, nil), bucket, locName) end
+      end
+    end
+    return (nw.seenStacks or 0)-seen0, (nw.pricedStacks or 0)-priced0
+  end
+  function TML:V21683_ScanCraftBag(nw)
+    local bagId = _G.BAG_VIRTUAL
+    if not bagId then nw.craftBagStatus = "Craft Bag API unavailable"; return 0,0 end
+    local beforeSeen, beforePriced = nw.seenStacks or 0, nw.pricedStacks or 0
+    local seenMaterial = {}
+    local candidates = {}
+    if SHARED_INVENTORY then
+      for _,method in ipairs({"GenerateFullSlotData","GetBagCache","GetOrCreateBagCache"}) do
+        if type(SHARED_INVENTORY[method]) == "function" then
+          local ok,data
+          if method == "GenerateFullSlotData" then ok,data = pcall(function() return SHARED_INVENTORY:GenerateFullSlotData(nil, bagId) end) else ok,data = pcall(function() return SHARED_INVENTORY[method](SHARED_INVENTORY, bagId) end) end
+          if ok and type(data) == "table" then candidates[#candidates+1] = data end
+        end
+      end
+    end
+    for _,data in ipairs(candidates) do
+      for slotKey,slotData in pairs(data) do
+        local slotIndex = tonumber(slotData and (slotData.slotIndex or slotData.slotId or slotData.slot or slotKey)) or tonumber(slotKey)
+        local link = self:V21683_SlotLink(bagId, slotIndex, slotData)
+        if link and link ~= "" then
+          local k = ItemKey83(link)
+          if not seenMaterial[k] then
+            seenMaterial[k] = true
+            self:V21683_AddNWItem(nw, link, self:V21683_SlotQty(bagId, slotIndex, slotData), "craftBag", "Craft Bag")
+          end
+        end
+      end
+    end
+    if (nw.seenStacks or 0) == beforeSeen then self:V21683_ScanBag(nw, bagId, "craftBag", "Craft Bag") end
+    local seen = (nw.seenStacks or 0) - beforeSeen
+    local priced = (nw.pricedStacks or 0) - beforePriced
+    nw.craftBagStatus = seen > 0 and ("Scanned "..tostring(seen).." unique craft bag items") or "Craft Bag not loaded"
+    return seen, priced
+  end
+  function TML:V21683_FinalizeNetWorth(nw)
+    nw.top = {}
+    for _,row in pairs(nw.itemMap or {}) do
+      row.location = (#(row.locations or {}) > 1) and "Multiple" or ((row.locations or {})[1] or WNA())
+      row.priceLabel = row.avg and WFormatGold(row.avg) or FormatSource83(row.source)
+      nw.top[#nw.top+1] = row
+    end
+    table.sort(nw.top, function(a,b) return (a.value or 0) > (b.value or 0) end)
+    while #nw.top > 20 do table.remove(nw.top) end
+    nw.unpricedItems = {}
+    for _,row in pairs(nw.unpricedMap or {}) do
+      row.location = (#(row.locations or {}) > 1) and "Multiple" or ((row.locations or {})[1] or WNA())
+      nw.unpricedItems[#nw.unpricedItems+1] = row
+    end
+    table.sort(nw.unpricedItems, function(a,b) return tostring(a.name) < tostring(b.name) end)
+    nw.unpriced = #nw.unpricedItems
+    nw.itemMap = nil; nw.unpricedMap = nil
+  end
+  function TML:ScanNetWorth()
+    self:EnsureDataDefaults()
+    self.saved.networth = nil
+    pcall(function() self:ScanAllGuildSales(true) end)
+    local nw = self:V21683_NewNetWorth()
+    local accountLoc = {_G.CURRENCY_LOCATION_ACCOUNT, nil}
+    local charBankLoc = {_G.CURRENCY_LOCATION_CHARACTER, _G.CURRENCY_LOCATION_BANK, _G.CURRENCY_LOCATION_ACCOUNT, nil}
+    nw.currencies = {
+      {"Crowns", WCurrencyAny({"CURT_CROWNS","CURT_CROWN_CROWNS"}, accountLoc)},
+      {"Crown Gems", WCurrencyAny({"CURT_CROWN_GEMS"}, accountLoc)},
+      {"Writ Vouchers", WCurrencyAny({"CURT_WRIT_VOUCHERS","CURT_WRIT_VOUCHER"}, charBankLoc)},
+      {"Alliance Points", WCurrencyAny({"CURT_ALLIANCE_POINTS"}, charBankLoc)},
+      {"Tel Var Stones", WCurrencyAny({"CURT_TELVAR_STONES"}, charBankLoc)},
+      {"Gold Bars", WCurrencyAny({"CURT_TRADE_BARS","CURT_GOLD_BARS","CURT_EVENT_TICKETS","CURT_EVENT_TICKET"}, accountLoc)},
+      {"Undaunted Keys", WCurrencyAny({"CURT_UNDAUNTED_KEYS","CURT_UNDAUNTED_KEY"}, charBankLoc)},
+      {"Seals", WCurrencyAny({"CURT_SEALS_OF_ENDEAVOR","CURT_ENDEAVOR_SEALS","CURT_SEAL_OF_ENDEAVOR"}, accountLoc)},
+      {"Archival Fortunes", WCurrencyAny({"CURT_ARCHIVAL_FORTUNES","CURT_ARCHIVAL_FORTUNE"}, charBankLoc)},
+      {"Tome Points", WCurrencyAny({"CURT_TOME_POINTS","CURT_TAMRIEL_TOME_POINTS","CURT_TAMRIEL_TOMES"}, charBankLoc)}
+    }
+    self:V21683_ScanBag(nw, _G.BAG_BACKPACK, "carriedItems", "Backpack")
+    self:V21683_ScanBag(nw, _G.BAG_BANK, "bankedItems", "Bank")
+    self:V21683_ScanBag(nw, _G.BAG_SUBSCRIBER_BANK, "bankedItems", "Bank")
+    self:V21683_ScanCraftBag(nw)
+    local crowns=nil
+    for _,cur in ipairs(nw.currencies or {}) do if cur[1] == "Crowns" then crowns = tonumber(cur[2]) end end
+    if nw.crownRate and nw.crownRate > 0 and crowns then nw.crownGold = math.floor(crowns * nw.crownRate) end
+    self:V21683_FinalizeNetWorth(nw)
+    nw.character = nw.carriedGold + nw.carriedItems
+    nw.total = nw.character + nw.bankedGold + nw.bankedItems + nw.craftBag + (nw.crownGold or 0)
+    self.saved.networth = nw
+    self.saved.goldSnapshots.last = {carriedGold=nw.carriedGold, bankedGold=nw.bankedGold, timestamp=Now83()}
+    self.saved.scanStatus.networth = "Scan complete: "..tostring(#(nw.top or {})).." priced items / "..tostring(nw.unpriced or 0).." unpriced unique items"
+    if self.MarkScanned then self:MarkScanned("Scanned", true) end
+  end
+
+  function TML:RenderOldNetWorth(root, x, y, w, h, accent)
+    local nw = self:GetNetWorth(); local scanned = nw and nw.scanned and nw.lastScan; local leftW = 620; local filter = self.saved.netWorthFilter or "Top Value"
+    self:DrawLegacyPanel(root, "NWStats83", x, y, leftW, h-70, "SUMMARY", accent)
+    local function val(v) return scanned and WFormatGold(v or 0) or "Not Scanned" end
+    local invValue = scanned and WFormatGold((nw.carriedItems or 0) + (nw.bankedItems or 0) + (nw.craftBag or 0)) or "Not Scanned"
+    local left = {{"TOTAL", val(nw.total), VGreen}, {"Character", val(nw.character), VGreen}, {"Carried Gold", val(nw.carriedGold), C.gold}, {"Banked Gold", val(nw.bankedGold), C.gold}, {"INV VALUE", invValue, C.cyanSoft}, {"Carried Items", val(nw.carriedItems), C.cyanSoft}, {"Banked Items", val(nw.bankedItems), C.cyanSoft}, {"Craft Bag", scanned and WFormatGold(nw.craftBag or 0) or "Not Scanned", C.cyanSoft}, {"Unpriced", scanned and WFormatNumber(nw.unpriced or 0) or "Not Scanned", C.muted}}
+    local right = {{"CURRENCIES", "", C.cyanSoft}}
+    if scanned then for _,cur in ipairs(nw.currencies or {}) do right[#right+1] = {cur[1], cur[2]==nil and WNA() or WFormatNumber(cur[2]), cur[2]==nil and C.muted or C.gold} end else right[#right+1] = {"Status", "Press Scan", C.gold} end
+    local topY = y + 64; local rowH = math.max(30, math.min(36, math.floor((h-160) / math.max(#left, #right, 1))))
+    for i,r in ipairs(left) do self:Label("NWK83"..i, root, r[1], x+28, topY+(i-1)*rowH, 154, rowH, r[3], FONTS.panelSmall, TEXT_ALIGN_LEFT); self:Label("NWV83"..i, root, r[2], x+184, topY+(i-1)*rowH, 126, rowH, r[3], FONTS.panelSmall, TEXT_ALIGN_RIGHT) end
+    for i,r in ipairs(right) do self:Label("NWCK83"..i, root, r[1], x+334, topY+(i-1)*rowH, 170, rowH, r[3], FONTS.panelSmall, TEXT_ALIGN_LEFT); self:Label("NWCV83"..i, root, r[2], x+500, topY+(i-1)*rowH, 94, rowH, r[3], FONTS.panelSmall, TEXT_ALIGN_RIGHT) end
+    local tx = x + leftW + 24; local tw = w - leftW - 24
+    self:Label("NWStatus83", root, "Status: "..tostring(self.saved.scanStatus.networth or "Press Scan Net Worth"), tx+16, y+8, tw-32, 28, C.cyanSoft, FONTS.panelSmall, TEXT_ALIGN_LEFT)
+    local rows, title, headers, widths = {}, "TOP 20 MOST VALUABLE ITEMS", {"Rank","Item","Price","Qty","Value","Loc"}, {.38,2.35,.86,.62,.94,.95}
+    if scanned and filter == "Unpriced Items" then
+      title = "UNPRICED ITEMS - UNIQUE SCANNED ITEMS"; headers = {"#","Item","Qty","Location","Reason"}; widths = {.35,2.55,.62,1,1.55}
+      for i,it in ipairs(nw.unpricedItems or {}) do rows[#rows+1] = {tostring(i), self:FormatItemCell(it.itemLink, it.name, 30), WFormatNumber(it.qty), it.location or WNA(), it.reason or "No Price"} end
+    elseif scanned then
+      for i,it in ipairs(nw.top or {}) do rows[#rows+1] = {tostring(i), self:FormatItemCell(it.itemLink, it.name, 30), VCell(tostring(it.priceLabel or FormatSource83(it.source)), it.avg and VYellow or C.cyanSoft), WFormatNumber(it.qty), VCell(WFormatGold(it.value), VGreen), it.location or WNA()} end
+    end
+    self:DrawLegacyTable(root, "NWItems83", tx, y+44, tw, h-116, title, headers, self:RowsOrNA(rows,#headers,"Press Scan Net Worth"), accent, widths)
+    local by = y + h - 60; local bw = math.floor((w - 60) / 6)
+    self:ToolButton(root,"NWScan83",x,by,bw,48,"Scan",accent,function() TML:ScanNetWorth(); TML:RenderTool("net_worth") end)
+    self:ToolButton(root,"NWFilter83",x+bw+10,by,bw,48,"Filter: "..filter,accent,function() TML:CycleNetWorthFilter() end)
+    self:ToolButton(root,"NWCrown83",x+(bw+10)*2,by,bw,48,"Crown Rate",accent,function() TML:OpenSetCrownRatePage() end)
+    self:ToolButton(root,"NWBack83",x+(bw+10)*3,by,bw,48,"Back",C.cyan,function() TML:Back() end)
+    self:ToolButton(root,"NWReset83",x+(bw+10)*4,by,bw,48,"Reset",C.gold,function() TML:ResetPageData("net_worth") end)
+    self:ToolButton(root,"NWExit83",x+(bw+10)*5,by,bw,48,"Exit",C.red,function() TML:ReturnToESOMenu() end)
+  end
+
+  -- Guild Bank: explicit net value formula, and member value follows same sign rules.
+  function TML:ComputeBankStats(guildId)
+    local st = {given=0,taken=0,givenValue=0,takenValue=0,netValue=0,currentItems=0,last=WNA()}
+    local last=0
+    for _,e in ipairs(self:GetBankRows(guildId)) do
+      local q=tonumber(e.quantity) or 1; local v=tonumber(e.value) or 0
+      if e.action == "withdraw" then
+        st.taken = st.taken + q; st.takenValue = st.takenValue + v; st.currentItems = st.currentItems - q
+      else
+        st.given = st.given + q; st.givenValue = st.givenValue + v; st.currentItems = st.currentItems + q
+      end
+      if (tonumber(e.timestamp) or 0) > last then last = tonumber(e.timestamp) or 0; st.last = WRelTime(e.timestamp) end
+    end
+    st.netValue = st.givenValue - st.takenValue
+    return st
+  end
+  function TML:GetBankMemberRows(guildId)
+    local by = {}
+    for _,e in ipairs(self:GetBankRows(guildId)) do
+      local u=e.user or WNA(); local r=by[u] or {user=u,taken=0,given=0,givenValue=0,takenValue=0,value=0,last=0}
+      local q=tonumber(e.quantity) or 1; local v=tonumber(e.value) or 0
+      if e.action == "withdraw" then r.taken = r.taken + q; r.takenValue = r.takenValue + v else r.given = r.given + q; r.givenValue = r.givenValue + v end
+      r.value = (r.givenValue or 0) - (r.takenValue or 0)
+      if (tonumber(e.timestamp) or 0) > (r.last or 0) then r.last = tonumber(e.timestamp) or 0 end
+      by[u]=r
+    end
+    local rows={}; for _,r in pairs(by) do rows[#rows+1]=r end
+    table.sort(rows,function(a,b) return (a.last or 0)>(b.last or 0) end)
+    return rows
+  end
+
+  -- Reset should also clear scroll top and the page's view only, not verified shared sales core.
+  local OldResetPageData83 = TML.ResetPageData
+  function TML:ResetPageData(toolKey,noRender)
+    self:EnsureDataDefaults(); toolKey=tostring(toolKey or (self.state and self.state.activeTool) or "")
+    self.saved.scrollOffsets = {}; self.state.scrollFocus = nil
+    if toolKey == "net_worth" then self.saved.networth=nil; self.saved.scanStatus.networth="Reset complete - press Scan"
+    elseif toolKey == "gold_ledger_personal" then self.saved.personalGoldEvents={}; self.saved.scanStatus.personalGold="Reset complete - press Refresh"
+    elseif toolKey == "personal_sales" then self.saved.scanStatus.sales="Personal Sales view reset - press Scan Sales"
+    elseif toolKey == "guild_sales" then self.saved.scanStatus.sales="Guild Sales view reset - press Scan Guild"
+    else if OldResetPageData83 then OldResetPageData83(self, toolKey, true) end end
+    if not noRender then self:RenderTool(toolKey) end
+  end
+
+  local OldInitialize83 = TML.Initialize
+  function TML:Initialize(addonName)
+    if OldInitialize83 then OldInitialize83(self, addonName) end
+    self.version = "2.0.16.83"
+    self.addOnVersion = 21683
+    self.lastUpdated = "06/15/2026 09:15 UTC"
+    self.icon = "TamrielMasterLedger/textures/tamrielmasterledger_icon.dds"
+    self.displayTitle = "|c00D9FFTamriel Master Ledger|r"
+    self:EnsureDataDefaults()
+    if self.RegisterGamepadMainMenuEntry then
+      zo_callLater(function() if TML and TML.RegisterGamepadMainMenuEntry then TML:RegisterGamepadMainMenuEntry() end end, 250)
+    end
+    if d then d("Tamriel Master Ledger v"..self.version.." public-release shared sales/networth/scroll/footer fix loaded.") end
+  end
+end
+TML_21683_Patch()

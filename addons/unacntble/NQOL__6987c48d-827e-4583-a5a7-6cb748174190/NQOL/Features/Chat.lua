@@ -67,6 +67,7 @@ local defaults = {
         filterGuildAds = false,
         filterPlusMessages = false,
         filterWttWts = false,
+        filterZoneItems = false,
         filterFriendStatus = false,
         annotateMissingItems = {
             enabled = false,
@@ -139,6 +140,7 @@ local function GetSettings()
     NQOL.Settings.Boolean(settings, defaultSettings, "filterGuildAds")
     NQOL.Settings.Boolean(settings, defaultSettings, "filterPlusMessages")
     NQOL.Settings.Boolean(settings, defaultSettings, "filterWttWts")
+    NQOL.Settings.Boolean(settings, defaultSettings, "filterZoneItems")
     NQOL.Settings.Boolean(settings, defaultSettings, "filterFriendStatus")
     local annotateMissingItems = NQOL.Settings.EnsureTable(settings, "annotateMissingItems")
     NQOL.Settings.Boolean(annotateMissingItems, defaultSettings.annotateMissingItems, "enabled")
@@ -691,7 +693,33 @@ local function IsOwnChatChannelMessage(messageType, fromName, fromDisplayName)
         or IsOwnChatMessage(fromName, fromDisplayName)
 end
 
-local function ShouldFilterMessage(message, rawText)
+local function IsZoneChannel(messageType)
+    return messageType == CHAT_CHANNEL_ZONE
+        or (CHAT_CHANNEL_ZONE_LANGUAGE_1 and messageType == CHAT_CHANNEL_ZONE_LANGUAGE_1)
+        or (CHAT_CHANNEL_ZONE_LANGUAGE_2 and messageType == CHAT_CHANNEL_ZONE_LANGUAGE_2)
+        or (CHAT_CHANNEL_ZONE_LANGUAGE_3 and messageType == CHAT_CHANNEL_ZONE_LANGUAGE_3)
+        or (CHAT_CHANNEL_ZONE_LANGUAGE_4 and messageType == CHAT_CHANNEL_ZONE_LANGUAGE_4)
+        or (CHAT_CHANNEL_ZONE_LANGUAGE_5 and messageType == CHAT_CHANNEL_ZONE_LANGUAGE_5)
+        or (CHAT_CHANNEL_ZONE_LANGUAGE_6 and messageType == CHAT_CHANNEL_ZONE_LANGUAGE_6)
+        or (CHAT_CHANNEL_ZONE_LANGUAGE_7 and messageType == CHAT_CHANNEL_ZONE_LANGUAGE_7)
+end
+
+local function IsSingleItemOrGuildLinkMessage(message)
+    if not GetLinkType or type(message) ~= "string" then
+        return false
+    end
+
+    local remainder, linkCount = string.gsub(message, CHAT_LINK_PATTERN, "")
+    if linkCount ~= 1 or not string.match(remainder, "^%s*$") then
+        return false
+    end
+
+    local link = string.match(message, CHAT_LINK_PATTERN)
+    local linkType = link and GetLinkType(link)
+    return linkType == LINK_TYPE_ITEM or linkType == LINK_TYPE_GUILD
+end
+
+local function ShouldFilterMessage(message, rawText, messageType)
     if restoringHistory then
         return false
     end
@@ -719,6 +747,10 @@ local function ShouldFilterMessage(message, rawText)
         if string.find(upperText, "WTT", 1, true) or string.find(upperText, "WTS", 1, true) or string.find(upperText, "WTB", 1, true) then
             return true
         end
+    end
+
+    if settings.filterZoneItems and IsZoneChannel(messageType) and IsSingleItemOrGuildLinkMessage(rawMessageText ~= "" and rawMessageText or messageText) then
+        return true
     end
 
     return false
@@ -910,7 +942,7 @@ local function InstallRouterHook()
             return false
         end
 
-        return ShouldFilterMessage(nil, rawText)
+        return ShouldFilterMessage(nil, rawText, messageType)
     end)
 
     routerHookInstalled = true
@@ -1123,7 +1155,7 @@ local function InstallChannelHook()
                 local messageType = select(1, ...)
                 local isOwnMessage = IsOwnChatChannelMessage(messageType, fromName, fromDisplayName)
 
-                if not isOwnMessage and ShouldFilterMessage(results[1], rawText) then
+                if not isOwnMessage and ShouldFilterMessage(results[1], rawText, messageType) then
                     return
                 end
 
@@ -1337,6 +1369,14 @@ end
 
 function ChatFeature.SetFilterWttWts(value)
     GetSettings().filterWttWts = value == true
+end
+
+function ChatFeature.GetFilterZoneItems()
+    return GetSettings().filterZoneItems
+end
+
+function ChatFeature.SetFilterZoneItems(value)
+    GetSettings().filterZoneItems = value == true
 end
 
 function ChatFeature.GetFilterFriendStatus()
@@ -1557,6 +1597,14 @@ end
 
 function ChatFeature.GetFilterWttWtsTooltip()
     return NQOL.L("features.chat.filter_wtt_wts_tooltip")
+end
+
+function ChatFeature.GetFilterZoneItemsLabel()
+    return NQOL.L("features.chat.filter_zone_items_label")
+end
+
+function ChatFeature.GetFilterZoneItemsTooltip()
+    return NQOL.L("features.chat.filter_zone_items_tooltip")
 end
 
 function ChatFeature.GetFilterFriendStatusLabel()

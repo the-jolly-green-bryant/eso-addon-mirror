@@ -1,0 +1,9 @@
+## Title: DVD ScreenSaver
+## APIVersion: 101048
+## Version: 1.3.1
+## Author: Phamo 1000
+## Dependencies: LibAddonMenu-2.0
+## SavedVariables: DVDScreenSaverSavedVars
+## Description: Moves ESO's resource bars (health, magicka, stamina) separately and randomly within the screen.
+
+DVDScreenSaver.lua

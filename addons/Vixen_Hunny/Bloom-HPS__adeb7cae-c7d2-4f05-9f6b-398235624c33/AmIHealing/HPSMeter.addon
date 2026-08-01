@@ -1,0 +1,9 @@
+## Title: Bloom HPS
+## APIVersion: 101046
+## AddOnVersion: 2.1
+## Author: Vixen Hunny
+## SavedVariables: HPSMeterSavedVars
+## DependsOn: LibAddonMenu-2.0
+## Description: HPS and SPS Meter
+
+HPSMeter.lua

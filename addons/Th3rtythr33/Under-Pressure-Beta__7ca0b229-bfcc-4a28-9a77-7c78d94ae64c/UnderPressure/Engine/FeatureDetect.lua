@@ -9,11 +9,11 @@
 -- 1. DETECTION -- UP.RunFeatureDetect(), at startup, exactly once. This is
 --    NOT diagnostics: both surviving flags are consumed as configuration.
 --
---      * combatFilter     -- decides whether EventIngest registers
---                            server-side target filters. Without it, Tank
---                            mode falls back to an UNFILTERED subscription
---                            and every combat event in the zone crosses
---                            into Lua.
+--      * combatFilter     -- decides whether EventIngest registers a
+--                            server-side target filter. Without it the
+--                            subscription is UNFILTERED, so every combat
+--                            event in the zone crosses into Lua and gets
+--                            discarded in the callback instead.
 --      * statusEffectType -- decides whether the classifier can categorise
 --                            debuffs by type or must fall back to the static
 --                            ability-ID table.
@@ -206,29 +206,36 @@ function UP.RunApiAudit()
         end
     end
 
-    -- Tank mode's extra registration depends on two flags at once, which the
-    -- per-flag list above does not make obvious. The mode itself is live --
-    -- it can be changed from the settings panel, which re-registers.
-    -- The sourceType PROBE was retired, but the capability it tested is still
-    -- load-bearing here: Tank mode's group-filtered registration needs
-    -- COMBAT_UNIT_TYPE_OTHER_PLAYER. EventIngest guards it inline, so check
-    -- the constant directly rather than a flag that no longer exists.
-    local mode = (UP.sv and UP.sv.attacker_mode) or "solo"
-    if mode == "tank" then
-        local hasOtherPlayer = type(COMBAT_UNIT_TYPE_OTHER_PLAYER) == "number"
-        if UP.features.combatFilter and hasOtherPlayer then
-            d("  Tank mode: group-filtered registration ACTIVE")
-        elseif not hasOtherPlayer then
-            d("  |cFF4040Tank mode: COMBAT_UNIT_TYPE_OTHER_PLAYER missing --|r")
-            d("  |cFF4040groupmate attackers are NOT being counted|r")
-        else
-            d("  |cFFA500Tank mode: falling back to unfiltered events|r")
-        end
+    -- Silence detection (0.3.0). REPORTING ONLY -- deliberately not a probe in
+    -- the PROBES table and not a gate on anything, because the two signals are
+    -- redundant: either constant alone is enough for the feature to work, so
+    -- there is no single false result that should change behaviour.
+    --
+    -- It earns a line here because "does the console runtime populate these?"
+    -- is a genuinely open question, which is the bar APIAUDITS.md sets. Both
+    -- constants are documented at API 101050; whether they arrive with real
+    -- values on console is what the debug overlay's aT=/sT= columns answer.
+    local hasAbilityType  = type(ABILITY_TYPE_SILENCE) == "number"
+    local hasStatusType   = type(STATUS_EFFECT_TYPE_SILENCE) == "number"
+    d(("  %s  %-16s %s"):format(
+        hasAbilityType and "|c00FF00YES|r" or "|cFF4040NO |r",
+        "ABILITY_TYPE_SILENCE",
+        hasAbilityType and "" or "-- silence signal 1 unavailable"))
+    d(("  %s  %-16s %s"):format(
+        hasStatusType and "|c00FF00YES|r" or "|cFF4040NO |r",
+        "STATUS_EFFECT_TYPE_SILENCE",
+        hasStatusType and "" or "-- silence signal 2 unavailable"))
+    if not (hasAbilityType or hasStatusType) then
+        d("  |cFF4040Silence ring cannot work: neither constant exists|r")
     end
+
+    -- A Tank-mode block used to follow, reporting whether the group-filtered
+    -- second registration was active -- it depended on combatFilter AND
+    -- COMBAT_UNIT_TYPE_OTHER_PLAYER at once, which the per-flag list above did
+    -- not make obvious. Tank mode was removed in 0.2.9, so the only remaining
+    -- consumer of COMBAT_UNIT_TYPE_OTHER_PLAYER is gone with it.
 end
 
 -- Registered at file scope, not from onAddOnLoaded, so the audit still works
 -- if startup bailed -- which is exactly when you most want to run it.
 SLASH_COMMANDS["/up-api-audit"] = function() UP.RunApiAudit() end
--- Hyphen-free alias, in case the chat parser tokenizes on non-word characters.
-SLASH_COMMANDS["/upapi"] = SLASH_COMMANDS["/up-api-audit"]

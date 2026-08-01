@@ -1,0 +1,32 @@
+; Created by @SpringPeace2575
+
+## Title: SPFLib
+## Description: Shared stuff for Add-ons made by SpringPeace2575
+## Version: 1.0.0
+## Author: |cb7ff00SpringPeace2575|r
+## APIVersion: 101048 101049 101050
+## IsLibrary: true
+## SavedVariables: SPFLibSavedVars
+## DependsOn: LibAddonMenu-2.0>=32
+
+; LibHarvensAddonSettings Fork
+LHASFork/LHASForkMain.lua
+LHASFork/PC/Controls.xml
+LHASFork/PC/Settings.lua
+LHASFork/Console/Controls.xml
+LHASFork/Console/Settings.lua
+
+; SPFLib
+SPFLibUtils.lua
+SPFLibItemInfo.lua
+SPFLibSettings.lua
+SPFLibMainMenu.lua
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

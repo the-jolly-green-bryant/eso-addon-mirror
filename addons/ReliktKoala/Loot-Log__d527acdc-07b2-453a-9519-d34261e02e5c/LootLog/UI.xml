@@ -1,0 +1,133 @@
+<GuiXml>
+    <Controls>
+        <Control name="LootLogItemRow" virtual="true" mouseEnabled="true">
+            <Dimensions y="48" />
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+                <Label name="$(parent)Item" font="ZoFontGamepad27" wrapMode="ELLIPSIS">
+                    <Anchor point="LEFT" offsetX="16" />
+                    <Dimensions x="860" y="48" />
+                </Label>
+                <Label name="$(parent)Count" font="ZoFontGamepad27" horizontalAlignment="RIGHT">
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-18" />
+                    <Dimensions x="220" y="48" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="LootLogHeaderActionControl" virtual="true" mouseEnabled="true">
+            <Dimensions x="280" y="58" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_SingleLineEditBackdrop_Gamepad">
+                    <AnchorFill />
+                </Backdrop>
+                <Label name="$(parent)Label" font="ZoFontGamepad34" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" offsetX="8" offsetY="4" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-8" offsetY="-4" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="LootLogWindow" hidden="true" movable="true" mouseEnabled="true" clampedToScreen="true">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <Dimensions x="1220" y="820" />
+            <OnInitialized>
+                LootLog.OnUIInitialized(self)
+            </OnInitialized>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Label name="$(parent)Title" font="ZoFontGamepad42" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+                    <Anchor point="TOPLEFT" offsetX="22" offsetY="18" />
+                </Label>
+
+                <Control name="$(parent)LifetimeTab" inherits="LootLogHeaderActionControl">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-22" offsetY="18" />
+                    <Dimensions x="240" y="58" />
+                </Control>
+
+                <Control name="$(parent)ManualTab" inherits="LootLogHeaderActionControl">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-270" offsetY="18" />
+                    <Dimensions x="240" y="58" />
+                </Control>
+
+                <Control name="$(parent)SessionTab" inherits="LootLogHeaderActionControl">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-518" offsetY="18" />
+                    <Dimensions x="240" y="58" />
+                </Control>
+
+                <Label name="$(parent)Summary" font="ZoFontGamepad27" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="22" offsetY="92" />
+                    <Dimensions x="1176" y="34" />
+                </Label>
+
+                <Label name="$(parent)SearchLabel" font="ZoFontGamepad27" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="CENTER">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="22" offsetY="136" />
+                    <Dimensions x="170" y="56" />
+                </Label>
+
+                <Backdrop name="$(parent)Search" inherits="ZO_SingleLineEditBackdrop_Gamepad">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SearchLabel" relativePoint="TOPRIGHT" offsetX="8" />
+                    <Dimensions x="470" y="56" />
+                    <Controls>
+                        <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop_Gamepad" font="ZoFontGamepad27" defaultText="Press A to enter filter..." />
+                    </Controls>
+                </Backdrop>
+
+                <Label name="$(parent)RarityLabel" font="ZoFontGamepad27" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="CENTER">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Search" relativePoint="TOPRIGHT" offsetX="10" />
+                    <Dimensions x="65" y="56" />
+                </Label>
+
+                <Control name="$(parent)RaritySelector" inherits="LootLogHeaderActionControl">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)RarityLabel" relativePoint="TOPRIGHT" offsetX="4" />
+                    <Dimensions x="120" y="56" />
+                </Control>
+
+                <Label name="$(parent)ItemTypeLabel" font="ZoFontGamepad27" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="CENTER">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)RaritySelector" relativePoint="TOPRIGHT" offsetX="10" />
+                    <Dimensions x="50" y="56" />
+                </Label>
+
+                <Control name="$(parent)ItemTypeSelector" inherits="LootLogHeaderActionControl">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)ItemTypeLabel" relativePoint="TOPRIGHT" offsetX="4" />
+                    <Dimensions x="165" y="56" />
+                </Control>
+
+                <Control name="$(parent)Headers">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="22" offsetY="200" />
+                    <Dimensions x="1176" y="42" />
+                    <Controls>
+                        <Control name="$(parent)Item" inherits="ZO_SortHeader" mouseEnabled="false">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Item", "itemName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGamepad34")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" offsetX="16" />
+                            <Dimensions x="900" y="42" />
+                        </Control>
+                        <Control name="$(parent)Count" inherits="ZO_SortHeader" mouseEnabled="false">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Qty", "count", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, "ZoFontGamepad34")
+                            </OnInitialized>
+                            <Anchor point="TOPRIGHT" offsetX="-18" />
+                            <Dimensions x="220" y="42" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="22" offsetY="242" />
+                    <Dimensions x="1176" y="556" />
+                </Control>
+
+                <Label name="$(parent)EmptyState" hidden="true" font="ZoFontGamepad34" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)List" relativePoint="TOPLEFT" offsetX="24" offsetY="24" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)List" relativePoint="BOTTOMRIGHT" offsetX="-24" offsetY="-24" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

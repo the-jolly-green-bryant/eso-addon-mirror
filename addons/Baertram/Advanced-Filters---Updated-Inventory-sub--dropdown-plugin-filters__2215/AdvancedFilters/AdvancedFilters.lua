@@ -218,6 +218,7 @@ local function checkIfBankLastCurrentFilterIsGiven(self, filterTab)
     return currentFilter
 end
 
+
 --Reanchor & hide some controls at the vanilla UI, like the searchBar and box.
 --Based on the baseControl the controls to change are children
 local function reanchorAndHideVanillaUIControls(baseControl)
@@ -448,6 +449,7 @@ local function InitializeHooks()
             --Check if the current layoutData (offsets of controls in the inventory) is given
             --local layoutData = (p_isCraftingInventoryType == true and util.GetCraftingInventoryLayoutData(invTypeUpdateListAnchor)) or self.appliedLayout
             local layoutData = self.appliedLayout
+            local layoutDataChanged = false
             if layoutData == nil or isGuildStoreSell == true then
                 --Check if the layoutData or any offsets for the list are stored in AF internal constants
                 if debugSpam then
@@ -457,14 +459,14 @@ local function InitializeHooks()
                 layoutData = BACKPACK_DEFAULT_LAYOUT_FRAGMENT.layoutData
                 local additionalLayoutData = util.GetAlternativeInventoryLayoutData(invTypeUpdateListAnchor)
                 if additionalLayoutData ~= nil then
-                    local layoutWasChanged = false
                     local layoutDataCopy = ZO_ShallowTableCopy(layoutData)
                     for key,value in pairs(additionalLayoutData) do
                         layoutDataCopy[key] = value
-                        layoutWasChanged = true
+                        layoutDataChanged = true
                     end
                     layoutData = layoutDataCopy
-                    if debugSpam and layoutWasChanged == true then
+--d(">layoutData.inventoryBottomOffsetY: " ..tos(layoutData.inventoryBottomOffsetY))
+                    if debugSpam and layoutDataChanged == true then
                         d(">>Overwrote some layoutData settings with additional layoutdata")
                     end
                 end
@@ -498,9 +500,9 @@ local function InitializeHooks()
                 --list:SetWidth(layoutData.width)
                 list = listData.control
                 if list then
-                    --d(">>list found by util.GetListControlForSubfilterBarReanchor")
+--d(">>list found by util.GetListControlForSubfilterBarReanchor - current Y offset: " .. tos(listData.offsetY))
                     list:ClearAnchors()
-                    list:SetAnchor(listData.anchorPoint or TOP, listData.relativeTo or anchorTo, listData.relativePoint or BOTTOM, listData.offsetX or 0, listData.offsetY or layoutData.backpackOffsetY)
+                    list:SetAnchor(listData.anchorPoint or TOP, listData.relativeTo or anchorTo, listData.relativePoint or BOTTOM, listData.offsetX or 0, ((layoutDataChanged == true and layoutData.backpackOffsetY ~= listData.offsetY) and layoutData.backpackOffsetY) or listData.offsetY)
                     --Move the inventory's bottom bar more down?
                     if moveInvBottomBarDown then
                         --Do not move the bar if the addon PerfectPixel is active as it was moved already
@@ -525,9 +527,14 @@ local function InitializeHooks()
                     --offsetYList = offsetYList + shiftY
                 end
                 list:SetAnchor(TOPRIGHT, anchorVar, TOPRIGHT, 0, offsetYList)
-                list:SetAnchor(BOTTOMRIGHT)
+                if layoutDataChanged == true and layoutData.inventoryBottomOffsetY ~= nil then
+                    list:SetAnchor(BOTTOMRIGHT, nil, BOTTOMRIGHT, 0, layoutData.inventoryBottomOffsetY)
+                else
+                    list:SetAnchor(BOTTOMRIGHT)
+                end
+
                 if debugSpam then
-                    d(">ZO_ScrollList was moved on Y to: " .. (offsetYList) .. ", new height: " ..tos(list:GetHeight()))
+                    d(">ZO_ScrollList was moved on Y to: " .. (offsetYList) .. ", bottomY: " .. tos(layoutData.inventoryBottomOffsetY) ..", new height: " ..tos(list:GetHeight()))
                 end
                 ZO_ScrollList_SetHeight(list, list:GetHeight())
             end

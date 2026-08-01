@@ -1,0 +1,4 @@
+-- ============================================
+-- GUILD BOOKKEEPER ORCHESTRATOR
+-- ============================================
+-- Implementations are split across features/guild/bookkeeper/*.lua and loaded via manifest order.

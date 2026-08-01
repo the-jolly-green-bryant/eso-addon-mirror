@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/The_SkyNomad/CombatStatus-Console__669db721-3682-4957-9a09-a06172f0b3e0",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "The_SkyNomad",
+  "canonical_id": "bethesda:669db721-3682-4957-9a09-a06172f0b3e0",
+  "content_id": "669db721-3682-4957-9a09-a06172f0b3e0",
+  "deleted": false,
+  "fingerprint": "d0db01d0df039c56b00f2dba456f99eca30a01538277aa9018c0c855214ba9f1",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "669db721-3682-4957-9a09-a06172f0b3e0",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/669db721-3682-4957-9a09-a06172f0b3e0",
+  "title": "CombatStatus-Console"
+}

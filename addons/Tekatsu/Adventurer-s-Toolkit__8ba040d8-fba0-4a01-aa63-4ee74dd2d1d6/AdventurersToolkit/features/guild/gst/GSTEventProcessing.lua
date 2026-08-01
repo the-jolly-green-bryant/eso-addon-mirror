@@ -1,0 +1,9 @@
+-- ============================================
+-- GST EVENT PROCESSING COMPATIBILITY SHIM
+-- ============================================
+-- GST logic was split into:
+--   gst/GSTConstants.lua
+--   gst/GSTScan.lua
+--   gst/GSTCommands.lua
+--   gst/GSTDashboard.lua
+-- Keep this file in manifest load order for backward-compatible structure.

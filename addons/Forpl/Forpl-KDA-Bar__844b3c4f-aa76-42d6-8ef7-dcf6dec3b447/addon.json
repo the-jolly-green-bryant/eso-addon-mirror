@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Forpl/Forpl-KDA-Bar__844b3c4f-aa76-42d6-8ef7-dcf6dec3b447",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Forpl",
+  "canonical_id": "bethesda:844b3c4f-aa76-42d6-8ef7-dcf6dec3b447",
+  "content_id": "844b3c4f-aa76-42d6-8ef7-dcf6dec3b447",
+  "deleted": false,
+  "fingerprint": "e85cb9c628a52ef870cd0fe0db25210a5c7b186559c9933f842ccd2432109dcc",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "844b3c4f-aa76-42d6-8ef7-dcf6dec3b447",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/844b3c4f-aa76-42d6-8ef7-dcf6dec3b447",
+  "title": "Forpl-KDA-Bar"
+}

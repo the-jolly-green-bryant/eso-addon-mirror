@@ -10,6 +10,7 @@ local Templates = {
 	[LibConsoleMenu.CT_EDIT] = "LibConsoleMenuGamepadEdit",
 	[LibConsoleMenu.CT_SELECTOR] = "ZO_GamepadHorizontalListRow",
 	[LibConsoleMenu.CT_DROPDOWN] = "LibConsoleMenuGamepadDropdown",
+	[LibConsoleMenu.CT_CHECKLIST] = "LibConsoleMenuGamepadChecklist",
 	[LibConsoleMenu.CT_COLORPICKER] = "ZO_GamepadOptionsColorRow",
 	[LibConsoleMenu.CT_BUTTON] = "ZO_GamepadOptionsLabelRow",
 	[LibConsoleMenu.CT_LABEL] = "ZO_GamepadOptionsLabelRow",
@@ -265,6 +266,7 @@ function Settings_ParametricList:InitializeKeybindStripDescriptors()
 		[LibConsoleMenu.CT_EDIT] = true,
 		[LibConsoleMenu.CT_SECTION] = true,
 		[LibConsoleMenu.CT_DROPDOWN] = true,
+		[LibConsoleMenu.CT_CHECKLIST] = true,
 	}
 	local CONTROL_TYPES_WITH_INPUT = {
 		[LibConsoleMenu.CT_SLIDER] = true,
@@ -304,7 +306,7 @@ function Settings_ParametricList:InitializeKeybindStripDescriptors()
 					LibConsoleMenu.list:GetSelectedData():ValueChanged(control)
 				elseif controlType == LibConsoleMenu.CT_COLORPICKER then
 					control:ShowDialog()
-				elseif controlType == LibConsoleMenu.CT_EDIT or controlType == LibConsoleMenu.CT_SECTION or controlType == LibConsoleMenu.CT_DROPDOWN then
+				elseif controlType == LibConsoleMenu.CT_EDIT or controlType == LibConsoleMenu.CT_SECTION or controlType == LibConsoleMenu.CT_DROPDOWN or controlType == LibConsoleMenu.CT_CHECKLIST then
 					control:Activate()
 				end
 			end,
@@ -386,10 +388,17 @@ function Settings_ParametricList:InitializeKeybindStripDescriptors()
 	ZO_Gamepad_AddBackNavigationKeybindDescriptors(self.keybindStripDescriptor, GAME_NAVIGATION_TYPE_BUTTON, OnBack)
 	LibConsoleMenu.scene:RegisterCallback(
 		"StateChange",
-		function(newState)
-			if newState == SCENE_HIDING and lastActiveInput then
-				lastActiveInput:Deactivate()
-				lastActiveInput = nil
+		function(oldState, newState)
+			-- Stock House Tours: deactivate open ComboBoxes when the screen hides.
+			if newState == SCENE_HIDING then
+				if lastActiveInput then
+					lastActiveInput:Deactivate()
+					lastActiveInput = nil
+				end
+				local selectedControl = LibConsoleMenu.list and LibConsoleMenu.list:GetSelectedControl()
+				if selectedControl and selectedControl.Deactivate then
+					selectedControl:Deactivate()
+				end
 			end
 		end
 	)
@@ -410,6 +419,11 @@ local function OptionsWindowFragmentStateChangeRefresh(oldState, newState)
 		local section = LibConsoleMenu.list and LibConsoleMenu.list.currentSection
 		if section and type(section.onExit) == "function" then
 			section.onExit(section)
+		end
+		-- Also close ComboBox popups if scene hide was skipped (e.g. fragment-only hide).
+		local selectedControl = LibConsoleMenu.list and LibConsoleMenu.list:GetSelectedControl()
+		if selectedControl and selectedControl.Deactivate then
+			selectedControl:Deactivate()
 		end
 	elseif newState == SCENE_FRAGMENT_SHOWING then
 		if LibConsoleMenu.needUpdate and LibConsoleMenu.currentSettings ~= nil then
@@ -598,6 +612,11 @@ function LibConsoleMenu:CreateControlPools()
 		self.CT_DROPDOWN,
 		"DropDown",
 		LibConsoleMenu.CreateDropdownPoolFactory()
+	)
+	AddPool(
+		self.CT_CHECKLIST,
+		"Checklist",
+		LibConsoleMenu.CreateChecklistPoolFactory()
 	)
 	AddPool(
 		self.CT_EDIT,

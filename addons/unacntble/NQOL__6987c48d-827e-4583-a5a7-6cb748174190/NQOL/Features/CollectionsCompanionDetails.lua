@@ -2,6 +2,10 @@ NQOL = NQOL or {}
 NQOL.Features = NQOL.Features or {}
 
 local CompanionDetails = {}
+local RapportData = NQOL.Data and NQOL.Data.CompanionRapport or {}
+
+local LIKE_COLOR = { 0.35, 0.95, 0.45 }
+local DISLIKE_COLOR = { 1, 0.28, 0.28 }
 local houseguestsByName
 
 local function FormatCollectibleName(name)
@@ -101,6 +105,32 @@ function CompanionDetails.AppendDetailLines(record, lines, AddDetailLine)
         achievementId = companionData:GetLinkedAchievement()
     end
     AddAchievementDetails(lines, AddDetailLine, achievementId)
+end
+
+local function BuildRapportText(entries)
+    if not entries or #entries == 0 then return "" end
+    local lines = {}
+    for _, entry in ipairs(entries) do
+        lines[#lines + 1] = "• " .. tostring(entry[1]) .. "  " .. NQOL.L(entry[2])
+    end
+    return table.concat(lines, "\n")
+end
+
+function CompanionDetails.BuildRapportColumns(record)
+    local rapport = record and RapportData[record.collectibleId] or nil
+    if not rapport then return nil end
+    return {
+        left = {
+            heading = NQOL.L("features.collections_companions.likes"),
+            text = BuildRapportText(rapport.likes),
+            color = LIKE_COLOR,
+        },
+        right = {
+            heading = NQOL.L("features.collections_companions.dislikes"),
+            text = BuildRapportText(rapport.dislikes),
+            color = DISLIKE_COLOR,
+        },
+    }
 end
 
 NQOL.Features.CollectionsCompanionDetails = CompanionDetails

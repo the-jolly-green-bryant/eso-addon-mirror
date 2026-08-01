@@ -1,0 +1,31 @@
+## Title: |cFFFFFFSpolszczenie|r |cFF0000EsoPL|r
+## APIVersion: 101050
+## Version: 1.0.21
+## Author: tomkolp (Skrybowie Tamriel), Adrosar
+## SavedVariables: EsoPL_SavedVars
+## OptionalDependsOn: LibHarvensAddonSettings
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+EsoPL.lua
+Menu.lua
+data/SkillDB.lua
+modules/Abilities.lua
+modules/Champion.lua
+
+; Font fixes by Adrosar
+BookFontHook.lua
+modules/MapFontFix.lua
+
+fonts/FuturaStd-Condensed.slug
+fonts/FuturaStd-CondensedLight.slug
+fonts/ProseAntique.slug
+fonts/handwritten_bold.slug
+fonts/proseantiquepsmt.slug
+fonts/trajanpro-regular.slug
+fonts/univers55.slug
+fonts/univers57.slug
+fonts/univers67.slug

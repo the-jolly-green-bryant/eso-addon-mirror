@@ -1,0 +1,17 @@
+Aldren's Timers 0.0.10 - PS5 Test
+
+Build source: Working 0.0.9 PS5 Test 2.
+
+This build promotes the enlarged Share confirmation text into version 0.0.10.
+No timer, panel, settings, menu-hiding, friendly-label, or chat-message behavior was rebuilt.
+
+Test
+1. Confirm the add-on reports version 0.0.10.
+2. Open Aldren's Timers settings.
+3. Select "Share Aldren's Timers".
+4. Verify the title, body text, Yes label, and No label are large and clearly readable.
+5. Verify the confirmation box still fits correctly.
+6. Select No and verify no chat message is prepared.
+7. Open the confirmation again and select Yes.
+8. Verify Zone Chat opens with the recommendation message prepared.
+9. Verify active consumable timers, friendly labels, countdowns, panel settings, saved values, and menu hiding still work.

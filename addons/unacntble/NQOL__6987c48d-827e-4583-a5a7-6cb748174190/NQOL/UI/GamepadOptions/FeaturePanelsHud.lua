@@ -113,6 +113,11 @@ function GamepadOptions.BuildChatFilterWttWtsOption()
     return GamepadOptions.BuildCheckboxOption(CHAT_PANEL_ID, 11, chat.GetFilterWttWtsLabel(), chat.GetFilterWttWtsTooltip(), chat.GetFilterWttWts, chat.SetFilterWttWts)
 end
 
+function GamepadOptions.BuildChatFilterZoneItemsOption()
+    local chat = NQOL.Features.Chat
+    return GamepadOptions.BuildCheckboxOption(CHAT_PANEL_ID, 18, chat.GetFilterZoneItemsLabel(), chat.GetFilterZoneItemsTooltip(), chat.GetFilterZoneItems, chat.SetFilterZoneItems)
+end
+
 function GamepadOptions.BuildChatFilterFriendStatusOption()
     local chat = NQOL.Features.Chat
     return GamepadOptions.BuildCheckboxOption(CHAT_PANEL_ID, 15, chat.GetFilterFriendStatusLabel(), chat.GetFilterFriendStatusTooltip(), chat.GetFilterFriendStatus, chat.SetFilterFriendStatus)

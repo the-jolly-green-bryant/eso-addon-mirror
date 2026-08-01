@@ -385,6 +385,7 @@ local function CaptureCurrentResults(task)
         local description = CleanText(GetGroupFinderSearchListingDescriptionByIndex(listingIndex))
         local leader = CleanText(GetGroupFinderSearchListingLeaderDisplayNameByIndex(listingIndex))
         if ZO_FormatUserFacingDisplayName then leader = ZO_FormatUserFacingDisplayName(leader) end
+        if leader ~= "" and string.sub(leader, 1, 1) ~= "@" then leader = "@" .. leader end
         primary = CleanText(primary)
         secondary = CleanText(secondary)
         local categoryText = GetString("SI_GROUPFINDERCATEGORY", category)
@@ -407,6 +408,7 @@ local function CaptureCurrentResults(task)
                 activity = activity,
                 preferActivityTitle = preferActivityTitle,
                 title = title,
+                leader = leader,
                 description = description,
                 supportsRoles = supportsRoles,
                 roleCountsText = roleCountsText,

@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Wrynch/Vestige-Mirror__76fce7e2-297a-472f-bdf6-3e80756e7e8c",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Wrynch",
+  "canonical_id": "bethesda:76fce7e2-297a-472f-bdf6-3e80756e7e8c",
+  "content_id": "76fce7e2-297a-472f-bdf6-3e80756e7e8c",
+  "deleted": false,
+  "fingerprint": "7a9b290605203cf4ee8017b1fbc89140b626ce1064cd522b526a133fcca7f563",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "76fce7e2-297a-472f-bdf6-3e80756e7e8c",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/76fce7e2-297a-472f-bdf6-3e80756e7e8c",
+  "title": "Vestige Mirror"
+}

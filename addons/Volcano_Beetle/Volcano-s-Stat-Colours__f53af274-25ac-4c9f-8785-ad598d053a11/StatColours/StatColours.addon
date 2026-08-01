@@ -1,0 +1,14 @@
+## Title: |cd95238Volcano's|r |c4cb4ffStat|r |c9af24bColours|r
+## APIVersion: 101046
+## Version: 1.0.3
+## Author: |c00bfffVolcano_Beetle|r
+## Description: Colours stats in tooltips.
+
+StatColours.lua
+lang/de.lua
+lang/en.lua
+lang/es.lua
+lang/fr.lua
+lang/jp.lua
+lang/ru.lua
+lang/zh.lua

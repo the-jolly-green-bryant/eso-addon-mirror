@@ -20,6 +20,10 @@ PP.tamrielTomesScene = function ()
         -- ZO_TimedActivities_KeyboardTLBG is an existing CT_BACKDROP (ZO_DefaultBackdrop + AnchorFill)
         -- Passing it directly reskins it with PP style rather than creating a second backdrop
         PP:CreateBackground(ZO_TimedActivities_KeyboardTLBG)
+        local mungeOverlay = ZO_TimedActivities_KeyboardTLBGMungeOverlay
+        if mungeOverlay then
+            mungeOverlay:SetHidden(true)
+        end
 
         PP.Font(ZO_TimedActivities_KeyboardTLContentHeaderTitle, --[[Font]] PP.f.u67, 24, "outline")
         PP.Font(ZO_TimedActivities_KeyboardTLContentHeaderResetTime, --[[Font]] PP.f.u67, 18, "outline")

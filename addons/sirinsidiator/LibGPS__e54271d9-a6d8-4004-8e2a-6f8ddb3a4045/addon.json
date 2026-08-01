@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/sirinsidiator/LibGPS__e54271d9-a6d8-4004-8e2a-6f8ddb3a4045",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "sirinsidiator",
+  "canonical_id": "bethesda:e54271d9-a6d8-4004-8e2a-6f8ddb3a4045",
+  "content_id": "e54271d9-a6d8-4004-8e2a-6f8ddb3a4045",
+  "deleted": false,
+  "fingerprint": "870c57ed79c06b4626426048687b122815840c17bd40187f1d50892cfd0b9601",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "e54271d9-a6d8-4004-8e2a-6f8ddb3a4045",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/e54271d9-a6d8-4004-8e2a-6f8ddb3a4045",
+  "title": "LibGPS"
+}

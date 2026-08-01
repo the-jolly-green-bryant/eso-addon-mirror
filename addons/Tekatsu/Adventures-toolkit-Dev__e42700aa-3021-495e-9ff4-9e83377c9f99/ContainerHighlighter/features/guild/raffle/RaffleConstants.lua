@@ -1,0 +1,2 @@
+-- Raffle constants/state scaffolding
+-- Compatibility split: implementation currently resides in RaffleDashboard.lua

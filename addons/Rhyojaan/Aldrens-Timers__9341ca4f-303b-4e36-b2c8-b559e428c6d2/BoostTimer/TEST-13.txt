@@ -1,0 +1,17 @@
+Aldren's Timers 0.0.13 - PS5 Final Test
+
+Change in this build
+--------------------
+The Share button now opens Zone Chat through the console-safe chat entry path.
+This avoids the private SetSetting error shown by 0.0.12.
+
+Test
+----
+1. Confirm the add-on reports version 0.0.13.
+2. Open Settings > Add-ons > Aldren's Timers.
+3. Select Share Aldren's Timers.
+4. Select Yes.
+5. Confirm there is no UI error.
+6. Confirm Zone Chat opens with the recommendation ready to submit.
+7. Submit the message normally.
+8. Confirm timers and all existing settings still work.

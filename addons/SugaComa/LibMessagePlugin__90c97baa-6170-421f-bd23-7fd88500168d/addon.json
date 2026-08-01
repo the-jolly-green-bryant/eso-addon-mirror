@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/SugaComa/LibMessagePlugin__90c97baa-6170-421f-bd23-7fd88500168d",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "SugaComa",
+  "canonical_id": "bethesda:90c97baa-6170-421f-bd23-7fd88500168d",
+  "content_id": "90c97baa-6170-421f-bd23-7fd88500168d",
+  "deleted": false,
+  "fingerprint": "9eacd587ae415cf73335e14a9c29ccc4dc6bb1e0e13dc29dd16be09677590ba3",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "90c97baa-6170-421f-bd23-7fd88500168d",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/90c97baa-6170-421f-bd23-7fd88500168d",
+  "title": "LibMessagePlugin"
+}

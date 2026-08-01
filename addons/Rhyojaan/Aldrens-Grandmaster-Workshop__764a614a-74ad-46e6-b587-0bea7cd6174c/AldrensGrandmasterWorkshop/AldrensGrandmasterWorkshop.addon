@@ -1,0 +1,14 @@
+## Title: Aldren's Grandmaster Workshop
+## APIVersion: 101050
+## Version: 2.0.1
+## Author: Aldren + ChatGPT
+## Description: Aldren's gentle crafting guide for alchemy, enchanting, provisioning, jewelry, blacksmithing, clothing, and woodworking research support on the Grand Master Crafter journey.
+## SavedVariables: AldrensAlchemyWorkshopSavedVariables
+## DependsOn: LibCharacterKnowledge>=300030
+
+AldrensGrandmasterWorkshop_Bootstrap.lua
+AldrensGrandmasterWorkshop_Data.lua
+AldrensGrandmasterWorkshop_Recipes.lua
+AldrensGrandmasterWorkshop_ProvisioningKnowledge.lua
+AldrensGrandmasterWorkshop.lua
+Bindings.xml

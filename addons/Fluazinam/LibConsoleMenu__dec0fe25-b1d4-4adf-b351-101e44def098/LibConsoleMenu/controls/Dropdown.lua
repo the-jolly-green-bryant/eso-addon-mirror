@@ -75,11 +75,11 @@ local function ApplyDropdownItemLabelLayout(dropdown, control)
 	if not nameControl then
 		return
 	end
-	-- Multi-select items (e.g. Home Tours tags) keep Name beside CheckBox — do not re-anchor.
+	-- Multi-select items (e.g. Home Tours tags / Checklist) keep Name beside CheckBox.
 	if control:GetNamedChild("CheckBox") then
 		return
 	end
-	if dropdown and dropdown._lcmSettingsDropdown then
+	if dropdown and dropdown._lcmSettingsDropdown and dropdown._lcmDropdownCenterItems then
 		CenterDropdownItemLabel(nameControl)
 	else
 		RestoreStockDropdownItemLabel(nameControl)
@@ -106,6 +106,36 @@ local function CenterClosedSelectedText(dropdown)
 	label:ClearAnchors()
 	label:SetAnchor(TOPLEFT, container, TOPLEFT, inset, 0)
 	label:SetAnchor(BOTTOMRIGHT, container, BOTTOMRIGHT, -inset, 0)
+end
+
+local function RestoreStockClosedSelectedText(dropdown)
+	local label = dropdown.m_selectedItemText
+	local container = dropdown.m_container
+	if not label or not container then
+		return
+	end
+	local arrow = container:GetNamedChild("OpenDropdown")
+	local font = dropdown.m_font or ZO_GAMEPAD_COMBO_BOX_FONT
+	label:SetFont(font)
+	label:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+	label:ClearAnchors()
+	label:SetAnchor(TOPLEFT, container, TOPLEFT, 0, 0)
+	if arrow then
+		label:SetAnchor(RIGHT, arrow, LEFT, -3, 0, ANCHOR_CONSTRAINS_X)
+	else
+		label:SetAnchor(BOTTOMRIGHT, container, BOTTOMRIGHT, 0, 0)
+	end
+end
+
+local function ApplyClosedSelectedTextLayout(dropdown)
+	if not dropdown then
+		return
+	end
+	if dropdown._lcmDropdownCenterItems then
+		CenterClosedSelectedText(dropdown)
+	else
+		RestoreStockClosedSelectedText(dropdown)
+	end
 end
 
 -- Class-level so non-LCM combos restore pooled item layout after we center for settings.
@@ -135,14 +165,15 @@ local function EnsureClassLevelItemLayoutHook()
 	end
 end
 
-local function EnsureCenteredDropdownItems(dropdown)
-	if not dropdown or dropdown._lcmCenteredItems then
+local function EnsureDropdownLayout(dropdown)
+	if not dropdown or dropdown._lcmDropdownReady then
 		return
 	end
-	dropdown._lcmCenteredItems = true
+	dropdown._lcmDropdownReady = true
 	dropdown._lcmSettingsDropdown = true
-
-	CenterClosedSelectedText(dropdown)
+	-- Default center until update applies the setting's align.
+	dropdown._lcmDropdownCenterItems = true
+	ApplyClosedSelectedTextLayout(dropdown)
 	EnsureClassLevelItemLayoutHook()
 end
 
@@ -169,13 +200,17 @@ end
 LCM.updateControlFunctions[LCM.CT_DROPDOWN] = function(self, control, selected, enabled)
 	local nameControl = control:GetNamedChild("Name")
 	local label = self:GetString(self:GetValueOrCallback(self.labelText))
+	local align = self:GetValueOrCallback(self.align) or "center"
 	if nameControl then
 		nameControl:SetText(label)
+		nameControl:SetHorizontalAlignment(align == "left" and TEXT_ALIGN_LEFT or TEXT_ALIGN_CENTER)
 	end
 
 	local dropdown = control.dropdown
 	dropdown:SetSortsItems(false)
 	dropdown:SetName(label)
+	dropdown._lcmDropdownCenterItems = align ~= "left"
+	ApplyClosedSelectedTextLayout(dropdown)
 
 	if control._lcmOnItemSelected then
 		dropdown:UnregisterCallback("OnItemSelected", control._lcmOnItemSelected)
@@ -259,6 +294,7 @@ LCM.setupControlFunctions[LCM.CT_DROPDOWN] = function(self, params)
 	self.default = params.default
 	self.ignoreDefault = params.ignoreDefault
 	self.disable = params.disable
+	self.align = params.align or "center"
 end
 
 function LCM.CreateDropdownPoolFactory()
@@ -267,7 +303,7 @@ function LCM.CreateDropdownPoolFactory()
 			local dropdownControl = control:GetNamedChild("Dropdown")
 			control.dropdown = ZO_ComboBox_ObjectFromContainer(dropdownControl)
 		end
-		EnsureCenteredDropdownItems(control.dropdown)
+		EnsureDropdownLayout(control.dropdown)
 		function control:Activate()
 			if self.dropdown then
 				self.dropdown:Activate()

@@ -53,7 +53,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Equipment Level (for Update 6)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Garkin/Equipment-Level-for-Update-6__625) | Garkin | PC / Mac | 1.3 |
 | [Equipped Champion Stars - Equipped CP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Equipped-Champion-Stars---Equipped-CP__3691) | notnear | PC / Mac | 1.1.1 |
 | [ERA's Collection Book](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/WildEra/ERA-s-Collection-Book__2235) | WildEra | PC / Mac | 2.2.0 |
-| [ESO Assistant by ESO-hub.com](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solinur/ESO-Assistant-by-ESO-hub.com__3b053cc9-5963-4eb9-96b7-de3d29a5fa8b) | Solinur | Console | — |
+| [ESO Assistant by ESO-hub.com](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ESO-Hub/ESO-Assistant-by-ESO-hub.com__3b053cc9-5963-4eb9-96b7-de3d29a5fa8b) | ESO-Hub | Console | — |
 | [ESO Calendar Reborn: RP Edition](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Priapia/ESO-Calendar-Reborn-RP-Edition__1685) | Priapia | PC / Mac | 1.0 |
 | [ESO Emoji](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kitkathy1994/ESO-Emoji__3376) | kitkathy1994 | PC / Mac | 0.4.2 |
 | [ESO Farm-Buddy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Keldor/ESO-Farm-Buddy__2553) | Keldor | PC / Mac | 1.0.36 |
@@ -71,32 +71,32 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ESO-Database.com Leaderboard Export AddOn](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Keldor/ESO-Database.com-Leaderboard-Export-AddOn__3438) | Keldor | PC / Mac | 1.0.13 |
 | [ESO-Hub Trading](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Woeler/ESO-Hub-Trading__4095) | Woeler | PC / Mac | 2026.07.27.02.53 |
 | [ESO-Skillfactory.com Build Export](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Keldor/ESO-Skillfactory.com-Build-Export__2899) | Keldor | PC / Mac | 1.2.12 |
-| [ESO_BuildForge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unknown/ESO_BuildForge__3ea08b32-8d76-48a9-8c15-7f6867883984) | Unknown | Console | — |
+| [ESO_BuildForge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SremmurdDex/ESO_BuildForge__3ea08b32-8d76-48a9-8c15-7f6867883984) | SremmurdDex | Console | — |
 | [ESO_UnlimitedSkies \[WiP\]](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/devKyle/ESO_UnlimitedSkies-WiP__1781) | devKyle | PC / Mac | v0.00.000.01 |
-| [EsoAR](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MATREX-X-iNyfj/EsoAR__6aa72f53-f802-446b-9be4-55671bec2726) | MATREX-X = iNyfj | Console | — |
+| [EsoAR](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/EsoAR__6aa72f53-f802-446b-9be4-55671bec2726) | Lofand | Console | — |
 | [EsoBR - Tradução Português - v2026](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rodrigo/EsoBR---Tradução-Português---v2026__2256) | rodrigo | PC / Mac | 1.2.3 |
 | [ESOBR Reforged \[OBSOLETE\]](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/erickhwk/ESOBR-Reforged-OBSOLETE__4541) | erickhwk | PC / Mac | 1.0.14 |
 | [ESOFacts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/chris1984/ESOFacts__4376) | chris1984 | PC / Mac | 1.0.3 |
+| [EsoKR](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sharlikran/EsoKR__b15376ba-5e02-4e7a-b5f8-249f644ad1ac) | Sharlikran | Console | — |
 | [EsoKR](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/whya5448/EsoKR__2334) | whya5448 | PC / Mac | 10.21 |
-| [EsoKR](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cff9b15Sharlikran-r/EsoKR__b15376ba-5e02-4e7a-b5f8-249f644ad1ac) | \|cff9b15Sharlikran\|r | Console | — |
 | [EsoKRLite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/whya5448/EsoKRLite__2340) | whya5448 | PC / Mac | 0.1.3 |
 | [ESOLiveSplit - Universal Speedrun Timer \[BETA\]](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/ESOLiveSplit---Universal-Speedrun-Timer-BETA__3782) | MrPikPik | PC / Mac | 0.3.2 |
 | [ESOLiveSplit U47 Update Patch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Asquart/ESOLiveSplit-U47-Update-Patch__4206) | Asquart | PC / Mac | 1.1 |
-| [EsoLiveToolbar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c39B5E5Eldibabalo-r/EsoLiveToolbar__cce864e9-8d4b-4b05-b635-c68b101420de) | \|c39B5E5Eldibabalo\|r | Console | — |
+| [EsoLiveToolbar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/EsoLiveToolbar__cce864e9-8d4b-4b05-b635-c68b101420de) | Eldibabalo | Console | — |
 | [ESOPager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Minceraft/ESOPager__1007) | Minceraft | PC / Mac | 1.0 |
 | [ESOPie - Extensive Quickslots](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FiveStar/ESOPie---Extensive-Quickslots__3132) | FiveStar | PC / Mac | 0.2.9 |
-| [EsoPL - Spolszczenie](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomkolp-Skrybowie-Tamriel-Adrosar/EsoPL---Spolszczenie__10a87c9d-556d-4389-8952-629b42b5a3bc) | tomkolp (Skrybowie Tamriel), Adrosar | Console | — |
+| [EsoPL - Spolszczenie](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomkolp/EsoPL---Spolszczenie__10a87c9d-556d-4389-8952-629b42b5a3bc) | tomkolp | Console | — |
 | [EsoRP - Communicative roleplay addon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Connor/EsoRP---Communicative-roleplay-addon__1957) | Connor | PC / Mac | Alpha 5.2.6 |
 | [EsoSets - Set Search](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dr_Swizz/EsoSets---Set-Search__1999) | Dr_Swizz | PC / Mac | 1.6 |
-| [esoTestAddon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CodeWarrior82/esoTestAddon__e60b762b-efc6-4d5b-bfc6-d9b02453c067) | CodeWarrior82 | Console | — |
+| [esoTestAddon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/esoTestAddon__e60b762b-efc6-4d5b-bfc6-d9b02453c067) | codeWarrior82 | Console | — |
 | [EsoTH - Thai Localization](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Bagheera9/EsoTH---Thai-Localization__4057) | Bagheera9 | PC / Mac | 0.14.2 |
 | [ESOTheater](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Halja/ESOTheater__59) | Halja | PC / Mac | 0.4.8 |
-| [ESOTR_TEST_MODUL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/c18A7EA-XANTOS-TR-r-c18A7EA-BALGAMOV-r/ESOTR_TEST_MODUL__cbc2e748-501a-4137-8faa-cabf349da2d7) | \|c18A7EA@XANTOS-TR\|r & \|c18A7EA@BALGAMOV\|r | Console | — |
+| [ESOTR_TEST_MODUL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/XANTOSTR/ESOTR_TEST_MODUL__cbc2e748-501a-4137-8faa-cabf349da2d7) | XANTOSTR | Console | — |
 | [EsoUA — Ukrainian Localization](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/w2unemdhysend/EsoUA-Ukrainian-Localization__3437) | w2unemdhysend | PC / Mac | 1.07 |
 | [ESOXP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Deathfather/ESOXP__4078) | Deathfather | PC / Mac | 4 |
 | [Essential Housing Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cardinal05/Essential-Housing-Tools__1959) | Cardinal05 | PC / Mac | 1776 |
 | [EssentialHousingTools RU Patch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alezhu/EssentialHousingTools-RU-Patch__3226) | alezhu | PC / Mac | 1.0.0 |
-| [Ev](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PH/Ev__dd556dbe-ac20-41a5-8dba-9ba37eb97347) | PH | Console | — |
+| [Ev](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mr_tee21/Ev__dd556dbe-ac20-41a5-8dba-9ba37eb97347) | Mr_tee21 | Console | — |
 | [Event Box Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Smugger21/Event-Box-Timer__3755) | Smugger21 | PC / Mac | 2023.11.23-1.1a |
 | [Event Ticket Notifier](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ibex.rc/Event-Ticket-Notifier__2787) | ibex.rc | PC / Mac | 12 |
 | [Event Tickets (Clockwork City Event)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kafeijao/Event-Tickets-Clockwork-City-Event__2174) | kafeijao | PC / Mac | 2.0 |
@@ -104,8 +104,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Event Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kelinmiriel/Event-Tracker__2504) | Kelinmiriel | PC / Mac | 2.420 |
 | [EventBuffReminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/bluebuiy/EventBuffReminder__2993) | bluebuiy | PC / Mac | 4 |
 | [Eventor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ek1/Eventor__2793) | Ek1 | PC / Mac | 1049.260402 |
-| [EWPFinder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Synkronist-and-Lina/EWPFinder__bf9cbf1c-54ac-48f3-b489-a2aeda4996e8) | Synkronist and Lina | Console | — |
-| [EWPFinder 2.0](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Synkronist-and-Lina/EWPFinder-2.0__8f176813-8471-496d-8957-4f8b5c93057a) | Synkronist and Lina | Console | — |
+| [EWPFinder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/EWPFinder__bf9cbf1c-54ac-48f3-b489-a2aeda4996e8) | Vixen_Hunny | Console | — |
+| [EWPFinder 2.0](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/EWPFinder-2.0__8f176813-8471-496d-8957-4f8b5c93057a) | Vixen_Hunny | Console | — |
 | [Excessive Withdrawals](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/calia1120/Excessive-Withdrawals__1522) | calia1120 | PC / Mac | 18.23.0 |
 | [Excessive Withdrawals - Kith's Build](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kitherel/Excessive-Withdrawals---Kith-s-Build__1715) | kitherel | PC / Mac | 1 |
 | [ExecuteAssist](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/10becja/ExecuteAssist__3101) | 10becja | PC / Mac | 1.0.0 |
@@ -123,7 +123,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ExoYs Tributes Enhancement](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ExoY/ExoYs-Tributes-Enhancement__3364) | ExoY | PC / Mac | 1.6.1 |
 | [ExoYsProcSetTimerZHPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FusRoDah/ExoYsProcSetTimerZHPatch__3914) | FusRoDah | PC / Mac | 2.12.1 |
 | [ExpenseReport](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Whiskers/ExpenseReport__4715) | Whiskers | PC / Mac | 1.1 |
-| [experiment](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Synkronist-and-Awh_Lina/experiment__2b323144-77d2-41bc-9e3e-d016c4dd0f30) | Synkronist and Awh_Lina | Console | — |
+| [experiment](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/experiment__2b323144-77d2-41bc-9e3e-d016c4dd0f30) | Vixen_Hunny | Console | — |
 | [Extended Achievement Credit](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Extended-Achievement-Credit__3339) | code65536 | PC / Mac | 2.2.2 |
 | [Extended Friendlist](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akamatsu02/Extended-Friendlist__3692) | akamatsu02 | PC / Mac | 1.1 |
 | [Extended Ignore List](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/Extended-Ignore-List__3939) | Masteroshi430 | PC / Mac | 2026.07.09 |
@@ -133,7 +133,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Extra Compass Pins](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/trollusk/Extra-Compass-Pins__3430) | trollusk | PC / Mac | 1.1.0 |
 | [Eye Safety: Lockpicking](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/grin3671/Eye-Safety-Lockpicking__4055) | grin3671 | PC / Mac | 1.2.1 |
 | [Eye Strain](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Splat/Eye-Strain__2467) | Splat | PC / Mac | 1.1.1 |
-| [EyeOnKeep](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cB427D3Su-c546D6Aga-c889764Co-cDA34CDma-r/EyeOnKeep__4c644add-5991-49a0-ad77-6b91a5ffee42) | \|cB427D3Su\|c546D6Aga\|c889764Co\|cDA34CDma\|r | Console | — |
+| [EyeOnKeep](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/EyeOnKeep__4c644add-5991-49a0-ad77-6b91a5ffee42) | SugaComa | Console | — |
 | [EyeOnKeep (tested on console as working)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/EyeOnKeep-tested-on-console-as-working__4284) | SugaComa | PC / Mac | 1.0 |
 | [Eyes of the Undaunted](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xbutch/Eyes-of-the-Undaunted__b22ade94-a817-47da-bc4f-cfa7e1dd25ff) | xbutch | Console | — |
 | [EZReport](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/EZReport__1842) | Phinix | PC / Mac | 1.29 |

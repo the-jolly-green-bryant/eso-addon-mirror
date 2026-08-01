@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Masteroshi430/ArmoryRoleSwitcher__ec09cf15-d910-4d7e-b9cc-17c759d03aa0",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Masteroshi430",
+  "canonical_id": "bethesda:ec09cf15-d910-4d7e-b9cc-17c759d03aa0",
+  "content_id": "ec09cf15-d910-4d7e-b9cc-17c759d03aa0",
+  "deleted": false,
+  "fingerprint": "fb463f86d7afdaf474db7e850366bb4ae76e55e8019a41d2f040454fc1071304",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "ec09cf15-d910-4d7e-b9cc-17c759d03aa0",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/ec09cf15-d910-4d7e-b9cc-17c759d03aa0",
+  "title": "ArmoryRoleSwitcher"
+}

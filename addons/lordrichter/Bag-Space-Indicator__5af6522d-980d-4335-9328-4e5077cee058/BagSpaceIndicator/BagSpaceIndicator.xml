@@ -1,0 +1,8 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="BagSpaceIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" >
+            <Dimensions x="10" y="10" />
+            <Anchor point="CENTER" />                 
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

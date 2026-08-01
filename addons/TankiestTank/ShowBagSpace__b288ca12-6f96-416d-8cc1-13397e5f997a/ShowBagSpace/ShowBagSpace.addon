@@ -1,0 +1,8 @@
+## Title: ShowBagSpace
+## Author: Tankiest Tank
+## Version: 1
+## APIVersion: 101050
+## DependsOn: LibHarvensAddonSettings
+## SavedVariables: ShowBagSpaceSavedVars
+
+ShowBagSpace.lua

@@ -1,0 +1,22 @@
+## Title: Alliance Rank Progress
+## Description: Displays an Alliance Rank progress bar with alliance icon, rank icon, rank name and alliance points
+## Author: |cB22222Dusty Warehouse|r
+## Version: 1.18
+## AddOnVersion: 19
+## APIVersion: 101048 101049
+## SavedVariables: DWAllianceRankProgress_SavedVars
+## PCDependsOn: LibAddonMenu-2.0>=38
+## OptionalDependsOn: LibHarvensAddonSettings>=20000
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+# All rights reserved
+# You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lang/en.lua
+lang/$(language).lua
+DWAllianceRankProgress.lua
+PC/DWAllianceRankProgress.xml
+Console/DWAllianceRankProgress.xml
+PC/DWAllianceRankProgressSettings.lua
+Console/DWAllianceRankProgressSettings.lua

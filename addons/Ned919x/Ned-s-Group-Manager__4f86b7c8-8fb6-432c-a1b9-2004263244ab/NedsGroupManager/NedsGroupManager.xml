@@ -1,0 +1,92 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="NPGM_UI" movable="true" mouseEnabled="true" hidden="true" clampedToScreen="true">
+      <Anchor point="CENTER" />
+      <Dimensions x="800" y="900" />
+
+      <Controls>
+        <Backdrop name="$(parent)BG" centerColor="000000" alpha="0.7" edgeColor="FFFFFF" edgeFile="EsoUI/Art/ChatWindow/chat_BG_edge.dds">
+          <Anchor point="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" />
+        </Backdrop>
+
+        <Label name="$(parent)Title" font="ZoFontGamepad42" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+               text="Ned's Group Manager" horizontalAlignment="CENTER">
+          <Anchor point="TOP" offsetY="20" />
+        </Label>
+
+        <Label name="$(parent)Author" font="ZoFontGamepad36" color="FF0000" text="By: Ned919x & STUDLETON" horizontalAlignment="CENTER">
+          <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetY="5" />
+        </Label>
+
+        <Control name="$(parent)ScrollList" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT" offsetX="30" offsetY="120" />
+          <Dimensions x="540" y="800" />
+        </Control>
+		
+		<Label name="$(parent)GroupStuff" font="ZoFontGamepad36" color="FF0000" text="Group Stuff" >
+          <Anchor point="RIGHT" offsetX="-60" offsetY="-240" />
+        </Label>
+        <Button name="$(parent)KickButton" font="ZoFontGamepad36" text="Kick & Reinvite" mouseEnabled="true" inherits="ZO_DefaultButton">
+          <Anchor point="TOP" relativeTo="$(parent)GroupStuff" relativePoint="BOTTOM" offsetY="10" />
+          <Dimensions x="200" y="40" />
+        </Button>
+        <Button name="$(parent)ReinviteButton" font="ZoFontGamepad36" text="Reinvite Missed" mouseEnabled="true" inherits="ZO_DefaultButton">
+          <Anchor point="TOP" relativeTo="$(parent)KickButton" relativePoint="BOTTOM" offsetY="10" />
+          <Dimensions x="200" y="40" />
+        </Button>
+		<Button name="$(parent)RefreshGroup" font="ZoFontGamepad36" text="Refresh Group List" mouseEnabled="true" inherits="ZO_DefaultButton">
+          <Anchor point="TOP" relativeTo="$(parent)ReinviteButton" relativePoint="BOTTOM" offsetY="10" />
+          <Dimensions x="200" y="40" />
+        </Button>
+		<Button name="$(parent)ReformGroup" font="ZoFontGamepad36" text="Reform Group" mouseEnabled="true" inherits="ZO_DefaultButton">
+          <Anchor point="TOP" relativeTo="$(parent)RefreshGroup" relativePoint="BOTTOM" offsetY="10" />
+          <Dimensions x="200" y="40" />
+        </Button>
+		<Button name="$(parent)HideGroup" font="ZoFontGamepad36" text="Toggle Hide Group" mouseEnabled="true" inherits="ZO_DefaultButton">
+          <Anchor point="TOP" relativeTo="$(parent)ReformGroup" relativePoint="BOTTOM" offsetY="10" />
+          <Dimensions x="200" y="40" />
+        </Button>
+		<Label name="$(parent)AutoInvite" font="ZoFontGamepad36" color="FF0000" text="Auto Invite" horizontalAlignment="CENTER">
+          <Anchor point="TOP" relativeTo="$(parent)HideGroup" relativePoint="BOTTOM" offsetY="35" />
+        </Label>
+		<Button name="$(parent)ToggleAutoInvite" inherits="ZO_CheckButton">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)AutoInvite" relativePoint="BOTTOMLEFT" offsetX="-50" offsetY="10" />
+		</Button>
+        <Label name="$(parent)ToggleAutoInviteLabel" font="ZoFontGamepad34" text="Toggle Auto Invite" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)ToggleAutoInvite" relativePoint="RIGHT" offsetX="10" />
+        </Label>
+		<Button name="$(parent)AutoSettings" font="ZoFontGamepad36" text="Auto Invite Settings" mouseEnabled="true" inherits="ZO_DefaultButton">
+          <Anchor point="TOP" relativeTo="$(parent)AutoInvite" relativePoint="BOTTOM" offsetY="40" />
+          <Dimensions x="200" y="40" />
+        </Button>
+		<Button name="$(parent)Hide" inherits="ZO_ButtonBehaviorClickSound">
+			<Dimensions x="24" y="24" />
+			<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="5" />
+			<Textures normal="/esoui/art/buttons/decline_up.dds"
+				pressed="/esoui/art/buttons/decline_down.dds"
+				mouseOver="/esoui/art/buttons/decline_over.dds"
+				disabled="/esoui/art/buttons/decline_disabled.dds" />
+		</Button>
+      </Controls>
+    </TopLevelControl>
+
+    <Control name="NPGM_RowTemplate" virtual="true">
+      <Dimensions x="520" y="40" />
+      <Controls>
+		<Label name="$(parent)Number" font="ZoFontGamepad34" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" offsetX="10" />
+        </Label>
+		<Button name="$(parent)CheckBox" inherits="ZO_CheckButton">
+			<Anchor point="LEFT" relativeTo="$(parent)Number" relativePoint="RIGHT" offsetX="10" />
+		</Button>
+        <Label name="$(parent)Label" font="ZoFontGamepad34" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)CheckBox" relativePoint="RIGHT" offsetX="10" />
+        </Label>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

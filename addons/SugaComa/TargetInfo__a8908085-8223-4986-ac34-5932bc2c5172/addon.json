@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/SugaComa/TargetInfo__a8908085-8223-4986-ac34-5932bc2c5172",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "SugaComa",
+  "canonical_id": "bethesda:a8908085-8223-4986-ac34-5932bc2c5172",
+  "content_id": "a8908085-8223-4986-ac34-5932bc2c5172",
+  "deleted": false,
+  "fingerprint": "da855d8cc8532af8b065af84f577ce52cf7d68fcf92a33866577d5ac17def176",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "a8908085-8223-4986-ac34-5932bc2c5172",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/a8908085-8223-4986-ac34-5932bc2c5172",
+  "title": "TargetInfo"
+}

@@ -1,0 +1,6 @@
+<GuiXml>
+	<Controls>
+		<Texture name="HM_MapPin" textureFile="HarvestMapConsole/Textures/Map/mining.dds" mouseEnabled="false" hidden="true" virtual="true" tier="HIGH" />
+		<Control name="HarvestMapGamepadWorldMapFilterCheckboxTemplate" inherits="ZO_GamepadWorldMapFilterCheckboxOptionTemplate" virtual="true" />
+	</Controls>
+</GuiXml>

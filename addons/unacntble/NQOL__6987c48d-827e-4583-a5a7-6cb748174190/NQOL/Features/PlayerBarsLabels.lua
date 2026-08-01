@@ -215,6 +215,26 @@ function PlayerBars.GetCompanionShowNameTooltip()
     return NQOL.L("features.player_bars.companion_show_name_tooltip")
 end
 
+function PlayerBars.GetCompanionShowRapportLabel()
+    if GetString and SI_COMPANION_OVERVIEW_RAPPORT then
+        return GetString(SI_COMPANION_OVERVIEW_RAPPORT)
+    end
+
+    return NQOL.L("features.player_bars.companion_show_rapport_label")
+end
+
+function PlayerBars.GetCompanionShowRapportTooltip()
+    return NQOL.L("features.player_bars.companion_show_rapport_tooltip")
+end
+
+function PlayerBars.GetCompanionShowXpProgressLabel()
+    return NQOL.L("features.player_bars.companion_show_xp_progress_label")
+end
+
+function PlayerBars.GetCompanionShowXpProgressTooltip()
+    return NQOL.L("features.player_bars.companion_show_xp_progress_tooltip")
+end
+
 function PlayerBars.GetGroupNameDisplayLabel()
     return NQOL.L("features.player_bars.group_name_display_label")
 end
@@ -301,6 +321,14 @@ end
 
 function PlayerBars.GetCompanionHealthBarColorTooltip()
     return NQOL.L("features.player_bars.companion_health_bar_color_tooltip")
+end
+
+function PlayerBars.GetCompanionXpColorLabel()
+    return NQOL.L("features.player_bars.companion_xp_color_label")
+end
+
+function PlayerBars.GetCompanionXpColorTooltip()
+    return NQOL.L("features.player_bars.companion_xp_color_tooltip")
 end
 
 function PlayerBars.GetCompanionReverseLabel()

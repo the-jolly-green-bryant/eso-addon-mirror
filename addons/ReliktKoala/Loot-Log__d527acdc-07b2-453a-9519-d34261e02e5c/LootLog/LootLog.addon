@@ -1,0 +1,18 @@
+## Title: LootLog
+## Description: Tracks looted items and loot interactions with session, manual, and account-wide totals.
+## Author: ReliktGepard3
+## Version: 0.7.20
+## APIVersion: 101047
+## SavedVariables: LootLogSavedVars
+## OptionalDependsOn: LibHarvensAddonSettings LibRadialMenu-ConsoleLibrary
+Utils.lua
+DataStore.lua
+Migrations.lua
+CurrencyConstants.lua
+Tracking.lua
+Commands.lua
+UI.lua
+UI.xml
+Settings.lua
+RadialMenu.lua
+LootLog.lua

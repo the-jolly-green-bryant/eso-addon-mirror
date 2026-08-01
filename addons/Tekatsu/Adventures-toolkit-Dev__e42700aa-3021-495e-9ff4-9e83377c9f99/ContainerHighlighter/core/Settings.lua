@@ -1,0 +1,4 @@
+-- ============================================
+-- SETTINGS MODULE ORCHESTRATOR
+-- ============================================
+-- Implementations are split across core/settings/*.lua and loaded via manifest order.

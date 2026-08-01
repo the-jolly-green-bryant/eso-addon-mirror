@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Lofand/EsoAR__6aa72f53-f802-446b-9be4-55671bec2726",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Lofand",
+  "canonical_id": "bethesda:6aa72f53-f802-446b-9be4-55671bec2726",
+  "content_id": "6aa72f53-f802-446b-9be4-55671bec2726",
+  "deleted": false,
+  "fingerprint": "c9fb8cea7a020a5c2d414dcaa14c02a72e02aa0f0ae0a3e16398d11a300fbd14",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "6aa72f53-f802-446b-9be4-55671bec2726",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/6aa72f53-f802-446b-9be4-55671bec2726",
+  "title": "EsoAR"
+}

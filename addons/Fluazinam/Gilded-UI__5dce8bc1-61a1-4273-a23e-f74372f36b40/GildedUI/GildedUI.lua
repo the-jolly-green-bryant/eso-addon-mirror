@@ -3,7 +3,7 @@ local Addon = GildedUI
 
 Addon.name = "GildedUI"
 Addon.displayName = "Gilded UI"
-Addon.version = "0.2.21"
+Addon.version = "0.2.26"
 
 -- Feature modules RegisterDefaults() into this table at load time.
 Addon.defaults = Addon.defaults or {
@@ -62,6 +62,7 @@ function Addon:SanitizeSavedVars()
     self:SanitizePlayerIndicators()
     self:SanitizeTrackerColumn()
     self:SanitizeAlertText()
+    self:SanitizeStayMounted()
 end
 
 function Addon:SetupSceneHiding()
@@ -123,6 +124,7 @@ function Addon:Initialize()
     self:RegisterUpdateLoop()
     self:RegisterResourceEvents()
     self:RegisterCombatStatusEvents()
+    self:InitStayMounted()
 end
 
 local function OnAddonLoaded(_, addonName)

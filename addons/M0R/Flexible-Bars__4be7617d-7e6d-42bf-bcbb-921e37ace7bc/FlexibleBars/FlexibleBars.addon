@@ -1,0 +1,13 @@
+## Title: |cFFD700Flexible Bars|r
+## APIVersion:  101047
+## Version: 1.0.0
+## AddOnVersion: 100
+## Description: A tool to move attribute bars with great flexibility!
+## Author: |c0DC1CF@M0R_Gaming|r
+## SavedVariables: FlexibleBarsVars
+## DependsOn: LibAddonMenu-2.0>=40
+## OptionalDependsOn: LibCombatAlerts>=7010
+
+presets.lua
+layout.xml
+main.lua

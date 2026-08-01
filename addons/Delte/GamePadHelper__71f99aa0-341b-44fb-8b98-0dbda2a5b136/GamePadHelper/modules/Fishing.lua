@@ -1,0 +1,188 @@
+local prevLureCharges = 0
+
+-- Bait constants
+local BAIT_LAKE_GUTS          = 2
+local BAIT_LAKE_GUTS_ITEMID   = 42870
+local BAIT_LAKE_MINNOW        = 8
+local BAIT_LAKE_MINNOW_ITEMID = 42876
+
+local BAIT_FOUL_CRAWLERS      = 3
+local BAIT_FOUL_CRAWLERS_ITEMID = 42871
+local BAIT_FOUL_ROE           = 9
+local BAIT_FOUL_ROE_ITEMID    = 42873
+
+local BAIT_RIVER_INSECT       = 4
+local BAIT_RIVER_INSECT_ITEMID = 42872
+local BAIT_RIVER_SHAD         = 6
+local BAIT_RIVER_SHAD_ITEMID  = 42874
+
+local BAIT_SALTWATER_WORMS    = 5
+local BAIT_SALTWATER_WORMS_ITEMID = 42869
+local BAIT_SALTWATER_CHUB     = 7
+local BAIT_SALTWATER_CHUB_ITEMID  = 42875
+
+local LAKE_HOLE      = { reg = BAIT_LAKE_GUTS,       regId = BAIT_LAKE_GUTS_ITEMID,       alt = BAIT_LAKE_MINNOW,    altId = BAIT_LAKE_MINNOW_ITEMID }
+local SALTWATER_HOLE = { reg = BAIT_SALTWATER_WORMS, regId = BAIT_SALTWATER_WORMS_ITEMID, alt = BAIT_SALTWATER_CHUB, altId = BAIT_SALTWATER_CHUB_ITEMID }
+local FOUL_HOLE      = { reg = BAIT_FOUL_CRAWLERS,   regId = BAIT_FOUL_CRAWLERS_ITEMID,   alt = BAIT_FOUL_ROE,       altId = BAIT_FOUL_ROE_ITEMID }
+local RIVER_HOLE     = { reg = BAIT_RIVER_INSECT,    regId = BAIT_RIVER_INSECT_ITEMID,    alt = BAIT_RIVER_SHAD,     altId = BAIT_RIVER_SHAD_ITEMID }
+
+-- List of {keyword, data} pairs; matched via case-insensitive substring search
+-- against the interactable name the game returns, so minor wording differences
+-- between the addon strings and actual game strings don't break matching.
+local FISHING_HOLES = {}
+
+local function AddFishingHoleName(name, data)
+    if name and name ~= "" then
+        table.insert(FISHING_HOLES, { keyword = zo_strlower(name), data = data })
+    end
+end
+
+AddFishingHoleName(GetString(SI_GPH_FISHING_HOLE_LAKE),      LAKE_HOLE)
+AddFishingHoleName(GetString(SI_GPH_FISHING_HOLE_SALTWATER), SALTWATER_HOLE)
+AddFishingHoleName(GetString(SI_GPH_FISHING_HOLE_FOUL),      FOUL_HOLE)
+AddFishingHoleName(GetString(SI_GPH_FISHING_HOLE_RIVER),     RIVER_HOLE)
+
+-- English fallback covers clients whose API still returns the English name.
+AddFishingHoleName("Lake Fishing Hole",      LAKE_HOLE)
+AddFishingHoleName("Saltwater Fishing Hole", SALTWATER_HOLE)
+AddFishingHoleName("Foul Fishing Hole",      FOUL_HOLE)
+AddFishingHoleName("River Fishing Hole",     RIVER_HOLE)
+
+-- Tracks the interactable name bait was last selected for, so a change of
+-- fishing hole (even without a frame where nothing is interactable) still
+-- triggers a reselect. Cleared whenever the target isn't a fishing node.
+local lastBaitedHoleName = nil
+
+local function CountItemInBag(bagId, itemId)
+    local total = 0
+    for slotIndex = 0, GetBagSize(bagId) - 1 do
+        if GetItemId(bagId, slotIndex) == itemId then
+            total = total + GetSlotStackSize(bagId, slotIndex)
+        end
+    end
+    return total
+end
+
+-- GetItemInfo takes a slot index, not an item id, so the old lookup read the
+-- wrong slots and never returned a real bait count.
+local function GetItemQuantity(itemId)
+    local total = CountItemInBag(BAG_BACKPACK, itemId)
+    if HasCraftBagAccess() then
+        total = total + CountItemInBag(BAG_VIRTUAL, itemId)
+    end
+    return total
+end
+
+local function SelectFishingBait(interactableName)
+    local sv = _G["GamePadHelper_CharSavedVars"]
+    if not sv or not sv.fishingEnabled then return end
+
+    local nameLower = zo_strlower(interactableName)
+    local hole = nil
+    for _, entry in ipairs(FISHING_HOLES) do
+        if nameLower:find(entry.keyword, 1, true) then
+            hole = entry.data
+            break
+        end
+    end
+    if not hole then return end
+
+    if sv.fishingAlternativeBaits and GetItemQuantity(hole.altId) > 0 then
+        SetFishingLure(hole.alt)
+    else
+        SetFishingLure(hole.reg)
+    end
+end
+
+local function OnFishBiteRumble()
+    SetGamepadVibration(3000, 0.99, 0.50, 1.00, 1.00, "Fishing")
+    EVENT_MANAGER:UnregisterForUpdate("GPH_FishBiteRumble")
+end
+
+local function OnFishBitePulse()
+    SetGamepadVibration(180, 0.50, 0.90, 1.00, 1.00, "Fishing")
+    EVENT_MANAGER:RegisterForUpdate("GPH_FishBiteRumble", 250, OnFishBiteRumble)
+end
+
+local function onSlotUpdate(event, bagId, slotIndex, isNew)
+    local sv = _G["GamePadHelper_CharSavedVars"]
+    if not sv or not sv.fishingEnabled then
+        return
+    end
+
+    if GetItemType(bagId, slotIndex) ~= ITEMTYPE_LURE then
+        return
+    end
+
+    local lure = GetFishingLure()
+    local cnt = 0
+    if lure then
+        cnt = select(3, GetFishingLureInfo(lure))
+    end
+    if (not isNew and (prevLureCharges - cnt == 1)) then
+        OnFishBitePulse()
+        local action = GetGameCameraInteractableActionInfo()
+        if action == GetString(SI_GAMECAMERAACTIONTYPE17) then
+            local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_MAJOR_TEXT, SOUNDS.BOOK_ACQUIRED)
+            messageParams:SetText(GetString(SI_GPH_FISHING_REEL_IN))
+            CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(messageParams)
+        end
+    else
+        SetGamepadVibration(0, 0, 0, 0, 0, "Fishing")
+    end
+    prevLureCharges = cnt
+end
+
+local function onLureCleared(event)
+    local lure = GetFishingLure()
+    if lure then
+        prevLureCharges = select(3, GetFishingLureInfo(lure))
+    else
+        prevLureCharges = 0
+    end
+end
+
+local function onLureSet(event, lure)
+    if lure then
+        prevLureCharges = select(3, GetFishingLureInfo(lure))
+    end
+end
+
+local function OnAddonLoaded(event, name)
+    if name ~= "GamePadHelper" then return end
+    EVENT_MANAGER:UnregisterForEvent("Fishing", EVENT_ADD_ON_LOADED)
+
+    EVENT_MANAGER:RegisterForEvent("Fishing", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, onSlotUpdate)
+    EVENT_MANAGER:RegisterForEvent("Fishing", EVENT_FISHING_LURE_CLEARED, onLureCleared)
+    EVENT_MANAGER:RegisterForEvent("Fishing", EVENT_FISHING_LURE_SET, onLureSet)
+
+    if ZO_Reticle then
+        ZO_PreHook(ZO_Reticle, "TryHandlingInteraction", function(interactionPossible, currentFrameTimeSeconds)
+            local sv = _G["GamePadHelper_CharSavedVars"]
+            if not sv or not sv.fishingEnabled then
+                return
+            end
+
+            if interactionPossible then
+                local action, interactableName, interactionBlocked, isOwned, additionalInteractInfo, context, contextLink, isCriminalInteract = GetGameCameraInteractableActionInfo()
+                if additionalInteractInfo == ADDITIONAL_INTERACT_INFO_FISHING_NODE then
+                    if interactableName ~= lastBaitedHoleName then
+                        SelectFishingBait(interactableName)
+                        lastBaitedHoleName = interactableName
+                    end
+                else
+                    lastBaitedHoleName = nil
+                end
+            else
+                lastBaitedHoleName = nil
+            end
+        end)
+    end
+
+    local lure = GetFishingLure()
+    if lure then
+        prevLureCharges = select(3, GetFishingLureInfo(lure))
+    end
+end
+
+EVENT_MANAGER:RegisterForEvent("Fishing", EVENT_ADD_ON_LOADED, OnAddonLoaded)

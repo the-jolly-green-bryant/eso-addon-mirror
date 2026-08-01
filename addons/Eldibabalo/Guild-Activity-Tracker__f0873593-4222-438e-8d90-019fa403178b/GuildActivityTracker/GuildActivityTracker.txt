@@ -1,0 +1,11 @@
+## Title: Guild Activity Tracker
+## Description: Console-first guild management addon for guild masters and officers. Browse your full roster with color-coded activity status, review guild history filtered by Gold Deposited, Sales, Item Deposits and Withdrawals. Select any member to view their personal contributions. Search by name, item or gold amount. Multi-guild support with persistent settings. Full gamepad navigation: L1/R1 tabs, L2/R2 row selection, X select, Square search, Triangle guild, R3 filter/range.
+## Author: |c39B5E5Eldibabalo|r
+## APIVersion: 101047
+## Version: 3.6.22
+## SavedVariables: GuildActivityTrackerSV
+
+Bindings.xml
+GuildActivityTracker.lua
+GuildActivityTracker.xml
+GuildActivityTrackerUI.lua

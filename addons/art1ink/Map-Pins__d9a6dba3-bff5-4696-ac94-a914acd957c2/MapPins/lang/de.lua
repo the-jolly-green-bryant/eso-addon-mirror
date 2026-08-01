@@ -1,0 +1,46 @@
+MapPins_Localization = MapPins_Localization or {}
+MapPins_Localization["de"] = {--provided by Neverlands 1.98
+		--Water
+		Lake="Seewasser",Foul="Brackwasser",River="Flusswasser",Salt="Salzwasser",Oily="Ölwasser",Mystic="Mythenwasser",Running="Fließgewässer",
+		--Portals
+		Portals="Portale",Celestial_Rifts="Himmlische Risse",Dark_Fissures="Dunkle Risse",Oblivion_Portals="Oblivion Portale",Shadow_Fissures="Schattenrisse",Lava_Lashers="Lavaschlote",Soul_Reaper="Seelenschnitter",
+		--Filters
+		Delve_bosses="Gewölbe-Anführer",Delve_bosses_done="Gewölbe-Anführer, besiegt",
+		Skyshards="Himmelsscherben",Skyshards_done="Himmelsscherben, gesammelt",
+		Lore_books="Lorebücher",Lore_books_done="Lorebücher, gelesen",
+		Treasure_Maps="Schatzkarten",
+		Treasure_Chests="Schatztruhen",
+		Unknown_POI="Unbekannter, markanter Ort",
+		Undaunted="Unerschrockene",	
+		Time_Rifts="Zeitrisse",
+		Shrines="Schreine",
+		Fishing_Nodes="Fischgründe",
+		Antiquities="Antiquitäten", Antiquity_Leads="Fundorte von Spuren",
+		Imperial_City="Kaiserstadt",
+		IC_Bosses="Anführer",
+		IC_Respawns="Allianz-Basen",
+		Cunning_Scamp="Listskampen",
+		Trove_Scamp="Gierskampen",	
+		World_achievements="Weltweite Errungenschaften",
+		Orsinium_world_event="Zufällige Begegnungen",
+		Summerset_world_event="Zufällige Begegnungen",
+		Random_Encounters="Zufällige Begegnungen",
+		Dynamic_Encounters="Dynamische Begegnungen",
+		
+		--DLC
+		Orsinium="Orsinium",
+		Thieves_guild="Diebesgilde",
+		Morrowind="Morrowind",
+		Clockwork_City="Stadt der Uhrwerke",
+		Summerset="Schatzkarte",	
+		Murkmire="Trübmoor",
+		Elsweyr="Elsweyr",
+		Greymoor="Greymoor",
+		Markarth="Markarth",
+		Blackwood="Dunkelforst",	
+		High_Isle="Hochinsel",
+		Firesong="Feuersang",
+		Necrom="Nekrom",
+		Gold_Road="Goldstraße",
+		Seasons_of_the_Worm_Cult="Saisons Des Wurmkults",
+		}

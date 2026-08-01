@@ -1,0 +1,28 @@
+## APIVersion: 101048 101049
+## Title: ESO Assistant by ESO-hub.com
+## Version: 1.0.8
+## AddOnVersion: 10008
+## Author: Solinur
+## Description: Enables easy access to resources on ESO-Hub.com
+## SavedVariables: ESOAssistantSavedVariables
+## DependsOn: LibQRCode
+## PCDependsOn: LibAddonMenu-2.0>=40
+## ConsoleDependsOn: LibHarvensAddonSettings>=20004
+## OptionalDependsOn: LibDebugLogger
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. 
+; in the United States and/or other countries. All rights reserved.
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Lang\en.lua
+Lang\$(language).lua
+
+ESOAssistant.lua
+ESOAssistant.xml
+Zones.lua
+Itemsets.lua
+Skills.lua
+Console\Menu.lua
+PC\Menu.lua

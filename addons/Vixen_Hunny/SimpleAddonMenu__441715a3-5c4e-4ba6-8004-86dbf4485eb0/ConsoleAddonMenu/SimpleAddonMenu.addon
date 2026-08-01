@@ -1,0 +1,9 @@
+## Title: SimpleAddonMenu
+## Description: Lightweight settings menu library similar to LibAddonMenu, written from scratch. Console friendly.
+## Author: Vixen Hunny
+## Version: 1.1
+## APIVersion: 101048
+## IsLibrary: 1
+## SavedVariables: SAMVARS
+
+SimpleAddonMenu.lua

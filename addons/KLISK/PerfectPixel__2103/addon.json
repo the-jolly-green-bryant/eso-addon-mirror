@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/KLISK/PerfectPixel__2103",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "KLISK",
   "canonical_id": "esoui:2103",
   "category_id": "20",
@@ -69,7 +70,7 @@
     "PerfectPixel"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2103/",
-  "fingerprint": "bd1cd68a89f698357879ae694ba51b7d95529d2494a571a35b4fad5f5692140a",
+  "fingerprint": "c42b25053d808876a40225a7f9ae530919f67a54f28c7a31d25aad9db240f6c5",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw8425.png",
     "https://cdn-eso.mmoui.com/preview/pvw8427.png",
@@ -86,11 +87,11 @@
   "source_id": "2103",
   "source_url": "https://www.esoui.com/downloads/info2103-PerfectPixel.html",
   "stats": {
-    "downloads": 1427153,
+    "downloads": 1428539,
     "favorites": 460,
-    "monthly_downloads": 20505
+    "monthly_downloads": 20481
   },
   "title": "PerfectPixel",
-  "updated_at": 1783093041000,
-  "version": "0.13.36"
+  "updated_at": 1785543346000,
+  "version": "0.13.37"
 }

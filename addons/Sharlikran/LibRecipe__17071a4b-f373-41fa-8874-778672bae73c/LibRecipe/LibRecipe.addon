@@ -1,0 +1,15 @@
+## APIVersion: 101045 101046
+## Title: LibRecipe
+## Description: Addon
+## Version 1.03
+## AddOnVersion: 103
+## SavedVariables: LibRecipe_SavedVariables
+## PCDependsOn: LibAlchemy>=18 LibAsync>=30002
+## ConsoleDependsOn: LibAlchemy>=18
+## OptionalDependsOn: LibDebugLogger DebugLogViewer
+## IsLibrary: true
+
+Init.lua
+PC/LibRecipe.lua
+console/LibRecipe.lua
+console/recipe_data.lua

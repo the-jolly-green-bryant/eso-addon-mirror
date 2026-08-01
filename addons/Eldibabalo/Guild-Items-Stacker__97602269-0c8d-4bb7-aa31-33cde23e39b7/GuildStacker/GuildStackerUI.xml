@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+
+        <!-- Keyboard UI -->
+        <TopLevelControl name="GS_Window" hidden="true" mouseEnabled="true">
+            <Dimensions x="565" />
+            <Anchor point="TOPLEFT" relativeTo="ZO_GuildBank" />
+            <Anchor point="BOTTOMLEFT" relativeTo="ZO_GuildBank" />
+            <Controls>
+                <Texture name="$(parent)BG" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds">
+                    <AnchorFill />
+                    <TextureCoords left="0" right="1" top="0" bottom=".8125" />
+                </Texture>
+                <Texture name="$(parent)Icon">
+                    <Dimensions x="128" y="128" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" />
+                </Texture>
+                <Label name="$(parent)Description" font="ZoFontWinH2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SECOND_CONTRAST" horizontalAlignment="CENTER">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="8" offsetX="-300"/>
+                    <Dimensions x="600" y="50" />
+                </Label>
+                <StatusBar name="$(parent)Bar" minValue="0" maxValue="100" value="0" textureFile="EsoUI/Art/Miscellaneous/progressbar_genericFill.dds" textureFileLeadingEdge="EsoUI/Art/Miscellaneous/progressbar_genericFill_leadingEdge.dds">
+                    <Dimensions x="420" y="32" />
+                    <Anchor point="TOP" relativeTo="$(parent)Description" relativePoint="BOTTOM" offsetY="10" />
+                </StatusBar>
+                <Label name="$(parent)Percent" font="ZoFontWinH1" color="1 1 1 1" horizontalAlignment="CENTER">
+                    <Dimensions x="100" y="40" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Bar" relativePoint="RIGHT" offsetX="12" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Gamepad UI -->
+        <TopLevelControl name="GS_WindowGP" hidden="true" mouseEnabled="true">
+            <Dimensions x="470" />
+            <Anchor point="TOPLEFT" relativeTo="ZO_GuildBankTopLevel_Gamepad" />
+            <Anchor point="BOTTOMLEFT" relativeTo="ZO_GuildBankTopLevel_Gamepad" />
+            <Controls>
+                <Texture name="$(parent)BG" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds">
+                    <AnchorFill />
+                    <TextureCoords left="0" right="1" top="0" bottom=".8125" />
+                </Texture>
+                <Texture name="$(parent)Icon">
+                    <Dimensions x="128" y="128" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" />
+                </Texture>
+                <Label name="$(parent)Description" font="ZoFontWinH2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SECOND_CONTRAST" horizontalAlignment="CENTER">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="8" offsetX="-300"/>
+                    <Dimensions x="600" y="50" />
+                </Label>
+                <StatusBar name="$(parent)Bar" minValue="0" maxValue="100" value="0" textureFile="EsoUI/Art/Miscellaneous/progressbar_genericFill.dds" textureFileLeadingEdge="EsoUI/Art/Miscellaneous/progressbar_genericFill_leadingEdge.dds">
+                    <Dimensions x="380" y="32" />
+                    <Anchor point="TOP" relativeTo="$(parent)Description" relativePoint="BOTTOM" offsetY="10" />
+                </StatusBar>
+                <Label name="$(parent)Percent" font="ZoFontWinH1" color="1 1 1 1" horizontalAlignment="CENTER">
+                    <Dimensions x="100" y="40" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Bar" relativePoint="RIGHT" offsetX="12" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

@@ -1,6 +1,6 @@
 ## Title: Cooldown Tracker
 ## Author: clubwratt
-## Version: 1.1.0
+## Version: 1.1.1
 ## APIVersion: 101049
 ## Description: Configurable tracker for proc set cooldowns with movable frames.
 ## ConsoleDependsOn: LibHarvensAddonSettings

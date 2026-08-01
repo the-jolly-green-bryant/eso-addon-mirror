@@ -1,9 +1,9 @@
 ## Title: NQOL-dev
 ## Author: unacntble
 ## APIVersion: 101050 101051
-## AddOnVersion: 263
-## LastProdVersionCommitID: 589119e
-## LastDevVersionCommitID: d3bcfe8
+## AddOnVersion: 274
+## LastProdVersionCommitID: 1eb9369
+## LastDevVersionCommitID: b3b3da2
 ## Description: Console-focused quality-of-life tools.
 ## SavedVariables: NQOLSavedVariablesDev
 ## OptionalDependsOn: LibFoodDrinkBuff LibCustomNames LibRecipe
@@ -26,6 +26,7 @@ Core/Settings.lua
 Core/Chat.lua
 Core/FirstRun.lua
 Data/WhatsNew.lua
+Data/CompanionRapport.lua
 Core/WhatsNew.lua
 Features/SlashCommands.lua
 Features/Mounts.lua
@@ -62,6 +63,7 @@ Features/Positioning.lua
 Features/LuaGc.lua
 Features/UltimateCountdown.lua
 Features/CombatInfiniteArchive.lua
+Features/CombatMiscellaneous.lua
 Features/BuffsDebuffsEffectIds.lua
 Features/BuffsDebuffs.lua
 UI/Ticker.xml

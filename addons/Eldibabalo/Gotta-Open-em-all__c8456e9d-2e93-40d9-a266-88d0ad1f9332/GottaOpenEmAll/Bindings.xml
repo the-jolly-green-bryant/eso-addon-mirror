@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<Bindings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esobindings.xsd">
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="SI_GOEA">
+      <Action name="OPEN_ALL_SURVEYS" rebindable="true">
+        <Down>return GottaOpenEmAll.OpenAll()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

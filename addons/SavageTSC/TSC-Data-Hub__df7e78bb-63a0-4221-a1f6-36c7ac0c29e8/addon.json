@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/SavageTSC/TSC-Data-Hub__df7e78bb-63a0-4221-a1f6-36c7ac0c29e8",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "SavageTSC",
+  "canonical_id": "bethesda:df7e78bb-63a0-4221-a1f6-36c7ac0c29e8",
+  "content_id": "df7e78bb-63a0-4221-a1f6-36c7ac0c29e8",
+  "deleted": false,
+  "fingerprint": "c36100049ba0b2abe2822c878b18176cc8c7e8685c8cfe47c2de01e96c225271",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "df7e78bb-63a0-4221-a1f6-36c7ac0c29e8",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/df7e78bb-63a0-4221-a1f6-36c7ac0c29e8",
+  "title": "TSC Data Hub"
+}

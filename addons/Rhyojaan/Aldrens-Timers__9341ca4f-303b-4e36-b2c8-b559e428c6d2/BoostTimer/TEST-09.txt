@@ -1,0 +1,30 @@
+Aldren's Timers 0.0.9 - PS5 Test
+
+Build source: Verified 0.0.8 upload.
+
+Change 1: Friendly timer labels
+1. Use a drink that creates Stamina Recovery or Magicka Recovery.
+2. Verify each matching timer displays "Drink" instead of the technical effect name.
+3. Use food that creates Increase Max Health, Max Magicka, or Max Stamina.
+4. Verify each matching timer displays "Food" instead of the technical effect name.
+5. Verify countdown values, sorting, maximum visible rows, and automatic panel height are unchanged.
+6. Unknown long timed effects should display "Other" rather than their technical effect name.
+
+Change 2: Share button
+1. Open Aldren's Timers settings.
+2. Select "Share Aldren's Timers".
+3. Verify the dialog title is "Share Aldren's Timers?".
+4. Verify the body says "This will post a recommendation in Zone Chat.".
+5. Select "No" and verify no chat message is prepared.
+6. Open the dialog again and select "Yes".
+7. Verify Zone Chat opens with this exact message prepared:
+
+Stop opening menus just to check your buff timers! Aldren's Timers keeps your food, drinks, potions, and scrolls visible right on your screen. Give it a try!
+
+8. Submit the prepared message using the normal PS5 chat control.
+9. Verify all 0.0.8 settings, menu hiding, panel placement, resizing, saved values, and timers still work.
+
+Confirmation text readability retest
+1. Open the Share Aldren's Timers confirmation on PS5.
+2. Verify the title, body message, Yes label, and No label are large and clearly readable.
+3. Verify the confirmation box still fits correctly and both buttons still work.

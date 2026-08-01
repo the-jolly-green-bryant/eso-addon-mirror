@@ -5,7 +5,7 @@ local Addon = LCMDemo
 
 Addon.name = "LCMDemo"
 Addon.displayName = "LCM Demo"
-Addon.version = "1.0.3"
+Addon.version = "1.0.6"
 
 Addon.defaults = {
 	enabled = true,
@@ -13,6 +13,7 @@ Addon.defaults = {
 	updateFrequency = 5,
 	profile = "balanced",
 	difficultyMode = "adventurer",
+	featureTags = { "ui", "combat" },
 	playerTag = "Demo",
 	showAlerts = true,
 	alertSound = true,
@@ -45,7 +46,11 @@ local function CopyDefaults()
 	local sv = Addon.sv
 	for key, value in pairs(Addon.defaults) do
 		if type(value) == "table" then
-			sv[key] = { value[1], value[2], value[3], value[4] }
+			local copy = {}
+			for i = 1, #value do
+				copy[i] = value[i]
+			end
+			sv[key] = copy
 		else
 			sv[key] = value
 		end
@@ -158,6 +163,7 @@ local function BuildMenu()
 			type = "dropdown",
 			name = "Challenge Style",
 			tooltip = "Open with A. Item tips update as you highlight options.",
+			align = "left",
 			choices = {
 				{ name = "Adventurer", value = "adventurer", tooltip = "A gentler overland experience." },
 				{ name = "Seasoned", value = "seasoned", tooltip = "Standard challenge for regular play." },
@@ -177,6 +183,28 @@ local function BuildMenu()
 				sv.difficultyMode = value
 			end,
 			default = defaults.difficultyMode,
+		},
+		{
+			type = "checklist",
+			name = "Feature Tags",
+			tooltip = "Open with A. Pick up to 3 tags (Home Tours style).",
+			choices = {
+				{ name = "UI", value = "ui", tooltip = "Interface and layout features." },
+				{ name = "Combat", value = "combat", tooltip = "Combat feedback and alerts." },
+				{ name = "Social", value = "social", tooltip = "Guild and group helpers." },
+				{ name = "Economy", value = "economy", tooltip = "Currency and inventory tools." },
+				{ name = "Housing", value = "housing", tooltip = "Home and furnishing tools." },
+			},
+			maxSelections = 3,
+			noSelectionText = "No Tags",
+			multiSelectionTextFormatter = "<<1[$d Tag/$d Tags]>>",
+			getFunc = function()
+				return sv.featureTags
+			end,
+			setFunc = function(values)
+				sv.featureTags = values
+			end,
+			default = defaults.featureTags,
 		},
 		{
 			type = "editbox",
@@ -418,3 +446,4 @@ local function OnAddOnLoaded(_, name)
 end
 
 EVENT_MANAGER:RegisterForEvent(Addon.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
+

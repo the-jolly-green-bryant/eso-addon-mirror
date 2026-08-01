@@ -15,7 +15,8 @@ local defaults = {
         size = 350,
         borderSize = 2,
         borderColor = { 0.5, 0.35, 0, 1 },
-        onFootZoom = 150,
+        zoneZoom = 150,
+        subzoneZoom = 150,
         mountedZoom = 110,
         areaLabelPosition = "right",
         areaLabelFont = NQOL.Util.GetDefaultFont(),
@@ -130,8 +131,10 @@ local function NormalizeSettings(settings)
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "verticalPosition", 0, 100)
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "size", VIEW_SIZE_MIN, VIEW_SIZE_MAX, true)
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "borderSize", BORDER_SIZE_MIN, BORDER_SIZE_MAX, true)
-    NQOL.Settings.ClampedNumber(settings, defaults.minimap, "onFootZoom", ZOOM_MIN, ZOOM_MAX, true)
+    NQOL.Settings.ClampedNumber(settings, defaults.minimap, "zoneZoom", ZOOM_MIN, ZOOM_MAX, true)
+    NQOL.Settings.ClampedNumber(settings, defaults.minimap, "subzoneZoom", ZOOM_MIN, ZOOM_MAX, true)
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "mountedZoom", ZOOM_MIN, ZOOM_MAX, true)
+    settings.onFootZoom = nil
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "areaLabelSize", AREA_LABEL_SIZE_MIN, AREA_LABEL_SIZE_MAX, true)
     local wayfinder = NQOL.Settings.EnsureTable(settings, "wayshrineWayfinder")
     NQOL.Settings.Boolean(wayfinder, defaults.minimap.wayshrineWayfinder, "enabled")
@@ -239,7 +242,13 @@ end
 
 local function GetActiveZoom()
     local settings = GetSettings()
-    return mounted and settings.mountedZoom or settings.onFootZoom
+    if mounted then
+        return settings.mountedZoom
+    end
+    if GetMapType() == MAPTYPE_SUBZONE then
+        return settings.subzoneZoom
+    end
+    return settings.zoneZoom
 end
 
 local function GetMapContentSize()
@@ -766,16 +775,30 @@ local function ApplyContainerLayout()
     ApplyCurrentMinimapDrawOrder()
 end
 
+local function FlushNativeMapRefreshQueue()
+    local control = WORLD_MAP_MANAGER and WORLD_MAP_MANAGER.control
+    local onUpdate = control and control:GetHandler("OnUpdate")
+    if onUpdate then
+        onUpdate(control, GetFrameTimeSeconds())
+    end
+end
+
 local function RefreshPlayerMap()
     if not containerAttached then
         return
     end
 
     ZO_WorldMapContainer:SetHidden(true)
+    local mapChanged = false
     if not DoesCurrentMapMatchMapForPlayerLocation() then
-        SetMapToPlayerLocation()
+        mapChanged = SetMapToPlayerLocation() == SET_MAP_RESULT_MAP_CHANGED
     end
-    ZO_WorldMap_UpdateMap()
+    if mapChanged then
+        CALLBACK_MANAGER:FireCallbacks("OnWorldMapChanged")
+    else
+        ZO_WorldMap_UpdateMap()
+    end
+    FlushNativeMapRefreshQueue()
     ApplyContainerLayout()
     ZO_WorldMapContainer:SetHidden(false)
 end
@@ -1026,6 +1049,15 @@ local function OnLocationChanged()
     end
 end
 
+local function OnSubzoneChanged()
+    OnLocationChanged()
+    if zo_callLater then
+        zo_callLater(RefreshPlayerMap, 0)
+    else
+        RefreshPlayerMap()
+    end
+end
+
 local function RegisterSceneCallback(scene)
     if scene then
         scene:RegisterCallback("StateChange", OnWorldMapSceneStateChanged)
@@ -1066,7 +1098,8 @@ local function RegisterRuntime()
     EVENT_MANAGER:RegisterForEvent("NQOL_MinimapPlayerActivated", EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
     EVENT_MANAGER:RegisterForEvent("NQOL_MinimapMountedStateChanged", EVENT_MOUNTED_STATE_CHANGED, OnMountedStateChanged)
     EVENT_MANAGER:RegisterForEvent("NQOL_MinimapCombatStateChanged", EVENT_PLAYER_COMBAT_STATE, OnCombatStateChanged)
-    EVENT_MANAGER:RegisterForEvent("NQOL_MinimapZoneChanged", EVENT_ZONE_CHANGED, OnLocationChanged)
+    EVENT_MANAGER:RegisterForEvent("NQOL_MinimapZoneChanged", EVENT_ZONE_CHANGED, OnSubzoneChanged)
+    EVENT_MANAGER:RegisterForEvent("NQOL_MinimapSubzoneListChanged", EVENT_CURRENT_SUBZONE_LIST_CHANGED, OnSubzoneChanged)
     EVENT_MANAGER:RegisterForEvent("NQOL_MinimapLinkedPositionChanged", EVENT_LINKED_WORLD_POSITION_CHANGED, OnLocationChanged)
     EVENT_MANAGER:RegisterForEvent("NQOL_MinimapScreenResized", EVENT_SCREEN_RESIZED, ApplyViewportLayout)
 end
@@ -1090,6 +1123,7 @@ local function UnregisterRuntime()
     EVENT_MANAGER:UnregisterForEvent("NQOL_MinimapMountedStateChanged", EVENT_MOUNTED_STATE_CHANGED)
     EVENT_MANAGER:UnregisterForEvent("NQOL_MinimapCombatStateChanged", EVENT_PLAYER_COMBAT_STATE)
     EVENT_MANAGER:UnregisterForEvent("NQOL_MinimapZoneChanged", EVENT_ZONE_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent("NQOL_MinimapSubzoneListChanged", EVENT_CURRENT_SUBZONE_LIST_CHANGED)
     EVENT_MANAGER:UnregisterForEvent("NQOL_MinimapLinkedPositionChanged", EVENT_LINKED_WORLD_POSITION_CHANGED)
     EVENT_MANAGER:UnregisterForEvent("NQOL_MinimapScreenResized", EVENT_SCREEN_RESIZED)
     runtimeRegistered = false
@@ -1471,17 +1505,32 @@ function Minimap.GetEnabledTooltip()
     return NQOL.L("features.minimap.enabled_tooltip_dynamic")
 end
 
-function Minimap.GetOnFootZoom()
-    return GetSettings().onFootZoom
+function Minimap.GetZoneZoom()
+    return GetSettings().zoneZoom
 end
 
-function Minimap.GetOnFootZoomDefault()
-    return defaults.minimap.onFootZoom
+function Minimap.GetZoneZoomDefault()
+    return defaults.minimap.zoneZoom
 end
 
-function Minimap.SetOnFootZoom(value)
-    GetSettings().onFootZoom = NQOL.Util.Clamp(NQOL.Util.Round(value), ZOOM_MIN, ZOOM_MAX)
-    if initialized and containerAttached and not mounted then
+function Minimap.SetZoneZoom(value)
+    GetSettings().zoneZoom = NQOL.Util.Clamp(NQOL.Util.Round(value), ZOOM_MIN, ZOOM_MAX)
+    if initialized and containerAttached and not mounted and GetMapType() ~= MAPTYPE_SUBZONE then
+        ApplyContainerLayout()
+    end
+end
+
+function Minimap.GetSubzoneZoom()
+    return GetSettings().subzoneZoom
+end
+
+function Minimap.GetSubzoneZoomDefault()
+    return defaults.minimap.subzoneZoom
+end
+
+function Minimap.SetSubzoneZoom(value)
+    GetSettings().subzoneZoom = NQOL.Util.Clamp(NQOL.Util.Round(value), ZOOM_MIN, ZOOM_MAX)
+    if initialized and containerAttached and not mounted and GetMapType() == MAPTYPE_SUBZONE then
         ApplyContainerLayout()
     end
 end
@@ -1509,12 +1558,20 @@ function Minimap.GetZoomMax()
     return ZOOM_MAX
 end
 
-function Minimap.GetOnFootZoomLabel()
-    return NQOL.L("features.minimap.on_foot_zoom_label")
+function Minimap.GetZoneZoomLabel()
+    return NQOL.L("features.minimap.zone_zoom_label")
 end
 
-function Minimap.GetOnFootZoomTooltip()
-    return NQOL.L("features.minimap.on_foot_zoom_tooltip")
+function Minimap.GetZoneZoomTooltip()
+    return NQOL.L("features.minimap.zone_zoom_tooltip")
+end
+
+function Minimap.GetSubzoneZoomLabel()
+    return NQOL.L("features.minimap.subzone_zoom_label")
+end
+
+function Minimap.GetSubzoneZoomTooltip()
+    return NQOL.L("features.minimap.subzone_zoom_tooltip")
 end
 
 function Minimap.GetMountedZoomLabel()

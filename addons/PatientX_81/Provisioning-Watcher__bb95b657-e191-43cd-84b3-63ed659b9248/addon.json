@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/PatientX_81/Provisioning-Watcher__bb95b657-e191-43cd-84b3-63ed659b9248",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "PatientX_81",
+  "canonical_id": "bethesda:bb95b657-e191-43cd-84b3-63ed659b9248",
+  "content_id": "bb95b657-e191-43cd-84b3-63ed659b9248",
+  "deleted": false,
+  "fingerprint": "fba7dd573db91bbc1d18ce732772c9fbce19361c1f8d6b38d9cfd0118f35b341",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "bb95b657-e191-43cd-84b3-63ed659b9248",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/bb95b657-e191-43cd-84b3-63ed659b9248",
+  "title": "Provisioning Watcher"
+}

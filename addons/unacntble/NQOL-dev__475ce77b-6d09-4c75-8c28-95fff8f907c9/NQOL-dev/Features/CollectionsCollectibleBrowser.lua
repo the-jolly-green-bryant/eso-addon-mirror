@@ -30,6 +30,11 @@ function CollectionsCollectibleBrowser.Create(config)
         PANE_GAP = 18,
         PORTRAIT_STATUS_HEIGHT = 42,
         PORTRAIT_MAX_SIZE = 112,
+        DETAIL_COLUMNS_GAP = 18,
+        DETAIL_COLUMNS_HEADER_HEIGHT = 34,
+        DETAIL_COLUMN_FONT_MAX = 18,
+        DETAIL_COLUMN_FONT_MIN = 10,
+        DETAIL_COLUMN_MEASURE_HEIGHT = 2400,
         SCROLL_ARROW_GUTTER = 30,
         ROW_GAP = 4,
         INPUT_DEADZONE = 0.34,
@@ -37,8 +42,9 @@ function CollectionsCollectibleBrowser.Create(config)
         INPUT_REPEAT_DELAY_MS = 95,
         MIN_WIDTH = 900,
         MAX_WIDTH = 1420,
-        MIN_HEIGHT = 540,
-        MAX_HEIGHT = 820,
+        MIN_HEIGHT = tonumber(config.minHeight) or 540,
+        MAX_HEIGHT = tonumber(config.maxHeight) or 820,
+        HEIGHT_RATIO = tonumber(config.heightRatio) or 0.80,
     }
 
     local COLORS = {
@@ -422,7 +428,7 @@ function CollectionsCollectibleBrowser.Create(config)
         local availableWidth = math.max((screenWidth - (C.SCREEN_MARGIN * 2)) / scale, C.MIN_WIDTH)
         local availableHeight = math.max((screenHeight - (C.SCREEN_MARGIN * 2)) / scale, C.MIN_HEIGHT)
         local width = Clamp(math.floor(availableWidth * 0.86), C.MIN_WIDTH, C.MAX_WIDTH)
-        local height = Clamp(math.floor(availableHeight * 0.80), C.MIN_HEIGHT, C.MAX_HEIGHT)
+        local height = Clamp(math.floor(availableHeight * C.HEIGHT_RATIO), C.MIN_HEIGHT, C.MAX_HEIGHT)
         local innerWidth = width - (C.PADDING * 2)
         local contentTop = C.PADDING + C.HEADER_HEIGHT
         local contentHeight = height - contentTop - C.FOOTER_HEIGHT - C.PADDING
@@ -532,6 +538,20 @@ function CollectionsCollectibleBrowser.Create(config)
         hud.details = CreateLabel(hud.rightViewport, -4, COLORS.text)
         hud.details:SetVerticalAlignment(TEXT_ALIGN_TOP)
         if hud.details.SetWrapMode and TEXT_WRAP_MODE_TRUNCATE then hud.details:SetWrapMode(TEXT_WRAP_MODE_TRUNCATE) end
+        if config.buildDetailColumns then
+            hud.detailLeftHeading = CreateLabel(hud.rightViewport, -4, COLORS.complete)
+            hud.detailLeftHeading:SetVerticalAlignment(TEXT_ALIGN_TOP)
+            hud.detailRightHeading = CreateLabel(hud.rightViewport, -4, COLORS.missing)
+            hud.detailRightHeading:SetVerticalAlignment(TEXT_ALIGN_TOP)
+            hud.detailLeft = CreateLabel(hud.rightViewport, -8, COLORS.complete)
+            hud.detailLeft:SetVerticalAlignment(TEXT_ALIGN_TOP)
+            hud.detailRight = CreateLabel(hud.rightViewport, -8, COLORS.missing)
+            hud.detailRight:SetVerticalAlignment(TEXT_ALIGN_TOP)
+            if TEXT_WRAP_MODE_TRUNCATE then
+                if hud.detailLeft.SetWrapMode then hud.detailLeft:SetWrapMode(TEXT_WRAP_MODE_TRUNCATE) end
+                if hud.detailRight.SetWrapMode then hud.detailRight:SetWrapMode(TEXT_WRAP_MODE_TRUNCATE) end
+            end
+        end
 
         hud.empty = CreateLabel(hud.leftViewport, -1, COLORS.textMuted, TEXT_ALIGN_CENTER)
         hud.footerDivider = WINDOW_MANAGER:CreateControl(nil, hud.control, CT_TEXTURE)
@@ -559,6 +579,10 @@ function CollectionsCollectibleBrowser.Create(config)
         hud.status:SetFont(GetFont(-3))
         hud.meta:SetFont(GetFont(-4))
         hud.details:SetFont(GetFont(-4))
+        if hud.detailLeftHeading then
+            hud.detailLeftHeading:SetFont(GetFont(-4))
+            hud.detailRightHeading:SetFont(GetFont(-4))
+        end
         hud.empty:SetFont(GetFont(-1))
         hud.hint:SetFont(GetFont(-4))
         for _, row in ipairs(hud.listRows or {}) do
@@ -807,6 +831,79 @@ function CollectionsCollectibleBrowser.Create(config)
         hud.currentPhotoPath = nil
     end
 
+    local function HideDetailColumns()
+        if not hud.detailLeft then return end
+        hud.detailLeftHeading:SetHidden(true)
+        hud.detailRightHeading:SetHidden(true)
+        hud.detailLeft:SetHidden(true)
+        hud.detailRight:SetHidden(true)
+    end
+
+    local function MeasureDetailColumn(label, text, width, fontSize)
+        if not text or text == "" then return 0 end
+        label:SetFont(GetFont(fontSize - DEFAULT_FONT_SIZE))
+        label:SetText(text)
+        label:SetDimensions(width, C.DETAIL_COLUMN_MEASURE_HEIGHT)
+        return label.GetTextHeight and math.ceil(label:GetTextHeight()) or 0
+    end
+
+    local function RenderDetailColumns(record, detailTextHeight)
+        if not hud.detailLeft or not config.buildDetailColumns then return end
+        local columns = config.buildDetailColumns(record)
+        local left = columns and columns.left or nil
+        local right = columns and columns.right or nil
+        if not left and not right then
+            HideDetailColumns()
+            return
+        end
+
+        local layout = hud.layout
+        local columnWidth = math.floor((layout.rightWidth - C.DETAIL_COLUMNS_GAP) * 0.5)
+        local leftText = left and left.text or ""
+        local rightText = right and right.text or ""
+        local leftMinimumHeight = MeasureDetailColumn(hud.detailLeft, leftText, columnWidth, C.DETAIL_COLUMN_FONT_MIN)
+        local rightMinimumHeight = MeasureDetailColumn(hud.detailRight, rightText, columnWidth, C.DETAIL_COLUMN_FONT_MIN)
+        local minimumBodyHeight = math.max(leftMinimumHeight, rightMinimumHeight)
+        local preferredTop = math.max(170, 110 + detailTextHeight + C.DETAIL_COLUMNS_GAP)
+        local latestTop = math.max(170, layout.viewportHeight - C.DETAIL_COLUMNS_HEADER_HEIGHT - minimumBodyHeight)
+        local columnTop = math.min(preferredTop, latestTop)
+        local bodyTop = columnTop + C.DETAIL_COLUMNS_HEADER_HEIGHT
+        local bodyHeight = math.max(layout.viewportHeight - bodyTop, 1)
+        local columnFontSize = C.DETAIL_COLUMN_FONT_MIN
+        for fontSize = C.DETAIL_COLUMN_FONT_MAX, C.DETAIL_COLUMN_FONT_MIN, -1 do
+            local leftHeight = MeasureDetailColumn(hud.detailLeft, leftText, columnWidth, fontSize)
+            local rightHeight = MeasureDetailColumn(hud.detailRight, rightText, columnWidth, fontSize)
+            if math.max(leftHeight, rightHeight) <= bodyHeight or fontSize == C.DETAIL_COLUMN_FONT_MIN then
+                columnFontSize = fontSize
+                break
+            end
+        end
+
+        local function LayoutColumn(heading, label, data, x)
+            local visible = data and data.text and data.text ~= ""
+            heading:SetHidden(not visible)
+            label:SetHidden(not visible)
+            if not visible then return end
+            SetColor(heading, data.color or COLORS.text)
+            SetColor(label, data.color or COLORS.text)
+            heading:ClearAnchors()
+            heading:SetDimensions(columnWidth, C.DETAIL_COLUMNS_HEADER_HEIGHT)
+            heading:SetAnchor(TOPLEFT, hud.rightViewport, TOPLEFT, x, columnTop)
+            heading:SetText(data.heading or "")
+            label:ClearAnchors()
+            label:SetAnchor(TOPLEFT, hud.rightViewport, TOPLEFT, x, bodyTop)
+            label:SetFont(GetFont(columnFontSize - DEFAULT_FONT_SIZE))
+            label:SetText(data.text)
+            label:SetDimensions(columnWidth, bodyHeight)
+        end
+
+        LayoutColumn(hud.detailLeftHeading, hud.detailLeft, left, 0)
+        LayoutColumn(hud.detailRightHeading, hud.detailRight, right, columnWidth + C.DETAIL_COLUMNS_GAP)
+
+        local detailHeight = math.max(columnTop - 110 - C.DETAIL_COLUMNS_GAP, 1)
+        hud.details:SetHeight(detailHeight)
+    end
+
     local function RenderCollectibleDetails(record)
         if not record then
             ReleasePhotoTexture()
@@ -817,8 +914,20 @@ function CollectionsCollectibleBrowser.Create(config)
             hud.status:SetText("")
             hud.meta:SetText("")
             hud.details:SetText("")
+            HideDetailColumns()
             return
         end
+
+        local layout = hud.layout
+        hud.collectibleName:SetText(record.displayName)
+        local collectibleNameHeight = hud.collectibleName.GetTextHeight and math.ceil(hud.collectibleName:GetTextHeight()) or (DEFAULT_FONT_SIZE + 4)
+        hud.collectibleName:SetHeight(Clamp(collectibleNameHeight, 1, 58))
+
+        hud.details:ClearAnchors()
+        hud.details:SetDimensions(layout.detailWidth, math.max(layout.viewportHeight - 110, 40))
+        hud.details:SetAnchor(TOPLEFT, hud.rightViewport, TOPLEFT, 0, 110)
+        hud.details:SetFont(GetFont(-4))
+        SetColor(hud.details, COLORS.text)
 
         local portraitPath, textureRight = GetPortrait(record)
         local hasImage = portraitPath ~= ""
@@ -846,14 +955,15 @@ function CollectionsCollectibleBrowser.Create(config)
             hud.photoPlaceholder:SetHidden(false)
         end
 
-        hud.collectibleName:SetText(record.displayName)
-        local collectibleNameHeight = hud.collectibleName.GetTextHeight and math.ceil(hud.collectibleName:GetTextHeight()) or (DEFAULT_FONT_SIZE + 4)
-        hud.collectibleName:SetHeight(Clamp(collectibleNameHeight, 1, 58))
         hud.status:SetText(showActiveStatus and record.isActive and NQOL.L("common.active") or showActiveStatus and record.isSuppressed and NQOL.L("common.selected") or record.isAcquired and NQOL.L("common.acquired") or NQOL.L("common.not_acquired"))
         SetColor(hud.status, record.isAcquired and COLORS.complete or COLORS.missing)
         hud.meta:SetText(record.categoryName)
 
+        hud.details:SetDimensions(layout.detailWidth, C.DETAIL_COLUMN_MEASURE_HEIGHT)
         hud.details:SetText(record.detailText)
+        local detailTextHeight = hud.details.GetTextHeight and math.ceil(hud.details:GetTextHeight()) or 0
+        hud.details:SetHeight(math.max(math.min(detailTextHeight, layout.viewportHeight - 110), 1))
+        RenderDetailColumns(record, detailTextHeight)
     end
 
     local function GetBindingIcon(actionName, fallback)

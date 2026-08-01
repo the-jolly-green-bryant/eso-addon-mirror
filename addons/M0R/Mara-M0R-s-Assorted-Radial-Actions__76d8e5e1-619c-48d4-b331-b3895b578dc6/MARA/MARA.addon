@@ -1,0 +1,11 @@
+## Title: |cFFD700Mara|r: |cE0B0FFM0R's Assorted Radial Actions|r
+## APIVersion: 101050
+## Version: 6
+## AddOnVersion: 6
+## Description: A bunch of random actions/scripts
+## Author: |c0DC1CF@M0R_Gaming|r
+## DependsOn: LibRadialMenu
+## OptionalDependsOn: WizardsWardrobe
+
+DTR.lua
+main.lua

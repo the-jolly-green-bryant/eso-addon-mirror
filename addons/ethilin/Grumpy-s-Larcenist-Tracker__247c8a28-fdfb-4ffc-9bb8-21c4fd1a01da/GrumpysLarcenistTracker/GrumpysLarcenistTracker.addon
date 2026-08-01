@@ -1,0 +1,11 @@
+## Title: Grumpy's Larcenist Tracker
+## APIVersion: 101049
+## Version: 1.0.0
+## Author: Gemini AI (for GrumpyEthilin)
+## Description: A lightweight tracker for fencing achievements across all zones.
+## SavedVariables: GET_LarcenistTracker_Vars
+## IsLibrary: false
+## IsConsoleAddOn: 1
+## IsConsoleAddOnAllPlatforms: 1
+
+GrumpysLarcenistTracker.lua

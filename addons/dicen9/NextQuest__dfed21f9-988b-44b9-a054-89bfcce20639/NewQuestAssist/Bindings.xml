@@ -1,0 +1,14 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="New Quest Assist">
+            <!-- Jumps to the quest you just accepted -->
+            <Action name="NEWQUESTASSIST_ASSIST_NEWEST">
+                <Down>NewQuestAssist_AssistNewest()</Down>
+            </Action>
+            <!-- Turns the Cycle-button jump behaviour on/off in-game -->
+            <Action name="NEWQUESTASSIST_TOGGLE_OVERLOAD">
+                <Down>NewQuestAssist_ToggleOverload()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

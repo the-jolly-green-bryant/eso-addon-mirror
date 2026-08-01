@@ -40,11 +40,11 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Unknown Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kadeer/Unknown-Tracker__2325) | kadeer | PC / Mac | v0.79 |
 | [UnknownFilter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Xarador/UnknownFilter__670babe5-297e-4cb3-88d6-cda790275d1a) | Xarador | Console | — |
 | [Unlimited Camera Zoom](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaptainBlagbird/Unlimited-Camera-Zoom__1273) | CaptainBlagbird | PC / Mac | 1.0.15 |
-| [Unofficial U49 Camera Settings](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Murfiex/Unofficial-U49-Camera-Settings__a00e3e80-0ad4-406b-bc48-322f6244f725) | Murfiex | Console | — |
+| [Unofficial U49 Camera Settings](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/murphyx/Unofficial-U49-Camera-Settings__a00e3e80-0ad4-406b-bc48-322f6244f725) | murphyx | Console | — |
 | [UnstableUnicornGuildGrabber](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ragingpix3l/UnstableUnicornGuildGrabber__2751) | ragingpix3l | PC / Mac | 0.10 |
 | [UnstuffMyBags](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/UnstuffMyBags__640) | manavortex | PC / Mac | 1.8a |
 | [Untaunted](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solinur/Untaunted__1475) | Solinur | PC / Mac | 1.1.5 |
-| [Update 47 Tweaker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Murfiex/Update-47-Tweaker__50a4c919-aff0-4475-8614-eb2576d6b6d9) | Murfiex | Console | — |
+| [Update 47 Tweaker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/murphyx/Update-47-Tweaker__50a4c919-aff0-4475-8614-eb2576d6b6d9) | murphyx | Console | — |
 | [Update Furniture Cache](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Update-Furniture-Cache__1597) | manavortex | PC / Mac | 1.0 |
 | [UpExperienceBar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/fisicorj/UpExperienceBar__3958) | fisicorj | PC / Mac | 2.1 |
 | [Urich's Coffer Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/fritzOSU03/Urich-s-Coffer-Timer__1661) | fritzOSU03 | PC / Mac | 2.1.0 |
@@ -52,8 +52,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Urich's Coffer Timer - greymoor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Matt_Eweroun/Urich-s-Coffer-Timer---greymoor__2691) | Matt_Eweroun | PC / Mac | 3.1.1 |
 | [Urich's Hireling Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/fritzOSU03/Urich-s-Hireling-Timer__1841) | fritzOSU03 | PC / Mac | 2.1.0 |
 | [Urich's Skill Point Finder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/fritzOSU03/Urich-s-Skill-Point-Finder__1863) | fritzOSU03 | PC / Mac | 7.5.0 |
-| [Usable Containers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Community/Usable-Containers__9237369e-344f-4e5c-8966-b0f04b0be2c9) | Community | Console | — |
-| [use buff group panels to track pilly cd now](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unknown/use-buff-group-panels-to-track-pilly-cd-now__64f89b81-db7d-4b9c-9027-3f6185a2d96c) | Unknown | Console | — |
+| [Usable Containers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dicen9/Usable-Containers__9237369e-344f-4e5c-8966-b0f04b0be2c9) | dicen9 | Console | — |
+| [use buff group panels to track pilly cd now](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NamesJacks/use-buff-group-panels-to-track-pilly-cd-now__64f89b81-db7d-4b9c-9027-3f6185a2d96c) | NamesJacks | Console | — |
 | [Use Ultimate Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eymix/Use-Ultimate-Reminder__2538) | Eymix | PC / Mac | 5.3 |
 | [UseWarmaskYouFool](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Pit_Eso/UseWarmaskYouFool__4722) | Pit_Eso | PC / Mac | 1.0.0 |
 | [USPF - Greymoor Patch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sir-Quackberry/USPF---Greymoor-Patch__2761) | Sir Quackberry | PC / Mac | v1.0.0 |

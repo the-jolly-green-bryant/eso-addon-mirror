@@ -1,0 +1,8 @@
+## Title: Title Loop
+## Author: Copper
+## Version: 1.0.8
+## APIVersion: 101050
+## AddOnVersion: 1008
+## Description: Adds per-character favorite titles plus Random Favorite Title and Cycle Favorite Title rotation entries with seconds/minutes timer controls.
+## SavedVariables: TitleLoopSavedVariables
+TitleLoop.lua

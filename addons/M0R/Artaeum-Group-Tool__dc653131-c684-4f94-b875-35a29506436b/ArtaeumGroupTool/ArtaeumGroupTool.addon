@@ -1,0 +1,17 @@
+## Title: |cFFD700Artaeum Group Tool|r
+## APIVersion:  101048
+## Version: 6.1.3 - Console
+## AddOnVersion: 613
+## Description: A toolset for groups, including a custom group frame!
+## Author: |c0DC1CF@M0R_Gaming|r
+## SavedVariables: ADVars
+## DependsOn: LibAddonMenu-2.0>=40 LibGroupBroadcast>=91 LibGroupResources>=91 LibGroupCombatStats LibRadialMenu
+
+ADGroupTool.lua
+modules/AD_Settings.lua
+Textures/ArtaeumGroupTool.xml
+utils/AD_3D.lua
+utils/AD_Frames.lua
+modules/AD_GroupShare.lua
+modules/AD_CrownArrow.lua
+bindings.xml

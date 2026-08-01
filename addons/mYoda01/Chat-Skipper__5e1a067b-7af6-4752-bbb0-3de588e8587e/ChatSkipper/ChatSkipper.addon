@@ -1,0 +1,17 @@
+## Title: ChatSkipper
+## Author: myoda01
+## AddOnVersion: 100
+## Version: 1.0
+## Description: Skips conversations. Similar to QuestSkipper PC Addon
+## APIVersion: 101048 101049
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: ChatSkipperVars
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.
+
+ChatSkipper.lua
+ChatSkipperSettings.lua
+bindings.xml
+bindings.lua

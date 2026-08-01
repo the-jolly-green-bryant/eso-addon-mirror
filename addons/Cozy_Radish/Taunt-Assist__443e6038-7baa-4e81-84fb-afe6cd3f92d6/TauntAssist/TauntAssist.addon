@@ -1,0 +1,8 @@
+## Title: TauntAssist
+## Author: Cozy
+## Version: 0.6
+## AddOnVersion: 6
+## APIVersion: 101047
+## OptionalDependsOn: LibHarvensAddonSettings LibAddonMenu
+
+TauntAssist.lua

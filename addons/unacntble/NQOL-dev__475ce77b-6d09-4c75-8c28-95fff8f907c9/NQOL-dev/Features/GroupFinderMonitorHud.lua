@@ -186,7 +186,6 @@ end
 
 local function GetRowAccent(data)
     if data.isAlarm then return C.ALARM_COLOR end
-    if data.isNew then return C.NEW_COLOR end
     if data.isVeteran then return C.VETERAN_COLOR end
     if data.primary ~= "" then return C.NORMAL_COLOR end
     return C.OTHER_COLOR
@@ -254,6 +253,9 @@ local function RenderRow(row, data, width, y, rowHeight, fontChoice, textColor)
         details = data.title
     elseif data.title ~= "" and data.activity ~= data.title then
         details = data.activity
+    end
+    if data.leader and data.leader ~= "" then
+        details = details ~= "" and string.format("%s · %s", data.leader, details) or data.leader
     end
     row.details:SetFont(GetFont(-8, fontChoice))
     row.details:SetText(details)

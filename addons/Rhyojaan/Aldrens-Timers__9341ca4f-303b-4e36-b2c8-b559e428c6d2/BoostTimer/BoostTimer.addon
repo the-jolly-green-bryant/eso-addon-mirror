@@ -1,0 +1,9 @@
+## Title: Aldren's Timers
+## Description: A small always-visible timer for active consumable boosts.
+## Author: Aldren Project
+## Version: 0.0.14
+## APIVersion: 101047
+## SavedVariables: AldrensTimersSavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+
+BoostTimer.lua

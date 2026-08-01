@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/SolinurAddons/LibCombat2__96103ec3-3c4e-4865-be32-cc3b57df04d0",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "SolinurAddons",
+  "canonical_id": "bethesda:96103ec3-3c4e-4865-be32-cc3b57df04d0",
+  "content_id": "96103ec3-3c4e-4865-be32-cc3b57df04d0",
+  "deleted": false,
+  "fingerprint": "3d0528058c73fb50d2f7ac1a92c798b320ad4a411f47a4f3e06e15ff5249f115",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "96103ec3-3c4e-4865-be32-cc3b57df04d0",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/96103ec3-3c4e-4865-be32-cc3b57df04d0",
+  "title": "LibCombat2"
+}

@@ -1,0 +1,13 @@
+## Title: Rotation Helper
+## Author: YourName
+## Version: 1.0.0
+## APIVersion: 101046 101047
+## Description: DDR-style rotation helper that tracks light attacks, skills, bar swaps, and potions. Calculates light attack miss percentage. Console compatible.
+## SavedVariables: RotationHelperSavedVars
+## OptionalDependsOn: LibAddonMenu-2.0
+## DependsOn:
+## IsLibrary: false
+
+RotationHelper.lua
+SkillDatabase.lua
+RotationHelper.xml

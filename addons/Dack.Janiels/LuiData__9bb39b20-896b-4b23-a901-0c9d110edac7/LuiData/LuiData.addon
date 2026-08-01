@@ -1,0 +1,136 @@
+## APIVersion: 101050 101051
+## Title: LuiData
+## Author: @dack_janiels[PC]
+## LegacyAuthors: ArtOfShred, psypanda, Saenic & SpellBuilder
+## AddOnVersion: 7226
+## Version: 7.2.2.6
+## Description: Provides data for LuiExtended.
+## DependsOn: LuiMedia>=7133
+## IsLibrary: true
+
+lang/default.lua
+lang/$(language).lua
+
+# Core Data Files
+src/Globals.lua
+src/_data_namespace.lua
+src/AbilityTables.lua
+src/Tooltips.lua
+PC/IconFrameColorSamples.lua
+src/UnitNamesTable.lua
+src/ZoneNamesTable.lua
+
+# Effects - Core
+Effects/IsFoodBuff.lua
+Effects/IsDrinkBuff.lua
+Effects/KeepUpgradeOverride.lua
+Effects/KeepUpgradeTooltip.lua
+Effects/MapDataOverride.lua
+Effects/MergeId.lua
+Effects/MergeName.lua
+Effects/Misc.lua
+Effects/Override.lua
+Effects/OffBalance.lua
+Effects/OverrideByName.lua
+Effects/PullDuration.lua
+Effects/PullStacks.lua
+Effects/SourceOverride.lua
+Effects/SynergyNameOverride.lua
+Effects/TooltipUseDefault.lua
+Effects/ZoneBuffs.lua
+Effects/ZoneDataOverride.lua
+Effects/AddNameAura.lua
+Effects/AddNameOnBossEngaged.lua
+Effects/AddNameOnEvent.lua
+Effects/AddStackOnEvent.lua
+Effects/ArtificialEffectOverride.lua
+Effects/AssistantIcons.lua
+Effects/OakenSoul.lua
+
+# Effects - Bar Highlight
+Effects/BarHighlight/AddNoDurationBarHighlight.lua
+Effects/BarHighlight/BarHighlightCheckOnFade.lua
+Effects/BarHighlight/BarHighlightCruxMap.lua
+Effects/BarHighlight/BarHighlightDestroFix.lua
+Effects/BarHighlight/BarHighlightExtraId.lua
+Effects/BarHighlight/BarHighlightSlottedMajorCap.lua
+Effects/BarHighlight/BarHighlightOverride.lua
+Effects/BarHighlight/BarHighlightStack.lua
+Effects/BarHighlight/BarHighlightStackFromCast.lua
+Effects/BarHighlight/BarHighlightSkullCharge.lua
+Effects/BarHighlight/BarHighlightTaunt.lua
+Effects/CompanionAbilityTrack.lua
+Effects/BarHighlight/BarIdOverride.lua
+Effects/BarHighlight/HasAbilityProc.lua
+Effects/BarHighlight/IsAbilityActiveGlow.lua
+Effects/BarHighlight/IsAbilityActiveHighlight.lua
+Effects/BarHighlight/IsBloodFrenzy.lua
+Effects/BarHighlight/IsGrimFocus.lua
+Effects/BarHighlight/MajorMinor.lua
+Effects/BarHighlight/RemoveAbilityActiveHighlight.lua
+
+# Effects - Misc
+Effects/CreateSkillAura.lua
+Effects/DisguiseIcons.lua
+
+# Effects - Fake Effects
+Effects/Fake/FakeAddGroundDamageAura.lua
+Effects/Fake/FakeEffectGroundDisplay.lua
+Effects/Fake/FakeExternalBuffs.lua
+Effects/Fake/FakeExternalDebuffs.lua
+Effects/Fake/FakePlayerBuffs.lua
+Effects/Fake/FakePlayerDebuffs.lua
+Effects/Fake/FakePlayerOfflineAura.lua
+Effects/Fake/FakeStagger.lua
+
+# Effects - Keep Upgrades
+Effects/HideSCT.lua
+Effects/KeepUpgradeAlliance.lua
+Effects/KeepUpgradeNameFix.lua
+
+# Combat and Collectibles
+src/CastBarTable.lua
+src/CollectibleTables.lua
+src/CombatTextConstants.lua
+
+# Alert System
+AlertTable/AlertTable.lua
+AlertTable/InfiniteArchive.lua
+AlertTable/TrialSupplementAlerts.lua
+AlertTable/BossNameConvert.lua
+AlertTable/MapOverride.lua
+AlertTable/ZoneOverride.lua
+AlertTable/ZoneTable.lua
+
+# Crowd Control
+CrowdControl/aoeNPCBoss.lua
+CrowdControl/aoeNPCElite.lua
+CrowdControl/aoeNPCNormal.lua
+CrowdControl/aoePlayerNormal.lua
+CrowdControl/aoePlayerSet.lua
+CrowdControl/aoePlayerUltimate.lua
+CrowdControl/aoeTraps.lua
+CrowdControl/IgnoreList.lua
+CrowdControl/IgnoreListSupplement.lua
+CrowdControl/LavaAlerts.lua
+CrowdControl/ReversedLogic.lua
+CrowdControl/SpecialCC.lua
+
+# Misc Data
+src/Quests.lua
+src/PetNames.lua
+src/AbilityBlacklistPresets.lua
+src/CombatTextBlacklistPresets.lua
+src/CrownStoreCollectibles.lua
+
+
+# Debug
+Debug/DebugAuras.lua
+Debug/DebugResults.lua
+Debug/DebugStatus.lua
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+# All rights reserved
+#
+# You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

@@ -1,0 +1,13 @@
+1.0.0 "Lite" version of HodorReflexesIconExtension. Does not support Hodor/Ody's.
+
+1.0.1 AVA Capture Alliance icon resize (at request of @Bislobo).
+
+1.1.0 Made esouiart.lua file for easier upkeep between addons and made the icons/art a Libary (LibShogrinArt).
+
+1.1.1 Added some system icons, enhanced some ShogrinUI icons. Removed LibShogrinArt dependency until I get it working correctly.
+
+1.1.2 API versioning update. Added version, author, name variables for future.
+
+1.1.4 Added Arcanist and SMC Guild Halls.
+
+1.1.5 Added extra GP support for console.

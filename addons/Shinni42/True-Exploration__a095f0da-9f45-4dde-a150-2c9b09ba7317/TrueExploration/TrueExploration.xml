@@ -1,0 +1,5 @@
+<GuiXml>
+    <Controls>
+        <Texture name="TE_MapTile" textureFile="EsoUI/Art/WorldMap/worldmap_map_background_512tile.dds" pixelRoundingEnabled="false" level="2" virtual="true" />
+    </Controls>
+</GuiXml>

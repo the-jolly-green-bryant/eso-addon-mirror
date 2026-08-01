@@ -1,0 +1,24 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|cE8C05CGuild Activity Tracker|r">
+            <Action name="GAT_TOGGLE">
+                <Down>GAT:ToggleWindow()</Down>
+            </Action>
+            <Action name="GAT_NEXT_TAB">
+                <Down>GAT_UI:KeyNextTab()</Down>
+            </Action>
+            <Action name="GAT_PREV_TAB">
+                <Down>GAT_UI:KeyPrevTab()</Down>
+            </Action>
+            <Action name="GAT_SCROLL_DOWN">
+                <Down>GAT_UI:KeyScrollDown()</Down>
+            </Action>
+            <Action name="GAT_SCROLL_UP">
+                <Down>GAT_UI:KeyScrollUp()</Down>
+            </Action>
+            <Action name="GAT_CLOSE">
+                <Down>GAT_UI:Hide()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

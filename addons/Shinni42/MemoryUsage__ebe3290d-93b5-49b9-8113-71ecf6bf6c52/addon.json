@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Shinni42/MemoryUsage__ebe3290d-93b5-49b9-8113-71ecf6bf6c52",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Shinni42",
+  "canonical_id": "bethesda:ebe3290d-93b5-49b9-8113-71ecf6bf6c52",
+  "content_id": "ebe3290d-93b5-49b9-8113-71ecf6bf6c52",
+  "deleted": false,
+  "fingerprint": "52be838a410cda4be0e36888c30a89df28110256a3484e4a8ea8dd77d1628ac5",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "ebe3290d-93b5-49b9-8113-71ecf6bf6c52",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/ebe3290d-93b5-49b9-8113-71ecf6bf6c52",
+  "title": "MemoryUsage"
+}

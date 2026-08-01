@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/ReliktKoala/Guild-Trader-Tracker__f2495833-84b0-4142-8a25-f2063d0f0a23",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "ReliktKoala",
+  "canonical_id": "bethesda:f2495833-84b0-4142-8a25-f2063d0f0a23",
+  "content_id": "f2495833-84b0-4142-8a25-f2063d0f0a23",
+  "deleted": false,
+  "fingerprint": "5f3d7c79c3f14d131222f60b2388f4461ba5df863fa91cd82cf19734e34b6893",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "f2495833-84b0-4142-8a25-f2063d0f0a23",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/f2495833-84b0-4142-8a25-f2063d0f0a23",
+  "title": "Guild Trader Tracker"
+}

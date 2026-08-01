@@ -1,0 +1,9 @@
+## Title: Dark Mode ESO
+## Description: Transforms ESO's UI into a sleek dark theme. Darkens all major UI panels, health bar outlines, compass, and other interface elements.
+## Author: |c9933FFRogue0rbit|r
+## Version: 1.0.0
+## APIVersion: 101048
+## SavedVariables: DarkModeESO_SavedVariables
+## OptionalDependsOn: LibHarvensAddonSettings
+
+DarkModeESO.lua

@@ -1,0 +1,18 @@
+## Title: True Exploration
+## APIVersion: 101046
+## Version: 2.3
+## AddOnVersion: 203
+## Author: Shinni
+## SavedVariables: TE_SavedVars
+## ConsoleDependsOn: LibHarvensAddonSettings
+## OptionalDependsOn: AUI LibDebugLogger
+
+language/en.lua
+language/$(language).lua
+
+TrueExploration.xml
+TrueExploration.lua
+TileDisplay.lua
+DiscoveryData.lua
+TrueExplorationOptions.lua
+FilterCheckboxes.lua

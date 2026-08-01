@@ -1,0 +1,9 @@
+## Title: Bulk Buy
+## Description: Bulk quantity selector for vendors. R3 toggles bulk mode, L1/R1 adjust quantity. Buy 1 via spinner, addon auto-buys the rest. Console/gamepad.
+## Author: |c39B5E5Eldibabalo|r
+## APIVersion: 101047
+## Version: 4.0.0
+## SavedVariables: BulkBuySV
+
+Bindings.xml
+BulkBuy.lua

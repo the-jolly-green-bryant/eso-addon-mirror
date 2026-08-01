@@ -25,6 +25,8 @@ SettingsActions.returnSelectionKey = SettingsActions.returnSelectionKey or nil
 ---@type string|nil
 SettingsActions.pendingSelectionKey = SettingsActions.pendingSelectionKey or nil
 SettingsActions.rebuildPending = SettingsActions.rebuildPending == true
+SettingsActions.rebuildWhenShown = SettingsActions.rebuildWhenShown == true
+SettingsActions.sceneShowHookRegistered = SettingsActions.sceneShowHookRegistered == true
 
 local STACK_DISPLAY_ITEMS = SettingsUtils.STACK_DISPLAY_ITEMS
 local STACK_DISPLAY_NAME_BY_VALUE = SettingsUtils.STACK_DISPLAY_NAME_BY_VALUE
@@ -58,7 +60,7 @@ local function ApplyMainFramePosition()
     end
 
     frame.root:ClearAnchors()
-    frame.root:SetAnchor(cfg.point, GuiRoot, cfg.point, cfg.x, cfg.y, nil)
+    frame.root:SetAnchor(cfg.point, _G["GuiRoot"], cfg.point, cfg.x, cfg.y, nil)
 end
 
 ---@return table|nil
@@ -82,8 +84,53 @@ local function GetSettingsConfig()
     return sv.settings
 end
 
+-- On console, LibHarvensAddonSettings pushes this scene when the user enters an
+-- addon panel. The library only clears a panel's `selected` flag when a
+-- *different* addon is selected, so closing the whole menu leaves our panel
+-- flagged selected. Rebuilding while the scene is hidden is worse than wasted
+-- work: the drill-down restore calls SetCurrentList/CreateControls, which
+-- re-activates the gamepad parametric list and steals directional input from
+-- the character (movement lockups while "Watch combat" streams events).
+local SETTINGS_SCENE_NAME = "LibHarvensAddonSettingsScene"
+
+local function GetSettingsScene()
+    local sceneManager = _G["SCENE_MANAGER"]
+    if not sceneManager or type(sceneManager.GetScene) ~= "function" then
+        return nil
+    end
+    return sceneManager:GetScene(SETTINGS_SCENE_NAME)
+end
+
+local function IsSettingsSceneShowing()
+    local scene = GetSettingsScene()
+    if not scene then
+        -- PC panel has no dedicated scene; fall back to the selected flag alone.
+        return true
+    end
+    local state = scene:GetState()
+    return state == SCENE_SHOWING or state == SCENE_SHOWN
+end
+
 function SettingsActions:IsPanelSelected()
     return self.addonSettings ~= nil and self.addonSettings.selected == true
+end
+
+-- Rebuild deferred from a hidden scene runs when the settings scene next shows.
+function SettingsActions:EnsureSceneShowHook()
+    if self.sceneShowHookRegistered then
+        return
+    end
+    local scene = GetSettingsScene()
+    if not scene then
+        return
+    end
+    self.sceneShowHookRegistered = true
+    scene:RegisterCallback("StateChange", function(_, newState)
+        if newState == SCENE_SHOWING and self.rebuildWhenShown then
+            self.rebuildWhenShown = false
+            self:Rebuild()
+        end
+    end)
 end
 
 function SettingsActions:ScheduleRebuild()
@@ -93,9 +140,15 @@ function SettingsActions:ScheduleRebuild()
     self.rebuildPending = true
     zo_callLater(function()
         self.rebuildPending = false
-        if self.addonSettings and self.addonSettings.selected then
-            self:Rebuild()
+        if not self:IsPanelSelected() then
+            return
         end
+        if not IsSettingsSceneShowing() then
+            self.rebuildWhenShown = true
+            self:EnsureSceneShowHook()
+            return
+        end
+        self:Rebuild()
     end, 200)
 end
 
@@ -348,8 +401,10 @@ local function RestoreNavigation(panel, targetKey, selectionIndex, activeSection
         return
     end
 
-    -- PC (non-drill-down) or an unselected panel: keep the simple flat restore.
-    if not CanUseDrillDown() or panel.selected ~= true then
+    -- PC (non-drill-down), an unselected panel, or a hidden scene: keep the
+    -- simple flat restore. Drilling in while hidden would activate the gamepad
+    -- list and steal directional input from the character.
+    if not CanUseDrillDown() or panel.selected ~= true or not IsSettingsSceneShowing() then
         RestoreSelectedSetting(targetKey, selectionIndex)
         return
     end
@@ -677,7 +732,9 @@ function SettingsActions:Rebuild()
     -- Rebuilds recreate every section as a new object, so the library's drill-down
     -- reference goes stale. Drop back to the main list first so the teardown and
     -- re-add render against a valid list; RestoreNavigation re-drills afterward.
-    if self:IsPanelSelected() then
+    -- Only while the scene is showing: SetCurrentList activates the gamepad list,
+    -- which would steal directional input if the user is out in the world.
+    if self:IsPanelSelected() and IsSettingsSceneShowing() then
         SetActiveListToMain()
     end
 

@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Baertram/Advanced-Filters---Updated-Inventory-sub--dropdown-plugin-filters__2215",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Baertram",
   "canonical_id": "esoui:2215",
   "category_id": "20",
@@ -69,7 +70,7 @@
     "AdvancedFilters"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2215/",
-  "fingerprint": "fa4ea06f8798df1c7d7beb28e5adc8bf7163e6c8af58e2a47a8dc2636506a24a",
+  "fingerprint": "cc2435a26a5fb0ebb543fa2c83bfe90db9d8bcdf0dc45b9bfe1ebdc3ca368ab7",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw7597.jpg"
   ],
@@ -79,11 +80,11 @@
   "source_id": "2215",
   "source_url": "https://www.esoui.com/downloads/info2215-AdvancedFilters-UpdatedInventorysub-dropdownpluginfilters.html",
   "stats": {
-    "downloads": 2615585,
+    "downloads": 2617542,
     "favorites": 864,
-    "monthly_downloads": 6392
+    "monthly_downloads": 6326
   },
   "title": "Advanced Filters - Updated (Inventory sub- & dropdown plugin filters)",
-  "updated_at": 1780512576000,
-  "version": "1.6.5.5"
+  "updated_at": 1785543443000,
+  "version": "1.6.5.6"
 }

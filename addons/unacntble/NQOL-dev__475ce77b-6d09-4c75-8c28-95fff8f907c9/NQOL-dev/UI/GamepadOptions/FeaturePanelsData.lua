@@ -149,6 +149,7 @@ end
 function GamepadOptions.BuildCombatOptionsData()
     return {
         GamepadOptions.BuildCombatInfiniteArchiveEntry(),
+        GamepadOptions.BuildCombatMiscellaneousEntry(),
         GamepadOptions.BuildUltimateCountdownEntry(),
     }
 end
@@ -283,11 +284,12 @@ function GamepadOptions.BuildMinimapOptionsData()
         GamepadOptions.BuildMinimapSizeOption(),
         GamepadOptions.BuildMinimapBorderSizeOption(),
         GamepadOptions.BuildMinimapBorderColorOption(),
-        GamepadOptions.BuildMinimapOnFootZoomOption(),
-        GamepadOptions.BuildMinimapMountedZoomOption(),
         GamepadOptions.BuildMinimapAreaLabelPositionOption(),
         GamepadOptions.BuildMinimapAreaLabelFontOption(),
         GamepadOptions.BuildMinimapAreaLabelSizeOption(),
+        GamepadOptions.WithHeader(GamepadOptions.BuildMinimapZoneZoomOption(), NQOL.L("ui.headers.zoom")),
+        GamepadOptions.BuildMinimapMountedZoomOption(),
+        GamepadOptions.BuildMinimapSubzoneZoomOption(),
         GamepadOptions.WithHeader(GamepadOptions.BuildMinimapWayshrineWayfinderEnabledOption(), NQOL.L("ui.headers.wayshrine_wayfinder_714bb59")),
         GamepadOptions.BuildMinimapWayshrineWayfinderThicknessOption(),
         GamepadOptions.BuildMinimapWayshrineWayfinderColorOption(),
@@ -451,8 +453,11 @@ function GamepadOptions.BuildCompanionFrameOptionsData()
         GamepadOptions.BuildCompanionBorderSizeOption(),
         GamepadOptions.BuildCompanionReverseOption(),
         GamepadOptions.WithHeader(GamepadOptions.BuildCompanionShowNameOption(), NQOL.L("ui.headers.values_b1564f6")),
+        GamepadOptions.BuildCompanionShowRapportOption(),
+        GamepadOptions.BuildCompanionShowXpProgressOption(),
         GamepadOptions.BuildCompanionCurrentValueOption(),
         GamepadOptions.WithHeader(GamepadOptions.BuildCompanionHealthBarColorOption(), NQOL.L("ui.headers.appearance_41def7a")),
+        GamepadOptions.BuildCompanionXpColorOption(),
         GamepadOptions.BuildCompanionSmoothTransitionsOption(),
         GamepadOptions.BuildCompanionTransitionShadowOption(),
         GamepadOptions.BuildCompanionShadowOption(),

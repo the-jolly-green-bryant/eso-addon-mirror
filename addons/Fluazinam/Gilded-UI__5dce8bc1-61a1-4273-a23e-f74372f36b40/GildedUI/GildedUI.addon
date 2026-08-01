@@ -1,6 +1,6 @@
 ## Title: Gilded UI
 ## Description: Something.
-## Version: 0.2.21
+## Version: 0.2.26
 ## Author: Fluazinam
 ## APIVersion: 101050
 ## SavedVariables: GildedUISV
@@ -36,5 +36,9 @@ modules/layout/trackers/Menu.lua
 modules/layout/alerts/AlertText.lua
 modules/layout/alerts/Menu.lua
 modules/layout/Menu.lua
+modules/system/mount/StayMounted.lua
+modules/system/mount/Menu.lua
+modules/system/Menu.lua
 Overlay.lua
 settings/SettingsMenu.lua
+bindings.xml

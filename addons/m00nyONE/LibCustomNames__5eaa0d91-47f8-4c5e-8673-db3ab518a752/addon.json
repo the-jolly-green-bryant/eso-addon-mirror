@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/m00nyONE/LibCustomNames__5eaa0d91-47f8-4c5e-8673-db3ab518a752",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "m00nyONE",
+  "canonical_id": "bethesda:5eaa0d91-47f8-4c5e-8673-db3ab518a752",
+  "content_id": "5eaa0d91-47f8-4c5e-8673-db3ab518a752",
+  "deleted": false,
+  "fingerprint": "8b7cfbd14df368a225a69b37f15337c9f4a14ce1ee59064f6cc78715a9147c1a",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "5eaa0d91-47f8-4c5e-8673-db3ab518a752",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/5eaa0d91-47f8-4c5e-8673-db3ab518a752",
+  "title": "LibCustomNames"
+}

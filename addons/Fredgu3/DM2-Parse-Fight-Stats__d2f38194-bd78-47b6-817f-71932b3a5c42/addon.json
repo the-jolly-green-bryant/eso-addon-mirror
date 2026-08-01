@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Fredgu3/DM2-Parse-Fight-Stats__d2f38194-bd78-47b6-817f-71932b3a5c42",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Fredgu3",
+  "canonical_id": "bethesda:d2f38194-bd78-47b6-817f-71932b3a5c42",
+  "content_id": "d2f38194-bd78-47b6-817f-71932b3a5c42",
+  "deleted": false,
+  "fingerprint": "5433d4ba881f1ff3c24a8c9207947c0ab633cfd75459034bf95fec5aceb5efaa",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "d2f38194-bd78-47b6-817f-71932b3a5c42",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/d2f38194-bd78-47b6-817f-71932b3a5c42",
+  "title": "DM2 Parse & Fight Stats"
+}

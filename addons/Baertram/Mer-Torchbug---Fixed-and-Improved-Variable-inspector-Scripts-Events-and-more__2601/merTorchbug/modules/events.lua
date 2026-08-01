@@ -8,6 +8,7 @@ local tbug = TBUG or SYSTEMS:GetSystem("merTorchbug")
 local type = type
 local strfind = string.find
 local tinsert = table.insert
+local tremove = table.remove
 
 local types = tbug.types
 local stringType = types.string
@@ -349,6 +350,13 @@ function tbug.SaveEventsTracked()
     end
 end
 
+function tbug.DeleteEventsTracked(key)
+    local savedEvents = tbug.savedVars.savedEvents
+    if key == nil or savedEvents == nil or savedEvents[key] == nil then return end
+    tremove(tbug.savedVars.savedEvents, key)
+    d("[TBUG]Deleted saved events #" .. tostring(key))
+end
+
 function tbug.LoadEventsTracked(key, loadDetailsStr)
     local savedEvents = tbug.savedVars.savedEvents
     if key == nil or savedEvents == nil or savedEvents[key] == nil or savedEvents[key].events == nil then return end
@@ -357,8 +365,77 @@ function tbug.LoadEventsTracked(key, loadDetailsStr)
 end
 
 
+function tbug.SetAutomaticEventsTrackingFlag(value, doReloadUI, activateNextLogin, chatOutput, onlyFor1ReloadUI, allOff)
+    doReloadUI = doReloadUI or false
+    activateNextLogin = activateNextLogin or false
+    chatOutput = chatOutput or false
+    onlyFor1ReloadUI = onlyFor1ReloadUI or false
+    allOff = allOff or false
+
+    if value ~= nil and activateNextLogin == true then
+        value = nil
+    end
+
+    if allOff == true then
+        tbug.activateAutomaticEventTrackingOnNextLogin = false
+        tbug.savedVars.enableEventTrackerAtNextLogin = nil
+        tbug.savedVars.enableEventTrackerAtStartup = false
+        tbug.savedVars.enableEventTrackerAtStartupOnlyOnce = nil
+        if chatOutput == true then
+            d("[TBUG]Automatic events: Off")
+        end
+        return
+    end
+
+    tbug.savedVars.enableEventTrackerAtStartup = value
+    tbug.savedVars.enableEventTrackerAtStartupOnlyOnce = nil
+    tbug.savedVars.enableEventTrackerAtNextLogin = nil
+    if value ~= nil and value == true and not doReloadUI and not activateNextLogin then
+        if true == onlyFor1ReloadUI then
+            tbug.savedVars.enableEventTrackerAtStartupOnlyOnce = true
+            if chatOutput == true then
+                d("[TBUG]Automatic events at 1 next ReloadUI: On")
+            end
+        else
+            if chatOutput == true then
+                d("[TBUG]Automatic events at all ReloadUIs: On")
+            end
+        end
+    end
+
+    --Activate the automatic event tracking on next login?
+    if activateNextLogin == true then
+        tbug.activateAutomaticEventTrackingOnNextLogin = true
+        if chatOutput == true then
+            d("[TBUG]Automatic events at next login: On")
+        end
+    else
+        tbug.activateAutomaticEventTrackingOnNextLogin = nil
+    end
+
+    --Reload the UI now?
+    if doReloadUI == true then
+        ReloadUI("ingame")
+    end
+end
+
 --At startup of the addon EVENT_ADD_ON_LOADED: Automatically load the event tracking?
 function tbug.AutomaticEventTrackingCheck()
-    if not tbug.savedVars.enableEventTrackerAtStartup then return end
-    startEventTracking()
+    local doStartEventTrackingNow = false
+    local sv = tbug.savedVars
+    if sv.enableEventTrackerAtNextLogin == true then
+        sv.enableEventTrackerAtNextLogin = nil
+        sv.enableEventTrackerAtStartupOnlyOnce = nil
+        sv.enableEventTrackerAtStartup = false
+        doStartEventTrackingNow = true
+    elseif sv.enableEventTrackerAtStartup == true then
+        if sv.enableEventTrackerAtStartupOnlyOnce == true then
+            sv.enableEventTrackerAtStartupOnlyOnce = nil
+            sv.enableEventTrackerAtStartup = false
+        end
+        doStartEventTrackingNow = true
+    end
+    if doStartEventTrackingNow == true then
+        startEventTracking()
+    end
 end

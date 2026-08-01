@@ -1,0 +1,25 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="DLJExpUI" mouseEnabled="false" movable="true" clampedToScreen="true" >
+      <Dimensions x="200" y="24" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="200" />
+      <OnInitialized>
+      </OnInitialized>
+      <OnMoveStop>
+        DLJExp.OnMoveStopUI()
+      </OnMoveStop>
+ 
+      <Controls>
+        <Backdrop name="$(parent)_Bg" inherits="ZO_DefaultBackdrop" alpha="0.05"/>
+        <Texture name="$(parent)_Icon" textureFile="esoui/art/icons/icon_experience.dds">
+					<Dimensions x="24" y="24" />
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="-2" />
+				</Texture>
+
+        <Label name="$(parent)Label" width="256" height="25" font="ZoFontGamepad22" inheritAlpha="true" color="000000" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="buff status">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="28"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

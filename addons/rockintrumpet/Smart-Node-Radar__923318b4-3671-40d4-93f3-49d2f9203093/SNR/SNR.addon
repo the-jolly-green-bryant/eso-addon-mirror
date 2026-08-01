@@ -1,0 +1,8 @@
+## Title: SNR
+## Author: Lucas
+## Version: 1.2.4
+## APIVersion: 101049 101050
+## IsConsoleAddon: 1
+## SavedVariables: SmartNodeRadar_Data
+
+SNR.lua

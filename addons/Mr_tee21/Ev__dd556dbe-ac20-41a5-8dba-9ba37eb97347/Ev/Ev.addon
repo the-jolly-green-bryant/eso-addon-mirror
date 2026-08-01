@@ -1,0 +1,11 @@
+## Title: Ev
+## Author: PH
+## Version: 2.0.2
+## AddOnVersion: 20002
+## APIVersion: 101047 101046
+## SavedVariables: EvSavedVars
+## DependsOn: LibAddonMenu-2.0>=31
+
+Ev.lua
+EvMenu.lua
+Ev.xml

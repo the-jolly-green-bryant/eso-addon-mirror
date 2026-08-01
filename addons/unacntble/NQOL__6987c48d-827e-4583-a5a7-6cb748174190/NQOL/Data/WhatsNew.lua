@@ -2,45 +2,73 @@ NQOL = NQOL or {}
 
 -- Replace this table for each release. Only the current release is retained.
 NQOL.WhatsNewContent = {
-    version = "262",
+    version = "273",
     messages = {
-        en = [[Have you visited a vendor and do not know which lead you miss? Not anymore. Enable "Antiquities > Vendor lead indicators" and now you see an hourglass for leads currently owned and a green checkmark for leads previously excavated, next to each item!
+        en = [[- Added a zone-item chat filter.
+- Group Finder Monitor now shows listing creator IDs.
+- Added separate minimap zoom settings for zones, subzones, and mounted travel.
+- Companion Frame can now show rapport and XP progress.
+- Collections > Companions now shows rapport likes, dislikes, and point values.
 
 You can send any feedback to:
 nqol@agentmail.to
 
 Thank you for your support and for using NQOL!]],
-        fr = [[Avez-vous déjà rendu visite à un marchand sans savoir quelle piste il vous manque ? Ce n'est plus un problème. Activez « Antiquités > Indicateurs de pistes chez les marchands » : vous verrez désormais un sablier pour les pistes actuellement possédées et une coche verte pour les pistes déjà excavées, à côté de chaque objet !
+        fr = [[- Ajout d’un filtre de chat pour les objets de zone.
+- Le moniteur de recherche de groupe affiche désormais l’identifiant du créateur.
+- Ajout de zooms distincts pour les zones, sous-zones et déplacements à monture.
+- Le cadre de compagnon peut désormais afficher la relation et la progression d’EXP.
+- Collections > Compagnons affiche désormais les goûts, aversions et valeurs de relation.
 
 Vous pouvez envoyer vos commentaires à :
 nqol@agentmail.to
 
 Merci pour votre soutien et pour avoir utilisé NQOL !]],
-        de = [[Hast du schon einmal einen Händler besucht und wusstest nicht, welche Spur dir fehlt? Damit ist jetzt Schluss. Aktiviere „Antiquitäten > Händler-Spurenanzeigen“. Nun siehst du neben jedem Gegenstand eine Sanduhr für derzeit vorhandene Spuren und ein grünes Häkchen für bereits ausgegrabene Spuren!
+        de = [[- Gebietsgegenstandsfilter für den Chat hinzugefügt.
+- Der Gruppensuche-Monitor zeigt nun die Spieler-ID des Erstellers.
+- Separate Minikarten-Zoomstufen für Zonen, Unterzonen und Reiten hinzugefügt.
+- Der Begleiterrahmen kann nun Beziehung und EP-Fortschritt anzeigen.
+- Sammlungen > Begleiter zeigt nun Vorlieben, Abneigungen und Beziehungswerte.
 
 Sie können Ihr Feedback an folgende Adresse senden:
 nqol@agentmail.to
 
 Vielen Dank für Ihre Unterstützung und die Nutzung von NQOL!]],
-        jp = [[商人を訪れたとき、どの手掛かりが不足しているのか分からなかったことはありませんか？もう迷う必要はありません。「古遺物 > 商人の手掛かりインジケーター」を有効にすると、各アイテムの横に、現在所持している手掛かりには砂時計、以前に発掘済みの手掛かりには緑のチェックマークが表示されます！
+        jp = [[- ゾーンアイテム用のチャットフィルターを追加しました。
+- グループ検索モニターに募集作成者のプレイヤーIDを表示するようにしました。
+- ゾーン、サブゾーン、騎乗中のミニマップズームを個別に設定できるようにしました。
+- コンパニオンフレームに関係とXP進行度を表示できるようにしました。
+- コレクション > コンパニオンに好む行動、嫌う行動、関係値を表示するようにしました。
 
 フィードバックは次の宛先に送信できます。
 nqol@agentmail.to
 
 いつもNQOLをご利用いただき、誠にありがとうございます。]],
-        es = [[¿Has visitado a un mercader sin saber qué pista te falta? ¡Ya no! Activa «Antigüedades > Indicadores de pistas del mercader» y ahora verás, junto a cada artículo, un reloj de arena para las pistas que ya tienes y una marca verde para las que ya has excavado.
+        es = [[- Se añadió un filtro de chat para objetos de zona.
+- El monitor del buscador de grupo ahora muestra el ID del creador.
+- Se añadieron ajustes de zoom separados para zonas, subzonas y monturas.
+- El marco del compañero ahora puede mostrar la relación y el progreso de EXP.
+- Colecciones > Compañeros ahora muestra gustos, aversiones y valores de relación.
 
 Puedes enviar cualquier comentario a:
 nqol@agentmail.to
 
 ¡Gracias por su apoyo y por usar NQOL!]],
-        ru = [[Заходили к торговцу и не знали, какой зацепки вам не хватает? Теперь это в прошлом. Включите «Древности > Индикаторы зацепок у торговцев», и рядом с каждым предметом появятся песочные часы для уже полученных зацепок и зелёная галочка для ранее раскопанных!
+        ru = [[- Добавлен фильтр предметов в чате зоны.
+- Монитор поиска группы теперь показывает ID создателя объявления.
+- Добавлены отдельные настройки масштаба мини-карты для зон, подзон и езды верхом.
+- Рамка спутника теперь может показывать отношения и прогресс опыта.
+- В «Коллекции > Спутники» теперь показаны предпочтения, антипатии и очки отношений.
 
 Любой отзыв вы можете отправить по адресу:
 nqol@agentmail.to
 
 Спасибо за вашу поддержку и за использование NQOL!]],
-        zh = [[拜访商人时，不知道自己还缺少哪条线索？现在不用再烦恼了。启用“古物 > 商人线索标记”后，每件物品旁都会显示标记：当前已拥有的线索显示沙漏，曾经挖掘过的线索显示绿色勾号！
+        zh = [[- 新增区域物品聊天过滤器。
+- 组队查找器监控现在会显示招募创建者的玩家ID。
+- 新增区域、子区域和骑乘状态的独立小地图缩放设置。
+- 同伴框架现在可显示默契和经验进度。
+- 收藏 > 同伴现在会显示喜好、厌恶和默契点数。
 
 您可以将任何反馈发送至：
 nqol@agentmail.to

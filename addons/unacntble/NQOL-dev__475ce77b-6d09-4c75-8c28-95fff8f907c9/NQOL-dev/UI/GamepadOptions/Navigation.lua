@@ -37,6 +37,7 @@ local AUTO_CHARGE_PANEL_ID = PanelIds.AUTO_CHARGE
 local AUTO_REPAIR_PANEL_ID = PanelIds.AUTO_REPAIR
 local COMBAT_PANEL_ID = PanelIds.COMBAT
 local COMBAT_INFINITE_ARCHIVE_PANEL_ID = PanelIds.COMBAT_INFINITE_ARCHIVE
+local COMBAT_MISCELLANEOUS_PANEL_ID = PanelIds.COMBAT_MISCELLANEOUS
 local ULTIMATE_COUNTDOWN_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN
 local ULTIMATE_COUNTDOWN_FRONT_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_FRONT
 local ULTIMATE_COUNTDOWN_BACK_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_BACK
@@ -173,6 +174,26 @@ function GamepadOptions.BuildCombatInfiniteArchiveEntry()
         end,
         callback = function()
             GamepadOptions.ShowPanel(COMBAT_INFINITE_ARCHIVE_PANEL_ID)
+        end,
+    }
+end
+
+function GamepadOptions.BuildCombatMiscellaneousEntry()
+    return {
+        panel = COMBAT_PANEL_ID,
+        system = COMBAT_PANEL_ID,
+        settingId = 2,
+        controlType = OPTIONS_INVOKE_CALLBACK,
+        text = NQOL.L("ui.navigation.miscellaneous"),
+        gamepadTextOverride = NQOL.L("ui.navigation.miscellaneous"),
+        onInitializeFunction = function(control)
+            GamepadOptions.InitializeNavigationEntry(control)
+        end,
+        gamepadCustomTooltipFunction = function(tooltipControl)
+            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.L("ui.navigation.configure_optional_combat_integrations"))
+        end,
+        callback = function()
+            GamepadOptions.ShowPanel(COMBAT_MISCELLANEOUS_PANEL_ID)
         end,
     }
 end

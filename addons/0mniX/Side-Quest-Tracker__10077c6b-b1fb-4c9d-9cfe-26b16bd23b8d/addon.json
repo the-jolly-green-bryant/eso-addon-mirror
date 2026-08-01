@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/0mniX/Side-Quest-Tracker__10077c6b-b1fb-4c9d-9cfe-26b16bd23b8d",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "0mniX",
+  "canonical_id": "bethesda:10077c6b-b1fb-4c9d-9cfe-26b16bd23b8d",
+  "content_id": "10077c6b-b1fb-4c9d-9cfe-26b16bd23b8d",
+  "deleted": false,
+  "fingerprint": "eeb26ddaaa983ede683f94627a677446542881466426158ccdd41f084f80c16d",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "10077c6b-b1fb-4c9d-9cfe-26b16bd23b8d",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/10077c6b-b1fb-4c9d-9cfe-26b16bd23b8d",
+  "title": "Side Quest Tracker"
+}

@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/murphyx/Murf-s-Skyshards__f252b54c-ca06-45e6-8a13-3211eb5d96ba",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "murphyx",
+  "canonical_id": "bethesda:f252b54c-ca06-45e6-8a13-3211eb5d96ba",
+  "content_id": "f252b54c-ca06-45e6-8a13-3211eb5d96ba",
+  "deleted": false,
+  "fingerprint": "b1aa5d642a9ad9cb3caf6eeb2ad3607cc7e7d168af141b2c0e0b11c681e0a041",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "f252b54c-ca06-45e6-8a13-3211eb5d96ba",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/f252b54c-ca06-45e6-8a13-3211eb5d96ba",
+  "title": "Murf's Skyshards"
+}

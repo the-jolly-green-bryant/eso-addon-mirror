@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/murphyx/Update-47-Tweaker__50a4c919-aff0-4475-8614-eb2576d6b6d9",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "murphyx",
+  "canonical_id": "bethesda:50a4c919-aff0-4475-8614-eb2576d6b6d9",
+  "content_id": "50a4c919-aff0-4475-8614-eb2576d6b6d9",
+  "deleted": false,
+  "fingerprint": "ba7cd2095e6806caef08513c1b2bcd09da548135c4cf7d30e994a943f74fdc0e",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "50a4c919-aff0-4475-8614-eb2576d6b6d9",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/50a4c919-aff0-4475-8614-eb2576d6b6d9",
+  "title": "Update 47 Tweaker"
+}

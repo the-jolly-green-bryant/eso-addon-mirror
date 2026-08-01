@@ -1,0 +1,10 @@
+## Title: |cFFD700A M0R Automated Invite|r
+## APIVersion:  101046
+## Version: 1.0.0 - Console
+## AddOnVersion: 100
+## Description: An automated invitation addon that sends a group invite when players type a specific text in their chat!
+## Author: |c0DC1CF@M0R_Gaming|r
+## SavedVariables: AutoInv
+## DependsOn: LibAddonMenu-2.0>=40
+
+autoinv.lua

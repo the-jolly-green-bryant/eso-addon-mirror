@@ -74,9 +74,14 @@ function GamepadOptions.BuildMinimapEnabledOption()
     return GamepadOptions.BuildCheckboxOption(MINIMAP_PANEL_ID, 1, minimap.GetEnabledLabel(), minimap.GetEnabledTooltip(), minimap.GetEnabled, minimap.SetEnabled, minimap.CanEnable, minimap.GetEnabledDefault)
 end
 
-function GamepadOptions.BuildMinimapOnFootZoomOption()
+function GamepadOptions.BuildMinimapZoneZoomOption()
     local minimap = NQOL.Features.Minimap
-    return GamepadOptions.BuildValueStepSliderOption(MINIMAP_PANEL_ID, 6, minimap.GetOnFootZoomLabel(), minimap.GetOnFootZoomTooltip(), minimap.GetZoomMin(), minimap.GetZoomMax(), "%.0f%%", minimap.GetOnFootZoom, minimap.SetOnFootZoom, 1, nil, minimap.GetOnFootZoomDefault)
+    return GamepadOptions.BuildValueStepSliderOption(MINIMAP_PANEL_ID, 6, minimap.GetZoneZoomLabel(), minimap.GetZoneZoomTooltip(), minimap.GetZoomMin(), minimap.GetZoomMax(), "%.0f%%", minimap.GetZoneZoom, minimap.SetZoneZoom, 1, nil, minimap.GetZoneZoomDefault)
+end
+
+function GamepadOptions.BuildMinimapSubzoneZoomOption()
+    local minimap = NQOL.Features.Minimap
+    return GamepadOptions.BuildValueStepSliderOption(MINIMAP_PANEL_ID, 19, minimap.GetSubzoneZoomLabel(), minimap.GetSubzoneZoomTooltip(), minimap.GetZoomMin(), minimap.GetZoomMax(), "%.0f%%", minimap.GetSubzoneZoom, minimap.SetSubzoneZoom, 1, nil, minimap.GetSubzoneZoomDefault)
 end
 
 function GamepadOptions.BuildMinimapMountedZoomOption()

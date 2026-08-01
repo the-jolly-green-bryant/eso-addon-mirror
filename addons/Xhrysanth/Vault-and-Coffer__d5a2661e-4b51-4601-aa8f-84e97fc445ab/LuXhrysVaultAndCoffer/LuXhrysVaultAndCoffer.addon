@@ -1,0 +1,37 @@
+; This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+; This file is part of the user interface module for the LuXhrys add-on system for the Elder Scrolls Online.
+
+; This module implements the user interface functionality for the LuXhrys add-on system for the Elder Scrolls Online.
+
+; Written and copyright (c) 2026 by Xhrysanth (PSNA). License terms to be determined. Currently, and until this notice changes, all rights are reserved, except those that belong to ZeniMax Media Inc., which provides the API used by this software.
+
+
+## Title: LuXhrysVaultAndCoffer
+## Author: Xhrysanth
+## APIVersion: 101050
+## AddOnVersion: 002
+## Version: 0.2a
+## IsLibrary: False
+; SavedVariables: LuXhrysVaultAndCoffer_SV
+
+
+; Dependencies
+
+; OptionalDependsOn: LibHarvensAddonSettings>=20102
+; OptionalDependsOn: LibAsync>=30102
+## DependsOn: LuXhrysLibExtendedInventory>=001
+## OptionalDependsOn: LuXhrysLibItemLinkPreview
+
+
+; Code
+
+VaCTooltips.lua
+VaCListScreen.lua
+; VaCInfoPanel.lua
+
+VaCInterface.xml
+
+
+

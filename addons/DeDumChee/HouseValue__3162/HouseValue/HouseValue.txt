@@ -1,0 +1,8 @@
+## Title: HouseValue
+## Description: Use /gn to get a value estimate for your house.
+## APIVersion: 100035
+## DependsOn: LibPrice
+## SavedVariables: DV
+## Author: @DeDumChee
+
+HouseValue.lua

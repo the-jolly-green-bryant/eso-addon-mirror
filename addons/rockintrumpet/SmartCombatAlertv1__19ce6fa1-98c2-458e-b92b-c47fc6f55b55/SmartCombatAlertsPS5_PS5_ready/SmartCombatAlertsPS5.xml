@@ -1,0 +1,19 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="SmartCombatAlertsPS5_UI" mouseEnabled="false" hidden="false" clampedToScreen="true">
+            <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="180" />
+            <Dimensions x="700" y="120" />
+            <Controls>
+                <Label name="SmartCombatAlertsPS5_Label"
+                       hidden="true"
+                       font="$(CHAT_FONT)|32|soft-shadow-thick"
+                       color="FFFFFFFF"
+                       modifyTextType="UPPERCASE"
+                       horizontalAlignment="CENTER"
+                       verticalAlignment="CENTER">
+                    <Anchor fill="parent"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

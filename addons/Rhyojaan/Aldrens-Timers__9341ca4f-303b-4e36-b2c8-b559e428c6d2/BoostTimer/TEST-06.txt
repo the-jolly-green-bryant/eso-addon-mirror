@@ -1,0 +1,18 @@
+ALDREN'S TIMERS — PS5 TEST 06
+
+Purpose:
+Confirm that the timer panel can automatically hide while pause-style menus are open.
+
+Changes from 0.0.5:
+- Added a saved on/off setting named Hide While Menus Are Open.
+- The setting defaults to ON.
+- The panel hides when ESO enters menu UI mode and returns when gameplay resumes.
+- Timer detection, position, sizing, and display logic were not changed.
+
+PS5 test:
+1. Confirm the active timer still appears during normal gameplay.
+2. Open Inventory and then the Craft Bag. Confirm the timer box disappears.
+3. Close the menus. Confirm the timer box returns.
+4. Open Settings > Add-On Settings > Aldren's Timers.
+5. Turn Hide While Menus Are Open OFF. Confirm the timer remains visible in menus.
+6. Turn it back ON and confirm hiding resumes.

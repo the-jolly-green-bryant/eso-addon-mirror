@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/svammy/AlreadyListed__66e34000-1a7c-4b71-9c6b-18742fa714c5",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "svammy",
+  "canonical_id": "bethesda:66e34000-1a7c-4b71-9c6b-18742fa714c5",
+  "content_id": "66e34000-1a7c-4b71-9c6b-18742fa714c5",
+  "deleted": false,
+  "fingerprint": "78f9861b09e568a7a8038a7e85cf4310160e2cb32c3bd43490a0d499ee08a962",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "66e34000-1a7c-4b71-9c6b-18742fa714c5",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/66e34000-1a7c-4b71-9c6b-18742fa714c5",
+  "title": "AlreadyListed"
+}

@@ -1,0 +1,15 @@
+## Title: House Hotkey
+## Author: thisbeaurielle
+## Version: 1.8.1
+## APIVersion: 101049 101050
+## AddOnVersion: 181
+## SavedVariables: HouseHotkey_Vars
+## DependsOn: LibHarvensAddonSettings>=20007
+## OptionalDependsOn: LibRadialMenu
+
+HouseHotkeyGlobals.lua
+lang/en.lua
+lang/$(language).lua
+Console/ui.lua
+HouseHotkey.lua
+

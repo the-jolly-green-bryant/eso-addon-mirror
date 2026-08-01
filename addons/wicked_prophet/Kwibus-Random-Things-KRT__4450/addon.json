@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/wicked_prophet/Kwibus-Random-Things-KRT__4450",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "wicked_prophet",
   "canonical_id": "esoui:4450",
   "category_id": "27",
@@ -17,7 +18,7 @@
     "KwibusRandomThings"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4450/",
-  "fingerprint": "5039725b7519e2c3157369b8853c4fa07a1af175506444a99e5f59fc2194320f",
+  "fingerprint": "4487971f9e34c0078f9c11497df36ebba776eabd79ac5338ee23acc8c4aba6ed",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15486.png",
     "https://cdn-eso.mmoui.com/preview/pvw15487.png",
@@ -34,11 +35,11 @@
   "source_id": "4450",
   "source_url": "https://www.esoui.com/downloads/info4450-KwibusRandomThingsKRT.html",
   "stats": {
-    "downloads": 269,
+    "downloads": 278,
     "favorites": 2,
-    "monthly_downloads": 63
+    "monthly_downloads": 68
   },
   "title": "Kwibus Random Things (KRT)",
-  "updated_at": 1785089676000,
-  "version": "1.2.8"
+  "updated_at": 1785537290000,
+  "version": "1.2.9"
 }

@@ -78,6 +78,37 @@
       </Controls>
     </Control>
 
+    <!-- Name + multi-select ComboBox (Home Tours Tags pattern). -->
+    <Control name="LibConsoleMenuGamepadChecklist" inherits="ZO_GamepadMenuEntryDimensionsTemplate" virtual="true">
+      <OnInitialized>
+        ZO_SharedGamepadEntry_OnInitialized(self)
+        self.label = self:GetNamedChild("Name")
+        if not self.dropdown then
+          local dropdownControl = self:GetNamedChild("Dropdown")
+          self.dropdown = ZO_ComboBox_ObjectFromContainer(dropdownControl)
+        end
+        self.GetHeight = function(control)
+          local nameHeight = control.label and control.label:GetTextHeight() or 0
+          local dropdownHeight = control.dropdown and control.dropdown:GetHeight() or 28
+          return nameHeight + dropdownHeight
+        end
+      </OnInitialized>
+      <Controls>
+        <Label name="$(parent)Name" inherits="ZO_GamepadFullWidthLabelTemplate"/>
+        <Control name="$(parent)Dropdown" inherits="ZO_MultiSelection_ComboBox_Gamepad">
+          <Dimensions y="28"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Name" relativePoint="BOTTOMRIGHT"/>
+          <Controls>
+            <Texture name="$(parent)OpenDropdown" override="true">
+              <Dimensions x="24" y="24"/>
+              <Anchor point="RIGHT" offsetX="-3"/>
+            </Texture>
+          </Controls>
+        </Control>
+      </Controls>
+    </Control>
+
     <Control name="LCM_GamepadHorizontalListEntry" virtual="true">
       <Dimensions x="320"/>
       <Controls>

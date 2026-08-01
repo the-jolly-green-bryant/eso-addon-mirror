@@ -57,12 +57,25 @@ UP.DefaultRiskBonus = {
 -- ---------------------------------------------------------------------------
 -- The constants below may be nil on console; we guard each lookup. The
 -- engine consults this table only when FeatureDetect.statusEffectType=true.
+--
+-- NO SILENCE ENTRY (0.3.2). Silence used to classify here like any other
+-- CONTROL-category status, but that made this table's statusEffectType-only
+-- test the sole way the risk bonus ever learned about a silence -- weaker
+-- coverage than the ring, which also accepts abilityType. EventIngest.lua's
+-- onEffectChanged now injects UP.RISK.CONTROL for silence directly, off the
+-- same dual-signal SilenceTracker.IsSilenceEffect() check that drives the
+-- ring, so both consumers detect it exactly once, the same way, with the same
+-- console-safe fallback. Re-adding a SILENCE line here would not double-count
+-- it (IngestEffect just overwrites the same activeEffects[abilityId] record),
+-- but it would let a saved-variable abilityOverrides entry for a specific
+-- silence ability ID reclassify it away from CONTROL after the direct inject
+-- already ran -- harmless today since none are seeded, worth knowing if one
+-- ever is.
 local function buildStatusEffectMap()
     local m = {}
     if type(STATUS_EFFECT_TYPE_STUN)        == "number" then m[STATUS_EFFECT_TYPE_STUN]        = UP.RISK.CONTROL end
     if type(STATUS_EFFECT_TYPE_DISORIENT)   == "number" then m[STATUS_EFFECT_TYPE_DISORIENT]   = UP.RISK.CONTROL end
     if type(STATUS_EFFECT_TYPE_FEAR)        == "number" then m[STATUS_EFFECT_TYPE_FEAR]        = UP.RISK.CONTROL end
-    if type(STATUS_EFFECT_TYPE_SILENCE)     == "number" then m[STATUS_EFFECT_TYPE_SILENCE]     = UP.RISK.CONTROL end
     if type(STATUS_EFFECT_TYPE_SNARE)       == "number" then m[STATUS_EFFECT_TYPE_SNARE]       = UP.RISK.CONTROL end
     if type(STATUS_EFFECT_TYPE_ROOT)        == "number" then m[STATUS_EFFECT_TYPE_ROOT]        = UP.RISK.CONTROL end
     if type(STATUS_EFFECT_TYPE_BLEED)       == "number" then m[STATUS_EFFECT_TYPE_BLEED]       = UP.RISK.DOT end

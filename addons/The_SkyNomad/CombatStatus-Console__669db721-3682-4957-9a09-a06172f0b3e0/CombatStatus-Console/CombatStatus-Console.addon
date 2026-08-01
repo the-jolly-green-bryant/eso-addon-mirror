@@ -1,0 +1,7 @@
+## Title: CombatStatus-Console
+## APIVersion: 101040
+## AddOnVersion: 0.1
+## IsLibrary: False
+
+CombatStatus-Console.lua
+CombatStatus-Console.xml

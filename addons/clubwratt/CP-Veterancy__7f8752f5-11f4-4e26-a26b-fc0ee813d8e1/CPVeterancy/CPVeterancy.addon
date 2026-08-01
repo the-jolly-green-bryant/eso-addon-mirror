@@ -1,0 +1,11 @@
+## Title: CP Veterancy
+## Author: clubwratt
+## Version: 0.0.2
+## APIVersion: 101050
+## Description: Always shows Champion Points on player unit frames instead of the veterancy rank shown in PvP/veterancy progression zones.
+## DevId: bc6b3b76-f701-4533-9492-c50acb1783bc
+## ProdId: 7f8752f5-11f4-4e26-a26b-fc0ee813d8e1
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls(R) and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+CPVeterancy.lua

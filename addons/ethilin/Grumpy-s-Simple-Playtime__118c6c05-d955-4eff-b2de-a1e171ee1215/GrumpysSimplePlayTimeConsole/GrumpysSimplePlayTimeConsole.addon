@@ -1,0 +1,10 @@
+## Title: Grumpys Simple Playtime - Console
+## Author: GrumpyEthilin
+## Version: 1.0.4
+## APIVersion: 101049 101050
+## SavedVariables: GrumpysSimplePlaytime
+## Description: Lightweight playtime tracker for consoles. Use /playtime to view stats in chat.
+## IsConsoleAddOn: 1
+## IsConsoleAddOnAllPlatforms: 1
+
+GrumpysSimplePlayTimeConsole.lua

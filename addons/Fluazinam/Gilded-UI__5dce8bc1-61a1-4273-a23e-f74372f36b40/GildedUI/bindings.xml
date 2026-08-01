@@ -1,0 +1,57 @@
+<Bindings>
+	<Layer name="GildedUI_StayMounted_Action1">
+		<Category>
+			<BlockAction name="GAMEPAD_ACTION_BUTTON_3"/>
+		</Category>
+	</Layer>
+	<Layer name="GildedUI_StayMounted_Action2">
+		<Category>
+			<BlockAction name="GAMEPAD_ACTION_BUTTON_4"/>
+		</Category>
+	</Layer>
+	<Layer name="GildedUI_StayMounted_Action3">
+		<Category>
+			<BlockAction name="GAMEPAD_ACTION_BUTTON_5"/>
+		</Category>
+	</Layer>
+	<Layer name="GildedUI_StayMounted_Action4">
+		<Category>
+			<BlockAction name="GAMEPAD_ACTION_BUTTON_6"/>
+		</Category>
+	</Layer>
+	<Layer name="GildedUI_StayMounted_Action5">
+		<Category>
+			<BlockAction name="GAMEPAD_ACTION_BUTTON_7"/>
+		</Category>
+	</Layer>
+	<Layer name="GildedUI_StayMounted_Ultimate">
+		<Category>
+			<BlockAction name="GAMEPAD_ACTION_BUTTON_8"/>
+		</Category>
+	</Layer>
+	<Layer name="GildedUI_StayMounted_QuickSlot">
+		<Category>
+			<BlockAction name="ACTION_BUTTON_9"/>
+		</Category>
+	</Layer>
+	<Layer name="GildedUI_StayMounted_Attack">
+		<Category>
+			<BlockAction name="SPECIAL_MOVE_ATTACK"/>
+		</Category>
+	</Layer>
+	<Layer name="GildedUI_StayMounted_Block">
+		<Category>
+			<BlockAction name="SPECIAL_MOVE_BLOCK"/>
+		</Category>
+	</Layer>
+	<Layer name="GildedUI_StayMounted_Bash">
+		<Category>
+			<BlockAction name="SPECIAL_MOVE_INTERRUPT"/>
+		</Category>
+	</Layer>
+	<Layer name="GildedUI_StayMounted_Crouch">
+		<Category>
+			<BlockAction name="SPECIAL_MOVE_CROUCH"/>
+		</Category>
+	</Layer>
+</Bindings>

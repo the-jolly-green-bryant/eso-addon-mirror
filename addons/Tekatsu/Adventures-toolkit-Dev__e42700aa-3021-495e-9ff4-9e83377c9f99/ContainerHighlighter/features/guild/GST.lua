@@ -1,0 +1,4 @@
+-- ============================================
+-- GUILD SALES TRACKER ORCHESTRATOR
+-- ============================================
+-- Implementations are split across features/guild/gst/*.lua and loaded via manifest order.

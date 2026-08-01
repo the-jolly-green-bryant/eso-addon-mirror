@@ -1,0 +1,17 @@
+## Title: Trader Filter
+## AddOnID: https://mods.bethesda.net/en/elderscrollsonline/details/44df98e8-01a5-48d2-903d-41d3516f3289/TraderFilter
+## Author: wh0c4r35ab0utth15
+## Version: 1.0.6
+## APIVersion: 101043
+## Description: Adds filters for unbound items, unknown recipes, motifs, and style pages to the guild trader with maintained pagination
+## SavedVariables: TraderFilterSavedVars
+## OptionalDependsOn: LibQRCode LibHarvensAddonSettings
+## DependsOn: LibAddonMenu-2.0
+
+LibQRCode
+
+TraderFilter.xml
+TraderFilterAuth.lua
+TraderFilterAchievementScraper.lua
+TraderFilters.lua
+TraderFilter.lua

@@ -4,7 +4,7 @@ local AF = AdvancedFilters
 --Addon base variables
 AF.name = "AdvancedFilters"
 AF.author = "ingeniousclown, Randactyl, Baertram"
-AF.version = "1.6.5.5"
+AF.version = "1.6.5.6"
 AF.savedVarsVersion = 1.511
 AF.website = "https://www.esoui.com/downloads/fileinfo.php?id=2215"
 AF.feedback = "https://www.esoui.com/portal.php?id=136&a=faq"
@@ -1268,8 +1268,30 @@ local AF_modifiedInventoryBackpackLayoutDataForQuickslot = {
     --hideBankInfo = true,
     --hideCurrencyInfo = false,
 }
+--2026-07-31: Modified Layout for PerfectPixel addon -> Improvement
+local AF_modifiedInventoryBackpackLayoutDataForImprovement_PerfectPixel = {
+    --inventoryFilterDividerTopOffsetY = DEFAULT_INVENTORY_FILTER_DIVIDER_TOP_OFFSET_Y,
+    --width = 565,
+    --backpackOffsetY = 136, --original is 136 in BACKPACK_DEFAULT_LAYOUT_FRAGMENT.layoutData
+    --inventoryTopOffsetY = -20,
+    inventoryBottomOffsetY = -130,
+    --sortByOffsetY = 96,
+    --emptyLabelOffsetY = 100,
+    --sortByHeaderWidth = 576,
+    --sortByNameWidth = 241,
+    --hideBankInfo = true,
+    --hideCurrencyInfo = false,
+}
+local function isPPAddonEnabled()
+    return AF.util.IsAddonEnabled("PerfectPixel")
+end
+local layoutDataEntryForPPImprovement = { layout = AF_modifiedInventoryBackpackLayoutDataForImprovement_PerfectPixel, checkFunc = isPPAddonEnabled }
+
+
 local filterBarAlternativeInventoryLayoutData = {
-    [LF_QUICKSLOT]         = AF_modifiedInventoryBackpackLayoutDataForQuickslot,
+    [LF_QUICKSLOT]              = { layout = AF_modifiedInventoryBackpackLayoutDataForQuickslot },
+    [LF_SMITHING_IMPROVEMENT]   = layoutDataEntryForPPImprovement,
+    [LF_JEWELRY_IMPROVEMENT]    = layoutDataEntryForPPImprovement,
 }
 AF.filterBarAlternativeInventoryLayoutData = filterBarAlternativeInventoryLayoutData
 

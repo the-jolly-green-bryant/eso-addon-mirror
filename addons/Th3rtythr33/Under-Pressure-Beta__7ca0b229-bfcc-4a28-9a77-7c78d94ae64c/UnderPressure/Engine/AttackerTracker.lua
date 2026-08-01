@@ -4,12 +4,15 @@
 -- Maintains a rolling map of distinct attackers seen within a configurable
 -- window. Used to drive the small counter rendered under the indicator shape.
 --
--- Two modes:
---   * "solo" (Not Tank) -- count attackers targeting the local player
---   * "tank"            -- count attackers targeting any groupmate (best
---                          effort: the console runtime may not report every
---                          attack on every groupmate; whatever the local
---                          client observes is what we count)
+-- Counts attackers targeting the LOCAL PLAYER, and nothing else.
+--
+-- Tank mode -- a second counting mode that widened this to attackers on any
+-- groupmate -- was removed in 0.2.9. It needed a group-membership cache and a
+-- target-scope classification on every combat event, and it never worked as
+-- intended: the local client only receives a subset of the combat events
+-- happening to groupmates, so the count was quietly incomplete in exactly the
+-- content (trials, big pulls) where a tank would rely on it. See
+-- Docs/UnderPressure.md for the full reasoning.
 --
 -- A distinct attacker is identified by sourceUnitId. When sourceUnitId is
 -- zero, missing, or not numeric (e.g., siege, environmental) we fall back to
@@ -27,54 +30,6 @@ UP.Attackers = {}
 -- sourceType so the split was a no-op. Reverted to a single attacker count
 -- in 0.2.6.
 local seenAttackers = {}
-
--- Group-membership cache. Rebuilt on demand (cheap, max 12 entries). Used in
--- Tank mode to test whether a combat-event target is a groupmate.
---   groupNames[lowercasedName] = true
---   groupUnitIds[unitId] = true   (only populated if the unit-id lookup works)
-local groupNames   = {}
-local groupUnitIds = {}
-local groupCacheBuiltMs = 0
-local GROUP_CACHE_TTL_MS = 1500  -- rebuild at most every 1.5s
-
-local function lower(s)
-    if type(s) ~= "string" then return nil end
-    return s:lower()
-end
-
-local function rebuildGroupCache(nowMs)
-    groupNames   = {}
-    groupUnitIds = {}
-    groupCacheBuiltMs = nowMs
-
-    -- GetGroupSize returns 0 when not in a group. Cap at 24 to be safe across
-    -- ESO group-size eras (4, 12, 24 raid).
-    local size = (type(GetGroupSize) == "function") and GetGroupSize() or 0
-    if size <= 0 then return end
-    if size > 24 then size = 24 end
-
-    for i = 1, size do
-        local tag = ("group%d"):format(i)
-        if type(GetUnitName) == "function" then
-            local ok, name = pcall(GetUnitName, tag)
-            if ok and type(name) == "string" and name ~= "" then
-                groupNames[name:lower()] = true
-            end
-        end
-        if type(GetUnitId) == "function" then
-            local ok2, uid = pcall(GetUnitId, tag)
-            if ok2 and type(uid) == "number" and uid > 0 then
-                groupUnitIds[uid] = true
-            end
-        end
-    end
-end
-
-local function ensureGroupCacheFresh(nowMs)
-    if nowMs - groupCacheBuiltMs >= GROUP_CACHE_TTL_MS then
-        rebuildGroupCache(nowMs)
-    end
-end
 
 -- ---------------------------------------------------------------------------
 -- Identity key for an attacker
@@ -99,59 +54,18 @@ end
 -- ---------------------------------------------------------------------------
 -- Public ingest from EventIngest
 -- ---------------------------------------------------------------------------
--- Called for every hostile combat event.
+-- Called for every hostile combat event that targets the local player. The
+-- caller is responsible for that filtering -- see EventIngest.onCombatEvent,
+-- which returns early on any other target before reaching this.
 --
 -- Args:
 --   nowMs        -- event timestamp
 --   sourceUnitId -- numeric or nil
 --   sourceName   -- string or nil
---   targetScope  -- "self" (local player), "group" (groupmate), "other" (ignored)
-function UP.Attackers.Record(nowMs, sourceUnitId, sourceName, targetScope)
-    if targetScope ~= "self" and targetScope ~= "group" then return end
-
-    local sv = UP.sv or {}
-    local mode = sv.attacker_mode or "solo"
-    -- Solo mode: only count attackers on the local player.
-    -- Tank mode: count attackers on any groupmate (which includes the local
-    -- player -- a tank may also take hits directly).
-    if mode == "solo" and targetScope ~= "self" then return end
-
+function UP.Attackers.Record(nowMs, sourceUnitId, sourceName)
     local key = attackerKey(sourceUnitId, sourceName)
     if not key then return end
     seenAttackers[key] = nowMs
-end
-
--- ---------------------------------------------------------------------------
--- Helpers exposed for EventIngest
--- ---------------------------------------------------------------------------
--- Returns "self", "group", or "other" given the event's target identifiers.
--- The local-player check is the cheapest, so we do it first.
-function UP.Attackers.ClassifyTarget(targetType, targetUnitId, targetName, nowMs)
-    -- Local player. EventIngest already filters most events to targetType ==
-    -- COMBAT_UNIT_TYPE_PLAYER for the local player; we keep the check here
-    -- so this function is safe to call from any callsite.
-    if type(COMBAT_UNIT_TYPE_PLAYER) == "number"
-       and targetType == COMBAT_UNIT_TYPE_PLAYER then
-        return "self"
-    end
-
-    -- Groupmate check is only meaningful when the target is another player.
-    if type(COMBAT_UNIT_TYPE_OTHER_PLAYER) == "number"
-       and targetType ~= COMBAT_UNIT_TYPE_OTHER_PLAYER then
-        return "other"
-    end
-
-    -- Only useful in Tank mode; cheap enough to always compute.
-    ensureGroupCacheFresh(nowMs)
-
-    if type(targetUnitId) == "number" and groupUnitIds[targetUnitId] then
-        return "group"
-    end
-    local key = lower(targetName)
-    if key and groupNames[key] then
-        return "group"
-    end
-    return "other"
 end
 
 -- ---------------------------------------------------------------------------
@@ -185,12 +99,6 @@ function UP.Attackers.Counts(nowMs)
 
     lastCountMs, lastCount = nowMs, n
     return n
-end
-
--- Returns mode string, useful for the indicator label
-function UP.Attackers.Mode()
-    local sv = UP.sv or {}
-    return sv.attacker_mode or "solo"
 end
 
 -- Reset (called on combat-state leaving, optional)

@@ -1,0 +1,16 @@
+local SRC = SupportRotationCallouts
+SRC.Colossus = SRC.Colossus or {}
+
+SRC.Colossus.MAJOR_VULNERABILITY_ID = 106754
+SRC.Colossus.ABILITY_IDS = {
+    [122174] = true,
+    [122388] = true,
+    [122395] = true,
+}
+SRC.Colossus.CORRELATION_WINDOW_MS = 5000
+SRC.Colossus.CAST_DEDUPE_MS = 4500
+SRC.Colossus.ENDTIME_TOLERANCE_SECONDS = 0.075
+SRC.Colossus.UPDATE_INTERVAL_MS = 50
+
+SRC.Colossus.ULT_SPEND_MIN_ABSOLUTE = 40
+SRC.Colossus.ULT_SPEND_TOLERANCE_RATIO = 0.35

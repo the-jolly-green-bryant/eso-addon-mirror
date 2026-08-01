@@ -1,0 +1,69 @@
+<GuiXml>
+  <Animations>
+    <AnimationTimeline name="DWAllianceRankProgressBarGlow">
+      <Animations>
+        <AlphaAnimation duration="300" startAlpha="0.0" endAlpha="0.5" />
+        <AlphaAnimation duration="300" delay="2700" startAlpha="0.5" endAlpha="0.0" />
+      </Animations>
+    </AnimationTimeline>
+  </Animations>
+
+  <Controls>
+    <TopLevelControl name="DWAllianceRankProgressTLC">
+      <Dimensions x="395" y="64" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+
+      <Controls>
+        <Backdrop name="DWAllianceRankProgressUI" movable="true" mouseEnabled="true" centerColor="00000000" edgeColor="00000000">
+          <Dimensions x="395" y="64" />
+          <Anchor point="TOPLEFT" relativeTo="DWAllianceRankProgressTLC" relativePoint="TOPLEFT" offsetX="0" offsetY ="0" />
+          <OnMouseUp>
+            DWAllianceRankProgress:OnMoveStop()
+          </OnMouseUp>
+
+          <Controls>
+            <Texture name="$(parent)AllianceFlag" hidden="false" color="ffffff" textureFile="">
+              <Dimensions x="64" y="64" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            </Texture>
+
+            <Texture name="$(parent)AllianceRankIcon" hidden="false" color="ffffff" textureFile="">
+              <Dimensions x="21" y="21" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)AllianceFlag" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+            </Texture>
+
+            <Label name="$(parent)AllianceRankLabel" font="$(BOLD_FONT)|17|shadow" color="ffffff" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Rank/Title">
+              <Anchor point="LEFT" relativeTo="$(parent)AllianceRankIcon" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+            </Label>
+
+            <StatusBar name="$(parent)StatusBar" inherits="ZO_ArrowStatusBar" color="ffffff">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)AllianceRankIcon" relativePoint="BOTTOMLEFT" offsetX="3" offsetY="3" />
+              <Controls>
+                  <StatusBar name="$(parent)Gloss" level="550" override="true" />
+
+                  <Control name="$(parent)GlowContainer" inherits="ZO_PlayerAttributeWarner">
+                    <Controls>
+                        <Texture name="$(parent)Left" inherits="ZO_PlayerAttributeWarnerLeft" textureFile="EsoUI/Art/Progression/progressBar_genericGlow.dds" />
+                        <Texture name="$(parent)Right" inherits="ZO_PlayerAttributeWarnerRightArrow" textureFile="EsoUI/Art/Progression/progressBar_genericGlow.dds" />
+                        <Texture name="$(parent)Center" inherits="ZO_PlayerAttributeWarnerCenter" textureFile="EsoUI/Art/Progression/progressBar_genericGlow.dds" />
+                    </Controls>
+                  </Control>
+
+                  <Control name="$(parent)BG" inherits="ZO_ArrowStatusBarBG" tier="LOW" />
+                  <Control name="$(parent)Overlay" inherits="ZO_ArrowStatusBarOverlay" />
+              </Controls>
+            </StatusBar>
+
+            <Label name="$(parent)AllianceRankNumber" font="$(BOLD_FONT)|15|shadow" color="ffffff" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="50">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)StatusBar" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+            </Label>
+
+            <Label name="$(parent)AlliancePoints" font="$(BOLD_FONT)|15|shadow" color="ffffff" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="0/0">
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)StatusBar" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+            </Label>
+          </Controls>
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

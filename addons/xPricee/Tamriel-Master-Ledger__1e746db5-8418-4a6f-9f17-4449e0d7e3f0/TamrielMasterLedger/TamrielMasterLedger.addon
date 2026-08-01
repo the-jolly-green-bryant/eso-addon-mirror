@@ -1,0 +1,13 @@
+## Title: Tamriel Master Ledger v2.0.16.83 - Public Release Sales NetWorth Scroll Footer Fix
+## APIVersion: 101050
+## Version: 2.0.16.83
+## AddOnVersion: 21683
+## Author: The Eternal Gods / xPricee
+## SavedVariables: TamrielMasterLedgerMenuShellSavedVariables
+## IconTexture: TamrielMasterLedger/textures/tamrielmasterledger_icon.dds
+## Icon: textures/tamrielmasterledger_icon.dds
+## OptionalDependsOn: LibMainMenu-2.0 LibHistoire
+
+TamrielMasterLedger.xml
+TamrielMasterLedger.lua
+Bindings.xml

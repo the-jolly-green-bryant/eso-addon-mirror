@@ -1,0 +1,11 @@
+## Title: Companion Rapport
+## Author: Bankroll
+## Version: 2.1.1
+## AddOnVersion: 221
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: CompanionRapportSavedVars
+## Description: Shows which actions positively or negatively affects your companions rapport along with system messages to track rapport rank progress.
+
+CompanionRapportData.lua
+CompanionRapport.lua

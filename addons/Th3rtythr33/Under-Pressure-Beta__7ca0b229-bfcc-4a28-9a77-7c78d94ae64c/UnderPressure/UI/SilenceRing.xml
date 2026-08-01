@@ -1,0 +1,91 @@
+<GuiXml>
+    <Animations>
+        <!--
+            Breathing pulse for the silence ring.
+
+            Declared here rather than driven from Lua on purpose. The engine
+            runs it, so there is no RegisterForUpdate and no per-frame Lua at
+            all, which matters on console where the 1s-per-frame execution
+            budget is shared across every installed addon, and which keeps
+            faith with the 0.2.8 pass that removed per-tick work.
+
+            playbackType/loopCount as XML attributes has precedent in ZOS's own
+            compass.xml; the CreateTimelineFromVirtual instantiation in
+            SilenceRing.lua is the idiom reticle.lua itself uses. Neither
+            compass nor reticle is keyboard/gamepad split, so both are safe
+            references for console behaviour.
+
+            Applied to the Pulse texture only. The base Ring stays at constant
+            alpha so the state never momentarily reads as "off": for a
+            "you cannot cast" warning, a blink is worse than a glow.
+
+            (Note for future editors: XML comments cannot contain a double
+            hyphen, so the punctuation style here differs from the Lua files.)
+        -->
+        <AnimationTimeline name="UP_SilencePulse" playbackType="LOOP" loopCount="LOOP_INDEFINITELY">
+            <Animations>
+                <AlphaAnimation duration="350" startAlpha="0" endAlpha="0.9"/>
+                <AlphaAnimation duration="350" delay="350" startAlpha="0.9" endAlpha="0"/>
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+
+    <Controls>
+        <!--
+            Silence ring.
+
+            POSITION: GuiRoot CENTER with offsetY +108, which puts a 48px gap
+            between screen centre and the ring's TOP EDGE.
+
+            The offset is expressed as a control centre but the number that
+            matters is the gap, so the two are related by half the ring's height:
+            offsetY = gap + 60. Change the size and this has to be recomputed to
+            hold the gap steady.
+
+            History: +64 originally, i.e. the ring's CENTRE one reticle-height
+            below the crosshair, which gave a 24px gap at the original 80x80
+            size. Growing the ring to 120x120 shrank that gap to 4px without
+            moving anything, since the extra radius came off the top. Respaced to
+            a 48px gap on 2026-07-29.
+
+            It is deliberately NOT anchored to the reticle, even though that
+            would have worked:
+
+              * ZO_ReticleContainer is declared AnchorFill (a full-screen
+                container) and ZO_ReticleContainerReticle is anchored CENTER
+                inside it with no relativeTo. The reticle's centre therefore IS
+                screen centre, so this anchor is positionally identical while
+                taking no dependency on a first-party control.
+              * 64 is the reticle texture's height, fixed in ZOS's reticle.xml
+                and never resized anywhere in reticle.lua.
+              * reticle.lua hides the container and the reticle texture
+                independently (stealth, disguise, several interaction states).
+                A child control would inherit that and vanish while stealthed,
+                including while silenced in stealth, which is exactly when this
+                needs to be visible.
+
+            SIZE: 120x120, raised from 80x80 (a 50% increase) on 2026-07-29.
+            80 had matched the indicator tiles exactly; 120 is also a closer fit
+            to the 256px source art, so there is less downscaling.
+
+            No text anywhere in this control tree, so the gamepad-font trap
+            documented in UI/Fonts.lua does not apply here.
+        -->
+        <TopLevelControl name="UP_SilenceRingRoot" mouseEnabled="false" movable="false" hidden="true">
+            <Dimensions x="120" y="120"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="108"/>
+            <Controls>
+                <!-- Base ring: constant alpha, always the readable layer. -->
+                <Texture name="$(parent)Ring" textureFile="UnderPressure/UI/Textures/silence_ring.dds">
+                    <AnchorFill/>
+                </Texture>
+                <!-- Pulse overlay: alpha animated by UP_SilencePulse. Starts at
+                     0 so it cannot flash at full opacity for one frame before
+                     the timeline takes over. -->
+                <Texture name="$(parent)Pulse" textureFile="UnderPressure/UI/Textures/silence_ring_pulse.dds" alpha="0">
+                    <AnchorFill/>
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

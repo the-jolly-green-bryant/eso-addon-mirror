@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/murphyx/Hello-goodbye__80a0dbcb-9e84-4f98-8d1d-d2fd78129f82",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "murphyx",
+  "canonical_id": "bethesda:80a0dbcb-9e84-4f98-8d1d-d2fd78129f82",
+  "content_id": "80a0dbcb-9e84-4f98-8d1d-d2fd78129f82",
+  "deleted": false,
+  "fingerprint": "c015c02c8078edc8c9bb7dff640f8b0a74f4318973a405f447e15084d44c3ab7",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "80a0dbcb-9e84-4f98-8d1d-d2fd78129f82",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/80a0dbcb-9e84-4f98-8d1d-d2fd78129f82",
+  "title": "Hello, goodbye"
+}

@@ -1,0 +1,12 @@
+## Title: PvP Buddy
+## APIVersion: 101050
+## Version: 0.1.92
+## Author: Alpha AC
+## Description: Xbox-oriented Cyrodiil/Imperial City PvP Buddy overlay.
+## SavedVariables: PVPBuddySaved
+## OptionalDependsOn: LibAddonMenu-2.0
+
+PC/PVPBuddyRankProgress.xml
+Console/PVPBuddyRankProgress.xml
+PVPBuddyRankProgress.lua
+PVPBuddy.lua

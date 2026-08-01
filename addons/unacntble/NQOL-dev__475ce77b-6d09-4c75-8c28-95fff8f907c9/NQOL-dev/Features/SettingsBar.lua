@@ -1652,6 +1652,24 @@ function PlayerBars.SetCompanionShowName(value)
     COMPANION.QueueRefresh()
 end
 
+function PlayerBars.GetCompanionShowRapport()
+    return GetCompanionSettings().showRapport == true
+end
+
+function PlayerBars.SetCompanionShowRapport(value)
+    GetCompanionSettings().showRapport = value == true
+    COMPANION.QueueRefresh()
+end
+
+function PlayerBars.GetCompanionShowXpProgress()
+    return GetCompanionSettings().showXpProgress == true
+end
+
+function PlayerBars.SetCompanionShowXpProgress(value)
+    GetCompanionSettings().showXpProgress = value == true
+    COMPANION.QueueRefresh()
+end
+
 function PlayerBars.GetCompanionCurrentValue()
     return GetCompanionSettings().currentValue
 end
@@ -1672,6 +1690,16 @@ end
 
 function PlayerBars.SetCompanionHealthBarColor(red, green, blue, alpha)
     GetCompanionSettings().healthColor = PlayerBars.Group.CopyColorTable({ r = red, g = green, b = blue, a = alpha or 1 })
+    COMPANION.QueueRefresh()
+end
+
+function PlayerBars.GetCompanionXpColor()
+    local color = GetCompanionSettings().xpColor
+    return color.r, color.g, color.b, color.a or 1
+end
+
+function PlayerBars.SetCompanionXpColor(red, green, blue, alpha)
+    GetCompanionSettings().xpColor = PlayerBars.Group.CopyColorTable({ r = red, g = green, b = blue, a = alpha or 1 })
     COMPANION.QueueRefresh()
 end
 

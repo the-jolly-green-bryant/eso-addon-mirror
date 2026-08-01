@@ -1,0 +1,47 @@
+## Title: Khajiit Feng Shui
+## Author: @dack_janiels[PC-NA]
+## APIVersion: 101050 101051
+## Version: 1.3.7
+## AddOnVersion: 137
+## Description: Khajiit-approved console UI mover with LibCombatAlerts integration.
+## DependsOn: LibCombatAlerts LibHarvensAddonSettings>=20103
+## OptionalDependsOn: LuiExtended
+## SavedVariables: KhajiitFengShui_SavedVariables KhajiitFengShui_UnitFrames_SavedVariables
+
+# Temp Fixes
+util/temp_fix.lua
+
+# Closure gen
+util/functionUtility.lua
+
+# Language Files
+lang/default.lua
+
+# Namespace
+init.lua
+
+# Modules
+src/panel_utils.lua
+src/attribute_scaler.lua
+src/panel_definitions.lua
+src/edit_mode_controller.lua
+src/grid_overlay.lua
+
+# ZOS unitframes but KFS
+unitframes/unitframes.lua
+unitframes/unitframes.xml
+
+# Settings
+src/settings_controller.lua
+
+# Mover state management
+src/mover_state.lua
+
+# Do the stuff.
+src/main.lua
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+# All rights reserved
+#
+# You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

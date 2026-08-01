@@ -1,16 +1,23 @@
 ## Title: Under Pressure
 ## Author: Th3rtythr33
-## Version: 0.2.8
-## AddOnVersion: 9
+## Version: 0.3.2
+## AddOnVersion: 12
 ## APIVersion: 101049 101050
 ## SavedVariables: UnderPressureSavedVars
 ## DependsOn: LibAddonMenu-2.0>=32
-## Description: Quickly see how much danger you are in and how long you have to live if the damage isn't healed through or mitigated. Also provides a counter of how many distinct mobs you are taking damage from, with a Tank Mode to provide a count of what mobs you may not have under your control.
+## Description: Quickly see how much danger you are in and how long you have to live if the damage isn't healed through or mitigated. Also provides a counter of how many distinct mobs you are taking damage from.
 
-; AddOnVersion tracks the LAST PUBLISHED build, which is 0.2.7 = 8. It must
-; only ever increase. This was briefly set to 30 while the release was
-; planned as 3.0; that build was never published, so stepping back to 9 is
-; safe here and would NOT be safe if 30 had ever shipped.
+; AddOnVersion tracks the LAST PUBLISHED build. 0.2.7 = 8, 0.2.8 = 9,
+; 0.2.9 = 10, 0.3.0 = 11, so 0.3.2 = 12. It must only ever increase -- it
+; steps by one per published build regardless of how far the semantic
+; ## Version jumps. It was briefly set to 30 while the release was planned as
+; 3.0; that build was never published, so stepping back to 9 was safe and
+; would NOT have been safe if 30 had shipped.
+;
+; The Tank Mode sentence was dropped from the Description in 0.2.9 along with
+; the feature. The Bethesda.net web listing carries its own copy of this text
+; and has to be edited separately, in the uploader -- it is not derived from
+; this file.
 ;
 ; DependsOn (not Optional) is correct: LibAddonMenu-2.0 IS listed on the
 ; Bethesda.net console portal, confirmed by the author 2026-07-28, so the
@@ -31,12 +38,15 @@
 Engine/FeatureDetect.lua
 Engine/AbilityClassifier.lua
 Engine/AttackerTracker.lua
+Engine/SilenceTracker.lua
 Engine/PressureEngine.lua
 Engine/EventIngest.lua
 
 UI/Fonts.lua
 UI/Indicator.xml
 UI/Indicator.lua
+UI/SilenceRing.xml
+UI/SilenceRing.lua
 UI/Debug.xml
 UI/Debug.lua
 

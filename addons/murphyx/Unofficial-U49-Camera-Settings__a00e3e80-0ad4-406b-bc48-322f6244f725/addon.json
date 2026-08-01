@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/murphyx/Unofficial-U49-Camera-Settings__a00e3e80-0ad4-406b-bc48-322f6244f725",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "murphyx",
+  "canonical_id": "bethesda:a00e3e80-0ad4-406b-bc48-322f6244f725",
+  "content_id": "a00e3e80-0ad4-406b-bc48-322f6244f725",
+  "deleted": false,
+  "fingerprint": "deb570de2bf4f2a5de0f576d511394907989e6d777da86d636f069fb06d15688",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "a00e3e80-0ad4-406b-bc48-322f6244f725",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/a00e3e80-0ad4-406b-bc48-322f6244f725",
+  "title": "Unofficial U49 Camera Settings"
+}

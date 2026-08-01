@@ -115,6 +115,7 @@ local function ConvertDropdown(entry, out, pendingHeader)
 		header = header,
 		headerAlign = headerAlign,
 		items = items,
+		align = entry.align,
 		getFunction = function()
 			if not getFunc then
 				return items[1] and items[1].name
@@ -125,6 +126,47 @@ local function ConvertDropdown(entry, out, pendingHeader)
 		setFunction = function(_, name, item)
 			if setFunc then
 				setFunc(item and item.data or name)
+			end
+		end,
+		popSection = entry._popSection,
+	})
+end
+
+local function ConvertChecklist(entry, out, pendingHeader)
+	local items = BuildChoiceItems(entry)
+	local getFunc = entry.getFunc
+	local setFunc = entry.setFunc
+	local header, headerAlign = ConsumeHeader(entry, pendingHeader)
+	local default = entry.default
+	if type(default) ~= "table" then
+		default = {}
+	end
+	AddToIndexed(out, {
+		type = LCM.CT_CHECKLIST,
+		label = entry.name,
+		tooltip = entry.tooltip,
+		default = default,
+		disable = entry.disabled,
+		header = header,
+		headerAlign = headerAlign,
+		items = items,
+		maxSelections = entry.maxSelections,
+		noSelectionText = entry.noSelectionText,
+		multiSelectionTextFormatter = entry.multiSelectionTextFormatter,
+		align = entry.align,
+		getFunction = function()
+			if not getFunc then
+				return {}
+			end
+			local value = getFunc()
+			if type(value) ~= "table" then
+				return {}
+			end
+			return value
+		end,
+		setFunction = function(selectedValues)
+			if setFunc then
+				setFunc(selectedValues or {})
 			end
 		end,
 		popSection = entry._popSection,
@@ -243,6 +285,9 @@ ConvertControls = function(optionsTable, out, depth)
 				pendingHeader = nil
 			elseif entryType == "dropdown" then
 				ConvertDropdown(entry, out, pendingHeader)
+				pendingHeader = nil
+			elseif entryType == "checklist" then
+				ConvertChecklist(entry, out, pendingHeader)
 				pendingHeader = nil
 			elseif entryType == "description" then
 				ConvertDescription(entry, out, pendingHeader)
@@ -381,7 +426,7 @@ function LCM:RegisterAddonPanel(addonID, panelData)
 	BuildPanel(addonID)
 end
 
--- optionsTable = control list (toggle, slider, selector, dropdown, submenu, iconpicker, ...); checkbox is an alias for toggle
+-- optionsTable = control list (toggle, slider, selector, dropdown, checklist, submenu, iconpicker, ...); checkbox is an alias for toggle
 function LCM:RegisterOptionControls(addonID, optionsTable)
 	if not IsConsoleUI() then
 		return

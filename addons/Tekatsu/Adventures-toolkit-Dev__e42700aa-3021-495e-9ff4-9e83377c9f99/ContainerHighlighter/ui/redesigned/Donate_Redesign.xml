@@ -1,0 +1,100 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ATK_Donate_UI" hidden="true" mouseEnabled="true" movable="false">
+            <Dimensions x="1200" y="800"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" alpha="0.98">
+                    <AnchorFill/>
+                    <Edge edgeSize="4" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0A0A0A"/>
+                </Backdrop>
+                
+                <!-- Header -->
+                <Label name="$(parent)Title" font="ZoFontGamepadBold48" horizontalAlignment="CENTER" text="|cFFD700Adventurer's Toolkit|r">
+                    <Dimensions x="1200" y="70"/>
+                    <Anchor point="TOP" offsetY="20"/>
+                </Label>
+                
+                <!-- Left Panel - Features -->
+                <Control name="$(parent)LeftPanel">
+                    <Dimensions x="500" y="620"/>
+                    <Anchor point="TOPLEFT" offsetX="40" offsetY="100"/>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" alpha="0.95">
+                            <AnchorFill/>
+                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0D0D0D"/>
+                        </Backdrop>
+                        <Label name="$(parent)Header" font="ZoFontGamepadBold34" horizontalAlignment="CENTER" text="|c00FFFFOne Addon, All This|r">
+                            <Dimensions x="460" y="40"/>
+                            <Anchor point="TOP" offsetY="15"/>
+                        </Label>
+                        <Label name="$(parent)Features" font="ZoFontGamepad22" horizontalAlignment="LEFT" text="|cFFD700Guild Bookkeeper|r - Dues, raffles, management&#10;&#10;|cFFD700Guild Sales Tracker|r - Sales history, analytics&#10;&#10;|cFFD700Net Worth Dashboard|r - Total wealth tracking&#10;&#10;|cFFD700Housing Dashboard|r - Furniture finder&#10;&#10;|cFFD700Fishing Tracker|r - Catch rates, rare fish&#10;&#10;|cFFD700Loot Radar|r - Never miss a container&#10;&#10;|cFFD700Gold Ledger|r - Transaction history">
+                            <Dimensions x="460" y="380"/>
+                            <Anchor point="TOP" offsetY="60"/>
+                        </Label>
+                        <Label name="$(parent)Hours" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" color="88FF88" text="The only all-in-one toolkit for Xbox">
+                            <Dimensions x="460" y="35"/>
+                            <Anchor point="BOTTOM" offsetY="-60"/>
+                        </Label>
+                        <Label name="$(parent)Free" font="ZoFontGamepad22" horizontalAlignment="CENTER" text="|cFFFFFF100% free. No paywalls. Ever.|r">
+                            <Dimensions x="460" y="30"/>
+                            <Anchor point="BOTTOM" offsetY="-25"/>
+                        </Label>
+                    </Controls>
+                </Control>
+                
+                <!-- Right Panel - Donate Info -->
+                <Control name="$(parent)RightPanel">
+                    <Dimensions x="580" y="620"/>
+                    <Anchor point="TOPRIGHT" offsetX="-40" offsetY="100"/>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" alpha="0.95">
+                            <AnchorFill/>
+                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0D0D0D"/>
+                        </Backdrop>
+                        <Label name="$(parent)Header" font="ZoFontGamepadBold34" horizontalAlignment="CENTER" text="|cFFD700Buy Me a Coffee?|r">
+                            <Dimensions x="540" y="45"/>
+                            <Anchor point="TOP" offsetY="15"/>
+                        </Label>
+                        <Label name="$(parent)Message" font="ZoFontGamepad22" horizontalAlignment="CENTER" text="This addon is a labor of love.&#10;Donations help me dedicate more time&#10;to new features and improvements.">
+                            <Dimensions x="540" y="80"/>
+                            <Anchor point="TOP" offsetY="55"/>
+                        </Label>
+                        
+                        <!-- QR Code Container -->
+                        <Control name="$(parent)QRContainer">
+                            <Dimensions x="320" y="320"/>
+                            <Anchor point="CENTER" offsetY="-20"/>
+                        </Control>
+                        
+                        <Label name="$(parent)ScanText" font="ZoFontGamepadBold22" horizontalAlignment="CENTER" color="AAAAAA" text="Scan with your phone">
+                            <Dimensions x="540" y="30"/>
+                            <Anchor point="CENTER" offsetY="175"/>
+                        </Label>
+                        <Label name="$(parent)URL" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" color="00FF00" text="paypal.me/tekatsu23">
+                            <Dimensions x="540" y="40"/>
+                            <Anchor point="BOTTOM" offsetY="-80"/>
+                        </Label>
+                        <Label name="$(parent)Thanks" font="ZoFontGamepad22" horizontalAlignment="CENTER" color="FFD700" text="Even a few dollars makes a difference!">
+                            <Dimensions x="540" y="30"/>
+                            <Anchor point="BOTTOM" offsetY="-45"/>
+                        </Label>
+                        <Label name="$(parent)Heart" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" color="FF6666" text="Thank you, adventurer!">
+                            <Dimensions x="540" y="35"/>
+                            <Anchor point="BOTTOM" offsetY="-12"/>
+                        </Label>
+                    </Controls>
+                </Control>
+                
+                <!-- Footer -->
+                <Label name="$(parent)Footer" font="ZoFontGamepad18" horizontalAlignment="CENTER" color="888888" text="|c888888[B] Back|r">
+                    <Dimensions x="1000" y="25"/>
+                    <Anchor point="BOTTOM" offsetY="-15"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

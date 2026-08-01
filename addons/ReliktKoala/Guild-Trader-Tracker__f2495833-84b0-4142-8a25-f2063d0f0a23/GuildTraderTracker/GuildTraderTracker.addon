@@ -1,0 +1,7 @@
+## Title: GuildTraderTracker
+## Description: Probe addon for guild trader event discovery.
+## Author: TBD
+## Version: 0.1.0
+## APIVersion: 101047
+## SavedVariables: GuildTraderTrackerSavedVariables
+GuildTraderTracker.lua

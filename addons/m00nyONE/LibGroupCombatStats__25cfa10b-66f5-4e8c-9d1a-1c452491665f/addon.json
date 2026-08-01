@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/m00nyONE/LibGroupCombatStats__25cfa10b-66f5-4e8c-9d1a-1c452491665f",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "m00nyONE",
+  "canonical_id": "bethesda:25cfa10b-66f5-4e8c-9d1a-1c452491665f",
+  "content_id": "25cfa10b-66f5-4e8c-9d1a-1c452491665f",
+  "deleted": false,
+  "fingerprint": "8a888799e0b28d09591ca90e9f57fd6d09e82bad0c81e002b12ff4ea10da77ae",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "25cfa10b-66f5-4e8c-9d1a-1c452491665f",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/25cfa10b-66f5-4e8c-9d1a-1c452491665f",
+  "title": "LibGroupCombatStats"
+}

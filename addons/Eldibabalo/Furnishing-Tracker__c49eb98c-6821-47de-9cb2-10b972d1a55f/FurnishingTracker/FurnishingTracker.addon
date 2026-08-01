@@ -1,0 +1,11 @@
+﻿## Title: |c39B5E5Furnishing Tracker|r
+## Description: Console-first furnishing plan tracker for the logged-in character. Browse known/unknown plans, preview crafted item info, rarity, and source hints.
+## Author: |c39B5E5Eldibabalo|r
+## APIVersion: 101050
+## Version: 1.0.19
+## SavedVariables: FurnishingTrackerSV
+
+Bindings.xml
+FurnishingTrackerUI.xml
+FurnishingTracker.lua
+FurnishingTrackerUI.lua

@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/clubwratt/CP-Veterancy__7f8752f5-11f4-4e26-a26b-fc0ee813d8e1",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "clubwratt",
+  "canonical_id": "bethesda:7f8752f5-11f4-4e26-a26b-fc0ee813d8e1",
+  "content_id": "7f8752f5-11f4-4e26-a26b-fc0ee813d8e1",
+  "deleted": false,
+  "fingerprint": "c77d29273aede3cef20d7d754acca45cf4244cde93f73edbe73782fd609ef887",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "7f8752f5-11f4-4e26-a26b-fc0ee813d8e1",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/7f8752f5-11f4-4e26-a26b-fc0ee813d8e1",
+  "title": "CP Veterancy"
+}

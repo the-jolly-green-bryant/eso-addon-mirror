@@ -9,6 +9,7 @@ local libFilters = util.LibFilters
 local showChatDebug = AF.showChatDebug
 
 local displayName = GetDisplayName()
+local tos = tostring
 
 
 --Added 202060311: New inventory buy backspace icon needs to be hidden?
@@ -30,6 +31,16 @@ local function hideInventoryCountControls()
             end
         end
     end
+end
+
+--Check if another addon is enabled
+function util.IsAddonEnabled(addonName)
+    if addonName == nil or addonName == "" then return false end
+    local addonName2Global = {
+        ["PerfectPixel"] = PerfectPixel,
+    }
+--d("[AF]util.IsAddonEnabled: " .. tos(addonName) .. " = " .. tos(addonName2Global[addonName] ~= nil))
+    return (addonName2Global[addonName] ~= nil and true) or false
 end
 
 --Get the language of the client
@@ -174,7 +185,7 @@ local function addStrings(strings, p_filterInformation, p_pluginName)
         langStrings = p_filterInformation[lang .. "Strings"]
     end
 
---d("[AF]addStrings-name: " ..tostring(pluginName) .. ", lang: " ..tostring(lang))
+--d("[AF]addStrings-name: " ..tos(pluginName) .. ", lang: " ..tos(lang))
 
 
     --English strings (or generated strings in client language) first
@@ -194,7 +205,7 @@ local function addStrings(strings, p_filterInformation, p_pluginName)
             --Check if the same key was defined within another plugin already, and if this is the case: Error!
             local alreadyAddedPluginForKey = AF.pluginStringKeyToPlugin[key]
             if alreadyAddedPluginForKey ~= nil and alreadyAddedPluginForKey ~= pluginName then
-                d("[AdvancedFilters]String key \'"..tostring(key) .."\' = \'"..tostring(stringEn).."\' already exist in plugin \'" .. tostring(alreadyAddedPluginForKey).."\'! Please define a unique string key within current plugin: \'" ..tostring(pluginName) .. "\'")
+                d("[AdvancedFilters]String key \'"..tos(key) .."\' = \'"..tos(stringEn).."\' already exist in plugin \'" .. tos(alreadyAddedPluginForKey).."\'! Please define a unique string key within current plugin: \'" ..tos(pluginName) .. "\'")
             end
             ]]
         end
@@ -215,7 +226,7 @@ local function addStrings(strings, p_filterInformation, p_pluginName)
                 --Check if the same key was defined within another plugin already, and if this is the case: Error!
                 local alreadyAddedPluginForKey = AF.pluginStringKeyToPlugin[key]
                 if alreadyAddedPluginForKey ~= nil and alreadyAddedPluginForKey ~= pluginName then
-                    d("[AdvancedFilters]Client lang \'"..tostring(lang).."\' string key \'"..tostring(key) .."\' = \'"..tostring(stringOfClientLang).."\' already exist in plugin \'" .. tostring(alreadyAddedPluginForKey).."\'! Please define a unique string key within current plugin: \'" ..tostring(pluginName) .. "\'")
+                    d("[AdvancedFilters]Client lang \'"..tos(lang).."\' string key \'"..tos(key) .."\' = \'"..tos(stringOfClientLang).."\' already exist in plugin \'" .. tos(alreadyAddedPluginForKey).."\'! Please define a unique string key within current plugin: \'" ..tos(pluginName) .. "\'")
                 end
                 ]]
             --end
@@ -554,7 +565,7 @@ local getCurrentFilterOfInventory = util.GetCurrentFilterOfInventory
 
 function util.SetCurrentFilterOfInventory(invVar, invType, currentFilter)
     if not invVar or not invType or not invVar.inventories[invType] then
-        if AF.settings.debugSpam then df("<<ABORT[AF]util.UpdateCurrentFilter - invType %q missing in PLAYER_INVENTORY.inventories! CurrentFilter: %s", tostring(invType), tostring(currentFilter)) end
+        if AF.settings.debugSpam then df("<<ABORT[AF]util.UpdateCurrentFilter - invType %q missing in PLAYER_INVENTORY.inventories! CurrentFilter: %s", tos(invType), tos(currentFilter)) end
         return false
     end
     if doesInventoryTypeNeedsMappingToCustomAFCurrentFilter(invType) then
@@ -703,10 +714,21 @@ end
 --======================================================================================================================
 -- -v- Inventory layout functions                                                                                  -v-
 --======================================================================================================================
+local filterBarInventoryLayoutData = AF.filterBarAlternativeInventoryLayoutData
 function util.GetAlternativeInventoryLayoutData(filterType)
---d("[AF]util.GetAlternativeInventoryLayoutData - filterType: " ..tos(filterType))
-    local filterBarInventoryLayoutData = AF.filterBarAlternativeInventoryLayoutData
-    return filterBarInventoryLayoutData[filterType]
+    --d("[AF]util.GetAlternativeInventoryLayoutData - filterType: " ..tos(filterType))
+    filterBarInventoryLayoutData = filterBarInventoryLayoutData or AF.filterBarAlternativeInventoryLayoutData
+    if filterType == nil then return end
+    local filterBarInventoryLayoutDataForFiltertype = filterBarInventoryLayoutData[filterType]
+    if filterBarInventoryLayoutDataForFiltertype ~= nil then
+        if type(filterBarInventoryLayoutDataForFiltertype.checkFunc) == "function" then
+            if not filterBarInventoryLayoutDataForFiltertype.checkFunc() then return end
+--d(">checkFunc was OK")
+        end
+--d(">returning new layoutData for filterType: " ..tos(filterType))
+        return filterBarInventoryLayoutDataForFiltertype.layout
+    end
+    return
 end
 
 function util.HideInventoryControls(filterType, delay)

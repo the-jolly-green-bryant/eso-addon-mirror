@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Gamer_sa22/Infinite-Archive-Helper__fd1c014a-ca0d-42e8-91b7-3ce3c64be6b8",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Gamer_sa22",
+  "canonical_id": "bethesda:fd1c014a-ca0d-42e8-91b7-3ce3c64be6b8",
+  "content_id": "fd1c014a-ca0d-42e8-91b7-3ce3c64be6b8",
+  "deleted": false,
+  "fingerprint": "9ff0c213c7deca426094495fa17c1665834f9cffcedebdb861b0fb3130f811e6",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "fd1c014a-ca0d-42e8-91b7-3ce3c64be6b8",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/fd1c014a-ca0d-42e8-91b7-3ce3c64be6b8",
+  "title": "Infinite Archive Helper"
+}

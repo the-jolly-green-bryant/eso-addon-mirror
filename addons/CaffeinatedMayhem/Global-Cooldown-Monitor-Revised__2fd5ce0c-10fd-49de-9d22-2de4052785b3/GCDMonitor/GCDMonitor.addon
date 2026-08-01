@@ -1,0 +1,19 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Global Cooldown Monitor
+## Author: CaffeinatedMayhem, Armodeniz
+## Version: 2.01
+## AddOnVersion: 20001
+## APIVersion: 101049 101050
+## Description: GUI tracking Global Cooldown and Light Attack weeave time
+## SavedVariables: GCDMonitor_Settings
+## ConsoleDependsOn: LibHarvensAddonSettings>=20108
+## PCDependsOn: LibAddonMenu-2.0>=43
+
+GCDMonitor.xml
+PC/GCDMonitor.lua
+Console/ConsoleGCDMonitor.lua

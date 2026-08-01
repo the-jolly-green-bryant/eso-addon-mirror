@@ -1,0 +1,12 @@
+## Title: Persona
+## APIVersion: 101049 101050
+## Author: |cB427D3Su|c546D6Aga|c889764Co|cDA34CDma|r
+## Version: 1.0.0
+## Description: Console-first character personality and contextual emote addon.
+## DependsOn: LibHarvensAddonSettings
+## SavedVariables: Persona_SV
+
+## Disclaimer: This addon is fan-made using ZOS-provided APIs. It is not created, endorsed, or supported by ZeniMax Online Studios or Bethesda Softworks.
+
+Persona.lua
+Persona_Settings.lua

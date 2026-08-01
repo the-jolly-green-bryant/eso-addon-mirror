@@ -1,0 +1,27 @@
+<GuiXml>
+    <Controls>
+        <Label name="MyGamepadHeaderFontTemplate"
+               font="ZoFontGamepadBold27"
+               modifyTextType="UPPERCASE"
+               wrapMode="ELLIPSIS"
+               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+               virtual="true" />
+
+        <Label name="MyGamepadHeaderTemplate"
+               inherits="MyGamepadHeaderFontTemplate"
+               virtual="true">
+            <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" offsetX="40" />
+            <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="-40" />
+            <Dimensions y="60" />
+        </Label>
+    </Controls>
+
+    <Controls>
+        <TopLevelControl name="HerosCompassMenuRoot" inherits="ZO_Gamepad_ParametricList_Screen" hidden="true" mouseEnabled="false">
+            <OnInitialized>
+                HerosCompass_MenuScreen_OnInitialized(self)
+            </OnInitialized>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>
+

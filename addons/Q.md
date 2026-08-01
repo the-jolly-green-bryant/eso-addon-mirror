@@ -23,7 +23,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [QualityColorBlind](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/jellyalex978/QualityColorBlind__1680) | jellyalex978 | PC / Mac | 1.3.0 |
 | [Quest Map](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaptainBlagbird/Quest-Map__1022) | CaptainBlagbird | PC / Mac | 3.29 |
 | [Quest Mover](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gamer_sa22/Quest-Mover__9a439c8a-322c-472e-99f9-e05a6f76532b) | Gamer_sa22 | Console | — |
-| [Quest Test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unknown/Quest-Test__752b2e95-d14a-48f3-894f-3831aea7ce25) | Unknown | Console | — |
+| [Quest Test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ParanoidGaming/Quest-Test__752b2e95-d14a-48f3-894f-3831aea7ce25) | ParanoidGaming | Console | — |
 | [Quest Tracker Toggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SkullElf/Quest-Tracker-Toggle__4040) | SkullElf | PC / Mac | 1.4 |
 | [QuestSkipper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/helixanon/QuestSkipper__3062) | helixanon | PC / Mac | 1.4.0 |
 | [Quick Bank](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ranckor90/Quick-Bank__4109) | Ranckor90 | PC / Mac | v1.0.2 |

@@ -1,0 +1,18 @@
+<GuiXml>
+    <Controls>
+		<TopLevelControl name="WEAVEDELAYSBAR" hidden="true" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true"  layer="5" level="0">
+			<Dimensions x="520" y="20" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="200" offsetY="200" />
+			<OnMoveStop>
+				WeaveDelaysSaveDelayBarPosition()
+			</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)BG" centerColor="00000000" edgeColor="FFCCCCCC" layer="5" level="0">
+					<AnchorFill/>
+					<Edge edgeSize="1"/>
+					<Dimensions x="520" y="20"/>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

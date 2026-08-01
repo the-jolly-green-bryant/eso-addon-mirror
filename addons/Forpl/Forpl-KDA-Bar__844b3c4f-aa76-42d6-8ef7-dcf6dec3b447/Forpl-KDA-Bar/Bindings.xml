@@ -1,0 +1,18 @@
+<Bindings>
+    <!-- Appears under Settings > Controls > Keybindings > Forpl KDA Bar (PC and console).
+         Bind these so the bar can be moved/shown on Xbox, where slash commands aren't
+         practical. Unlock, then drag the bar; lock again when it's where you want it. -->
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Forpl KDA Bar">
+            <Action name="KDA_TOGGLE_LOCK">
+                <Down>KDABanner.ToggleLock()</Down>
+            </Action>
+            <Action name="KDA_TOGGLE_SHOW">
+                <Down>KDABanner.ToggleShown()</Down>
+            </Action>
+            <Action name="KDA_RESET">
+                <Down>KDABanner.Reset()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

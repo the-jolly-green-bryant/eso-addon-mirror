@@ -1,0 +1,10 @@
+## Title: EWPFinder
+## APIVersion: 101046
+## AddOnVersion: 1
+## Author: Synkronist and Lina
+## Description: Find your weapon power (WP) based on your current weapon and skills.
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: EWPFinderDamage EWPFinderSettings
+EWPFinder.lua
+EWPFinder.xml
+EWPFinderSettings.lua

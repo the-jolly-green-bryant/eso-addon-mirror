@@ -1,0 +1,11 @@
+## APIVersion: 101044
+## Title: Rebar
+## Author: |cff00ccVixen Hunny|r
+## Version: 6.0
+## Description : Classic-style custom attribute bars with smooth animation, 1000ms restore tracking, shield display, and low-resource alerts
+## SavedVariables: RebarVars
+## DependsOn: LibAddonMenu-2.0
+
+
+Rebar.lua
+Rebar.xml

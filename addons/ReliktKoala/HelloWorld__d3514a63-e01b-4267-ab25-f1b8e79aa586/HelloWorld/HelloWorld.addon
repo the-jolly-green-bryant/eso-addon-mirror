@@ -1,0 +1,6 @@
+## Title: HelloWorld
+## Description: Minimal hello world slash command addon for ESO console upload testing.
+## Author: ReliktGepard3
+## Version: 0.0.6
+## APIVersion: 101047
+HelloWorld.lua

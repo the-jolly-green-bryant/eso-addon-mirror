@@ -1,0 +1,100 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="RT_MainWindow" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="true">
+            <Dimensions x="1220" y="760" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <OnInitialized>
+                self:SetDrawLayer(DL_OVERLAY)
+                self:SetDrawTier(DT_HIGH)
+                self:SetDrawLevel(20)
+            </OnInitialized>
+            <Controls>
+                <Texture name="$(parent)BGSolid" mouseEnabled="false" color="0D0D0D" alpha="0.97">
+                    <AnchorFill />
+                </Texture>
+                <Backdrop name="$(parent)Border" mouseEnabled="false" centerColor="00000000" edgeColor="E8C05C">
+                    <AnchorFill />
+                    <Edge edgeSize="2" />
+                </Backdrop>
+                <Label name="$(parent)Title" font="$(BOLD_FONT)|30|soft-shadow-thick" text="Research Tracker" color="FFFFFF">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="18" offsetY="14" />
+                    <Dimensions x="700" y="34" />
+                </Label>
+                <Label name="$(parent)Info" font="$(MEDIUM_FONT)|20|soft-shadow-thin" text="Select a craft line to open detail page." color="CFCFCF">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="6" />
+                    <Dimensions x="1000" y="28" />
+                </Label>
+                <Control name="$(parent)SearchBox" mouseEnabled="false">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="54" />
+                    <Dimensions x="340" y="28" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_EditBackdrop">
+                            <AnchorFill />
+                        </Backdrop>
+                        <EditBox name="$(parent)Edit" inherits="ZO_DefaultEditForBackdrop" font="$(MEDIUM_FONT)|20|soft-shadow-thin">
+                            <Anchor point="TOPLEFT" offsetX="6" offsetY="2" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-6" offsetY="-2" />
+                        </EditBox>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)ListArea" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="110" />
+                    <Dimensions x="1180" y="520" />
+                </Control>
+                <Label name="$(parent)Footer" font="$(MEDIUM_FONT)|20|soft-shadow-thin" text="" color="B0B0B0">
+                    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="-18" />
+                    <Dimensions x="800" y="26" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="RT_DetailWindow" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="true">
+            <Dimensions x="1220" y="760" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <OnInitialized>
+                self:SetDrawLayer(DL_OVERLAY)
+                self:SetDrawTier(DT_HIGH)
+                self:SetDrawLevel(20)
+            </OnInitialized>
+            <Controls>
+                <Texture name="$(parent)BGSolid" mouseEnabled="false" color="0D0D0D" alpha="0.97">
+                    <AnchorFill />
+                </Texture>
+                <Backdrop name="$(parent)Border" mouseEnabled="false" centerColor="00000000" edgeColor="E8C05C">
+                    <AnchorFill />
+                    <Edge edgeSize="2" />
+                </Backdrop>
+                <Label name="$(parent)Title" font="$(BOLD_FONT)|30|soft-shadow-thick" text="Research Detail" color="FFFFFF">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="18" offsetY="14" />
+                    <Dimensions x="700" y="34" />
+                </Label>
+                <Label name="$(parent)Info" font="$(MEDIUM_FONT)|20|soft-shadow-thin" text="" color="CFCFCF">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="6" />
+                    <Dimensions x="1000" y="28" />
+                </Label>
+                <Control name="$(parent)SearchBox" mouseEnabled="false">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="54" />
+                    <Dimensions x="340" y="28" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_EditBackdrop">
+                            <AnchorFill />
+                        </Backdrop>
+                        <EditBox name="$(parent)Edit" inherits="ZO_DefaultEditForBackdrop" font="$(MEDIUM_FONT)|20|soft-shadow-thin">
+                            <Anchor point="TOPLEFT" offsetX="6" offsetY="2" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-6" offsetY="-2" />
+                        </EditBox>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)ListArea" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="110" />
+                    <Dimensions x="1180" y="520" />
+                </Control>
+                <Label name="$(parent)Footer" font="$(MEDIUM_FONT)|20|soft-shadow-thin" text="" color="B0B0B0">
+                    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="-18" />
+                    <Dimensions x="800" y="26" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>
+

@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/SavageTSC/TSC-Price-Fetcher-2__2a88cc14-8e8c-4b73-9605-2e1d7c764e23",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "SavageTSC",
+  "canonical_id": "bethesda:2a88cc14-8e8c-4b73-9605-2e1d7c764e23",
+  "content_id": "2a88cc14-8e8c-4b73-9605-2e1d7c764e23",
+  "deleted": false,
+  "fingerprint": "803b534f740d4af67b48d2f1caedc56300a908aa54ba17e895ea567b02bb19e3",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "2a88cc14-8e8c-4b73-9605-2e1d7c764e23",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/2a88cc14-8e8c-4b73-9605-2e1d7c764e23",
+  "title": "TSC Price Fetcher 2"
+}

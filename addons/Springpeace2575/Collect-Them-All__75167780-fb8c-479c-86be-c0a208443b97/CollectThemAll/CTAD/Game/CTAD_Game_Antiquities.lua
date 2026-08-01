@@ -1,0 +1,71 @@
+CollectThemAllData_Game_Antiquities = {
+    name = "Antiquities",
+    source = "Game",
+    collection = {
+        [COLLECTIBLE_CATEGORY_TYPE_ACCOUNT_UPGRADE] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_DLC] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_HOUSE_BANK] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_HOUSE] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_FURNITURE] = {
+            { name = "Blackwood Tapestry" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_ASSISTANT] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_COMPANION] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_MOUNT] = {
+            { name = "Ebon Dwarven Wolf" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_VANITY_PET] = {
+            { name = "Dwarven Scarab" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_MEMENTO] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_EMOTE] = {
+            { name = "Alinor Allemande" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_OUTFIT_STYLE] = {
+            { name = "Bog Blight Funerary Mask" },
+            { name = "Cryptcanon Vestments" },
+            { name = "Eldertide", armorOnly = true },
+            { name = "Esoteric Environment Greaves" },
+            { name = "Faun's Lark Cladding Jack" },
+            { name = "Huntsman's Warmask" },
+            { name = "Mad God's Dancing Shoes" },
+            { name = "Mantle Pelagicon Epaulets" },
+            { name = "Rakkhat's Voidmantle" },
+            { name = "Rourken Steamguards" },
+            { name = "Scaled Sabatons" },
+            { name = "Sinistral Cincture Belt" },
+            { name = "Stormweaver's Cavort Breeches" },
+            { name = "Syrabane's Ward Girdle" },
+            { name = "The Shadow Queen's Cowl" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_PLAYER_FX_OVERRIDE] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_ABILITY_FX_OVERRIDE] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_POLYMORPH] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_PERSONALITY] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_SKIN] = {
+            { name = "Barkroot Blessing" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_COSTUME] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_HAT] = {
+            { name = "Arkthzand Insight Vertex Shroud" },
+            { name = "Ironclad Sarcoshroud" },
+            { name = "Nighthunter's Cowl" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_BODY_MARKING] = {
+            { name = "Dwemer Body Markings" },
+            { name = "Spore Savant Body Marks" },
+            { name = "Ysgramor's Chosen Body Markings" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HEAD_MARKING] = {
+            { name = "Spore Savant Face Marks" },
+            { name = "Ysgramor's Chosen Face Marking" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HAIR] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_FACIAL_HAIR_HORNS] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_FACIAL_ACCESSORY] = {
+            { name = "Companion's Coronet" },
+            { name = "Dwemer Crown" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_PIERCING_JEWELRY] = {},
+    },
+}

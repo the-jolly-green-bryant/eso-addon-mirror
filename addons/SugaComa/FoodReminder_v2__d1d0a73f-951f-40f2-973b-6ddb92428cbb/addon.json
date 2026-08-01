@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/SugaComa/FoodReminder_v2__d1d0a73f-951f-40f2-973b-6ddb92428cbb",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "SugaComa",
+  "canonical_id": "bethesda:d1d0a73f-951f-40f2-973b-6ddb92428cbb",
+  "content_id": "d1d0a73f-951f-40f2-973b-6ddb92428cbb",
+  "deleted": false,
+  "fingerprint": "61ec70367c4f11af8546adf9219979baf5a62852befea43f11605d470f2f8236",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "d1d0a73f-951f-40f2-973b-6ddb92428cbb",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/d1d0a73f-951f-40f2-973b-6ddb92428cbb",
+  "title": "FoodReminder_v2"
+}

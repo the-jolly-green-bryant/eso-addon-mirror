@@ -24,9 +24,12 @@ function Addon:BuildSettingsMenu()
 
     local H = self:CreateSettingsHelpers()
     LCM:RegisterOptionControls(panelName, {
+        { type = "header", name = "Interface", align = "left" },
         self:BuildAnalyticsMenu(H),
         self:BuildResourcesMenu(H),
         self:BuildPlayerMenu(H),
         self:BuildLayoutMenu(H),
+        { type = "header", name = "System", align = "left" },
+        self:BuildSystemMenu(H),
     })
 end

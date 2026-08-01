@@ -13,11 +13,11 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Kaljastus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ek1/Kaljastus__2038) | Ek1 | PC / Mac | 4.0-20180621 |
 | [KamiChat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kamimark/KamiChat__3087) | kamimark | PC / Mac | 1.0.0 |
 | [Katt's Crypt Icons for OdySupportIcons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DonjaZero/Katt-s-Crypt-Icons-for-OdySupportIcons__3818) | DonjaZero | PC / Mac | 1.7.1 |
-| [KDStatTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen-Hunny/KDStatTracker__0f87c2f6-55c7-4450-b93b-d6395ac2004d) | Vixen Hunny | Console | — |
-| [KDStatTracker\[BETA\]](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen-Hunny/KDStatTracker-BETA__c8ab1f8d-4c10-4310-a76f-473ac11c3d05) | Vixen Hunny | Console | — |
+| [KDStatTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/KDStatTracker__0f87c2f6-55c7-4450-b93b-d6395ac2004d) | Vixen_Hunny | Console | — |
+| [KDStatTracker\[BETA\]](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/KDStatTracker-BETA__c8ab1f8d-4c10-4310-a76f-473ac11c3d05) | Vixen_Hunny | Console | — |
 | [Kecaj Trial Icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kecaj/Kecaj-Trial-Icons__3775) | kecaj | PC / Mac | 0.2.1 |
 | [Keep Door](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Verling/Keep-Door__3620) | Verling | PC / Mac | 1.0.6 |
-| [Keep ONE for Research](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Huah-Tu/Keep-ONE-for-Research__eb5d6e39-de4d-4163-9c41-521a3eb2a1aa) | Huah Tu | Console | — |
+| [Keep ONE for Research](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/huahtu/Keep-ONE-for-Research__eb5d6e39-de4d-4163-9c41-521a3eb2a1aa) | huahtu | Console | — |
 | [Keep ONE for Research](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/huahtu/Keep-ONE-for-Research__4605) | huahtu | PC / Mac | 0.0.3 |
 | [Keep Status](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aldericon/Keep-Status__2109) | aldericon | PC / Mac | 9.0 |
 | [Keep Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kitkathy1994/Keep-Tracker__3360) | kitkathy1994 | PC / Mac | 1.0.2 |
@@ -32,7 +32,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Keybinding: Miscellaneous Mementos](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Keybinding-Miscellaneous-Mementos__2309) | code65536 | PC / Mac | 2.1.7 |
 | [Keybinding: Toggle "Double Tap to Dodge"](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Keybinding-Toggle-Double-Tap-to-Dodge__2292) | code65536 | PC / Mac | 1.0.9 |
 | [KeyInv - Add hotkeys to items in your inventory](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/marlonbrando/KeyInv---Add-hotkeys-to-items-in-your-inventory__2903) | marlonbrando | PC / Mac | 1.5 |
-| [Khajiit Feng Shui](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dack_janiels-PC-NA/Khajiit-Feng-Shui__cae51d07-5b11-4feb-ab79-11e17ca47dca) | @dack_janiels\[PC-NA\] | Console | — |
+| [Khajiit Feng Shui](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dack.Janiels/Khajiit-Feng-Shui__cae51d07-5b11-4feb-ab79-11e17ca47dca) | Dack.Janiels | Console | — |
 | [Khajiit Speak](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Diriel/Khajiit-Speak__157) | Diriel | PC / Mac | 1.17 |
 | [KharfUi](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kharf/KharfUi__2077) | Kharf | PC / Mac | 0.4.3 |
 | [KHC Helmet FOV add-in](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Khrill/KHC-Helmet-FOV-add-in__1032) | Khrill | PC / Mac | 1.4.0 |
@@ -61,7 +61,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [KR Patch for WPamA (What Pledges at my Alts)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/whya5448/KR-Patch-for-WPamA-What-Pledges-at-my-Alts__2386) | whya5448 | PC / Mac | 0.1.0 |
 | [KR Patch for WPamA NEW](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dedo2/KR-Patch-for-WPamA-NEW__2507) | dedo2 | PC / Mac | 1.1.6 |
 | [KWerewolfTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Konten/KWerewolfTracker__4727) | Konten | PC / Mac | 1.1.0 |
-| [Kwibus Random Things (KRT)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wicked_prophet/Kwibus-Random-Things-KRT__4450) | wicked_prophet | PC / Mac | 1.2.8 |
+| [Kwibus Random Things (KRT)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wicked_prophet/Kwibus-Random-Things-KRT__4450) | wicked_prophet | PC / Mac | 1.2.9 |
 | [Kyoma's Global Achievements](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyoma/Kyoma-s-Global-Achievements__1867) | Kyoma | PC / Mac | 2.4.0 |
 | [Kyoma's Repair 'n Recharge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyoma/Kyoma-s-Repair-n-Recharge__1828) | Kyoma | PC / Mac | 1.1 |
 | [Kyoma's Repair 'n Recharge - Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tarkasion/Kyoma-s-Repair-n-Recharge---Updated__3275) | Tarkasion | PC / Mac | 1.3 |

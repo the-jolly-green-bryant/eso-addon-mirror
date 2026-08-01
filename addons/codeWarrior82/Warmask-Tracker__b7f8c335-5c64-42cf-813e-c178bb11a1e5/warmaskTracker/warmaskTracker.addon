@@ -1,0 +1,9 @@
+## Title:   Warmask Tracker
+## Author: CodeWarrior82
+## Description: Tracks the Huntsman's Warmask buff / debuff
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0>=42 LibChatMessage
+## SavedVariables: wmtAddonVars
+
+warmaskTracker.lua
+warmaskTracker.xml

@@ -1,0 +1,13 @@
+## Title: TorigaHUD
+## Description: A modern combat HUD with segmented resource bars and individually draggable frames.
+## APIVersion: 101050 101051
+## Version: 1.0.0
+## Author: Toriga (https://github.com/Master-Antonio)
+## SavedVariables: TorigaHUDSavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+## Bindings: Bindings.xml
+
+lang/en.lua
+lang/$(language).lua
+
+TorigaHUD.lua

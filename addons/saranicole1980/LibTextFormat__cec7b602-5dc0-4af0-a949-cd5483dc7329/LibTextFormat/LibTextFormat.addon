@@ -1,0 +1,27 @@
+## Title: LibTextFormat
+## Author: Saranicole1980
+## Version: 0.1.8
+## APIVersion: 101049 101050
+## AddOnVersion: 018
+## Description: Advanced Text Formatting and Parsing
+## IsLibrary: true
+
+LibTextFormatGlobals.lua
+
+# core
+core/Helpers.lua
+core/Scope.lua
+core/Filters.lua
+core/Protocol.lua
+
+# filters
+filters/Icons.lua
+filters/Collections.lua
+filters/Items.lua
+filter/Utility.lua
+
+# protocols
+protocols/Csv.lua
+protocols/DotPaths.lua
+
+LibTextFormat.lua

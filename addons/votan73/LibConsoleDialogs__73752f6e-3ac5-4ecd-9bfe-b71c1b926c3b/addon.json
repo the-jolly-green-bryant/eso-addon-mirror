@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/votan73/LibConsoleDialogs__73752f6e-3ac5-4ecd-9bfe-b71c1b926c3b",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "votan73",
+  "canonical_id": "bethesda:73752f6e-3ac5-4ecd-9bfe-b71c1b926c3b",
+  "content_id": "73752f6e-3ac5-4ecd-9bfe-b71c1b926c3b",
+  "deleted": false,
+  "fingerprint": "2a145e804921c76205caf969205dc536b4b606dc2cbef7ac0a8eae1ccee558e0",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "73752f6e-3ac5-4ecd-9bfe-b71c1b926c3b",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/73752f6e-3ac5-4ecd-9bfe-b71c1b926c3b",
+  "title": "LibConsoleDialogs"
+}

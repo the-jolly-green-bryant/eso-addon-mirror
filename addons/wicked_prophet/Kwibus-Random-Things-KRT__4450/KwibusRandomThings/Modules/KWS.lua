@@ -22,13 +22,15 @@ KRT.KWS = {
     editBox = nil,
     kickBtn = nil,
     fragment = nil,
-    pendingInvites = {}, -- Tracks players waiting to be re-invited
-    pendingKicksCount = 0, -- Tracks how many people we are waiting on the server to kick
-    inviteTimeoutTimer = nil, -- Failsafe timer
+    pendingInvites = {},
+    pendingKicksCount = 0,
+    inviteTimeoutTimer = nil,
+    isProcessing = false,
 }
 local self = KRT.KWS
 
 local function SV()
+    if not KRT.sv then KRT.sv = {} end
     if not KRT.sv.kws then
         KRT.sv.kws = ZO_DeepTableCopy(DEFAULTS.kws)
     end
@@ -36,15 +38,17 @@ local function SV()
 end
 
 function KRT.KWS:CreateUI()
-    local existing = _G["KwibusSpaulderUI"]
-    if existing and existing.SetHidden then
-        self.ui = existing
+    if self.ui and self.ui:GetNamedChild("Title") and #self.rows == 12 then
         return
     end
 
-    local win = WM:CreateTopLevelWindow("KwibusSpaulderUI")
+    local win = _G["KwibusSpaulderUI"]
+    if not win then
+        win = WM:CreateTopLevelWindow("KwibusSpaulderUI")
+    end
+
     win:SetDimensions(350, 520)
-    win:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, SV().offsetX, SV().offsetY)
+    win:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, SV().offsetX or 150, SV().offsetY or 150)
     win:SetMouseEnabled(true)
     win:SetMovable(true)
     win:SetClampedToScreen(true)
@@ -54,138 +58,170 @@ function KRT.KWS:CreateUI()
         SV().offsetY = control:GetTop()
     end)
 
-    local bg = WM:CreateControlFromVirtual(nil, win, "ZO_DefaultBackdrop")
-    bg:SetAnchorFill()
-
-    local title = WM:CreateControl(nil, win, CT_LABEL)
-    title:SetFont("ZoFontWinH2")
-    title:SetText("Kwibus Spaulder")
-    title:SetAnchor(TOP, win, TOP, 0, 10)
-
-    for i = 1, 12 do
-        local row = WM:CreateControl(nil, win, CT_CONTROL)
-        row:SetDimensions(330, 26)
-        row:SetAnchor(TOPLEFT, win, TOPLEFT, 10, 40 + ((i - 1) * 26))
-
-        local cb = WM:CreateControl(nil, row, CT_BUTTON)
-        cb:SetDimensions(20, 20)
-        cb:SetAnchor(LEFT, row, LEFT, 5, 0)
-        cb:SetNormalTexture("esoui/art/buttons/checkbox_unchecked.dds")
-        cb:SetMouseOverTexture("esoui/art/buttons/checkbox_mouseover.dds")
-        cb:SetPressedTexture("esoui/art/buttons/checkbox_checked.dds")
-        cb.checked = false
-
-        local role = WM:CreateControl(nil, row, CT_TEXTURE)
-        role:SetDimensions(24, 24)
-        role:SetAnchor(LEFT, cb, RIGHT, 5, 0)
-
-        local rr, rg, rb, ra = role:GetColor()
-        row.roleOriginalColor = { rr, rg, rb, ra }
-
-        local nameLabel = WM:CreateControl(nil, row, CT_LABEL)
-        nameLabel:SetFont("ZoFontGame")
-        nameLabel:SetAnchor(LEFT, role, RIGHT, 5, 0)
-        nameLabel:SetDimensions(220, 24)
-
-        local zoneIcon = WM:CreateControl(nil, row, CT_TEXTURE)
-        zoneIcon:SetDimensions(24, 24)
-        zoneIcon:SetAnchor(LEFT, nameLabel, RIGHT, 5, 0)
-
-        local function UpdateCheckboxTexture(control, isChecked)
-            if isChecked then
-                control:SetNormalTexture("esoui/art/buttons/checkbox_checked.dds")
-                control:SetMouseOverTexture("esoui/art/buttons/checkbox_checked_mouseover.dds")
-                control:SetPressedTexture("esoui/art/buttons/checkbox_unchecked.dds")
-            else
-                control:SetNormalTexture("esoui/art/buttons/checkbox_unchecked.dds")
-                control:SetMouseOverTexture("esoui/art/buttons/checkbox_mouseover.dds")
-                control:SetPressedTexture("esoui/art/buttons/checkbox_checked.dds")
-            end
-        end
-
-        cb:SetHandler("OnClicked", function(control)
-            control.checked = not control.checked
-            UpdateCheckboxTexture(control, control.checked)
-            if row.displayName then
-                self.selectedPlayers[row.displayName] = control.checked
-            end
-        end)
-        cb.UpdateTexture = UpdateCheckboxTexture
-
-        row.cb = cb
-        row.role = role
-        row.nameLabel = nameLabel
-        row.zoneIcon = zoneIcon
-        self.rows[i] = row
+    if not win:GetNamedChild("Backdrop") then
+        local bg = WM:CreateControlFromVirtual("$(parent)Backdrop", win, "ZO_DefaultBackdrop")
+        if bg then bg:SetAnchorFill() end
     end
 
-    local kickBtn = WM:CreateControlFromVirtual(nil, win, "ZO_DefaultButton")
-    kickBtn:SetAnchor(TOP, win, TOP, 0, 360)
-    kickBtn:SetWidth(250)
-    kickBtn:SetText("Kick & Re-invite Selected")
-    kickBtn:SetHandler("OnClicked", function() self:KickAndReinvite() end)
-    self.kickBtn = kickBtn
-
-    local pTitle = WM:CreateControl(nil, win, CT_LABEL)
-    pTitle:SetFont("ZoFontWinH3")
-    pTitle:SetText("Profiles")
-    pTitle:SetAnchor(TOPLEFT, win, TOPLEFT, 15, 400)
-
-    local editBg = WM:CreateControlFromVirtual(nil, win, "ZO_EditBackdrop")
-    editBg:SetDimensions(200, 26)
-    editBg:SetAnchor(TOPLEFT, pTitle, BOTTOMLEFT, 0, 10)
-    self.editBox = WM:CreateControlFromVirtual(nil, editBg, "ZO_DefaultEditForBackdrop")
-
-    local saveBtn = WM:CreateControlFromVirtual(nil, win, "ZO_DefaultButton")
-    saveBtn:SetDimensions(80, 28)
-    saveBtn:SetAnchor(LEFT, editBg, RIGHT, 10, 0)
-    saveBtn:SetText("Save")
-    saveBtn:SetHandler("OnClicked", function()
-        local pName = self.editBox:GetText()
-        if pName and pName ~= "" then
-            SV().profiles[pName] = ZO_DeepTableCopy(self.selectedPlayers)
-            SV().lastProfile = pName
-            self:UpdateProfileDropdown()
-            self.editBox:SetText("")
+    if not win:GetNamedChild("Title") then
+        local title = WM:CreateControl("$(parent)Title", win, CT_LABEL)
+        if title then
+            title:SetFont("ZoFontWinH2")
+            title:SetText("Kwibus Spaulder")
+            title:SetAnchor(TOP, win, TOP, 0, 10)
         end
-    end)
+    end
 
-    local comboCtrl = WM:CreateControlFromVirtual(nil, win, "ZO_ComboBox")
-    comboCtrl:SetDimensions(140, 26)
-    comboCtrl:SetAnchor(TOPLEFT, editBg, BOTTOMLEFT, 0, 15)
-    self.comboBox = ZO_ComboBox_ObjectFromContainer(comboCtrl)
-    self.comboBox:SetSortsItems(false)
+    for i = 1, 12 do
+        local row = self.rows[i]
+        if not row or not (row.cb and row.role and row.nameLabel and row.zoneIcon) then
+            row = WM:CreateControl(nil, win, CT_CONTROL)
+            row:SetDimensions(330, 26)
+            row:SetAnchor(TOPLEFT, win, TOPLEFT, 10, 40 + ((i - 1) * 26))
 
-    local loadBtn = WM:CreateControlFromVirtual(nil, win, "ZO_DefaultButton")
-    loadBtn:SetDimensions(70, 28)
-    loadBtn:SetAnchor(LEFT, comboCtrl, RIGHT, 10, 0)
-    loadBtn:SetText("Load")
-    loadBtn:SetHandler("OnClicked", function()
-        local selected = self.comboBox:GetSelectedItemData()
-        if selected and selected.name then
-            SV().lastProfile = selected.name
-            local prof = SV().profiles[selected.name]
-            if prof then
-                self.selectedPlayers = ZO_DeepTableCopy(prof)
-                self:RefreshRows()
+            local cb = WM:CreateControl(nil, row, CT_BUTTON)
+            cb:SetDimensions(20, 20)
+            cb:SetAnchor(LEFT, row, LEFT, 5, 0)
+            cb:SetNormalTexture("esoui/art/buttons/checkbox_unchecked.dds")
+            cb:SetMouseOverTexture("esoui/art/buttons/checkbox_mouseover.dds")
+            cb:SetPressedTexture("esoui/art/buttons/checkbox_checked.dds")
+            cb:SetDisabledTexture("esoui/art/buttons/checkbox_disabled.dds")
+            cb.checked = false
+
+            local role = WM:CreateControl(nil, row, CT_TEXTURE)
+            role:SetDimensions(24, 24)
+            role:SetAnchor(LEFT, cb, RIGHT, 5, 0)
+
+            local rr, rg, rb, ra = role:GetColor()
+            row.roleOriginalColor = { rr, rg, rb, ra }
+
+            local nameLabel = WM:CreateControl(nil, row, CT_LABEL)
+            nameLabel:SetFont("ZoFontGame")
+            nameLabel:SetAnchor(LEFT, role, RIGHT, 5, 0)
+            nameLabel:SetDimensions(220, 24)
+
+            local zoneIcon = WM:CreateControl(nil, row, CT_TEXTURE)
+            zoneIcon:SetDimensions(24, 24)
+            zoneIcon:SetAnchor(LEFT, nameLabel, RIGHT, 5, 0)
+
+            cb:SetHandler("OnClicked", function(control)
+                if row.isSelf or self.isProcessing then return end
+                control.checked = not control.checked
+                if control.checked then
+                    control:SetNormalTexture("esoui/art/buttons/checkbox_checked.dds")
+                    control:SetMouseOverTexture("esoui/art/buttons/checkbox_checked_mouseover.dds")
+                else
+                    control:SetNormalTexture("esoui/art/buttons/checkbox_unchecked.dds")
+                    control:SetMouseOverTexture("esoui/art/buttons/checkbox_mouseover.dds")
+                end
+                if row.displayName then
+                    self.selectedPlayers[row.displayName] = control.checked
+                end
+            end)
+
+            row.cb = cb
+            row.role = role
+            row.nameLabel = nameLabel
+            row.zoneIcon = zoneIcon
+            self.rows[i] = row
+        end
+    end
+
+    if not self.kickBtn then
+        local kickBtn = WM:CreateControlFromVirtual(nil, win, "ZO_DefaultButton")
+        if kickBtn then
+            kickBtn:SetAnchor(TOP, win, TOP, 0, 360)
+            kickBtn:SetWidth(250)
+            kickBtn:SetText("Kick & Re-invite Selected")
+            kickBtn:SetHandler("OnClicked", function() self:KickAndReinvite() end)
+            self.kickBtn = kickBtn
+        end
+    end
+
+    if not self.comboBox then
+        local pTitle = WM:CreateControl(nil, win, CT_LABEL)
+        if pTitle then
+            pTitle:SetFont("ZoFontWinH3")
+            pTitle:SetText("Profiles")
+            pTitle:SetAnchor(TOPLEFT, win, TOPLEFT, 15, 400)
+        end
+
+        local editBg = WM:CreateControlFromVirtual(nil, win, "ZO_EditBackdrop")
+        if editBg then
+            editBg:SetDimensions(200, 26)
+            editBg:SetAnchor(TOPLEFT, pTitle, BOTTOMLEFT, 0, 10)
+            self.editBox = WM:CreateControlFromVirtual(nil, editBg, "ZO_DefaultEditForBackdrop")
+        end
+
+        local saveBtn = WM:CreateControlFromVirtual(nil, win, "ZO_DefaultButton")
+        if saveBtn and editBg then
+            saveBtn:SetDimensions(80, 28)
+            saveBtn:SetAnchor(LEFT, editBg, RIGHT, 10, 0)
+            saveBtn:SetText("Save")
+            saveBtn:SetHandler("OnClicked", function()
+                if self.editBox then
+                    local pName = self.editBox:GetText()
+                    if pName and pName ~= "" then
+                        SV().profiles[pName] = ZO_DeepTableCopy(self.selectedPlayers)
+                        SV().lastProfile = pName
+                        self:UpdateProfileDropdown()
+                        self.editBox:SetText("")
+                    end
+                end
+            end)
+        end
+
+        local comboCtrl = WM:CreateControlFromVirtual(nil, win, "ZO_ComboBox")
+        if comboCtrl and editBg then
+            comboCtrl:SetDimensions(140, 26)
+            comboCtrl:SetAnchor(TOPLEFT, editBg, BOTTOMLEFT, 0, 15)
+            self.comboBox = ZO_ComboBox_ObjectFromContainer(comboCtrl)
+            if self.comboBox then
+                self.comboBox:SetSortsItems(false)
             end
         end
-    end)
 
-    local deleteBtn = WM:CreateControlFromVirtual(nil, win, "ZO_DefaultButton")
-    deleteBtn:SetDimensions(70, 28)
-    deleteBtn:SetAnchor(LEFT, loadBtn, RIGHT, 10, 0)
-    deleteBtn:SetText("Delete")
-    deleteBtn:SetHandler("OnClicked", function()
-        local selected = self.comboBox:GetSelectedItemData()
-        if selected and selected.name then
-            SV().profiles[selected.name] = nil
-            if SV().lastProfile == selected.name then
-                SV().lastProfile = ""
-            end
-            self:UpdateProfileDropdown()
+        local loadBtn = WM:CreateControlFromVirtual(nil, win, "ZO_DefaultButton")
+        if loadBtn and comboCtrl then
+            loadBtn:SetDimensions(70, 28)
+            loadBtn:SetAnchor(LEFT, comboCtrl, RIGHT, 10, 0)
+            loadBtn:SetText("Load")
+            loadBtn:SetHandler("OnClicked", function()
+                if self.comboBox then
+                    local selected = self.comboBox:GetSelectedItemData()
+                    if selected and selected.name then
+                        SV().lastProfile = selected.name
+                        local prof = SV().profiles and SV().profiles[selected.name]
+                        if prof then
+                            self.selectedPlayers = ZO_DeepTableCopy(prof)
+                            self:RefreshRows()
+                        end
+                    end
+                end
+            end)
         end
-    end)
+
+        local deleteBtn = WM:CreateControlFromVirtual(nil, win, "ZO_DefaultButton")
+        if deleteBtn and loadBtn then
+            deleteBtn:SetDimensions(70, 28)
+            deleteBtn:SetAnchor(LEFT, loadBtn, RIGHT, 10, 0)
+            deleteBtn:SetText("Delete")
+            deleteBtn:SetHandler("OnClicked", function()
+                if self.comboBox then
+                    local selected = self.comboBox:GetSelectedItemData()
+                    if selected and selected.name then
+                        if SV().profiles then
+                            SV().profiles[selected.name] = nil
+                        end
+                        if SV().lastProfile == selected.name then
+                            SV().lastProfile = ""
+                        end
+                        self:UpdateProfileDropdown()
+                    end
+                end
+            end)
+        end
+    end
 
     self.ui = win
 end
@@ -194,31 +230,35 @@ function KRT.KWS:UpdateProfileDropdown()
     if not self.comboBox then return end
     self.comboBox:ClearItems()
 
-    if not SV().profiles then
-        SV().profiles = {}
+    local sv = SV()
+    if not sv.profiles then
+        sv.profiles = {}
     end
 
     local targetIndex = 1
     local currentIndex = 1
 
-    for pName, _ in pairs(SV().profiles) do
+    for pName, _ in pairs(sv.profiles) do
         local entry = self.comboBox:CreateItemEntry(pName, function() end)
-        self.comboBox:AddItem(entry, ZO_COMBOBOX_SUPPRESS_UPDATE)
+        if entry then
+            self.comboBox:AddItem(entry, ZO_COMBOBOX_SUPPRESS_UPDATE)
 
-        if SV().lastProfile == pName then
-            targetIndex = currentIndex
+            if sv.lastProfile == pName then
+                targetIndex = currentIndex
+            end
+            currentIndex = currentIndex + 1
         end
-        currentIndex = currentIndex + 1
     end
 
     self.comboBox:UpdateItems()
-    local first = next(SV().profiles)
+    local first = next(sv.profiles)
     if first then
         self.comboBox:SelectItemByIndex(targetIndex)
     end
 end
 
 local function RestoreRoleColor(row)
+    if not row or not row.role then return end
     local c = row.roleOriginalColor
     if c then
         row.role:SetColor(c[1], c[2], c[3], c[4])
@@ -228,6 +268,7 @@ local function RestoreRoleColor(row)
 end
 
 local function SortGroupMembers(a, b)
+    if not a or not b then return false end
     if a.roleWeight ~= b.roleWeight then
         return a.roleWeight < b.roleWeight
     end
@@ -235,14 +276,19 @@ local function SortGroupMembers(a, b)
 end
 
 function KRT.KWS:RefreshRows()
+    if not self.ui then
+        self:CreateUI()
+    end
+
     if not self.ui or self.ui:IsHidden() then return end
 
     if self.kickBtn then
-        self.kickBtn:SetEnabled(IsUnitGroupLeader("player"))
+        self.kickBtn:SetEnabled(IsUnitGroupLeader("player") and not self.isProcessing)
     end
 
     local groupSize = IsUnitGrouped("player") and GetGroupSize() or 1
     local myZoneId = GetUnitZoneIndex("player")
+    local myDisplayName = string.lower(GetDisplayName() or "")
     local members = {}
 
     for i = 1, groupSize do
@@ -260,6 +306,8 @@ function KRT.KWS:RefreshRows()
             roleWeight = 3
         end
 
+        local isSelf = AreUnitsEqual(tag, "player") or (displayName and string.lower(displayName) == myDisplayName)
+
         table.insert(members, {
             tag = tag,
             displayName = displayName,
@@ -267,6 +315,7 @@ function KRT.KWS:RefreshRows()
             roleWeight = roleWeight,
             inMyZone = (unitZoneId == myZoneId),
             isOnline = IsUnitOnline(tag),
+            isSelf = isSelf,
         })
     end
 
@@ -276,53 +325,76 @@ function KRT.KWS:RefreshRows()
         local row = self.rows[i]
         local member = members[i]
 
-        if member then
-            row.displayName = member.displayName
-            row.nameLabel:SetText(member.displayName)
+        if row and row.cb and row.nameLabel and row.role and row.zoneIcon then
+            if member then
+                row.displayName = member.displayName
+                row.isSelf = member.isSelf
+                row.nameLabel:SetText(member.displayName or "")
 
-            local isChecked = self.selectedPlayers[member.displayName] or false
-            row.cb.checked = isChecked
-            row.cb.UpdateTexture(row.cb, isChecked)
+                if member.isSelf then
+                    row.cb:SetEnabled(false)
+                    row.cb.checked = false
+                    row.cb:SetNormalTexture("esoui/art/buttons/checkbox_disabled.dds")
+                    row.cb:SetMouseOverTexture("esoui/art/buttons/checkbox_disabled.dds")
+                    row.nameLabel:SetColor(0.5, 0.5, 0.5, 1)
+                    if member.displayName then
+                        self.selectedPlayers[member.displayName] = false
+                    end
+                else
+                    row.cb:SetEnabled(not self.isProcessing)
+                    row.nameLabel:SetColor(1, 1, 1, 1)
+                    local isChecked = (member.displayName and self.selectedPlayers[member.displayName]) or false
+                    row.cb.checked = isChecked
+                    if isChecked then
+                        row.cb:SetNormalTexture("esoui/art/buttons/checkbox_checked.dds")
+                        row.cb:SetMouseOverTexture("esoui/art/buttons/checkbox_checked_mouseover.dds")
+                    else
+                        row.cb:SetNormalTexture("esoui/art/buttons/checkbox_unchecked.dds")
+                        row.cb:SetMouseOverTexture("esoui/art/buttons/checkbox_mouseover.dds")
+                    end
+                end
 
-            if member.role == LFG_ROLE_TANK then
-                row.role:SetTexture("esoui/art/lfg/lfg_tank_down.dds")
-                if member.isOnline then
-                    row.role:SetColor(1, 0.2, 0.2, 1)
+                if member.role == LFG_ROLE_TANK then
+                    row.role:SetTexture("esoui/art/lfg/lfg_tank_down.dds")
+                    if member.isOnline then
+                        row.role:SetColor(1, 0.2, 0.2, 1)
+                    else
+                        RestoreRoleColor(row)
+                    end
+                elseif member.role == LFG_ROLE_HEAL then
+                    row.role:SetTexture("esoui/art/lfg/lfg_healer_down.dds")
+                    if member.isOnline then
+                        row.role:SetColor(0.2, 0.6, 1, 1)
+                    else
+                        RestoreRoleColor(row)
+                    end
+                elseif member.role == LFG_ROLE_DPS then
+                    row.role:SetTexture("esoui/art/lfg/lfg_dps_down.dds")
+                    if member.isOnline then
+                        row.role:SetColor(0.2, 1, 0.2, 1)
+                    else
+                        RestoreRoleColor(row)
+                    end
                 else
+                    row.role:SetTexture("esoui/art/lfg/lfg_dps_down.dds")
                     RestoreRoleColor(row)
                 end
-            elseif member.role == LFG_ROLE_HEAL then
-                row.role:SetTexture("esoui/art/lfg/lfg_healer_down.dds")
-                if member.isOnline then
-                    row.role:SetColor(0.2, 0.6, 1, 1)
+
+                if member.inMyZone then
+                    row.zoneIcon:SetTexture("esoui/art/buttons/accept_up.dds")
+                    row.zoneIcon:SetColor(0.2, 1, 0.2, 1)
                 else
-                    RestoreRoleColor(row)
+                    row.zoneIcon:SetTexture("esoui/art/buttons/decline_up.dds")
+                    row.zoneIcon:SetColor(1, 0.2, 0.2, 1)
                 end
-            elseif member.role == LFG_ROLE_DPS then
-                row.role:SetTexture("esoui/art/lfg/lfg_dps_down.dds")
-                if member.isOnline then
-                    row.role:SetColor(0.2, 1, 0.2, 1)
-                else
-                    RestoreRoleColor(row)
-                end
+
+                row.zoneIcon:SetHidden(false)
+                row:SetHidden(false)
             else
-                row.role:SetTexture("esoui/art/lfg/lfg_dps_down.dds")
-                RestoreRoleColor(row)
+                row:SetHidden(true)
+                row.displayName = nil
+                row.isSelf = false
             end
-
-            if member.inMyZone then
-                row.zoneIcon:SetTexture("esoui/art/buttons/accept_up.dds")
-                row.zoneIcon:SetColor(0.2, 1, 0.2, 1)
-            else
-                row.zoneIcon:SetTexture("esoui/art/buttons/decline_up.dds")
-                row.zoneIcon:SetColor(1, 0.2, 0.2, 1)
-            end
-
-            row.zoneIcon:SetHidden(false)
-            row:SetHidden(false)
-        else
-            row:SetHidden(true)
-            row.displayName = nil
         end
     end
 end
@@ -333,40 +405,54 @@ function KRT.KWS:ExecuteInvites()
         self.inviteTimeoutTimer = nil
     end
 
-    if #self.pendingInvites > 0 then
+    if self.pendingInvites and #self.pendingInvites > 0 then
         for _, name in ipairs(self.pendingInvites) do
-            GroupInviteByName(name)
+            if name and name ~= "" then
+                GroupInviteByName(name)
+            end
         end
         d("[Kwibus Spaulder] Re-invited " .. #self.pendingInvites .. " players.")
     end
 
-    -- Clear lists
     self.pendingInvites = {}
     self.pendingKicksCount = 0
+    self.isProcessing = false
+    self:RefreshRows()
 end
 
 function KRT.KWS:KickAndReinvite()
+    if self.isProcessing then
+        return
+    end
+
     if not IsUnitGroupLeader("player") then
         d("[Kwibus Spaulder] You must be the group leader to kick players!")
         return
     end
 
+    self.isProcessing = true
     self.pendingInvites = {}
     self.pendingKicksCount = 0
 
-    for i = 1, GetGroupSize() do
-        local tag = GetGroupUnitTagByIndex(i)
-        local displayName = GetUnitDisplayName(tag)
+    if self.kickBtn then
+        self.kickBtn:SetEnabled(false)
+    end
 
-        if self.selectedPlayers[displayName] and not AreUnitsEqual(tag, "player") then
-            table.insert(self.pendingInvites, displayName)
-            GroupKick(tag)
-            self.pendingKicksCount = self.pendingKicksCount + 1
+    local groupSize = GetGroupSize() or 0
+    for i = 1, groupSize do
+        local tag = GetGroupUnitTagByIndex(i)
+        if tag then
+            local displayName = GetUnitDisplayName(tag)
+
+            if displayName and self.selectedPlayers[displayName] and not AreUnitsEqual(tag, "player") then
+                table.insert(self.pendingInvites, displayName)
+                GroupKick(tag)
+                self.pendingKicksCount = self.pendingKicksCount + 1
+            end
         end
     end
 
     if self.pendingKicksCount > 0 then
-        -- Failsafe: if the server bugs out and misses an EVENT_GROUP_MEMBER_LEFT, force invites after 3 seconds anyway
         if self.inviteTimeoutTimer then
             zo_removeCallLater(self.inviteTimeoutTimer)
         end
@@ -377,11 +463,14 @@ function KRT.KWS:KickAndReinvite()
                 self:ExecuteInvites()
             end
         end, 3000)
+    else
+        self.isProcessing = false
+        self:RefreshRows()
     end
 end
 
 function KRT.KWS:ToggleFragment()
-    local groupScene = SCENE_MANAGER:GetScene("groupMenuKeyboard")
+    local groupScene = SCENE_MANAGER and SCENE_MANAGER:GetScene("groupMenuKeyboard")
     if groupScene and self.fragment then
         local groupSize = IsUnitGrouped("player") and GetGroupSize() or 0
         local shouldShow = SV().enabled and (groupSize >= 5)
@@ -424,17 +513,14 @@ function KRT.KWS:Initialize()
     local function OnGroupMemberLeft(eventCode, memberCharacterName, reason, isLocalPlayer, isLeader, memberDisplayName, actionRequiredVote)
         OnGroupUpdate()
 
-        -- If we are waiting for kicks to finish, reduce the tracker and send invites when it hits zero
         if self.pendingKicksCount > 0 then
-            -- We only care if the person leaving is someone in our pending invite list
             for _, pendingName in ipairs(self.pendingInvites) do
-                if pendingName == memberDisplayName then
+                if pendingName and memberDisplayName and pendingName == memberDisplayName then
                     self.pendingKicksCount = self.pendingKicksCount - 1
                     break
                 end
             end
 
-            -- Delay invites by 2s after the last kick is confirmed
             if self.pendingKicksCount <= 0 then
                 zo_callLater(function()
                     self:ExecuteInvites()

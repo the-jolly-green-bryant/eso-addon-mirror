@@ -1,0 +1,32 @@
+local HH = HouseHotkey
+
+HH.Lang = {
+  CHARACTER_SETTING =         "Configuration by Characters",
+  CREATE_QUICKSLOT =          "Create QuickSlots for Porting to Houses",
+  NO_HOUSES =                 "No Houses Available",
+  HOUSE =                     "House",
+  HOUSE_RETURN =              "RETURN",
+  HOUSE_PREVIEW_EXPLAIN =     "Exit the Previewed House to return to your original location",
+  HOUSE_EXTERIOR =            "Jump to Outside of House",
+  HOUSE_INSIDE =              "Inside",
+  HOUSE_OUTSIDE =             "Outside",
+  HOUSE_INSIDE_ONLY =         "Inside Only",
+  HOUSE_OWNER =               "Owner",
+  HOUSE_COLLECTED =           "Collected",
+  WHEEL_CATEGORY =            "Wheel Category",
+  WHEEL_SLOT =                "Slot",
+  WHEEL_ICON =                "Icons",
+  WHEEL_NAME =                "Title",
+  WHEEL_APPLY =               "Add",
+  WHEEL_INFO =                "\r\n* HouseHotkey Overwrites these Wheels without modifying Placed Items",
+  WHEEL_DESC =                "Configured: ",
+  WHEEL_EDIT =                "Edit",
+  WHEEL_EMPTY =               "Empty this Category",
+  WHEEL_DELETE =              "Delete this slot",
+
+  STATUS_NO_NAME =            "|cFF0000Title Required!|r",
+  STATUS_ADDED =              "|c008000Added!|r",
+  ADD_TO_HOTBAR =             "Assign",
+  HOTBAR_OPTIONS =            "Quickslot Options",
+  LRM_WHEEL =                 "Addon Entries",
+}

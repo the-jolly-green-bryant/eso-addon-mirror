@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/brossin13/CollectablesTesting__9cb042d4-e427-4f0c-9c9c-48e1a355c970",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "brossin13",
+  "canonical_id": "bethesda:9cb042d4-e427-4f0c-9c9c-48e1a355c970",
+  "content_id": "9cb042d4-e427-4f0c-9c9c-48e1a355c970",
+  "deleted": false,
+  "fingerprint": "6e8a64827459b64f0628c236c21e9de0281779d11bb8d9d1dc32b725fac5aa50",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "9cb042d4-e427-4f0c-9c9c-48e1a355c970",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/9cb042d4-e427-4f0c-9c9c-48e1a355c970",
+  "title": "CollectablesTesting"
+}

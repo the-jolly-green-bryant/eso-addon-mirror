@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Squid.Meat/AutoInteract__ddf1a1e2-b627-4cb5-a40a-a3ece40c609c",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Squid.Meat",
+  "canonical_id": "bethesda:ddf1a1e2-b627-4cb5-a40a-a3ece40c609c",
+  "content_id": "ddf1a1e2-b627-4cb5-a40a-a3ece40c609c",
+  "deleted": false,
+  "fingerprint": "03bb98f8372efc2b1c617ed2e5570cb25f9dfeffd531cfd04e81d533a31d7a41",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "ddf1a1e2-b627-4cb5-a40a-a3ece40c609c",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/ddf1a1e2-b627-4cb5-a40a-a3ece40c609c",
+  "title": "AutoInteract"
+}

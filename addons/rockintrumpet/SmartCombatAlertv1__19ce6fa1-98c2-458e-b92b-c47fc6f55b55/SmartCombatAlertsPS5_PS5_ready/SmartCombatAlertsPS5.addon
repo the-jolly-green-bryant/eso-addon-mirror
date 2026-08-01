@@ -1,0 +1,10 @@
+## Title: Smart Combat Alerts PS5
+## Author: Lucas
+## Version: 3.0.0
+## APIVersion: 101049 101050
+## Description: Lightweight combat alerts designed for console play.
+## IsConsoleAddon: 1
+## SavedVariables: SmartCombatAlertsPS5_SavedVariables
+
+SmartCombatAlertsPS5.lua
+SmartCombatAlertsPS5.xml

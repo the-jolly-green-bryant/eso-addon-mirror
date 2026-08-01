@@ -1,0 +1,47 @@
+CollectThemAllData_Events_NightMarket = {
+    name = "Night Market",
+    source = "Events",
+    collection = {
+        [COLLECTIBLE_CATEGORY_TYPE_HOUSE] = {
+            { name = "Night's Den", no = 124 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_FURNITURE] = {
+            { name = "Gleaming Lamp Replica" },
+            { name = "Egg of Arac Replica" },
+            { name = "Windglass Replica" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_ASSISTANT] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_COMPANION] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_MOUNT] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_VANITY_PET] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_MEMENTO] = {
+            { name = "Gleaming Lamp" },
+            { name = "Egg of Arac" },
+            { name = "Windglass" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_EMOTE] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_OUTFIT_STYLE] = {
+            { name = "Helm of the Glittering Goad" },
+            { name = "Shoulders of the Glittering Goad" },
+            { name = "Helm of the Ruckus" },
+            { name = "Shoulder of the Ruckus" },
+            { name = "Helm of the Thousand Eyes" },
+            { name = "Shoulders of the Thousand Eyes" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_PLAYER_FX_OVERRIDE] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_ABILITY_FX_OVERRIDE] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_POLYMORPH] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_PERSONALITY] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_SKIN] = {
+            { name = "Night Market Curator" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_COSTUME] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_HAT] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_BODY_MARKING] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_HEAD_MARKING] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_HAIR] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_FACIAL_HAIR_HORNS] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_FACIAL_ACCESSORY] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_PIERCING_JEWELRY] = {},
+    },
+}

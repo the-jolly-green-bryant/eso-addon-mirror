@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/beammeupbot/BeamMeUp__d2c9bb50-7161-423e-ab74-38b8353ace04",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "beammeupbot",
+  "canonical_id": "bethesda:d2c9bb50-7161-423e-ab74-38b8353ace04",
+  "content_id": "d2c9bb50-7161-423e-ab74-38b8353ace04",
+  "deleted": false,
+  "fingerprint": "9018db65502f59c98256da5144f00e1e8aabc2a76c3e427b8365e6f8c9802c2d",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "d2c9bb50-7161-423e-ab74-38b8353ace04",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/d2c9bb50-7161-423e-ab74-38b8353ace04",
+  "title": "BeamMeUp"
+}

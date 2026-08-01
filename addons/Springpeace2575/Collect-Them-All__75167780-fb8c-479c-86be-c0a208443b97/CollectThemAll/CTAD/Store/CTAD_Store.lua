@@ -1,0 +1,15 @@
+CollectThemAllData_Store = {
+    CollectThemAllData_Store_LimitedHouses or {},
+    CollectThemAllData_Store_LimitedOffers or {},
+    CollectThemAllData_Store_LimitedBundles or {},
+    CollectThemAllData_Store_LimitedMounts or {},
+    CollectThemAllData_Store_LimitedPets or {},
+    CollectThemAllData_Store_LimitedWeapons or {},
+    CollectThemAllData_Store_LimitedEventStyles or {},
+    CollectThemAllData_Store_LimitedMonsterArms or {},
+    CollectThemAllData_Store_LimitedOutfitStyles or {},
+    CollectThemAllData_Store_PermanentOffers or {},
+    CollectThemAllData_Store_PermanentHouses or {},
+    CollectThemAllData_Store_PermanentBundles or {},
+    CollectThemAllData_Store_PermanentStyleParlor or {},
+}

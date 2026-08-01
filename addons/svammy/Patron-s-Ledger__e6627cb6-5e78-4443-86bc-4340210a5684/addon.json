@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/svammy/Patron-s-Ledger__e6627cb6-5e78-4443-86bc-4340210a5684",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "svammy",
+  "canonical_id": "bethesda:e6627cb6-5e78-4443-86bc-4340210a5684",
+  "content_id": "e6627cb6-5e78-4443-86bc-4340210a5684",
+  "deleted": false,
+  "fingerprint": "386edd2fd35d13f2098d06048420e41d934b360b7edf0ade9a010a8709d9042c",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "e6627cb6-5e78-4443-86bc-4340210a5684",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/e6627cb6-5e78-4443-86bc-4340210a5684",
+  "title": "Patron's Ledger"
+}

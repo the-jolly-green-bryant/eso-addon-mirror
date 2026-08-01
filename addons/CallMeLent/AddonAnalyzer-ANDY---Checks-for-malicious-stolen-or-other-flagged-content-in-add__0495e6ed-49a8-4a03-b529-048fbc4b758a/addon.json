@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/CallMeLent/AddonAnalyzer-ANDY---Checks-for-malicious-stolen-or-other-flagged-content-in-add__0495e6ed-49a8-4a03-b529-048fbc4b758a",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "CallMeLent",
+  "canonical_id": "bethesda:0495e6ed-49a8-4a03-b529-048fbc4b758a",
+  "content_id": "0495e6ed-49a8-4a03-b529-048fbc4b758a",
+  "deleted": false,
+  "fingerprint": "c1c9a8b7a7e4995e146ea5d1bdb0f5690609f92f22ffb919aec18ae4877df298",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "0495e6ed-49a8-4a03-b529-048fbc4b758a",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/0495e6ed-49a8-4a03-b529-048fbc4b758a",
+  "title": "AddonAnalyzer (ANDY) - Checks for malicious, stolen, or other flagged content in addons!"
+}

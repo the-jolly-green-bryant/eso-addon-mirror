@@ -306,6 +306,16 @@ function GamepadOptions.BuildCompanionShowNameOption()
     return GamepadOptions.BuildCheckboxOption(GamepadOptions.COMPANION_FRAME_PANEL_ID, 13, playerBars.GetCompanionShowNameLabel(), playerBars.GetCompanionShowNameTooltip(), playerBars.GetCompanionShowName, playerBars.SetCompanionShowName)
 end
 
+function GamepadOptions.BuildCompanionShowRapportOption()
+    local playerBars = NQOL.Features.PlayerBars
+    return GamepadOptions.BuildCheckboxOption(GamepadOptions.COMPANION_FRAME_PANEL_ID, 15, playerBars.GetCompanionShowRapportLabel(), playerBars.GetCompanionShowRapportTooltip(), playerBars.GetCompanionShowRapport, playerBars.SetCompanionShowRapport)
+end
+
+function GamepadOptions.BuildCompanionShowXpProgressOption()
+    local playerBars = NQOL.Features.PlayerBars
+    return GamepadOptions.BuildCheckboxOption(GamepadOptions.COMPANION_FRAME_PANEL_ID, 16, playerBars.GetCompanionShowXpProgressLabel(), playerBars.GetCompanionShowXpProgressTooltip(), playerBars.GetCompanionShowXpProgress, playerBars.SetCompanionShowXpProgress)
+end
+
 function GamepadOptions.BuildGroupNameDisplayOption()
     local playerBars = NQOL.Features.PlayerBars
     return GamepadOptions.BuildFiniteListOption(GamepadOptions.GROUP_FRAME_PANEL_ID, 15, playerBars.GetGroupNameDisplayLabel(), playerBars.GetGroupNameDisplayTooltip(), playerBars.GetGroupNameDisplayChoices(), playerBars.GetGroupNameDisplayChoiceNames(), playerBars.GetGroupNameDisplay, playerBars.SetGroupNameDisplay)
@@ -374,6 +384,11 @@ end
 function GamepadOptions.BuildCompanionHealthBarColorOption()
     local playerBars = NQOL.Features.PlayerBars
     return GamepadOptions.BuildColorOption(GamepadOptions.COMPANION_FRAME_PANEL_ID, 21, playerBars.GetCompanionHealthBarColorLabel(), playerBars.GetCompanionHealthBarColorTooltip(), playerBars.GetCompanionHealthBarColor, playerBars.SetCompanionHealthBarColor)
+end
+
+function GamepadOptions.BuildCompanionXpColorOption()
+    local playerBars = NQOL.Features.PlayerBars
+    return GamepadOptions.BuildColorOption(GamepadOptions.COMPANION_FRAME_PANEL_ID, 22, playerBars.GetCompanionXpColorLabel(), playerBars.GetCompanionXpColorTooltip(), playerBars.GetCompanionXpColor, playerBars.SetCompanionXpColor)
 end
 
 function GamepadOptions.BuildGroupSmoothTransitionsOption()

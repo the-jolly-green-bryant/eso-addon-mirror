@@ -1,0 +1,122 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ATK_Help_UI" hidden="true" mouseEnabled="true" movable="false">
+            <Dimensions x="1600" y="900"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" alpha="0.98">
+                    <AnchorFill/>
+                    <Edge edgeSize="4" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="88FFFF"/>
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0A0A0A"/>
+                </Backdrop>
+                <Control name="$(parent)Header">
+                    <Dimensions x="1560" y="85"/>
+                    <Anchor point="TOP" offsetY="5"/>
+                    <Controls>
+                        <Backdrop name="$(parent)Plate" alpha="0.9">
+                            <AnchorFill/>
+                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="88FFFF"/>
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="111111"/>
+                        </Backdrop>
+                        <Label name="$(parent)Title" font="ZoFontGamepadBold48" horizontalAlignment="CENTER" text="|c88FFFFHELP and INSTRUCTIONS|r">
+                            <Anchor point="TOP" offsetY="5"/>
+                        </Label>
+                        <Label name="$(parent)Subtitle" font="ZoFontGamepad22" horizontalAlignment="CENTER" text="|cFFFFFFAdventurer's Toolkit Guide|r">
+                            <Anchor point="BOTTOM" offsetY="-8"/>
+                        </Label>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)LeftCol">
+                    <Dimensions x="400" y="700"/>
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="100"/>
+                    <Controls>
+                        <Control name="$(parent)TopicsCard">
+                            <Dimensions x="380" y="690"/>
+                            <Anchor point="TOPLEFT"/>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" alpha="0.95">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0D0D0D"/>
+                                </Backdrop>
+                                <Texture name="$(parent)FocusGlow" hidden="true" textureFile="EsoUI/Art/Buttons/gamepad/gp_goldHighlight.dds" alpha="0.5">
+                                    <AnchorFill/>
+                                </Texture>
+                                <Backdrop name="$(parent)HeaderPlate" alpha="0.9">
+                                    <Dimensions x="360" y="45"/>
+                                    <Anchor point="TOP" offsetY="10"/>
+                                    <Edge edgeSize="1" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="151515"/>
+                                </Backdrop>
+                                <Label name="$(parent)Header" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" text="|c88FFFFTOPICS|r">
+                                    <Anchor point="TOP" offsetY="18"/>
+                                </Label>
+                                <Control name="$(parent)List">
+                                    <Dimensions x="360" y="610"/>
+                                    <Anchor point="TOP" offsetY="65"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)SelectionFrame" hidden="true" alpha="0.8">
+                                            <Dimensions x="350" y="40"/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="88FFFF"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="88FFFF" alpha="0.15"/>
+                                        </Backdrop>
+                                        <Label name="$(parent)Row1" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="0"/></Label>
+                                        <Label name="$(parent)Row2" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="45"/></Label>
+                                        <Label name="$(parent)Row3" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="90"/></Label>
+                                        <Label name="$(parent)Row4" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="135"/></Label>
+                                        <Label name="$(parent)Row5" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="180"/></Label>
+                                        <Label name="$(parent)Row6" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="225"/></Label>
+                                        <Label name="$(parent)Row7" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="270"/></Label>
+                                        <Label name="$(parent)Row8" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="315"/></Label>
+                                        <Label name="$(parent)Row9" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="360"/></Label>
+                                        <Label name="$(parent)Row10" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="405"/></Label>
+                                        <Label name="$(parent)Row11" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="450"/></Label>
+                                        <Label name="$(parent)Row12" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="495"/></Label>
+                                        <Label name="$(parent)Row13" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="540"/></Label>
+                                        <Label name="$(parent)Row14" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="585"/></Label>
+                                        <Label name="$(parent)Row15" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="630"/></Label>
+                                        <Label name="$(parent)Row16" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="340" y="40"/><Anchor point="TOPLEFT" offsetX="10" offsetY="675"/></Label>
+                                    </Controls>
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)RightCol">
+                    <Dimensions x="1130" y="700"/>
+                    <Anchor point="TOPRIGHT" offsetX="-20" offsetY="100"/>
+                    <Controls>
+                        <Control name="$(parent)ContentCard">
+                            <Dimensions x="1110" y="690"/>
+                            <Anchor point="TOPLEFT"/>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" alpha="0.95">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0D0D0D"/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)HeaderPlate" alpha="0.9">
+                                    <Dimensions x="1090" y="50"/>
+                                    <Anchor point="TOP" offsetY="10"/>
+                                    <Edge edgeSize="1" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="151515"/>
+                                </Backdrop>
+                                <Label name="$(parent)TopicTitle" font="ZoFontGamepadBold34" horizontalAlignment="CENTER" color="FFD700">
+                                    <Anchor point="TOP" offsetY="18"/>
+                                </Label>
+                                <Label name="$(parent)Content" font="ZoFontGamepad22" horizontalAlignment="LEFT" wrapMode="TRUNCATE">
+                                    <Dimensions x="1070" y="580"/>
+                                    <Anchor point="TOP" offsetY="75"/>
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+                <Label name="$(parent)Footer" font="ZoFontGamepad18" horizontalAlignment="CENTER" color="888888" text="|c888888[D-Pad] Navigate Topics  [A] Select  [B] Back|r">
+                    <Dimensions x="1400" y="25"/>
+                    <Anchor point="BOTTOM" offsetY="-15"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

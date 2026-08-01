@@ -1,0 +1,17 @@
+## Title: Trial Recorder
+## Description: Records veteran and Hard Mode trial clears, scores, completion times, dates, and personal records.
+## Author: @BMGXSANCHO
+## Version: 1.0.007
+## APIVersion: 101050
+## SavedVariables: TrialRecorderSavedVariables
+## AddOnVersion: 10007
+## IsLibrary: false
+## OptionalDependsOn: LibHarvensAddonSettings
+
+TrialRecorder_Strings.lua
+TrialRecorder_Data.lua
+TrialRecorder_Storage.lua
+TrialRecorder_Tracker.lua
+TrialRecorder_UI.lua
+TrialRecorder_Menu.lua
+TrialRecorder.lua

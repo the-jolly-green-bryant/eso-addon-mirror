@@ -1,0 +1,20 @@
+ALDREN'S TIMERS — PS5 TEST 05
+
+Purpose:
+Confirm that the timer panel can be moved and resized through ESO's Add-On Settings menu without changing the working timer detection.
+
+Changes from 0.0.4:
+- Added saved settings for horizontal position, vertical position, panel width, panel height, and text size.
+- Added a reset button that restores the tested 0.0.4 position and size.
+- Kept the working timer detection unchanged.
+- Kept the current broad effect-name display unchanged.
+
+Important dependency:
+The settings panel uses LibAddonMenu-2.0. The timer itself still loads if that library is unavailable, but the settings page will only appear when LibAddonMenu-2.0 is installed and enabled.
+
+PS5 test:
+1. Confirm Stamina Recovery or another timed boost still appears and counts down.
+2. Open Settings > Add-On Settings > Aldren's Timers.
+3. Change Horizontal Position by one step and confirm the box moves.
+4. Change Panel Width by one step and confirm the box resizes.
+5. Use Reset Position and Size and confirm it returns to the approved location.
