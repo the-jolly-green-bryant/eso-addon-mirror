@@ -2,6 +2,7 @@ name: Synchronize ESO add-on archive
 
 on:
   schedule:
+    # Once daily. GitHub may delay scheduled jobs during busy periods.
     - cron: "23 4 * * *"
   workflow_dispatch:
 
@@ -13,74 +14,72 @@ permissions:
   contents: write
 
 jobs:
-  catalog:
+  mirror:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-      - name: Refresh the official ESOUI catalog
-        run: python3 scripts/sync_esoui.py --metadata-only
-      - name: Publish catalog changes
-        run: |
-          if git diff --quiet -- catalog.json catalog-index.json catalogs/esoui.json addons; then
-            echo "Catalog is already current."
-            exit 0
-          fi
-          git config user.name "eso-addon-mirror[bot]"
-          git config user.email "eso-addon-mirror[bot]@users.noreply.github.com"
-          git add catalog.json catalog-index.json catalogs/esoui.json addons
-          git commit -m "catalog: refresh ESOUI metadata"
-          git push
-
-  archive:
-    needs: catalog
-    strategy:
-      fail-fast: false
-      max-parallel: 16
-      matrix:
-        shard: ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f"]
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 330
     env:
-      GH_TOKEN: ${{ secrets.ADDON_MIRROR_TOKEN }}
+      BNET_USERNAME: ${{ secrets.BNET_USERNAME }}
+      BNET_PASSWORD: ${{ secrets.BNET_PASSWORD }}
+      MIRROR_SCOPE: all
+      NO_COLOR: "1"
     steps:
-      - uses: actions/checkout@v6
+      - name: Check out metadata without the archive payload
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
-      - name: Load refreshed catalog
-        run: git pull --ff-only origin main
-      - name: Check out one stable archive shard
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/
+            /scripts/
+            /allowlist.txt
+            /catalog.json
+            /catalog-index.json
+            /catalogs/
+            /LICENSE
+            /README.md
+            /addons/*.md
+            /addons/*/*/addon.json
+            /addons/*/*/.mirror-omitted.json
+            /addons/*/*/ARCHIVE_UNAVAILABLE.md
+
+      - name: Install pinned Bethesda ESO CLI
+        shell: bash
         run: |
-          mkdir -p "$RUNNER_TEMP/shards"
-          gh auth setup-git
-          gh repo clone \
-            "the-jolly-green-bryant/eso-addon-mirror-shard-${{ matrix.shard }}" \
-            "$RUNNER_TEMP/shards/${{ matrix.shard }}" \
-            -- --depth=1
-      - name: Archive new and changed PC releases
-        id: archive
+          set -euo pipefail
+          url="https://github.com/sirinsidiator/ESOAddOnUploaderCLI/releases/download/1.4.0/ESOAddOnUploaderCli-linux.tar.gz"
+          curl --fail --location --retry 3 "$url" --output "$RUNNER_TEMP/esocli.tar.gz"
+          echo "74a263859b5cff215501f91c59fdb3b8a8c829dd2d9d347c6c014b7c18336ec1  $RUNNER_TEMP/esocli.tar.gz" | sha256sum --check
+          mkdir -p "$RUNNER_TEMP/esocli"
+          tar -xzf "$RUNNER_TEMP/esocli.tar.gz" -C "$RUNNER_TEMP/esocli"
+          chmod +x "$RUNNER_TEMP/esocli/ESOAddOnUploaderCli"
+          echo "$RUNNER_TEMP/esocli" >> "$GITHUB_PATH"
+
+      - name: Refresh Console add-ons from Bethesda
+        id: bethesda
         continue-on-error: true
-        run: |
-          python3 scripts/sync_esoui.py \
-            --shard-root "$RUNNER_TEMP/shards" \
-            --shard "${{ matrix.shard }}"
-      - name: Publish shard changes
-        working-directory: ${{ runner.temp }}/shards/${{ matrix.shard }}
+        run: python3 scripts/mirror.py
+
+      - name: Refresh PC and Mac add-ons from ESOUI
+        id: esoui
+        continue-on-error: true
+        run: python3 scripts/sync_esoui.py --main-repository
+
+      - name: Publish changed add-ons and catalogs
         run: |
           if [ -z "$(git status --porcelain)" ]; then
-            echo "Shard is already current."
+            echo "The mirror is already current."
             exit 0
           fi
           git config user.name "eso-addon-mirror[bot]"
           git config user.email "eso-addon-mirror[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "archive: refresh ESOUI releases"
+          git add --sparse -A -- addons catalogs catalog.json catalog-index.json
+          git commit -m "mirror: daily Console and PC refresh"
           git push
-      - name: Report incomplete archive
-        if: steps.archive.outcome == 'failure'
+
+      - name: Report incomplete synchronization
+        if: steps.bethesda.outcome == 'failure' || steps.esoui.outcome == 'failure'
         run: |
-          echo "One or more ESOUI releases could not be archived after four attempts."
-          echo "Successful releases were published and failed releases will retry next run."
+          echo "One or more upstream releases could not be synchronized."
+          echo "Successful changes were committed; failures will retry tomorrow."
           exit 1

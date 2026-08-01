@@ -129,6 +129,30 @@ class SyncEsouiTests(unittest.TestCase):
             sync_esoui.release_fingerprint(changed),
         )
 
+    def test_main_repository_record_points_to_canonical_repo(self):
+        record = sync_esoui.record_from_entry(
+            {
+                "UID": "7",
+                "UIName": "Example",
+                "UIAuthorName": "Author",
+                "UIVersion": "1.0",
+            },
+            None,
+            main_repository=True,
+        )
+        self.assertEqual(
+            record["archive_repository"],
+            "the-jolly-green-bryant/eso-addon-mirror",
+        )
+        self.assertEqual(record["archive_path"], "addons/Author/Example__7")
+        self.assertNotIn("shard", record)
+
+    def test_archive_state_fields_are_explicit(self):
+        self.assertEqual(
+            set(sync_esoui.ARCHIVE_STATE_FIELDS),
+            {"archive_error", "archive_format", "archive_status", "omitted_files"},
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

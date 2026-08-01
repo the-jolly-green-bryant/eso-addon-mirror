@@ -31,8 +31,15 @@ from archive_common import (
 FEED_URL = "https://api.mmoui.com/v3/game/ESO/filelist.json"
 DOWNLOAD_URL = "https://www.esoui.com/downloads/dl{source_id}/"
 MAX_UNPACKED_BYTES = 512 * 1024 * 1024
-MAX_REPOSITORY_FILE_BYTES = 50 * 1024 * 1024
+MAX_REPOSITORY_FILE_BYTES = 95 * 1024 * 1024
 DOWNLOAD_ATTEMPTS = 4
+MAIN_REPOSITORY = "the-jolly-green-bryant/eso-addon-mirror"
+ARCHIVE_STATE_FIELDS = (
+    "archive_error",
+    "archive_format",
+    "archive_status",
+    "omitted_files",
+)
 
 
 class UnavailableReleaseError(RuntimeError):
@@ -65,14 +72,18 @@ def release_fingerprint(entry: dict[str, Any]) -> str:
     )
 
 
-def record_from_entry(entry: dict[str, Any], old: dict[str, Any] | None) -> dict[str, Any]:
+def record_from_entry(
+    entry: dict[str, Any],
+    old: dict[str, Any] | None,
+    main_repository: bool = False,
+) -> dict[str, Any]:
     source_id = str(entry["UID"])
     identifier = canonical_id("esoui", source_id)
     title = str(entry.get("UIName") or source_id)
     author = str(entry.get("UIAuthorName") or "Unknown")
     shard = shard_for(identifier)
     relative_path = archive_path(author, title, source_id)
-    return {
+    record = {
         "canonical_id": identifier,
         "content_id": identifier,
         "source": "esoui",
@@ -96,11 +107,15 @@ def record_from_entry(entry: dict[str, Any], old: dict[str, Any] | None) -> dict
         "fingerprint": release_fingerprint(entry),
         "source_url": entry.get("UIFileInfoURL"),
         "download_url": DOWNLOAD_URL.format(source_id=source_id),
-        "archive_repository": archive_repository(shard),
+        "archive_repository": (
+            MAIN_REPOSITORY if main_repository else archive_repository(shard)
+        ),
         "archive_path": relative_path,
-        "shard": shard,
         "archived": bool(old and old.get("archived")),
     }
+    if not main_repository:
+        record["shard"] = shard
+    return record
 
 
 def omit_oversized_files(root: Path, record: dict[str, Any]) -> list[dict[str, Any]]:
@@ -117,7 +132,7 @@ def omit_oversized_files(root: Path, record: dict[str, Any]) -> list[dict[str, A
                 "path": file_path.relative_to(root).as_posix(),
                 "bytes": file_path.stat().st_size,
                 "sha256": digest.hexdigest(),
-                "reason": "exceeds the mirror's 50 MiB per-file Git limit",
+                "reason": "exceeds the mirror's 95 MiB per-file Git limit",
                 "download_url": record["download_url"],
             }
         )
@@ -127,8 +142,15 @@ def omit_oversized_files(root: Path, record: dict[str, Any]) -> list[dict[str, A
     return omitted
 
 
-def write_unavailable_release(record: dict[str, Any], shard_root: Path, reason: str) -> None:
-    destination = shard_root / record["shard"] / record["archive_path"]
+def archive_destination(root: Path, record: dict[str, Any], sharded: bool) -> Path:
+    prefix = Path(str(record["shard"])) if sharded else Path()
+    return root / prefix / record["archive_path"]
+
+
+def write_unavailable_release(
+    record: dict[str, Any], archive_root: Path, reason: str, sharded: bool = True
+) -> None:
+    destination = archive_destination(archive_root, record, sharded)
     if destination.exists():
         return
     destination.mkdir(parents=True, exist_ok=True)
@@ -146,12 +168,18 @@ def write_unavailable_release(record: dict[str, Any], shard_root: Path, reason: 
     )
 
 
-def archive_release(record: dict[str, Any], old: dict[str, Any] | None, shard_root: Path) -> None:
-    shard_directory = shard_root / record["shard"]
-    destination = shard_directory / record["archive_path"]
+def archive_release(
+    record: dict[str, Any],
+    old: dict[str, Any] | None,
+    archive_root: Path,
+    sharded: bool = True,
+) -> None:
+    destination = archive_destination(archive_root, record, sharded)
     old_destination = (
-        shard_root / old["shard"] / old["archive_path"]
-        if old and old.get("archive_path") and old.get("shard")
+        archive_destination(archive_root, old, sharded)
+        if old
+        and old.get("archive_path")
+        and (not sharded or old.get("shard"))
         else None
     )
     with tempfile.TemporaryDirectory(prefix="esoui-addon-") as temporary:
@@ -217,9 +245,16 @@ def main() -> None:
     parser.add_argument("--feed", type=Path)
     parser.add_argument("--shard-root", type=Path)
     parser.add_argument("--shard", choices=[f"{value:02x}" for value in range(16)])
+    parser.add_argument(
+        "--main-repository",
+        action="store_true",
+        help="Archive directly into the canonical repository instead of shards.",
+    )
     parser.add_argument("--limit", type=int)
     parser.add_argument("--metadata-only", action="store_true")
     args = parser.parse_args()
+    if args.main_repository and (args.shard or args.shard_root):
+        parser.error("--main-repository cannot be combined with shard options")
     root = args.root.resolve()
     catalog_path = root / "catalogs" / "esoui.json"
     previous = (
@@ -242,15 +277,16 @@ def main() -> None:
         identifier = canonical_id("esoui", str(entry["UID"]))
         discovered.add(identifier)
         old = previous.get(identifier)
-        record = record_from_entry(entry, old)
+        record = record_from_entry(entry, old, args.main_repository)
         if args.shard and record["shard"] != args.shard:
             continue
         local_metadata = None
-        if args.shard_root:
+        archive_root = root if args.main_repository else args.shard_root
+        if archive_root:
             local_path = (
-                args.shard_root.resolve()
-                / record["shard"]
-                / record["archive_path"]
+                archive_destination(
+                    archive_root.resolve(), record, not args.main_repository
+                )
                 / "addon.json"
             )
             if local_path.exists():
@@ -258,24 +294,41 @@ def main() -> None:
                     local_metadata = json.loads(local_path.read_text(encoding="utf-8"))
                 except (OSError, json.JSONDecodeError):
                     local_metadata = None
-        should_archive = not args.metadata_only and args.shard_root and (
+        should_archive = not args.metadata_only and archive_root and (
             not local_metadata
             or local_metadata.get("fingerprint") != record["fingerprint"]
             or local_metadata.get("archive_path") != record["archive_path"]
         )
+        if not should_archive and old:
+            for field in ARCHIVE_STATE_FIELDS:
+                if field in old:
+                    record[field] = old[field]
         if should_archive:
             try:
-                archive_release(record, old, args.shard_root.resolve())
+                archive_release(
+                    record,
+                    old,
+                    archive_root.resolve(),
+                    sharded=not args.main_repository,
+                )
                 archived += 1
             except UnavailableReleaseError as error:
-                write_unavailable_release(record, args.shard_root.resolve(), str(error))
+                write_unavailable_release(
+                    record,
+                    archive_root.resolve(),
+                    str(error),
+                    sharded=not args.main_repository,
+                )
                 record["archive_status"] = "unavailable"
+                record["archive_error"] = str(error)
                 unavailable += 1
                 print(f"::notice title=ESOUI archive unavailable::{identifier}: {error}")
             except (OSError, RuntimeError, urllib.error.URLError, zipfile.BadZipFile) as error:
                 failure = f"{identifier}: {error}"
                 failures.append(failure)
                 print(f"::warning title=ESOUI archive skipped::{failure}")
+                if old:
+                    record = dict(old)
         next_catalog[identifier] = record
 
     if not args.shard and not args.limit:

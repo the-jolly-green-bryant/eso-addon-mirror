@@ -1,12 +1,13 @@
 import importlib.util
+import sys
 import tempfile
 import unittest
 import zipfile
 from pathlib import Path
 
-SPEC = importlib.util.spec_from_file_location(
-    "mirror", Path(__file__).parents[1] / "scripts" / "mirror.py"
-)
+SCRIPTS = Path(__file__).parents[1] / "scripts"
+sys.path.insert(0, str(SCRIPTS))
+SPEC = importlib.util.spec_from_file_location("mirror", SCRIPTS / "mirror.py")
 mirror = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader
 SPEC.loader.exec_module(mirror)
@@ -51,15 +52,25 @@ class MirrorTests(unittest.TestCase):
         )
         self.assertFalse(record["published"])
         self.assertEqual(record["title"], "No Release")
+        self.assertEqual(
+            record["archive_repository"],
+            "the-jolly-green-bryant/eso-addon-mirror",
+        )
 
     def test_title_decodes_html_entities(self):
         self.assertEqual(mirror.title({"title": "Votan&#39;s Addon"}, "x"), "Votan's Addon")
 
-    def test_directory_name_is_readable_and_safe(self):
+    def test_archive_path_is_readable_and_stable(self):
         identifier = "00000000-0000-4000-8000-000000000000"
+        record = mirror.addon_record(
+            identifier,
+            {"title": "Votan's Fisherman / Console", "author": "Votan"},
+            "fingerprint",
+            True,
+        )
         self.assertEqual(
-            mirror.directory_name("Votan's Fisherman / Console", identifier),
-            f"Votan-s-Fisherman-Console__{identifier}",
+            record["archive_path"],
+            f"addons/Votan/Votan-s-Fisherman-Console__{identifier}",
         )
 
 

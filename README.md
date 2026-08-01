@@ -4,56 +4,79 @@ A public, GitHub-browsable catalog and preservation mirror for Elder Scrolls Onl
 
 ## Browse add-ons
 
-**[Browse every Console and PC / Mac add-on A–Z](addons/README.md).** Each listing links directly to the add-on's unpacked source in its public archive shard. The index and current total are regenerated automatically when catalog metadata changes.
+**[Browse every Console and PC / Mac add-on A–Z](addons/README.md).** Each listing links directly to the add-on's unpacked source in this repository. The index and current total are regenerated automatically when catalog metadata changes.
 
 ## Architecture
 
-This lightweight control repository stores normalized metadata and synchronization software. Unpacked source lives in 16 public archive shards, so browsing one add-on never requires cloning the whole ecosystem.
+This is the canonical archive: normalized metadata, synchronization software, and the current unpacked source for every mirrored Console and PC / Mac add-on live together. The former 16 shard repositories remain available as compatibility snapshots, but catalog links and daily updates point here.
 
 ```text
 catalog.json                         unified searchable catalog
 catalog-index.json                   compact catalog for web/API browsing
 catalogs/bethesda.json               Bethesda source records
 catalogs/esoui.json                  official ESOUI/MMOUI feed records
-addons/                              generated A–Z GitHub browsing indexes
-eso-addon-mirror-shard-00 … -0f      unpacked GitHub-browsable source
+addons/AUTHOR/TITLE__SOURCE_ID/       unpacked GitHub-browsable source
+addons/*.md                           generated A–Z browsing indexes
 ```
 
-Every add-on has an immutable canonical ID: `bethesda:UUID` or `esoui:NUMBER`. A SHA-256-derived shard depends only on that ID. Human-readable folders use:
+Every add-on has an immutable canonical ID: `bethesda:UUID` or `esoui:NUMBER`. Human-readable folders use:
 
 ```text
 addons/AUTHOR/TITLE__SOURCE_ID/
 ```
 
-If an author or title changes, synchronization moves that one stable record to its new readable path. It does not create a duplicate or change shards. Bethesda's content model is the canonical record shape; ESOUI metadata is normalized into that model.
+If an author or title changes, synchronization moves that one stable record to its new readable path instead of creating a duplicate. Bethesda's content model is the canonical record shape; ESOUI metadata is normalized into that model.
 
 ## Performance
 
-Daily GitHub Actions first refresh the small official ESOUI feed, then fan out across the 16 shards. Each runner shallow-clones only one shard and downloads a release only when its local `addon.json` fingerprint changed. Code-only work in this repository never checks out archived source.
+One daily GitHub Actions runner refreshes the complete Bethesda and ESOUI catalogs. CI uses a blobless sparse checkout containing catalogs and `addon.json` metadata, then downloads and commits only releases whose stable fingerprint changed. Unchanged source blobs are never fetched by the runner.
 
 `catalog-index.json` contains only fields used for search, paging, source labels,
 downloads, and detail links. It stays below common server-rendering cache limits,
 while `catalog.json` remains the complete metadata source of truth.
 
-ZIP releases are safely unpacked. The handful of legacy ESOUI RAR releases are preserved in their original format, and a listing with no downloadable payload gets an explicit `ARCHIVE_UNAVAILABLE.md` marker. Individual generated files over 50 MiB are excluded from Git and recorded in `.mirror-omitted.json` with their byte size, SHA-256 checksum, and official download URL.
+ZIP releases are safely unpacked. The handful of legacy ESOUI RAR releases are preserved in their original format, and a listing with no downloadable payload gets an explicit `ARCHIVE_UNAVAILABLE.md` marker. Individual files that would approach GitHub's 100 MiB hard limit are excluded from Git at 95 MiB and recorded in `.mirror-omitted.json` with their byte size, SHA-256 checksum, and official download URL. All other mirrored files are marked `-text` so Git preserves the exact upstream bytes and line endings.
 
-For a lightweight local metadata checkout, clone each shard with blob filtering and sparse checkout:
+Because the complete unpacked snapshot is large, use a blobless partial clone and sparse checkout unless you truly want every source file:
 
 ```bash
-mkdir -p ../eso-addon-mirror-shards
-for shard in 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f; do
-  target="../eso-addon-mirror-shards/$shard"
-  git clone --filter=blob:none --no-checkout \
-    "https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-$shard.git" \
-    "$target"
-  git -C "$target" sparse-checkout set --no-cone \
-    '/README.md' '/.gitattributes' '/addons/*/*/addon.json' \
-    '/addons/*/*/.mirror-omitted.json' '/addons/*/*/ARCHIVE_UNAVAILABLE.md'
-  git -C "$target" checkout main
-done
+git clone --filter=blob:none --no-checkout \
+  https://github.com/the-jolly-green-bryant/eso-addon-mirror.git
+cd eso-addon-mirror
+git sparse-checkout set --no-cone \
+  '/README.md' '/LICENSE' '/catalog.json' '/catalog-index.json' '/catalogs/' \
+  '/addons/*.md' '/addons/*/*/addon.json' \
+  '/addons/*/*/.mirror-omitted.json' '/addons/*/*/ARCHIVE_UNAVAILABLE.md'
+git checkout main
 ```
 
-This keeps the complete, current metadata locally while downloading full add-on source blobs only when you explicitly request them.
+That keeps the complete searchable catalog and per-add-on metadata locally. Materialize one add-on without downloading the rest:
+
+```bash
+git sparse-checkout add --no-cone \
+  '/addons/AUTHOR/TITLE__SOURCE_ID/'
+```
+
+Or select a whole platform from the catalog while retaining the lightweight metadata set:
+
+```bash
+{
+  printf '%s\n' '/README.md' '/LICENSE' '/catalog.json' '/catalog-index.json' \
+    '/catalogs/' '/addons/*.md' '/addons/*/*/addon.json'
+  jq -r '.addons[] | select(.source == "esoui") | "/" + .archive_path + "/"' \
+    catalog-index.json
+} | git sparse-checkout set --no-cone --stdin
+```
+
+Change `esoui` to `bethesda` for Console add-ons. Blob filtering means Git downloads the selected current source only when the sparse patterns request it.
+
+To expand a selective clone into the complete Console and PC / Mac archive later:
+
+```bash
+git sparse-checkout disable
+```
+
+That command materializes every current add-on; the blobless clone still avoids downloading unreachable historical blobs.
 
 ## Stewardship
 
