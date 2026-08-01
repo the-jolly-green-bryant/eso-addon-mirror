@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Lykeion/Sul-Xan-s-Soul-Catcher__3656",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lykeion",
+  "canonical_id": "esoui:3656",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3656",
+  "deleted": false,
+  "directories": [
+    "SulXan"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3656/",
+  "fingerprint": "981b8fc1e31c89df6f1b0e1955fae174c1541f55ee4c6944558fafb2f988627f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12455.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12456.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12457.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3656",
+  "source_url": "https://www.esoui.com/downloads/info3656-Sul-XansSoulCatcher.html",
+  "stats": {
+    "downloads": 4809,
+    "favorites": 3,
+    "monthly_downloads": 157
+  },
+  "title": "Sul-Xan's Soul Catcher",
+  "updated_at": 1761304023000,
+  "version": "1.5"
+}

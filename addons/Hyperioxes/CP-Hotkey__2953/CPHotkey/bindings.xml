@@ -1,0 +1,24 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="CP Hotkey">
+			<Action name="SETUP_1">
+				<Down>CPHLoadSetup(1)</Down>
+			</Action>
+			<Action name="SETUP_2">
+				<Down>CPHLoadSetup(2)</Down>
+			</Action>
+			<Action name="SETUP_3">
+				<Down>CPHLoadSetup(3)</Down>
+			</Action>
+			<Action name="SETUP_4">
+				<Down>CPHLoadSetup(4)</Down>
+			</Action>
+			<Action name="SETUP_5">
+				<Down>CPHLoadSetup(5)</Down>
+			</Action>
+			<Action name="SETUP_6">
+				<Down>CPHLoadSetup(6)</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

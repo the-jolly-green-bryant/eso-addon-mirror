@@ -1,0 +1,6 @@
+<GuiXml> 
+	<Controls>
+	<TopLevelControl name="CmwWindow" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="true">
+	</TopLevelControl>
+	</Controls>
+</GuiXml>

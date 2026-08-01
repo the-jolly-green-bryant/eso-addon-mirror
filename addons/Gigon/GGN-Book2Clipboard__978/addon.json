@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Gigon/GGN-Book2Clipboard__978",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Gigon",
+  "canonical_id": "esoui:978",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:978",
+  "deleted": false,
+  "directories": [
+    "GGNBook2Clipboard"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl978/",
+  "fingerprint": "a22bba15c82b91bb296e59033ca7350c80363d1c908f5a98bc6b0872488a5923",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2981.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "978",
+  "source_url": "https://www.esoui.com/downloads/info978-GGNBook2Clipboard.html",
+  "stats": {
+    "downloads": 5556,
+    "favorites": 8,
+    "monthly_downloads": 7
+  },
+  "title": "GGN Book2Clipboard",
+  "updated_at": 1495021675000,
+  "version": "1.20"
+}

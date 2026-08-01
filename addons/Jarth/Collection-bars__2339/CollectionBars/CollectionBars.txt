@@ -1,0 +1,49 @@
+﻿; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Collection Bars
+## APIVersion: 101036
+## Version: 1.1.13
+## Author: Jarth
+## Description: Show collection bars and activate collections with key or button press. Settings window: /cb. LibDebugLogger can be used for logging can be enabled in the settings
+## OptionalDependsOn: LibDebugLogger
+## SavedVariables: CollectionBars_Account
+## SavedVariables: CollectionBars_Character
+
+# i18n (TODO - Implement?!)
+
+# constants
+values/General.lua
+
+# logging
+logging/Logging.lua
+
+# core
+core/Handlers.lua
+
+# components - shared
+components/shared/MoveFrame.lua
+components/shared/Fragment.lua
+
+# components - ui
+components/ui/Button.lua
+components/ui/Button.xml
+components/ui/Buttons.lua
+components/ui/Labels.lua
+
+# components - menu
+components/menu/Settings_Data.lua
+components/menu/Settings_List.lua
+components/menu/Settings.lua
+components/menu/Settings.xml
+
+# main
+CollectionBars.xml
+CollectionBars.lua
+
+# bindings
+bindings/Bindings.lua
+bindings/Bindings.xml

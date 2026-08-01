@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/init3/Asylum-Tracker__2111",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "init3",
+  "canonical_id": "esoui:2111",
+  "category_id": "45",
+  "compatibility": [],
+  "content_id": "esoui:2111",
+  "deleted": false,
+  "directories": [
+    "AsylumTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2111/",
+  "fingerprint": "f89f2585153d32dcbb6ab56f56c8834a4b8986b10c6e13897c8399f5295656f8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7542.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7540.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7541.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7543.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7555.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7556.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2111",
+  "source_url": "https://www.esoui.com/downloads/info2111-AsylumTracker.html",
+  "stats": {
+    "downloads": 127371,
+    "favorites": 80,
+    "monthly_downloads": 477
+  },
+  "title": "Asylum Tracker",
+  "updated_at": 1567404493000,
+  "version": "2.0.5"
+}

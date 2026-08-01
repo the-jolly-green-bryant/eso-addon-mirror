@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Glen348/Notebooks__1105",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Glen348",
+  "canonical_id": "esoui:1105",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:1105",
+  "deleted": false,
+  "directories": [
+    "Notebooks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1105/",
+  "fingerprint": "d4a1da4a679fbf3723394996ca761f5cb0e3a7cb61f1cc92de5b676c71c1662d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1105",
+  "source_url": "https://www.esoui.com/downloads/info1105-Notebooks.html",
+  "stats": {
+    "downloads": 36462,
+    "favorites": 44,
+    "monthly_downloads": 15
+  },
+  "title": "Notebooks",
+  "updated_at": 1509191756000,
+  "version": "Outdated"
+}

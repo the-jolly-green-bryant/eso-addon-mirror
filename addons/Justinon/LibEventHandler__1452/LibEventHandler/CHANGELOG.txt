@@ -1,0 +1,96 @@
+======================================================================
+This is a modified version of LibEventHandler, originally by Justinon.
+======================================================================
+https://www.esoui.com/downloads/info1452-LibEventHandler.html
+
+NOTE : this modified version is still under the Artistic License 2.0
+
+Version 1.3.13: (Calamath)
+- Updated API version to 101050 (ESO 12.0.x : Update 50)
+
+Version 1.3.12: (Calamath)
+- Updated API version to 101049 (ESO 11.3.x : Season Zero - Dawn and Dusk)
+
+Version 1.3.11: (Calamath)
+- Updated API version to 101048 (ESO 11.2.x : Seasons of the Worm Cult Part 2)
+
+Version 1.3.10: (Calamath)
+- Updated API version to 101047 (ESO 11.1.x : Feast of Shadows)
+
+Version 1.3.9: (Calamath)
+- Updated API version to 101046 (ESO 11.0.x : Seasons of the Worm Cult Part 1)
+
+Version 1.3.8: (Calamath)
+- Updated API version to 101045 (ESO 10.3.x : Fallen Banners)
+
+Version 1.3.7: (Calamath)
+- Updated API version to 101044 (ESO 10.2.x : Update 44)
+
+Version 1.3.6: (Calamath)
+- Updated API version to 101043 (ESO 10.1.x : Update 43)
+
+Version 1.3.5: (Calamath)
+- Updated API version to 101042 (ESO 10.0.x : Gold Road)
+
+Version 1.3.4: (Calamath)
+- Updated API version to 101039 (ESO 9.1.x : Update 39)
+
+Version 1.3.3: (Calamath)
+- Updated API version to 101038 (ESO 9.0.x : Necrom)
+
+Version 1.3.2: (Calamath)
+- Updated API version to 101037 (ESO 8.3.x : Scribes of Fate)
+
+Version 1.3.1: (Calamath)
+- Updated API version to 101036 (ESO 8.2.x : Firesong)
+
+Version 1.3.0: (Calamath)
+- Updated API version to 101035 (ESO 8.1.x : Lost Depths)
+
+Version 1.2.99: (Calamath)
+- Updated API version to 101034 (ESO 8.0.x : High Isle)
+
+Version 1.2.98: (Calamath)
+- Updated API version to 101033 (ESO 7.3.x : Ascending Tide)
+
+Version 1.2.97: (Calamath)
+- Updated API version to 101032 (ESO 7.2.x : Deadlands)
+
+Version 1.2.96: (Calamath)
+- Updated API version to 101031 (ESO 7.1.x : Waking Flame)
+
+Version 1.2.95: (Calamath)
+- Updated API version to 100035 (ESO 7.0.x : Blackwood)
+
+Version 1.2.94: (Calamath)
+- Updated API version to 100034 (ESO 6.3.x : Flames of Ambition)
+
+Version 1.2.93: (Calamath)
+- Updated API version to 100033 (ESO 6.2.x : Markarth)
+
+Version 1.2.92: (Calamath)
+- Updated API version to 100032 (ESO 6.1.x : Stonethorn)
+
+Version 1.2.91: (Calamath)
+- Updated API version to 100031 (ESO 6.0.x : Greymoor)
+
+Version 1.2.90: (Calamath)
+- LibEventHandler library now has its own manifest file and a global variable LibEventHandler for direct access.
+- Updated API version to 100029 (ESO 5.2.5 : Dragonhold)
+- LibDebugLogger has been newly added to OptionalDependsOn in the add-on manifest file.
+- Moved debug message output from UI chat to LibDebugLogger. From now on, we add-on authors and contributers will look at the debug log with the DebugLogViewer add-on.
+
+------------------------------------------------------------------------------
+The following are changes to the standard version by original author Justinon.
+------------------------------------------------------------------------------
+
+Version 1.2:
+
+- Removed a print statement
+
+
+Version 1.1:
+
+- Changed async to allow for user input for the delay time as opposed to hard codes half a second. Still accepts boolean values
+
+

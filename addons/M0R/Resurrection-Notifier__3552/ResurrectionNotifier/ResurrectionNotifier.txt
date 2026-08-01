@@ -1,0 +1,7 @@
+## Title: |cEFEBBEResurrection Notifier|r
+## APIVersion: 101036
+## Version: 1
+## AddOnVersion: 1
+## Description: Notifies you of target's resurrection status.
+## Author: |c0DC1CF@M0R_Gaming|r and |c800020@BosmeriPride|r
+ResurrectionNotifier.lua

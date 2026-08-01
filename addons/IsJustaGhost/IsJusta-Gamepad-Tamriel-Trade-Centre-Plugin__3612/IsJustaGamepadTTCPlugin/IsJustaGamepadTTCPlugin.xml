@@ -1,0 +1,19 @@
+<GuiXml>
+	<Controls>
+        <Control name="IJA_GamepadTTCP_Tooltip" virtual="true">
+			<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-25" />
+			
+            <Controls>
+                <Control name="$(parent)Tip" inherits="ZO_Tooltip" tier="MEDIUM">
+                    <Anchor point="TOP" offsetY="0" />
+                </Control>
+            </Controls>
+        </Control>
+		
+        <TopLevelControl name="IJA_GamepadTTCP">
+            <OnInitialized>
+                IJA_GamepadTTCP_Initialize(self)
+            </OnInitialized>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

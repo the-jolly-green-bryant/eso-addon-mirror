@@ -1,0 +1,6 @@
+## Title: AetheriusGuildHalls
+## Author: MechaN1ck
+## Version: 0.0.6
+## APIVersion: 100031
+## Edited @MechaN1ck 17/09/2021
+AetheriusGuildHalls.lua

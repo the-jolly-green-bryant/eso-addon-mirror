@@ -1,0 +1,67 @@
+## Title: |cFFFF00Event Tracker |c00CCFFZeal of Zenithar|r v2.420
+## Description: Helps track Event Tickets so you don't miss any.
+## Author: |cAA00FFKelinmiriel|r
+## Version: 2.420
+## AddOnVersion: 2420
+## APIVersion: 101050 101051
+## SavedVariables: EventTrackerVars EventTrackerShared
+## OptionalDependsOn: LibSlashCommander
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+## Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+## trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+## other countries. All rights reserved.
+##
+## THIS MATERIAL IS NOT MADE, GUARANTEED OR SUPPORTED
+## BY ZENIMAX OR ITS AFFILIATES.
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+##
+## Thank you to the following addon authors, without whom it would have been a lot
+## harder to write this.
+##   StorybookTerror (Reveries; much specific assistance!)
+##   Dolgubon (Dolgubon's Lazy Writ Crafter; library idea!)
+##   code65536 (PlunderSkullTimer, DungeonTimer)
+##   tirtow (TimersOfNirn)
+##   Kafeijao (EventTickets)
+##   AethronX (Grubmaster)
+##
+
+Bindings.xml
+EventTracker.lua
+Languages/en.lua
+Languages/$(language).lua
+EVTUtils.lua
+EVTEvents.lua
+EVTUserInterface.lua
+EventTracker.xml
+
+; Recent changes:
+; Version 2.420 (2026/06/24) Zeal of Zenithar; U51 API for next PTS
+; Version 2.412 (2026/04/13) Zeal of Zenithar on PTS
+; Version 2.411 (2026/04/09) Should now skip bars dropped from Twitch, Tome purchases, etc.
+; Version 2.410 (2026/04/02 9pm) Anniversary (had missed a "3" vs "300"); U50 API
+; Version 2.401 (2026/04/02 6am) Fixed final Jester trade bar; more info on future
+; Version 2.400 (2026/03/30) Jester's Fest & Anniversary; Trade Bars; U49 API
+; Version 2.390 (2026/02/09) Heart's Week
+; Version 2.380 (2026/01/19) Whitestrake's Mayhem (Not updating for U49 yet)
+; Version 2.371 (2025/12/18) Fixed end date code
+; Version 2.370 (2025/12/14) New Life
+; Version 2.361 (2025/11/20) Fixed a few lines
+; Version 2.360 (2025/11/18) Daedric War
+; Version 2.350 (2025/10/22) Witches Fest; info for upcoming through Anniversary (exc. dates)
+; Version 2.340 (2025/09/16) Undaunted; U48 API; Heart's Week on PTS (only dates & tickets)
+; Version 2.330 (2025/08/06) Whitestrake's extended one extra day
+; Version 2.322 (2025/06/29) Removed library in comment below; added Mayhem; U47 API
+; Version 2.321 (2025/06/26) Removed (now entirely redacted LibEventTracker)
+;    by request, since Minion 4 was not recognizing the ";"
+; Version 2.320 (2025/06/26) Zeal of Zenithar; U46 API
+; Version 2.311 (2025/04/04) missing parameter on /evt coll; fixed /xpbuff
+; Version 2.310 (2025/04/03) Anniversary (including first 2 Q2 fragments available)
+; Version 2.301 (2025/03/31) Anniversary end date; changed to ".addon"
+; Version 2.300 (2025/03/25) Jesters Festival & start of Anniversary
+; Version 2.291 (2025/02/20) Fixed IC ticket algorithm
+; Version 2.290 (2025/02/19) Whitestrake's Mayhem
+; Version 2.280 (2025/01/23) Pan-Tamriel; U45 API; Jester & Anniversary on PTS
+
+; Initial creation 2019/11/28 - see ChangeLog.txt for all other changes

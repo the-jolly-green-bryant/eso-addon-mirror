@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Horse-Feed-Confirmation__644",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:644",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:644",
+  "deleted": false,
+  "directories": [
+    "HarvensHorseFeedConfirmation"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl644/",
+  "fingerprint": "cf2ec9b32da8a828f64d0217cae70180bd07f03c671df750bcb72bd004de60a8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1948.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "644",
+  "source_url": "https://www.esoui.com/downloads/info644-HarvensHorseFeedConfirmation.html",
+  "stats": {
+    "downloads": 9003,
+    "favorites": 26,
+    "monthly_downloads": 6
+  },
+  "title": "Harven's Horse Feed Confirmation",
+  "updated_at": 1585512274000,
+  "version": "1.2"
+}

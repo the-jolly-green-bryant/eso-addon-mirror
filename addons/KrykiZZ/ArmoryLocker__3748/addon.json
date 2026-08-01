@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/KrykiZZ/ArmoryLocker__3748",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KrykiZZ",
+  "canonical_id": "esoui:3748",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3748",
+  "deleted": false,
+  "directories": [
+    "ArmoryLocker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3748/",
+  "fingerprint": "37e093a19e2b75307c51dbdced8578b4904a0920542d89bfa50b771f790e3e2e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3748",
+  "source_url": "https://www.esoui.com/downloads/info3748-ArmoryLocker.html",
+  "stats": {
+    "downloads": 1845,
+    "favorites": 4,
+    "monthly_downloads": 17
+  },
+  "title": "ArmoryLocker",
+  "updated_at": 1699655319000,
+  "version": "1.0.0"
+}

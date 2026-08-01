@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Lexynide/Show-My-Chat-Tales-of-Tribute-update__2941",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lexynide",
+  "canonical_id": "esoui:2941",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:2941",
+  "deleted": false,
+  "directories": [
+    "ShowMyChat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2941/",
+  "fingerprint": "d3c09353853f86da89235241a0b40a0d0fe58f59deb9686adc0bc1a036230bb3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9928.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2941",
+  "source_url": "https://www.esoui.com/downloads/info2941-ShowMyChatTalesofTributeupdate.html",
+  "stats": {
+    "downloads": 4122,
+    "favorites": 4,
+    "monthly_downloads": 13
+  },
+  "title": "Show My Chat (Tales of Tribute update)",
+  "updated_at": 1659116511000,
+  "version": "1.5"
+}

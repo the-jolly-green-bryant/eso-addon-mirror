@@ -1,0 +1,84 @@
+<GuiXml>
+	<Controls>
+
+
+		<TopLevelControl name="ESOEmoji_Control">
+			<Dimensions x="500" y="25" />
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+
+			<Controls>
+				<Control name="$(parent)ChatBar">
+					<Dimensions y="30" />
+					<Controls>
+
+
+
+
+
+
+						<Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+							<Dimensions y="4"/>
+							<Anchor point="BOTTOMLEFT" offsetY="-25" offsetX="-10" />
+							<Anchor point="BOTTOMRIGHT" offsetY="-25" offsetX="10"/>
+							<TextureCoords top="0" bottom="1" left="0.181640625" right="0.818359375"/>
+						</Texture>
+
+
+						<Button name="$(parent)SettingsButton" inherits="ZO_ButtonBehaviorClickSound" verticalAlignment="1">
+							<Dimensions x="26" y="26" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT"/>
+							<Textures normal="ESOEmoji/icons/misc/ChatBarGear.dds"
+								pressed="ESOEmoji/icons/misc/ChatBarGear.dds"
+								pressedMouseOver="ESOEmoji/icons/misc/ChatBarDown.dds"
+								mouseOver="ESOEmoji/icons/misc/ChatBarOver.dds"
+								disabled="ESOEmoji/icons/misc/ChatBarGear.dds"/>
+							<OnClicked>
+								ESOEmoji.OpenSettings()
+							</OnClicked>
+						</Button>
+
+						<Label name="$(parent)Label" verticalAlignment="CENTER" font="ZoFontChat" text=":">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)SettingsButton" relativePoint="TOPRIGHT"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)SettingsButton" relativePoint="BOTTOMRIGHT"/>
+						</Label>
+
+						<EditBox name="$(parent)PreviewBox" font="ZoFontEditChat" verticalAlignment="CENTER" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT" offsetX="6" offsetY="3" />
+							<Anchor point="BOTTOMRIGHT" offsetY="-3"/>
+						</EditBox>
+
+						<Control name="$(parent)Favourites" verticalAlignment="1">
+							<Anchor point="LEFT" relativeTo="$(parent)SettingsButton" relativePoint="RIGHT" />
+							<Controls>
+
+								
+
+							</Controls>
+						</Control>
+
+
+
+
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+
+
+		<Button name="ESO_EmojiButtonTemplate" inherits="ZO_ButtonBehaviorClickSound" verticalAlignment="1" virtual="true">
+			<Dimensions x="26" y="26" />
+			<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+			<Textures normal="ESOEmoji/icons/misc/ChatBarGear.dds"
+				pressed="ESOEmoji/icons/misc/ChatBarGear.dds"
+				pressedMouseOver="ESOEmoji/icons/misc/ChatBarDown.dds"
+				mouseOver="ESOEmoji/icons/misc/ChatBarOver.dds"
+				disabled="ESOEmoji/icons/misc/ChatBarGear.dds"/>
+			<OnClicked>
+				ESOEmoji.InsertFave1()
+			</OnClicked>
+		</Button>
+
+
+	</Controls>
+</GuiXml>

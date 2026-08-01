@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Kahanor/AutoCollect__3723",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kahanor",
+  "canonical_id": "esoui:3723",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3723",
+  "deleted": false,
+  "directories": [
+    "AutoCollect"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3723/",
+  "fingerprint": "c5fa0234f7634a534632452647b3d32bcee52a35704d05747bc20469b856341e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3723",
+  "source_url": "https://www.esoui.com/downloads/info3723-AutoCollect.html",
+  "stats": {
+    "downloads": 2464,
+    "favorites": 3,
+    "monthly_downloads": 52
+  },
+  "title": "AutoCollect",
+  "updated_at": 1695639517000,
+  "version": "1.2"
+}

@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/kawamonkey/Release-Tracker__3713",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3713",
+  "category_id": "155",
+  "compatibility": [],
+  "content_id": "esoui:3713",
+  "deleted": false,
+  "directories": [
+    "ReleaseTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3713/",
+  "fingerprint": "6b8288c3c850e3de0037a999ff8ebf70eb81179a56fe6a1d877b9d1997f35611",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12629.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3713",
+  "source_url": "https://www.esoui.com/downloads/info3713-ReleaseTracker.html",
+  "stats": {
+    "downloads": 15767,
+    "favorites": 16,
+    "monthly_downloads": 17
+  },
+  "title": "Release Tracker",
+  "updated_at": 1765648156000,
+  "version": "2025.12"
+}

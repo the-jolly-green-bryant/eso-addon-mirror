@@ -1,0 +1,10 @@
+## APIVersion: 100034
+## Title: Tamriel Trade Centre Simple Price
+## Author: Kriax
+## Version: 1.1.3
+## Description: Display Trade price
+## SavedVariables: TTCSPVars
+## DependsOn: LibAddonMenu-2.0>=32 TamrielTradeCentre
+
+TamrielTradeCentreSimplePrice.lua
+TamrielTradeCentreSimplePrice.xml

@@ -1,0 +1,25 @@
+<GuiXml>
+	<Controls>
+		<Control name="FangLairHelperBanner" resizeToFitDescendents="true" hidden="false" virtual="true">
+			<Controls>
+				<Label name="$(parent)Minor" font="$(BOLD_FONT)|$(KB_36)|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER" text=" ">
+					<Anchor point="TOP" />
+				</Label>
+				<Label name="$(parent)Major" font="$(BOLD_FONT)|$(KB_54)|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER" text=" ">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Minor" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="FangLairHelperNotifications" resizeToFitDescendents="true" hidden="true">
+			<Controls>
+				<Control name="$(parent)Banner2" inherits="FangLairHelperBanner">
+					<Anchor point="TOP" />
+				</Control>
+				<Control name="$(parent)Banner1" inherits="FangLairHelperBanner">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Banner2" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

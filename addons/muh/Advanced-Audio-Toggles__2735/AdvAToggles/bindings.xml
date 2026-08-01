@@ -1,0 +1,30 @@
+<Bindings>
+    <Layer name = "SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name = "Advanced Audio Toggles">
+            <Action name = "ADVATOGGLES_TOGGLE_MASTER">
+                <Down>AdvAToggles_keybind_set("master")</Down>
+            </Action>
+            <Action name = "ADVATOGGLES_TOGGLE_MUSIC">
+                <Down>AdvAToggles_keybind_set("music")</Down>
+            </Action>
+            <Action name = "ADVATOGGLES_TOGGLE_SOUND">
+                <Down>AdvAToggles_keybind_set("sound")</Down>
+            </Action>
+            <Action name = "ADVATOGGLES_TOGGLE_AMBIENT">
+                <Down>AdvAToggles_keybind_set("ambient")</Down>
+            </Action>
+            <Action name = "ADVATOGGLES_TOGGLE_EFFECTS">
+                <Down>AdvAToggles_keybind_set("effects")</Down>
+            </Action>
+            <Action name = "ADVATOGGLES_TOGGLE_FOOTSTEPS">
+                <Down>AdvAToggles_keybind_set("footsteps")</Down>
+            </Action>
+            <Action name = "ADVATOGGLES_TOGGLE_DIALOGUE">
+                <Down>AdvAToggles_keybind_set("dialogue")</Down>
+            </Action>
+            <Action name = "ADVATOGGLES_TOGGLE_INTERFACE">
+                <Down>AdvAToggles_keybind_set("interface")</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

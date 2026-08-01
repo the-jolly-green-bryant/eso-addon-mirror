@@ -1,0 +1,8 @@
+## APIVersion: 100034
+## Title: True Bounty
+## Author: Kawamonkey
+
+lang\en.lua
+lang\$(language).lua
+
+TrueBounty.lua

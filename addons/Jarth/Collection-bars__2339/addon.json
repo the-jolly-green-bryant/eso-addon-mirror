@@ -1,0 +1,68 @@
+{
+  "archive_path": "addons/Jarth/Collection-bars__2339",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jarth",
+  "canonical_id": "esoui:2339",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2339",
+  "deleted": false,
+  "directories": [
+    "CollectionBars"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2339/",
+  "fingerprint": "11dc7a777e2ecce6307b3a88e0913bb0b5b37d36040b3426fd4dc2d39698e133",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10786.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9089.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9090.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11204.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7983.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8204.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7985.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7984.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2339",
+  "source_url": "https://www.esoui.com/downloads/info2339-Collectionbars.html",
+  "stats": {
+    "downloads": 18727,
+    "favorites": 44,
+    "monthly_downloads": 26
+  },
+  "title": "Collection bars",
+  "updated_at": 1676815326000,
+  "version": "1.1.14"
+}

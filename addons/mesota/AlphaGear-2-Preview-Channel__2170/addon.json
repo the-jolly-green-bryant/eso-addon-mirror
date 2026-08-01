@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/mesota/AlphaGear-2-Preview-Channel__2170",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mesota",
+  "canonical_id": "esoui:2170",
+  "category_id": "19",
+  "compatibility": [],
+  "content_id": "esoui:2170",
+  "deleted": false,
+  "directories": [
+    "AlphaGear"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2170/",
+  "fingerprint": "5fcf537c93dae7c573d8a9b83648a0af7af9089158183da58ed344ef366a1fb1",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2170",
+  "source_url": "https://www.esoui.com/downloads/info2170-AlphaGear2PreviewChannel.html",
+  "stats": {
+    "downloads": 39812,
+    "favorites": 6,
+    "monthly_downloads": 55
+  },
+  "title": "AlphaGear 2 Preview Channel",
+  "updated_at": 1543177146000,
+  "version": "6.4.1 beta 3"
+}

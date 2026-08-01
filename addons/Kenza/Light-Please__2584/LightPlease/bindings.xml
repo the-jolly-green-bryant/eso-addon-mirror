@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Mementos">
+			<Action name="ALMALEXIA">
+				<Down>UseCollectible(341)</Down>
+			</Action>
+			<Action name="FINVIR">
+				<Down>UseCollectible(336)</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

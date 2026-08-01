@@ -1,0 +1,31 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="DOLLY">
+			<Action name="DOLLY_ZOOM_IN">
+				<Down>DollyCam:ZoomIn()</Down>
+				<Up>DollyCam:StopZoomIn()</Up>
+			</Action>
+      <Action name="DOLLY_ZOOM_OUT">
+				<Down>DollyCam:ZoomOut()</Down>
+				<Up>DollyCam:StopZoomOut()</Up>
+			</Action>
+      		<Action name="DOLLY_TZOOM_IN">
+				<Down>DollyCam:TZoomIn()</Down>
+				<Up>DollyCam:StopZoomIn()</Up>
+			</Action>
+      <Action name="DOLLY_TZOOM_OUT">
+				<Down>DollyCam:TZoomOut()</Down>
+				<Up>DollyCam:StopZoomOut()</Up>
+			</Action>
+      <Action name="DOLLY_RESET">
+				<Down>DollyCam:Reset()</Down>
+			</Action>
+			<Action name="DOLLY_SPEED">
+				<Down>DollyCam:Speed()</Down>
+			</Action>
+      <Action name="DOLLY_DUMP">
+        <Down>DollyCam:DumpSettings()</Down>
+      </Action>
+    </Category>
+	</Layer>
+</Bindings>

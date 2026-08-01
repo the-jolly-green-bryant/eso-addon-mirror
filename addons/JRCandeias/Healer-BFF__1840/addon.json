@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/JRCandeias/Healer-BFF__1840",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "JRCandeias",
+  "canonical_id": "esoui:1840",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1840",
+  "deleted": false,
+  "directories": [
+    "HealerBFF"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1840/",
+  "fingerprint": "3d35d1721617d766615931dc6809355ca9e0d4a2a9f500badc368a8176ac16ef",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6814.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1840",
+  "source_url": "https://www.esoui.com/downloads/info1840-HealerBFF.html",
+  "stats": {
+    "downloads": 16650,
+    "favorites": 11,
+    "monthly_downloads": 27
+  },
+  "title": "Healer BFF",
+  "updated_at": 1598546745000,
+  "version": "1.0.9"
+}

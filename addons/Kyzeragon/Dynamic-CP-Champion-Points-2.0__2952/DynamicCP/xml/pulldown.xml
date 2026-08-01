@@ -1,0 +1,113 @@
+<GuiXml>
+    <Controls>
+<!-- ======================================================================================================================= -->
+        <Control name="DynamicCPPulldownSetControls" virtual="true" tier="MEDIUM">
+            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="2"/>
+            <Controls>
+                <Control name="$(parent)Dropdown" inherits="ZO_ComboBox" tier="HIGH">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                </Control>
+                <EditBox name="$(parent)TextField" inherits="ZO_DefaultEditForBackdrop" defaultText="  New slottable set" tier="MEDIUM" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Dropdown" relativePoint="BOTTOMLEFT" offsetY="4"/>
+                    <Controls><Backdrop name="$(parent)Backdrop" centerColor="55000000" edgeColor="88000000" tier="LOW"><AnchorFill/><Edge edgeSize="1"/></Backdrop></Controls>
+                    <OnFocusLost>DynamicCP.OnSlotSetTextFocusLost(self)</OnFocusLost>
+                </EditBox>
+                <Button name="$(parent)Delete" alpha="1" topmost="true" tier="MEDIUM" hidden="true">
+                    <Anchor point="LEFT" relativeTo="$(parent)Dropdown" relativePoint="RIGHT" offsetX="4"/>
+                    <Dimensions x="24" y="24"/>
+                    <Textures normal="/esoui/art/buttons/decline_up.dds" pressed="/esoui/art/buttons/decline_down.dds" mouseOver="/esoui/art/buttons/decline_over.dds"/>
+                    <OnClicked>DynamicCP.DeleteSlotSet(self)</OnClicked>
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, BOTTOMRIGHT, "Delete set")
+                    </OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                </Button>
+                <Button name="$(parent)Save" alpha="1" topmost="true" tier="MEDIUM" hidden="true">
+                    <Anchor point="LEFT" relativeTo="$(parent)TextField" relativePoint="RIGHT" offsetX="4"/>
+                    <Dimensions x="28" y="28"/>
+                    <Textures normal="/esoui/art/buttons/edit_save_up.dds" pressed="/esoui/art/buttons/edit_save_down.dds" mouseOver="/esoui/art/buttons/edit_save_over.dds"/>
+                    <OnClicked>DynamicCP.SaveSlotSet(self)</OnClicked>
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, BOTTOMRIGHT, "Save set")
+                    </OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                </Button>
+            </Controls>
+        </Control>
+<!-- ======================================================================================================================= -->
+        <Control name="DynamicCPPulldownStar" virtual="true" tier="MEDIUM">
+            <OnInitialized>
+                self:SetHeight(20)
+                self:SetWidth(self:GetParent():GetWidth() / 2)
+                self.SetColors = function(color)
+                    self:GetNamedChild("Name"):SetColor(unpack(color))
+                    self:GetNamedChild("Points"):SetColor(unpack(color))
+                end
+            </OnInitialized>
+            <Controls>
+                <Texture name="$(parent)Icon" textureFile="esoui/art/ava/ava_rankicon_legate.dds" tier="MEDIUM">
+                    <Dimensions x="14" y="14"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+                </Texture>
+                <Label name="$(parent)Name" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Star" tier="MEDIUM">
+                    <Dimensions y="20"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT"/>
+                </Label>
+                <Label name="$(parent)Points" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="420" tier="MEDIUM">
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0"/>
+                </Label>
+            </Controls>
+        </Control>
+<!-- ======================================================================================================================= -->
+        <TopLevelControl name="DynamicCPPulldownContainer" mouseEnabled="false" movable="false" hidden="true" tier="MEDIUM">
+            <OnInitialized>
+                CHAMPION_PERKS_SCENE:AddFragment(ZO_HUDFadeSceneFragment:New(self))
+                GAMEPAD_CHAMPION_PERKS_SCENE:AddFragment(ZO_HUDFadeSceneFragment:New(self))
+            </OnInitialized>
+            <Controls>
+                <Control name="DynamicCPPulldown" mouseEnabled="false" movable="false" hidden="false" allowBringToTop="false" tier="MEDIUM">
+                    <Dimensions x="740" y="104"/>
+                    <Anchor point="TOP" relativeTo="ZO_ChampionPerksActionBar" relativePoint="BOTTOM"/>
+                    <OnInitialized>
+                        self:SetWidth(ZO_ChampionPerksActionBar:GetWidth()*0.92)
+                    </OnInitialized>
+                    <Controls>
+                        <Backdrop name="$(parent)Backdrop" centerColor="66000000" edgeColor="00000000" tier="MEDIUM"><AnchorFill/></Backdrop>
+                        <Control name="$(parent)Green" tier="MEDIUM">
+                            <Anchor point="TOP" relativeTo="ZO_ChampionPerksActionBar" relativePoint="BOTTOM"/>
+                        </Control>
+                        <Control name="$(parent)Blue" tier="MEDIUM">
+                            <Anchor point="TOP" relativeTo="ZO_ChampionPerksActionBar" relativePoint="BOTTOM"/>
+                        </Control>
+                        <Control name="$(parent)Red" tier="MEDIUM">
+                            <Anchor point="TOP" relativeTo="ZO_ChampionPerksActionBar" relativePoint="BOTTOM"/>
+                        </Control>
+                        <Label name="$(parent)Hint" color="BBBBBB" text="Create slottable sets here to use them manually or with presets or rules." hidden="false" tier="HIGH" layer="TEXT" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="700" y="16"/>
+                            <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-12"/>
+                        </Label>
+                    </Controls>
+                </Control>
+                <Control name="DynamicCPPulldownTab" mouseEnabled="true" hidden="false" tier="MEDIUM">
+                    <Anchor point="TOP" relativeTo="DynamicCPPulldown" relativePoint="BOTTOM" offsetY="0" />
+                    <Dimensions x="48" y="20" />
+                    <OnMouseUp>
+                        DynamicCP.TogglePulldown()
+                    </OnMouseUp>
+                    <Controls>
+                        <Backdrop name="$(parent)Backdrop" centerColor="66000000" edgeColor="00000000" tier="MEDIUM"><AnchorFill/></Backdrop>
+                        <Texture name="$(parent)ArrowExpanded" textureFile="esoui/art/buttons/large_uparrow_up.dds" tier="MEDIUM">
+                            <Dimensions x="20" y="20"/>
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                        </Texture>
+                        <Texture name="$(parent)ArrowHidden" textureFile="esoui/art/buttons/large_downarrow_up.dds" hidden="true" tier="MEDIUM">
+                            <Dimensions x="20" y="20"/>
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                        </Texture>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+<!-- ======================================================================================================================= -->
+    </Controls>
+</GuiXml>

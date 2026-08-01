@@ -1,0 +1,9 @@
+## Title: VampStage
+## Description: Displays your vampire stage with a skull icon and stage timer. Shows "Mortal" when you are not a vampire. Each element (skull, stage label, timer) can be moved, scaled, and toggled independently. Use /vamplock to unlock and drag elements, or /vampdebug to check buff detection.
+## Author: @R1K3R
+## Version: 1.4
+## APIVersion: 101048 101049
+## SavedVariables: VampStage_SavedVars
+## OptionalDependsOn: LibAddonMenu-2.0
+
+VampStage.lua

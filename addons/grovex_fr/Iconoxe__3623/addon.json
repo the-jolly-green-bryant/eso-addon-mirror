@@ -1,0 +1,73 @@
+{
+  "archive_path": "addons/grovex_fr/Iconoxe__3623",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "grovex_fr",
+  "canonical_id": "esoui:3623",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3623",
+  "deleted": false,
+  "directories": [
+    "Iconoxe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3623/",
+  "fingerprint": "3ae2f4d9e11b89d1595d31a83fd5845e70959c805e2b184f033d6e66279c3d3a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12341.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3623",
+  "source_url": "https://www.esoui.com/downloads/info3623-Iconoxe.html",
+  "stats": {
+    "downloads": 1540,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "Iconoxe",
+  "updated_at": 1752700241000,
+  "version": "4600"
+}

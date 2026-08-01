@@ -1,0 +1,19 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="WISHLIST_TITLE">
+      <Action name="WISHLIST_SHOW">
+        <Down>WishList:Show()</Down>
+      </Action>
+      <Action name="WISHLIST_ADD_OR_REMOVE">
+        <Down>WishList:AddOrRemoveFromWishList()</Down>
+      </Action>
+      <Action name="WISHLIST_SHOW_ITEM_SET_COLLECTION_CURRENT_ZONE">
+        <Down>
+          if not WishList.openSetItemCollectionBrowserForCurrentZone(false) then
+            WishList.openSetItemCollectionBrowserForCurrentZone(true)
+          end
+        </Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

@@ -1,0 +1,33 @@
+{
+  "archive_path": "addons/M0R/Gear-Tracker__3174",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "M0R",
+  "canonical_id": "esoui:3174",
+  "category_id": "159",
+  "compatibility": [],
+  "content_id": "esoui:3174",
+  "deleted": false,
+  "directories": [
+    "GearTracker",
+    "__MACOSX"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3174/",
+  "fingerprint": "9ca15d36fe8721ce46f2adc4e5948e2e3a38d0dd545a18616a0968f576f9bb38",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10777.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3174",
+  "source_url": "https://www.esoui.com/downloads/info3174-GearTracker.html",
+  "stats": {
+    "downloads": 6776,
+    "favorites": 7,
+    "monthly_downloads": 41
+  },
+  "title": "Gear Tracker",
+  "updated_at": 1629077146000,
+  "version": "1.1"
+}

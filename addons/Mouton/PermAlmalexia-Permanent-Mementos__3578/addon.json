@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Mouton/PermAlmalexia-Permanent-Mementos__3578",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mouton",
+  "canonical_id": "esoui:3578",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3578",
+  "deleted": false,
+  "directories": [
+    "PermAlmalexia"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3578/",
+  "fingerprint": "6be7963a7000f5ff0138fb57874c067a22bbb157f21c68fc4e23efc1394bc25c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12147.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12148.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3578",
+  "source_url": "https://www.esoui.com/downloads/info3578-PermAlmalexiaPermanentMementos.html",
+  "stats": {
+    "downloads": 5938,
+    "favorites": 8,
+    "monthly_downloads": 19
+  },
+  "title": "PermAlmalexia: Permanent Mementos",
+  "updated_at": 1710187012000,
+  "version": "1.2.1"
+}

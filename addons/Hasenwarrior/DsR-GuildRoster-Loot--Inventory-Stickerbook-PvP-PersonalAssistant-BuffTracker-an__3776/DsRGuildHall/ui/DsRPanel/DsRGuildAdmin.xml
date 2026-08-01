@@ -1,0 +1,147 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+  <Controls>
+    <TopLevelControl name="DsRGuildAdminFrame" hidden="true">
+      <Dimensions x="700" y="100" />
+        <Anchor point="TOPRIGHT" relativeTo="ZO_GuildHome" relativePoint="TOPLEFT" offsetX="-20" offsetY="50" />
+      <OnInitialized>
+            DsRGuildAdmin.Check()
+      </OnInitialized>
+      <Controls>
+        <Control name="DsRGuildSettingPanel">
+            <Controls>
+                <Texture name="DsRGuildSettingPanelBg" textureFile="/DsRGuildHall/misc/DsRInfoBG.dds" override="true">
+                    <Anchor point="TOPRIGHT" relativeTo="ZO_GuildHome" relativePoint="TOPLEFT" offsetX="-20" offsetY="600" />
+                    <Dimensions x="700" y="200" />
+                </Texture>
+                <Texture name="DsRGuildSettingDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider_mythic.dds"
+                    verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+                    <Dimensions x="900" y="10" />
+                    <Anchor point="TOPLEFT" relativeTo="DsRGuildAdminFrame" relativePoint="TOPLEFT" offsetX="-90" offsetY="590"/>
+                </Texture>
+                <Label name="DsRGuildSettingTXT" width="200" height="25" font="ZoFontWinH3" inheritAlpha="true"  color="9fb6cd"
+                        wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"  text="DsR GuildRoster" >
+                        <Anchor point="TOP" relativeTo="DsRGuildSettingPanelBg" relativePoint="TOP" offsetX="30" offsetY="20"/>
+                </Label>
+                <Button name="DsRGuildSettings" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+                    wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" 
+                    text="Einstellungen">
+                    <OnClicked>
+                        DsR.Menu.Open()
+                    </OnClicked>
+                    <Anchor point="TOP" relativeTo="DsRGuildSettingDivider" relativePoint="TOP" offsetX="-200" offsetY="10"/>
+                    <Dimensions x="190" />
+                </Button>
+                <Button name="DsRGuildSettingsPLAYED" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+                    wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" 
+                    text="|cFfa500ESO-Sucht besteht seit...|r">
+                    <OnClicked>
+                        DsRGuildAdmin:PlayedTimeOverall(...)
+                    </OnClicked>
+                    <Anchor point="TOP" relativeTo="DsRGuildSettings" relativePoint="TOP" offsetX="200"  offsetY="0"/>
+                    <Dimensions x="190" />
+                </Button>
+                <Button name="DsRGuildSettingsReload" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+                    wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" 
+                    text="|c35fc38ReLoadUI|r">
+                    <OnClicked>
+	                        SCENE_MANAGER:SetInUIMode(false)
+
+	                        local params  = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_MAJOR_TEXT)
+	                        local icon    = zo_iconFormat("/esoui/art/lfg/lfg_groupfinder_refreshsearch_down.dds", 64, 64)
+
+	                        params:SetCSAType(CENTER_SCREEN_ANNOUNCE_TYPE_DAILY_LOGIN_REWARD_CLAIMED)
+	                        params:SetText(icon .. "|c35fc38Reloading UI|r")
+
+	                        CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(params)
+	                        DsR.CallLater("ReloadUI",1000,ReloadUI)
+                    </OnClicked>
+                    <Anchor point="TOP" relativeTo="DsRGuildSettingsPLAYED" relativePoint="TOP" offsetX="200"  offsetY="0"/>
+                    <Dimensions x="190" />
+                </Button>
+            </Controls>
+        </Control>
+        <Control name="DsRGuildAdminPanel">
+            <Controls>
+                <Texture name="DsRGuildAdminPanelBg" textureFile="/DsRGuildHall/misc/DsRInfoBG.dds" override="true">
+                    <Anchor point="TOPRIGHT" relativeTo="ZO_GuildHome" relativePoint="TOPLEFT" offsetX="-20" offsetY="690" />
+                    <Dimensions x="700" y="200" />
+                </Texture>
+                <Texture name="DsRGuildAdminDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider_mythic.dds"
+                    verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+                    <Dimensions x="900" y="10" />
+                    <Anchor point="TOPLEFT" relativeTo="DsRGuildAdminFrame" relativePoint="TOPLEFT" offsetX="-90" offsetY="680"/>
+                </Texture>
+                <Label name="DsRGuildAdminTXT" width="200" height="25" font="ZoFontWinH3" inheritAlpha="true"  color="9fb6cd"
+                        wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"  text="Rabenwacht" >
+                        <Anchor point="TOP" relativeTo="DsRGuildAdminPanelBg" relativePoint="TOP" offsetX="30" offsetY="20"/>
+                </Label>
+                <Button name="DsRGuildAdminDiscord" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+                    wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" 
+                    text="Discord">
+                    <OnClicked>
+                        DsRGuildAdmin:OnClickedDiscord(...)
+                    </OnClicked>
+                    <Anchor point="TOP" relativeTo="DsRGuildAdminDivider" relativePoint="TOP" offsetX="-250" offsetY="10"/>
+                    <Dimensions x="130" />
+                </Button>
+                <Button name="DsRGuildAdminEventErinnerung" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+                    wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" 
+                    text="Eventerinnerung">
+                    <OnClicked>
+                        DsRGuildAdmin:OnClickedEventErinnerung(...)
+                    </OnClicked>
+                    <Anchor point="TOP" relativeTo="DsRGuildAdminDiscord" relativePoint="TOP" offsetX="130" offsetY="0"/>
+                    <Dimensions x="170" />
+                </Button>
+                <Button name="DsRGuildAdminKickMember" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+                    wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" 
+                    text="|cFF0000Kick Member|r">
+                    <OnClicked>
+                        DsRGuildAdmin:OnClickedKickMember(...)
+                    </OnClicked>
+                    <Anchor point="TOP" relativeTo="DsRGuildAdminEventErinnerung" relativePoint="TOP" offsetX="130" offsetY="0"/>
+                    <Dimensions x="130" />
+                </Button>
+                <Button name="DsRGuildAdminHaendler" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+                    wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" 
+                    text="Händler">
+                    <OnClicked>
+                        DsRGuildAdmin:OnClickedHaendler(...)
+                    </OnClicked>
+                    <Anchor point="TOP" relativeTo="DsRGuildAdminKickMember" relativePoint="TOP" offsetX="120" offsetY="0"/>
+                    <Dimensions x="130" />
+                </Button>
+                <Button name="DsRGuildAdminAddon" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+                    wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" 
+                    text="Addon">
+                    <OnClicked>
+                        DsRGuildAdmin:OnClickedAddon(...)
+                    </OnClicked>
+                    <Anchor point="TOP" relativeTo="DsRGuildAdminHaendler" relativePoint="TOP" offsetX="120" offsetY="0"/>
+                    <Dimensions x="130" />
+                </Button>
+    <!-- Only @Hasenwarrior -->
+                <Button name="DsRGuildAdminTEST" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+                    wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" 
+                    text="|c35fc38TEST Func|r">
+                    <OnClicked>
+                        DsRGuildAdmin:OnClickedTestFunction(...)
+                    </OnClicked>
+                    <Anchor point="TOP" relativeTo="DsRGuildAdminKickMember" relativePoint="BOTTOM" offsetX="-80"  offsetY="40"/>
+                    <Dimensions x="140" />
+                </Button>                
+                <Button name="DsRGuildAdminSoundT" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+                    wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" 
+                    text="|c35fc38Sounds|r">
+                    <OnClicked>
+                        DsRGuildAdmin:OnClickedSoundFunction(...)
+                    </OnClicked>
+                    <Anchor point="TOP" relativeTo="DsRGuildAdminKickMember" relativePoint="BOTTOM" offsetX="80"  offsetY="40"/>
+                    <Dimensions x="140" />
+                </Button>
+            </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

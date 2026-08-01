@@ -1,0 +1,10 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<!-- Games Default User Interface Category -->
+		<Category name="Chaotic Tools">
+			<Action name="CHAOTIC_GO_GUILD_HALL">
+				<Up>ChaoticTools.guildHallButtonClick()</Up>
+			</Action>		
+		</Category>
+	</Layer>
+</Bindings>

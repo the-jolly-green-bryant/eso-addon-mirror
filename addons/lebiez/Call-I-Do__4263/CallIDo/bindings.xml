@@ -1,0 +1,19 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Call-I-Do">
+		<Action name="CALLIDO_WHEEL">
+            <Down>CallIDo_Wheel_Show()</Down>
+            <Up>CallIDo_Wheel_Hide()</Up>
+        </Action>
+            <Action name="CALLIDO_1"><Down>CallIDo_Call1()</Down></Action>
+            <Action name="CALLIDO_2"><Down>CallIDo_Call2()</Down></Action>
+            <Action name="CALLIDO_3"><Down>CallIDo_Call3()</Down></Action>
+            <Action name="CALLIDO_4"><Down>CallIDo_Call4()</Down></Action>
+            <Action name="CALLIDO_5"><Down>CallIDo_Call5()</Down></Action>
+            <Action name="CALLIDO_6"><Down>CallIDo_Call6()</Down></Action>
+            <Action name="CALLIDO_7"><Down>CallIDo_Call7()</Down></Action>
+            <Action name="CALLIDO_8"><Down>CallIDo_Call8()</Down></Action>
+            <Action name="CALLIDO_9"><Down>CallIDo_Call9()</Down></Action>
+        </Category>
+    </Layer>
+</Bindings>

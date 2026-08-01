@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Hoft/Group-Loot-Notifier__1618",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hoft",
+  "canonical_id": "esoui:1618",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1618",
+  "deleted": false,
+  "directories": [
+    "GroupLootNotifier"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1618/",
+  "fingerprint": "e49d027f023472df37b4eb109196d38ddc6749d72796c20ac37aeb8fdc54ed88",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5311.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1618",
+  "source_url": "https://www.esoui.com/downloads/info1618-GroupLootNotifier.html",
+  "stats": {
+    "downloads": 364397,
+    "favorites": 224,
+    "monthly_downloads": 421
+  },
+  "title": "Group Loot Notifier",
+  "updated_at": 1603531576000,
+  "version": "2.17"
+}

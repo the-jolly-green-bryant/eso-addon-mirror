@@ -1,0 +1,15 @@
+## Title: Leo's Dolmen Runner
+## APIVersion: 100035
+## Version: 1.3.1
+## AddOnVersion: 131
+## Author: |c39B027@LeandroSilva|r
+## SavedVariables: LeoDolmenRunner_Data
+## DependsOn: LibFeedback LibAddonMenu-2.0 LibSavedVars
+
+LeoDolmenRunner.lua
+Runner.lua
+Inviter.lua
+Ui.lua
+Settings.lua
+LeoDolmenRunner.xml
+Bindings.xml

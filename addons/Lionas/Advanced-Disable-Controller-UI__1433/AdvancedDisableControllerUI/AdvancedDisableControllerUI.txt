@@ -1,0 +1,30 @@
+﻿## Title: Advanced Disable Controller UI
+## APIVersion: 100027 100028
+## AddOnVersion: 152
+## Version: 1.5.3
+## Author: Lionas, Setsu
+## Description: Disable controller-UI and adjust compass
+## DependsOn: LibStub LibAddonMenu-2.0
+## OptionalDependsOn: LibDebugLogger
+## SavedVariables: AdvancedDisableControllerUI_SavedPrefs
+
+# This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder ScrollsR and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+Lang/en.lua
+Lang/$(language).lua
+
+# Always load this first
+src/ADCUI_Vars.lua
+
+src/ADCUI_HelperFunctions.lua
+src/ADCUI_GlobalOverrides.lua
+src/ADCUI_Compass.lua
+src/ADCUI_SettingsOverrides.lua
+src/ADCUI_EventHandlers.lua
+src/ADCUI_MainKeystrip.lua
+src/ADCUI_Menu.lua
+src/ADCUI_Debug.xml
+src/ADCUI_Debug.lua
+
+AdvancedDisableControllerUI.lua
+Bindings.xml

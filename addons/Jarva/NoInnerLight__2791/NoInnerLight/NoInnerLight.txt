@@ -1,0 +1,9 @@
+## Title: No Inner Light
+## Author: @Jarva [EU]
+## APIVersion: 100033
+## DependsOn: LibAddonMenu-2.0 LibSkillBlocker
+## SavedVariables: NoInnerLightVars
+## Version: 1.0.2
+## AddOnVersion: 102
+
+NoInnerLight.lua

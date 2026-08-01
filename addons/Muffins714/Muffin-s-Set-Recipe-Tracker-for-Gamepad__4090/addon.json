@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Muffins714/Muffin-s-Set-Recipe-Tracker-for-Gamepad__4090",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Muffins714",
+  "canonical_id": "esoui:4090",
+  "category_id": "162",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4090",
+  "deleted": false,
+  "directories": [
+    "MuffinsSetRecipeTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4090/",
+  "fingerprint": "7ddc15c675bcde57e5866d16c8d7ecc8eabee096149ec51470595c37c2a0222a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13945.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13947.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13948.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14031.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16372.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16371.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4090",
+  "source_url": "https://www.esoui.com/downloads/info4090-MuffinsSetRecipeTrackerforGamepad.html",
+  "stats": {
+    "downloads": 3675,
+    "favorites": 8,
+    "monthly_downloads": 466
+  },
+  "title": "Muffin\u2019s Set\u00a0&\u00a0Recipe Tracker for Gamepad",
+  "updated_at": 1783547896000,
+  "version": "1.6.1"
+}

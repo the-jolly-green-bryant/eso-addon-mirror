@@ -1,0 +1,14 @@
+<GuiXml>
+	<Controls>
+		
+		<Backdrop name="MapCoordinates_Research_Template" inherits="ZO_SingleLineEditBackdrop_Keyboard" tier="HIGH" virtual="true">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+			<Dimensions x="270"/>
+			<Controls>
+				<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" defaultText="MAPCOORDS_SEARCH_PLACEHOLDER">
+				</EditBox>
+			</Controls>
+		</Backdrop>
+		
+	</Controls>
+</GuiXml>

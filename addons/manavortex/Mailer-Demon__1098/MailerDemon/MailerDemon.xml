@@ -1,0 +1,110 @@
+<GuiXml>
+	<Controls>
+			<TopLevelControl name="MailerDemonMain">
+				<Anchor point= "RIGHT" relativeTo="ZO_MailSendToField" relativePoint="TOP" offsetX="5" offsetY = "-120" /> 
+				<Controls>
+
+					<Tooltip name="MailerDemon_Tooltip" inherits="ZO_BaseTooltip"  level="10">
+						<Dimensions x="300" y="60"/>
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="50"/>
+					</Tooltip>
+
+					<Button name="MailerDemon_Bait"  level = "5" mouseEnabled="true">
+						<Dimensions x="32" y="32"/>
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY = "5" />
+						<Textures
+							normal="/MailerDemon/Textures/bait_up.dds"
+							pressed="/MailerDemon/Textures/bait_down.dds"
+							mouseOver="/MailerDemon/Textures/bait_down.dds"
+						/>
+						<OnMouseEnter>
+							MailerDemon_CreateTooltip(self)
+						</OnMouseEnter>
+						<OnMouseExit>
+							MailerDemon_HideTooltip(self)
+						</OnMouseExit>
+						<OnClicked>
+							MailerDemon_PushButton(self)
+						</OnClicked>
+					</Button>
+
+					<Button name="MailerDemon_Bounce" level = "4" mouseEnabled="true">
+						<Dimensions x="32" y="32"/>
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="45" offsetY="5"/>
+						<Textures
+							normal="/MailerDemon/Textures/bounce_up.dds"
+							pressed="/MailerDemon/Textures/bounce_down.dds"
+							mouseOver="/MailerDemon/Textures/bounce_down.dds"
+						/>
+						<OnMouseEnter>
+							MailerDemon_CreateTooltip(self)
+						</OnMouseEnter>
+						<OnMouseExit>
+							MailerDemon_HideTooltip(self)
+						</OnMouseExit>
+						<OnClicked>
+							MailerDemon_PushButton(self)
+						</OnClicked>
+					</Button>
+
+					<Button name="MailerDemon_Decon" level = "4" mouseEnabled="true">
+						<Dimensions x="32" y="32"/>
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="85" offsetY="5"/>
+						<Textures
+							normal="/MailerDemon/Textures/decon_up.dds"
+							pressed="/MailerDemon/Textures/decon_down.dds"
+							mouseOver="/MailerDemon/Textures/decon_down.dds"
+						/>
+						<OnMouseEnter>
+							MailerDemon_CreateTooltip(self)
+						</OnMouseEnter>
+						<OnMouseExit>
+							MailerDemon_HideTooltip(self)
+						</OnMouseExit>
+						<OnClicked>
+							MailerDemon_PushButton(self)
+						</OnClicked>
+					</Button>
+
+					<Button name="MailerDemon_Ref" level = "4" mouseEnabled="true">
+						<Dimensions x="32" y="32"/>
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="125" offsetY="5"/>
+						<Textures
+							normal="/MailerDemon/Textures/ref_up.dds"
+							pressed="/MailerDemon/Textures/ref_down.dds"
+							mouseOver="/MailerDemon/Textures/ref_down.dds"
+						/>
+						<OnMouseEnter>
+							MailerDemon_CreateTooltip(self)
+						</OnMouseEnter>
+						<OnMouseExit>
+							MailerDemon_HideTooltip(self)
+						</OnMouseExit>
+						<OnClicked>
+							MailerDemon_PushButton(self)
+						</OnClicked>
+					</Button>
+
+					<Button name="MailerDemon_Materials" level = "4" mouseEnabled="true">
+						<Dimensions x="32" y="32"/>
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="165" offsetY="5"/>
+						<Textures
+							normal="/MailerDemon/Textures/materials_up.dds"
+							pressed="/MailerDemon/Textures/materials_down.dds"
+							mouseOver="/MailerDemon/Textures/materials_down.dds"
+						/>
+						<OnMouseEnter>
+							MailerDemon_CreateTooltip(self)
+						</OnMouseEnter>
+						<OnMouseExit>
+							MailerDemon_HideTooltip(self)
+						</OnMouseExit>
+						<OnClicked>
+							MailerDemon_PushButton(self)
+						</OnClicked>
+					</Button>
+
+				</Controls>
+			</TopLevelControl>
+	</Controls>
+</GuiXml>

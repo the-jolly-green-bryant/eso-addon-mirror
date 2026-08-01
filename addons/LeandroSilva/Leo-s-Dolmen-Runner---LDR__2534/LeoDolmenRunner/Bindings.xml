@@ -1,0 +1,15 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Leo's Dolmen Runner">
+      <Action name="LEODOLMENRUNNER_TOGGLE_WINDOW">
+        <Down>LeoDolmenRunnerWindow:ToggleHidden()</Down>
+      </Action>
+      <Action name="LEODOLMENRUNNER_RUNNER_TOGGLE">
+        <Down>LeoDolmenRunner.runner:StartStop()</Down>
+      </Action>
+      <Action name="LEODOLMENRUNNER_INVITER_TOGGLE">
+        <Down>LeoDolmenRunner.inviter:StartStop()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

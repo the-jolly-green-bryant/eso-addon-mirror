@@ -1,0 +1,16 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: |cD9A441Wayfinder|r
+## Author: |cFF77CCKanashiReinkyatto|r
+## Description: Open delve and public dungeon maps from world map pins, and find/teleport to group, friends, and guildmates.
+## Version: 1.1
+## APIVersion: 101050
+## DependsOn: LibCustomMenu>=730 LibAddonMenu-2.0>=43
+## SavedVariables: WayfinderSV
+
+Wayfinder.lua
+Wayfinder_Settings.lua

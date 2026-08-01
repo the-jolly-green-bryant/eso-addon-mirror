@@ -1,0 +1,48 @@
+## Title: GoblinSpeak
+## APIVersion: 101045
+## Version: 1.4
+## Author: @Konten
+## Description: Are you a true roleplay lover? Then this addon is for you! 
+## Use the Shadowsilk Gem to transform your character into a goblin—and speak like one too! 
+## Whether you're whispering in the shadows or shouting in the chaos of battle, 
+## your words will carry the wild and wacky charm of Tamriel's goblin kin. 
+## Perfect for immersive roleplay, chaotic fun, or just getting a laugh from your groupmates!
+
+## Version 1.4
+## Added personality auto-swap feature
+## Improved sayings logic for stealth, trial, and boss encounters
+## Sayings now vary based on group role (Tank, Healer, DPS) 
+## Modularized sayings and filler logic for better performance and maintainability
+
+## Version 1.3
+## Fixed minor bugs
+## Reorganized addon structure to support future updates
+## Added new sayings for boss encounters
+## Added new sayings for "Stealth Detected" events
+## Added new sayings for sneaking
+	
+## Version 1.2
+## Fixed minor bugs
+
+## Version 1.1
+## Fixed minor bugs
+
+## Version 1.0
+## Initial release
+
+## SavedVariables: GoblinSpeakSaved
+
+Sayings/GoblinTankSayings.lua
+Sayings/GoblinHealerSayings.lua
+Sayings/GoblinDpsSayings.lua
+Sayings/GoblinBossSayings.lua
+Sayings/GoblinStealthSayings.lua
+Sayings/GoblinDetectedSayings.lua
+Sayings/GoblinCombatSayings.lua
+Sayings/GoblinOthersDeathSayings.lua
+Sayings/GoblinDeathSayings.lua
+Sayings/GoblinRandomFillers.lua
+Sayings/GoblinDictionary.lua
+Sayings/GoblinTrialSayings.lua
+Sayings/GoblinSayings.lua
+GoblinSpeak.lua

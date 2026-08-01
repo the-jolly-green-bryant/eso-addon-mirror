@@ -1,0 +1,10 @@
+## Title: BossBoxTimer
+## APIVersion: 101048 101049
+## Author: Lexalious
+## Version: 1.1.0
+## Description: Your on-screen timer to track any timed item you want using keywords
+## SavedVariables: BossBoxTimer_SavedVars
+## DependsOn: LibAddonMenu-2.0>=32
+
+BossBoxTimer.lua
+Settings.lua

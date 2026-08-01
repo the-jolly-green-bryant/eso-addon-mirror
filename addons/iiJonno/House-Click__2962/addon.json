@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/iiJonno/House-Click__2962",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "iiJonno",
+  "canonical_id": "esoui:2962",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:2962",
+  "deleted": false,
+  "directories": [
+    "HouseClick"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2962/",
+  "fingerprint": "f7738b9a7add138bba4f2804e266d39dcf370089185f9b0c7512619b60ab2d0c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9999.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10000.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2962",
+  "source_url": "https://www.esoui.com/downloads/info2962-HouseClick.html",
+  "stats": {
+    "downloads": 2999,
+    "favorites": 5,
+    "monthly_downloads": 16
+  },
+  "title": "House Click",
+  "updated_at": 1732048510000,
+  "version": "1.2"
+}

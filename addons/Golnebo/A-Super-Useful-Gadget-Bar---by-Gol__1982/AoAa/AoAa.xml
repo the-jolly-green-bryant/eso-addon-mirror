@@ -1,0 +1,264 @@
+<GuiXml>
+    <Controls>
+        <Control name="AoAXMLHeader" virtual = "true">
+            <Dimensions y="32" />
+            <Controls>
+                <Label name="$(parent)Label" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" modifyTextType="UPPERCASE">
+                    <Anchor point="LEFT" />
+                </Label>
+            </Controls>
+        </Control>
+        <TopLevelControl name="AoAaIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="500" y="60" />
+            <Anchor point="CENTER" />
+            <OnUpdate> 
+                AoAa.OnUpdate() 
+            </OnUpdate>
+            <OnMoveStop>
+                AoAa.OnIndicatorMoveStop()
+            </OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)BG" alpha="0" edge="0" inherits="ZO_DefaultBackdrop" />
+                <Button name="$(parent)ButtonBar" inherits="ZO_ButtonBehaviorClickSound" mouseEnabled="true">
+                  <Dimensions x="30" y="30" />
+                  <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="20" />
+                  <Textures normal="EsoUI/Art/icons/mapkey/mapkey_inn.dds"
+                        pressed="EsoUI/Art/Buttons/large_rightarrow_down.dds"
+                        mouseOver="EsoUI/Art/Buttons/large_rightarrow_mouseover.dds"
+                        disabled="EsoUI/Art/Buttons/large_rightarrow_disabled.dds"/>
+                    <OnClicked>
+                        AoAa.GuiPortToBar()
+                    </OnClicked>
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipBar(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>
+                <Button name="$(parent)ButtonGuildhall" inherits="ZO_ButtonBehaviorClickSound">
+                  <Dimensions x="30" y="30" />
+                  <Anchor point="RIGHT" relativeTo="$(parent)ButtonBar" relativePoint="RIGHT" offsetX="40" offsetY="0" />
+                  <Textures normal="EsoUI/Art/icons/mapkey/mapkey_temple.dds"
+                        pressed="EsoUI/Art/Buttons/large_rightarrow_down.dds"
+                        mouseOver="EsoUI/Art/Buttons/large_rightarrow_mouseover.dds"
+                        disabled="EsoUI/Art/Buttons/large_rightarrow_disabled.dds"/>
+                    <OnClicked>
+                        AoAa.GuiPortToGuildhall()
+                    </OnClicked>
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipGuildHall(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>
+                <Button name="$(parent)Buttonhorror" inherits="ZO_ButtonBehaviorClickSound">
+                  <Dimensions x="30" y="30" />
+                  <Anchor point="RIGHT" relativeTo="$(parent)ButtonGuildhall" relativePoint="RIGHT" offsetX="40" offsetY="0" />
+                  <Textures normal="EsoUI/Art/icons/mapkey/mapkey_groupboss.dds"
+                        pressed="EsoUI/Art/Buttons/large_rightarrow_down.dds"
+                        mouseOver="EsoUI/Art/Buttons/large_rightarrow_mouseover.dds"
+                        disabled="EsoUI/Art/Buttons/large_rightarrow_disabled.dds"/>
+                    <OnClicked>
+                        AoAa.GuiPortToHorror()
+                    </OnClicked>
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipHorror(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>
+                <Button name="$(parent)LvlIcon">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Buttonhorror" relativePoint="RIGHT" offsetX="4" offsetY="0" /> 
+                    <Textures normal="EsoUI/Art/tutorial/gamepad/gp_playermenu_icon_character.dds" />
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipLvl(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>
+                <Label name="$(parent)Lvl" font="ZoFontChat" color="cccccc" text="">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)LvlIcon" relativePoint="RIGHT" offsetX="4" offsetY="-1" />
+                </Label>
+                <Button name="$(parent)CPIcon">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Lvl" relativePoint="RIGHT" offsetX="4" offsetY="3" /> 
+                    <Textures normal="EsoUI/Art/champion/champion_icon_32.dds" />
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipCP(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>
+                <Label name="$(parent)CP" font="ZoFontChat" color="cccccc" text="">
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)CPIcon" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+                </Label>
+                <Button name="$(parent)GoldIcon">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)CP" relativePoint="RIGHT" offsetX="4" offsetY="0" /> 
+                    <Textures normal="EsoUI/Art/currency/currency_gold_32.dds" />
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipGold(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>
+                <Label name="$(parent)Gold" font="ZoFontChat" color="cccccc" text="">
+                    <Dimensions x="60" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)GoldIcon" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+                </Label>
+                <Button name="$(parent)TelvarIcon">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Gold" relativePoint="RIGHT" offsetX="4" offsetY="0" /> 
+                    <Textures normal="EsoUI/Art/currency/currency_telvar.dds" />
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipTelvar(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>
+                <Label name="$(parent)Telvar" font="ZoFontChat" color="cccccc" text="">
+                    <Dimensions x="50" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)TelvarIcon" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+                </Label>
+                <Button name="$(parent)TCIcon">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Telvar" relativePoint="RIGHT" offsetX="4" offsetY="-0" /> 
+                    <Textures normal="EsoUI/Art/currency/currency_seedcrystal_mipmap.dds" />
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipTC(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>
+                <Label name="$(parent)TC" font="ZoFontChat" color="cccccc" text="">
+                    <Dimensions x="34" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)TCIcon" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+                </Label>
+                <Button name="$(parent)APIcon">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)TC" relativePoint="RIGHT" offsetX="4" offsetY="0" /> 
+                    <Textures normal="EsoUI/Art/currency/alliancepoints.dds" />
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipAP(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>
+                <Label name="$(parent)AP" font="ZoFontChat" color="cccccc" text="">
+                    <Dimensions x="50" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)APIcon" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+                </Label>
+                <Button name="$(parent)WritvIcon">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)AP" relativePoint="RIGHT" offsetX="4" offsetY="0" /> 
+                    <Textures normal="EsoUI/Art/currency/currency_writvoucher.dds" />
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipWV(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>
+                <Label name="$(parent)Writv" font="ZoFontChat" color="cccccc" text="">
+                    <Dimensions x="34" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)WritvIcon" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+                </Label>
+                <Button name="$(parent)BagIcon">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Writv" relativePoint="RIGHT" offsetX="4" offsetY="0" /> 
+                    <Textures normal="EsoUI/Art/icons/collectible_crafting_bag.dds" />
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipMebers(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>
+                <Label name="$(parent)Bag" font="ZoFontChat" color="cccccc" text="">
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)BagIcon" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+                </Label>
+                <Label name="$(parent)BagDiv" font="ZoFontChat" color="cccccc" text="/">
+                    <Dimensions x="8" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Bag" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+                </Label>
+                <Label name="$(parent)BagTot" font="ZoFontChat" color="cccccc" text="">
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)BagDiv" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+                </Label>
+                <Button name="$(parent)MountIcon">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)BagTot" relativePoint="RIGHT" offsetX="4" offsetY="0" /> 
+                    <Textures normal="EsoUI/Art/icons/mounticon_senche_a.dds" />
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipM(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>
+                <Label name="$(parent)Mount" font="ZoFontChat" color="cccccc" text="">
+                    <Dimensions x="50" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)MountIcon" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+                </Label>
+                <Button name="$(parent)XPIcon">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Mount" relativePoint="RIGHT" offsetX="4" offsetY="0" /> 
+                    <Textures normal="EsoUI/Art/icons/icon_experience.dds" />
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipXP(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>    
+                <Label name="$(parent)XP" font="ZoFontChat" color="cccccc" text="">
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)XPIcon" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+                </Label>   
+                <Button name="$(parent)FPSIcon">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)XP" relativePoint="RIGHT" offsetX="4" offsetY="0" /> 
+                    <Textures normal="AoAa/art/FPS.dds" />
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipFPS(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>    
+                <Label name="$(parent)FPS" font="ZoFontChat" color="cccccc" text="">
+                    <Dimensions x="20" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)FPSIcon" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+                </Label> 
+                <Button name="$(parent)LATIcon">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)FPS" relativePoint="RIGHT" offsetX="4" offsetY="0" /> 
+                    <Textures normal="AoAa/art/LAT.dds" />
+                    <OnMouseEnter>
+                        AoAa.ShowToolTipLAT(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        AoAa.HideTooltip(self)
+                    </OnMouseExit>
+                </Button>    
+                <Label name="$(parent)LAT" font="ZoFontChat" color="cccccc" text="">
+                    <Dimensions x="20" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)LATIcon" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+                </Label> 
+            </Controls>
+        </TopLevelControl>
+  </Controls>
+</GuiXml>

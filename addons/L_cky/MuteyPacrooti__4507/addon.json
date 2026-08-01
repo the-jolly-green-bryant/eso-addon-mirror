@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/L_cky/MuteyPacrooti__4507",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "L_cky",
+  "canonical_id": "esoui:4507",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4507",
+  "deleted": false,
+  "directories": [
+    "MuteyPacrooti"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4507/",
+  "fingerprint": "bb2a66a057b22a879eeaec8f6f4706566ba1de3007ff39763e6f71d14c1a4190",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4507",
+  "source_url": "https://www.esoui.com/downloads/info4507-MuteyPacrooti.html",
+  "stats": {
+    "downloads": 107,
+    "favorites": 0,
+    "monthly_downloads": 11
+  },
+  "title": "MuteyPacrooti",
+  "updated_at": 1776520475000,
+  "version": "0.3.0"
+}

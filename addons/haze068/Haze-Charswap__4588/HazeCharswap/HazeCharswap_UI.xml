@@ -1,0 +1,210 @@
+<GuiXml>
+    <Controls>
+
+        <TopLevelControl name="HazeCharswapWindow"
+                         mouseEnabled="true"
+                         movable="true"
+                         clampedToScreen="true"
+                         hidden="true">
+            <Dimensions x="540" y="600" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="400" offsetY="200" />
+
+            <OnMoveStop>
+                HazeCharswap.UI_OnMoveStop(self)
+            </OnMoveStop>
+
+            <Controls>
+
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Label name="$(parent)Title"
+                       font="ZoFontWinH2"
+                       color="FFD700"
+                       wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="14" />
+                    <Anchor point="TOPRIGHT" offsetX="-40" offsetY="14" />
+                </Label>
+
+                <Label name="$(parent)Count"
+                       font="ZoFontGameSmall"
+                       color="AAAAAA"
+                       horizontalAlignment="RIGHT">
+                    <Anchor point="TOPRIGHT" offsetX="-40" offsetY="52" />
+                    <Dimensions x="200" y="18" />
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-8" offsetY="8" />
+                    <OnClicked>
+                        HazeCharswap.UI_Hide()
+                    </OnClicked>
+                </Button>
+
+                <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+                    <Dimensions y="4" />
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="48" />
+                    <Anchor point="TOPRIGHT" offsetX="-20" offsetY="48" />
+                </Texture>
+
+                <!-- Profile bar -->
+                <Label name="$(parent)ProfileLabel"
+                       font="ZoFontGameSmall"
+                       color="CCCCCC"
+                       verticalAlignment="CENTER">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="70" />
+                    <Dimensions x="60" y="28" />
+                </Label>
+
+                <Control name="$(parent)ProfileDropdown" inherits="ZO_ComboBox">
+                    <Dimensions x="180" y="28" />
+                    <Anchor point="TOPLEFT" offsetX="78" offsetY="70" />
+                </Control>
+
+                <Button name="$(parent)ProfileNew" inherits="ZO_DefaultButton">
+                    <Dimensions x="68" y="26" />
+                    <Anchor point="TOPLEFT" offsetX="266" offsetY="71" />
+                    <OnClicked>
+                        HazeCharswap.UI_OnProfileNewClicked()
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)ProfileRename" inherits="ZO_DefaultButton">
+                    <Dimensions x="74" y="26" />
+                    <Anchor point="TOPLEFT" offsetX="340" offsetY="71" />
+                    <OnClicked>
+                        HazeCharswap.UI_OnProfileRenameClicked()
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)ProfileDelete" inherits="ZO_DefaultButton">
+                    <Dimensions x="64" y="26" />
+                    <Anchor point="TOPLEFT" offsetX="420" offsetY="71" />
+                    <OnClicked>
+                        HazeCharswap.UI_OnProfileDeleteClicked()
+                    </OnClicked>
+                </Button>
+
+                <!-- Bank status -->
+                <Label name="$(parent)BankStatus"
+                       font="ZoFontGameSmall"
+                       wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="108" />
+                    <Anchor point="TOPRIGHT" offsetX="-220" offsetY="108" />
+                </Label>
+
+                <!-- Scrollable list -->
+                <Control name="$(parent)ScrollContainer" inherits="ZO_ScrollContainer">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="134" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="-110" />
+
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop">
+                            <AnchorFill />
+                        </Backdrop>
+                    </Controls>
+                </Control>
+
+                <Label name="$(parent)EmptyHint"
+                       font="ZoFontGame"
+                       color="888888"
+                       horizontalAlignment="CENTER"
+                       hidden="true">
+                    <Anchor point="CENTER" relativeTo="$(parent)ScrollContainer" />
+                </Label>
+
+                <Button name="$(parent)Refresh" inherits="ZO_DefaultButton">
+                    <Dimensions x="150" y="32" />
+                    <Anchor point="BOTTOMLEFT" offsetX="20" offsetY="-65" />
+                    <OnClicked>
+                        HazeCharswap.UI_Refresh()
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)Clear" inherits="ZO_DefaultButton">
+                    <Dimensions x="150" y="32" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="-65" />
+                    <OnClicked>
+                        HazeCharswap.UI_OnClearClicked()
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)Deposit" inherits="ZO_DefaultButton">
+                    <Dimensions x="230" y="36" />
+                    <Anchor point="BOTTOMLEFT" offsetX="20" offsetY="-20" />
+                    <OnClicked>
+                        HazeCharswap.DepositAll()
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)Withdraw" inherits="ZO_DefaultButton">
+                    <Dimensions x="230" y="36" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="-20" />
+                    <OnClicked>
+                        HazeCharswap.WithdrawAll()
+                    </OnClicked>
+                </Button>
+
+            </Controls>
+        </TopLevelControl>
+
+
+        <Control name="HazeCharswap_RowTemplate" mouseEnabled="true" virtual="true">
+            <Dimensions y="36" />
+
+            <Controls>
+                <Backdrop name="$(parent)Highlight" centerColor="33FFD70022" edgeColor="00000000" hidden="true">
+                    <Edge edgeSize="0" />
+                    <AnchorFill />
+                </Backdrop>
+
+                <Texture name="$(parent)Icon">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="LEFT" offsetX="4" offsetY="0" />
+                </Texture>
+
+                <Label name="$(parent)Name"
+                       font="ZoFontGame"
+                       verticalAlignment="CENTER"
+                       wrapMode="ELLIPSIS"
+                       mouseEnabled="true">
+                    <Anchor point="LEFT" offsetX="44" offsetY="0" />
+                    <Dimensions x="240" y="32" />
+
+                    <OnMouseEnter>
+                        HazeCharswap.UI_RowMouseEnter(self:GetParent())
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        HazeCharswap.UI_RowMouseExit(self:GetParent())
+                    </OnMouseExit>
+                </Label>
+
+                <Label name="$(parent)Location"
+                       font="ZoFontGameSmall"
+                       verticalAlignment="CENTER"
+                       horizontalAlignment="CENTER">
+                    <Anchor point="LEFT" offsetX="290" offsetY="0" />
+                    <Dimensions x="70" y="32" />
+                </Label>
+
+                <Label name="$(parent)Stack"
+                       font="ZoFontGameSmall"
+                       verticalAlignment="CENTER"
+                       horizontalAlignment="CENTER"
+                       color="DDDDDD">
+                    <Anchor point="LEFT" offsetX="365" offsetY="0" />
+                    <Dimensions x="45" y="32" />
+                </Label>
+
+                <Button name="$(parent)Remove" inherits="ZO_CloseButton">
+                    <Anchor point="RIGHT" offsetX="-8" offsetY="0" />
+                    <OnClicked>
+                        HazeCharswap.UI_OnRowRemoveClicked(self:GetParent())
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </Control>
+
+    </Controls>
+</GuiXml>

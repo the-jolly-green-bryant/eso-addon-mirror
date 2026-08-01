@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Kyoma/Kyoma-s-Titleizer__1252",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyoma",
+  "canonical_id": "esoui:1252",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    }
+  ],
+  "content_id": "esoui:1252",
+  "deleted": false,
+  "directories": [
+    "kyoTitleizer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1252/",
+  "fingerprint": "3902b0d16e2bfea27bf6ddf4841fc3ce91b66bef3882f41fafb265e34f58922c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5418.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1252",
+  "source_url": "https://www.esoui.com/downloads/info1252-KyomasTitleizer.html",
+  "stats": {
+    "downloads": 4833,
+    "favorites": 4,
+    "monthly_downloads": 14
+  },
+  "title": "Kyoma's Titleizer",
+  "updated_at": 1551708423000,
+  "version": "2.0"
+}

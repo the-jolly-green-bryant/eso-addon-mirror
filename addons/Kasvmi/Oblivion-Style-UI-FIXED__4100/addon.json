@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Kasvmi/Oblivion-Style-UI-FIXED__4100",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kasvmi",
+  "canonical_id": "esoui:4100",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4100",
+  "deleted": false,
+  "directories": [
+    "OblivionStyleHUD"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4100/",
+  "fingerprint": "c24a5e9b91e9ac61631c12b4f7db13a58fbfe6adef7d111d5cfa9ae5c3fcd1e4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14017.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14016.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14014.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4100",
+  "source_url": "https://www.esoui.com/downloads/info4100-OblivionStyleUIFIXED.html",
+  "stats": {
+    "downloads": 1659,
+    "favorites": 7,
+    "monthly_downloads": 63
+  },
+  "title": "Oblivion Style UI (FIXED)",
+  "updated_at": 1746283880000,
+  "version": "1.1"
+}

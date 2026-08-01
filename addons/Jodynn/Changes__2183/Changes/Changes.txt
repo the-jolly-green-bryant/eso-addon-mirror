@@ -1,0 +1,12 @@
+## Title: |cff00ffChanges8
+## Description: Changes to the deault UI
+## Author: Jodynn
+## Version: 2.1.1
+## APIVersion: 100035
+## SavedVariables: Changes_sv
+## DependsOn: LibAddonMenu-2.0
+
+Changes.xml
+Changes.lua
+bindings.xml
+lang/en.lua

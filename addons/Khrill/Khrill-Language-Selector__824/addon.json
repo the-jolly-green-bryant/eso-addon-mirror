@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Khrill/Khrill-Language-Selector__824",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Khrill",
+  "canonical_id": "esoui:824",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:824",
+  "deleted": false,
+  "directories": [
+    "KhrillLanguageSelector"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl824/",
+  "fingerprint": "f9226784d3f49c3b107d65f82939851023599404fa6309ff9e7b61c13ef5243a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2577.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3243.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "824",
+  "source_url": "https://www.esoui.com/downloads/info824-KhrillLanguageSelector.html",
+  "stats": {
+    "downloads": 78575,
+    "favorites": 41,
+    "monthly_downloads": 73
+  },
+  "title": "Khrill Language Selector",
+  "updated_at": 1534312844000,
+  "version": "1.6.0"
+}

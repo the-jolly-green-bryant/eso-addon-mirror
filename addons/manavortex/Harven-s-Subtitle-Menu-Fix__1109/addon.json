@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/manavortex/Harven-s-Subtitle-Menu-Fix__1109",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1109",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1109",
+  "deleted": false,
+  "directories": [
+    "HarvensSubtitleAddon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1109/",
+  "fingerprint": "423f2d9046fedd57a2a7dcbb83d4211a2dc82c45a6201298abfd972137943647",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3516.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1109",
+  "source_url": "https://www.esoui.com/downloads/info1109-HarvensSubtitleMenuFix.html",
+  "stats": {
+    "downloads": 8117,
+    "favorites": 6,
+    "monthly_downloads": 17
+  },
+  "title": "Harven's Subtitle Menu Fix",
+  "updated_at": 1432547263000,
+  "version": "1.4f"
+}

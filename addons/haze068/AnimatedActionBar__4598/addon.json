@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/haze068/AnimatedActionBar__4598",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "haze068",
+  "canonical_id": "esoui:4598",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4598",
+  "deleted": false,
+  "directories": [
+    "AnimatedActionBarPlus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4598/",
+  "fingerprint": "caa99ce19707a20434b4f09220bf3b70b36c2846d205cf961f1c7cdb82d4a4d9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16133.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16132.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4598",
+  "source_url": "https://www.esoui.com/downloads/info4598-AnimatedActionBar.html",
+  "stats": {
+    "downloads": 1511,
+    "favorites": 9,
+    "monthly_downloads": 506
+  },
+  "title": "AnimatedActionBar+",
+  "updated_at": 1785274889000,
+  "version": "2.0"
+}

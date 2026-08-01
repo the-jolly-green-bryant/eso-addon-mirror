@@ -1,0 +1,26 @@
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+##
+
+## Title: |cff0096Group Synergy Tracker|r
+## Description: Tracks Synergy cooldowns for Group Members
+## APIVersion: 100027 100028
+## Author: |cff0096@init3 [NA]|r
+## Version: 1.4.5
+## SavedVariables: GSTVars
+## DependsOn: LibAddonMenu-2.0>=29
+
+; PackageReleaseDir: releases
+; PackageBumpFiles: src/Core.lua
+
+src/Core.lua
+src/Defaults.lua
+src/Settings.lua
+src/Frames.lua
+src/Indexing.lua
+src/Units.lua
+src/UI.xml

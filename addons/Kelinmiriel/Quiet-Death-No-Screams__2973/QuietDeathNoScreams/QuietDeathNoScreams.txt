@@ -1,0 +1,28 @@
+## Title: |cFFFF00Quiet Death, No Screams |c00CCFFInitial Release|r v0.01
+## Description: Mutes SFX soundtrack (inc. death screams) during combat
+## Author: |cAA00FFKelinmiriel|r
+## Version: 0.01
+## APIVersion: 100033 100034
+## SavedVariables: QuietDeathNoScreamsVars
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+## Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+## trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+## other countries. All rights reserved.
+##
+## THIS MATERIAL IS NOT MADE, GUARANTEED OR SUPPORTED
+## BY ZENIMAX OR ITS AFFILIATES.
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+##
+## Thank you to the following addon author, without whom it would have been a lot
+## harder to write this.
+##   @Kafeijao (MusicVolumeInCombat)
+##
+
+QuietDeathNoScreams.lua
+
+; Changelog:
+; Version 0.01 (2021/03/19) Initial release
+;   Written at the suggestion of @princessjonathon (and others of my wonderful
+;   Swamp Haven guildies who love animals and cringe at those sounds!)

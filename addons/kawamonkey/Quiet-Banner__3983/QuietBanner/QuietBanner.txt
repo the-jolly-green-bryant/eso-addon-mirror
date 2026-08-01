@@ -1,0 +1,6 @@
+## APIVersion: 101044
+## Title: Quiet Banner
+## Author: Kawamonkey
+## Version: 1.0
+
+QuietBanner.lua

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Geldis/NoMoreOzezan__3622",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Geldis",
+  "canonical_id": "esoui:3622",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3622",
+  "deleted": false,
+  "directories": [
+    "NoMoreOzezan"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3622/",
+  "fingerprint": "bec181d46b4a99d7a3caabc6cc967499ec0eabbc5df111514ca84b7f51049a1f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12338.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3622",
+  "source_url": "https://www.esoui.com/downloads/info3622-NoMoreOzezan.html",
+  "stats": {
+    "downloads": 1331,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "NoMoreOzezan",
+  "updated_at": 1682351734000,
+  "version": "1.0"
+}

@@ -1,0 +1,15 @@
+ZO_CreateStringId("SI_SHOPPINGLIST_CLEAR", "Clear")
+ZO_CreateStringId("SI_SHOPPINGLIST_OWN", "Subtract Owned")
+ZO_CreateStringId("SI_SHOPPINGLIST_PRINT", "Print")
+
+ZO_CreateStringId("SI_BINDING_NAME_SL_ADD", "Add 1 to Shopping List")
+ZO_CreateStringId("SI_BINDING_NAME_SL_DEL", "Remove 1 from Shopping List")
+ZO_CreateStringId("SI_BINDING_NAME_SL_TOGGLE", "Toggle Shopping List window")
+
+ZO_CreateStringId("FSL_REQUIRES_FC", "[FurnitureShoppingList] This addon requires FurnitureCatalogue by Manavortex to function.")
+ZO_CreateStringId("FSL_NOT_VALID_ITEM", "[FurnitureShoppingList] This item cannot be crafted.")
+ZO_CreateStringId("FSL_OUTPUT_TOO_LONG", "[FurnitureShoppingList] Shopping list is too long to send as message. Open a blank mail to output list there.")
+ZO_CreateStringId("FSL_ADD_1_TO_LIST", "Add 1 to Shopping List")
+ZO_CreateStringId("FSL_DEL_1_TO_LIST", "Remove 1 from Shopping List")
+ZO_CreateStringId("FSL_KB_ADD", "+1 to Shopping List")
+ZO_CreateStringId("FSL_KB_DEL", "-1 from Shopping List")

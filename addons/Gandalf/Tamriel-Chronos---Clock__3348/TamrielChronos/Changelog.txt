@@ -1,0 +1,45 @@
+﻿-----------------------------------------------------------------------------
+-- 					      									               --
+-- 	Title:		 Tamriel Chronos                    					   --
+--	Description: Tamriel Time and astronomical data                        --
+--	Author: 	 Gandalf (@Gandalf2675)									   --
+-- 					      									               --
+-----------------------------------------------------------------------------
+
+ Changelog:
+ 
+ 13.08.22 V2.1.1
+ - New: ESO Update 35 (Lost Depths) API Version 101035
+
+ 28.06.22 V2.1
+ - New: Calculation accuracy increased
+ - Fix: Elder Scrolls Online Holidays (Jester, Mayhem) removed,
+        those events do not follow the Tamriel calendar
+ 
+ 21.04.22 v2.0
+ - New ESO Update 34 (High Isle) API Version 101034
+ - Name change from Chronos to Tamriel Chronos due to conflicting addon name
+ - Support of Tamriel Holiday Calendar
+
+23.10.21 v1.11.1
+ - New: ESO Update 32 (Deadlands) API Version 101032 
+
+10.09.21 v.11
+ - New: Double click the clock will popup the conversion dialog
+        Right click the clock will post Chronos data into chat
+ - New: Clock tooltip will show time played
+ 
+26.08.21 v1.10
+ - New: Reminder for taking health breaks
+ 
+23.08.21 v1.9.1
+ - New: ESO Update 31 (Waking Flame) API Version 101031 
+ - Fix: Adapted Chronos scaling to the new API behaviour
+ 
+16.05.21 v1.9
+ - New: Check for correct installation on startup via LibAddonMgmt
+
+13.05.21 v1.8
+ - New: Chronos - First Public Release
+ 
+ 

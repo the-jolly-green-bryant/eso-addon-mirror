@@ -1,0 +1,18 @@
+## Title: Bound Armaments Counter
+## APIVersion: 100030
+## SavedVariables: BoundArmamentsCounterVariables
+## Description: Displays stacks of Bound Armaments and shows a selection of custom titles on characters. Based on @g4rr3t's GFC addon, adapted by @Masel92
+## Version: 1.0.7
+## Author: @g4rr3t (NA) & @ Masel92 (EU)
+## OptionalDependsOn:  LibAddonMenu-2.0
+
+src/Main.lua
+src/Textures.lua
+src/Defaults.lua
+src/Abilities.lua
+src/Settings.lua
+src/Tracking.lua
+src/Interface.lua
+libs/LibCustomTitles/LibTitleLocale.lua
+libs/LibCustomTitles/LibCustomTitles.lua
+libs/LibCustomTitles/Titles/Masel.lua

@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/Klayvan/AutoEmote---Fixed--Update-7-FR__2578",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Klayvan",
+  "canonical_id": "esoui:2578",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2578",
+  "deleted": false,
+  "directories": [
+    "AutoEmote"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2578/",
+  "fingerprint": "b6031e6911b3f8dc0723acc863dfb94517ee7b933d6c7617f607545d82972705",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2578",
+  "source_url": "https://www.esoui.com/downloads/info2578-AutoEmote-Fixed-Update7FR.html",
+  "stats": {
+    "downloads": 3725,
+    "favorites": 2,
+    "monthly_downloads": 8
+  },
+  "title": "AutoEmote - Fixed- Update 7 + FR",
+  "updated_at": 1587925133000,
+  "version": "1.1"
+}

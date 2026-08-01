@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/muh/Advanced-Audio-Toggles__2735",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "muh",
+  "canonical_id": "esoui:2735",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2735",
+  "deleted": false,
+  "directories": [
+    "AdvAToggles"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2735/",
+  "fingerprint": "96a875232bab84dfa1a9bb80698086ef3fab4dccf0d0b5a6f112e493e14ee56b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2735",
+  "source_url": "https://www.esoui.com/downloads/info2735-AdvancedAudioToggles.html",
+  "stats": {
+    "downloads": 2516,
+    "favorites": 2,
+    "monthly_downloads": 11
+  },
+  "title": "Advanced Audio Toggles",
+  "updated_at": 1597083252000,
+  "version": "1.0"
+}

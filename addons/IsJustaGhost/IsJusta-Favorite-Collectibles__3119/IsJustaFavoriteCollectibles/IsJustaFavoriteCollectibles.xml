@@ -1,0 +1,19 @@
+<GuiXml>
+	<Controls>
+        <TopLevelControl name="IJA_FavoriteCollectibles" mouseEnabled="true" movable="true" drawlayer="3" hidden="true">
+			<Dimensions x="64" y="64"/>
+			<Anchor point="BOTTOMRIGHT" offsetX="-200" offsetY="-200"/>
+            <OnInitialized>
+                IJA_FavoriteCollectibles_Initialize(self)
+				
+				self.icon = self:GetNamedChild("Icon")
+            </OnInitialized>
+			
+			<Controls>
+				<Texture name="$(parent)Icon" textureFile="/esoui/art/treeicons/store_indexicon_mounts_up.dds" alpha="1">
+					<AnchorFill />
+				</Texture>
+			</Controls>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

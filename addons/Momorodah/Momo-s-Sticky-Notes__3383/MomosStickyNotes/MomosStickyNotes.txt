@@ -1,0 +1,16 @@
+## Title: Momo's Sticky Notes
+## Description: A bunch of sticky notes for your note-taking pleasures! Movable, resizable, with or without a background texture. This addon is a work in progress, make sure you create a backup of your most precious notes just to be safe!
+## Version: 1.0
+## AddOnVersion: 1.0
+## IsLibrary: False
+## Author: Momorodah
+## APIVersion: 101032 101033
+## SavedVariables: MomosSNSavedVariables
+## DependsOn: LibAddonMenu-2.0>=30
+
+MomosStickyNotes.lua
+Bindings.xml
+data\MomosSN_vars.lua
+data\MomosSN_helpers.lua
+data\MomosSN_style.lua
+data\MomosSN_settings.lua

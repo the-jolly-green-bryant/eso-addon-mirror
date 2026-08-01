@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kecaj/Wizard-s-Wardrobe-Dungeons-Extension__3845",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kecaj",
+  "canonical_id": "esoui:3845",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3845",
+  "deleted": false,
+  "directories": [
+    "WizardsWardrobeDungeons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3845/",
+  "fingerprint": "9a40ca3f97d4559fb5c92ec41b93b393b060afdc588dbd4f31f3c897165b9cfc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13142.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3845",
+  "source_url": "https://www.esoui.com/downloads/info3845-WizardsWardrobeDungeonsExtension.html",
+  "stats": {
+    "downloads": 13998,
+    "favorites": 12,
+    "monthly_downloads": 169
+  },
+  "title": "Wizard's Wardrobe Dungeons Extension",
+  "updated_at": 1717199029000,
+  "version": "3.1"
+}

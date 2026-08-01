@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/makos000/Makos-s-HOTwindow__3948",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "makos000",
+  "canonical_id": "esoui:3948",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:3948",
+  "deleted": false,
+  "directories": [
+    "HOTwindow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3948/",
+  "fingerprint": "e116dfcc3eaae1dca948c50470f7c96539e0b60852138ba608a3fa32c2c8c43f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13818.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13739.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13740.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13505.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13743.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13819.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13820.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13821.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13371.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3948",
+  "source_url": "https://www.esoui.com/downloads/info3948-MakossHOTwindow.html",
+  "stats": {
+    "downloads": 3074,
+    "favorites": 4,
+    "monthly_downloads": 7
+  },
+  "title": "Makos's HOTwindow",
+  "updated_at": 1746013145000,
+  "version": "1.2.2"
+}

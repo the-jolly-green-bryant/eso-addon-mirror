@@ -1,0 +1,7 @@
+## Title: Advanced Filters - Scribing Script Filters
+## Author: mccalli
+## Version: 1.0.0
+## APIVersion: 101042
+## DependsOn: AdvancedFilters
+
+AF_ScribingScriptFilters.lua

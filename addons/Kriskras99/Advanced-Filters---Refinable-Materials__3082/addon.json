@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Kriskras99/Advanced-Filters---Refinable-Materials__3082",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kriskras99",
+  "canonical_id": "esoui:3082",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3082",
+  "deleted": false,
+  "directories": [
+    "AF_RefinableMatsFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3082/",
+  "fingerprint": "12f50b4a66fa3ef7b3d67b09912cfbede158cf153d108213f2fc5b7b350b6b67",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10312.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3082",
+  "source_url": "https://www.esoui.com/downloads/info3082-AdvancedFilters-RefinableMaterials.html",
+  "stats": {
+    "downloads": 14528,
+    "favorites": 11,
+    "monthly_downloads": 32
+  },
+  "title": "Advanced Filters - Refinable Materials",
+  "updated_at": 1621723259000,
+  "version": "1.0"
+}

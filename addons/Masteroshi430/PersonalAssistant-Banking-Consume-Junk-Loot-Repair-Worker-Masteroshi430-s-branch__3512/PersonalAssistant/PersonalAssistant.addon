@@ -1,0 +1,63 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: |cFFD700P|rersonal|cFFD700A|rssistant
+## Description: Contains core functions, must be enabled to use any other PersonalAssistant Add-On.
+## Version: 2026.07.31
+## AddOnVersion: 20260731
+## Author: Klingo, |c3CB371@Masteroshi430|r
+## APIVersion: 101050 
+## SavedVariables: PersonalAssistant_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=40 LibMainMenu-2.0>=40400 LibCustomMenu>=711
+## OptionalDependsOn: LibChatMessage>=105 LibCharacterKnowledge>=11 
+
+# Logger
+#Utilities/Logger.lua
+
+# Globals
+vars/Globals.lua
+
+# Localization
+localization/en.lua
+localization/$(language).lua
+PersonalAssistantGeneral/localization/en.lua
+PersonalAssistantGeneral/localization/$(language).lua
+
+# Core-Utilities
+Utilities/HelperFunctions.lua
+Utilities/zo_savedvars.lua
+Utilities/EventManager.lua
+Utilities/SavedVarsPatcher.lua
+
+# Integrations
+libs/Integrations/FCOItemSaver.lua
+libs/Integrations/CharacterKnowledge.lua
+
+# Profiles
+PersonalAssistantGeneral/Profiles/PAGeneralSavedVarsPatcher.lua
+
+# Debug Window
+Utilities/XML/DebugWindow.xml
+Utilities/XML/DebugWindow.lua
+
+# Rules Window
+Utilities/XML/RulesWindow.xml
+Utilities/XML/RulesWindowTemplates.xml
+Utilities/XML/RulesWindow.lua
+
+# Settings
+Menu/MenuFunctions.lua
+Menu/MenuChoices.lua
+Menu/ItemContextMenu.lua
+PersonalAssistantGeneral/Menu/PAGeneralMenuDefaults.lua
+PersonalAssistantGeneral/Menu/PAGeneralMenuFunctions.lua
+PersonalAssistantGeneral/Menu/PAGeneralMenu.lua
+
+# Main
+PersonalAssistant.lua
+
+# Bindings
+#bindings/Bindings.lua
+bindings/Bindings.xml

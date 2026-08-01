@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Muffins714/Price-Tooltip-Gamepad__4439",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Muffins714",
+  "canonical_id": "esoui:4439",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4439",
+  "deleted": false,
+  "directories": [
+    "PriceTooltipGamepad"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4439/",
+  "fingerprint": "5a1d2195def028efbb12540152dc3ebf85a52a8b0da40f46b5f5cbb368b65d58",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15434.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15435.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15961.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15964.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15962.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4439",
+  "source_url": "https://www.esoui.com/downloads/info4439-PriceTooltipGamepad.html",
+  "stats": {
+    "downloads": 910,
+    "favorites": 4,
+    "monthly_downloads": 76
+  },
+  "title": "Price Tooltip Gamepad",
+  "updated_at": 1780716407000,
+  "version": "1.4"
+}

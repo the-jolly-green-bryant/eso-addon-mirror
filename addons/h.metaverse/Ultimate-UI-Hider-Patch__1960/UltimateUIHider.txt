@@ -1,0 +1,26 @@
+## Title: UltimateUIHider
+## Author: SilentShanx
+## Description: This addon will allow you to hide your ui including player markers.
+## Version: 1.7002
+## APIVersion: 100015
+## SavedVariables: UltimateUIHiderSavedVariables
+
+UltimateUIHider.lua
+Bindings\Bindings.lua
+Bindings\Bindings.xml
+
+
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls� and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+; AUTHOR NOTE: 
+; Zenimax does not properly support Addon development nor do they properly 
+; document, or advertise, their API changes and patches. I can only work with the tools 
+; that I am given. If something breaks it is likely due to something ZOS did that I need 
+; to adjust my code in response to. Give me time and I'll do it. I appologize for the 
+; inconvenience that this will cause you but ultimately it's out of my hands.

@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/LimPack/SmartPricer__4562",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "LimPack",
+  "canonical_id": "esoui:4562",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4562",
+  "deleted": false,
+  "directories": [
+    "SmartPricer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4562/",
+  "fingerprint": "3476d9a462664ff16574127bb5e0d311414666a9e33c05ff64a87a8c62b73954",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15977.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15975.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15978.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15976.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4562",
+  "source_url": "https://www.esoui.com/downloads/info4562-SmartPricer.html",
+  "stats": {
+    "downloads": 155,
+    "favorites": 1,
+    "monthly_downloads": 23
+  },
+  "title": "SmartPricer",
+  "updated_at": 1778230949000,
+  "version": "1.1"
+}

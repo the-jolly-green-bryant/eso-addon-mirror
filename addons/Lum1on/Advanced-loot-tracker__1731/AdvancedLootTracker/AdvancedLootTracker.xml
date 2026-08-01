@@ -1,0 +1,28 @@
+
+<!--
+
+	Addon: ADVANCED LOOT TRACKER
+	Created by: @Lum1on
+
+-->
+
+<GuiXml>	
+	<Font name="UIHuge" font="$(CHAT_FONT)|$(KB_30)|thick-outline" />
+	<Font name="UILarge" font="$(CHAT_FONT)|$(KB_20)|soft-shadow-thin" />
+	<Font name="UILarge_Thick" font="$(CHAT_FONT)|$(KB_20)|thick-outline" />
+	<Font name="UIMedium" font="$(CHAT_FONT)|$(KB_18)|soft-shadow-thin" />
+	<Font name="UIMedium_Thick" font="$(CHAT_FONT)|$(KB_18)|thick-outline" />
+	<Font name="UISmall_Thick" font="$(CHAT_FONT)|$(KB_15)|thick-outline" />
+	
+	<Controls>
+		<Label name="_LootWindowTitle" font="ZoFontWinH4" text="LOOT TRACKER" virtual="true">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="15" offsetY="15" />
+		</Label>
+		
+		<Button name="_LootWindowSettings" virtual="true">
+			<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+			<Dimensions x="32" y="32" />
+			<Textures normal="esoui/art/chatwindow/chat_options_up.dds" pressed="esoui/art/chatwindow/chat_options_down.dds" mouseOver="esoui/art/chatwindow/chat_options_over.dds" />
+		</Button>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,69 @@
+﻿## APIVersion: 101034
+## Title: |c3A5FCDRAETIA|r InfoHub
+## Author: Kraeius, |c66ccffP5YCH3|r
+## Version: 1.2.4
+## AddOnVersion: 124
+## SavedVariables: RAEIH_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=32 LibMainMenu-2.0>=436 LibAnimation-1.0>=022 LibMediaProvider-1.0>=16
+
+RAEIH_PrimaryStructure.lua
+RAEIH_Defaults.lua
+RAEIH_XFunctions.lua
+RAEIH_Events.lua
+RAEIH_Positions.lua
+RAEIH_Settings.lua
+
+Modules\RAEIH_FPS.lua
+Modules\RAEIH_Latency.lua
+Modules\RAEIH_LUAMemory.lua
+Modules\RAEIH_Time.lua
+Modules\RAEIH_Zone.lua
+Modules\RAEIH_Coordinates.lua
+Modules\RAEIH_LVR.lua
+Modules\RAEIH_XVP.lua
+Modules\RAEIH_XVPperHour.lua
+Modules\RAEIH_Gold.lua
+Modules\RAEIH_GoldperHour.lua
+Modules\RAEIH_BankedGold.lua
+Modules\RAEIH_Durability.lua
+Modules\RAEIH_RepairCost.lua
+Modules\RAEIH_BagSlots.lua
+Modules\RAEIH_BankSlots.lua
+Modules\RAEIH_Thievery.lua
+Modules\RAEIH_Bounty.lua
+Modules\RAEIH_Riding.lua
+Modules\RAEIH_Blacksmithing.lua
+Modules\RAEIH_Woodworking.lua
+Modules\RAEIH_Clothing.lua
+Modules\RAEIH_SoulGems.lua
+Modules\RAEIH_WeaponCharge.lua
+Modules\RAEIH_AttributePoints.lua
+Modules\RAEIH_SkyShards.lua
+Modules\RAEIH_SkillPoints.lua
+Modules\RAEIH_ChampionXP.lua
+Modules\RAEIH_AlliancePoints.lua
+Modules\RAEIH_AvARank.lua
+Modules\RAEIH_AchievementPoints.lua
+Modules\RAEIH_Friends.lua
+Modules\RAEIH_TimePlayed.lua
+Modules\RAEIH_CombatState.lua
+Modules\RAEIH_Vampirism.lua
+Modules\RAEIH_Lycanthropy.lua
+Modules\RAEIH_CraftingXP.lua
+Modules\RAEIH_Notification.lua
+Modules\RAEIH_Subtitles.lua
+Modules\RAEIH_Reticle.lua
+
+Modules\RAEIH_Legatus.lua
+
+Modules\RAEIH_Chamberlain.lua
+
+RAETIA_InfoHub.xml
+
+Bindings\Bindings.xml
+Bindings\Bindings.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.

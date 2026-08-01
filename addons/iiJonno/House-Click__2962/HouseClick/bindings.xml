@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="House Click">
+			<Action name="PRIMARYHOUSEINSIDE">
+				<Down> HouseClick.keybindInside() </Down>
+			</Action>
+			<Action name="PRIMARYHOUSEOUTSIDE">
+				<Down> HouseClick.keybindOutside() </Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

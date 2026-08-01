@@ -1,0 +1,12 @@
+<GuiXml>
+    <Controls>
+        <!-- Tracker window -->
+        <TopLevelControl name="StyleTracker_Window" mouseEnabled="true" movable="true">
+            <Dimensions x="400" y="500" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <Controls>
+                <!-- You can add additional elements here -->
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

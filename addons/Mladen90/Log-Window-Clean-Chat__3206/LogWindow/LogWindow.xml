@@ -1,0 +1,82 @@
+<GuiXml>
+    <Controls>
+        <Label name="LogWindow_Root" text="LOG" resizeHandleSize="8" movable="true" font="ZoFontChat" mouseEnabled="true" clampedToScreen="true" horizontalAlignment="CENTER" topmost="true">
+            <Anchor relativeTo="GuiRoot" relativePoint="CENTER" point="CENTER"/>
+            <Dimensions x="600" y="320"/>
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+	        <ClampedToScreenInsets left="-8" top="-8" right="6" bottom="6"/>
+
+            <OnMouseEnter>
+                if LogWindow then
+                    LogWindow_Fade(false)
+                end
+            </OnMouseEnter>
+
+            <OnMouseExit>
+                if LogWindow then
+                    LogWindow_Fade(true)
+                end
+            </OnMouseExit>
+
+            <OnMoveStop>
+                if LogWindow then
+                    LogWindow.SavedVariables.MainWindowLeft = self:GetLeft()
+                    LogWindow.SavedVariables.MainWindowBottom = self:GetBottom()
+                end
+            </OnMoveStop>
+
+            <OnResizeStop>
+                if LogWindow then
+                    local width, height = self:GetDimensions()
+                    LogWindow.SavedVariables.MainWindowWidth = width
+                    LogWindow.SavedVariables.MainWindowHeight = height
+                    LogWindow_UpdateDimensions()
+                end
+            </OnResizeStop>
+
+            <Controls>
+                <Backdrop name="LogWindow_Root_Backdrop" inherits="ZO_DefaultBackdrop" alpha="0.5"/>
+
+                <Control name="LogWindow_Root_TopDivider" inherits="ZO_DynamicHorizontalDivider">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="25"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="25"/>
+                </Control>
+
+                <Slider name="LogWindow_Root_ScrollBar" inherits="ZO_VerticalScrollbarBase" mouseEnabled="true">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="45"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-15"/>
+
+                    <OnValueChanged>
+                        local min, max = self:GetMinMax()
+                        LogWindow_Root_TextBuffer:SetScrollPosition(max - value)
+                    </OnValueChanged>
+                </Slider>
+
+                <TextBuffer name="LogWindow_Root_TextBuffer" font="ZoFontChat" mouseEnabled="true" maxHistoryLines="10000" splitLongMessages="false" linkEnabled="true">
+                    <Dimensions x="580" y="280"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="-5"/>
+                    
+                    <OnMouseEnter>
+                        if LogWindow then
+                            LogWindow_Fade(false)
+                        end
+                    </OnMouseEnter>
+
+                    <OnMouseExit>
+                        if LogWindow then
+                            LogWindow_Fade(true)
+                        end
+                    </OnMouseExit>
+
+                    <OnLinkMouseUp>
+                        ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
+                    </OnLinkMouseUp>
+
+                    <OnMouseWheel>
+                        LogWindow_Root_ScrollBar:SetValue(LogWindow_Root_ScrollBar:GetValue() - delta)
+                    </OnMouseWheel>
+                </TextBuffer>
+            </Controls>
+        </Label>
+    </Controls>
+</GuiXml>

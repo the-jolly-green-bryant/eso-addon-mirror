@@ -1,0 +1,157 @@
+<GuiXml>
+    <Controls>
+        <Label name="DMTDummyText" font="ZoFontGameSmall" hidden="true"></Label>
+        <TopLevelControl name="DMTContainer" mouseEnabled="false" movable="false">
+            <OnInitialized>
+                HUD_SCENE:AddFragment(ZO_SimpleSceneFragment:New(self))
+                HUD_UI_SCENE:AddFragment(ZO_SimpleSceneFragment:New(self))
+            </OnInitialized>
+            <Controls>
+<!-- ======================================================================================================================= -->
+                <Control name="DMTTally" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+                    <Dimensions x="210" y="100"/>
+                    <OnMoveStop>
+                        DeadMansTally.SavePosition()
+                    </OnMoveStop>
+                    <Controls>
+                        <Backdrop name="$(parent)Backdrop" centerColor="60000000" edgeColor="00000000" hidden="false"><AnchorFill/></Backdrop>
+                        <Control name="$(parent)Buttons">
+                            <Dimensions x="210" y="24"/>
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+                            <Controls>
+                                <Backdrop name="$(parent)Backdrop" centerColor="30000000" edgeColor="00000000" hidden="false"><AnchorFill/></Backdrop>
+
+                                <Texture name="$(parent)Companion" textureFile="/esoui/art/mappins/activecompanion_pin.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+                                    <Dimensions x="18" y="18"/>
+                                    <OnMouseUp>DeadMansTally.OnToggleClicked(self, "companion")</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include your own companions' deaths in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Group" textureFile="/esoui/art/tutorial/gamepad/gp_overview_group.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)Companion" relativePoint="LEFT"/>
+                                    <Dimensions x="18" y="18"/>
+                                    <OnMouseUp>DeadMansTally.OnToggleClicked(self, "group")</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include grouped deaths, including your own, in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Player" textureFile="/esoui/art/menubar/gamepad/gp_playermenu_icon_character.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)Group" relativePoint="LEFT"/>
+                                    <Dimensions x="16" y="16"/>
+                                    <OnMouseUp>DeadMansTally.OnToggleClicked(self, "ungroupedplayer")</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include your own deaths, while not grouped, in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+
+                                <Texture name="$(parent)GroupCompanion" textureFile="/esoui/art/companion/gamepad/gp_category_u30_allies.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+                                    <Dimensions x="18" y="18"/>
+                                    <OnMouseUp>DeadMansTally.OnToggleClicked(self, "groupcompanion")</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include other players' companions' deaths in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)PlayerPet" textureFile="/esoui/art/treeicons/gamepad/gp_store_indexicon_vanitypets.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="LEFT" relativeTo="$(parent)GroupCompanion" relativePoint="RIGHT"/>
+                                    <Dimensions x="18" y="18"/>
+                                    <OnMouseUp>DeadMansTally.OnToggleClicked(self, "playerpet")</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include your summons' deaths in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Boss" textureFile="/esoui/art/icons/mapkey/mapkey_groupboss.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="LEFT" relativeTo="$(parent)PlayerPet" relativePoint="RIGHT"/>
+                                    <Dimensions x="18" y="18"/>
+                                    <OnMouseUp>DeadMansTally.OnToggleClicked(self, "boss")</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include boss deaths in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+
+                                <Texture name="$(parent)AllSession" textureFile="/esoui/art/buttons/radiobuttondown.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="8"/>
+                                    <Dimensions x="16" y="16"/>
+                                    <OnMouseUp>DeadMansTally.OnSessionToggled()</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to show tally for all-time or session only")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Server" textureFile="DeadMansTally/art/all.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="LEFT" relativeTo="$(parent)AllSession" relativePoint="RIGHT" offsetX="4"/>
+                                    <Dimensions x="16" y="16"/>
+                                    <OnMouseUp>DeadMansTally.OnServerCycled()</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Cycle through which servers to show")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+
+
+                                <Button name="$(parent)Close" alpha="1" topmost="true">
+                                    <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+                                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                    <Dimensions x="36" y="36"/>
+                                    <OnClicked>
+                                        DeadMansTally.Hide()
+                                    </OnClicked>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Hide this panel")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Button>
+                                <Button name="$(parent)Refresh" alpha="1" topmost="true">
+                                    <Textures normal="/esoui/art/lfg/lfg_groupfinder_refreshsearch_up.dds" mouseOver="/esoui/art/lfg/lfg_groupfinder_refreshsearch_over.dds" />
+                                    <Anchor point="RIGHT" relativeTo="$(parent)Close" relativePoint="LEFT" offsetX="8"/>
+                                    <Dimensions x="24" y="24"/>
+                                    <OnClicked>
+                                        DeadMansTally.ClearSession()
+                                    </OnClicked>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Clear this session's deaths")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Button>
+                            </Controls>
+                        </Control>
+                        <Label name="$(parent)Header" font="ZoFontGameBold" color="FFFFFF" text="Session Deaths" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                            <Dimensions x="210" y="30"/>
+                            <Anchor point="TOP" relativeTo="$(parent)Buttons" relativePoint="BOTTOM"/>
+                            <Controls>
+                                <Backdrop name="$(parent)Backdrop" centerColor="30000000" edgeColor="00000000" hidden="false"><AnchorFill/></Backdrop>
+                            </Controls>
+                        </Label>
+                        <Control name="$(parent)ScrollContainer" inherits="ZO_ScrollContainer">
+                            <Dimensions x="192" y="60"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT"/>
+                        </Control>
+                        <Label name="$(parent)Count" font="ZoFontGameSmall" color="FFFFFF" text="420&#13;&#10;3&#13;&#10;1&#13;&#10;1" horizontalAlignment="RIGHT" wrapMode="TRUNCATE">
+                            <Dimensions x="80"/>
+                            <OnInitialized>
+                                self:SetParent(GetControl("DMTTallyScrollContainerScrollChild"))
+                                self:SetAnchor(TOPRIGHT, GetControl("DMTTallyScrollContainerScrollChild"), TOPRIGHT, 0, 6)
+                            </OnInitialized>
+                        </Label>
+                        <Label name="$(parent)Names" font="ZoFontGameSmall" color="FFFFFF" text="Test Name&#13;&#10;Another Test Name&#13;&#10;Third Test Name&#13;&#10;Last Test" horizontalAlignment="LEFT" wrapMode="TRUNCATE">
+                            <Dimensions x="174"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Count" relativePoint="TOPRIGHT"/>
+                            <OnInitialized>
+                                self:SetParent(GetControl("DMTTallyScrollContainerScrollChild"))
+                            </OnInitialized>
+                        </Label>
+                    </Controls>
+                </Control>
+<!-- ======================================================================================================================= -->
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

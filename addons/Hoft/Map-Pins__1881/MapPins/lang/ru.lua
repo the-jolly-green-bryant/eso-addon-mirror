@@ -1,0 +1,47 @@
+MapPins_Localization = MapPins_Localization or {}
+MapPins_Localization["ru"] = {
+		--Water
+		Lake="озерная вода",Foul="сточная вода",River="речная вода",Salt="морская вода",Oily="маслянистая вода",Mystic="мистическая вода",Running="речная вода",
+		--Portals
+		Portals="Порталы",Celestial_Rifts="Небесные разломы",Dark_Fissures="Темные трещины",Oblivion_Portals="Порталы Обливиона",Shadow_Fissures="Теневые трещины",Lava_Lashers="Лавовые запруды",Soul_Reaper="Жнец Души",
+		--Filters
+		Delve_bosses="Босы подземелий",Delve_bosses_done="Босы подземелий (выполнено)",
+		Skyshards="Небесные осколки",Skyshards_done="Небесные осколки (выполнено)",
+		Lore_books="Книги",Lore_books_done="Книги (выполнено)",
+		Treasure_Maps="Карты сокровищ",
+		Treasure_Chests="Сундуки",
+		Unknown_POI="Неизведанные места",
+		Undaunted="Неустрашимые",
+		Time_Rifts="Временные бреши",
+		Shrines="Алтари",
+		Fishing_Nodes="Рыбалка",
+		Volendrung="Волендранг",
+		Antiquities="Древности", Antiquity_Leads="Подсказки древностей",
+		Imperial_City="Имперский город",
+		IC_Bosses="Босы",
+		IC_Respawns="Места возрождений",
+		Cunning_Scamp="Хитрые скампы",
+		Trove_Scamp="Рыщущие скампы",
+		World_achievements="Случайные встречи",
+		Orsinium_world_event="Случайные встречи",
+		Summerset_world_event="Случайные встречи",
+		Random_Encounters="Случайные встречи",
+		Dynamic_Encounters="Случайные события",
+		
+		--DLC
+		Orsinium="Орсиниум",
+		Thieves_guild="Гильдия воров",
+		Morrowind="Моровинд",
+		Clockwork_City="Заводной город",
+		Summerset="Саммерсет",
+		Murkmire="Мрачные Трясины",
+		Elsweyr="Эльсвейр",
+		Blackwood="Черный лес",
+		Markarth="Маркарт",
+		Greymoor="Западный скайрим",	
+		High_Isle="Высокий Остров",
+		Firesong="Пламенная песнь",
+		Necrom="Некром",
+		Gold_Road="Золотая дорога",
+		Seasons_of_the_Worm_Cult="Сезон культа червя",
+		}

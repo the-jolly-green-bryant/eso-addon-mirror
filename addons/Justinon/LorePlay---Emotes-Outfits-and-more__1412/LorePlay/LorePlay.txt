@@ -1,0 +1,61 @@
+## Title: LorePlay
+## Description: Adds immersion through intelligent, contextual emotes and outfits.
+## Version: 1.5.0
+## APIVersion: 100019 100018
+## Author: Justinon
+## SavedVariables: LorePlaySavedVars
+## OptionalDependsOn: LibAddonMenu-2.0 LibEventHandler
+
+libs\LibStub\LibStub.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\controls\submenu.lua
+libs\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\controls\colorpicker.lua
+libs\LibAddonMenu-2.0\controls\custom.lua
+libs\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\controls\dropdown.lua
+libs\LibAddonMenu-2.0\controls\editbox.lua
+libs\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\controls\slider.lua
+libs\LibAddonMenu-2.0\controls\texture.lua
+libs\LibAddonMenu-2.0\controls\iconpicker.lua
+libs\LibEventHandler\LibEventHandler.lua
+
+code\locales\en.lua
+code\locales\$(language).lua
+
+code\LPCategoryStrings.lua
+code\LPUtilities.lua
+code\LPEmotesTable.lua
+code\LPEmoteHandler.lua
+code\LPSettings.lua
+LorePlay.lua
+code\SmartEmotesIndicator.xml
+code\SmartEmotes.lua
+code\IdleEmotes.lua
+code\LoreWear.lua
+bindings\bindings.xml
+bindings\bindings.lua
+
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+; AUTHOR NOTE:
+; Thanks for using LorePlay! I'm having an amazingly fun time creating this addon for you.
+; This addon is continuously getting introduced with new ideas, so there may be some features
+; that need tweaking, and of course there are interesting updates on my to-do list. However,
+; your feedback is needed to ensure the desired experience for fellow roleplayers,
+; so don't hesistate to inform me of your thoughts!
+
+; SPECIAL THANKS:
+; Huge shoutout to @iladrion for translating the titles and locations to german for me!
+
+; Again, thank you!
+; -Justinon

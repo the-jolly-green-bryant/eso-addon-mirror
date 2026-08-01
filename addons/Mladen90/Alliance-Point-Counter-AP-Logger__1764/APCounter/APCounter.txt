@@ -1,0 +1,13 @@
+## APIVersion: 101031
+## Title: Alliance Points Counter
+## Version: 1.6.0
+## Author: Mladen90 (@Mladen90 EU)
+## Description: Logs your alliance points gain to chat and can show statistics
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: APCounter_Settings_2
+
+APCounter.lua
+APCounter_Default.lua
+APCounter_Globals.lua
+APCounter_Forms.lua
+APCounter_Menu.lua

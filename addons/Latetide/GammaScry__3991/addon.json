@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Latetide/GammaScry__3991",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Latetide",
+  "canonical_id": "esoui:3991",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3991",
+  "deleted": false,
+  "directories": [
+    "GammaScry"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3991/",
+  "fingerprint": "c641048bf39c3c316ff1aa89b261f538096b97979ffa265aed440db03f846fc8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13527.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13528.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13529.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13533.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3991",
+  "source_url": "https://www.esoui.com/downloads/info3991-GammaScry.html",
+  "stats": {
+    "downloads": 1458,
+    "favorites": 2,
+    "monthly_downloads": 25
+  },
+  "title": "GammaScry",
+  "updated_at": 1732130053000,
+  "version": "1.0.2"
+}

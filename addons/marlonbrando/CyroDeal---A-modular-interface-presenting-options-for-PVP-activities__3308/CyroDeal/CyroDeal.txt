@@ -1,0 +1,12 @@
+## APIVersion: 101034
+## AddonVersion: 1002
+## Title: CyroDeal
+## Author: |c66ffff|Valandil|r
+## Description: Cyrodiil Helper
+## IsLibrary: false
+## DependsOn: LibAddonMenu-2.0>=30 LibDebugLogger>=217 LibChatMessage LibSlashCommander
+## SavedVariables: CyroDealSaved
+## OptionalDependsOn: pChat tom
+
+CyroDeal.lua
+Chat.lua

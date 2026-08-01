@@ -1,0 +1,14 @@
+## Title: |c42BCF4A|rcuity
+## Description: Tracks your Acuity uptime and downtime
+## Author: Wheels
+## Version: 2.4
+## APIVersion: 100032
+## SavedVariables: AcuitySavedVars
+## OptionalDependsOn: LibAddonMenu-2.0
+
+; libs/LibCustomTitles/LibTitleLocale.lua
+; libs/LibCustomTitles/LibCustomTitles.lua
+; libs/LibCustomTitles/Titles/Wheels.lua
+Acuity.lua
+AcuityMenu.lua
+Acuity.xml

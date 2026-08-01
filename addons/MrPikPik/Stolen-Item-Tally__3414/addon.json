@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/MrPikPik/Stolen-Item-Tally__3414",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:3414",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3414",
+  "deleted": false,
+  "directories": [
+    "StolenItemTally"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3414/",
+  "fingerprint": "daacc15d4a3c2f2eaeebce21f37714a44c0eeda3be9e8d03fcf09bb67e37b295",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11656.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11657.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3414",
+  "source_url": "https://www.esoui.com/downloads/info3414-StolenItemTally.html",
+  "stats": {
+    "downloads": 2285,
+    "favorites": 2,
+    "monthly_downloads": 12
+  },
+  "title": "Stolen Item Tally",
+  "updated_at": 1656437928000,
+  "version": "1.0"
+}

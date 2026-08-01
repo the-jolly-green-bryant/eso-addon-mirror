@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/haipahaipa/Alik-r-Dolmen-Helper__2399",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "haipahaipa",
+  "canonical_id": "esoui:2399",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2399",
+  "deleted": false,
+  "directories": [
+    "AlikrDolmenHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2399/",
+  "fingerprint": "072b13e50343ddb919a3f61e71d20feab84a130f5d39dca6a57bdc82abba639e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8162.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8163.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2399",
+  "source_url": "https://www.esoui.com/downloads/info2399-AlikrDolmenHelper.html",
+  "stats": {
+    "downloads": 17791,
+    "favorites": 20,
+    "monthly_downloads": 76
+  },
+  "title": "Alik'r Dolmen Helper",
+  "updated_at": 1559918231000,
+  "version": "v0.1.0"
+}

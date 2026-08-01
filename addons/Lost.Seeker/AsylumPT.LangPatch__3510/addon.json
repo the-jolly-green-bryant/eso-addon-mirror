@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/Lost.Seeker/AsylumPT.LangPatch__3510",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lost.Seeker",
+  "canonical_id": "esoui:3510",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3510",
+  "deleted": false,
+  "directories": [
+    "AsylumPT.LangPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3510/",
+  "fingerprint": "c7aa4ab74600a8ff6810b12454ed62a79a3e17e56f75afa0a990009eec1e01f5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11950.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3510",
+  "source_url": "https://www.esoui.com/downloads/info3510-AsylumPT.LangPatch.html",
+  "stats": {
+    "downloads": 3534,
+    "favorites": 2,
+    "monthly_downloads": 18
+  },
+  "title": "AsylumPT.LangPatch",
+  "updated_at": 1693841763000,
+  "version": "1.2.2"
+}

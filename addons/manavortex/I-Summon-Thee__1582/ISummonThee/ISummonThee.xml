@@ -1,0 +1,21 @@
+<GuiXml>
+	<Controls> 				
+		<TopLevelControl name="ISTControl" parent="GuiRoot" movable="true" mouseEnabled="true">
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" /> 	
+			<Controls> 	
+				<Control name="SummoningControl">
+					<Dimensions x="475" y="145" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+					<Controls>
+						<Label name="$(parent)Text" font="ZoFontAnnounceLarge" verticalAlignment="TOP" horizontalAlignment="CENTER" text="" color="FFFFFF">
+							<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" />
+						</Label>
+					</Controls>
+				</Control>
+			</Controls> 		
+        </TopLevelControl>
+		
+		
+
+	</Controls> 
+</GuiXml>

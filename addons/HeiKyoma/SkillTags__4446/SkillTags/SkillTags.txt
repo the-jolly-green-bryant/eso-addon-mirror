@@ -1,0 +1,8 @@
+## Title: SkillTags
+## APIVersion: 101047
+## Author: |c950000HeiKyoma|r
+## Version: 1.2
+
+SkillTagsData.lua
+SkillTags_DamageType_loc.lua
+SkillTags.lua

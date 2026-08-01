@@ -1,0 +1,29 @@
+## Title: |cff8800TraitBuddy|r v3.1
+## Description: This addon trys to help you easily manage and keep track of what crafting research traits all your characters know.
+## Author: Weolo
+## APIVersion: 100017
+## SavedVariables: TraitBuddySettings
+## Version: 3.1
+
+libs/LibStub/LibStub.lua
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+libs/LibAddonMenu-2.0/controls/panel.lua
+libs/LibAddonMenu-2.0/controls/submenu.lua
+libs/LibAddonMenu-2.0/controls/button.lua
+libs/LibAddonMenu-2.0/controls/checkbox.lua
+libs/LibAddonMenu-2.0/controls/colorpicker.lua
+libs/LibAddonMenu-2.0/controls/custom.lua
+libs/LibAddonMenu-2.0/controls/description.lua
+libs/LibAddonMenu-2.0/controls/dropdown.lua
+libs/LibAddonMenu-2.0/controls/editbox.lua
+libs/LibAddonMenu-2.0/controls/header.lua
+libs/LibAddonMenu-2.0/controls/slider.lua
+libs/LibAddonMenu-2.0/controls/texture.lua
+libs/LibAddonMenu-2.0/controls/iconpicker.lua
+
+lang/$(language).lua
+
+TraitBuddy.xml
+TraitBuddyData.lua
+TraitBuddy.lua
+Bindings.xml

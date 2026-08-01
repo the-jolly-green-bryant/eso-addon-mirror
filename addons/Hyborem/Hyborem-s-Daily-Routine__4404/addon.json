@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Hyborem/Hyborem-s-Daily-Routine__4404",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hyborem",
+  "canonical_id": "esoui:4404",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4404",
+  "deleted": false,
+  "directories": [
+    "HyboremDaily"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4404/",
+  "fingerprint": "e0ccce3faa7688d55a40e337887a9df96559193749e33974fb42df26eec3ed67",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4404",
+  "source_url": "https://www.esoui.com/downloads/info4404-HyboremsDailyRoutine.html",
+  "stats": {
+    "downloads": 186,
+    "favorites": 0,
+    "monthly_downloads": 19
+  },
+  "title": "Hyborem's Daily Routine",
+  "updated_at": 1772215100000,
+  "version": "v.1.3"
+}

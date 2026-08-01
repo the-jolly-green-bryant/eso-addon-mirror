@@ -1,0 +1,38 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="NWT_Panel" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+            <Dimensions x="64" y="64" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="200" />
+
+            <OnMoveStop>
+                NothingWastedTracker.OnMoveStop()
+            </OnMoveStop>
+
+            <Controls>
+                <!-- rahmen im stil von OffBalanceTracker: vollflaechiger backdrop
+                     hinter dem icon. die farbige center-flaeche bildet den rand,
+                     das icon liegt mit border-inset darueber. zustand = center-color. -->
+                <Backdrop name="$(parent)Border" centerColor="7F7F7FFF" edgeColor="000000FF" tier="LOW">
+                    <AnchorFill />
+                    <Edge edgeSize="1" />
+                </Backdrop>
+
+                <!-- buff-icon: zwei anker (TOPLEFT/BOTTOMRIGHT) = echte groesse.
+                     der inset wird in ApplyAppearance an borderThickness angepasst.
+                     tier HIGH, damit es ueber dem backdrop liegt. -->
+                <Texture name="$(parent)Icon" textureFile="EsoUI/Art/Icons/icon_missing.dds" tier="HIGH">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+                </Texture>
+
+                <Label name="$(parent)Stacks" font="ZoFontWinH1" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" text="0" tier="HIGH">
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Icon" relativePoint="BOTTOMRIGHT" offsetX="-3" offsetY="-1" />
+                </Label>
+
+                <Label name="$(parent)Timer" font="ZoFontGameSmall" color="FFFFFFFF" horizontalAlignment="CENTER" verticalAlignment="TOP" text="" tier="HIGH">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="2" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

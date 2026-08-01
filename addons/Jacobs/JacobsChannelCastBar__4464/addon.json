@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Jacobs/JacobsChannelCastBar__4464",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jacobs",
+  "canonical_id": "esoui:4464",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4464",
+  "deleted": false,
+  "directories": [
+    "JacobsChannelCastBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4464/",
+  "fingerprint": "85225c88176910a98e6f67f1d61410aa9297e53566b8f7b5eba934bba1cd0f82",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15528.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4464",
+  "source_url": "https://www.esoui.com/downloads/info4464-JacobsChannelCastBar.html",
+  "stats": {
+    "downloads": 400,
+    "favorites": 2,
+    "monthly_downloads": 39
+  },
+  "title": "JacobsChannelCastBar",
+  "updated_at": 1773816070000,
+  "version": "1.0.1"
+}

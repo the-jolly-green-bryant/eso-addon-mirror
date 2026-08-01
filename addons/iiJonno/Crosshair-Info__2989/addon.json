@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/iiJonno/Crosshair-Info__2989",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "iiJonno",
+  "canonical_id": "esoui:2989",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:2989",
+  "deleted": false,
+  "directories": [
+    "CrosshairInfo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2989/",
+  "fingerprint": "47c2890c8c8d1012ed2fe7c67549b5e81d30fd4f61aecf4709bc7e2ec69e4239",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10089.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10090.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10091.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2989",
+  "source_url": "https://www.esoui.com/downloads/info2989-CrosshairInfo.html",
+  "stats": {
+    "downloads": 3674,
+    "favorites": 4,
+    "monthly_downloads": 22
+  },
+  "title": "Crosshair Info",
+  "updated_at": 1732048202000,
+  "version": "1.2"
+}

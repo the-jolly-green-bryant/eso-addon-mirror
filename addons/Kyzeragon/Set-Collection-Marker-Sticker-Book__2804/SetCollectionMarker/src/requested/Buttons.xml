@@ -1,0 +1,73 @@
+<GuiXml>
+    <Controls>
+        <Control name="SCM_TradeButton" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="false" tier="HIGH">
+            <Dimensions x="40" y="40"/>
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"/>
+            <Controls>
+                <Button name="$(parent)AddItems" alpha="1" clickSound="Default_Click" topmost="true" tier="HIGH">
+                    <Textures normal="/esoui/art/collections/collections_tabicon_itemsets_down.dds"/>
+                    <Dimensions x="40" y="40"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                    <OnClicked>
+                        SetCollectionMarker.Trade.AddItemsToTrade()
+                    </OnClicked>
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, LEFT, SetCollectionMarker.Trade.GetTradeButtonTooltip())
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                </Button>
+            </Controls>
+        </Control>
+
+        <!-- Gamepad trade -->
+        <Control name="SCM_GamepadTrade" hidden="true" mouseEnabled="false" tier="HIGH">
+            <Dimensions x="600" y="600"/>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" centerColor="88000000" edgeColor="00000000" hidden="false">
+                    <AnchorFill/>
+                </Backdrop>
+                <Label name="$(parent)Label" font="ZoFontGame" color="dddddd" text="@Kyzeragon wants:" verticalAlignment="TOP" horizontalAlignment="LEFT" wrapMode="TEXT_WRAP_MODE_TRUNCATE" hidden="false" tier="HIGH">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="2"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-2" offsetY="-2"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <!-- Mail -->
+        <Control name="MailPlayerTemplate" virtual="true" hidden="true">
+            <Dimensions x="60" y="60"/>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" centerColor="88000000" edgeColor="00000000" hidden="false">
+                    <AnchorFill/>
+                </Backdrop>
+                <Label name="$(parent)Label" font="ZoFontGame" color="dddddd" text="@Kyzeragon wants:" verticalAlignment="TOP" horizontalAlignment="LEFT" wrapMode="TEXT_WRAP_MODE_TRUNCATE" hidden="false" tier="HIGH">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="2"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-2" offsetY="-2"/>
+                </Label>
+                <Button name="$(parent)AddItems" alpha="1" clickSound="Default_Click" topmost="true" tier="HIGH">
+                    <Textures normal="/esoui/art/collections/collections_tabicon_itemsets_down.dds"/>
+                    <Dimensions x="24" y="24"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-2" offsetY="2"/>
+                    <OnClicked>
+                        SetCollectionMarker.Mail.AddItemsToMail(self)
+                    </OnClicked>
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Add this recipient and items to the mail")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                </Button>
+            </Controls>
+        </Control>
+
+        <Control name="SCM_Mail" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="false" tier="HIGH">
+            <Dimensions x="60" y="600"/>
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"/>
+            <Controls>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

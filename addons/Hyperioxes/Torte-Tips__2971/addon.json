@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Hyperioxes/Torte-Tips__2971",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hyperioxes",
+  "canonical_id": "esoui:2971",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2971",
+  "deleted": false,
+  "directories": [
+    "TorteTips"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2971/",
+  "fingerprint": "85beeda1b3a9c550fbfb43a196d0d4fc34f6439f8f52c81169983766f183af57",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10028.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2971",
+  "source_url": "https://www.esoui.com/downloads/info2971-TorteTips.html",
+  "stats": {
+    "downloads": 2972,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "Torte Tips",
+  "updated_at": 1615996121000,
+  "version": "1.0"
+}

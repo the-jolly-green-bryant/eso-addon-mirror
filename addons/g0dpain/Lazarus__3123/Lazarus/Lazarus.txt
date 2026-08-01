@@ -1,0 +1,9 @@
+## APIVersion: 100035
+## Title: Lazarus
+## Version: 0.1.0
+## Author: |cFFC300@G0dPain|r
+## SavedVariables: Lazarus_SavedVariables
+
+Lazarus.lua
+Lazarus.xml
+Revival.log

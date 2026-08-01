@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Marcus-Brody/Marcus-Guild-Management-Tool-Poukav-CLI__3484",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marcus Brody",
+  "canonical_id": "esoui:3484",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3484",
+  "deleted": false,
+  "directories": [
+    "MarcusPoukav"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3484/",
+  "fingerprint": "3d6a08124da6069e4e685a09ed7a91a612a028e7a20034790c94485f774cdad3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11936.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11941.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11959.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11942.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11943.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11944.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11964.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3484",
+  "source_url": "https://www.esoui.com/downloads/info3484-MarcusGuildManagementToolPoukavCLI.html",
+  "stats": {
+    "downloads": 4920,
+    "favorites": 6,
+    "monthly_downloads": 10
+  },
+  "title": "Marcus' Guild Management Tool (Poukav CLI)",
+  "updated_at": 1670823857000,
+  "version": "1.9.2"
+}

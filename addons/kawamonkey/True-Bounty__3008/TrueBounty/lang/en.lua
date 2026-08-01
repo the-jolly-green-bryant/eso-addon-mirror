@@ -1,0 +1,1 @@
+ZO_CreateStringId("SI_INTERACT_OPTION_PAY_BOUNTY_FORFEIT_ITEMS_COST", "[Pay] Here's <<1>> gold and <<2[/1 stolen item/$d stolen items]>> worth <<3>> gold. Clear my bounty.")

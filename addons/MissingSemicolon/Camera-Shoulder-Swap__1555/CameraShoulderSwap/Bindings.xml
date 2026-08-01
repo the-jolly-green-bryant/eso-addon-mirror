@@ -1,0 +1,9 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="Camera Shoulder Swap">
+            <Action name="SWAP_SHOULDER">
+                <Up>swapShoulder()</Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

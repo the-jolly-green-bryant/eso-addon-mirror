@@ -1,0 +1,49 @@
+<GuiXml>
+  <Controls>
+    <Control name="CBs_Button" clampedToScreen="true" movable="false" virtual="true" level="4">
+      <Controls>
+        <Button name="$(parent)Button" mouseOverBlendMode="ADD">
+          <AnchorFill />
+          <MouseButton button="1" enabled="true" />
+          <MouseButton button="2" enabled="true" />
+          <Textures normal="/EsoUI/Art/ActionBar/abilityFrame64_up.dds" pressed="/EsoUI/Art/ActionBar/abilityFrame64_down.dds" mouseOver="/EsoUI/Art/ActionBar/actionBar_mouseOver.dds" />
+        </Button>
+
+        <Texture name="$(parent)BG" level="0" textureFile="/EsoUI/Art/ActionBar/abilityInset.dds">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" />
+        </Texture>
+        <Texture name="$(parent)Icon" level="1">
+          <Anchor point="CENTER" relativeTo="$(parent)" />
+        </Texture>
+        <Texture name="$(parent)CooldownIcon" level="1">
+          <TextureCoords left="0" right="1" top="0" bottom="0" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Icon" relativePoint="BOTTOMRIGHT" />
+        </Texture>
+        <Texture name="$(parent)Status" textureFile="/EsoUI/Art/ActionBar/ActionSlot_toggledon.dds" tier="HIGH" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Icon" relativePoint="BOTTOMRIGHT" />
+        </Texture>
+
+        <Cooldown name="$(parent)Cooldown" inherits="ZO_DefaultCooldown" tier="HIGH" alpha="0.7">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Icon" relativePoint="BOTTOMRIGHT" />
+        </Cooldown>
+        <Texture name="$(parent)CooldownCompleteAnimation" textureFile="/EsoUI/Art/ActionBar/coolDown_completeEFX.dds" blendMode="ADD" tier="HIGH" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Icon" relativePoint="BOTTOMRIGHT" />
+        </Texture>
+
+        <Label name="$(parent)ButtonText" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" tier="HIGH" verticalAlignment="BOTTOM" font="ZoFontGameSmall">
+          <Anchor point="BOTTOM" relativeTo="$(parent)Button" relativePoint="BOTTOM" />
+        </Label>
+
+        <Label name="$(parent)CooldownTime" font="ZoFontWindowSubtitle" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="CENTER" verticalAlignment="CENTER" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Icon" relativePoint="BOTTOMRIGHT" />
+        </Label>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>      

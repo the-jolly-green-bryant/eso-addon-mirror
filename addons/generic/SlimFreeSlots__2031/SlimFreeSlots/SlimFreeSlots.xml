@@ -1,0 +1,33 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="SlimFreeSlotsUI" movable="true" mouseEnabled="true" clampedToScreen="true" >           
+            <Anchor point="TOPLEFT" offsetX="0" offsetY="0"  />
+            <OnMoveStop>
+                SlimFreeSlots.OnMoveStop( self )
+            </OnMoveStop>
+            <OnUpdate>
+                SlimFreeSlots.OnUpdateHandler( self )
+            </OnUpdate>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.8" />
+				
+                <Label name="$(parent)Title" font="ZoFontGame" resizeToFitDescendents="true" fontSize="100" color="CFDCBD"  horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="TRUNCATE" text="  Free Slots:">
+                    <AnchorFill />
+                    <Anchor  point="BOTTOMLEFT" offsetY="-25" />
+                </Label>
+                <Label name="$(parent)Status" font="ZoFontGame" resizeToFitDescendents="true" fontSize="100" color="CFDCBD" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT" verticalAlignment="TOP" text="">
+                    <AnchorFill />
+                    <Anchor  point="BOTTOMRIGHT" offsetX="-5" offsetY="-25"/>
+                </Label>
+                <Label name="$(parent)BankSlots" font="ZoFontGame" resizeToFitDescendents="true" fontSize="100" color="CFDCBD"  horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="TRUNCATE" text="  Bank Slots:">
+                    <AnchorFill />
+                    <Anchor  point="BOTTOMLEFT" offsetY="-5" />
+                </Label>				
+                <Label name="$(parent)BankSlotsDisplay" font="ZoFontGame" resizeToFitDescendents="true" fontSize="100" color="CFDCBD" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT" verticalAlignment="TOP" text="">
+                    <AnchorFill />
+                    <Anchor  point="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,15 @@
+;This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+;The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+;All rights reserved.
+
+## Title: Improved Item Set Categories
+## Description: Hide all unlocked items, so quickly see, what you're missing!
+## Author: MrPikPik
+## APIVersion: 101034
+## AddOnVersion: 111
+## Version: 1.1.1
+
+lang/en.lua
+lang/$(language).lua
+
+ImprovedItemSetCollection.lua

@@ -1,0 +1,17 @@
+ISTRUZIONI:
+
+traduzione di bassa qualità piu o meno completa, si puo distribuire con moderazione  per uso personale. Esiste già ESOITA che teoricamente distribuisce una traduzione di qualità.
+
+installare esoita
+poi si usa il sistema delle bandierine per passare da una lingua all'altro
+
+con  il gioco in italiano si consiglia di fare una copia dei files prima della sostituzione, se ci sono problemi si rimettono i files originali
+sostiuire i files C:\Users\XXXX\Documents\Elder Scrolls Online\live\AddOns\gamedata e C:\Users\XXXX\Documents\Elder Scrolls Online\live\AddOns\EsoUI con i corrispondenti del pacchetto compresso
+
+il file it.lang è abbastanza  testato
+
+gli altri 2 files sono stati tradotti ma il programma di traduzione ha aggiunto spazi dove non doveva, più o meno funzionano. eventualmente si usano quelli di esoita. Lascio anche i file originali inglesi se qualcuno vuole modificare.
+
+
+
+

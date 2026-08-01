@@ -1,0 +1,10 @@
+## APIVersion: 100026
+## Version: 2.2.2
+## AddOnVersion: 222
+## Title: Slightly Improved™ Attribute Bars
+## License: MIT
+## SavedVariables: SlightlyImprovedAttributeBars_SavedVars
+## DependsOn: LibAddonMenu-2.0
+
+Settings.lua
+SlightlyImprovedAttributeBars.lua

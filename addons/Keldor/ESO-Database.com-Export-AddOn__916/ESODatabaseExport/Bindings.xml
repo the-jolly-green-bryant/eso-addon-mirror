@@ -1,0 +1,41 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="ESO-Database.com">
+            <Action name="OPEN_CHARACTER_LINK">
+                <Down>
+                    ESODBExportCommand.OpenQuicklinkUrl("character")
+                </Down>
+            </Action>
+            <Action name="OPEN_DUNGEON_LINK">
+                <Down>
+                    ESODBExportCommand.OpenQuicklinkUrl("dungeon")
+                </Down>
+            </Action>
+            <Action name="OPEN_TRIAL_LINK">
+                <Down>
+                    ESODBExportCommand.OpenQuicklinkUrl("trial")
+                </Down>
+            </Action>
+            <Action name="OPEN_SETS_LINK">
+                <Down>
+                    ESODBExportCommand.OpenQuicklinkUrl("sets")
+                </Down>
+            </Action>
+            <Action name="OPEN_MOTIFS_LINK">
+                <Down>
+                    ESODBExportCommand.OpenQuicklinkUrl("motifs")
+                </Down>
+            </Action>
+            <Action name="OPEN_ANTIQUITIES_LINK">
+                <Down>
+                    ESODBExportCommand.OpenQuicklinkUrl("antiquities")
+                </Down>
+            </Action>
+            <Action name="OPEN_STATS_LINK">
+                <Down>
+                    ESODBExportCommand.OpenQuicklinkUrl("stats")
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

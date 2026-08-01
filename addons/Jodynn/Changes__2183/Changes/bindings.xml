@@ -1,0 +1,18 @@
+<Bindings><Layer name="SI_KEYBINDINGS_LAYER_GENERAL"><Category name="Changes">
+<Action name="CHANGES_BANKER"><Down>ChangesBanker()</Down></Action>
+<Action name="CHANGES_MERCHANT"><Down>ChangesMerchant()</Down></Action>
+<Action name="CHANGES_FENCE"><Down>ChangesFence()</Down></Action>
+<Action name="CHANGES_BANKER_CAT"><Down>ChangesBankerCat()</Down></Action>
+<Action name="CHANGES_MERCHANT_CAT"><Down>ChangesMerchantCat()</Down></Action>
+<Action name="CHANGES_MIRRI"><Down>ChangesMirri()</Down></Action>
+<Action name="CHANGES_BASTIAN"><Down>ChangesBastian()</Down></Action>
+<Action name="CHANGES_CUSTOM_COMMAND_1"><Down>CustomCommand(1)</Down></Action>
+<Action name="CHANGES_CUSTOM_COMMAND_2"><Down>CustomCommand(2)</Down></Action>
+<Action name="CHANGES_CUSTOM_COMMAND_3"><Down>CustomCommand(3)</Down></Action>
+<Action name="CHANGES_CUSTOM_COMMAND_4"><Down>CustomCommand(4)</Down></Action>
+<Action name="CHANGES_CUSTOM_COMMAND_5"><Down>CustomCommand(5)</Down></Action>
+<Action name="CHANGES_CUSTOM_COMMAND_6"><Down>CustomCommand(6)</Down></Action>
+<Action name="CHANGES_CUSTOM_COMMAND_7"><Down>CustomCommand(7)</Down></Action>
+<Action name="CHANGES_CUSTOM_COMMAND_8"><Down>CustomCommand(8)</Down></Action>
+<Action name="CHANGES_CUSTOM_COMMAND_9"><Down>CustomCommand(9)</Down></Action>
+</Category></Layer></Bindings>

@@ -1,0 +1,105 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="GearList" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="1133" y="850" />
+			<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-60" />
+			<Controls>
+
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+				<Label name="$(parent)WindowTitle" horizontalAlignment="CENTER" font="ZoFontAnnounceLarge" text="|cFFD700Gear Set Tracker|r">
+					<AnchorFill />
+				</Label>
+
+				<Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+					<Dimensions x="1133" y="4"/>
+					<Anchor point="TOP" relativeTo="$(parent)" offsetY="38" />
+				</Texture>
+
+				<Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						GearList:SetHidden(true)
+					</OnClicked>
+				</Button>
+				<Button name="$(parent)ButtonScreenshot" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+					<Textures normal="/esoui/art/buttons/edit_save_up.dds"
+						pressed="/esoui/art/buttons/edit_save_down.dds"
+						mouseOver="EsoUI/Art/Buttons/edit_save_over.dds"
+						disabled="EsoUI/Art/Buttons/edit_save_disabled.dds"/>
+					<OnClicked>
+						GearTracker.takeScreenshot()
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)PlayerName" horizontalAlignment="CENTER" font="ZoFontGame">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT"/>
+					<OnInitialized>
+						local name = GetUnitDisplayName('player')
+						self:SetText(name)
+					</OnInitialized>
+				</Label>
+			</Controls>
+			<OnInitialized>
+				local textures = {
+					"esoui/art/tutorial/gamepad/gp_tooltip_itemslot_head.dds",
+					"esoui/art/tutorial/gamepad/gp_tooltip_itemslot_shoulders.dds",
+					"esoui/art/tutorial/gamepad/gp_tooltip_itemslot_chest.dds",
+					"esoui/art/tutorial/gamepad/gp_tooltip_itemslot_hands.dds",
+					"esoui/art/tutorial/gamepad/gp_tooltip_itemslot_waist.dds",
+					"esoui/art/tutorial/gamepad/gp_tooltip_itemslot_legs.dds",
+					"esoui/art/tutorial/gamepad/gp_tooltip_itemslot_feet.dds",
+					"esoui/art/tutorial/gamepad/gp_tooltip_itemslot_neck.dds",
+					"esoui/art/tutorial/gamepad/gp_tooltip_itemslot_ring.dds",
+					"esoui/art/icons/gear_breton_dagger_d.dds",
+					"esoui/art/icons/gear_breton_1haxe_d.dds",
+					"esoui/art/icons/gear_breton_1hhammer_d.dds",
+					"esoui/art/icons/gear_breton_1hsword_d.dds",
+					"esoui/art/icons/gear_breton_2haxe_d.dds",
+					"esoui/art/icons/gear_breton_2hhammer_d.dds",
+					"esoui/art/icons/gear_breton_2hsword_d.dds",
+					"esoui/art/icons/gear_breton_bow_d.dds",
+					"esoui/art/progression/icon_healstaff.dds",
+					"esoui/art/progression/icon_firestaff.dds",
+					"esoui/art/progression/icon_icestaff.dds",
+					"esoui/art/progression/icon_lightningstaff.dds",
+					"esoui/art/icons/gear_breton_shield_d.dds"
+				}
+				for i=1,22 do
+	   				local button = WINDOW_MANAGER:CreateControl("$(parent)Box"..i, GearList, CT_TEXTURE)
+	   				button:SetDimensions(30, 30)
+					
+					button:SetTexture(textures[i])
+					if i &lt; 10 then
+						button:SetAnchor(TOPLEFT, rowControl, TOPLEFT, 414+i*30, 50)
+						button:SetScale(1.25)
+						button:SetColor(0.7,0.7,0.7,1)
+					elseif i &lt; 18 or i == 22 then
+						button:SetAnchor(TOPLEFT, rowControl, TOPLEFT, 414+i*30, 55)
+						button:SetScale(1)
+					else
+						button:SetAnchor(TOPLEFT, rowControl, TOPLEFT, 414+i*30, 45)
+						button:SetScale(1.75)
+					end
+				end
+			</OnInitialized>
+		</TopLevelControl>
+
+
+		<Control name="WishListRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="30" />
+			<Controls>
+				<Label name="$(parent)Name" font="ZoFontGame" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="LEFT" />
+					<Dimensions x="418" y="30" />
+				</Label>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

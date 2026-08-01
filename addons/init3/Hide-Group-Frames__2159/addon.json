@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/init3/Hide-Group-Frames__2159",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "init3",
+  "canonical_id": "esoui:2159",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:2159",
+  "deleted": false,
+  "directories": [
+    "HideGroupFrames"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2159/",
+  "fingerprint": "26bf26f29bc0a7c4adc691f0d4e7b2f97be3d295ee9302c824a4da904beec8b2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2159",
+  "source_url": "https://www.esoui.com/downloads/info2159-HideGroupFrames.html",
+  "stats": {
+    "downloads": 31127,
+    "favorites": 4,
+    "monthly_downloads": 93
+  },
+  "title": "Hide Group Frames",
+  "updated_at": 1538436145000,
+  "version": "1.0"
+}

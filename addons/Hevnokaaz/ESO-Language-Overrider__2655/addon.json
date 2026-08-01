@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/Hevnokaaz/ESO-Language-Overrider__2655",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hevnokaaz",
+  "canonical_id": "esoui:2655",
+  "category_id": "159",
+  "compatibility": [],
+  "content_id": "esoui:2655",
+  "deleted": false,
+  "directories": [
+    "ESOLanguageOverrider"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2655/",
+  "fingerprint": "1cf0a7adf16e70a00223fa91b49ca5b2eee4842f37128a89a5795bc4e3bfd178",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9006.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2655",
+  "source_url": "https://www.esoui.com/downloads/info2655-ESOLanguageOverrider.html",
+  "stats": {
+    "downloads": 5181,
+    "favorites": 4,
+    "monthly_downloads": 28
+  },
+  "title": "ESO Language Overrider",
+  "updated_at": 1591490503000,
+  "version": "1.2.2"
+}

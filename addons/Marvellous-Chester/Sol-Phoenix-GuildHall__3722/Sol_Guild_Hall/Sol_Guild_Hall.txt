@@ -1,0 +1,10 @@
+## Title: Sol_Guild_Hall
+## Author: Sheo
+## Version: 1.0
+## APIVersion: 101040
+
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: SolGuildHallVars
+
+Sol_Guild_Hall.lua
+Sol_Guild_Hall.xml

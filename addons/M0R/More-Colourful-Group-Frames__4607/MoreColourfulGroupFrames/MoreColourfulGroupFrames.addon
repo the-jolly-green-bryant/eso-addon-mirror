@@ -1,0 +1,11 @@
+## Title: |cFFD700More Colourful Group Frames|r
+## Description: Allows you to customize the group frame colours for each role
+## Author: |c0DC1CF@M0R_Gaming|r
+## APIVersion: 101049
+## Version: 1
+## AddOnVersion: 1
+## SavedVariables: MoreColourfulGroupFramesVars
+## OptionalDependsOn: LibAddonMenu-2.0
+
+main.lua
+settings.lua

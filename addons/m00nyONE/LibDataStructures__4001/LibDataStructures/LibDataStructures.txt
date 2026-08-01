@@ -1,0 +1,22 @@
+## Title: LibDataStructures
+## Description: commonly used datastructures in programming
+## Version: 2024.12.06
+## Author: |c76c3f4@m00nyONE|r
+## APIVersion: 101044
+## AddOnVersion: 20241206
+## IsLibrary: true
+
+# Core Library
+LibDataStructures.lua
+
+# data structures
+datastructures/Stack.lua
+datastructures/Queue.lua
+datastructures/BinaryTree.lua
+
+# tests
+test/Tests.lua
+test/Stack.lua
+test/Queue.lua
+test/BinaryTree.lua
+

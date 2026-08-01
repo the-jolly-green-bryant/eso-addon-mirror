@@ -1,0 +1,160 @@
+<GuiXml>
+    <Animations>
+        <AnimationTimeline name="LFCP_ArrowRotateAnim">
+            <Animations>
+                <TextureRotateAnimation duration="400" startRotation="0" endRotation="3.14159265359" />
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+    <Controls>
+        <Control name="FCPHeaderIcon_Template" mouseEnabled="true" virtual="true">
+            <Dimensions x="26" y="26"/>
+            <Controls>
+                <Texture name="$(parent)Texture" textureFile="/esoui/art/icons/u26_unknown_antiquity_questionmark.dds" tier="HIGH">
+                    <Anchor point="CENTER"/>
+                    <Dimensions x="24" y="24"/>
+                </Texture>
+            </Controls>
+            <OnMouseUp>
+                LibFilteredChatPanel.OnFilterIconClicked(self)
+            </OnMouseUp>
+            <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, LEFT, self.name)
+            </OnMouseEnter>
+            <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+            </OnMouseExit>
+        </Control>
+<!-- ======================================================================================================================= -->
+        <TopLevelControl name="FilteredChatPanel" clampedToScreen="false" movable="true" hidden="false" mouseEnabled="false" resizeHandleSize="10">
+            <Dimensions x="530" y="700"/>
+            <Anchor point="LEFT" relativeTo="GuiRoot" relativePoint="RIGHT" offsetX="0" offsetY="-70"/>
+            <OnMoveStart>
+                self:SetClampedToScreen(true)
+            </OnMoveStart>
+            <OnMoveStop>
+                self:SetClampedToScreen(false)
+                LibFilteredChatPanel.SavePosition()
+            </OnMoveStop>
+            <OnResizeStop>
+                LibFilteredChatPanel.SavePosition()
+            </OnResizeStop>
+            <Controls>
+<!-- ======================================================================================================================= -->
+                <Control name="$(parent)Content">
+                    <AnchorFill/>
+                    <Controls>
+                        <Control name="$(parent)Header">
+                            <Dimensions y="40"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+                            <Controls>
+                                <Backdrop name="$(parent)Divider" centerColor="75000000" edgeColor="00000000">
+                                    <Dimensions y="2"/>
+                                    <Anchor point="BOTTOMLEFT" offsetY="-4"/>
+                                    <Anchor point="BOTTOMRIGHT" offsetY="-4"/>
+                                </Backdrop>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)Footer">
+                            <Dimensions y="30"/>
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT"/>
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+                            <Controls>
+                                <Button name="$(parent)Settings" alpha="1" clickSound="Default_Click" topmost="true">
+                                    <Textures normal="/esoui/art/housing/keyboard/furniture_tabicon_settings_up.dds" mouseOver="/esoui/art/housing/keyboard/furniture_tabicon_settings_over.dds" />
+                                    <Anchor point="LEFT" offsetX="10"/>
+                                    <Dimensions x="24" y="24"/>
+                                    <OnClicked>
+                                        LibFilteredChatPanel.OpenSettingsMenu()
+                                    </OnClicked>
+                                </Button>
+                                <Texture name="$(parent)Close" textureFile="/esoui/art/buttons/large_rightarrow_up.dds" mouseEnabled="true">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-4" offsetY="0" />
+                                    <Dimensions x="30" y="30" />
+                                    <OnMouseUp>
+                                        LibFilteredChatPanel.OnSidebarClicked(button)
+                                    </OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle the chat panel")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        ZO_Tooltips_HideTextTooltip()
+                                    </OnMouseExit>
+                                </Texture>
+                                <EditBox name="$(parent)TextField" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Settings" relativePoint="TOPRIGHT" offsetX="6" offsetY="2"/>
+                                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-40" offsetY="-5"/>
+                                    <Controls><Backdrop name="$(parent)Backdrop" inherits="ZO_SingleLineEditBackdrop_Keyboard"><AnchorFill/></Backdrop></Controls>
+                                    <OnEnter>LibFilteredChatPanel.OnTextFieldEnter()</OnEnter>
+                                    <OnEscape>LibFilteredChatPanel.OnTextFieldEscape()</OnEscape>
+                                    <OnUpArrow></OnUpArrow>
+                                    <OnDownArrow></OnDownArrow>
+                                </EditBox>
+                            </Controls>
+                        </Control>
+<!-- ======================================================================================================================= -->
+                        <TextBuffer name="$(parent)Buffer" font="ZoFontGameSmall" linkEnabled="true" mouseEnabled="true">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetX="12"/>
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Footer" relativePoint="TOPRIGHT" offsetX="-16"/>
+                            <OnLinkMouseUp>
+                                LibFilteredChatPanel.OnLinkClicked(linkText, button, self, linkData)
+                            </OnLinkMouseUp>
+                        </TextBuffer>
+                        
+                        <Slider name="$(parent)Slider" mouseEnabled="true" step="1">
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Buffer" offsetX="0" offsetY="12"/>
+                            <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Buffer" offsetX="0" offsetY="-24"/>
+                            <Dimensions x="8"/>
+                            <Limits min="1" max="1"/>
+                            
+                            <ThumbTexture
+                                textureFile="EsoUI/Art/ChatWindow/chat_thumb.dds"
+                                disabledTextureFile="EsoUI/Art/ChatWindow/chat_thumb_disabled.dds"
+                                thumbWidth="8"
+                                thumbHeight="22"
+                                bottom="0.6875"
+                            />
+                            
+                            <BackgroundMiddle textureFile="EsoUI/Art/ChatWindow/chat_scrollbar_track.dds"/>
+                            
+                            <Controls>
+                                <Button name="$(parent)ScrollUp" inherits="ZO_ScrollUpButton">
+                                    <Anchor point="BOTTOM" relativePoint="TOP" offsetX="-1"/>
+                                    <Dimensions x="12" y="12"/>
+                                    <Textures
+                                        normal="EsoUI/Art/ChatWindow/chat_scrollbar_upArrow_up.dds"
+                                        pressed="EsoUI/Art/ChatWindow/chat_scrollbar_upArrow_down.dds"
+                                        mouseOver="EsoUI/Art/ChatWindow/chat_scrollbar_upArrow_over.dds"
+                                        disabled="EsoUI/Art/ChatWindow/chat_scrollbar_upArrow_disabled.dds"
+                                    />
+                                </Button>
+                                
+                                <Button name="$(parent)ScrollDown" inherits="ZO_ScrollDownButton">
+                                    <Anchor point="TOP" relativePoint="BOTTOM" offsetX="-1"/>
+                                    <Dimensions x="12" y="12"/>
+                                    <Textures
+                                        normal="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_up.dds"
+                                        pressed="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_down.dds"
+                                        mouseOver="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_over.dds"
+                                        disabled="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_disabled.dds"
+                                    />
+                                </Button>
+                                
+                                <Button name="$(parent)ScrollEnd" inherits="ZO_ScrollEndButton">
+                                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)ScrollDown"/>
+                                    <Dimensions x="12" y="12"/>                                         
+                                </Button>                                               
+                            </Controls>
+                        </Slider>                                   
+<!-- ======================================================================================================================= -->
+                    </Controls>
+                </Control>
+                <Backdrop name="$(parent)Backdrop" centerColor="40000000" edgeColor="00000000">
+                    <AnchorFill/>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

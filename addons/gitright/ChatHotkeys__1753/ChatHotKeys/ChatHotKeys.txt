@@ -1,0 +1,24 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: ChatHotKeys
+## Version: 1.0.019
+## Author: Gitright
+## APIVersion: 100019
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: ChatHotKeys_SavedVariables
+## Description: Allows user to set hotkeys for standard chat topics such as guild recruiting.
+
+Libs/LibStub/LibStub.lua
+Libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+Libs/LibAddonMenu-2.0/controls/panel.lua
+Libs\LibAddonMenu-2.0/controls/header.lua
+libs\LibAddonMenu-2.0/controls/editbox.lua
+
+ChatHotKeys.lua
+ChatHotKeysConfig.lua
+Bindings\Bindings.lua
+Bindings\Bindings.xml

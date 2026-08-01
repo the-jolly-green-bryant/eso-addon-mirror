@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/haggen/Compact-Paper-Doll__1241",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "haggen",
+  "canonical_id": "esoui:1241",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1241",
+  "deleted": false,
+  "directories": [
+    "CompactPaperDoll"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1241/",
+  "fingerprint": "7bb4274f2f6c2ab236fb6f6f1c5622ab1bdb912972049445473b8ff6fd925648",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4022.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1241",
+  "source_url": "https://www.esoui.com/downloads/info1241-CompactPaperDoll.html",
+  "stats": {
+    "downloads": 4598,
+    "favorites": 2,
+    "monthly_downloads": 8
+  },
+  "title": "Compact Paper Doll",
+  "updated_at": 1448090954000,
+  "version": "1.0.0"
+}

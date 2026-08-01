@@ -1,0 +1,68 @@
+<GuiXml  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+  <Controls>
+    <TopLevelControl name="DsRGuildHallFrame" hidden="true">
+      <Dimensions x="200" y="200" />
+      <Anchor point="TOP" relativeTo="ZO_GuildHomeTraderViewWeeklyBids" relativePoint="BOTTOM" />
+      <OnInitialized>
+            DsRGuildHall.Check()
+      </OnInitialized>
+      <Controls>
+        <Label name="DsRGuild" width="200" height="25" font="ZoFontWinH3" inheritAlpha="true"  color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER"  text="" modifyTextType="UPPERCASE">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="10"/>
+        </Label>
+        <Texture name="DsRGuildHallIcon">
+          <Dimensions x="100" y="100"/>
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="40"/>
+          <OnInitialized>
+                DsRGuildHall.LoadIcon()
+          </OnInitialized>
+        </Texture>
+        <Label name="DsRGuildHallName" font="ZoFontWinH3" inheritAlpha="true"  
+            hidden="false" color="9fb6cd" 
+            verticalAlignment="CENTER" horizontalAlignment="CENTER"  text="Die sieben Raben" 
+			maxLineCount="3" wrapMode="ELLIPSIS">
+          <Dimensions x="200"/>
+		  <DimensionConstraints minY="-1" maxY="175"/>
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="140"/>
+        </Label>
+        <Button name="GoToDsRGuildHall" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+            wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" 
+            text="">
+          <OnClicked>
+                 DsRGuildAdmin:OnClickedPortGuild(...)
+          </OnClicked>
+          <Anchor point="TOP" relativeTo="DsRGuildHallName" relativePoint="BOTTOM" offsetX="0" offsetY="5"/>
+          <Dimensions x="200" />
+        </Button>
+        <Texture name="DsRGuildHallHodorIcon">
+          <Dimensions x="45" y="45"/>
+          <Anchor point="TOP" relativeTo="GoToDsRGuildHall" relativePoint="BOTTOM" offsetX="0" offsetY="5" />
+        </Texture>
+        <Button name="GoToDsRGuildHallMem" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+            wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" 
+            text="">
+          <OnClicked>
+                 DsRGuildAdmin:OnClickedPortMem(...)
+          </OnClicked>
+          <Anchor point="TOP" relativeTo="DsRGuildHallHodorIcon" relativePoint="BOTTOM"  offsetX="0" offsetY="5"/>
+          <Dimensions x="200" />
+        </Button>
+        <Texture name="DsRGuildHallPost" textureFile="/esoui/art/menubar/menubar_mail_down.dds"
+            verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+            <Dimensions x="60" y="60" />
+            <Anchor point="TOP" relativeTo="GoToDsRGuildHallMem" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+        </Texture>
+        <Button name="DsRGuildHallPostButton" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+            wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" 
+            text="">
+          <OnClicked>
+                DsRGuildMailWindowOpenButton_OnClicked()
+          </OnClicked>
+          <Anchor point="TOP" relativeTo="DsRGuildHallPost" relativePoint="BOTTOM" offsetX="0" offsetY="-10"/>
+          <Dimensions x="200" />
+        </Button>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

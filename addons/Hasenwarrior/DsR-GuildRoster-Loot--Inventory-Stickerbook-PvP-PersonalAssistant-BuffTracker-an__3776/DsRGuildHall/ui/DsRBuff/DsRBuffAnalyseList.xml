@@ -1,0 +1,84 @@
+<GuiXml>
+    <Controls>
+
+        <Control name="DsRBuffAnalyseRow" virtual="true" mouseEnabled="true">
+            <Dimensions x="720" y="44" />
+
+            <Controls>
+                <!-- ICON LINKS -->
+                <Texture name="$(parent)Icon" textureFile="" >
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="LEFT" offsetX="0" offsetY="0" />
+                </Texture>
+
+                <!-- Spalte 1: AbilityId -->
+                <Label name="$(parent)AbilityId" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="60" y="44" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="10" />
+                </Label>
+
+                <!-- Spalte 2: Name -->
+                <Label name="$(parent)Name" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="300" y="44" />
+                    <Anchor point="LEFT" relativeTo="$(parent)AbilityId" relativePoint="RIGHT" offsetX="0" />
+                </Label>
+
+                <!-- Spalte 3: EffectType -->
+                <Label name="$(parent)EffectType" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="120" y="44" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="0" />
+                </Label>
+
+                <!-- Spalte 4: StatusEffectType -->
+                <Label name="$(parent)StatusEffectType" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="60" y="44" />
+                    <Anchor point="LEFT" relativeTo="$(parent)EffectType" relativePoint="RIGHT" offsetX="0" />
+                </Label>
+
+                <!-- Spalte 5: AbilityType -->
+                <Label name="$(parent)AbilityType" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="180" y="44" />
+                    <Anchor point="LEFT" relativeTo="$(parent)StatusEffectType" relativePoint="RIGHT" offsetX="0" />
+                </Label>
+
+                <!-- Spalte 6: SourceType -->
+                <Label name="$(parent)SourceType" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="120" y="44" />
+                    <Anchor point="LEFT" relativeTo="$(parent)AbilityType" relativePoint="RIGHT" offsetX="0" />
+                </Label>
+
+                <!-- Spalte 7: Target Description -->
+                <Label name="$(parent)TargetDesc" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="120" y="44" />
+                    <Anchor point="LEFT" relativeTo="$(parent)SourceType" relativePoint="RIGHT" offsetX="-10" />
+                </Label>
+
+                <!-- Spalte 8: isPassiv -->
+                <Label name="$(parent)isPassiv" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="90" y="44" />
+                    <Anchor point="LEFT" relativeTo="$(parent)TargetDesc" relativePoint="RIGHT" offsetX="20" />
+                </Label>
+
+                <!-- Spalte 9: isUltimate -->
+                <Label name="$(parent)isUltimate" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="90" y="44" />
+                    <Anchor point="LEFT" relativeTo="$(parent)isPassiv" relativePoint="RIGHT" offsetX="-10" />
+                </Label>
+
+                <!-- Spalte 9: BuffType -->
+                <Label name="$(parent)isPermanent" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="90" y="44" />
+                    <Anchor point="LEFT" relativeTo="$(parent)isUltimate" relativePoint="RIGHT" offsetX="0" />
+                </Label>
+
+                <!-- Spalte 10: Cost -->
+                <Label name="$(parent)Cost" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="90" y="44" />
+                    <Anchor point="LEFT" relativeTo="$(parent)isPermanent" relativePoint="RIGHT" offsetX="0" />
+                </Label>
+
+            </Controls>
+        </Control>
+
+    </Controls>
+</GuiXml>

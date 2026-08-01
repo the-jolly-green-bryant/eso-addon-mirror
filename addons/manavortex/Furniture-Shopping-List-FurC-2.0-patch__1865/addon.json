@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/manavortex/Furniture-Shopping-List-FurC-2.0-patch__1865",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1865",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:1865",
+  "deleted": false,
+  "directories": [
+    "FurnitureShoppingList"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1865/",
+  "fingerprint": "39c7dc3097547b6667dc2729d876eb9bf2554627dc2ee4f56b3ba824504fdc4c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9251.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1865",
+  "source_url": "https://www.esoui.com/downloads/info1865-FurnitureShoppingListFurC2.0patch.html",
+  "stats": {
+    "downloads": 14505,
+    "favorites": 34,
+    "monthly_downloads": 203
+  },
+  "title": "Furniture Shopping List (FurC 2.0 patch)",
+  "updated_at": 1596968144000,
+  "version": "1.4.11"
+}

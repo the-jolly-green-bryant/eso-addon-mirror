@@ -1,0 +1,358 @@
+-- Russian overrides. Keyed by the string id (already created in en.lua, which
+-- loads first), so only the values that differ from English need to appear
+-- here; anything omitted keeps its English text.
+local strings = {
+    -- Settings panel
+    [SI_BMW_PANEL_NAME] = "Bureau of Material Worth",
+    [SI_BMW_PANEL_DISPLAY_NAME] = "|c6FCB9FBureau|r of Material Worth",
+    [SI_BMW_PANEL_INTRO] = "|c6FCB9FСтоимость материалов в ремесленной сумке с первого взгляда.|r Bureau of Material Worth подсчитывает рыночную стоимость всего содержимого ремесленной сумки и показывает её в небольшой панели рядом с ней, при необходимости с разбивкой по профессиям.",
+    [SI_BMW_PANEL_OVERVIEW] = "|c8C8A82• Использует LibPrice (Master Merchant / Tamriel Trade Centre / Arkadius' Trade Tools)\n• Подсчитывает стоимость только при открытой ремесленной сумке\n• Постепенно обновляет данные при добавлении и извлечении материалов|r",
+
+    -- Живой статус-блок вверху панели. Отражает текущую конфигурацию (не живую
+    -- стоимость сумки): валюация считается только пока открыта ремесленная сумка,
+    -- так что значение здесь было бы нулевым или устаревшим. Вкл - зелёный, выкл -
+    -- приглушённый; строки-режимы (порядок/база) используют нейтральный тон.
+    -- Каждая строка читается через тот же геттер, что и её контрол.
+    [SI_BMW_STATUS_TITLE] = "|cC5C29EТекущие настройки|r",
+    [SI_BMW_STATUS_ON] = "вкл",
+    [SI_BMW_STATUS_OFF] = "выкл",
+    [SI_BMW_STATUS_LABEL_BREAKDOWN] = "Разбивка по категориям:",
+    [SI_BMW_STATUS_LABEL_SORT] = "Порядок категорий:",
+    [SI_BMW_STATUS_SORT_BY_VALUE] = "по стоимости",
+    [SI_BMW_STATUS_SORT_BY_PROFESSION] = "по профессии",
+    [SI_BMW_STATUS_LABEL_COLOR_SCALE] = "Окраска золота:",
+    [SI_BMW_STATUS_LABEL_VALUE_HISTORY] = "История стоимости:",
+    [SI_BMW_STATUS_LABEL_PROFILE] = "Метка аккаунта:",
+    [SI_BMW_STATUS_LABEL_NOTIFY] = "Сообщения в чат:",
+    [SI_BMW_STATUS_LABEL_GUILD_STORE] = "В гильдейском магазине:",
+    [SI_BMW_STATUS_LABEL_DELTA] = "База сравнения:",
+
+    [SI_BMW_HEADER_DISPLAY] = "|cC5C29EОтображение|r",
+    [SI_BMW_HEADER_DIAGNOSTICS] = "|cC5C29EДиагностика|r",
+
+    -- Submenu разбивки по категориям: master-переключатель «показывать разбивку»
+    -- плюс три контрола, которые действуют только пока она включена (иконки,
+    -- окраска, сортировка).
+    [SI_BMW_SUBMENU_BREAKDOWN_NAME] = "Разбивка по категориям",
+    [SI_BMW_SUBMENU_BREAKDOWN_DESCRIPTION] = "|c8C8A82Разбить общую стоимость на суммы по профессиям и настроить их отображение. Параметры иконок, окраски и сортировки ниже работают только при включённой разбивке.|r",
+
+    [SI_BMW_SETTING_CATEGORY_BREAKDOWN_NAME] = "Показывать разбивку по категориям",
+    [SI_BMW_SETTING_CATEGORY_BREAKDOWN_TOOLTIP] = "Показывать суммы по профессиям (кузнечное дело, алхимия, провизия и т. д.) под общей стоимостью. Если выключено, отображается только общая стоимость.",
+    [SI_BMW_SETTING_CATEGORY_ICONS_NAME] = "Показывать иконки категорий",
+    [SI_BMW_SETTING_CATEGORY_ICONS_TOOLTIP] = "Показывать небольшую иконку профессии слева от названия каждой категории, чтобы строки читались быстрее. У «Прочего» нет профессии, поэтому используется общая иконка ремесленной сумки. Не действует, пока разбивка по категориям выключена.",
+    [SI_BMW_SETTING_COLOR_SCALE_NAME] = "Окрашивать золото по стоимости",
+    [SI_BMW_SETTING_COLOR_SCALE_TOOLTIP] = "Окрашивать сумму золота каждой категории по её величине: тусклее для небольших сумм и ярче для крупных, чтобы самые ценные категории сразу бросались в глаза. Если выключено, все суммы отображаются одним оттенком золота. Не действует, пока разбивка по категориям выключена.",
+    [SI_BMW_SETTING_SORT_BY_VALUE_NAME] = "Сортировать категории по стоимости",
+    [SI_BMW_SETTING_SORT_BY_VALUE_TOOLTIP] = "Упорядочивать строки категорий по убыванию стоимости в золоте, чтобы самые ценные запасы всегда были сверху. Если выключено, используется фиксированный порядок профессий. Не действует, пока разбивка по категориям выключена.",
+    [SI_BMW_SETTING_DETAIL_COLUMNS_NAME] = "Колонки таблицы материалов",
+    [SI_BMW_SETTING_DETAIL_COLUMNS_TOOLTIP] = "Основной вид показывает материал, количество и стоимость для быстрого просмотра. Аналитика дополнительно показывает накопленную долю стоимости и изменение цены. В виде «Изменения» всегда остаются колонки дельты, доли и статуса.",
+    [SI_BMW_SETTING_DETAIL_COLUMNS_BASIC] = "Основной",
+    [SI_BMW_SETTING_DETAIL_COLUMNS_ANALYTICS] = "Аналитика",
+    [SI_BMW_SETTING_DELTA_MODE_NAME] = "База изменений запасов",
+    [SI_BMW_SETTING_DELTA_MODE_TOOLTIP] = "С чем сравнивается строка изменения внизу окна. «С прошлого просмотра»: с состоянием при последнем нажатии на строку изменений; новые изменения накапливаются между открытиями сумки и сохраняются между перезапусками. «За сессию»: работает так же, но база сбрасывается после выхода из игры или /reloadui. Изменение только цен при том же составе сумки не отображается. Нажмите строку, чтобы увидеть состав изменений и отметить их просмотренными.",
+    [SI_BMW_SETTING_DELTA_MODE_VISIT] = "С прошлого просмотра",
+    [SI_BMW_SETTING_DELTA_MODE_SESSION] = "За сессию",
+    [SI_BMW_SETTING_BACKGROUND_NAME] = "Показывать фон",
+    [SI_BMW_SETTING_BACKGROUND_TOOLTIP] = "Рисовать тёмный фон панели за текстом. Выключите для ������ростого текста поверх ремесленной сумки.",
+    [SI_BMW_SETTING_BORDER_NAME] = "Показывать рамку",
+    [SI_BMW_SETTING_BORDER_TOOLTIP] = "Рисовать рамку панели. Выключите для более чистого вида без рамки.",
+    [SI_BMW_SETTING_VALUE_HISTORY_NAME] = "Показывать историю стоимости",
+    [SI_BMW_SETTING_VALUE_HISTORY_TOOLTIP] = "Рисовать внизу панели небольшой график стоимости ремесленной сумки во времени. Одна точка записывается при каждом открытии сумки (не чаще раза в несколько часов), хранятся последние 90 точек. Наведите курсор на график, чтобы увидеть самое старое, самое новое значения и итоговое изменение.",
+    [SI_BMW_SETTING_PROFILE_NAME] = "Показывать метку аккаунта",
+    [SI_BMW_SETTING_PROFILE_TOOLTIP] = "Показывать ваш @account и имя текущего персонажа в строке заголовка панели. Ремесленная сумка общая для всего аккаунта, поэтому @account указывает, чья это сумка. Выключите для более чистого заголовка.",
+    [SI_BMW_SETTING_NOTIFY_VISIT_NAME] = "Сообщения в чат",
+    [SI_BMW_SETTING_NOTIFY_VISIT_TOOLTIP] = "Выкл: автоматических сообщений нет.\nСводка: стоимость ремесленной сумки при первом открытии за сессию.\nСущественные: сообщать об изменениях не менее чем на 1%% от выбранной базы.\nПодробно: сводка, результаты извлечения и завершённая подгрузка цен.",
+    [SI_BMW_SETTING_NOTIFY_MODE_OFF] = "Выкл",
+    [SI_BMW_SETTING_NOTIFY_MODE_SUMMARY] = "Сводка",
+    [SI_BMW_SETTING_NOTIFY_MODE_IMPORTANT] = "Существенные изменения",
+    [SI_BMW_SETTING_NOTIFY_MODE_DETAILED] = "Подробно",
+    [SI_BMW_SETTING_GUILD_STORE_NAME] = "Показывать в гильдейском магазине",
+    [SI_BMW_SETTING_GUILD_STORE_TOOLTIP] = "Показывать панель стоимости, пока открыт гильдейский магазин. Она сдвигается левее, чтобы не перекрывать панель магазина. Выключите, чтобы полностью скрыть панель во время торговли.",
+    [SI_BMW_SETTING_WIDTH_NAME] = "Ширина окна",
+    [SI_BMW_SETTING_WIDTH_TOOLTIP] = "Ширина панели стоимости в пикселях. Увеличьте, если длинные названия категорий или большие суммы золота выглядят тесно.",
+    [SI_BMW_SETTING_OFFSET_X_NAME] = "Смещение по горизонтали",
+    [SI_BMW_SETTING_OFFSET_X_TOOLTIP] = "Точная подстройка положения окна по горизонтали относительно панели ремесленной сумки.",
+    [SI_BMW_SETTING_OFFSET_Y_NAME] = "Смещение по вертикали",
+    [SI_BMW_SETTING_OFFSET_Y_TOOLTIP] = "Точная подстройка положения окна по вертикали относительно панели ремесленной сумки.",
+    [SI_BMW_SETTING_DEBUG_MODE_NAME] = "Режим отладки",
+    [SI_BMW_SETTING_DEBUG_MODE_TOOLTIP] = "Определяет, сколько диагностических сообщений аддон выводит в чат.",
+    [SI_BMW_SETTING_REFRESH_NAME] = "Обновить цены сейчас",
+    [SI_BMW_SETTING_REFRESH_TOOLTIP] = "Сбросить кэш цен и пересчитать стоимость ремесленной сумки. Полезно после того, как Master Merchant или Tamriel Trade Centre завершит загрузку свежих данных.",
+
+    -- Window
+    [SI_BMW_PROFILE_ACCOUNT_CHAR] = "%s · %s",
+    -- %d = занятые ячейки (уникальные материалы), %s = классические стаки по 200,
+    -- %s = общее число предметов.
+    [SI_BMW_WINDOW_SUBTITLE] = "%d ячеек · %s стаков · %s предметов",
+    [SI_BMW_WINDOW_EMPTY] = "Ремесленная сумка пуста",
+    [SI_BMW_WINDOW_ADDON_NAME] = "Bureau Of Material Worth",
+    -- %s = версия из BureauOfMaterialWorth.version, %s = дата релиза из
+    -- BureauOfMaterialWorth.releaseDate. Подставляются в рантайме, поэтому
+    -- при выпуске версию правим только в ядре и манифесте.
+    [SI_BMW_WINDOW_VERSION_DATE] = "Версия аддона %s от %s",
+    [SI_BMW_ROW_PERCENT] = "%d%%",
+
+    -- Window: per-category hover tooltip
+    [SI_BMW_TOOLTIP_VALUE] = "Стоимость: %s",
+    -- Чистыми после комиссий гильдейского магазина (1% + 7%). %s = сумма золота.
+    [SI_BMW_TOOLTIP_NET] = "Чистыми при продаже: %s",
+    [SI_BMW_TOOLTIP_SLOTS] = "Ячеек (уникальных материалов): %d",
+    [SI_BMW_TOOLTIP_STACKS] = "Стаков по 200: %s",
+    [SI_BMW_TOOLTIP_ITEMS] = "Предметов: %s",
+    [SI_BMW_TOOLTIP_UNPRICED] = "Без цены: %d ячеек",
+    [SI_BMW_TOOLTIP_TOP_CATEGORY] = "Самая ценная категория",
+    [SI_BMW_TOOLTIP_CLICK_HINT] = "Нажмите для полного списка материалов",
+
+    -- Detail window: per-category material table (opened by clicking a row)
+    [SI_BMW_DETAIL_TITLE] = "%s - материалы",
+    [SI_BMW_DETAIL_COL_NAME] = "Материал",
+    [SI_BMW_DETAIL_COL_QTY] = "Кол-во",
+    [SI_BMW_DETAIL_COL_VALUE] = "Стоимость",
+    -- %d = порог CUM_CORE_THRESHOLD из DetailWindow.lua; подставляется в рантайме,
+    -- поэтому заголовок не может разойтись с фактическим порогом в коде.
+    [SI_BMW_DETAIL_COL_CUM] = "Накоп. %d%%",
+    [SI_BMW_DETAIL_CUM] = "%d%%",
+    [SI_BMW_DETAIL_CUM_TOOLTIP_TITLE] = "Накопленная доля",
+    [SI_BMW_DETAIL_CUM_TOOLTIP_BODY] = "Доля каждого материала в общей стоимости списка, рассчитанная от самого дорогого к самому дешёвому. Она не меняется при сортировке таблицы. Смотрите её в режиме |cFFF897по стоимости|r: строки примерно до 80% содержат те немногие стаки, которые дают основную часть стоимости. Их стоит продать в первую очередь; остальное можно оставить. Отметка 100% всегда приходится на самый дешёвый материал. Материалы без цены не учитываются и отмечаются прочерком.",
+    [SI_BMW_DETAIL_COL_CHANGE] = "Изменение",
+    [SI_BMW_DETAIL_GROWTH] = "%s%%",
+    [SI_BMW_DETAIL_GROWTH_NEW] = "-",
+    [SI_BMW_DETAIL_EMPTY] = "В этой категории нет материалов.",
+    [SI_BMW_DETAIL_SEARCH_HINT] = "Поиск...",
+    [SI_BMW_DETAIL_SEARCH_TITLE] = "Результаты поиска (%d)",
+    [SI_BMW_DETAIL_CONTEXT_CATEGORY] = "%s · %d материалов · %s",
+    [SI_BMW_DETAIL_CONTEXT_SEARCH] = "Поиск «%s» · %d результатов · весь ремесленный мешок · %s",
+    [SI_BMW_DETAIL_CONTEXT_BAG] = "Весь ремесленный мешок · %d материалов · %s",
+    [SI_BMW_DETAIL_CONTEXT_DIFF] = "Сравнение со снимком %s",
+    [SI_BMW_DETAIL_CONTEXT_VISIT_DIFF] = "Запасы: %s · Цены: %s",
+    [SI_BMW_DETAIL_CONTEXT_FILTER_ALL] = "все цены",
+    [SI_BMW_DETAIL_GROUP_SNAPSHOT] = "Снимок",
+    [SI_BMW_DETAIL_SNAPSHOT_READY] = "База: %s",
+    [SI_BMW_DETAIL_SNAPSHOT_MISSING] = "Базы нет",
+    [SI_BMW_DETAIL_GROUP_FILTER] = "Фильтр",
+    [SI_BMW_DETAIL_FILTER_TITLE] = "Материалы (%d)",
+    [SI_BMW_DETAIL_FILTER_ALL] = "Все",
+    [SI_BMW_DETAIL_FILTER_PRICED] = "С ценой",
+    [SI_BMW_DETAIL_FILTER_UNPRICED] = "Без цены",
+    [SI_BMW_DETAIL_FILTER_RESET] = "Сбросить",
+    [SI_BMW_DETAIL_SEARCH_CLEAR_TOOLTIP] = "Очистить поиск",
+
+    -- Тултип строки в окне детализации: уже посчитанные для колонок цифры,
+    -- раскрытые при наведении. %s несёт сумму в золоте (FormatGold), кроме _QTY
+    -- (локализованное количество) и _CHANGE (цветной процент со знаком).
+    -- _UNPRICED заменяет строки цены, когда цены нет.
+    [SI_BMW_ROW_TOOLTIP_QTY] = "Количество: %s",
+    [SI_BMW_ROW_TOOLTIP_UNIT] = "Цена за штуку: %s",
+    [SI_BMW_ROW_TOOLTIP_TOTAL] = "Стоимость стака: %s",
+    [SI_BMW_ROW_TOOLTIP_VALUE_SECTION] = "Стоимость и комиссии",
+    [SI_BMW_ROW_TOOLTIP_LISTING_FEE] = "Сбор за выставление (1%%): -%s",
+    [SI_BMW_ROW_TOOLTIP_SALES_TAX] = "Налог с продажи (7%%): -%s",
+    [SI_BMW_ROW_TOOLTIP_NET] = "Чистыми после комиссий: %s",
+    [SI_BMW_ROW_TOOLTIP_TECHNICAL_SECTION] = "Технические данные",
+    [SI_BMW_ROW_TOOLTIP_SOURCE] = "Источник цены: %s",
+    [SI_BMW_ROW_TOOLTIP_CHANGE] = "Изменение цены: %s",
+    [SI_BMW_ROW_TOOLTIP_UNPRICED] = "Цена недоступна",
+    [SI_BMW_DETAIL_ACTION_WITHDRAW_TOOLTIP] = "Извлечь в сумку",
+    [SI_BMW_DETAIL_ACTION_QUEUE_TOOLTIP] = "Добавить в очередь извлечения",
+
+    -- Строка-итог под списком детализации. Вид категории/поиска: число материалов,
+    -- общая стоимость (FormatGold) и доля списка в стоимости всей сумки. Вид
+    -- изменений: чистое движение золота плюс сколько материалов прибавилось / убыло.
+    [SI_BMW_DETAIL_FOOTER_COUNT] = "Материалов: %d",
+    [SI_BMW_DETAIL_FOOTER_SHARE] = "%d%% от сумки",
+    -- Чистыми по показанным строкам после комиссий (футер категории/поиска). %s =
+    -- сумма золота; иконка золота добавляется в коде.
+    [SI_BMW_DETAIL_FOOTER_NET_SOLD] = "чистыми %s",
+    [SI_BMW_DETAIL_FOOTER_NET] = "Итог:",
+    [SI_BMW_DETAIL_FOOTER_GAINED] = "Добавлено: %d",
+    [SI_BMW_DETAIL_FOOTER_LOST] = "Уменьшено: %d",
+
+    -- Snapshot + diff view
+    [SI_BMW_DETAIL_BTN_REMEMBER] = "Запомнить",
+    [SI_BMW_DETAIL_BTN_REMEMBER_TOOLTIP_TITLE] = "Запомнить состав",
+    [SI_BMW_DETAIL_BTN_REMEMBER_TOOLTIP_BODY] = "Сохранить текущее содержимое ремесленной сумки как снимок. Аддон один раз автоматически создаёт базовый снимок при первом открытии непустой ремесленной сумки; это нажатие заменяет его снимком, выбранным вами.",
+    [SI_BMW_DETAIL_BTN_CHANGES] = "Изменения",
+    [SI_BMW_DETAIL_BTN_CHANGES_TOOLTIP_TITLE] = "Изменения с момента снимка",
+    [SI_BMW_DETAIL_BTN_CHANGES_TOOLTIP_BODY] = "Показать, как изменилась ремесленная сумка с момента сохранённого снимка: какие материалы были добавлены, полностью израсходованы или изменились в количестве, а также стоимость каждого изменения в золоте. Базовый снимок автоматически создаётся при первом открытии непустой сумки; «Запомнить» можно нажать в любой момент, чтобы заменить его.",
+    -- Очищает сохранённый снимок, чтобы «Изменениям» было не с чем сравнивать до
+    -- следующего «Запомнить». С подтверждением: снимок - единственная сохранённая
+    -- база, и очистку нельзя отменить.
+    [SI_BMW_DETAIL_BTN_CLEAR] = "Очистить",
+    [SI_BMW_DETAIL_BTN_CLEAR_TOOLTIP_TITLE] = "Очистить снимок",
+    [SI_BMW_DETAIL_BTN_CLEAR_TOOLTIP_BODY] = "Забыть сохранённый снимок. Вид изменений будет пуст, пока вы не нажмёте «Запомнить» и не сделаете новый. Снимок один, поэтому отменить это нельзя.",
+    -- Диалог подтверждения перед очисткой снимка, чтобы случайный клик не стёр
+    -- базу. _ACCEPT - кнопка подтверждения; отмена - стандартная отмена диалога.
+    [SI_BMW_DETAIL_CLEAR_CONFIRM_TITLE] = "Очистить снимок?",
+    [SI_BMW_DETAIL_CLEAR_CONFIRM_BODY] = "Это забудет сохранённый снимок. Вид изменений будет пуст, пока вы снова не нажмёте «Запомнить». Снимок один, поэтому отменить это нельзя.",
+    [SI_BMW_DETAIL_CLEAR_CONFIRM_ACCEPT] = "Очистить",
+    [SI_BMW_DETAIL_CLEAR_CONFIRM_CANCEL] = "Отмена",
+    [SI_BMW_DETAIL_BTN_BACK] = "Назад",
+    [SI_BMW_DETAIL_BTN_BACK_TOOLTIP_TITLE] = "Назад к материалам",
+    [SI_BMW_DETAIL_BTN_BACK_TOOLTIP_BODY] = "Вернуться из вида изменений к списку материалов.",
+    [SI_BMW_DETAIL_DIFF_TITLE] = "Изменения с %s",
+    [SI_BMW_DETAIL_DIFF_EMPTY] = "С момента снимка ничего не изменилось.",
+    [SI_BMW_DETAIL_VISIT_DIFF_TITLE] = "Изменения с прошлого просмотра",
+    [SI_BMW_DETAIL_VISIT_DIFF_EMPTY] = "С прошлого просмотра количество материалов не изменилось.",
+    [SI_BMW_DETAIL_VISIT_DIFF_TOOLTIP_TITLE] = "Как работает этот список",
+    [SI_BMW_DETAIL_VISIT_DIFF_TOOLTIP_BODY] = "Здесь собраны изменения запасов с прошлого просмотра. Нажатие на строку в главном окне уже отметило их просмотренными: новые изменения будут накапливаться отдельно, даже если ремесленную сумку закрыть и открыть снова.",
+    [SI_BMW_DETAIL_NO_SNAPSHOT] = "Снимок ещё не сделан. Нажмите «Запомнить».",
+    [SI_BMW_DETAIL_COL_QTY_DELTA] = "Кол-во +/-",
+    [SI_BMW_DETAIL_COL_VALUE_DELTA] = "Стоим. +/-",
+    [SI_BMW_DETAIL_COL_SHARE] = "Доля",
+    [SI_BMW_DETAIL_COL_STATUS] = "Статус",
+    [SI_BMW_DETAIL_STATUS_NEW] = "добавлен",
+    [SI_BMW_DETAIL_STATUS_GONE] = "израсходован",
+    [SI_BMW_DETAIL_STATUS_ADDED] = "увеличено",
+    [SI_BMW_DETAIL_STATUS_REDUCED] = "уменьшено",
+    [SI_BMW_DETAIL_QTY_DELTA] = "%s%s",
+
+    -- Withdraw dialog
+    [SI_BMW_WITHDRAW_TITLE] = "Извлечь: %s",
+    [SI_BMW_WITHDRAW_FREE_SLOTS] = "Свободных ячеек в сумке: %d",
+    [SI_BMW_WITHDRAW_MAX] = "Максимум для извлечения: %s",
+    [SI_BMW_WITHDRAW_TOTAL_VALUE] = "Общая стоимость: %s",
+    [SI_BMW_WITHDRAW_QTY_LABEL] = "Количество",
+    [SI_BMW_WITHDRAW_PRESET_STACK] = "%d стак",
+    [SI_BMW_WITHDRAW_PRESET_STACKS_FEW] = "%d стака",
+    [SI_BMW_WITHDRAW_PRESET_STACKS] = "%d стаков",
+    [SI_BMW_WITHDRAW_CONFIRM] = "Извлечь",
+    [SI_BMW_WITHDRAW_ADD_TO_QUEUE] = "В очередь",
+    [SI_BMW_WITHDRAW_BATCH_TITLE] = "Пакетное извлечение",
+    [SI_BMW_WITHDRAW_BATCH_SUMMARY] = "%d материалов · %s предметов",
+    [SI_BMW_WITHDRAW_CANCEL] = "Отмена",
+    [SI_BMW_WITHDRAW_HIDE] = "Скрыть",
+    [SI_BMW_WITHDRAW_BACKPACK_FULL] = "Сумка переполнена",
+    [SI_BMW_WITHDRAW_PROGRESS] = "Извлечение... %d / %d",
+    -- Метка результата в самом окне. Суффикс _LABEL отделяет её от чат-отчёта
+    -- SI_BMW_MSG_WITHDRAW_RESULT, который принимает три %s вместо двух %d.
+    [SI_BMW_WITHDRAW_RESULT_LABEL] = "Извлечено: %d / %d",
+
+
+    -- Очередь извлечения внутри окна извлечения
+    [SI_BMW_QUEUE_TITLE] = "Очередь извлечения",
+    [SI_BMW_QUEUE_EMPTY] = "Нажмите «В очередь» или + у материала, чтобы собрать пакет.",
+    -- Итоговая строка очереди. %d = материалов, %d = требуемых ячеек, %s = стоимость.
+    [SI_BMW_QUEUE_SUMMARY] = "%d материалов · %d ячеек · %s",
+    [SI_BMW_QUEUE_STATUS_READY] = "Готово к извлечению",
+    [SI_BMW_QUEUE_STATUS_NO_SPACE] = "Недостаточно места в сумке",
+    [SI_BMW_QUEUE_WITHDRAW_ALL] = "Извлечь всё",
+    [SI_BMW_QUEUE_CLEAR] = "Очистить",
+
+    -- Window: footer (two-column label -> value rows)
+    [SI_BMW_FOOTER_INVENTORY_LABEL] = "Содержимое сумки",
+    [SI_BMW_FOOTER_PRICES_LABEL] = "Рыночные цены",
+    [SI_BMW_FOOTER_COVERAGE_LABEL] = "Материалы с ценой",
+    [SI_BMW_FOOTER_COVERAGE_VALUE] = "%d/%d с ценой",
+    [SI_BMW_FOOTER_LOW_COVERAGE] = "%d/%d без цены!",
+    [SI_BMW_FOOTER_COVERAGE_UNPRICED_HINT] = "Нажмите, чтобы увидеть материалы без цены.",
+    [SI_BMW_FOOTER_DELTA_LABEL] = "С прошлого просмотра",
+    [SI_BMW_FOOTER_DELTA_LABEL_SESSION] = "За сессию",
+    [SI_BMW_FOOTER_DELTA_VALUE] = "%s",
+    [SI_BMW_FOOTER_DELTA_TOOLTIP_TITLE] = "Разбор изменения стоимости",
+    [SI_BMW_FOOTER_DELTA_TOOLTIP_STOCK] = "Движение запасов: %s",
+    [SI_BMW_FOOTER_DELTA_TOOLTIP_PRICES] = "Переоценка цен: %s",
+    [SI_BMW_FOOTER_DELTA_TOOLTIP_ACCUMULATION] = "Изменения накапливаются до ручного просмотра и не сбрасываются от открытия сумки.",
+    [SI_BMW_FOOTER_DELTA_TOOLTIP_CLICK] = "Нажмите, чтобы увидеть изменения и отметить их просмотренными.",
+    [SI_BMW_FOOTER_GUIDANCE_UNPRICED] = "Без цены: %d - открыть список",
+
+    -- Тултип общего тотала: расклад «чистыми при продаже» по комиссиям
+    -- гильдейского магазина. %% даёт литеральный процент через string.format,
+    -- %s = сумма золота. _LISTING/_SALES показаны как вычеты; _NET - остаток.
+    [SI_BMW_NET_TOOLTIP_TITLE] = "При продаже у гильдейского торговца",
+    [SI_BMW_NET_TOOLTIP_GROSS] = "Цена лота: %s",
+    [SI_BMW_NET_TOOLTIP_LISTING] = "Сбор за размещение (1%%): -%s",
+    [SI_BMW_NET_TOOLTIP_SALES] = "Налог с продажи (7%%): -%s",
+    [SI_BMW_NET_TOOLTIP_NET] = "Вы получите (92%%): %s",
+
+    [SI_BMW_FOOTER_HISTORY_LABEL] = "История стоимости",
+    [SI_BMW_HISTORY_SCALE] = "%s - %s",
+    [SI_BMW_HISTORY_TOOLTIP_POINTS] = "Записано точек: %d",
+    [SI_BMW_HISTORY_TOOLTIP_OLDEST] = "Самая старая: %s",
+    [SI_BMW_HISTORY_TOOLTIP_NEWEST] = "Самая новая: %s",
+    [SI_BMW_HISTORY_TOOLTIP_CHANGE] = "Изменение: %s",
+
+    -- Window: relative time
+    [SI_BMW_TIME_NEVER] = "никогда",
+    [SI_BMW_TIME_JUST_NOW] = "только что",
+    [SI_BMW_TIME_SECONDS] = "%d сек. назад",
+    [SI_BMW_TIME_MINUTES] = "%d мин. назад",
+    [SI_BMW_TIME_HOURS] = "%d ч. назад",
+    -- Составное «сколько назад» для заголовка диффа снимка, который (в отличие от
+    -- футера) может охватывать дни. Возраст строится из двух старших ненулевых
+    -- единиц («5д 3ч», «3ч 20м», «45м»), затем оборачивается _AGO - порядок слов
+    -- задаётся локализацией.
+    [SI_BMW_TIME_UNIT_DAYS] = "%dд",
+    [SI_BMW_TIME_UNIT_HOURS] = "%dч",
+    [SI_BMW_TIME_UNIT_MINUTES] = "%dм",
+    [SI_BMW_TIME_AGO] = "%s назад",
+
+    -- Material categories
+    [SI_BMW_CATEGORY_BLACKSMITHING] = "Кузнечное дело",
+    [SI_BMW_CATEGORY_CLOTHIER] = "Портняжное дело",
+    [SI_BMW_CATEGORY_WOODWORKING] = "Столярное дело",
+    [SI_BMW_CATEGORY_JEWELRY] = "Ювелирное дело",
+    [SI_BMW_CATEGORY_ALCHEMY] = "Алхимия",
+    [SI_BMW_CATEGORY_ENCHANTING] = "Зачарование",
+    [SI_BMW_CATEGORY_PROVISIONING] = "Провизия",
+    [SI_BMW_CATEGORY_OTHER] = "Прочее",
+
+    -- Booleans
+    [SI_BMW_BOOL_TRUE] = "да",
+    [SI_BMW_BOOL_FALSE] = "нет",
+
+    -- Debug level names
+    [SI_BMW_DEBUG_LEVEL_OFF] = "Выкл",
+    [SI_BMW_DEBUG_LEVEL_ERRORS] = "Ошибки",
+    [SI_BMW_DEBUG_LEVEL_WARNINGS] = "Предупреждения",
+    [SI_BMW_DEBUG_LEVEL_INFO] = "Инфо",
+    [SI_BMW_DEBUG_LEVEL_VERBOSE] = "Подробно",
+
+    [SI_BMW_LOG_LEVEL_ERROR] = "|cFF0000[ОШИБКА]|r",
+    [SI_BMW_LOG_LEVEL_WARN] = "|cFFAA00[ПРЕДУПРЕЖДЕНИЕ]|r",
+    [SI_BMW_LOG_LEVEL_INFO] = "|c00FF00[ИНФО]|r",
+    [SI_BMW_LOG_LEVEL_DEBUG] = "|c999999[ОТЛАДКА]|r",
+
+    -- Log messages
+    [SI_BMW_LOG_ONADDONLOADED_LOADING] = "Загрузка версии %s...",
+    [SI_BMW_LOG_ADDON_LOADED] = "Аддон загружен.",
+    [SI_BMW_LOG_CRAFTBAG_SHOWN] = "Ремесленная сумка открыта.",
+    [SI_BMW_LOG_CRAFTBAG_HIDDEN] = "Ремесленная сумка закрыта.",
+    [SI_BMW_LOG_RESCAN_DONE] = "Полный пересчёт завершён: %d ячеек, в��его %s.",
+    [SI_BMW_LOG_SLOT_UPDATED] = "Я��ейка %d обновлена (вклад %s).",
+    [SI_BMW_LOG_LAM_MISSING] = "LibAddonMenu-2.0 не найден; панель настроек недоступна.",
+
+    -- Chat messages
+    [SI_BMW_MSG_LIBPRICE_MISSING] = "LibPrice не установлен. Bureau of Material Worth требует LibPrice (и источник цен, например Master Merchant или Tamriel Trade Centre) для работы.",
+    [SI_BMW_MSG_VERSION_DEBUG] = "Версия %s, отладка: %s (%d)",
+    [SI_BMW_MSG_STATUS_TOTAL] = "Стоимость ремесленной сумки: %s.",
+    [SI_BMW_MSG_STATUS_SLOTS] = "Ячеек с ценой: %d, без цены: %d.",
+    [SI_BMW_MSG_STATUS_FULL_UPDATES] = "Полных обновлений инвентаря за сеанс: %d всего, %d при открытой сумке, %d объединённых пересчётов.",
+    [SI_BMW_MSG_VISIT_DELTA] = "Ремесленная сумка стоит %s (%s с прошлого просмотра).",
+    [SI_BMW_MSG_VISIT_TOTAL] = "Ремесленная сумка стоит %s.",
+    [SI_BMW_MSG_SIGNIFICANT_DELTA] = "Стоимость ремесленной сумки изменилась на %s (%d%%).",
+    [SI_BMW_MSG_PRICES_RECOVERED] = "Цены теперь доступны для всех материалов ремесленной сумки (обновлено: %d).",
+    [SI_BMW_MSG_WITHDRAW_RESULT] = "Извлечено: %s/%s предметов, стоимость: %s.",
+    [SI_BMW_MSG_WITHDRAW_PARTIAL] = "Извлечено: %s/%s предметов, стоимость: %s. Остальное не удалось извлечь из-за места в сумке или изменения инвентаря.",
+    [SI_BMW_MSG_VALUE_UNKNOWN] = "неизвестна",
+    [SI_BMW_MSG_REFRESH_DONE] = "Цены обновлены.",
+    -- Подтверждение в чат при сохранении/очистке снимка из окна детализации.
+    -- _SAVED: %d = ячейки (уникальные материалы), %s = общая сумма золота.
+    [SI_BMW_MSG_SNAPSHOT_SAVED] = "Снимок сохранён: %d ячеек, %s.",
+    [SI_BMW_MSG_SNAPSHOT_CLEARED] = "Снимок очищен.",
+    [SI_BMW_MSG_DEBUG_MODE_SET] = "Режим отладки: %s (%d).",
+    [SI_BMW_MSG_INVALID_DEBUG_LEVEL] = "Неверный уровень отладки. Используйте число от 0 до 4.",
+    [SI_BMW_MSG_SETTINGS_UNAVAILABLE] = "Панель настроек недоступна (LibAddonMenu-2.0 не найден).",
+    [SI_BMW_MSG_UNKNOWN_COMMAND] = "Неизвестная команда. Введите /bmw help для списка команд.",
+
+    -- Slash command help
+    [SI_BMW_MSG_HELP_TITLE] = "|cC5C29EКоманды Bureau of Material Worth:|r",
+    [SI_BMW_MSG_HELP_STATUS] = "|cFFFFFF/bmw status|r - показать текущую стоимость ремесленной сумки.",
+    [SI_BMW_MSG_HELP_REFRESH] = "|cFFFFFF/bmw refresh|r - сбросить кэш цен и пересчитать.",
+    [SI_BMW_MSG_HELP_SETTINGS] = "|cFFFFFF/bmw settings|r - открыть панель настроек.",
+    [SI_BMW_MSG_HELP_DEBUG] = "|cFFFFFF/bmw debug <0-4>|r - задать уровень отладки в чате.",
+    [SI_BMW_MSG_HELP_HELP] = "|cFFFFFF/bmw help|r - показать этот список команд.",
+}
+
+for stringId, value in pairs(strings) do
+    SafeAddString(stringId, value, 1)
+end

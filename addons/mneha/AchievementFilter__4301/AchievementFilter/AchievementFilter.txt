@@ -1,0 +1,13 @@
+## Title: AchievementFilter
+## Author: mneha1987
+## Version: 1.1.3
+## APIVersion: 101050
+## Description: Standalone achievement browser with advanced filters (reward type, source, points, earned state, text, date range) and sortable columns.
+## SavedVariables: AchievementFilter_SavedVariables
+## DependsOn: LibCustomMenu>=730
+
+AchievementFilter.xml
+Bindings.xml
+AchievementFilter.lua
+Description.txt
+Changelog.txt

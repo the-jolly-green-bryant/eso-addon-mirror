@@ -1,0 +1,20 @@
+## Title: Xynode's All About Mechanics
+## Description: Mechanics guides
+## Author: XynodeGaming.com
+## Version 1.71
+## AddOnVersion: 160
+## APIVersion: 101038 101040
+## DependsOn: LibAddonMenu-2.0>=32
+## SavedVariables: XynodeVariables
+
+
+
+Xynode.lua
+Dungeons.lua
+Bosses.lua
+Sets.lua
+Xynode.xml
+XynodeMenu.lua
+bindings.xml
+
+

@@ -1,0 +1,24 @@
+## APIVersion: 101032 101031
+## Title:  |cFFC0CBSauhaufen|r 
+## Description: Sauhaufen Gilden Addon
+## Author: m00nyONE
+## Version: 2.0.0
+## AddOnVersion: 020000
+## DependsOn: LibAddonMenu-2.0>=31
+## OptionalDependsOn: OdySupportIcons
+## SavedVariables: SauhaufenVars
+
+Menu.lua
+Sauhaufen.lua
+Sauhaufen_scrollList.lua
+Sauhaufen_roles.lua
+Sauhaufen_gui.lua
+Sauhaufen.xml
+Sauhaufen_guildhalls.lua
+Sauhaufen_events.lua
+Sauhaufen_housing.lua
+Sauhaufen_games.lua
+
+Sauhaufen_cli.lua
+
+bindings.xml

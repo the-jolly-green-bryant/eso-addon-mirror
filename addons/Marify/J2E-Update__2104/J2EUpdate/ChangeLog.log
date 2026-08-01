@@ -1,0 +1,228 @@
+Version: 1.7.0 ---------------
+1.Update Item Datas.
+
+
+Version: 1.6.2 ---------------
+1.Bug fix
+Fixed an issue that caused an error for new users.
+
+
+Version: 1.6.1 ---------------
+1.ADD Chat link Menu.
+2.Update Item Datas.
+
+
+Version: 1.6.0 ---------------
+1.APIVersion Up 101036
+2.Update Data format.
+
+
+Version: 1.5.13 ---------------
+1.APIVersion Up 101035
+2.Update Item Datas.
+
+
+Version: 1.5.12 ---------------
+1.APIVersion Up 101034
+2.Update Item Datas.
+
+
+Version: 1.5.11 ---------------
+1.APIVersion Up 101033
+2.Update Item Datas.
+
+
+Version: 1.5.9 to 1.5.10 ---------------
+1.Bug fix
+Update cpSkill 142035. OLD="Ironclad" NEW="Fortified"
+
+
+Version: 1.5.8 ---------------
+1.Bug fix
+Fixed nil error in UpdateItemTable().
+
+
+Version: 1.5.7 ---------------
+1.Update Item Datas.
+
+
+Version: 1.5.6 ---------------
+1.APIVersion Up 101032
+2.Update Item Datas.
+
+
+Version: 1.5.5 ---------------
+1.APIVersion Up 101031
+2.Update Item Datas.
+
+
+Version: 1.5.4 ---------------
+1.APIVersion Up 100035
+
+
+Version: 1.5.3 ---------------
+1.Bug fix
+Fixed nil error in GetItemName().
+
+
+Version: 1.5.2 ---------------
+1.Bug fix
+Fixed nil error in AddCpSkillName().
+
+
+Version: 1.5.0 to 1.5.1 ---------------
+1.New DataFormat.
+
+
+Version: 1.4.0 to 1.4.4 ---------------
+1.APIVersion Up 100034
+2.Update Item Datas.
+
+
+Version: 1.3.7 ---------------
+1.Update Item Datas.
+
+
+Version: 1.3.6 ---------------
+1.APIVersion Up 100033
+2.Update Item Datas.
+
+
+Version: 1.3.5 ---------------
+1.Bug fix
+Fixed the display of the context menu.
+2.Update Item Datas.
+
+
+Version: 1.3.3 to 1.3.4 ---------------
+1.Bug fix
+Fixed an error when creating a craft.
+2.Update Item Datas.
+
+
+Version: 1.3.2 ---------------
+1.APIVersion Up 100032
+2.Update Item Datas.
+
+
+Version: 1.3.0 to 1.3.1 ---------------
+1.Add Name Constellation/ChampionSkill/Enchant/Trait
+2.Update Item Datas.
+
+
+Version: 1.2.3 ---------------
+1.APIVersion Up 100031
+2.Update Item Datas.
+
+
+Version: 1.2.1 too 1.2.2 ---------------
+1.Use LibCustomMenu.
+2.Update Item Datas.
+
+
+Version: 1.2.0 ---------------
+1.APIVersion Up 100030
+2.Update Item Datas
+3.LibMarify Outside.
+
+
+Version: 1.1.16 ---------------
+1.Bug fix
+LibMarify Update.
+
+
+Version: 1.1.13 to 1.1.15 ---------------
+1.APIVersion Up 100029
+2.Update Item Datas
+
+
+Version: 1.1.12 ---------------
+1.Bug fix
+LibMarify Update.
+
+
+Version: 1.1.11 ---------------
+1.APIVersion Up 100028
+2.Update Item Datas
+
+
+Version: 1.1.10 ---------------
+1.Bug fix
+LibMarify Update.
+
+2.Update Item Datas
+
+
+Version: 1.1.9 ---------------
+1.Added support for AwesomeGuildStore.
+
+
+Version: 1.1.8 ---------------
+1.APIVersion Up 100027
+2.Update Item Datas
+
+
+Version: 1.1.7 ---------------
+1.Update Item Datas
+
+
+Version: 1.1.6 ---------------
+1.Update Item Datas
+
+
+Version: 1.1.5 ---------------
+1.Added a delay to avoid conflicts with other add-ons.
+2.Update Item Datas
+
+
+Version: 1.1.4 ---------------
+1.Bug fix
+Debug message hidden.
+
+2.Bug fix
+Fixed a bug that some tooltips are not displayed in GamePad mode
+
+
+3.Update Item Datas
+
+
+Version: 1.1.3 ---------------
+1.APIVersion Up 100026
+
+2.Update Item Datas
+
+3.Update Skill Datas
+
+
+Version: 1.1.0 to 1.1.2 ---------------
+1.Update Item Datas
+2.Support game pad(Test)
+
+
+Version: 1.0.0 to 1.0.1 ---------------
+1.Update Item Datas
+
+
+Version: 0.9.3 ---------------
+1.Update LibStub
+
+2.Update Item Datas
+
+
+Version: 0.9.2 ---------------
+1.APIVersion Up 100025
+
+2.Add Item Datas
+
+3.Update Message
+
+
+Version: 0.9.1 ---------------
+1.Add Item Datas
+
+2.Bug fix
+
+
+Version: 0.9 ---------------
+1.Start !
+

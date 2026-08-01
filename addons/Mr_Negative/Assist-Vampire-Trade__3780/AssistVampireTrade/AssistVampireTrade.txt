@@ -1,0 +1,18 @@
+#
+## Title: |cFF0000Assist Vampire Trade|r
+## Author: |cefebbe@Mr_Negative420 (EU)|r
+## Version: 1.3.0
+## APIVersion: 101040
+## Description: |cFF0000AVT|r |cefebbemakes it easy to slot|r |t32:32:AssistVampireTrade/AVT.dds|t |cefebbeMesmerize for us in Stage 4 of Vampirism. The Addon can also revert skills if the option is set to do so! Use the command|r |cFF0000/avtset|r |cefebbefor settings.|r
+## AddOnVersion: 1
+## SavedVariables: AVTSV
+## DependsOn: LibAddonMenu-2.0 LibFeedback
+
+src\Addon.lua
+
+i18n\en.lua
+i18n\$(language).lua
+
+src\Bindings.xml
+src\Settings.lua
+src\Core.lua

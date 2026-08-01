@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Minceraft/AllianceBuddy__872",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Minceraft",
+  "canonical_id": "esoui:872",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:872",
+  "deleted": false,
+  "directories": [
+    "AllianceBuddy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl872/",
+  "fingerprint": "70c0fc72297614a87f12feecc7e05ae7a39c9709a552833c9474c8d06a7bf96f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10794.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10793.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2650.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "872",
+  "source_url": "https://www.esoui.com/downloads/info872-AllianceBuddy.html",
+  "stats": {
+    "downloads": 24868,
+    "favorites": 29,
+    "monthly_downloads": 27
+  },
+  "title": "AllianceBuddy",
+  "updated_at": 1683979387000,
+  "version": "3.2"
+}

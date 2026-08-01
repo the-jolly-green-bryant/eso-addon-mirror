@@ -1,0 +1,175 @@
+<!--
+      UI layout file based on MM's layout file. Please see MM_license.
+-->
+<GuiXml>
+  <Controls>
+    <!-- Listings Main Window -->
+    <TopLevelControl movable="true" mouseEnabled="true" name="DTDonorWindow" hidden="true">
+      <Dimensions x="1200" y="692" />
+      <OnMoveStop>
+        DT.UI.OnWindowMoveStop(self)
+      </OnMoveStop>
+      <OnShow>
+        SetGameCameraUIMode(true)
+      </OnShow>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+        <Texture name="$(parent)SearchIcon" textureFile="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds" inheritAlpha="true">
+          <Dimensions x="40" y="40" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="3" />
+          <TextureCoords left="0" right="1" top="0" bottom="1" />
+        </Texture>
+        <Backdrop name="$(parent)SearchBG" inherits="ZO_EditBackdrop">
+          <Anchor point="LEFT" relativeTo="$(parent)SearchIcon" relativePoint="RIGHT" offsetX="2" offsetY="-2" />
+          <Dimensions x="175" />
+          <Controls>
+            <EditBox name="$(grandparent)Search" inherits="ZO_DefaultEditForBackdrop">
+              <OnTextChanged>
+                DT.UI.DonorScrollList:RefreshFilters()
+              </OnTextChanged>
+            </EditBox>
+          </Controls>
+        </Backdrop>
+        <!-- Menu buttons -->
+        <Button name="$(parent)ItemViewButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+	      <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-340" offsetY="-5" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/mainmenu/menubar_inventory_up.dds" mouseOver="/esoui/art/mainmenu/menubar_inventory_over.dds" pressed="/esoui/art/mainmenu/menubar_inventory_down.dds"/>
+          <OnClicked>
+            DT.UI.SwitchToView(DTItemWindow)
+          </OnClicked>
+        </Button>
+        <!-- End Menu buttons -->
+        <Label name="$(parent)Title" height="25" inheritAlpha="true" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Item Records">
+	        <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-10" offsetY="5" />
+        </Label>
+        <Button name="$(parent)CloseButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+          <OnClicked>
+            DTDonorWindow:SetHidden(true)
+          </OnClicked>
+        </Button>
+        <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/centerscreen_topDivider.dds">
+          <Dimensions x="900" y="4" />
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-10" offsetY="47" />
+        </Texture>
+        <!-- Headers -->
+        <Control name="$(parent)Headers">
+            <Dimensions x="1200" y="32" />
+            <Anchor relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="51"/>
+            <Controls>       
+                <Control name="$(parent)Account" inherits="ZO_SortHeader">
+                    <Dimensions x="140" y="26" />
+                    <Anchor point="TOPLEFT" offsetX="5" offsetY="5" />
+                </Control>
+                <Control name="$(parent)MailCash" inherits="ZO_SortHeader">
+                    <Dimensions x="85" y="26" />
+                    <Anchor point="TOPLEFT" offsetX="140" offsetY="5" />
+                </Control>
+                <Control name="$(parent)MailItemsValue" inherits="ZO_SortHeader">
+                    <Dimensions x="85" y="26" />
+                    <Anchor point="TOPLEFT" offsetX="225" offsetY="5" />
+                </Control>
+                <Control name="$(parent)GBCash" inherits="ZO_SortHeader">
+                    <Dimensions x="85" y="26" />
+                    <Anchor point="TOPLEFT" offsetX="310" offsetY="5" />
+                </Control>
+                <Control name="$(parent)GBItemsValue" inherits="ZO_SortHeader">
+                    <Dimensions x="85" y="26" />
+                    <Anchor point="TOPLEFT" offsetX="395" offsetY="5" />
+                </Control>
+                <Control name="$(parent)CustomCash" inherits="ZO_SortHeader">
+                    <Dimensions x="85" y="26" />
+                    <Anchor point="TOPLEFT" offsetX="480" offsetY="5" />
+                </Control>
+                <Control name="$(parent)Vouchers" inherits="ZO_SortHeader">
+                    <Dimensions x="95" y="26" />
+                    <Anchor point="TOPLEFT" offsetX="565" offsetY="5" />
+                </Control>
+                <Control name="$(parent)ItemCategories" inherits="ZO_SortHeader">
+                    <Dimensions x="300" y="26" />
+                    <Anchor point="TOPLEFT" offsetX="630" offsetY="5" />
+                </Control>
+                <Control name="$(parent)Total" inherits="ZO_SortHeader">
+                    <Dimensions x="85" y="26" />
+                    <Anchor point="TOPLEFT" offsetX="930" offsetY="5" />
+                </Control>
+                <Control name="$(parent)TotalPercent" inherits="ZO_SortHeader">
+                    <Dimensions x="65" y="26" />
+                    <Anchor point="TOPLEFT" offsetX="1015" offsetY="5" />
+                </Control>
+            </Controls>
+        </Control>
+        <!-- End Headers -->
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="1" />
+          <Anchor point="BOTTOMRIGHT" offsetY="-3" offsetX="-3" />
+        </Control>
+      </Controls>
+    </TopLevelControl>
+
+    <Control name="DTDonorDataRow" horizontalAlignment="LEFT" verticalAlignment="CENTER" virtual="true">
+      <Dimensions x="1200" y="32" />
+      <Anchor point="TOPLEFT" offsetX="25" offsetY="0" />
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        <Label name="$(parent)Account" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Dimensions x="140" y="26" />
+          <Anchor point="TOPLEFT" offsetX="5" offsetY="5" />
+        </Label>
+        <Label name="$(parent)MailCash" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Dimensions x="85" y="26" />
+          <Anchor point="TOPLEFT" offsetX="140" offsetY="5" />
+        </Label>
+        <Label name="$(parent)MailItemsValue" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Dimensions x="85" y="26" />
+          <Anchor point="TOPLEFT" offsetX="225" offsetY="5" />
+        </Label>
+        <Label name="$(parent)GBCash" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Dimensions x="85" y="26" />
+          <Anchor point="TOPLEFT" offsetX="310" offsetY="5" />
+        </Label>
+        <Label name="$(parent)GBItemsValue" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Dimensions x="85" y="26" />
+          <Anchor point="TOPLEFT" offsetX="395" offsetY="5" />
+        </Label>
+        <Label name="$(parent)CustomCash" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Dimensions x="85" y="26" />
+          <Anchor point="TOPLEFT" offsetX="480" offsetY="5" />
+        </Label>
+        <Label name="$(parent)Vouchers" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Dimensions x="65" y="26" />
+          <Anchor point="TOPLEFT" offsetX="565" offsetY="5" />
+        </Label>
+        <Label name="$(parent)ItemCategories" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER" wrapMode="ELLIPSIS">
+          <Dimensions x="300" y="26" />
+          <Anchor point="TOPLEFT" offsetX="630" offsetY="5" />
+        </Label>
+        <Label name="$(parent)Total" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Dimensions x="85" y="26" />
+          <Anchor point="TOPLEFT" offsetX="930" offsetY="5" />
+        </Label>
+        <Label name="$(parent)TotalPercent" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Dimensions x="65" y="26" />
+          <Anchor point="TOPLEFT" offsetX="1015" offsetY="5" />
+        </Label>
+        <Button name="$(parent)EditButton" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+            <Anchor point="LEFT" offsetX="1080" offsetY="5" />
+            <Dimensions x="40" y="40" />
+            <Textures normal="/esoui/art/contacts/social_note_up.dds" mouseOver="/esoui/art/contacts/social_note_over.dds" pressed="/esoui/art/contacts/social_note_down.dds" />
+            <!-- OnClick handled dynamically -->>
+        </Button>
+        <Button name="$(parent)CustomGoldButton" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+            <Anchor point="LEFT" offsetX="1115" offsetY="5" />
+            <Dimensions x="40" y="40" />
+            <Textures normal="/esoui/art/bank/bank_tabicon_gold_up.dds" mouseOver="/esoui/art/bank/bank_tabicon_gold_over.dds" pressed="/esoui/art/bank/bank_tabicon_gold_down.dds" />
+            <!-- OnClick handled dynamically -->>
+        </Button>
+      </Controls>
+    </Control>
+
+    
+  </Controls>
+</GuiXml>

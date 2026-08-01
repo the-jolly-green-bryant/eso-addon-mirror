@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Kelinmiriel/Event-Tracker__2504",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kelinmiriel",
+  "canonical_id": "esoui:2504",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:2504",
+  "deleted": false,
+  "directories": [
+    "EventTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2504/",
+  "fingerprint": "bf0c63bf7ad38f1e29a94b0f3985946c96c6090239d88802687cc5e13441f716",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9098.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9099.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8583.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8584.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8586.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8585.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2504",
+  "source_url": "https://www.esoui.com/downloads/info2504-EventTracker.html",
+  "stats": {
+    "downloads": 252370,
+    "favorites": 127,
+    "monthly_downloads": 893
+  },
+  "title": "Event Tracker",
+  "updated_at": 1782359595000,
+  "version": "2.420"
+}

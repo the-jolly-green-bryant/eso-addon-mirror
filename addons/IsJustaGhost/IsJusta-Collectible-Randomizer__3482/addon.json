@@ -1,0 +1,66 @@
+{
+  "archive_path": "addons/IsJustaGhost/IsJusta-Collectible-Randomizer__3482",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IsJustaGhost",
+  "canonical_id": "esoui:3482",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3482",
+  "deleted": false,
+  "directories": [
+    "IsJustaCollectibleRandomizer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3482/",
+  "fingerprint": "eb79a973300f86815722bd908ac00dfbaf871ca933edbe404e68c33d7b5c3b3f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12444.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12445.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3482",
+  "source_url": "https://www.esoui.com/downloads/info3482-IsJustaCollectibleRandomizer.html",
+  "stats": {
+    "downloads": 3550,
+    "favorites": 2,
+    "monthly_downloads": 12
+  },
+  "title": "IsJusta Collectible Randomizer",
+  "updated_at": 1728175020000,
+  "version": "2.1.4"
+}

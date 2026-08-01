@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/mccalli/Advanced-Filters---Style-Pages__3786",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mccalli",
+  "canonical_id": "esoui:3786",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3786",
+  "deleted": false,
+  "directories": [
+    "AF_StylePageFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3786/",
+  "fingerprint": "331a26f15d83c09324f3e8a0687dc3915e3e37aff7d5043720c7f26427925015",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12853.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3786",
+  "source_url": "https://www.esoui.com/downloads/info3786-AdvancedFilters-StylePages.html",
+  "stats": {
+    "downloads": 3334,
+    "favorites": 9,
+    "monthly_downloads": 36
+  },
+  "title": "Advanced Filters - Style Pages",
+  "updated_at": 1718033125000,
+  "version": "1.0.3"
+}

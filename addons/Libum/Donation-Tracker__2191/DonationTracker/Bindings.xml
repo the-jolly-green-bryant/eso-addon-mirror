@@ -1,0 +1,20 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">
+        <Category name="Donation Tracker">
+          <Action name="DT_TRACK">
+                <Down>DT.UI.OnPressIgnore(true)</Down>
+                <Up>DT.UI.OnPressIgnore(false)</Up>
+           </Action>
+          <Action name="DT_ACCEPT">
+                <Up>DT.UI.OnPressAccept()</Up>
+           </Action>
+        </Category>
+    </Layer>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="Donation Tracker">
+            <Action name="DT_TOGGLE">
+                <Down>DT.UI.ToggleWindow()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

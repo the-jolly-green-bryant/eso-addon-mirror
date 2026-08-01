@@ -1,0 +1,18 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ChatInputViewerControl">
+			<Dimensions x="1000" y="125"/>
+			<Anchor point="TOPLEFT" relativeTo="ZO_ChatWindow" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+			<Anchor point="TOPRIGHT" relativeTo="ZO_ChatWindow" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+			<Controls>
+				<Label name="$(parent)_Label" font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="0"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="0"/>
+				</Label>
+				<Backdrop name="$(parent)_BG" alpha="1" inherits="ZO_EditBackdrop" centerColor="050505" edgeColor="050505">
+					<AnchorFill/>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

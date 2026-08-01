@@ -1,0 +1,13 @@
+## Title: Bloodsight
+## Description: Hides overhead ally healthbars until a group member drops below a configurable threshold. An arrow on your screen rotates to point at the wounded ally.
+## Author: @R1K3R
+## Version: 1.2.1
+## APIVersion: 101049 101050
+## AddOnVersion: 121
+## SavedVariables: BloodsightSV
+## OptionalDependsOn: LibAddonMenu-2.0
+
+Simple.dds
+Bloody.dds
+Ornate.dds
+Bloodsight.lua

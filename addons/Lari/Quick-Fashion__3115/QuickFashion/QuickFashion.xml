@@ -1,0 +1,648 @@
+<GuiXml>
+  <Controls>
+
+    <!-- QUICK FASHION HEADING PANEL -->
+    <TopLevelControl name="QF_Panel" mouseEnabled="true" movable="true" clampedToScreen="true" layer="2" level="1" hidden="true">
+      <Dimensions x="365" y="600" />
+      <Anchor point="CENTER" offsetX="-150" offsetY="-100"/>
+
+      <OnMoveStop>
+        QFashion_On_Move_Stop()
+      </OnMoveStop>
+
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+        <!-- TITLE -->
+        <Label name="$(parent)WindowTitle" font="ZoFontAnnounceMedium" text="|c7B68EEQuick|r |c9F00FFFashion|r">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" verticalAlignment="TOP" horizontalAlignment="CENTER" />
+        </Label>
+
+        <!-- HORIZONTAL DIVIDER -->
+        <Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="480" y="4" />
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="38" />
+        </Texture>
+
+        <!-- TOGGLE FAV_PANEL BUTTON -->
+        <Button name="$(parent)ToggleFavPanel">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+          <Dimensions x="35" y="35" />
+          <Textures normal="esoui\art\treeicons\achievements_indexicon_general_up.dds"
+                    pressed="esoui\art\treeicons\achievements_indexicon_general_down.dds"
+                    mouseOver="esoui\art\treeicons\achievements_indexicon_general_over.dds" />
+        </Button>
+
+        <!-- CLOSE BUTTON -->
+        <Button name="$(parent)CloseButton" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="30" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" />
+          <Textures normal="esoui\art\buttons\closebutton_up.dds"
+                    pressed="esoui\art\buttons\closebutton_down.dds"
+                    mouseOver="esoui\art\buttons\closebutton_mouseover.dds" />
+        </Button>
+
+        <!-- LOAD ALL ACTIVE COLLECTIBLES BUTTON -->
+        <Button name="$(parent)LoadAll" inherits="ZO_DefaultButton" text="Load Active">
+          <Dimensions x="130" y="30" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="58" />
+        </Button>
+
+        <!-- CLEAR ALL SLOTS BUTTON -->
+        <Button name="$(parent)ClearAll" inherits="ZO_DefaultButton" text="Clear">
+          <Dimensions x="80" y="30" />
+          <Anchor point="LEFT" relativeTo="$(parent)LoadAll" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+        </Button>
+
+        <!-- TOGGLE HELMET -->
+        <Button name="$(parent)ToggleHelm">
+          <Dimensions x="35" y="35" />
+          <Anchor point="LEFT" relativeTo="$(parent)ClearAll" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+          <Textures normal="esoui\art\progression\progression_indexicon_armor_up.dds"
+                    pressed="esoui\art\progression\progression_indexicon_armor_down.dds"
+                    mouseOver="esoui\art\progression\progression_indexicon_armor_over.dds" />
+        </Button>
+
+        <!-- UNEQUIP WEAPONS -->
+        <!-- Button name="$(parent)UnequipWeapons">
+          <Dimensions x="35" y="35" />
+          <Anchor point="LEFT" relativeTo="$(parent)ToggleHelm" relativePoint="RIGHT" offsetX="-5" offsetY="0" />
+          <Textures normal="esoui\art\inventory\inventory_tabicon_weapons_up.dds"
+                    pressed="esoui\art\inventory\inventory_tabicon_weapons_down.dds"
+                    mouseOver="esoui\art\inventory\inventory_tabicon_weapons_over.dds" />
+        </Button-->
+
+        <!-- RANDOMIZE -->
+        <Button name="QF_Randomize">
+          <Anchor point="LEFT" relativeTo="$(parent)ToggleHelm" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+          <Dimensions x="35" y="35" />
+          <MouseButton button="2" enabled="true"/>
+          <Textures normal="esoui\art\charactercreate\charactercreate_bodyicon_up.dds"
+                    pressed="esoui\art\charactercreate\charactercreate_bodyicon_down.dds"
+                    mouseOver="esoui\art\charactercreate\charactercreate_bodyicon_over.dds" />
+        </Button>
+
+        <!-- PARENT CONTROL FOR SLOTTED COLLECTIBLES -->
+        <Control name="$(parent)Current">
+          <Dimensions x="280" y="350" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="113" />
+          <Controls>
+
+            <!-- CHARACTER SILHOUETTE -->
+            <Button name="QF_Silhouette">
+              <Dimensions x="50" y="200" />
+              <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="130" offsetY="165" />
+              <Textures normal="esoui\art\characterwindow\silhouette_human_female.dds" />
+            </Button>
+
+          </Controls>
+        </Control>
+
+        <!-- PARENT CONTROL FOR CUSTOMIZED ACTIONS -->
+        <Control name="$(parent)Actions">
+          <Dimensions x="70" y="350" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Current" relativePoint="TOPRIGHT" offsetX="5" offsetY="0" />
+        </Control>
+
+        <!-- PARENT CONTROL FOR PROFILES -->
+        <Control name="$(parent)Profiles">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Current" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+          <Dimensions x="345" y="200" />
+
+          <Controls>
+
+            <!-- HORIZONTAL DIVIDER ABOVE PROFILES -->
+            <Texture name="$(parent)BottomDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds">
+              <Dimensions x="480" y="4" />
+              <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-5" offsetY="-16" />
+            </Texture>
+
+            <!-- AUTOOUTFITTER BUTTON -->
+            <Button name="QF_AutoOutfitter_Button">
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="-5" />
+              <Dimensions x="35" y="35" />
+              <Textures normal="esoui\art\collections\collections_tabicon_outfitstyles_up.dds"
+                        pressed="esoui\art\collections\collections_tabicon_outfitstyles_down.dds"
+                        mouseOver="esoui\art\collections\collections_tabicon_outfitstyles_over.dds" />
+            </Button>
+
+            <!-- HEADER -->
+            <Label name="$(parent)Title" font="ZoFontWinH3" text="Profiles">
+              <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-10" offsetY="0" />
+            </Label>
+
+            <!-- PROFILE MANAGEMENT -->
+            <Button name="QF_Equip" inherits="ZO_DefaultButton" text="Equip">
+              <Dimensions x="80" y="30" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-18" offsetY="80" />
+            </Button>
+
+            <Button name="QF_New" inherits="ZO_DefaultButton" text="New">
+              <Dimensions x="80" y="30" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="50" offsetY="80" />
+            </Button>
+
+            <Button name="QF_Save" inherits="ZO_DefaultButton" text="Save">
+              <Dimensions x="80" y="30" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="118" offsetY="80" />
+            </Button>
+
+            <Button name="QF_Cancel" inherits="ZO_DefaultButton" text="Cancel" hidden="true">
+              <Dimensions x="90" y="30" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="185" offsetY="80" />
+            </Button>
+
+            <Button name="QF_Delete" inherits="ZO_DefaultButton" text="Delete">
+              <Dimensions x="90" y="30" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="185" offsetY="80" />
+            </Button>
+
+            <Button name="QF_Share" inherits="ZO_DefaultButton" text="Share">
+              <Dimensions x="80" y="30" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="265" offsetY="80" />
+            </Button>
+
+            <EditBox name="QF_NewProfileEditBox" inherits="ZO_DefaultEditForBackdrop" maxInputCharacters="25" hidden="true" defaultText="Enter profile name">
+              <Dimensions x="272" y="30" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-5" offsetY="40" />
+              <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_SingleLineEditBackdrop_Keyboard" maxHeight="30">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-2" offsetY="-2"/>
+        					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="-2"/>
+        					<OnInitialized>
+                    self:SetHeight(30)
+                  </OnInitialized>
+                </Backdrop>
+              </Controls>
+            </EditBox>
+          </Controls>
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!-- QUICK FAVOURITES -->
+    <TopLevelControl name="Fav_Panel" mouseEnabled="true" movable="true" clampedToScreen="true" layer="2" level="0" hidden="true" resizeHandleSize="10">
+      <DimensionConstraints minX="305" minY="320" maxX="585" maxY="600" />
+      <Anchor point="TOPLEFT" relativeTo="QF_Panel" relativePoint="TOPRIGHT" offsetX="14" />
+
+      <OnMoveStop>
+        QFavs_On_Move_Stop()
+      </OnMoveStop>
+
+      <OnResizeStop>
+        QF_Favs_On_Resize_Stop()
+      </OnResizeStop>
+
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+        <!-- TITLE -->
+        <Label name="$(parent)WindowTitle" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" text="|c7B68EEQuick|r |c9F00FFFavourites|r">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" verticalAlignment="TOP" horizontalAlignment="CENTER" offsetX="-35" offsetY="0"/>
+        </Label>
+
+        <!-- HORIZONTAL DIVIDER -->
+        <Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="420" y="4" />
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="38" />
+        </Texture>
+
+        <!-- TOGGLE QF_PANEL BUTTON -->
+        <Button name="$(parent)ToggleQFPanel">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+          <Dimensions x="35" y="35" />
+          <Textures normal="esoui\art\inventory\inventory_tabicon_craftbag_stylematerial_up.dds"
+                    pressed="esoui\art\inventory\inventory_tabicon_craftbag_stylematerial_down.dds"
+                    mouseOver="esoui\art\inventory\inventory_tabicon_craftbag_stylematerial_over.dds" />
+        </Button>
+
+        <!-- SHOW ALL COLLECTIBLES BUTTON -->
+        <Button name="$(parent)ShowAll">
+          <Anchor point="LEFT" relativeTo="$(parent)WindowTitle" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+          <Dimensions x="30" y="30" />
+          <Textures normal="esoui\art\collections\collections_tabicon_collectibles_up.dds"
+                    pressed="esoui\art\collections\collections_tabicon_collectibles_down.dds"
+                    mouseOver="esoui\art\collections\collections_tabicon_collectibles_over.dds" />
+        </Button>
+
+        <!-- SHOW FAVOURITES BUTTON -->
+        <Button name="$(parent)ShowFavs">
+          <Anchor point="LEFT" relativeTo="$(parent)ShowAll" relativePoint="RIGHT" offsetX="-5" offsetY="0" />
+          <Dimensions x="30" y="30" />
+          <Textures normal="esoui\art\treeicons\achievements_indexicon_general_up.dds"
+                    pressed="esoui\art\treeicons\achievements_indexicon_general_down.dds"
+                    mouseOver="esoui\art\treeicons\achievements_indexicon_general_over.dds" />
+        </Button>
+
+        <!-- SHOW RECENT COLLECTIBLES BUTTON -->
+        <Button name="$(parent)ShowRecent">
+          <Anchor point="LEFT" relativeTo="$(parent)ShowFavs" relativePoint="RIGHT" offsetX="-5" offsetY="0" />
+          <Dimensions x="30" y="30" />
+          <Textures normal="esoui\art\inventory\inventory_tabicon_appearance_up.dds"
+                    pressed="esoui\art\inventory\inventory_tabicon_appearance_down.dds"
+                    mouseOver="esoui\art\inventory\inventory_tabicon_appearance_over.dds" />
+        </Button>
+
+        <!-- CLOSE BUTTON -->
+        <Button name="$(parent)CloseButton" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="30" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" />
+          <Textures normal="esoui\art\buttons\closebutton_up.dds"
+                    pressed="esoui\art\buttons\closebutton_down.dds"
+                    mouseOver="esoui\art\buttons\closebutton_mouseover.dds" />
+        </Button>
+
+        <!-- FAVOURITES LIST -->
+        <Control name="$(parent)Container" inherits="ZO_ScrollContainer">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="105" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-5" />
+          <DimensionConstraints minX="300" minY="210" maxX="600" maxY="490" />
+          <OnInitialized>
+            ZO_Scroll_Initialize(self)
+          </OnInitialized>
+        </Control>
+
+        <!-- EMPTY CONTROL FOR "INIT ALL COLLECTIBLES" BUTTON -->
+        <Control name="$(parent)Empty" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="105" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-5" />
+          <DimensionConstraints minX="300" minY="210" maxX="600" maxY="490" />
+          <Controls>
+            <Button name="QF_InitAllIcons" inherits="ZO_DefaultButton" text="Show All Collectibles">
+              <Dimensions x="250" y="30" />
+              <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-10" offsetY="15" />
+            </Button>
+            <Label name="$(parent)Label" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" color="7B7B7B" text="Click the button above to display all owned collectibles.">
+              <DimensionConstraints minX="50" minY="30" maxX="0" maxY="0" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="65"/>
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="65"/>
+            </Label>
+          </Controls>
+        </Control>
+
+        <!-- COLLECTIBLE FILTERS -->
+        <Control name="QF_Filter_Icons" hidden="false">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="5" offsetY="48" />
+          <Dimensions x="300" y="45" />
+
+          <Controls>
+            <Button name="QF_Filter_All" inherits="ZO_ButtonBehaviorClickSound" alpha="0.4">
+              <Dimensions x="35" y="35" />
+              <Anchor point="TOPLEFT" relativeTo="QF_Filter_Icons" relativePoint="TOPLEFT" offsetX="5" offsetY="10"/>
+              <Textures normal="esoui\art\inventory\gamepad\gp_inventory_icon_craftbag_all.dds" />
+            </Button>
+          </Controls>
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!-- RANDOMIZE SETTINGS PANEL -->
+    <TopLevelControl name="QF_RandomizeSettings" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="290" y="295"/>
+      <Anchor point="TOPRIGHT" relativeTo="QF_Panel" relativePoint="TOPLEFT" offsetX="-15" offsetY="0" />
+
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+        <!-- TITLE -->
+        <Label name="$(parent)Title" font="ZoFontHeader" text="Randomize! Settings">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" verticalAlignment="TOP" horizontalAlignment="CENTER" offsetY="2" />
+        </Label>
+
+        <!-- DIVIDER -->
+        <Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="350" y="4" />
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="34" />
+        </Texture>
+
+        <!-- CLOSE BUTTON -->
+        <Button name="$(parent)CloseButton" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="30" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" />
+          <Textures normal="esoui\art\buttons\closebutton_up.dds"
+                    pressed="esoui\art\buttons\closebutton_down.dds"
+                    mouseOver="esoui\art\buttons\closebutton_mouseover.dds" />
+        </Button>
+
+        <!-- DROPDOWN LABEL -->
+        <Label name="$(parent)DropdownLabel" font="$(MEDIUM_FONT)|$(KB_17)|soft-shadow-thin" color="C5C29E" text="Choose from:">
+          <DimensionConstraints minX="0" minY="20" maxX="270" maxY="0" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="9" offsetY="50" />
+        </Label>
+
+        <!-- DESCRIPTION -->
+        <Label name="$(parent)Caption" font="$(MEDIUM_FONT)|$(KB_17)|soft-shadow-thin" color="C5C29E">
+          <DimensionConstraints minX="270" minY="20" maxX="270" maxY="0" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="9" offsetY="85" />
+        </Label>
+
+        <!-- CONTAINER FOR COLLECTIBLE OPTIONS -->
+        <Control name="$(parent)Container">
+          <Dimensions x="270" y="170" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Caption" relativePoint="BOTTOMLEFT" offsetX="16" offsetY="5" />
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!-- AUTO OUTFITTER -->
+    <TopLevelControl name="QF_AutoOutfitter" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="609" y="300"/>
+      <Anchor point="TOPLEFT" relativeTo="QF_Panel" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="15" />
+
+      <OnMoveStop>
+        QF_AO_On_Move_Stop()
+      </OnMoveStop>
+
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+        <!-- INFO BUTTON (FLOATING TOOLTIP) -->
+        <Button name="$(parent)InfoButton">
+          <Dimensions x="35" y="35" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" />
+          <Textures normal="esoui\art\help\help_tabicon_tutorial_up.dds"
+                    mouseOver="esoui\art\help\help_tabicon_tutorial_down.dds" />
+        </Button>
+
+        <!-- TITLE -->
+        <Label name="$(parent)Title" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick" text="|c7B68EEQuick|r |c9F00FFProfiles:|r">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" verticalAlignment="TOP" horizontalAlignment="CENTER" offsetX="-50" offsetY="3" />
+        </Label>
+
+        <!-- FILTER (ZONES/HOUSES) -->
+        <Label name="$(parent)Filter" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thick" text="ZONES">
+          <Anchor point="LEFT" relativeTo="$(parent)Title" relativePoint="RIGHT" offsetX="6" offsetY="1" />
+        </Label>
+
+        <!-- ZONES BUTTON -->
+        <Button name="$(parent)ZonesButton" inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="LEFT" relativeTo="$(parent)Title" relativePoint="RIGHT" offsetX="80" offsetY="-1" />
+          <Dimensions x="35" y="35" />
+          <Textures normal="esoui\art\icons\achievements_indexicon_exploration_up.dds"
+                    pressed="esoui\art\icons\achievements_indexicon_exploration_down.dds"
+                    mouseOver="esoui\art\icons\achievements_indexicon_exploration_over.dds" />
+        </Button>
+
+        <!-- HOUSES BUTTON -->
+        <Button name="$(parent)HousesButton" inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="LEFT" relativeTo="$(parent)ZonesButton" relativePoint="RIGHT" offsetX="-5" offsetY="0" />
+          <Dimensions x="35" y="35" />
+          <Textures normal="esoui\art\treeicons\collection_indexicon_housing_up.dds"
+                    pressed="esoui\art\treeicons\collection_indexicon_housing_down.dds"
+                    mouseOver="esoui\art\treeicons\collection_indexicon_housing_over.dds" />
+        </Button>
+
+        <!-- DIVIDER -->
+        <Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="850" y="4" />
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="38" />
+        </Texture>
+
+        <!-- CLOSE BUTTON -->
+        <Button name="$(parent)CloseButton" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="30" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" />
+          <Textures normal="esoui\art\buttons\closebutton_up.dds"
+                    pressed="esoui\art\buttons\closebutton_down.dds"
+                    mouseOver="esoui\art\buttons\closebutton_mouseover.dds" />
+        </Button>
+
+        <!-- Container for Zone Categories -->
+        <Control name="QF_AO_Zones_Container">
+          <Dimensions x="609" y="300"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Controls>
+            <Control name="QF_AO_Categories" inherits="ZO_ScrollContainer">
+              <Dimensions x="295" y="200" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="100" />
+              <OnInitialized>
+                ZO_Scroll_Initialize(self)
+              </OnInitialized>
+            </Control>
+
+            <!-- Texture name="$(parent)VerticalDivider" textureFile="/esoui/art/interaction/conversation_verticalborder.dds">
+              <Dimensions x="4" y="200" />
+              <Anchor point="TOPLEFT" relativeTo="QF_AO_Categories" relativePoint="TOPRIGHT" offsetX="-15" />
+            </Texture -->
+
+            <!-- Container for Overland Zones -->
+            <Control name="QF_AO_Zones" inherits="ZO_ScrollContainer">
+              <Dimensions x="295" y ="200" />
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="100" />
+              <OnInitialized>
+                ZO_Scroll_Initialize(self)
+              </OnInitialized>
+            </Control>
+
+            <Control name="QF_AO_ZoneSettingTopBar">
+              <Dimensions x="600" y="30" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="52" />
+              <Controls>
+                <Label name="$(parent)Header" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thick" text="Select profile:">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="2" />
+                </Label>
+              </Controls>
+            </Control>
+          </Controls>
+        </Control>
+
+        <!-- Container for houses -->
+        <Control name="QF_AO_Houses_Container">
+          <Dimensions x="609" y="300"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Controls>
+            <Control name="QF_AO_Houses" inherits="ZO_ScrollContainer">
+              <Dimensions x="600" y="200" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="100" />
+              <OnInitialized>
+                ZO_Scroll_Initialize(self)
+              </OnInitialized>
+            </Control>
+
+            <Control name="QF_AO_HouseSettingTopBar">
+              <Dimensions x="600" y="30" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="52" />
+              <Controls>
+                <EditBox name="QF_AO_HouseEditBox_UserId" inherits="ZO_DefaultEditForBackdrop" hidden="false" defaultText="Enter User ID">
+                  <Dimensions x="200" y="30" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="2" />
+                  <Controls>
+                    <Backdrop name="$(parent)BG" inherits="ZO_SingleLineEditBackdrop_Keyboard" maxHeight="30">
+                      <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-2" offsetY="-2"/>
+                      <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="-2"/>
+                      <OnInitialized>
+                        self:SetHeight(28)
+                      </OnInitialized>
+                    </Backdrop>
+                  </Controls>
+                </EditBox>
+
+                <Button name="QF_AO_HouseSaveButton" inherits="ZO_ButtonBehaviorClickSound">
+                  <Dimensions x="35" y="35" />
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="-7" />
+                  <Textures normal="esoui\art\buttons\edit_save_up.dds"
+                            pressed="esoui\art\buttons\edit_save_down.dds"
+                            mouseOver="esoui\art\buttons\edit_save_over.dds" />
+                </Button>
+              </Controls>
+            </Control>
+          </Controls>
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!-- VIRTUALS -->
+
+    <!-- COLLECTIBLE ICON TEMPLATE -->
+    <Control name="QF_CollectibleIconTemplate" virtual="true" tier="HIGH">
+      <Dimensions x="50" y="50" />
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+        <Texture name="$(parent)Highlight" textureFile="esoui\art\restyle\keyboard\outfitslot_selectedbackground.dds" hidden="true" >
+          <Dimensions x="63" y="63" />
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-1" offsetY="-1" />
+        </Texture>
+        <Button name="$(parent)Button">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+          <Dimensions x="50" y="50" />
+          <MouseButton button="2" enabled="true"/>
+        </Button>
+        <Texture name="$(parent)Check" textureFile="esoui/art/cadwell/check.dds" color="00FF00" hidden="true">
+          <Dimensions x="15" y="15" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-5" offsetY="-4" />
+        </Texture>
+        <Texture name="$(parent)Star" textureFile="esoui/art/tutorial/ava_rankicon_general.dds" color="FEFF9A">
+          <Dimensions x="20" y="20" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="6" offsetY="-7" />
+        </Texture>
+      </Controls>
+    </Control>
+
+    <!-- FAVOURITES CATEGORY CONTAINER TEMPLATE for FAVICONS -->
+    <Control name="QF_FavContainerTemplate" resizeToFitDescendents="true" virtual="true">
+      <Controls>
+        <Label name="$(parent)Title" font="$(STONE_TABLET_FONT)|16|soft-shadow-thick">
+          <DimensionConstraints minX="50" minY="30" maxX="200" maxY="30" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="25"/>
+        </Label>
+        <Control name="$(parent)Grid" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="25" />
+        </Control>
+        <Texture name="$(parent)Bullet" textureFile="/esoui/art/buttons/leftarrow_up.dds">
+          <Dimensions x="20" y="20" />
+          <Anchor point="RIGHT" relativeTo="$(parent)Title" relativePoint="LEFT" offsetX="-3" offsetY="-3"/>
+        </Texture>
+        <Texture name="$(parent)Divider" textureFile="/esoui/art/quest/questjournal_divider.dds">
+          <Dimensions x="550" y="3" />
+          <Anchor point="LEFT" relativeTo="$(parent)Title" relativePoint="RIGHT" offsetX="8" offsetY="-3"/>
+        </Texture>
+        <Label name="$(parent)Empty" font="ZoFontGameMedium" color="7B7B7B" text="No collectibles to show." hidden="true">
+          <DimensionConstraints minX="50" minY="30" maxX="0" maxY="30" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="-20" offsetY="10"/>
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- FILTER ICON TEMPLATE -->
+    <Button name="QF_FilterIconTemplate" inherits="ZO_ButtonBehaviorClickSound" virtual="true">
+      <Dimensions x="25" y="25" />
+    </Button>
+
+    <!-- RANDOMIZE SETTINGS CHECKBOX TEMPLATE -->
+    <Control name="QF_CheckboxTemplate" virtual="true">
+      <Controls>
+        <Button name="$(parent)Checkbox" inherits="ZO_CheckButton">
+          <Dimensions x="16" y="16"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="2" />
+          <OnInitialized>
+            ZO_CheckButton_SetToggleFunction(self, QF.OnRandomizeSettingClicked)
+          </OnInitialized>
+        </Button>
+        <Label name="$(parent)Label" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" text="Setting" wrapMode="ELLIPSIS">
+          <Dimensions x="150" y="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" />
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- DROPDOWN TEMPLATE -->
+    <Control name="QF_DropdownTemplate" inherits="ZO_ScrollableComboBox" virtual="true">
+      <OnInitialized>
+        ZO_ScrollableComboBox:New(self)
+      </OnInitialized>
+    </Control>
+
+    <!-- AUTO OUTFITTER ZONE PROFILES TEMPLATE -->
+    <Control name="QF_AO_ZoneTemplate" virtual="true" resizeToFitDescendents="true">
+      <DimensionConstraints minX="150" minY="20" maxX="0" maxY="0" />
+      <Controls>
+        <Texture name="$(parent)BG" textureFile="/esoui/art/restyle/keyboard/outfitslot_hoverbackground.dds" hidden="true">
+          <DimensionConstraints minX="150" minY="20" maxX="0" maxY="0" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+        </Texture>
+        <Label name="$(parent)Name" font="$(MEDIUM_FONT)|$(KB_18)|soft-shadow-thin" wrapMode="ELLIPSIS" color="C5C29E" mouseEnabled="true">
+          <Dimensions x="145" y="25" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        <Label name="$(parent)Profile" font="$(MEDIUM_FONT)|$(KB_18)|soft-shadow-thin" wrapMode="ELLIPSIS" mouseEnabled="true">
+          <Dimensions x="100" y="25" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="5" />
+        </Label>
+        <Button name="$(parent)Edit" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="25" y="25" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Profile" relativePoint="TOPRIGHT" />
+          <MouseButton button="2" enabled="true"/>
+          <Textures normal="esoui\art\buttons\edit_save_up.dds"
+                    pressed="esoui\art\buttons\edit_save_down.dds"
+                    mouseOver="esoui\art\buttons\edit_save_over.dds" />
+        </Button>
+      </Controls>
+    </Control>
+
+    <!-- AUTO OUTFITTER HOUSE PROFILES TEMPLATE -->
+    <Control name="QF_AO_HouseTemplate" resizeToFitDescendents="true" virtual="true" >
+      <DimensionConstraints minX="600" minY="20" maxX="0" maxY="0" />
+      <Controls>
+        <Texture name="$(parent)BG" textureFile="/esoui/art/restyle/keyboard/outfitslot_hoverbackground.dds" hidden="true">
+          <DimensionConstraints minX="300" minY="20" maxX="0" maxY="0" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+        </Texture>
+        <Label name="$(parent)Player" font="$(MEDIUM_FONT)|$(KB_18)|soft-shadow-thin" wrapMode="ELLIPSIS" color="C5C29E" mouseEnabled="true" text="Player name">
+          <Dimensions x="130" y="25" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        <Label name="$(parent)House" font="$(MEDIUM_FONT)|$(KB_18)|soft-shadow-thin" wrapMode="ELLIPSIS" color="C5C29E" mouseEnabled="true" text="House name">
+          <Dimensions x="160" y="25" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Player" relativePoint="TOPRIGHT" />
+        </Label>
+        <Label name="$(parent)Profile" font="$(MEDIUM_FONT)|$(KB_18)|soft-shadow-thin" wrapMode="ELLIPSIS" mouseEnabled="true" text="profile">
+          <Dimensions x="120" y="25" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)House" relativePoint="TOPRIGHT" offsetX="5" />
+        </Label>
+        <Button name="$(parent)Edit" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="25" y="25" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Profile" relativePoint="TOPRIGHT" />
+          <MouseButton button="2" enabled="true"/>
+          <Textures normal="esoui\art\buttons\edit_save_up.dds"
+                    pressed="esoui\art\buttons\edit_save_down.dds"
+                    mouseOver="esoui\art\buttons\edit_save_over.dds" />
+        </Button>
+        <Button name="$(parent)PortButton" inherits="ZO_DefaultButton" text="Port">
+          <Dimensions x="65" y="25" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Edit" relativePoint="TOPRIGHT" offsetX="0" />
+        </Button>
+        <Button name="$(parent)RemoveButton" inherits="ZO_DefaultButton" text="Remove">
+          <Dimensions x="100" y="25" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)PortButton" relativePoint="TOPRIGHT" offsetX="-5" />
+        </Button>
+      </Controls>
+    </Control>
+
+  </Controls>
+</GuiXml>

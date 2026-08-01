@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Konten/LinkMyAchievements__4291",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Konten",
+  "canonical_id": "esoui:4291",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4291",
+  "deleted": false,
+  "directories": [
+    "LinkMyAchievements"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4291/",
+  "fingerprint": "cffc41cabc05958d62e3edfdaaedaca51ba86829cff85b5b93a2884cf985fcdf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14727.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4291",
+  "source_url": "https://www.esoui.com/downloads/info4291-LinkMyAchievements.html",
+  "stats": {
+    "downloads": 335,
+    "favorites": 1,
+    "monthly_downloads": 29
+  },
+  "title": "LinkMyAchievements",
+  "updated_at": 1785262728000,
+  "version": "1.2.0"
+}

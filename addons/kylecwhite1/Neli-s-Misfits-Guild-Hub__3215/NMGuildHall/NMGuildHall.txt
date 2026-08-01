@@ -1,0 +1,42 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: NMGuildHall
+## APIVersion: 101049 101050
+## Author: SassyKyle
+## Version: 9
+## DependsOn: LibAddonMenu-2.0>=32
+## OptionalDependsOn: LibDebugLogger>=180
+## SavedVariables: NeliMisfitsSavedVars
+
+Bindings.xml
+
+Modules/Localization_New.lua
+
+Data/teleport-data.lua
+Data/pledges-data.lua
+
+Modules/Constants.lua
+Modules/EventManager.lua
+Modules/Validator.lua
+Modules/Compatibility.lua
+Modules/Message.lua
+NMGuildHall.lua
+Modules/SlashCommands.lua
+Modules/Settings.lua
+Modules/ChatIcon.lua
+Modules/QueueWidget.lua
+Modules/Teleport.lua
+Modules/Quests.lua
+Modules/Campaign.lua
+Modules/Seasonal.lua
+Modules/UI.lua
+Modules/UI/Primitives.lua
+Modules/UI/Window.lua
+Modules/UI/Tabs.lua
+Modules/UI/Content.lua
+Modules/UI/Components.lua
+Modules/UI/Dialog.lua

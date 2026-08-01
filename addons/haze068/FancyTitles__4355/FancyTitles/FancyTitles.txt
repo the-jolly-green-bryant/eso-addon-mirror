@@ -1,0 +1,12 @@
+## Title: FancyTitles
+## Description: Custom gradient title. For title requests, join the Discord or whisper @haze068 on EU server.
+## Author: |c09e8ech|r|c4509eca|r|c094decz|r|c09e8ece|r|cec09e5068|r
+## Version: 5.2.0
+## APIVersion: 101050
+## SavedVariables: FancyTitlesDB
+## DependsOn: LibAddonMenu-2.0>=41
+
+ftdata.lua
+ftchatdata.lua
+FancyTitles_Core.lua
+FancyTitles_UI.lua

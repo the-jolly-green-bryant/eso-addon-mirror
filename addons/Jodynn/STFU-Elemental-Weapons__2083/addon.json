@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/Jodynn/STFU-Elemental-Weapons__2083",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jodynn",
+  "canonical_id": "esoui:2083",
+  "category_id": "25",
+  "compatibility": [],
+  "content_id": "esoui:2083",
+  "deleted": false,
+  "directories": [
+    "STFUElementalWeapon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2083/",
+  "fingerprint": "93fd95258feae01268dcf1096873e147934a8903af65a5b869fa840aefba8dc0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7696.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2083",
+  "source_url": "https://www.esoui.com/downloads/info2083-STFUElementalWeapons.html",
+  "stats": {
+    "downloads": 5516,
+    "favorites": 5,
+    "monthly_downloads": 27
+  },
+  "title": "STFU Elemental Weapons",
+  "updated_at": 1583938114000,
+  "version": "1.7"
+}

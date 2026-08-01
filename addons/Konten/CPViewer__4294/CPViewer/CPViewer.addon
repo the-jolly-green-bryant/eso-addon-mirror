@@ -1,0 +1,26 @@
+; ============================================================================
+; DDPositions Add-on
+; ============================================================================
+; This add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc.
+; The Elder Scrolls name, logos, and related trademarks are the property of ZeniMax Media Inc.
+; All rights reserved.
+; For official add-on terms, see: https://account.elderscrollsonline.com/add-on-terms
+; ============================================================================
+
+## Title: CPViewer
+## Description: CPViewer is a lightweight interface that lets you view, and change your Champion Point.
+## APIVersion: 101047 101048
+## Version: 1.0.1
+## Author: |cFF9B15@Konten|r
+## SavedVariables: CPViewer_SavedVariables
+
+CPViewer.lua
+Bindings.xml
+
+## Change Log:
+## Version 1.0.1:
+## - Added right-click option in panel UI to lock/unlock the panel
+## - Removed dependency on LibAddonMenu2
+
+## Version 1.0.0:
+## - Initial release!

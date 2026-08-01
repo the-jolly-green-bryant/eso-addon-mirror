@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Jodynn/Changes__2183",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jodynn",
+  "canonical_id": "esoui:2183",
+  "category_id": "17",
+  "compatibility": [],
+  "content_id": "esoui:2183",
+  "deleted": false,
+  "directories": [
+    "Changes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2183/",
+  "fingerprint": "fcf07d71c1a546ef503f75d46a958399c0dbc7d7b07b4b860b63ddfad3c86319",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7456.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8060.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7457.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7455.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2183",
+  "source_url": "https://www.esoui.com/downloads/info2183-Changes.html",
+  "stats": {
+    "downloads": 9521,
+    "favorites": 14,
+    "monthly_downloads": 14
+  },
+  "title": "Changes",
+  "updated_at": 1627002221000,
+  "version": "2.1.1"
+}

@@ -1,0 +1,19 @@
+;CopyPasta :)
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+;				64 char limit
+;         ----------------------------------------------------------------
+## Title: |c42DC07Tr|r|c7DE145ai|r|cA6E472tBu|r|cCAE898st|r|cEBEBB9er|r
+## Description: Identify duplicate items waiting to be trait researched.
+## Version: 1.1
+## Author: Jacoboon
+## APIVersion: 100024 100025
+## SavedVariables: TraitBuster_settings
+
+lang/en.lua
+lang/$(language).lua
+TraitBuster.lua

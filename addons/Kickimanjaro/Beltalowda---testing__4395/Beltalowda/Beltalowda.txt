@@ -1,0 +1,76 @@
+## Title: Beltalowda
+## Author: Kickimanjaro
+## Description: Group PvP coordination addon — tracks ultimates, synergies, damage timers, equipped sets, proc buffs, and group composition across all group members
+## APIVersion: 101048 101049
+## Version: 0.5.4
+## SavedVariables: BeltalowdaVars
+## DependsOn: LibAsync>=30101 LibGroupBroadcast>=91 LibAddonMenu-2.0>=41 LibGroupCombatStats>=20260111 LibSetDetection>=4 LibFoodDrinkBuff LibDebugLogger>=274 LibCombat>=86
+## OptionalDependsOn: LibMapPins-1.0
+
+# Main initialization
+Beltalowda.lua
+
+# Utilities
+Base/Util/Logger.lua
+Base/Util/Composition.lua
+Base/Util/BuffMonitor.lua
+Base/Util/Beams.lua
+Base/Util/Objects3D.lua
+Base/Util/RoleScoring.lua
+Base/Util/PvPDetection.lua
+
+# Data
+Base/Data/MonsterSetData.lua
+Base/Data/BuffDatabase.lua
+Base/Data/SetDatabase.lua
+Base/Data/AbilityCache.lua
+Base/Data/UltimateTracker.lua
+Base/Data/SynergyTracker.lua
+Base/Data/SynergyComposition.lua
+Base/Data/BuffComposition.lua
+Base/Data/MundusData.lua
+Base/Data/MundusComposition.lua
+Base/Data/ConsumableTracker.lua
+Base/Data/ChampionPointComposition.lua
+Base/Data/FightTotals.lua
+
+# Toolbox utilities
+Base/Toolbox/CyrodiilPins.lua
+Base/Toolbox/Recharger.lua
+Base/Toolbox/Repair.lua
+Base/Toolbox/SiegeMerchant.lua
+
+# Settings
+BeltalowdaSettings.lua
+
+# Network layer
+Base/Network/GroupBroadcast.lua
+Base/Network/RdKCompat.lua
+
+# UI Layer
+Base/UI/LeaderBeam.xml
+Base/UI/GroupUltimateDisplay.lua
+Base/UI/GroupUltimateDisplayByRoles.lua
+Base/UI/ClientUltimateSelector.lua
+Base/UI/CompositionWarningsPanel.lua
+Base/UI/CompositionWarnings.lua
+Base/UI/GroupCompositionPanel.lua
+Base/UI/GroupEquipmentDisplay.lua
+Base/UI/GroupDamageTimers.lua
+Base/UI/GroupDamageTimersByRole.lua
+Base/UI/RapidOverview.lua
+Base/UI/GroupSynergyDisplay.lua
+Base/UI/GroupSynergyDisplayByRoles.lua
+Base/UI/LeaderBeam.lua
+Base/UI/LeaderArrow.lua
+Base/UI/PowerfulAssaultDisplay.lua
+Base/UI/RallyingCryDisplay.lua
+Base/UI/ConsumableOverview.lua
+Base/UI/GroupFightTotalsMeter.lua
+
+# Localization
+Localization/en.lua
+
+# Keybinds
+# BeltalowdaKeybinds.xml - Temporarily disabled due to ESO XML parser issues
+# Will implement keybinds programmatically in future update

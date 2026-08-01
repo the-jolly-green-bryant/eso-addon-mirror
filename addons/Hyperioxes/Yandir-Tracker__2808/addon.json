@@ -1,0 +1,58 @@
+{
+  "archive_path": "addons/Hyperioxes/Yandir-Tracker__2808",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hyperioxes",
+  "canonical_id": "esoui:2808",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2808",
+  "deleted": false,
+  "directories": [
+    "YandirTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2808/",
+  "fingerprint": "bf979a8339593b64fbc7521630da90f6d3ca6262c0ff8ad1d3cbaa75faede386",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9582.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9581.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2808",
+  "source_url": "https://www.esoui.com/downloads/info2808-YandirTracker.html",
+  "stats": {
+    "downloads": 6558,
+    "favorites": 2,
+    "monthly_downloads": 39
+  },
+  "title": "Yandir Tracker",
+  "updated_at": 1637378136000,
+  "version": "1.2a"
+}

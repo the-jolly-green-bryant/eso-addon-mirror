@@ -1,0 +1,36 @@
+{
+  "archive_path": "addons/jultzy94/Ability-Frames__1714",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "jultzy94",
+  "canonical_id": "esoui:1714",
+  "category_id": "19",
+  "compatibility": [],
+  "content_id": "esoui:1714",
+  "deleted": false,
+  "directories": [
+    "AbilityFrames"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1714/",
+  "fingerprint": "b26e9ce41a92a448933d4bacc6c7b9f3b27ab0592ef44ec61e6f17dd52cba0df",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5659.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5660.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5661.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5662.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5663.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1714",
+  "source_url": "https://www.esoui.com/downloads/info1714-AbilityFrames.html",
+  "stats": {
+    "downloads": 7972,
+    "favorites": 11,
+    "monthly_downloads": 16
+  },
+  "title": "Ability Frames",
+  "updated_at": 1528448349000,
+  "version": "1.1"
+}

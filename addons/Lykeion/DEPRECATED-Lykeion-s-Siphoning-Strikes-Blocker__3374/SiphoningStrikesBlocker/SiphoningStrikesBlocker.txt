@@ -1,0 +1,19 @@
+## Title: SiphoningStrikesBlocker
+## Author: Lykeion
+## Description: If you ever pressed Siphoning Strikes (or any of its morphs) before the last one ended, this is for you.
+## APIVersion: 101033
+## Version: 2.0
+## SavedVariables: SSB_SV
+
+SiphoningStrikesBlocker.lua
+
+; DISCLAIMER:
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms
+

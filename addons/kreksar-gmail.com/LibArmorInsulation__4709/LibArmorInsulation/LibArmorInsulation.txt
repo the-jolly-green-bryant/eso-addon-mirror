@@ -1,0 +1,16 @@
+## Title: LibArmorInsulation
+## IsLibrary: true
+## Version: 2.7.11
+## AddOnVersion: 22
+## Author: @Kreksar5 and Claude.ai
+## Description: Library that calculates armor/outfit thermal insulation based on style, material coverage, and flavor text. Requires LibAddonMenu. AI-ASSISTED, written with Claude.ai, UESP-sourced style data, not yet independently validated in-game — see README.
+## APIVersion: 101050 101051
+## SavedVariables: LibArmorInsulation_SavedVars
+
+## DependsOn: LibAddonMenu-2.0>=43
+
+;; Core modules (order matters)
+LibArmorInsulation_StyleData.lua
+LibArmorInsulation_Calculator.lua
+LibArmorInsulation_Settings.lua
+LibArmorInsulation.lua

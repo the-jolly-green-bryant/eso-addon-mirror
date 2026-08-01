@@ -1,0 +1,1 @@
+ZO_CreateStringId("SI_BINDING_NAME_EASY_PTE", "Leave Instance")

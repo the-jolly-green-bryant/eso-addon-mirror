@@ -1,0 +1,13 @@
+## APIVersion: 101049 101050
+## Title: Price Tooltip Gamepad
+## Version: 1.4
+## Author: |c7851a9Muffins714|r (Gamepad),
+## Description: Gamepad Tooltips for Items (works with MM, TTC, ATT, UESP). Original by Mladen90 (@Mladen90 EU), Infixo (CoAuthor) 
+## DependsOn: LibAddonMenu-2.0>=38 LibCustomMenu>=730
+## OptionalDependsOn: TamrielTradeCentre MasterMerchant ArkadiusTradeTools uespLogSalesPrices PriceTooltipNote
+## SavedVariables: PriceTooltipGamepad_Settings_2
+
+PriceTooltipGamepad.lua
+PriceTooltipGamepad_Default.lua
+PriceTooltipGamepad_Globals.lua
+PriceTooltipGamepad_Menu.lua

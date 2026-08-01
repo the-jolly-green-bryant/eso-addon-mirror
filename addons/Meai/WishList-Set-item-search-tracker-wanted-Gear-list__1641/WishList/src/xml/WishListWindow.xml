@@ -1,0 +1,452 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+	<Font name="MyFontGame16" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" />
+    <Font name="MyFontGame20" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thik" />
+    <Controls>
+		<!-- Virtual labels -->
+        <Label name="WishListRowLabel" font="MyFontGame16" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" virtual="true" >
+		</Label>
+		<Label name="WishListSearchLabel" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" virtual="true" />
+        <!--Sort headers -->
+        <Control name="WhisListSortHeader" inherits="ZO_SortHeaderBehavior" virtual="true">
+            <Controls>
+                <Label name="$(parent)Name" font="MyFontGame20" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"  horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                        <AnchorFill />
+                </Label>
+            </Controls>
+        </Control>
+        <!-- Virtual Rows -->
+		<Control name="WishListRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="30" />
+			<OnMouseEnter>
+				WishListRow_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				WishListRow_OnMouseExit(self)
+			</OnMouseExit>
+            <OnMouseUp>
+					WishListRow_OnMouseUp(self, button, upInside)
+			</OnMouseUp>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+                <Label name="$(parent)DateTime" inherits="WishListRowLabel">
+                    <Anchor point="LEFT" />
+                    <Dimensions x="135" y="30" />
+                </Label>
+				<Label name="$(parent)Name" inherits="WishListRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)DateTime" />
+					<Dimensions x="200" y="30" />
+				</Label>
+				<Label name="$(parent)ArmorOrWeaponType" inherits="WishListRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" />
+					<Dimensions x="100" y="30" />
+				</Label>
+				<Label name="$(parent)Slot" inherits="WishListRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)ArmorOrWeaponType" />
+					<Dimensions x="90" y="30" />
+				</Label>
+				<Label name="$(parent)Trait" inherits="WishListRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Slot" />
+					<Dimensions x="130" y="30" />
+				</Label>
+                <Label name="$(parent)UserName" inherits="WishListRowLabel">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Trait" />
+                    <Dimensions x="80" y="30" />
+                </Label>
+                <Label name="$(parent)Locality" inherits="WishListRowLabel">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)UserName" />
+                    <Dimensions x="100" y="30" />
+                </Label>
+				<Label name="$(parent)Quality" inherits="WishListRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Locality" />
+					<Dimensions x="80" y="30" />
+				</Label>
+                <Label name="$(parent)SetItemCollectionState" inherits="WishListRowLabel">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Quality"/>
+                    <Dimensions x="26" y="26" />
+					<Controls>
+						<Texture name="$(parent)Marker" tier="HIGH">
+							<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)SetItemCollectionState" />
+							<Dimensions x="26" y="26" />
+						</Texture>
+					</Controls>
+					<!--<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="-16" />-->
+                </Label>
+                <Label name="$(parent)Gear" inherits="WishListRowLabel">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)SetItemCollectionState"/>
+                    <Dimensions x="26" y="26" />
+					<Controls>
+						<Texture name="$(parent)Marker" tier="HIGH">
+							<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)Gear" />
+							<Dimensions x="26" y="26" />
+						</Texture>
+					</Controls>
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="-4" />
+                </Label>
+			</Controls>
+		</Control>
+		<!-- Virtual Buttons -->
+		<Button name="WishListButtonSearch" virtual="true">
+			<Dimensions x="50" y="50" />
+			<Textures normal="/esoui/art/miscellaneous/search_icon.dds"
+					  mouseOver="/esoui/art/buttons/checkbox_mouseover.dds"
+					  pressed="/esoui/art/menubar/gamepad/gp_playermenu_icon_activityfinder.dds"
+			/>
+			<OnClicked>
+				WishList.SetTab(WISHLIST_TAB_SEARCH)
+			</OnClicked>
+			<OnMouseEnter>
+				WishList.ShowTooltip(self, TOP, GetString(WISHLIST_BUTTON_SEARCH_TT))
+			</OnMouseEnter>
+			<OnMouseExit>
+				WishList.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="WishListButtonList" virtual="true">
+			<Dimensions x="50" y="50" />
+			<Textures normal="/esoui/art/journal/journal_tabicon_cadwell_up.dds"
+					  mouseOver="/esoui/art/journal/journal_tabicon_cadwell_over.dds"
+					  pressed="/esoui/art/journal/journal_tabicon_cadwell_down.dds" />
+			<OnClicked>
+				WishList.SetTab(WISHLIST_TAB_WISHLIST)
+			</OnClicked>
+			<OnMouseEnter>
+				WishList.ShowTooltip(self, TOP, GetString(WISHLIST_BUTTON_WISHLIST_TT))
+			</OnMouseEnter>
+			<OnMouseExit>
+				WishList.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="WishListButtonHistory" virtual="true">
+			<Dimensions x="50" y="50" />
+			<Textures normal="/esoui/art/guild/tabicon_history_up.dds"
+					  mouseOver="/esoui/art/guild/tabicon_history_over.dds"
+					  pressed="/esoui/art/guild/tabicon_history_down.dds" />
+			<OnClicked>
+				WishList.SetTab(WISHLIST_TAB_HISTORY)
+			</OnClicked>
+			<OnMouseEnter>
+				WishList.ShowTooltip(self, TOP, GetString(WISHLIST_BUTTON_HISTORY_TT))
+			</OnMouseEnter>
+			<OnMouseExit>
+				WishList.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="WishListButtonSettings" virtual="true">
+			<Dimensions x="35" y="35" />
+			<Textures normal="esoui/art/chatwindow/chat_options_up.dds"
+					  pressed="esoui/art/chatwindow/chat_options_down.dds"
+					  mouseOver="esoui/art/chatwindow/chat_options_over.dds"/>
+			<OnClicked>
+				WishList.ShowLAMSettings()
+			</OnClicked>
+			<OnMouseEnter>
+				WishList.ShowTooltip(self, TOP, GetString(WISHLIST_BUTTON_SETTINGS_TT))
+			</OnMouseEnter>
+			<OnMouseExit>
+				WishList.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="WishListButtonSetItemCollection" virtual="true">
+			<Dimensions x="28" y="28" />
+			<Textures normal="esoui/art/collections/collections_tabIcon_itemSets_up.dds"
+					  pressed="esoui/art/collections/collections_tabIcon_itemSets_down.dds"
+					  mouseOver="esoui/art/collections/collections_tabIcon_itemSets_over.dds"/>
+			<OnClicked>
+				WishList.openSetItemCollectionBrowser()
+			</OnClicked>
+			<OnMouseEnter>
+				WishList.ShowTooltip(self, TOP, GetString(WISHLIST_BUTTON_SET_ITEM_COLLECTION_TT))
+			</OnMouseEnter>
+			<OnMouseExit>
+				WishList.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="WishListButtonReload" virtual="true">
+			<Dimensions x="30" y="30" />
+			<Textures normal="/esoui/art/help/help_tabicon_feedback_up.dds"
+					  mouseOver="/esoui/art/help/help_tabicon_feedback_over.dds"
+                      pressed="/esoui/art/help/help_tabicon_feedback_down.dds" />
+			<OnClicked>
+				WishList.ShowReloadItems(true)
+			</OnClicked>
+			<OnMouseEnter>
+				WishList.ShowTooltip(self, RIGHT, GetString(WISHLIST_BUTTON_RELOAD_TT))
+			</OnMouseEnter>
+			<OnMouseExit>
+				WishList.HideTooltip()
+			</OnMouseExit>
+		</Button>
+        <Button name="WishListButtonRemoveAll" virtual="true">
+            <Dimensions x="30" y="30" />
+            <Textures normal="/esoui/art/buttons/minus_up.dds"
+                      mouseOver="esoui/art/buttons/minus_over.dds"
+                      pressed="esoui/art/buttons/minus_down.dds"
+                      disabled="esoui/art/buttons/minus_disabled.dds" />
+            <OnClicked>
+                WishList.ShowRemoveAllItems(true)
+            </OnClicked>
+            <OnMouseEnter>
+                WishList.ShowTooltip(self, RIGHT, GetString(WISHLIST_BUTTON_REMOVE_ALL_TT))
+            </OnMouseEnter>
+            <OnMouseExit>
+                WishList.HideTooltip()
+            </OnMouseExit>
+        </Button>
+		<Button name="WishListButtonCopyToChar" virtual="true">
+			<Dimensions x="40" y="40" />
+			<Textures normal="esoui/art/hud/radialicon_addfriend_up.dds"
+					  mouseOver="esoui/art/hud/radialicon_addfriend_over.dds"
+					  pressed="esoui/art/hud/radialicon_addfriend_up.dds"
+					  disabled="esoui/art/hud/radialicon_addfriend_disabled.dds" />
+			<OnClicked>
+				WishList.ShowChooseChar(true, nil, true)
+			</OnClicked>
+			<OnMouseEnter>
+				WishList.ShowTooltip(self, RIGHT, GetString(WISHLIST_BUTTON_COPY_WISHLIST_TT))
+			</OnMouseEnter>
+			<OnMouseExit>
+				WishList.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="WishListButtonRemoveHistory" virtual="true">
+			<Dimensions x="30" y="30" />
+			<Textures normal="/esoui/art/buttons/minus_up.dds"
+					  mouseOver="esoui/art/buttons/minus_over.dds"
+					  pressed="esoui/art/buttons/minus_down.dds"
+					  disabled="esoui/art/buttons/minus_disabled.dds" />
+			<OnClicked>
+				WishList.ShowClearHistory(true)
+			</OnClicked>
+			<OnMouseEnter>
+				WishList.ShowTooltip(self, RIGHT, GetString(WISHLIST_BUTTON_REMOVE_HISTORY_TT))
+			</OnMouseEnter>
+			<OnMouseExit>
+				WishList.HideTooltip()
+			</OnMouseExit>
+		</Button>
+
+
+		<!-- Frame/Window -->
+		<TopLevelControl name="WishListFrame" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<Controls>
+				<Backdrop name="$(parent)Search" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-38" offsetY="14" />
+					<Dimensions x="250" />
+					<Controls>
+						<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop"/>
+					</Controls>
+				</Backdrop>
+
+				<Button name="$(parent)Reload" inherits="WishListButtonReload">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+							offsetX="20" offsetY="14" />
+				</Button>
+
+                <Button name="$(parent)RemoveAll" inherits="WishListButtonRemoveAll">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                            offsetX="20" offsetY="14" />
+                </Button>
+				<Button name="$(parent)CopyWishList" inherits="WishListButtonCopyToChar">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+							offsetX="60" offsetY="14" />
+				</Button>
+				<Button name="$(parent)RemoveHistory" inherits="WishListButtonRemoveHistory">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+							offsetX="20" offsetY="14" />
+				</Button>
+
+				<Control name="$(parent)SearchDrop" inherits="ZO_ComboBox" resizeToFitDescendents="true" mouseEnabled="true">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)Search" />
+					<Controls>
+						<Control name="$(parent)BG" override="true">
+							<OnInitialized>
+								self:SetHidden(true)
+							</OnInitialized>
+						</Control>
+						<Label name="$(parent)Anchor" inherits="WishListSearchLabel">
+							<Anchor point="RIGHT" />
+						</Label>
+						<Label name="$(parent)ColonText" text=":" inherits="WishListSearchLabel">
+							<Anchor point="RIGHT" relativeTo="$(parent)Anchor" relativePoint="LEFT" offsetX="-8" />
+						</Label>
+						<Label name="$(parent)SelectedItemText" inherits="WishListSearchLabel" override="true">
+							<Anchor point="RIGHT" relativeTo="$(parent)ColonText" relativePoint="LEFT" offsetX="-1" />
+						</Label>
+						<Button name="$(parent)OpenDropdown" inherits="ZO_DropdownButton" override="true">
+							<Dimensions x="16" y="16" />
+							<Anchor point="RIGHT" relativeTo="$(parent)SelectedItemText" relativePoint="LEFT" offsetX="-3" />
+							<OnClicked>
+								ZO_ComboBox_DropdownClicked(self:GetParent())
+							</OnClicked>
+						</Button>
+					</Controls>
+				</Control>
+				<Control name="$(parent)CharsDrop" inherits="ZO_ComboBox" resizeToFitDescendents="true" mouseEnabled="true">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)SearchDrop" offsetX="-20" />
+                    <Controls>
+						<Control name="$(parent)BG" override="true">
+							<OnInitialized>
+								self:SetHidden(true)
+							</OnInitialized>
+						</Control>
+                        <Label name="$(parent)Anchor" inherits="WishListSearchLabel">
+                            <Anchor point="RIGHT" />
+                        </Label>
+                        <Label name="$(parent)ColonText" text="" inherits="WishListSearchLabel">
+                            <Anchor point="RIGHT" relativeTo="$(parent)Anchor" relativePoint="LEFT" offsetX="-8" />
+                        </Label>
+                        <Label name="$(parent)SelectedItemText" inherits="WishListSearchLabel" override="true">
+                            <Anchor point="RIGHT" relativeTo="$(parent)ColonText" relativePoint="LEFT" offsetX="-1" />
+                        </Label>
+                        <Button name="$(parent)OpenDropdown" inherits="ZO_DropdownButton" override="true">
+                            <Dimensions x="16" y="16" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)SelectedItemText" relativePoint="LEFT" offsetX="-3" />
+                            <OnClicked>
+                                ZO_ComboBox_DropdownClicked(self:GetParent())
+                            </OnClicked>
+                        </Button>
+                    </Controls>
+				</Control>
+
+				<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="51" />
+					<Anchor point="TOPRIGHT" offsetY="51" />
+					<Dimensions y="32" />
+					<Controls>
+                        <Control name="$(parent)DateTime" inherits="WhisListSortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(WISHLIST_HEADER_DATE), "timestamp", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="135" y="32" />
+                        </Control>
+						<Control name="$(parent)Name" inherits="WhisListSortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(WISHLIST_HEADER_NAME), "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)DateTime" />
+							<Dimensions x="200" y="32" />
+						</Control>
+						<Control name="$(parent)ArmorOrWeaponType" inherits="WhisListSortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(WISHLIST_HEADER_TYPE), "armorOrWeaponTypeName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Name" />
+							<Dimensions x="100" y="32" />
+						</Control>
+						<Control name="$(parent)Slot" inherits="WhisListSortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(WISHLIST_HEADER_SLOT), "slotName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)ArmorOrWeaponType" />
+							<Dimensions x="90" y="32" />
+						</Control>
+						<Control name="$(parent)Trait" inherits="WhisListSortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(WISHLIST_HEADER_TRAIT), "traitName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Slot" />
+							<Dimensions x="130" y="32" />
+						</Control>
+                        <Control name="$(parent)UserName" inherits="WhisListSortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(WISHLIST_HEADER_USERNAME), "username", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Trait" />
+                            <Dimensions x="80" y="32" />
+                        </Control>
+                        <Control name="$(parent)Locality" inherits="WhisListSortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(WISHLIST_HEADER_LOCALITY), "locality", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)UserName" />
+                            <Dimensions x="100" y="32" />
+                        </Control>
+						<Control name="$(parent)Quality" inherits="WhisListSortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(WISHLIST_HEADER_QUALITY), "quality", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Locality" />
+							<Dimensions x="80" y="32" />
+						</Control>
+                        <Control name="$(parent)SetItemCollectionState" inherits="WhisListSortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, zo_iconTextFormatNoSpace(WISHLIST_TEXTURE_SETITEMCOLLECTION, 28, 28, "", nil), "knownInSetItemCollectionBook", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Quality"/>
+							<!--<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-16" />-->
+                            <Dimensions x="30" y="32" />
+                        </Control>
+                        <Control name="$(parent)Gear" inherits="WhisListSortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Gear", "gearId", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)SetItemCollectionState"/>
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-4" />
+                            <Dimensions x="30" y="32" />
+                        </Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-35" offsetY="-32" />
+				</Control>
+
+				<Label name="$(parent)Counter" font="ZoFontGameSmall" horizontalAlignment="RIGHT" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)List" relativePoint="BOTTOMRIGHT" offsetY="6" />
+				</Label>
+
+				<!-- No Sets loaded -->
+				<Label name="$(parent)labelNoSets" font="ZoFontGameLargeBold" horizontalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="CENTER" relativeTo="$(parent)List" relativePoint="TOP" offsetY="50" />
+				</Label>
+				<Button name="$(parent)buttonLoadSets" inherits="ZO_DefaultButton">
+					<Anchor point="CENTER" relativeTo="$(parent)List" relativePoint="TOP" offsetY="90" />
+					<Dimensions x="120" y="40" />
+					<OnClicked>
+						WishList.GetAllSetData()
+					</OnClicked>
+				</Button>
+
+				<!-- Loading Sets -->
+				<Label name="$(parent)labelLoadingSets" font="ZoFontGameLargeBold" horizontalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="CENTER" relativeTo="$(parent)List" relativePoint="CENTER" />
+				</Label>
+
+				<!-- Last scanned set -->
+				<Label name="$(parent)SetsLastScanned" font="ZoFontGameSmall" horizontalAlignment="LEFT" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+					<Anchor point="LEFT" relativeTo="$(parent)Reload" relativePoint="RIGHT" offsetX="20" offsetY="0"/>
+				</Label>
+
+				<!-- Tab Buttons -->
+				<Button name="$(parent)TabSearch" inherits="WishListButtonSearch">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"
+							offsetX="-190" offsetY="-50" />
+				</Button>
+				<Button name="$(parent)TabList" inherits="WishListButtonList">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"
+							offsetX="-140" offsetY="-50" />
+				</Button>
+				<Button name="$(parent)TabHistory" inherits="WishListButtonHistory">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"
+							offsetX="-90" offsetY="-50" />
+				</Button>
+				<Button name="$(parent)TabSettings" inherits="WishListButtonSettings">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"
+							offsetX="-40" offsetY="-55" />
+				</Button>
+				<Button name="$(parent)TabSetItemCollection" inherits="WishListButtonSetItemCollection">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)TabHistory" relativePoint="BOTTOMRIGHT"
+							offsetX="2" offsetY="0" />
+				</Button>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="WishListTooltipTopLevel" inherits="TooltipTopLevel">
+			<Controls>
+				<Tooltip name="WishListTooltip" inherits="ZO_ItemIconTooltip"/>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/MrPikPik/Locksmith__3531",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:3531",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3531",
+  "deleted": false,
+  "directories": [
+    "Locksmith"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3531/",
+  "fingerprint": "85af400d90904be5d7b7f97aec73034d23fe29f3cb491aba3761d1d7528ecbd1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12005.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3531",
+  "source_url": "https://www.esoui.com/downloads/info3531-Locksmith.html",
+  "stats": {
+    "downloads": 5628,
+    "favorites": 17,
+    "monthly_downloads": 47
+  },
+  "title": "Locksmith",
+  "updated_at": 1672165058000,
+  "version": "1.0"
+}

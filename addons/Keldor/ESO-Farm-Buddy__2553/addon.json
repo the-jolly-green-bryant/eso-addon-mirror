@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Keldor/ESO-Farm-Buddy__2553",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Keldor",
+  "canonical_id": "esoui:2553",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2553",
+  "deleted": false,
+  "directories": [
+    "ESOFarmBuddy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2553/",
+  "fingerprint": "dae7e4d9f32fc36bcfd92fa482f18e40c6a833ff856f2ae4aac1c3a14a2f48f6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8785.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8732.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8735.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8736.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8737.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8738.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2553",
+  "source_url": "https://www.esoui.com/downloads/info2553-ESOFarm-Buddy.html",
+  "stats": {
+    "downloads": 74138,
+    "favorites": 66,
+    "monthly_downloads": 150
+  },
+  "title": "ESO Farm-Buddy",
+  "updated_at": 1762972144000,
+  "version": "1.0.36"
+}

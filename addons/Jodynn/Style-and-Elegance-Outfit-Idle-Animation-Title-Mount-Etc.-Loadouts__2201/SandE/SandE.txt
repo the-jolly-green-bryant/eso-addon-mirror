@@ -1,0 +1,12 @@
+## Title: |cff00ffStyle and Elegance|r
+## Description: Gives you different loadouts for your outfits and costume pieces. Now also idle animations.
+## Author: Jodynn
+## Version: 2.13
+## APIVersion: 101045
+## SavedVariables: SandE_sv
+## OptionalDependsOn: LibAddonMenu-2.0
+
+SandEmoteList.lua
+SandE.xml
+SandE.lua
+bindings.xml

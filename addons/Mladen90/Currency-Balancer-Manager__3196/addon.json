@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Mladen90/Currency-Balancer-Manager__3196",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mladen90",
+  "canonical_id": "esoui:3196",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:3196",
+  "deleted": false,
+  "directories": [
+    "CurrencyBalancer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3196/",
+  "fingerprint": "31d10fe125c91b1766038ddb648ce5bb0118f64a6b2ef40e63272e97d51e078d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10892.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3196",
+  "source_url": "https://www.esoui.com/downloads/info3196-CurrencyBalancerManager.html",
+  "stats": {
+    "downloads": 2631,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "Currency Balancer (Manager)",
+  "updated_at": 1632585560000,
+  "version": "1.0.2"
+}

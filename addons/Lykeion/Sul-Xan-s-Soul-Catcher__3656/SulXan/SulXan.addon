@@ -1,0 +1,9 @@
+## Title: |c215895Sul-Xan's |cCC922FSoul Catcher|r
+## Version: 1.5
+## APIVersion: 101048
+## Author: |c215895L|c3E6284y|c5A6B73k|c777562e|c937F51i|cB08840o|cCC922Fn|r
+## OptionalDependsOn: LibAddonMenu-2.0>=40
+## SavedVariables: SXSV
+
+main.lua
+ui.xml

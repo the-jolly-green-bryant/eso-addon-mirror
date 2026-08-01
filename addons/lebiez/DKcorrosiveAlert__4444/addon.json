@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/lebiez/DKcorrosiveAlert__4444",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "lebiez",
+  "canonical_id": "esoui:4444",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4444",
+  "deleted": false,
+  "directories": [
+    "DKCorrosiveAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4444/",
+  "fingerprint": "14269950ccad6479587208fa6aecd2bc6e30fd085032268876421498e7dcbbef",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15470.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4444",
+  "source_url": "https://www.esoui.com/downloads/info4444-DKcorrosiveAlert.html",
+  "stats": {
+    "downloads": 3216,
+    "favorites": 3,
+    "monthly_downloads": 458
+  },
+  "title": "DKcorrosiveAlert",
+  "updated_at": 1776263999000,
+  "version": "1.04"
+}

@@ -1,0 +1,38 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Kal's Crown
+## Description: Creates a Crown based on the hodor icon of the leader
+## Author: @Kalinfe
+## Version: 1.1.3
+## APIVersion: 100033
+## SavedVariables: KalsCrownSavedVariables
+## DependsOn: HodorReflexes
+
+KalsCrown.lua
+Icons.lua
+MemberIcon.lua
+KalsCrownMenu.lua
+
+; Changelog:
+;
+; Version 1.1.3 (2021/2/7)
+; * Added highlights
+;
+; Version 1.1.2 (2021/1/12)
+; * Settings are now account wide instead of per character
+;
+; Version 1.1.1 (2020/12/22)
+; * Slight fix from uploading debug code instead of regular code
+;
+; Version 1.1.0 (2020/12/22)
+; * Fixed animation on static image bug
+; * Added ability to change height/size/visibility
+; * Default icon now based on role
+;
+; Version 1.0.0 (2020/12/14)
+; * Initial version
+;

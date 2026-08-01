@@ -1,0 +1,9 @@
+## Title: |cAF4FFFSprint Sensitivity Fix|r
+## Author: |cAF4FFF@GalacticWar|r
+## Version: 5.6
+## APIVersion: 101046
+## SavedVariables: SprintSensSettings
+## DependsOn: LibAddonMenu-2.0>=39
+
+SprintSens-api.lua
+SprintSens-settings.lua

@@ -1,0 +1,53 @@
+<GuiXml>
+    <Controls>
+        <Control name="KDDQuickSlot" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="false">
+            <Dimensions x="54" y="22"/>
+            <Anchor point="BOTTOMLEFT" relativeTo="ActionButton9" relativePoint="TOPLEFT" offsetX="-2" offsetY="-2"/>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" centerColor="80000000" edgeColor="CC000000" hidden="false" tier="LOW">
+                    <AnchorFill/>
+                    <Edge edgeSize="2"/>
+                </Backdrop>
+                <Control name="$(parent)Slot1">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="2"/>
+                    <Dimensions x="18" y="18"/>
+                    <Controls>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/icons/consumable_potion_001_type_001.dds" tier="HIGH">
+                            <AnchorFill/>
+                        </Texture>
+                        <Backdrop name="$(parent)Backdrop" centerColor="8000FF00" edgeColor="00000000" hidden="true" tier="MEDIUM">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Slot2">
+                    <Anchor point="LEFT" relativeTo="$(parent)Slot1" relativePoint="RIGHT" offsetX="-2"/>
+                    <Dimensions x="18" y="18"/>
+                    <Controls>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/icons/consumable_potion_001_type_001.dds" tier="HIGH">
+                            <AnchorFill/>
+                        </Texture>
+                        <Backdrop name="$(parent)Backdrop" centerColor="8000FF00" edgeColor="00000000" hidden="true" tier="MEDIUM">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Slot3">
+                    <Anchor point="LEFT" relativeTo="$(parent)Slot2" relativePoint="RIGHT" offsetX="-2"/>
+                    <Dimensions x="18" y="18"/>
+                    <Controls>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/icons/consumable_potion_001_type_001.dds" tier="HIGH">
+                            <AnchorFill/>
+                        </Texture>
+                        <Backdrop name="$(parent)Backdrop" centerColor="8000FF00" edgeColor="00000000" hidden="true" tier="MEDIUM">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

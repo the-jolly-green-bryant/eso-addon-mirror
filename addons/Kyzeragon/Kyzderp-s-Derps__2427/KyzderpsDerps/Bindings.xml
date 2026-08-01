@@ -1,0 +1,53 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="Kyzderp's Derps">
+            <Action name="KDD_QUICKSLOT_1">
+                <Down>KyzderpsDerps.QuickSlots.SelectQuickSlot(1)</Down>
+            </Action>
+            <Action name="KDD_QUICKSLOT_2">
+                <Down>KyzderpsDerps.QuickSlots.SelectQuickSlot(2)</Down>
+            </Action>
+            <Action name="KDD_QUICKSLOT_3">
+                <Down>KyzderpsDerps.QuickSlots.SelectQuickSlot(3)</Down>
+            </Action>
+            <Action name="KDD_QUICKSLOT_4">
+                <Down>KyzderpsDerps.QuickSlots.SelectQuickSlot(4)</Down>
+            </Action>
+            <Action name="KDD_QUICKSLOT_5">
+                <Down>KyzderpsDerps.QuickSlots.SelectQuickSlot(5)</Down>
+            </Action>
+            <Action name="KDD_QUICKSLOT_6">
+                <Down>KyzderpsDerps.QuickSlots.SelectQuickSlot(6)</Down>
+            </Action>
+            <Action name="KDD_QUICKSLOT_7">
+                <Down>KyzderpsDerps.QuickSlots.SelectQuickSlot(7)</Down>
+            </Action>
+            <Action name="KDD_QUICKSLOT_8">
+                <Down>KyzderpsDerps.QuickSlots.SelectQuickSlot(8)</Down>
+            </Action>
+            <Action name="KDD_PRINTPOS">
+                <Down>KyzderpsDerps.PrintCurrentPosition()</Down>
+            </Action>
+            <Action name="KDD_ANTISPUD_DISMISS">
+                <Down>KyzderpsDerps.AntiSpud.DismissCurrent()</Down>
+            </Action>
+            <Action name="KDD_ANTISPUD_SNOOZE">
+                <Down>KyzderpsDerps.AntiSpud.SnoozeCurrent()</Down>
+            </Action>
+        </Category>
+    </Layer>
+    <Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">
+        <Category name="Kyzderp's Derps">
+            <Action name="KDD_CLEARSEARCH">
+                <Down>
+                    KyzderpsDerps:dbg("Clearing all search boxes")
+                    ZO_PlayerInventorySearchBox:SetText("")
+                    ZO_PlayerBankSearchBox:SetText("")
+                    ZO_HouseBankSearchBox:SetText("")
+                    ZO_GuildBankSearchBox:SetText("")
+                    ZO_CraftBagSearchBox:SetText("")
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

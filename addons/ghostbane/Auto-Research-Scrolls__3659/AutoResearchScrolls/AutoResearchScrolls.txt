@@ -1,0 +1,15 @@
+## Title: Auto Research Scrolls
+## APIVersion: 100038
+## Description: Witchcraft for lazy people
+## Version: 1.0.1
+## AddOnVersion: 101
+## Author: |c00a313Ghostbane
+## SavedVariables: ARS_db
+## DependsOn: LibAddonMenu-2.0>=33 LibAsync LibChatMessage
+## OptionalDependsOn: WritWorthy 7.3.7
+
+boot.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

@@ -1,0 +1,69 @@
+<GuiXml>
+    <Controls>
+<!-- ======================================================================================================================= -->
+        <Control name="SynCool_Line_Template" virtual="true">
+            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+            <Dimensions x="40" y="40" />
+            <Controls>
+                <Texture name="$(parent)Icon" textureFile="esoui/art/icons/ability_u23_bloodball_chokeonit.dds" hidden="false" tier="MEDIUM">
+                    <Dimensions x="32" y="32"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                </Texture>
+                <Backdrop name="$(parent)Backdrop" centerColor="FF000000" edgeColor="FF222222" hidden="false" tier="LOW"> <AnchorFill/> <Edge edgeSize="2"/> </Backdrop>
+                <Label name="$(parent)Timer" color="FFFFFF" text="20.0" verticalAlignment="BOTTOM" horizontalAlignment="CENTER" hidden="false" tier="HIGH">
+                    <Dimensions x="32" y="32"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)Icon" relativePoint="CENTER"/>
+                </Label>
+                <StatusBar name="$(parent)Bar" hidden="false" inherits="ZO_ArrowStatusBarWithBG">
+                    <Dimensions x="120"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Backdrop" relativePoint="BOTTOMRIGHT" offsetX="4"/>
+                    <OnInitialized>
+                        ZO_StatusBar_SetGradientColor(self, ZO_XP_BAR_GRADIENT_COLORS)
+                        self.gloss = self:GetNamedChild("Gloss")
+                    </OnInitialized>
+                </StatusBar>
+                <Label name="$(parent)Label" color="FFFFFF" text="Sanguine Burst" verticalAlignment="BOTTOM" horizontalAlignment="LEFT" hidden="false">
+                    <Dimensions x="600" y="36"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Bar" relativePoint="TOPLEFT" offsetY="-1"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="SynCoolContainer" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="false">
+            <Dimensions x="40" y="40"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+            <OnMoveStop>SynergyCooldown:SavePosition()</OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="88000000" hidden="true">
+                    <AnchorFill/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Texture name="$(parent)Alert" textureFile="esoui/art/miscellaneous/gamepad/gp_icon_new.dds" hidden="false">
+                            <Dimensions x="40" y="40"/>
+                            <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                        </Texture>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="SynCoolOthers" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="false">
+            <Dimensions x="40" y="40"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+            <OnMoveStop>SynergyCooldown:SavePosition()</OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="88000000" hidden="true">
+                    <AnchorFill/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Texture name="$(parent)Alert" textureFile="esoui/art/miscellaneous/gamepad/gp_icon_new.dds" hidden="false">
+                            <Dimensions x="40" y="40"/>
+                            <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                        </Texture>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+        
+    </Controls>
+</GuiXml>

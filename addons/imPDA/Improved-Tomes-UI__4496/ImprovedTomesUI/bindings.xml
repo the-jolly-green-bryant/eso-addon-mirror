@@ -1,0 +1,23 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SI_KEYBINDINGS_CATEGORY_IMPROVED_TOMES_UI">
+            <Action name="IMPROVED_TAMRIEL_TOMES">
+                <Down>
+                    local sceneName = "ImprovedTomesUIScene"
+                    if SYSTEMS:GetObject("mainMenu").sceneInfo[sceneName] ~= nil then
+                        SYSTEMS:GetObject("mainMenu"):ToggleScene(sceneName)
+                    end
+                </Down>
+            </Action>
+            <Action name="IMPROVED_TAMRIEL_TOMES_SHOW_CHALLENGES">
+                <Down>
+                    if TIMED_ACTIVITIES_SCENE_KEYBOARD:IsShowing() then
+                        SCENE_MANAGER:Show(SCENE_MANAGER.previousScene.name)
+                    else
+                        TIMED_ACTIVITIES_MANAGER:ShowTimedActivitiesScene()
+                    end
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

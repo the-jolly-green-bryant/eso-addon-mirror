@@ -1,0 +1,267 @@
+DungeonFinderPlus = DungeonFinderPlus or {}
+local DFP = DungeonFinderPlus
+
+local function getLang()
+  local l = (GetCVar and GetCVar("Language.2")) or "en"
+  l = zo_strlower(l)
+  if l == "jp" then l = "ja" end
+  return l
+end
+
+local STR = {
+  en = {
+    title="DungeonFinderPlus",
+    panel_name="DungeonFinderPlus",
+    btn_close="Close",
+    btn_select_all="Select all",
+    btn_clear_sel="Clear selection",
+    btn_queue_selection="Queue (Selection)",
+    btn_mode_normal="Normal",
+    btn_mode_vet="Vet",
+    btn_all_normal="All Normal",
+    btn_all_vet="All Vet",
+    label_author="Author: <<1>>",
+    label_type_dlc="DLC",
+    label_type_base="Base",
+    status_ready="Ready.",
+    status_found="Found: <<1>>",
+    status_loaded="Loaded: <<1>> dungeons",
+    status_in_combat="In combat – cannot queue.",
+    status_leader_only="Only the group leader can start the queue.",
+    status_no_ids="No valid activities selected.",
+    status_queue_started="Queue started.",
+    status_queue_failed="Could not start queue.",
+    kb_toggle = "Open/Close DungeonFinderPlus",
+    opt_auto_pledge = "Automatic Undaunted Pledge dialogs (accept & turn-in)",
+    opt_auto_pledge_tip = "Automatically accept and turn in Undaunted pledges when talking to Maj al-Ragath, Glirion, or Urgarlag.",
+    opt_auto_chest = "Open Undaunted reward chests automatically",
+    opt_auto_chest_tip = "After turning in a pledge, automatically open the reward chest to collect transmutation crystals.",
+    opt_autoconfirm = "Autoconfirm",
+    state_on  = "ON",
+    state_off = "OFF",
+
+    -- Tooltip
+    tt_pledge_today = "Undaunted pledge today",
+    tt_stats_header = "Completion status (achievements)",
+    tt_sets_header  = "Sets in this dungeon",
+    tt_sets_normal  = "Normal:",
+    tt_sets_vet     = "Veteran:",
+    
+    -- Achievement-Typ-Labels
+    tt_ach_normal   = "Normal",
+    tt_ach_vet      = "Veteran",
+    tt_ach_hm       = "Hardmode",
+    tt_ach_speed    = "Speed Run",
+    tt_ach_nodeath  = "No Death",
+    tt_ach_tri      = "Trifecta",
+    tt_ach_motif    = "Motif",
+  },
+
+  de = {
+    title="DungeonFinderPlus",
+    panel_name="DungeonFinderPlus",
+    btn_close="Schließen",
+    btn_select_all="Alle auswählen",
+    btn_clear_sel="Auswahl leeren",
+    btn_queue_selection="Suche starten",
+    btn_mode_normal="Normal",
+    btn_mode_vet="Vet",
+    btn_all_normal="Alle Normal",
+    btn_all_vet="Alle Vet",
+    label_author="Autor: <<1>>",
+    label_type_dlc="DLC",
+    label_type_base="Basis",
+    status_ready="Bereit.",
+    status_found="Gefunden: <<1>>",
+    status_loaded="Geladen: <<1>> Dungeons",
+    status_in_combat="Im Kampf – Queue nicht möglich.",
+    status_leader_only="Nur der Gruppenleiter kann die Queue starten.",
+    status_no_ids="Keine gültigen Activities ausgewählt.",
+    status_queue_started="Queue gestartet.",
+    status_queue_failed="Queue konnte nicht gestartet werden.",
+    kb_toggle = "DungeonFinderPlus öffnen/schließen",
+    opt_auto_pledge = "Automatische Pledge-Dialoge (Annahme & Abgabe)",
+    opt_auto_pledge_tip = "Nimmt Unerschrockenen-Gelöbnisse bei Maj al-Ragath, Glirion oder Urgarlag automatisch an und gibt sie ab.",
+    opt_auto_chest = "Belohnungskisten automatisch öffnen",
+    opt_auto_chest_tip = "Öffnet nach der Abgabe die Unerschrockenen-Belohnungstruhe automatisch, um Transmutationskristalle zu erhalten.",
+    opt_autoconfirm = "Autoconfirm",
+    state_on  = "AN",
+    state_off = "AUS",
+
+    -- Tooltip
+    tt_pledge_today = "Heutiges Unerschrockenen-Gelöbnis",
+    tt_stats_header = "Abschluss-Status (Erfolge)",
+    tt_sets_header  = "Sets in diesem Dungeon",
+    tt_sets_normal  = "Normal:",
+    tt_sets_vet     = "Veteran:",
+    
+    -- Achievement-Typ-Labels
+    tt_ach_normal   = "Normal",
+    tt_ach_vet      = "Veteran",
+    tt_ach_hm       = "Hardmode",
+    tt_ach_speed    = "Zeitangriff",
+    tt_ach_nodeath  = "Kein Tod",
+    tt_ach_tri      = "Trifecta",
+    tt_ach_motif    = "Motiv",
+  },
+
+  fr = {
+    title="DungeonFinderPlus",
+    panel_name="DungeonFinderPlus",
+    btn_close="Fermer",
+    btn_select_all="Tout sélectionner",
+    btn_clear_sel="Effacer la sélection",
+    btn_queue_selection="Lancer la recherche",
+    btn_mode_normal="Normal",
+    btn_mode_vet="Vétéran",
+    btn_all_normal="Tout Normal",
+    btn_all_vet="Tout Vétéran",
+    label_author="Auteur : <<1>>",
+    label_type_dlc="DLC",
+    label_type_base="Base",
+    status_ready="Prêt.",
+    status_found="Trouvé : <<1>>",
+    status_loaded="Chargé : <<1>> donjons",
+    status_in_combat="En combat – recherche impossible.",
+    status_leader_only="Seul le chef de groupe peut lancer la recherche.",
+    status_no_ids="Aucune activité valide sélectionnée.",
+    status_queue_started="Recherche lancée.",
+    status_queue_failed="Impossible de lancer la recherche.",
+    kb_toggle = "Ouvrir/Fermer DungeonFinderPlus",
+    opt_auto_pledge = "Dialogues de serment automatiques (accepter/rendre)",
+    opt_auto_pledge_tip = "Accepte et remet automatiquement les serments des Indomptables auprès de Maj al-Ragath, Glirion ou Urgarlag.",
+    opt_auto_chest = "Ouvrir automatiquement les coffres de récompense des Indomptables",
+    opt_auto_chest_tip = "Après la remise d'un serment, ouvre automatiquement le coffre pour récupérer les cristaux de transmutation.",
+    opt_autoconfirm = "Auto-confirmation",
+    state_on  = "Activé",
+    state_off = "Désactivé",
+
+    -- Tooltip
+    tt_pledge_today = "Serment des Indomptables du jour",
+    tt_stats_header = "Statut d'achèvement (succès)",
+    tt_sets_header  = "Ensembles dans ce donjon",
+    tt_sets_normal  = "Normal :",
+    tt_sets_vet     = "Vétéran :",
+    
+    -- Achievement-Typ-Labels
+    tt_ach_normal   = "Normal",
+    tt_ach_vet      = "Vétéran",
+    tt_ach_hm       = "Mode difficile",
+    tt_ach_speed    = "Course rapide",
+    tt_ach_nodeath  = "Sans mort",
+    tt_ach_tri      = "Triomphe",
+    tt_ach_motif    = "Motif",
+  },
+
+  es = {
+    title="DungeonFinderPlus",
+    panel_name="DungeonFinderPlus",
+    btn_close="Cerrar",
+    btn_select_all="Seleccionar todo",
+    btn_clear_sel="Borrar selección",
+    btn_queue_selection="Iniciar búsqueda",
+    btn_mode_normal="Normal",
+    btn_mode_vet="Veterano",
+    btn_all_normal="Todo Normal",
+    btn_all_vet="Todo Veterano",
+    label_author="Autor: <<1>>",
+    label_type_dlc="DLC",
+    label_type_base="Base",
+    status_ready="Listo.",
+    status_found="Encontrados: <<1>>",
+    status_loaded="Cargados: <<1>> mazmorras",
+    status_in_combat="En combate – no se puede iniciar la búsqueda.",
+    status_leader_only="Solo el líder del grupo puede iniciar la búsqueda.",
+    status_no_ids="No hay actividades válidas seleccionadas.",
+    status_queue_started="Búsqueda iniciada.",
+    status_queue_failed="No se pudo iniciar la búsqueda.",
+    kb_toggle = "Abrir/Cerrar DungeonFinderPlus",
+    opt_auto_pledge = "Diálogos de promesa automáticos (aceptar y entregar)",
+    opt_auto_pledge_tip = "Acepta y entrega automáticamente las promesas de los Indómitos con Maj al-Ragath, Glirion o Urgarlag.",
+    opt_auto_chest = "Abrir automáticamente los cofres de recompensa de los Indómitos",
+    opt_auto_chest_tip = "Tras entregar una promesa, abre automáticamente el cofre para obtener cristales de transmutación.",
+    opt_autoconfirm = "Autoconfirmar",
+    state_on  = "Activado",
+    state_off = "Desactivado",
+
+    -- Tooltip
+    tt_pledge_today = "Gesta de los Indomables de hoy",
+    tt_stats_header = "Estado de finalización (logros)",
+    tt_sets_header  = "Conjuntos en esta mazmorra",
+    tt_sets_normal  = "Normal:",
+    tt_sets_vet     = "Veterano:",
+    
+    -- Achievement-Typ-Labels
+    tt_ach_normal   = "Normal",
+    tt_ach_vet      = "Veterano",
+    tt_ach_hm       = "Modo difícil",
+    tt_ach_speed    = "Carrera rápida",
+    tt_ach_nodeath  = "Sin muertes",
+    tt_ach_tri      = "Trifecta",
+    tt_ach_motif    = "Motivo",
+  },
+
+  pl = {
+    title="DungeonFinderPlus",
+    panel_name="DungeonFinderPlus",
+    btn_close="Zamknij",
+    btn_select_all="Zaznacz wszystko",
+    btn_clear_sel="Wyczyść zaznaczenie",
+    btn_queue_selection="Rozpocznij wyszukiwanie",
+    btn_mode_normal="Normalny",
+    btn_mode_vet="Weteran",
+    btn_all_normal="Wszystko Normalne",
+    btn_all_vet="Wszystko Weteran",
+    label_author="Autor: <<1>>",
+    label_type_dlc="DLC",
+    label_type_base="Podstawowy",
+    status_ready="Gotowe.",
+    status_found="Znaleziono: <<1>>",
+    status_loaded="Wczytano: <<1>> lochów",
+    status_in_combat="W trakcie walki – nie można rozpocząć wyszukiwania.",
+    status_leader_only="Tylko lider grupy może rozpocząć wyszukiwanie.",
+    status_no_ids="Nie wybrano prawidłowych aktywności.",
+    status_queue_started="Wyszukiwanie rozpoczęte.",
+    status_queue_failed="Nie udało się rozpocząć wyszukiwania.",
+    kb_toggle = "Otwórz/Zamknij DungeonFinderPlus",
+    opt_auto_pledge = "Automatyczne dialogi Pledge (przyjęcie i oddanie)",
+    opt_auto_pledge_tip = "Automatycznie przyjmuje i oddaje zadania Nieustraszonych u Maj al-Ragath, Gliriona lub Urgarlag.",
+    opt_auto_chest = "Automatycznie otwieraj skrzynie nagród Nieustraszonych",
+    opt_auto_chest_tip = "Po oddaniu zadania automatycznie otwiera skrzynię, aby odebrać kryształy transmutacji.",
+    opt_autoconfirm = "Autopotwierdzanie",
+    state_on  = "Włączone",
+    state_off = "Wyłączone",
+
+    -- Tooltip
+    tt_pledge_today = "Dzisiejsze zlecenie Nieustraszonych",
+    tt_stats_header = "Status ukończenia (osiągnięcia)",
+    tt_sets_header  = "Zestawy w tym lochu",
+    tt_sets_normal  = "Normalny:",
+    tt_sets_vet     = "Weteran:",
+    
+    -- Achievement-Typ-Labels
+    tt_ach_normal   = "Normalny",
+    tt_ach_vet      = "Weteran",
+    tt_ach_hm       = "Tryb trudny",
+    tt_ach_speed    = "Szybki przebieg",
+    tt_ach_nodeath  = "Bez śmierci",
+    tt_ach_tri      = "Trifecta",
+    tt_ach_motif    = "Motyw",
+  },
+}
+
+local function L(key, a1)
+  local t = STR[getLang()] or STR.en
+  local s = t[key] or STR.en[key] or key
+  if a1 ~= nil then s = s:gsub("<<1>>", tostring(a1)) end
+  return s
+end
+
+DFP.i18n = {
+  getLang = getLang,
+  L = L,
+  STR = STR,
+}
+
+ZO_CreateStringId("SI_BINDING_NAME_DFP_TOGGLE",
+  (DFP.i18n and DFP.i18n.L("kb_toggle")) or "Open/Close DungeonFinderPlus")

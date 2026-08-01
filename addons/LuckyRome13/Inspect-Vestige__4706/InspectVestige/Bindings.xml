@@ -1,0 +1,16 @@
+<!--
+    Inspect Vestige keybind.
+    ESO auto-loads a file named exactly "Bindings.xml" from the addon root
+    (it must NOT be listed in the manifest).
+    The display name comes from the string SI_BINDING_NAME_INSPECT_VESTIGE_RETICLE,
+    which we create in lang/en.lua.
+-->
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SI_BINDING_CATEGORY_INSPECT_VESTIGE">
+            <Action name="INSPECT_VESTIGE_RETICLE">
+                <Down>InspectVestige.OnReticleKeybind()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

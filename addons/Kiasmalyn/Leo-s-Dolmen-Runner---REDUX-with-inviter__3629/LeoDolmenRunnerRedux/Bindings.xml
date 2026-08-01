@@ -1,0 +1,15 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="Leo's Dolmen Runner REDUX">
+            <Action name="LEODOLMENRUNNERREDUX_TOGGLE_WINDOW">
+                <Down>LeoDolmenRunnerRedux.ui:ToggleShow()</Down>
+            </Action>
+            <Action name="LEODOLMENRUNNERREDUX_RUNNER_TOGGLE">
+                <Down>LeoDolmenRunnerRedux.runner:StartStop()</Down>
+            </Action>
+            <Action name="LEODOLMENRUNNERREDUX_INVITER_TOGGLE">
+                <Down>LeoDolmenRunnerRedux.inviter:StartStop()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

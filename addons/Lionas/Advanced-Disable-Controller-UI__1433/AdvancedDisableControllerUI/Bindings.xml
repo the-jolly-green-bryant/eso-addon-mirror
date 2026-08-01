@@ -1,0 +1,42 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Advanced Disable Controller UI">
+      <!--<Action name="ADCUI_DEBUG">
+        <Down>ReloadUI()</Down>
+      </Action>-->
+      <Action name="ADCUI_ACTIVATE">
+        <Down>SLASH_COMMANDS["/adcui"]()</Down>
+      </Action>
+      <Action name="USE_CONTROLLER_UI">
+        <Down>
+          local settings = ADCUI:getSettings()
+          settings.useControllerUI = not settings.useControllerUI
+          ADCUI:cycleGamepadPreferredMode()
+        </Down>
+      </Action>
+      <Action name="USE_GAMEPAD_BUTTONS">
+        <Down>
+          local settings = ADCUI:getSettings()
+          if settings.useControllerUI then
+          ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.GENERAL_ALERT_ERROR, "Disabled when controller UI is in use")
+          else
+          settings.useGamepadButtons = not settings.useGamepadButtons
+          ADCUI:cycleGamepadPreferredMode()
+          end
+        </Down>
+      </Action>
+      <Action name="USE_GAMEPAD_ACTION_BAR">
+        <Down>
+          local settings = ADCUI:getSettings()
+          if settings.useControllerUI then
+          ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.GENERAL_ALERT_ERROR, "Disabled when controller UI is in use")
+          else
+          settings.useGamepadActionBar = not settings.useGamepadActionBar
+          ADCUI:setGamepadActionBarOverrideState(settings.useGamepadActionBar)
+          ADCUI:cycleGamepadPreferredMode()
+          end
+        </Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

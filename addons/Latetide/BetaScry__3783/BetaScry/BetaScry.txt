@@ -1,0 +1,16 @@
+## Title: |cFF33AABetaScry|r v1.0.0
+## APIVersion: 101040
+## Version: 1.0.0
+## SavedVariables: BetaScry_Account
+## SavedVariables: BetaScry_Character
+## Author: mesota, person345, Latetide
+## Description: Additional lead filtering by level minimum/maximum and type (e.g. Furnishing). Based on AlphaScry
+## IsLibrary: false
+
+## UI
+dialogs/BSYChangeFilterDialog.xml
+dialogs/BSYChangeFilterDialog.lua
+
+## Main
+BetaScry.lua
+

@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Marify/Confirm-Master-Writ__2160",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marify",
+  "canonical_id": "esoui:2160",
+  "category_id": "98",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:2160",
+  "deleted": false,
+  "directories": [
+    "ConfirmMasterWrit"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2160/",
+  "fingerprint": "078b53900ad7fc97ae8fffc5fe81832c3f65d6992337f0c7819e05f1e5a60dff",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7343.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7342.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7344.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7345.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7346.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7347.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7348.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2160",
+  "source_url": "https://www.esoui.com/downloads/info2160-ConfirmMasterWrit.html",
+  "stats": {
+    "downloads": 135700,
+    "favorites": 152,
+    "monthly_downloads": 191
+  },
+  "title": "Confirm Master Writ",
+  "updated_at": 1669345444000,
+  "version": "1.4.0"
+}

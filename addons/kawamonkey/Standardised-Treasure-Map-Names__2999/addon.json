@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/Standardised-Treasure-Map-Names__2999",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:2999",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2999",
+  "deleted": false,
+  "directories": [
+    "StandardisedTreasureMapNames"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2999/",
+  "fingerprint": "ef0592fef21247e6514c8f4e7bc3463fa4234ff603c1d16e2be95f67b33f08d6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10113.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2999",
+  "source_url": "https://www.esoui.com/downloads/info2999-StandardisedTreasureMapNames.html",
+  "stats": {
+    "downloads": 4177,
+    "favorites": 4,
+    "monthly_downloads": 15
+  },
+  "title": "Standardised Treasure Map Names",
+  "updated_at": 1617199832000,
+  "version": "1.0"
+}

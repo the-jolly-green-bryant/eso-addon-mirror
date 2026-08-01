@@ -1,0 +1,137 @@
+==========================
+       insjunkyard
+       by: instant
+==========================
+
+ Introduction:
+==============
+ insJunkyard is an addon that can automatically sell _EVERY_
+ item you have marked as "Junk" whenever you visit a STORE. 
+
+ It can automatically mark ANY item you have added to a stored list 
+ as junk, and will remember this for your next game session.
+ 
+ It can auto mark TRASH items as Junk, so you do not  have to do that 
+ every time you loot a junk item.
+ 
+ You can be told which items are sold, the quantity, and the sum value
+ of said item as they are sold.
+ 
+ When you exit the store, you can be told the number of items sold and
+ the total sum gained.
+ 
+ When you loot an item you can get a message in chat with what you 
+ looted as a clickable link. 
+ 
+ It also has an option to let you know what your party members looted.
+ 
+ You can be informed when your inventory size is getting dangeorusly low.
+ 
+ It can also automatically mark as junk any item with the "Ornate" trait. 
+ I.e. items with "This item will sell for %". So you can easily sell these.
+ 
+ It can semi-automatically destroy items that are in your junk bag, 
+ on the junkyard list and are worth 0 gold.
+
+
+==================================================================
+To use JunkYard just as a Loot Info Addon you can do the following:
+
+/junkyard set loot (to true)
+/junkyard set party (to true)
+/junkyard set junkyard (to false)
+/junkyard set warn 0 (disabled inventory warnings)
+/junkyard set autosell (Disables autoselling)
+
+This will set the addon to display messages for all your loot
+and for any loot your party members get. It will disable the 
+autoselling of junk items, the automarking of junk items and
+the auto-warnings on low inventory space.
+==================================================================
+ 
+ Commands:
+==========
+Type /junkyard to see a list of commands.
+Type "/junkyard setup" or "/jy setup" for a GUI Option Screen. 
+
+Toggle between GLOBAL Configuration options and CHAR Specific:
+* /junkyard set global 
+
+Toggle between GLOBAL or PER-CHARACTER "Junk" Profile. 
+(This is the list of all items that are regarded as junk)
+* /junkyard set globaljunk
+
+Toggle to have a startup message or not. 
+* /junkyard set welcome
+
+Current working ITEMLIST commands:
+* List all inventory items (/junkyard list all)
+* List all junk items in inventory (/junkyard list junk)
+* List all items of a set quality (0-5) (/junkyard list q 0-5)
+
+* See a listing of all settings (/junkyard set)
+
+Current Settings:
+(at vendors)
+* Feedback per item sold (/junkyard set salespam)
+* Summary of sales on store exit (/junkyard set vendor)
+* Autoselling JUNK items when at vendor (/Junkyard set autosell)
+
+(when looting)
+* Loot messages in chat (/junkyard set loot)
+* Loot messages from party members (/junkyard set party)
+* Inventory Size Warning (/junkyard set warn) Toggle to warn when you have 5 slots or less free
+(This is also when AutoDestroy would kick in)
+
+(dangerous)
+* Autodestroy JUNK items that are worthless when low on inventory (/junkyard set destroy) !! WARNING !!
+For an item to be destroyed it
+	a. Must be in the JUNK bag
+	b. Must be worth 0 
+	c. Must be on the MARK list and match EXACTLY the MARK link. 
+	And the mouse cursor must be 'clear'
+
+(junk related)
+* Notification each time an item is added to junk (/junkyard set junkspam)
+* Automark TRASH items as junk (/junkyard set junkyard)
+* Automark "Vendor Sell %" trait items as Junk (/junkyard set trait)  
+** With /junkyard set trait #0-5 as an optional number you can set a limit to which items will be put in JUNK based
+   on their item quality in addition to having the "Will sell to vendor for %xx more" trait. Any other number disables
+   the quality check.
+   
+   0 - Worn/Trash (Gray)
+   1 - Normal (White)
+   2 - Fine (Green)
+   3 - Superior (Blue)
+   4 - Epic (Purple)
+   5 - Legendary (Gold)
+
+Special AutoMarking Options are:
+/junkyard add all - This option will add all items from your CURRENT Junk Inventory to Autojunk.
+/junkyard add # - Where # is the ID you see when typing LIST or LIST JUNK options
+/junkyard remove # - Where # is the ID you see when typing LIST/List Junk option.
+/junkyard list mark - Lists the items on the saved AutoJunk list and their autojunk setting.
+/junkyard delmark # - Remove a marked item from the MARK List. 
+/junkyard dm #  (Same as above)
+
+Note; You will have to ADD items to the MARK list from LIST/LIST JUNK for them
+to be saved. Autojunk must be enabled for the auto-junking to work.
+
+ Todo:
+======
+* Prettier output / Reduce spam.
+* Translations
+* Help
+* Less bugs and "hacky"
+* Rewrite when I have the time
+ 
+ Changelist:
+============
+* See file "Change.log"
+
+
+ License:
+=========
+[URL="http://creativecommons.org/licenses/by-nc-sa/4.0/"][IMG]http://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png[/IMG][/URL]
+
+This work is licensed under a [URL="http://creativecommons.org/licenses/by-nc-sa/4.0/"]Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License[/URL]

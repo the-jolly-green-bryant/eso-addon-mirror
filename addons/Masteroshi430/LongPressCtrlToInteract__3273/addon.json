@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Masteroshi430/LongPressCtrlToInteract__3273",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:3273",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3273",
+  "deleted": false,
+  "directories": [
+    "LongPressCtrlToInteract"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3273/",
+  "fingerprint": "9a67ad84f11abd521e5c31bcc58399730d2787d2f3477e7273162b36e7dc86f8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11169.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11168.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3273",
+  "source_url": "https://www.esoui.com/downloads/info3273-LongPressCtrlToInteract.html",
+  "stats": {
+    "downloads": 14249,
+    "favorites": 14,
+    "monthly_downloads": 195
+  },
+  "title": "LongPressCtrlToInteract",
+  "updated_at": 1784497662000,
+  "version": "2026.07.19"
+}

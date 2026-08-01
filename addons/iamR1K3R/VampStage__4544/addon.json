@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/iamR1K3R/VampStage__4544",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "iamR1K3R",
+  "canonical_id": "esoui:4544",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4544",
+  "deleted": false,
+  "directories": [
+    "VampStage"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4544/",
+  "fingerprint": "595b555395768b73bfbfe83f8d812df57da2d9e52f40b49ad2b26d3da385e16f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15886.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15887.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4544",
+  "source_url": "https://www.esoui.com/downloads/info4544-VampStage.html",
+  "stats": {
+    "downloads": 205,
+    "favorites": 1,
+    "monthly_downloads": 37
+  },
+  "title": "VampStage",
+  "updated_at": 1777829557000,
+  "version": "1.0.1"
+}

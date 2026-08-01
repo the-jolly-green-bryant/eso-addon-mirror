@@ -1,0 +1,32 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cFFD700More Markers|r">
+			<Action name="M0RMARKERS_TOGGLE_QUICK_MENU">
+				<Down>M0RMarkers.toggleQuickMenu()</Down>
+			</Action>
+			<Action name="M0RMARKERS_PLACE_MARKER">
+				<Down>M0RMarkers.placeIcon()</Down>
+			</Action>
+			<Action name="M0RMARKERS_PLACE_QUICK_MARKER">
+				<Down>M0RMarkers.placeQuickMenuIcon()</Down>
+			</Action>
+
+			<Action name="M0RMARKERS_PLACE_QUICK_MARKER_CURSOR">
+				<Down>M0RMarkers.placeQuickMenuIconAtCursor()</Down>
+			</Action>
+
+			<Action name="M0RMARKERS_REMOVE_MARKER">
+				<Down>M0RMarkers.removeClosestIcon()</Down>
+			</Action>
+
+			<Action name="M0RMARKERS_REMOVE_MARKER_CURSOR">
+				<Down>M0RMarkers.removeIconAtCursor()</Down>
+			</Action>
+
+			<Action name="M0RMARKERS_PLACE_TEMP_MARKER">
+				<Down>M0RMarkers.sendTempMarker()</Down>
+			</Action>
+
+		</Category>
+	</Layer>
+</Bindings>

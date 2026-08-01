@@ -1,0 +1,79 @@
+## Title: |cFF9900Joker
+## Description: Best enjoyed with Skooma, |cFF9900Joker |cFFFFFFoffers a collection of various jokes, riddles, trivia, ready checks, fun utilities & other amusing pop-culture references - all readily available ingame for your leisurely chatting pleasure!
+## Author: |cFF9900Lent|cFFFFFF (IGN |cFF9900@CallMeLent|cFFFFFF)
+
+## Version: 8.7.1
+## AddOnVersion: 807100
+## APIVersion: 101048
+## SavedVariables: JokerSavedVars
+## DependsOn: LibAddonMenu-2.0>=38
+
+# Start Loading Joker Components
+Joker.xml
+
+## I18n & Locales (default: en)
+i18n\en.lua
+i18n\$(language).lua
+
+## Core
+variables.lua
+
+## Preset Jokes
+jokes\Burns.lua
+jokes\Curse.lua
+jokes\Cat.lua
+jokes\Dad.lua
+jokes\Edgy.lua
+jokes\ESO.lua
+jokes\GameOfThrones.lua
+jokes\HarryPotter.lua
+jokes\LordOfTheRings.lua
+jokes\News.lua
+jokes\Norris.lua
+jokes\PickupLines.lua
+jokes\ReadyChecks.lua
+jokes\Riddles.lua
+jokes\Pokemon.lua
+jokes\StarWars.lua
+jokes\Twisters.lua
+jokes\Wisdom.lua
+
+## Preset Trivia
+trivia\ESO.lua
+trivia\Celebrity.lua
+trivia\Geography.lua
+trivia\Science.lua
+
+################################################################
+## ADD YOUR CUSTOM JOKE, RIDDLE, AND READY CHECK FILES BELOW! ##
+################################################################
+
+jokes\_MyCustomJokes.lua
+jokes\_MyCustomReadyChecks.lua
+
+################################################################
+## ADD YOUR CUSTOM JOKE, RIDDLE, AND READY CHECK FILES ABOVE! ##
+################################################################
+
+################################################################
+## ADD YOUR CUSTOM TRIVIA FILES BELOW! ##########################
+################################################################
+
+trivia\_MyCustomTrivia.lua
+
+################################################################
+## ADD YOUR CUSTOM TRIVIA FILES ABOVE! ##########################
+################################################################
+
+## Initialize Joker
+options\customize.lua
+Joker-Util.lua
+Joker-Data.lua
+Joker.lua
+bindings.xml
+
+## Addon Settings Window
+Settings.lua
+
+## LICENSE
+; See LICENSE in this addon directory.

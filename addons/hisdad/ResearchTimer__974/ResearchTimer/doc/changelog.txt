@@ -1,0 +1,55 @@
+2018-03-08  v1.98 (No Other Changes)
+	Bump API
+
+
+2017-10-23  v1.97
+	Bump API
+
+
+2017-05-23  v1.96
+	Bump API
+
+2017-01-06  v1.95
+	Bump API
+
+2016-08-01  v1.94
+	Bump API for Update 11
+
+2016-06-08  v1.93
+	Bump API for DB
+
+2016-02-28  v1.92
+	Bump API for TG
+
+2015-11-03  v1.91
+	Bump API for orsinium
+
+
+2015-09-06 v1.9
+	Fix weird display mode after closing with"X"
+
+2015-09-01 v1.8
+	API Bump
+
+2015-08-23 v1.7
+	Allow Esc to Close the Dialog.
+
+2015-05-04 v1.6
+	Change to doc to specify IUP 3.13
+
+2015-04-30  v1.5
+	Small fix to localisation. Sadly the viewer is still not unicode compatible.
+	More effort in the offline use documentation and some screenshots.
+
+
+2015-04-21 v1.4
+	Deactivate debugging code printing RT.oPtion
+
+2015-03-21 v1.2
+	Works better when research expires
+
+2015-03-21 v1.1
+	Better response to events
+
+2015-03-16 v1.0
+	Basic functionality complete

@@ -1,0 +1,69 @@
+{
+  "archive_path": "addons/marlonbrando/KeyInv---Add-hotkeys-to-items-in-your-inventory__2903",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "marlonbrando",
+  "canonical_id": "esoui:2903",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2903",
+  "deleted": false,
+  "directories": [
+    "KeyInv"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2903/",
+  "fingerprint": "6fdf798ec88dad20e1e5be37c00cd7d66071026045d6564655f3de296ed384cf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9799.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2903",
+  "source_url": "https://www.esoui.com/downloads/info2903-KeyInv-Addhotkeystoitemsinyourinventory.html",
+  "stats": {
+    "downloads": 3754,
+    "favorites": 4,
+    "monthly_downloads": 10
+  },
+  "title": "KeyInv - Add hotkeys to items in your inventory",
+  "updated_at": 1654469270000,
+  "version": "1.5"
+}

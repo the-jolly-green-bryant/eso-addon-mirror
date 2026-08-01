@@ -1,0 +1,78 @@
+--This is imported and run. Must be valid lua.
+
+
+--This defines both the visibility of this data and also the display order
+
+-- comment out unwanted tabs with   --
+-- or Delete Order  Entirely to used the default
+
+-- Overwrites the default, doesn't edit it.
+Order={
+"Public",
+"Group 1N",
+"Group 1V",
+"Group 1VH",
+"Group 2N",
+"Group 2V",
+"Group 2VH",
+"Trials Norm",
+"Trials Vet",
+"Trials Hard",
+"DLC Group"
+}
+
+
+--Done these, skip the display.
+--See data/meta/DLC_Order.lua  for current list
+Nope2DLC={
+
+["Deadlands"]=true,
+["Waking Flame"]=true,
+["Flames of Ambition"]=true,
+["Markarth"]=true,
+["Stonethorn"]=true,
+["Harrowstorm"]=true,
+["Dragonhold"]=true,
+["Scalebreaker"]=true,
+["Wrathstone"]=true,
+["Murkmire"]=true,
+["Wolfhunter"]=true,
+["Dragon Bones"]=true,
+["Clockwork City"]=true,
+["Horns of the Reach"]=true,
+["Shadows of the Hist"]=true,
+["Dark Brotherhood"]=true,
+["Thieves Guild"]=true,
+["Orsinium"]=true,
+["Imperial City"]=true,
+["Blackwood"]=true,
+}
+
+--
+
+--This redefines system defaults
+
+-- FG_Colour_Not_Complete = "#FFB67D"
+-- FG_Colour_Complete = "#000000"
+-- BG_Colour_Not_Complete = "#FFB67D"
+-- BG_Colour_Complete = "#A4FF5A"
+-- Colour_Heading_Complete = "#58FA58"
+-- DefWidth = 120		-- data column width for dungeon Columns
+
+
+
+
+
+
+
+-- remove from DLC_Order.dat table which has our DLC data for display
+for i,dlc in ipairs (DLC_Order.dat) do
+
+	if Nope2DLC[dlc] then
+		print("Nope for DLC: " .. dlc)
+		DLC_Order.dat[i] = nil
+	else
+		-- print("Ok for DLC: " .. dlc)
+	end
+
+end

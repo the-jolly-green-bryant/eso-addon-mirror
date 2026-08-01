@@ -1,0 +1,18 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="|cFFFF00Mail Buddy|r">
+            
+            <Action name="MAILBUDDY_COPY">
+                <Down>
+                	MailBuddy.CopyNameUnderControl()
+                    MailBuddy.keybindUsed = true
+                </Down>
+                <Up>
+                	MailBuddy.StoreRecipient()
+                    MailBuddy.keybindUsed = false
+                </Up>
+            </Action>
+            
+        </Category>
+    </Layer>
+</Bindings>

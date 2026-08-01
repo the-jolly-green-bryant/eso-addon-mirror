@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Hoft/Chat-Tab-Selector__1674",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hoft",
+  "canonical_id": "esoui:1674",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1674",
+  "deleted": false,
+  "directories": [
+    "ChatTabSelector"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1674/",
+  "fingerprint": "d1732ceaf7594cf5c37654685ff4208e323b2a316dff42b418f546d8c16b8dc4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5517.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1674",
+  "source_url": "https://www.esoui.com/downloads/info1674-ChatTabSelector.html",
+  "stats": {
+    "downloads": 53139,
+    "favorites": 64,
+    "monthly_downloads": 155
+  },
+  "title": "Chat Tab Selector",
+  "updated_at": 1639920240000,
+  "version": "1.38"
+}

@@ -1,0 +1,9 @@
+## APIVersion: 101039
+## Title: |cFF7777Armory|r|c7777FFLocker|r
+## Version: 1.0
+## AddOnVersion: 8
+## Author: |c8E4DFF@KrykiZZ|r, 
+## Description: Adds possibility to "lock" your builds from accidental overwrite
+## SavedVariables: ArmoryLocker_Data
+
+ArmoryLocker.lua

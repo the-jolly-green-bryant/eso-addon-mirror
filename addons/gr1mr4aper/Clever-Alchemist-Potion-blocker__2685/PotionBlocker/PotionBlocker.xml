@@ -1,0 +1,23 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="potFrame" allowBringToTop="false" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+			<Dimensions x="52" y="52" /> 
+			<OnMoveStop>  
+				savePos()
+			</OnMoveStop>
+			<Controls>
+			<Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill/>
+            </Backdrop>
+				<Label name="$(parent)Time" text="0.0" inheritAlpha="true" font="$(CHAT_FONT)|$(KB_48)|soft-shadow-thick" verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+					<AnchorFill />  
+				</Label> 
+                <Texture name="$(parent)TopDivider" textureFile="EsoUI/Art/icons/consumable_potion_002_type_005.dds" tier="LOW">
+					<Dimensions x="40" y="40"/>
+					<Anchor offsetY="0" point="CENTER" relativePoint="CENTER" relativeTo="$(parent)" />
+				</Texture>
+			</Controls>
+		</TopLevelControl>   
+	</Controls>
+</GuiXml>
+   

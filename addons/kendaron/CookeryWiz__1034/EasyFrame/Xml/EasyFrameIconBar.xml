@@ -1,0 +1,96 @@
+<GuiXml>
+  <Controls>
+  
+    <TopLevelControl name="EasyFrameIconBar" mouseEnabled="true" tier="MEDIUM" layer="CONTROLS" movable="false" clampedToScreen="true" virtual="true">
+      <Dimensions x="235" y="42" />
+      <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="100" offsetY="100"/>  
+			<Controls>
+
+        <Texture name="$(parent)DebugTexture" hidden="true" color="FF0000" alpha="0.3">
+          <AnchorFill />
+        </Texture>
+        
+       
+				<Texture name="$(parent)NormalTexture" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false" textureFile="/esoui/art/mappins/wayshrine_undiscovered.dds" alpha="1" integralWrapping="true">
+          <OnMouseEnter>
+            EasyFrameIconBar:OnMouseEnterIcon(self)
+          </OnMouseEnter>
+          <OnMouseExit>
+            EasyFrameIconBar:OnMouseExitIcon(self)
+          </OnMouseExit>
+          <OnMouseDown>
+            EasyFrameIconBar:OnMouseDownIcon(self)
+          </OnMouseDown>
+          <OnMouseUp>
+            EasyFrameIconBar:OnMouseUpIcon(self)
+          </OnMouseUp>              
+					<Dimensions x="32" y="32" />        
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
+				</Texture> 
+                
+        <Backdrop hidden="false" name="$(parent)BarTexture" inherits="ZO_DefaultBackdrop" excludeFromResizeToFitExtents="false" alpha="0">
+          <Dimensions x="42" y="30" />        
+          <Anchor point="TOPLEFT" relativeTo="$(parent)NormalTexture" relativePoint="CENTER" offsetX="0" offsetY="-14"/>
+          <Controls>
+          </Controls>
+        </Backdrop>       
+        
+                <!--
+        <Texture name="$(parent)BurstTexture" hidden="true" color="FF0000" alpha="0.3">
+          <Dimensions x="1" y="1" />
+          <Anchor point="CENTER" relativeTo="$(parent)NormalTexture" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+        </Texture>        
+				<Backdrop name="$(parent)Glow" drawLevel="0" hidden="true" alpha="0.2" >
+					<Dimensions x="64" y="64" />        
+          <Anchor point="CENTER" relativeTo="$(parent)NormalTexture" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+          <Edge file="EsoUI/Art/Crafting/crafting_toolTip_glow_edge_blue64.dds" edgeFileWidth="512" edgeFileHeight="64" edgeSize="8" edgeFilePadding="4" />
+            <Controls>
+
+            <Texture name="$(parent)DebugTexture" hidden="false" color="FF0000" alpha="0.3">
+              <AnchorFill />
+            </Texture>          
+          </Controls>          
+				</Backdrop>
+
+				<Texture name="$(parent)IconBurst1" drawLevel="0" hidden="true" textureFile="/esoui/art/crafting/white_burst.dds" alpha="1" >
+					<Dimensions x="72" y="72" />        
+          <Anchor point="CENTER" relativeTo="$(parent)NormalTexture" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Texture name="$(parent)IconBurst2" drawLevel="0" hidden="true" textureFile="/esoui/art/crafting/burst_blue.dds" alpha="1" >
+					<Dimensions x="72" y="72" />        
+          <Anchor point="CENTER" relativeTo="$(parent)NormalTexture" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+				</Texture>
+        -->
+      </Controls>
+    </TopLevelControl>
+    
+		<TopLevelControl name="EasyFrameMiniBar" hidden="false" inherits="EasyFrameIconBar" virtual="true">
+      <Controls>
+        <Backdrop name="$(parent)BarTexture" override="true" >
+          <Controls>
+          <!--
+            <Button name="$(parent)DisplayButton" hidden="false" tooltipText="Display">
+              <OnMouseEnter>
+                EasyFrameMiniBar:OnMouseEnterDisplayButton(self)
+              </OnMouseEnter>
+              <OnMouseExit>
+                EasyFrameMiniBar:OnMouseExitDisplayButton(self)
+              </OnMouseExit> 
+              <OnClicked>
+                EasyFrameMiniBar:OnClickedDisplayButton(...)
+              </OnClicked>              
+              <Dimensions x="28" y="28" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="2" />                  
+              <Textures scale="2" normal="esoui/art/chatwindow/maximize_up.dds" pressed="esoui/art/chatwindow/maximize_down.dds"
+                mouseOver="esoui/art/chatwindow/maximize_over.dds" />     
+            </Button> 
+            -->
+          </Controls>
+        </Backdrop>
+				<Texture name="$(parent)NormalTexture" hidden="false" override="true" textureFile="esoui/art/cadwell/cadwell_indexicon_silver_up.dds" alpha="1">
+				</Texture>         
+			</Controls>
+    </TopLevelControl>    
+    
+  </Controls>
+</GuiXml>      

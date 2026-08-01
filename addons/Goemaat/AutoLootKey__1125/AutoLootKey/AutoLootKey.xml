@@ -1,0 +1,16 @@
+<GuiXml>
+    <Controls>
+        <!-- just for OnUpdate -->
+        <TopLevelControl name="ALKMain" mouseEnabled="false" movable="false" clampedToScreen="true">
+            <Dimensions x="1" y="1" />
+
+			<OnMouseEnter>
+				ALKMain:SetAlpha(0)
+			</OnMouseEnter>
+
+			<OnUpdate>
+                ALK.OnUpdate()
+			</OnUpdate>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

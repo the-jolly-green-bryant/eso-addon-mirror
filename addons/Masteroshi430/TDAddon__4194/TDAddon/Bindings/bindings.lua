@@ -1,0 +1,5 @@
+ZO_CreateStringId("SI_BINDING_NAME_TDADDON_PASSENGER_HOP", "Passenger Hop")
+ZO_CreateStringId("SI_BINDING_NAME_TDADDON_RESPAWN_CAMP", "Revive at closest forward camp")
+ZO_CreateStringId("SI_BINDING_NAME_TDADDON_RESPAWN_KEEP", "Revive at closest keep in range")
+ZO_CreateStringId("SI_BINDING_NAME_TDADDON_RECALL", "Use Keep Recall Stone or Sigil")
+ZO_CreateStringId("SI_BINDING_NAME_TDADDON_ALL", "All in one button")

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/MrPikPik/Improved-Item-Set-Collection-Filters__3402",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:3402",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3402",
+  "deleted": false,
+  "directories": [
+    "ImprovedItemSetCollection"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3402/",
+  "fingerprint": "f491ee43c4aa929f76046cc9fe3a276cf82cb221927c522e59db7c982caece55",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11618.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3402",
+  "source_url": "https://www.esoui.com/downloads/info3402-ImprovedItemSetCollectionFilters.html",
+  "stats": {
+    "downloads": 4183,
+    "favorites": 6,
+    "monthly_downloads": 76
+  },
+  "title": "Improved Item Set Collection Filters",
+  "updated_at": 1655643041000,
+  "version": "1.1.1"
+}

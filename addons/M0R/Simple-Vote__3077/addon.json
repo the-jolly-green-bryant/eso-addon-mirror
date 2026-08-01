@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/M0R/Simple-Vote__3077",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "M0R",
+  "canonical_id": "esoui:3077",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3077",
+  "deleted": false,
+  "directories": [
+    "SimpleVote"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3077/",
+  "fingerprint": "3578c0d1120664b06d3f0e5bb43552261538337c2586881400ad8e6020c72ba7",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3077",
+  "source_url": "https://www.esoui.com/downloads/info3077-SimpleVote.html",
+  "stats": {
+    "downloads": 2296,
+    "favorites": 0,
+    "monthly_downloads": 9
+  },
+  "title": "Simple Vote",
+  "updated_at": 1621276221000,
+  "version": "1.0"
+}

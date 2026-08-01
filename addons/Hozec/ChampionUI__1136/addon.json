@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Hozec/ChampionUI__1136",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hozec",
+  "canonical_id": "esoui:1136",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1136",
+  "deleted": false,
+  "directories": [
+    "championUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1136/",
+  "fingerprint": "caaa63e7b721db695f7d62fb8bd1597d5b37184804e0d263d55292a3c111b1f4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3648.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1136",
+  "source_url": "https://www.esoui.com/downloads/info1136-ChampionUI.html",
+  "stats": {
+    "downloads": 6616,
+    "favorites": 9,
+    "monthly_downloads": 19
+  },
+  "title": "ChampionUI",
+  "updated_at": 1496090971000,
+  "version": "2.0.0"
+}

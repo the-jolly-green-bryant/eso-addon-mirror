@@ -1,0 +1,15 @@
+## Title: Seething Fury Counter
+## APIVersion: 100027
+## SavedVariables: SeethingFuryCounterVariables
+## Description: Displays stacks of Seething Fury
+## Version: 1.0.0
+## AddOnVersion: 1.0.0
+## Author: |cFFCCCC@g4rr3t|r (NA)
+## DependsOn: LibStub LibAddonMenu-2.0
+
+src/SeethingFuryCounter.xml
+src/Main.lua
+src/Defaults.lua
+src/Settings.lua
+src/Tracking.lua
+src/Interface.lua

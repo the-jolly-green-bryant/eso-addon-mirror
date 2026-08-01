@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Lykeion/Lykeion-s-Group-Banisher__3967",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lykeion",
+  "canonical_id": "esoui:3967",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:3967",
+  "deleted": false,
+  "directories": [
+    "LykeionsGroupBanisher"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3967/",
+  "fingerprint": "cb9d480cb51f6647940e34644c8eb3663c4d875a855ce1b43595ae11437cd90b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13446.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3967",
+  "source_url": "https://www.esoui.com/downloads/info3967-LykeionsGroupBanisher.html",
+  "stats": {
+    "downloads": 1346,
+    "favorites": 1,
+    "monthly_downloads": 6
+  },
+  "title": "Lykeion's Group Banisher",
+  "updated_at": 1729027541000,
+  "version": "1.3"
+}

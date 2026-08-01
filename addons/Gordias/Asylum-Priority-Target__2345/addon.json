@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Gordias/Asylum-Priority-Target__2345",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Gordias",
+  "canonical_id": "esoui:2345",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:2345",
+  "deleted": false,
+  "directories": [
+    "AsylumPriorityTarget"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2345/",
+  "fingerprint": "45418ebbd518e8c655db8ba9531b1f7f1e7c8d7c2fe1b5f992dfc272bcd83c3d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8019.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8020.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2345",
+  "source_url": "https://www.esoui.com/downloads/info2345-AsylumPriorityTarget.html",
+  "stats": {
+    "downloads": 12558,
+    "favorites": 13,
+    "monthly_downloads": 87
+  },
+  "title": "Asylum Priority Target",
+  "updated_at": 1697361873000,
+  "version": "1.3"
+}

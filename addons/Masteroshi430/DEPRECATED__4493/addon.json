@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Masteroshi430/DEPRECATED__4493",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:4493",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4493",
+  "deleted": false,
+  "directories": [
+    "LootDrop"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4493/",
+  "fingerprint": "10b65bd9729997a67cf307640258f8c713c2ed0e505eb130a2e771802a5705cd",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4493",
+  "source_url": "https://www.esoui.com/downloads/info4493-DEPRECATED.html",
+  "stats": {
+    "downloads": 389,
+    "favorites": 2,
+    "monthly_downloads": 36
+  },
+  "title": "DEPRECATED",
+  "updated_at": 1775540454000,
+  "version": "0"
+}

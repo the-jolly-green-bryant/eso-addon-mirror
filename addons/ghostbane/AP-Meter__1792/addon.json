@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/ghostbane/AP-Meter__1792",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ghostbane",
+  "canonical_id": "esoui:1792",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:1792",
+  "deleted": false,
+  "directories": [
+    "APMeter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1792/",
+  "fingerprint": "35ec0d7f1e087a520caeff49ae42c895f39b0c95b04339b55341cc6d8fd97c17",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12501.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12502.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12503.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1792",
+  "source_url": "https://www.esoui.com/downloads/info1792-APMeter.html",
+  "stats": {
+    "downloads": 93428,
+    "favorites": 60,
+    "monthly_downloads": 129
+  },
+  "title": "AP Meter",
+  "updated_at": 1688861043000,
+  "version": "2.0.4"
+}

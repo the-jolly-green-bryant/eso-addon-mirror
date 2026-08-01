@@ -1,0 +1,17 @@
+## APIVersion: 100029
+## Author: kendaron
+## Title: Easy Frame Library
+## Description: Used to easily create window frames
+## Version 1.0.26
+## License: Distribution or use of addon or code without attribution to author is prohibited!
+## LastUpdated: Nov 2017
+## SavedVariables: SavedVariables
+Lang\en.lua
+Lang\$(language).lua
+EasyFrameUtils.lua
+EasyFrame.lua
+EasyFrameDialog.lua
+EasyFrameIconBar.lua
+EasyFrameMiniBar.lua
+Xml\EasyFrameIconBar.xml
+EasyFrame.xml

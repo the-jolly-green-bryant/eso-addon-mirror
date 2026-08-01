@@ -1,0 +1,221 @@
+<GuiXml>
+    <Controls>
+	<TopLevelControl name="XynodePanel" clampedToScreen="true" mouseEnabled="true" movable="true">
+		<Dimensions x="250" y="48" />
+			<OnMoveStop>
+				OnMoveStop()
+			</OnMoveStop>
+			<AnchorFill />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.5"/>
+
+                <Label name="$(parent)Counter" hidden="false"  font="ZoFontGameSmall" color="CFDCBD" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="BOTTOM" text="..">
+										<Dimensions x="250" y="48" />
+										<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                </Label>
+                <Texture name="$(parent)Button" textureFile="Xynode/icons/Xy.dds" tier="HIGH">
+                	<Dimensions x="48" y="48" />
+                	<Anchor point="TOPLEFT"  relativeTo="$(parent)" offsetX="-24"/>
+
+                </Texture>
+
+
+
+				<Button name="$(parent)ButtonFullGuide" inherits="ZO_DefaultButton">
+				<Dimensions x="24" y="24" />
+				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="60" />
+				<Textures normal="Xynode/icons/xynode_entire_disabled.dds"
+					pressed="Xynode/icons/xynode_entire_disabled.dds"
+					mouseOver="Xynode/icons/xynode_entire_over.dds"
+					disabled="Xynode/icons/xynode_entire_disabled.dds"/>
+				<OnClicked>
+					ShowGuide(false)
+				</OnClicked>
+			</Button>
+
+
+
+			<Button name="$(parent)YouTubeFull" inherits="ZO_DefaultButton">
+				<Dimensions x="24" y="24" />
+				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="185" />
+				<Textures normal="Xynode/icons/youtube_AAM.dds"
+					pressed="Xynode/icons/youtube_AAM.dds"
+					mouseOver="Xynode/icons/youtube_AAM.dds"
+					disabled="Xynode/icons/youtube_AAM.dds"/>
+				<OnClicked>
+					ShowYouTube()
+				</OnClicked>
+			</Button>
+
+
+
+
+
+				<Button name="$(parent)ButtonBossGuide" inherits="ZO_DefaultButton">
+				<Dimensions x="24" y="24" />
+				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="85" />
+				<Textures normal="Xynode/icons/xynode_boss_normal.dds"
+					pressed="Xynode/icons/xynode_boss_disabled.dds"
+					mouseOver="Xynode/icons/xynode_boss_over.dds"
+					disabled="Xynode/icons/xynode_boss_disabled.dds"/>
+				<OnClicked>
+					ShowGuide(true)
+				</OnClicked>
+			</Button>
+
+			<Button name="$(parent)ButtonShowWebMenu" inherits="ZO_DefaultButton" tooltip="Website">
+				<Dimensions x="24" y="24" />
+				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="110" />
+				<Textures normal="Xynode/icons/xynode_web_normal.dds"
+					mouseOver="Xynode/icons/xynode_web_over.dds" />
+				<OnClicked>
+					ShowWebsite()
+				</OnClicked>
+			</Button>
+
+			<Button name="$(parent)ButtonSettings" inherits="ZO_DefaultButton">
+				<Dimensions x="24" y="24" />
+				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="135" />
+				<Textures normal="Xynode/icons/xynode_settings_normal.dds"
+					mouseOver="Xynode/icons/xynode_settings_over.dds" />
+				<OnClicked>
+					ShowSettings()
+				</OnClicked>
+			</Button>
+
+			<Button name="$(parent)ButtonAbout" inherits="ZO_DefaultButton">
+				<Dimensions x="24" y="24" />
+				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" />
+				<Textures normal="Xynode/icons/xynode_about_normal.dds"
+					mouseOver="Xynode/icons/xynode_about_over.dds" />
+				<OnClicked>
+					ShowAbout()
+				</OnClicked>
+			</Button>
+
+
+            </Controls>
+	</TopLevelControl>
+
+
+
+
+	<TopLevelControl name="XynodeGuide" hidden="true" clampedToScreen="false" mouseEnabled="true" movable="true">
+		<Dimensions x="750" y="800" />
+    <OnMoveStop>
+      OnXynodeGuideMoveStop()
+    </OnMoveStop>
+    	<Anchor point="CENTER" relativeTo="GuiRoot" />
+    	<Controls>
+			<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.5"/>
+
+   			<Label name="$(parent)WindowTitle" font="ZoFontAnnounceMedium" text="|cffff00Xynode's|r All About Mechanics" >
+   				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+   			</Label>
+			<Label name="$(parent)DungeonTitle" font="ZoFontAnnounceMedium" text="This is the dungeon title" >
+   				<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-60" />
+   			</Label>
+
+
+
+
+			<Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/gamepad/horizontaldivider.dds" tier="HIGH">
+    			<Dimensions x="800" y="4"/>
+    			<Anchor point="TOP" relativeTo="$(parent)" offsetY="38" />
+			</Texture>
+
+			<Control name="$(parent)Content" inherits="ZO_ScrollContainer">
+				<Dimensions x="700" />
+				<Anchor point="TOPLEFT"  relativeTo="$(parent)"  offsetY="60" />
+				<Anchor point="BOTTOMRIGHT" offsetY="-12" />
+			</Control>
+
+
+			<Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+				<Dimensions x="40" y="40" />
+				<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+				<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+					pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+					mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+					disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+				<OnClicked>
+					CloseGuide()
+				</OnClicked>
+			</Button>
+
+			<Button name="$(parent)ButtonHideShow" inherits="ZO_ButtonBehaviorClickSound">
+				<Dimensions x="40" y="40" />
+				<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="50" />
+				<Textures normal="EsoUI/Art/charactercreate/charactercreate_leftarrow_down.dds"/>
+				<OnClicked>
+					ShowHide()
+				</OnClicked>
+			</Button>
+
+
+
+			<Button name="$(parent)ButtonWebGuide" inherits="ZO_DefaultButton">
+				<Dimensions x="24" y="24" />
+				<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-24" />
+				<Textures normal="Xynode/icons/xynode_web_trans.dds"
+					mouseOver="Xynode/icons/xynode_web_trans.dds" />
+				<OnClicked>
+					ShowWebPage()
+				</OnClicked>
+			</Button>
+
+		</Controls>
+    </TopLevelControl>
+
+	<TopLevelControl name="XynodeAbout" hidden="true" clampedToScreen="true" mouseEnabled="true" movable="false">
+		<Dimensions x="750" y="800" />
+    	<Anchor point="CENTER" relativeTo="GuiRoot" />
+    	<Controls>
+			<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.5"/>
+
+   			<Label name="$(parent)WindowTitle" font="ZoFontAnnounceMedium" text="|cffff00Xynode's|r All About Mechanincs" >
+   				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+   			</Label>
+			<Label name="$(parent)AboutText" font="ZoFontGame" width="700" >
+   				<Dimensions x="750" y="800" />
+				<Anchor point="TOPLEFT" relativeTo="$(parent)" width="700" relativePoint="TOPLEFT" offsetY="60" />
+   			</Label>
+
+
+
+
+			<Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/gamepad/horizontaldivider.dds" tier="HIGH">
+    			<Dimensions x="800" y="4"/>
+    			<Anchor point="TOP" relativeTo="$(parent)" offsetY="38" />
+			</Texture>
+
+			<Control name="$(parent)Content" inherits="ZO_ScrollContainer">
+				<Dimensions x="700" />
+				<Anchor point="TOPLEFT"  relativeTo="$(parent)"  offsetY="60" />
+				<Anchor point="BOTTOMRIGHT" offsetY="-12" />
+			</Control>
+
+
+			<Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+				<Dimensions x="40" y="40" />
+				<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+				<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+					pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+					mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+					disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+				<OnClicked>
+					ShowAbout()
+				</OnClicked>
+			</Button>
+
+
+
+		</Controls>
+    </TopLevelControl>
+
+
+
+
+
+    </Controls>
+</GuiXml>

@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/kottsemla/Crafting-Stations__668",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kottsemla",
+  "canonical_id": "esoui:668",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:668",
+  "deleted": false,
+  "directories": [
+    "CraftingStations"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl668/",
+  "fingerprint": "df17a6d481eb85434c580743ad361c3c18ffccfb4f7a7149183b4c96f7b2b097",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2103.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2104.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2130.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4236.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "668",
+  "source_url": "https://www.esoui.com/downloads/info668-CraftingStations.html",
+  "stats": {
+    "downloads": 913307,
+    "favorites": 782,
+    "monthly_downloads": 2095
+  },
+  "title": "Crafting Stations",
+  "updated_at": 1781202614000,
+  "version": "1.19.7"
+}

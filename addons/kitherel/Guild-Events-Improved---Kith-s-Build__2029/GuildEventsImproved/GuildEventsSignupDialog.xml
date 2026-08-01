@@ -1,0 +1,63 @@
+<GuiXml>
+    <Controls>
+        <!-- Virtual Controls -->
+        <Button name="GuildEventVirtualCheckboxRole" virtual="true">
+            <Dimensions x="20" y="20" />
+            <Textures normal="/esoui/art/buttons/checkbox_unchecked.dds"
+                      mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" />
+            <OnClicked>
+                GuildEventsUI.toggleRole(self)
+            </OnClicked>
+        </Button>
+        <TopLevelControl name="GuildEventsSignupDialog" inherits="ZO_CustomDialogBase">
+            <Dimensions x="500" y="125" />
+            <Anchor point="CENTER" offsetY="-45" />
+            <Controls>
+                <Control name="$(parent)Content" inherits="ZO_DialogContentAnchors">
+                    <Controls>
+                        <Label name="$(parent)Text" font="ZoFontGame"
+                               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+                               horizontalAlignment="LEFT" text="xxx">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                        </Label>
+                        <Button name="$(parent)CheckboxRoleTank" inherits="GuildEventVirtualCheckboxRole">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                                    offsetX="0" offsetY="60" />
+                        </Button>
+                        <Label name="$(parent)TextRoleTank" font="ZoFontGame"
+                               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+                               horizontalAlignment="LEFT" text="L.roleTank">
+                            <Dimensions x="300" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                                    offsetX="30" offsetY="60" />
+                        </Label>
+                        <Button name="$(parent)CheckboxRoleHealer" inherits="GuildEventVirtualCheckboxRole">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                                    offsetX="0" offsetY="90" />
+                        </Button>
+                        <Label name="$(parent)TextRoleHealer" font="ZoFontGame"
+                               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+                               horizontalAlignment="LEFT" text="L.roleHealer">
+                            <Dimensions x="300" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                                    offsetX="30" offsetY="90" />
+                        </Label>
+                        <Button name="$(parent)CheckboxRoleDD" inherits="GuildEventVirtualCheckboxRole">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                                    offsetX="0" offsetY="120" />
+                        </Button>
+                        <Label name="$(parent)TextRoleDD" font="ZoFontGame"
+                               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+                               horizontalAlignment="LEFT" text="L.roleDD">
+                            <Dimensions x="300" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                                    offsetX="30" offsetY="120" />
+                        </Label>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton" />
+                <Control name="$(parent)Accept" inherits="ZO_CustomDialogButton" />
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/No-Logout-Confirmation__3551",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3551",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3551",
+  "deleted": false,
+  "directories": [
+    "NoLogoutConfirmation"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3551/",
+  "fingerprint": "08e79d6df790f5d9a7a571205e7f7baf0b02fbcd9d1bbddd90f0caad6acc88d9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12050.gif"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3551",
+  "source_url": "https://www.esoui.com/downloads/info3551-NoLogoutConfirmation.html",
+  "stats": {
+    "downloads": 2903,
+    "favorites": 2,
+    "monthly_downloads": 13
+  },
+  "title": "No Logout Confirmation",
+  "updated_at": 1674731396000,
+  "version": "1.0"
+}

@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Kharf/KharfUi__2077",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kharf",
+  "canonical_id": "esoui:2077",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2077",
+  "deleted": false,
+  "directories": [
+    "KharfUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2077/",
+  "fingerprint": "25615bcf6b537b2095ccc8613b89ba373da91acd2e53984e9ae6538941d2c198",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8052.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8057.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8054.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8055.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8053.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8056.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2077",
+  "source_url": "https://www.esoui.com/downloads/info2077-KharfUi.html",
+  "stats": {
+    "downloads": 5959,
+    "favorites": 7,
+    "monthly_downloads": 13
+  },
+  "title": "KharfUi",
+  "updated_at": 1557949060000,
+  "version": "0.4.3"
+}

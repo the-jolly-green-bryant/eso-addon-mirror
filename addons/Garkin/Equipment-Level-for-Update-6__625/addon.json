@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Garkin/Equipment-Level-for-Update-6__625",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Garkin",
+  "canonical_id": "esoui:625",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:625",
+  "deleted": false,
+  "directories": [
+    "EquipmentLevel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl625/",
+  "fingerprint": "f00d84a2ab29422e4dcd6aff0ec5d610ba965d10a0cfad232455e733beb072c5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1919.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "625",
+  "source_url": "https://www.esoui.com/downloads/info625-EquipmentLevelforUpdate6.html",
+  "stats": {
+    "downloads": 13368,
+    "favorites": 19,
+    "monthly_downloads": 6
+  },
+  "title": "Equipment Level (for Update 6)",
+  "updated_at": 1425425056000,
+  "version": "1.3"
+}

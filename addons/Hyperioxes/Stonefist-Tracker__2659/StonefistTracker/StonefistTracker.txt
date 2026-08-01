@@ -1,0 +1,14 @@
+## APIVersion: 100030
+## Title: StonefistTracker
+## Version: 1
+## Author: Hyperioxes
+## Description: UI that helps with tracking Stagger debuff uptime on bosses.
+## SavedVariables: StonefistTrackerSV
+
+
+
+
+StonefistTracker.lua
+
+
+

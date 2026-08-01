@@ -1,0 +1,24 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+  <Controls>
+    <TopLevelControl name="DsRGuildHolidayFrame" hidden="true">
+      <Dimensions x="950" y="100" />
+      <Anchor point="TOP" relativeTo="ZO_GuildHome" relativePoint="BOTTOM" />
+      <Controls>
+        <Texture name="DsRGuildHolidayIconFooter">
+          <Dimensions x="700" y="100"/>
+          <Anchor point="TOP" relativeTo="ZO_GuildHome" relativePoint="BOTTOM" offsetX="120" offsetY="-40"/>
+          <OnInitialized>
+                DsRGuildHoliday.LoadIconHoliFooter()
+          </OnInitialized>
+        </Texture>
+        <Texture name="DsRGuildHolidayIconHeader">
+          <Dimensions x="700" y="100"/>
+          <Anchor point="BOTTOM" relativeTo="ZO_GuildHome" relativePoint="TOP" offsetY="10"/>
+          <OnInitialized>
+                DsRGuildHoliday.LoadIconHoliHeader()
+          </OnInitialized>
+        </Texture>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,77 @@
+{
+  "archive_path": "addons/GalacticWar/Sprint-Sensitivity-Fix__3676",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "GalacticWar",
+  "canonical_id": "esoui:3676",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3676",
+  "deleted": false,
+  "directories": [
+    "SprintSens"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3676/",
+  "fingerprint": "a0dc1acf1eecabd5a01b4f4d03d23e819aca31f3d51696dd4060aa41499a3442",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13825.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3676",
+  "source_url": "https://www.esoui.com/downloads/info3676-SprintSensitivityFix.html",
+  "stats": {
+    "downloads": 6760,
+    "favorites": 7,
+    "monthly_downloads": 59
+  },
+  "title": "Sprint Sensitivity Fix",
+  "updated_at": 1754176780000,
+  "version": "5.6"
+}

@@ -1,0 +1,85 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="DsRGuildPvPBossTimerTimeTable" mouseEnabled="true" movable="true" clampedToScreen="false">
+			<Dimensions x="0" y="150" />
+			<OnMoveStop>
+				DsRGuildPvPBossTimer.onTableMove()
+			</OnMoveStop>
+		<!-- Population -->
+			<Controls>
+				<Label name="DsRGuildPvPBossTimerStatAD" font="ZoFontWinT1" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="BOTTOM" horizontalAlignment="LEFT" text="">
+					<Anchor point="LEFT" relativeTo="$(parent)" offsetY="-100" offsetX="10" />
+				</Label>
+				<Label name="DsRGuildPvPBossTimerStatEP" font="ZoFontWinT1" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="BOTTOM" horizontalAlignment="LEFT" text="">
+					<Anchor point="LEFT" relativeTo="$(parent)" offsetY="-100" offsetX="90" />
+				</Label>
+				<Label name="DsRGuildPvPBossTimerStatDC" font="ZoFontWinT1" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="BOTTOM" horizontalAlignment="LEFT" text="">
+					<Anchor point="LEFT" relativeTo="$(parent)" offsetY="-100" offsetX="170" />
+				</Label>
+				<Texture name="DsRGuildPvPBossTimerDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider_mythic.dds"
+					verticalAlignment="BOTTOM" horizontalAlignment="BOTTOM" >
+            	    <Dimensions x="320" y="3" />
+            	    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetY="-85" offsetX="-30"/>
+            	</Texture>
+			</Controls>
+		<!-- Attack and Districtnames -->
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0"/>
+				<Label name="DsRGuildPvPBossTimerDistricUAIcon" font="ZoFontWinT1" inheritAlpha="false" color="FFFFFF"
+					wrapMode="ELLIPSIS" verticalAlignment="BOTTOM" horizontalAlignment="LEFT" text="">
+					<Anchor point="LEFT" relativeTo="$(parent)" offsetY="12" offsetX="0" />
+				</Label>
+				<Label name="DsRGuildPvPBossTimerDistricIcon" font="ZoFontWinT1" inheritAlpha="false" color="FFFFFF"
+					wrapMode="ELLIPSIS" verticalAlignment="BOTTOM" horizontalAlignment="LEFT" text="">
+					<Anchor point="LEFT" relativeTo="$(parent)" offsetY="12" offsetX="0" />
+				</Label>
+				<Label name="DsRGuildPvPBossTimerDistricName" font="ZoFontWinT1" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="BOTTOM" horizontalAlignment="LEFT" text="">
+					<Anchor point="LEFT" relativeTo="$(parent)" offsetY="12" offsetX="30" />
+				</Label>
+				<Label name="DsRGuildPvPBossTimerTimerRemaining" font="ZoFontWinT1" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="BOTTOM" horizontalAlignment="LEFT" text="">
+					<Anchor point="LEFT" relativeTo="$(parent)" offsetY="12" offsetX="200" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+		<!-- TimerList MAP -->
+		<TopLevelControl name="DsRGuildPvPBossTimerMapTimers" movable="false" clampedToScreen="true" hidden="true">
+			<Dimensions x="800" y="800" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" />
+			<Controls>
+				<Label name="DsRGuildPvPBossTimerMemorialDistrictLabel" font="ZoFontWinH3" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+						<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-5" offsetY="-80" />
+				</Label>
+				<Label name="DsRGuildPvPBossTimerArenaDistrictLabel" font="ZoFontWinH3" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="85" offsetY="-30" />
+				</Label>
+				<Label name="DsRGuildPvPBossTimerArboretumDistrictLabel" font="ZoFontWinH3" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="80" offsetY="65" />
+				</Label>
+				<Label name="DsRGuildPvPBossTimerTempleDistrictLabel" font="ZoFontWinH3" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-5" offsetY="115" />
+				</Label>
+				<Label name="DsRGuildPvPBossTimerNoblesDistrictLabel" font="ZoFontWinH3" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-90" offsetY="65" />
+				</Label>
+				<Label name="DsRGuildPvPBossTimerElvenGardensDistrictLabel" font="ZoFontWinH3" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-90" offsetY="-35" />
+				</Label>
+				<Label name="DsRGuildPvPBossTimerCanLabel" font="ZoFontWinH3" inheritAlpha="false" color="FFFFFF"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

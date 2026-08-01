@@ -1,0 +1,94 @@
+{
+  "archive_path": "addons/Hoft/Map-Pins__1881",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hoft",
+  "canonical_id": "esoui:1881",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1881",
+  "deleted": false,
+  "directories": [
+    "MapPins"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1881/",
+  "fingerprint": "1a0d4dcf1423cb8937fde71ec4bcfb1a0f2ceeba6e0e6ce8c4b83bc11b026b50",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6751.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8009.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8434.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11753.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7575.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6416.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1881",
+  "source_url": "https://www.esoui.com/downloads/info1881-MapPins.html",
+  "stats": {
+    "downloads": 8271439,
+    "favorites": 2127,
+    "monthly_downloads": 193381
+  },
+  "title": "Map Pins",
+  "updated_at": 1785261871000,
+  "version": "1.100.22"
+}

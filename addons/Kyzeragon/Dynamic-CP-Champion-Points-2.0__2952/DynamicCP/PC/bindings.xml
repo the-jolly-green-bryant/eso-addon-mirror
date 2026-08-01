@@ -1,0 +1,31 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="Dynamic CP">
+            <Action name="DCP_TOGGLE_MENU">
+                <Down>
+                    DynamicCP.TogglePresetsWindow()
+                </Down>
+            </Action>
+            <Action name="DCP_TOGGLE_QUICKSTARS">
+                <Down>
+                    DynamicCP.ToggleQuickstars()
+                </Down>
+            </Action>
+            <Action name="DCP_CYCLE_QUICKSTARS">
+                <Down>
+                    DynamicCP.CycleQuickstars()
+                </Down>
+            </Action>
+            <Action name="DCP_DIALOG_CONFIRM">
+                <Down>
+                    DynamicCP.OnModelessConfirm()
+                </Down>
+            </Action>
+            <Action name="DCP_DIALOG_CANCEL">
+                <Down>
+                    DynamicCP.OnModelessCancel()
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

@@ -1,0 +1,9 @@
+## Title: |cEE1646Mini|r|c007385Bars|r
+## APIVersion: 100034 100035
+## Author: Merthan Merter / Lumpy Lemon
+## Version: 0.2
+## Description: Minimal resource bars.
+## SavedVariables: MiniBarsSavedVariables
+
+MiniBars.lua
+MiniBars.xml

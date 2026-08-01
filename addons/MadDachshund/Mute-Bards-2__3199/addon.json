@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/MadDachshund/Mute-Bards-2__3199",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MadDachshund",
+  "canonical_id": "esoui:3199",
+  "category_id": "27",
+  "compatibility": [],
+  "content_id": "esoui:3199",
+  "deleted": false,
+  "directories": [
+    "MuteBards2"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3199/",
+  "fingerprint": "809ee11b715b4a8d01c1a63cffe7ad9108c3bb5c907905abe63d37b18348a4a3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10863.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3199",
+  "source_url": "https://www.esoui.com/downloads/info3199-MuteBards2.html",
+  "stats": {
+    "downloads": 4456,
+    "favorites": 4,
+    "monthly_downloads": 8
+  },
+  "title": "Mute Bards 2",
+  "updated_at": 1632527754000,
+  "version": "2.0.6"
+}

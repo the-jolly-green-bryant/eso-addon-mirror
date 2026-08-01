@@ -1,0 +1,162 @@
+<GuiXml>
+    <Controls>
+	
+<!--
+	Virtual Template control
+-->
+        <Control name="PlaybillListItemTemplate" virtual="true" >
+            <Dimensions x="150" y="18" />
+            <OnMouseEnter>
+                ZO_ScrollList_MouseEnter(PlaybillFrameList, self)
+            </OnMouseEnter>
+
+            <OnMouseExit>
+                ZO_ScrollList_MouseExit(PlaybillFrameList, self)
+            </OnMouseExit>
+            
+            <OnMouseUp>
+                if(upInside) then
+                    ZO_ScrollList_MouseClick(PlaybillFrameList, self)
+                end
+            </OnMouseUp>
+			
+            <Controls>
+                <Label name="$(parent)Name" font="ZoFontGame" mouseEnabled="true">
+                    <Dimensions x="140" y="16" />
+                    <Anchor point="TOPLEFT" />
+					<!-- Events -->
+					<!-- ************************************************************* -->
+					<OnMouseDown>
+						ESOTheater.PlayEmoteByName(self:GetText())
+						local control =GetControl("PlaybillFrameBottomPanelStatusEmote")
+						control:SetText(self:GetText())
+						self:SetColor(1,1,0,1)
+					</OnMouseDown>
+					<OnMouseUp>
+						 self:SetColor(0.77,0.76,0.62,1)
+					</OnMouseUp>
+					<OnMouseEnter>
+						 self:SetColor(1,0,0,1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						self:SetColor(0.77,0.76,0.62,1)
+					</OnMouseExit>
+					<!-- ************************************************************* -->
+                </Label>
+            </Controls>
+        </Control>
+	
+<!--
+	Window for button choice selection
+-->
+        <TopLevelControl name="PlaybillFrame" tier="HIGH" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions x="150" y="750" />
+            <Anchor point="CENTER" />
+			<!-- Events -->
+			<!-- ************************************************************* -->
+			<OnMoveStop>
+				ESOTheater.ESOPlaybill:SaveWindowPosition()
+			</OnMoveStop>
+			<!-- ************************************************************* -->
+ 			
+            <Controls>
+				<Backdrop name="$(parent)BackGround" inherits="ZO_DefaultBackdrop" alpha="0.7"/>
+
+				<Button name="$(parent)Close" >
+					<Dimensions x="30" y="30" />
+					<Anchor point="TOPRIGHT" offsetX="15" offsetY="-3" />
+					<Textures
+						normal="EsoUI/Art/Buttons/closeButton_up.dds"
+						pressed="EsoUI/Art/Buttons/closeButton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closeButton_mouseOver.dds"
+						disabled="EsoUI/Art/Buttons/closeButton_disabled.dds"
+					 />
+					<!-- Events -->
+					<!-- ************************************************************* -->
+					<OnClicked>
+						ESOTheater.ESOPlaybill:Hide()
+					</OnClicked>
+					<!-- ************************************************************* -->
+				</Button>
+
+                <Control name="$(parent)HeaderPanel" >
+					<Dimensions x="145" y="25" />
+                    <Anchor point="TOP" relativeTo="PlaybillFrame"  relativePoint="TOP" offsetY="5" />
+					<Controls>
+						<Label name="$(parent)Title" inherits="ZO_WindowTitle"color="FF9900" horizontalAlignment="CENTER" text="" />	
+					</Controls>
+                </Control>
+
+				<Control name="$(parent)ComboBox01" inherits="ZO_ComboBox" mouseEnabled="true" >
+				 <Anchor point="TOPLEFT" relativeTo="PlaybillFrame" relativePoint="TOPLEFT" offsetX="-4" offsetY="-3" />
+				 </Control>
+
+				 <Texture name="$(parent)TopDivider" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+					<Dimensions y="4"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)HeaderPanel" relativePoint="BOTTOMLEFT" offsetX="-40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)HeaderPanel" relativePoint="BOTTOMRIGHT" offsetX="40" />
+				</Texture>
+				
+                <Control name="$(parent)CenterPanel">
+					<Dimensions x="145" y="375" />
+                    <Anchor point="TOP" relativeTo="$(parent)TopDivider" relativePoint="BOTTOM" offsetY="5"/>
+                </Control>
+				
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)CenterPanel"  relativePoint="TOPLEFT" offsetX="2" offsetY="5" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)CenterPanel" relativePoint="TOPRIGHT" offsetX="-2" offsetY="5" />
+					<Controls>
+						<!--
+							******************************************************************************************************************************************************
+								Emote list is created dynamically from the virtual ListItemTemplate and placed here in relation to the window
+							******************************************************************************************************************************************************  
+						-->
+					</Controls>
+                </Control>
+				
+                <Control name="$(parent)BottomPanel" color="FFABAB" >
+					<Dimensions x="145" y="30" />
+                    <Anchor point="BOTTOM" relativeTo="PlaybillFrame"  relativePoint="BOTTOM" offsetY="-5" />
+					<Controls>
+						<Label name="$(parent)StatusEmote" inherits="ZO_WindowTitle"   font="ZoFontGame" color="FFFF00" verticalAlignment ="CENTER"  horizontalAlignment="LEFT" text="" />
+					</Controls>
+                </Control>
+				
+				<Label name="$(parent)StatusLabel"  font="ZoFontGame" text="" >
+					<Dimensions x= "150" y="24"/>
+					<Anchor point="TOPLEFT" relativeTo="PlaybillFrame"  relativePoint="BOTTOMLEFT" offsetX="5" offsetY="5" />
+				</Label>
+				
+				<Button name="$(parent)ButtonCancel" inherits="ZO_DefaultButton" text="">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BottomPanel" relativePoint="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+					<!-- Events -->
+					<!-- ************************************************************* -->
+					<OnClicked>
+						ESOTheater.ESOPlaybill:Hide()
+					</OnClicked>
+					<!-- ************************************************************* -->
+				</Button>
+				
+				<Button name="$(parent)ButtonSave" inherits="ZO_DefaultButton" text="">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ButtonCancel" relativePoint="BOTTOMLEFT" offsetX="-5"/>
+					
+					<!-- Events -->
+					<!-- ************************************************************* -->
+					<OnClicked>
+						ESOTheater.ESOPlaybill:PlaybillFrameOnSave()
+					</OnClicked>
+					<!-- ************************************************************* -->
+				</Button>
+
+				<Texture name="$(parent)BottomDivider" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+                    <Dimensions y="4"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)BottomPanel" relativePoint="TOPLEFT" offsetX="-40"  offsetY="5" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BottomPanel" relativePoint="TOPRIGHT" offsetX="40"  offsetY="-5" />
+                </Texture>
+
+				
+            </Controls>
+        </TopLevelControl>
+		
+    </Controls>
+</GuiXml>

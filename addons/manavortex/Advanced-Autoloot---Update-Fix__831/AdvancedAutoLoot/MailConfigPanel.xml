@@ -1,0 +1,14 @@
+<GuiXml>
+    <Controls>        
+        <TopLevelControl name="ADVANCEDAUTOLOOT_MailConfigPanel" inherits="ZO_RightPanelFootPrint" hidden="true">
+            <OnInitialized>
+                ADVANCEDAUTOLOOT_MailConfigPanel_OnInitialized(self)
+            </OnInitialized>
+            <Controls>
+                <Label name="$(parent)ToLabel" font="ZoFontWinH3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="TestLABEL">
+                    <Anchor point="TOPLEFT" offsetY="40"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

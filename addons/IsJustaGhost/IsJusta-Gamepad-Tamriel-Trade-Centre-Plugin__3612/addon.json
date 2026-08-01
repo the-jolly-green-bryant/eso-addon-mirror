@@ -1,0 +1,60 @@
+{
+  "archive_path": "addons/IsJustaGhost/IsJusta-Gamepad-Tamriel-Trade-Centre-Plugin__3612",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IsJustaGhost",
+  "canonical_id": "esoui:3612",
+  "category_id": "162",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3612",
+  "deleted": false,
+  "directories": [
+    "IsJustaGamepadTTCPlugin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3612/",
+  "fingerprint": "b05ad01e6ae5997b0638b791f667302ddc6430510bd2308ec09147b92d4f7cd8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12294.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12295.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12296.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12297.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3612",
+  "source_url": "https://www.esoui.com/downloads/info3612-IsJustaGamepadTamrielTradeCentrePlugin.html",
+  "stats": {
+    "downloads": 25139,
+    "favorites": 24,
+    "monthly_downloads": 348
+  },
+  "title": "IsJusta Gamepad Tamriel Trade Centre Plugin",
+  "updated_at": 1717447920000,
+  "version": "2.1.3"
+}

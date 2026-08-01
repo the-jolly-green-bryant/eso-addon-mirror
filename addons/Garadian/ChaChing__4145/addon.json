@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Garadian/ChaChing__4145",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Garadian",
+  "canonical_id": "esoui:4145",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4145",
+  "deleted": false,
+  "directories": [
+    "ChaChing"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4145/",
+  "fingerprint": "9c90c28032951946b1d9c7b69d1f5de77753f8391e260317ae9b03d30025706a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14145.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4145",
+  "source_url": "https://www.esoui.com/downloads/info4145-ChaChing.html",
+  "stats": {
+    "downloads": 544,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "ChaChing",
+  "updated_at": 1750176082000,
+  "version": "1.1"
+}

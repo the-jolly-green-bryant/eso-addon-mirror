@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Kyzeragon/Set-Collection-Marker-Sticker-Book__2804",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyzeragon",
+  "canonical_id": "esoui:2804",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2804",
+  "deleted": false,
+  "directories": [
+    "SetCollectionMarker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2804/",
+  "fingerprint": "b2f7f6aeb24a3808246654a1096434cf1a0a5079976c4a1778ab5eabb9806656",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9490.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9491.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9498.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9524.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9525.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11742.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11743.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11744.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9523.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9522.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2804",
+  "source_url": "https://www.esoui.com/downloads/info2804-SetCollectionMarkerStickerBook.html",
+  "stats": {
+    "downloads": 135829,
+    "favorites": 120,
+    "monthly_downloads": 424
+  },
+  "title": "Set Collection Marker (Sticker Book)",
+  "updated_at": 1775421821000,
+  "version": "3.0.0"
+}

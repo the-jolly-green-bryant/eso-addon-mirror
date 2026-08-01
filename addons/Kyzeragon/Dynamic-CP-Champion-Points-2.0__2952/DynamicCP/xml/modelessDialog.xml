@@ -1,0 +1,45 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="DynamicCPModelessDialog" mouseEnabled="true" movable="true" hidden="true" tier="LOW">
+            <Dimensions x="400" y="300"/>
+            <OnMoveStop>DynamicCP.SaveModelessDialogPosition()</OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" centerColor="BB000000" edgeColor="BB3bdb5e" tier="LOW"><Edge edgeSize="2"/><AnchorFill/></Backdrop>
+                <Label name="$(parent)Label" color="3bdb5e" verticalAlignment="TOP" horizontalAlignment="LEFT" tier="MEDIUM" hidden="false" text="Slot these stars according to the custom rules: ?">
+                    <Dimensions x="360" y="260"/>
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="20"/>
+                </Label>
+                <Texture name="$(parent)Confirm" textureFile="esoui/art/buttons/accept_up.dds" tier="MEDIUM" color="FF3bdb5e" mouseEnabled="true">
+                    <Dimensions x="28" y="28" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="24" offsetY="-12"/>
+                    <OnMouseUp>DynamicCP.OnModelessConfirm()</OnMouseUp>
+                    <Controls>
+                        <Label name="$(parent)Label" color="3bdb5e" verticalAlignment="CENTER" horizontalAlignment="LEFT" tier="MEDIUM" hidden="false" text="Not Bound" mouseEnabled="true">
+                            <OnMouseUp>DynamicCP.OnModelessConfirm()</OnMouseUp>
+                            <Dimensions x="80" y="30"/>
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT"/>
+                        </Label>
+                    </Controls>
+                </Texture>
+                <Texture name="$(parent)Cancel" textureFile="esoui/art/buttons/decline_up.dds" tier="MEDIUM" color="FF3bdb5e" mouseEnabled="true">
+                    <Dimensions x="28" y="28" />
+                    <Anchor point="LEFT" relativeTo="$(parent)ConfirmLabel" relativePoint="RIGHT" offsetX="12"/>
+                    <OnMouseUp>DynamicCP.OnModelessCancel()</OnMouseUp>
+                    <Controls>
+                        <Label name="$(parent)Label" color="3bdb5e" verticalAlignment="CENTER" horizontalAlignment="LEFT" tier="MEDIUM" hidden="false" text="Not Bound" mouseEnabled="true">
+                            <OnMouseUp>DynamicCP.OnModelessCancel()</OnMouseUp>
+                            <Dimensions x="80" y="30"/>
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT"/>
+                        </Label>
+                    </Controls>
+                </Texture>
+                <Texture name="$(parent)Options" textureFile="esoui/art/chatwindow/chat_options_up.dds" tier="MEDIUM" color="FF3bdb5e" mouseEnabled="true">
+                    <Dimensions x="36" y="36" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-8" offsetY="-8"/>
+                    <OnMouseUp>DynamicCP.OpenCustomRulesMenu()</OnMouseUp>
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+<!-- ======================================================================================================================= -->
+    </Controls>
+</GuiXml>

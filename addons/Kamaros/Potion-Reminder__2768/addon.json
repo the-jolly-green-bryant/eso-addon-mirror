@@ -1,0 +1,63 @@
+{
+  "archive_path": "addons/Kamaros/Potion-Reminder__2768",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kamaros",
+  "canonical_id": "esoui:2768",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2768",
+  "deleted": false,
+  "directories": [
+    "PotionReminder",
+    "__MACOSX"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2768/",
+  "fingerprint": "98512b3c8ed692c172c59a99b4c6b230f7c885813aa35801267d94709376727e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9364.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9370.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2768",
+  "source_url": "https://www.esoui.com/downloads/info2768-PotionReminder.html",
+  "stats": {
+    "downloads": 17954,
+    "favorites": 31,
+    "monthly_downloads": 75
+  },
+  "title": "Potion Reminder",
+  "updated_at": 1655092575000,
+  "version": "1.2.0"
+}

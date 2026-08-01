@@ -1,0 +1,12 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: Harven's Book Copy
+## APIVersion: 100009
+## OptionalDependsOn: Librarian
+## Description: This simple addon allows you to copy content of a book you are currently reading to the system clipboard.
+
+HarvensBookCopy.lua
+HarvensBookCopy.xml

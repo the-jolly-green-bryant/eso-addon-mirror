@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/KA3ZUS/ThemeUI__3734",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KA3ZUS",
+  "canonical_id": "esoui:3734",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3734",
+  "deleted": false,
+  "directories": [
+    "ThemeUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3734/",
+  "fingerprint": "8ce70d207f54b1550a477068fbe3b0b8fc720880630a55aaaf23659e7f699b03",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12648.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12649.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12650.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3734",
+  "source_url": "https://www.esoui.com/downloads/info3734-ThemeUI.html",
+  "stats": {
+    "downloads": 1567,
+    "favorites": 2,
+    "monthly_downloads": 8
+  },
+  "title": "ThemeUI",
+  "updated_at": 1697332799000,
+  "version": "0.1.1"
+}

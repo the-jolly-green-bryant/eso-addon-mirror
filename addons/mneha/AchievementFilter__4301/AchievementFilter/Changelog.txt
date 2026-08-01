@@ -1,0 +1,5 @@
+1.1.3: Added hover descriptions, criteria text, completion stats, and wider table layout.
+1.1.2: Update 50 API bump; verified achievement reorganization and added duplicate achievement ID protection.
+1.1.1: Additional information added.
+1.1.0: Keybindings added.
+1.0.0: Initial release.

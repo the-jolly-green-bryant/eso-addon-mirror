@@ -1,0 +1,42 @@
+## Title: |cA02EF7MadHoek's Companion Wardrobe|r
+## Description: Save/Load & Manage Companion Loadouts.
+## APIVersion: 101050
+## Version: 3.11.0
+## IsLibrary: false
+## DependsOn: LibAddonMenu-2.0>=43
+## Author: MadHoek
+## SavedVariables: CompanionWardrobeSV
+##
+## This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+## and/or other countries. All rights reserved.
+
+MadHoeksCompanionWardrobe.lua
+MadHoeksCompanionWardrobeMenu.lua
+
+libs/MHCWLassets.lua
+libs/MHCWLcolors.lua
+libs/MHCWLui.lua
+
+core/MHCWLsavedvars.lua
+core/MHCWLdebug.lua
+core/MHCWLcompanion.lua
+core/MHCWLgear.lua
+core/MHCWLskills.lua
+core/MHCWLloadout.lua
+core/MHCWLtext.lua
+core/MHCWLsorting.lua
+core/MHCWLverify.lua
+core/MHCWLwarnings.lua
+core/MHCWLautofetch.lua
+core/MHCWLexport.lua
+
+ui/MHCWLdialogs.lua
+ui/MHCWLwindow.lua
+ui/MHCWLinspect.lua
+ui/MHCWLinspectText.lua
+
+bindings.xml
+
+lang/en.lua
+lang/$(language).lua

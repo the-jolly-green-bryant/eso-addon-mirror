@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/montewtf/Grim-Focus-Counter-but-it-counts-to-10__4426",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "montewtf",
+  "canonical_id": "esoui:4426",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4426",
+  "deleted": false,
+  "directories": [
+    "GrimFocusCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4426/",
+  "fingerprint": "33c1029d1ec791cc3f326b1aaa9503c242a252212516aea3c33c42d5bdecf503",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15354.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15353.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15355.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4426",
+  "source_url": "https://www.esoui.com/downloads/info4426-GrimFocusCounterbutitcountsto10.html",
+  "stats": {
+    "downloads": 478,
+    "favorites": 2,
+    "monthly_downloads": 53
+  },
+  "title": "Grim Focus Counter but it counts to 10",
+  "updated_at": 1772500420000,
+  "version": "2.0"
+}

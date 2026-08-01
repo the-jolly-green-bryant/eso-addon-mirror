@@ -1,0 +1,11 @@
+﻿;Deactivates catching Torchbugs and Butterflys while Mirri is around. Dismiss her to go on a hunt.
+;Code is based on NoInteract, which in turn copies from No, Thank You!
+;Fixed for Necron and beyond by KAD
+
+## Title: BuzzOff
+## APIVersion: 101038 101037
+## Author: Asaril, kad
+## Description: Deactivates catching Torchbugs and Butterflys while Mirri is around.
+## Version: 1.01
+
+BuzzOff.lua

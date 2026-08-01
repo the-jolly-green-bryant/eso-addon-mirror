@@ -1,0 +1,18 @@
+## Title: FFF Loot Value
+## Description:  Tracks items looted and value
+## Author: Hochbrawn (@Hochbrawn)
+## Version: 0.0.0.3
+## APIVersion: 100030
+## SavedVariables: FFFLootValueSavedVars
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder ScrollsR and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+##
+## OptionalDependsOn: LibAddonMenu-2.0
+
+
+FFFLootValue.lua
+

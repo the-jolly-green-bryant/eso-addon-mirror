@@ -1,0 +1,18 @@
+## Title: |cFF00FFIsJusta|r Gamepad Tamriel Trade Centre Plugin
+## Description: Adds TTC Prices to Gamepad item tooltips.
+## APIVersion: 101042 101041
+## Author: |cFF00FFIsJustaGhost|r
+## Version: 2.1.3
+## DependsOn: TamrielTradeCentre
+## SavedVariables: IJA_GPTTCP_SavedVars
+
+IsJustaGamepadTTCPlugin.lua
+IsJustaGamepadTTCPlugin.xml
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

@@ -1,0 +1,69 @@
+{
+  "archive_path": "addons/Meai/WishList-Set-item-search-tracker-wanted-Gear-list__1641",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Meai",
+  "canonical_id": "esoui:1641",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1641",
+  "deleted": false,
+  "directories": [
+    "WishList"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1641/",
+  "fingerprint": "43e0ea0e80bdafb36a127b4696b51047a30b52bdd600c899605515192895aec9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5382.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5383.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5384.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5385.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9626.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1641",
+  "source_url": "https://www.esoui.com/downloads/info1641-WishListSetitemsearchtrackerwantedGearlist.html",
+  "stats": {
+    "downloads": 62000,
+    "favorites": 139,
+    "monthly_downloads": 51
+  },
+  "title": "WishList (Set item search&tracker/wanted Gear list)",
+  "updated_at": 1727141438000,
+  "version": "3.21"
+}

@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/lwndow/Recount-Renovated__2739",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "lwndow",
+  "canonical_id": "esoui:2739",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2739",
+  "deleted": false,
+  "directories": [
+    "Recount"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2739/",
+  "fingerprint": "b9f3b9ad45df44d54a1690feffd86342b8f8c06b83290d12463ef9a7f0c7ac83",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9259.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9260.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2739",
+  "source_url": "https://www.esoui.com/downloads/info2739-RecountRenovated.html",
+  "stats": {
+    "downloads": 20014,
+    "favorites": 18,
+    "monthly_downloads": 50
+  },
+  "title": "Recount (Renovated)",
+  "updated_at": 1629566685000,
+  "version": "0.7.6"
+}

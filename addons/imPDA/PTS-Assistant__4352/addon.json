@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/imPDA/PTS-Assistant__4352",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "imPDA",
+  "canonical_id": "esoui:4352",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4352",
+  "deleted": false,
+  "directories": [
+    "PTSAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4352/",
+  "fingerprint": "be8a07600ee80f3cad3ad361e135b4418688fa52789c87ac964edcca9309ca49",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15075.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4352",
+  "source_url": "https://www.esoui.com/downloads/info4352-PTSAssistant.html",
+  "stats": {
+    "downloads": 388,
+    "favorites": 2,
+    "monthly_downloads": 41
+  },
+  "title": "PTS Assistant",
+  "updated_at": 1768573130000,
+  "version": "5"
+}

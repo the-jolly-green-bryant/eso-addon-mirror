@@ -1,0 +1,7 @@
+## Title: |cf49b42CombatTopHealthbar|r
+## Description: Displays the top health bar only for enemies in combat   
+## Version: 2026.07.07
+## Author: |c3CB371@Masteroshi430|r
+## APIVersion: 101050
+
+CombatTopHealthbar.lua

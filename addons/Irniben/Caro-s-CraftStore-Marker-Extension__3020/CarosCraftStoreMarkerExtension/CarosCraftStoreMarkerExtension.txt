@@ -1,0 +1,19 @@
+## Title: Caro's Craft Store Marker Extension
+## Description: Adds a red X in chat to every motif, recipe or furnishing plan that at least one of your characters tracked by CraftStore hasn't learned yet.
+## APIVersion: 101037
+## Version: 1.1.0
+## Author: |c1d6dadIrniben|r
+## SavedVariables: CCSMESavedVariables
+## DependsOn: CraftStoreFixedAndImproved LibAddonMenu-2.0
+## OptionalDependsOn: ShissuFramework ShissuChat PersonalAssistantJunk
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lang\en.lua
+lang\$(language).lua
+
+CarosCraftStoreMarkerExtension.lua

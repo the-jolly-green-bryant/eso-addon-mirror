@@ -1,0 +1,18 @@
+## Title: |cFFD700TT|rDungeon
+## Author: |cFFD700Koro|r.Sensei
+## Version: 2.0
+## APIVersion: 101046
+## DependsOn: LibAddonMenu-2.0>=40 LibSets>=000709
+## SavedVariables: TTDungeonSavedVars
+## Description: TTDungeon is an all-in-one dungeon companion, providing on-screen boss mechanics, achievement tracking, and set lists for all base-game and DLC dungeons.
+
+TTDungeon.lua
+TTDungeon_UI.lua
+TTDungeon_Encounters.lua
+TTDungeon_Sets.lua
+TTDungeon_Achievements.lua
+TTDungeon_Settings.lua
+DungeonID.lua
+DungeonID_de.lua
+TTDungeon.xml
+Bindings.xml

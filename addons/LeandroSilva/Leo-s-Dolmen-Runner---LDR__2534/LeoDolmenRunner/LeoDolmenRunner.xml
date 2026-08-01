@@ -1,0 +1,213 @@
+<GuiXml>
+    <Font name="LeoDolmenRunnerNormalFont" font="$(MEDIUM_FONT)|16|soft-shadow-thin"/>
+    <Font name="LeoDolmenRunnerSmallFont" font="$(MEDIUM_FONT)|14|soft-shadow-thin"/>
+    <Controls>
+
+        <TopLevelControl name="LeoDolmenRunnerWindow" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true" tier="MEDIUM">
+            <Dimensions x="300" y="370" />
+            <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="100" />
+
+            <OnMoveStop> LeoDolmenRunner.ui:OnWindowMoveStop() </OnMoveStop>
+            <OnHide> LeoDolmenRunner.settings.hidden = true </OnHide>
+            <OnShow> LeoDolmenRunner.settings.hidden = false </OnShow>
+
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="000000" edgeColor="222222">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                    <Dimensions x="300" y="40"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+                <Label name="$(parent)Title" color="39B027" font="ZoFontWinH5" wrapMode="ELLIPSIS"
+                       verticalAlignment="CENTER" mouseEnabled="false">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10"/>
+                </Label>
+
+                <Button name="$(parent)Close" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-5" offsetY="4"/>
+                    <Dimensions x="30" y="30"/>
+                    <OnClicked>self:GetParent():SetHidden(true)</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/buttons/decline_up.dds">
+                            <Dimensions y="20" x="20"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)FeedbackButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)Close" offsetX="-5"/>
+                    <Dimensions x="30" y="30"/>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                    </Controls>
+                </Button>
+
+                <Backdrop name="LeoDolmenRunnerWindowPanel" tier="1" centerColor="000000" edgeColor="202020" hidden="false" clampedToScreen="true" movable="false" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="LeoDolmenRunnerWindow" offsetX="0" offsetY="42"/>
+                    <Dimensions x="300" y="290"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+
+                        <Label name="$(parent)XPLabel" text="XP Rate" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Dimensions x="120" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="10" />
+                        </Label>
+                        <Label name="$(parent)XP" text="0" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                            <Dimensions x="100" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)XPLabel" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+                        </Label>
+
+                        <Label name="$(parent)XPNextLabel" text="ETA to Level" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Dimensions x="120" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="40" />
+                        </Label>
+                        <Label name="$(parent)XPNext" text="0" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                            <Dimensions x="100" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)XPNextLabel" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+                        </Label>
+
+                        <Label name="$(parent)TrainingGearLabel" text="Training Gear" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Dimensions x="120" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="70" />
+                        </Label>
+                        <Label name="$(parent)TrainingGear" text="" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                            <Dimensions x="100" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)TrainingGearLabel" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+                        </Label>
+
+                        <Label name="$(parent)XpFromGearLabel" text="XP from Gear" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Dimensions x="120" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="100" />
+                        </Label>
+                        <Label name="$(parent)XpFromGear" text="0 %" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                            <Dimensions x="160" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)XpFromGearLabel" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+                        </Label>
+
+                        <Label name="$(parent)DolmensClosedLabel" text="Dolmens Closed" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Dimensions x="120" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="130" />
+                        </Label>
+                        <Label name="$(parent)DolmensClosed" text="0" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                            <Dimensions x="100" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)DolmensClosedLabel" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+                        </Label>
+
+                        <Label name="$(parent)CurrentDolmenLabel" text="Current Dolmen" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Dimensions x="120" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="160" />
+                        </Label>
+                        <Label name="$(parent)CurrentDolmen" text="0" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                            <Dimensions x="100" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)CurrentDolmenLabel" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+                        </Label>
+
+                        <Label name="$(parent)LastDolmenLabel" text="Last Dolmen" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Dimensions x="120" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="190" />
+                        </Label>
+                        <Label name="$(parent)LastDolmen" text="0" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                            <Dimensions x="100" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)LastDolmenLabel" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+                        </Label>
+
+                        <Label name="$(parent)BeforeLastDolmenLabel" text="Before Last" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Dimensions x="120" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="220" />
+                        </Label>
+                        <Label name="$(parent)BeforeLastDolmen" text="0" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                            <Dimensions x="100" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)BeforeLastDolmenLabel" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+                        </Label>
+
+                        <Button name="$(parent)StartStop" clickSound="Click">
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Panel" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="-5" />
+                            <Dimensions x="75" y="30"/>
+                            <OnClicked> LeoDolmenRunner.runner:StartStop() </OnClicked>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="1"/>
+                                </Backdrop>
+                                <Label name="$(parent)Label" text="Start" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+                                    <Dimensions x="45" y="25" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="2"/>
+                                </Label>
+                            </Controls>
+                        </Button>
+
+                        <Label name="$(parent)Time" text="" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER">
+                            <Dimensions x="60" y="30" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)StartStop" relativePoint="TOPRIGHT" offsetX="10" />
+                        </Label>
+
+                        <Button name="$(parent)Orientation" clickSound="Click">
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Panel" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+                            <Dimensions x="60" y="30"/>
+                            <OnClicked> LeoDolmenRunner.runner:CWCCW() </OnClicked>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="1"/>
+                                </Backdrop>
+                                <Label name="$(parent)Label" text="CW" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                                    <Dimensions x="35" y="25" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="2"/>
+                                </Label>
+                            </Controls>
+                        </Button>
+
+                    </Controls>
+                </Backdrop>
+
+                <Backdrop name="LeoDolmenRunnerWindowInviterPanel" tier="1" centerColor="000000" edgeColor="202020" hidden="false" clampedToScreen="true" movable="false" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="LeoDolmenRunnerWindowPanel" offsetX="0" offsetY="2"/>
+                    <Dimensions x="300" y="70"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+
+                        <Label name="$(parent)Title" text="Auto Inviter" color="39B027" font="ZoFontWinH5" wrapMode="ELLIPSIS"
+                            verticalAlignment="CENTER" mouseEnabled="false">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10"/>
+                        </Label>
+
+                        <Button name="$(parent)StartStop" clickSound="Click">
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="-5" />
+                            <Dimensions x="75" y="30"/>
+                            <OnClicked> LeoDolmenRunner.inviter:StartStop() </OnClicked>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="1"/>
+                                </Backdrop>
+                                <Label name="$(parent)Label" text="Start" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+                                    <Dimensions x="45" y="25" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="2"/>
+                                </Label>
+                            </Controls>
+                        </Button>
+
+                        <Label name="$(parent)MessageLabel" text="Listening to" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                            <Dimensions x="80" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)StartStop" relativePoint="TOPRIGHT" offsetX="6" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Message" text="x" color="39B027" font="LeoDolmenRunnerNormalFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                            <Dimensions x="20" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)MessageLabel" relativePoint="TOPRIGHT" offsetX="6" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Hint" text="( /ldr <letter> )" font="LeoDolmenRunnerSmallFont" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                            <Dimensions x="80" y="35" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Message" relativePoint="TOPRIGHT" offsetX="6" offsetY="0" />
+                        </Label>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

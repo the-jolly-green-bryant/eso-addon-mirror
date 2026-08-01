@@ -1,0 +1,76 @@
+{
+  "archive_path": "addons/IgorSab/InventoryManagerTESO__4071",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IgorSab",
+  "canonical_id": "esoui:4071",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:4071",
+  "deleted": false,
+  "directories": [
+    "InventoryManagerTESO"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4071/",
+  "fingerprint": "219fd7ef6b11a7c3d7f52079a0c48b0e2e4726e073090f7bc846ed8410992894",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13870.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13871.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13872.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13873.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13874.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13875.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13879.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13880.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4071",
+  "source_url": "https://www.esoui.com/downloads/info4071-InventoryManagerTESO.html",
+  "stats": {
+    "downloads": 1826,
+    "favorites": 1,
+    "monthly_downloads": 57
+  },
+  "title": "InventoryManagerTESO",
+  "updated_at": 1742553210000,
+  "version": "1.0.2"
+}

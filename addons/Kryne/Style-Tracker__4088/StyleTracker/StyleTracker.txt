@@ -1,0 +1,7 @@
+## Title: Style Tracker
+## APIVersion: 100035
+## SavedVariables: StyleTracker_SavedVars
+## OptionalDependsOn: LibMotifCategories
+StyleTracker.lua
+StyleTracker.xml
+StyleTrackerSettings.lua

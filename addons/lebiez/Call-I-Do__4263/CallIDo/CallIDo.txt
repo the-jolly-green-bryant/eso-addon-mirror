@@ -1,0 +1,10 @@
+## Title: Call-I-Do
+## Description: Text-only on-screen calls 
+## Author: Lebiez
+## Version: 1.08
+## APIVersion: 101040 101041 101042 101043 101044
+## SavedVariables: CallIDo_SV
+## DependsOn: LibAddonMenu-2.0>=40 LibGroupBroadcast LibGroupSocket
+
+CallIDo.lua
+bindings.xml

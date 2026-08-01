@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kendaron/Guild-Bank-Twiddler__1207",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kendaron",
+  "canonical_id": "esoui:1207",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    }
+  ],
+  "content_id": "esoui:1207",
+  "deleted": false,
+  "directories": [
+    "GuildBankTwiddler"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1207/",
+  "fingerprint": "8e42349a3cc8659dcb8d68b2145ab8b203a948c2dc51c3ef4a6b83850b3ab614",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3871.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1207",
+  "source_url": "https://www.esoui.com/downloads/info1207-GuildBankTwiddler.html",
+  "stats": {
+    "downloads": 4550,
+    "favorites": 8,
+    "monthly_downloads": 6
+  },
+  "title": "Guild Bank Twiddler",
+  "updated_at": 1470118511000,
+  "version": "1.0.5"
+}

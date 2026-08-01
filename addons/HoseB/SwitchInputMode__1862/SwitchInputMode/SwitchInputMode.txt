@@ -1,0 +1,6 @@
+## Title: HoseBsInputSwitcher
+## APIVersion: 100021
+## SavedVariables: SwitchInputModeAddonSavedVariables
+
+SwitchInputMode.lua
+bindings.xml

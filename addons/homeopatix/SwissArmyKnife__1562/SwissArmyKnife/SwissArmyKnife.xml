@@ -1,0 +1,478 @@
+<GuiXml> 
+<Controls>
+   <TopLevelControl name="SwissArmyKnifeContainer" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">	
+       <Dimensions x="294" y="75" />      
+       <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+	<OnMoveStop>
+            SAK.SaveLoc()
+         </OnMoveStop>
+       <Controls>
+          
+           <!-- Background -->
+           <Texture name="$(parent)Background" textureFile="esoui/art/windows/gamepad/gp_grunge_scalable.dds">
+               <Dimensions x="380" y="225" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-40" offsetY="-25"/>
+           </Texture>  
+
+	   <Label name="$(parent)BackgroundLabel" font="ZoFontWinH1" color="FFFFFF" text="SwissArmyKnife" verticalAlignment="TOPCENTER" horizontalAlignment="CENTER">			
+           <Dimensions x="294" y="74" />
+           <Anchor point="TOPCENTER"  relativeTo="$(parent)" relativePoint="TOPCENTER" offsetX="2" offsetY="-29"/>
+           </Label>
+	   <Label name="$(parent)BackgroundLabel2" font="ZoFontWinH1" color="B114FF" text="SwissArmyKnife" verticalAlignment="TOPCENTER" horizontalAlignment="CENTER">			
+           <Dimensions x="294" y="74" />
+           <Anchor point="TOPCENTER"  relativeTo="$(parent)" relativePoint="TOPCENTER" offsetX="0" offsetY="-31"/>
+           </Label>
+
+	   <!-- Bounty timer -->
+	   <Label name="$(parent)BountyTimer" font="ZoFontGameSmall" color="FFFFFF" text="" verticalAlignment="TOPCENTER" horizontalAlignment="CENTER">			
+           <Dimensions x="294" y="74" />
+           <Anchor point="TOPCENTER"  relativeTo="$(parent)" relativePoint="TOPCENTER" offsetX="0" offsetY="0"/>
+           </Label>
+
+	   <!-- Travel cost -->
+	   <Label name="$(parent)LabelCost" font="ZoFontWinH4" color="FFFFFF" text="" verticalAlignment="TOPCENTER" horizontalAlignment="CENTER">			
+           <Dimensions x="294" y="74" />
+           <Anchor point="TOPCENTER"  relativeTo="$(parent)" relativePoint="TOPCENTER" offsetX="-153" offsetY="-22"/>
+           </Label>
+
+	<!-- Number mails -->
+	   <Label name="$(parent)NumberMails" font="ZoFontGameSmall" color="FFFFFF" text="" verticalAlignment="TOPCENTER" horizontalAlignment="CENTER">			
+           <Dimensions x="294" y="74" />
+           <Anchor point="TOPCENTER"  relativeTo="$(parent)" relativePoint="TOPCENTER" offsetX="-173" offsetY="55"/>
+           </Label>
+
+	  <!-- Mount train Timer -->
+	   <Label name="$(parent)TrainText1" font="ZoFontGameSmall" color="FFFFFF" text="" level="1" verticalAlignment="TOPCENTER" horizontalAlignment="LEFT">			
+           <Dimensions x="30" y="74" />
+           <Anchor point="TOPCENTER"  relativeTo="$(parent)" relativePoint="TOPCENTER" offsetX="-29" offsetY="3"/>
+           </Label>
+	   <Label name="$(parent)TrainText2" font="ZoFontGameSmall" color="FFFFFF" text="" level="1" verticalAlignment="TOPCENTER" horizontalAlignment="LEFT">			
+           <Dimensions x="30" y="74" />
+           <Anchor point="TOPCENTER"  relativeTo="$(parent)" relativePoint="TOPCENTER" offsetX="-7" offsetY="3"/>
+           </Label>
+	   <Label name="$(parent)TrainText3" font="ZoFontGameSmall" color="FFFFFF" text="" level="1" verticalAlignment="TOPCENTER" horizontalAlignment="LEFT">			
+           <Dimensions x="30" y="74" />
+           <Anchor point="TOPCENTER"  relativeTo="$(parent)" relativePoint="TOPCENTER" offsetX="11" offsetY="3"/>
+           </Label>
+	   <Label name="$(parent)TrainTimer" font="ZoFontGameSmall" color="FFFFFF" text="" verticalAlignment="TOPCENTER" horizontalAlignment="LEFT">			
+           <Dimensions x="94" y="74" />
+           <Anchor point="TOPCENTER"  relativeTo="$(parent)" relativePoint="TOPCENTER" offsetX="-46" offsetY="-1"/>
+           </Label>
+
+	  <!-- Crystal transmute -->
+	   <Label name="$(parent)CrystalTransmute" font="ZoFontGameSmall" color="FFFFFF" text="" verticalAlignment="TOPCENTER" horizontalAlignment="RIGHT">			
+           <Dimensions x="174" y="74" />
+           <Anchor point="TOPCENTER"  relativeTo="$(parent)" relativePoint="TOPCENTER" offsetX="166" offsetY="4"/>
+           </Label>
+	<!-- Writ voucher -->
+	   <Label name="$(parent)WritVoucher" font="ZoFontGameSmall" color="FFFFFF" text="" verticalAlignment="TOPCENTER" horizontalAlignment="RIGHT">			
+           <Dimensions x="174" y="74" />
+           <Anchor point="TOPCENTER"  relativeTo="$(parent)" relativePoint="TOPCENTER" offsetX="166" offsetY="20"/>
+           </Label>
+	  <!-- XP -->
+	   <Label name="$(parent)BackgroundLabel4" font="ZoFontWinH4" color="FFFFFF" text="" verticalAlignment="TOPCENTER" horizontalAlignment="CENTER">			
+           <Dimensions x="294" y="74" />
+           <Anchor point="TOPCENTER"  relativeTo="$(parent)" relativePoint="TOPCENTER" offsetX="160" offsetY="-17"/>
+           </Label>
+
+	   <Label name="$(parent)BackgroundLabel3" font="ZoFontGameSmall" color="FFFFFF" text="Nothing" verticalAlignment="BOTTOMCENTER" horizontalAlignment="CENTER">			
+           <Dimensions x="294" y="30" />
+           <Anchor point="BOTTOMCENTER"  relativeTo="$(parent)" relativePoint="BOTTOMCENTER" offsetX="0" offsetY="70"/>
+           </Label>
+
+          <StatusBar name="$(parent)StatusBar2" color="D3D3D3" alpha="0">
+            <Dimensions x="210" y="15" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="47" offsetY="71"/>
+            <Limits min="0" max="100" />
+           </StatusBar>
+
+	   <StatusBar name="$(parent)StatusBarRed" color="F53D00" alpha="0">
+            <Dimensions x="210" y="15" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="47" offsetY="71"/>
+            <Limits min="0" max="100" />
+           </StatusBar>
+
+	   <StatusBar name="$(parent)StatusBarBlue" color="00CCFF" alpha="0">
+            <Dimensions x="210" y="15" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="47" offsetY="71"/>
+            <Limits min="0" max="100" />
+           </StatusBar>
+
+	   <StatusBar name="$(parent)StatusBarGreen" color="4DFF00" alpha="0">
+            <Dimensions x="210" y="15" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="47" offsetY="71"/>
+            <Limits min="0" max="100" />
+           </StatusBar>
+
+	   <StatusBar name="$(parent)StatusBarGold" color="ffff00" alpha="0">
+            <Dimensions x="210" y="1" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="47" offsetY="70"/>
+            <Limits min="0" max="100" />
+           </StatusBar>
+
+	  <!-- Vampire Bite -->
+	   <Label name="$(parent)BackgroundLabelIcon7"  level="1" font="ZoFontGameSmall" color="ff8000" text="" verticalAlignment="BOTTOMCENTER" horizontalAlignment="CENTER">		
+           <Dimensions x="294" y="30" />
+           <Anchor point="BOTTOMCENTER"  relativeTo="$(parent)" relativePoint="BOTTOMCENTER" offsetX="20" offsetY="94"/>
+           </Label>
+
+	  <!-- Icon -->
+	   <Label name="$(parent)BackgroundLabelIcon4" font="ZoFontWinH5" color="" text="" verticalAlignment="BOTTOMCENTER" horizontalAlignment="CENTER">		
+           <Dimensions x="294" y="30" />
+           <Anchor point="BOTTOMCENTER"  relativeTo="$(parent)" relativePoint="BOTTOMCENTER" offsetX="0" offsetY="87"/>
+           </Label>
+	   <Label name="$(parent)BackgroundLabelIcon5" level="1" font="ZoFontWinH5" color="FF0000" text="" verticalAlignment="BOTTOMCENTER" horizontalAlignment="CENTER">			
+           <Dimensions x="294" y="30" />
+           <Anchor point="BOTTOMCENTER"  relativeTo="$(parent)" relativePoint="BOTTOMCENTER" offsetX="30" offsetY="91"/>
+           </Label>
+	   <Label name="$(parent)BackgroundLabelIcon6"  level="1" font="ZoFontWinH5" color="FF0000" text="" verticalAlignment="BOTTOMCENTER" horizontalAlignment="CENTER">			
+           <Dimensions x="294" y="30" />
+           <Anchor point="BOTTOMCENTER"  relativeTo="$(parent)" relativePoint="BOTTOMCENTER" offsetX="45" offsetY="91"/>
+           </Label>
+
+
+	   <!-- Writ -->
+	   <Texture name="$(parent)WritIcon_1" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_clothing_up.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-267" offsetY="15"/>
+               <Dimensions x="50" y="50"/>
+           </Texture>
+
+           <Label name="$(parent)WritLabel_1" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="54" y="54" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-257" offsetY="5"/>
+           </Label>
+	   
+	   <Texture name="$(parent)WritIcon_2" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_blacksmithing_up.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-207" offsetY="15"/>
+               <Dimensions x="50" y="50"/>
+           </Texture>
+
+           <Label name="$(parent)WritLabel_2" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="54" y="54" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-197" offsetY="5"/>
+           </Label>
+
+	   <Texture name="$(parent)WritIcon_3" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_woodworking_up.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-147" offsetY="15"/>
+               <Dimensions x="50" y="50"/>
+           </Texture>
+
+           <Label name="$(parent)WritLabel_3" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="54" y="54" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-137" offsetY="5"/>
+           </Label>
+
+	   <Texture name="$(parent)WritIcon_4" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_enchanting_up.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-87" offsetY="15"/>
+               <Dimensions x="50" y="50"/>
+           </Texture>
+
+           <Label name="$(parent)WritLabel_4" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="54" y="54" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-77" offsetY="5"/>
+           </Label>
+
+	   <Texture name="$(parent)WritIcon_5" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_provisioning_up.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-27" offsetY="15"/>
+               <Dimensions x="50" y="50"/>
+           </Texture>
+
+           <Label name="$(parent)WritLabel_5" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="54" y="54" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-17" offsetY="5"/>
+           </Label>
+
+	   <Texture name="$(parent)WritIcon_6" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_alchemy_up.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="30" offsetY="15"/>
+               <Dimensions x="50" y="50"/>
+           </Texture>
+
+           <Label name="$(parent)WritLabel_6" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="54" y="54" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="40" offsetY="5"/>
+           </Label>
+		
+	
+
+	   <!-- Sigil -->
+           <Texture name="$(parent)SigilIcon" textureFile="/esoui/art/icons/rune_a.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-247" offsetY="15"/>
+               <Dimensions x="54" y="54"/>
+           </Texture>
+
+           <Label name="$(parent)SigilLabel" font="ZoFontWinH2" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="54" y="54" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-237" offsetY="5"/>
+           </Label>
+
+	   <!-- CembersTotal -->
+           <Texture name="$(parent)DaedricEmbersIcon_2" textureFile="/esoui/art/icons/quest_daedricembers.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-187" offsetY="15"/>
+               <Dimensions x="54" y="54"/>
+           </Texture>
+
+           <Label name="$(parent)DaedricEmbersLabel_2" font="ZoFontWinH2" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="54" y="54" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-177" offsetY="5"/>
+           </Label>
+
+	   <!-- Key -->
+           <Texture name="$(parent)KeyIcon" textureFile="esoui/art/icons/quest_grinddoorkey_bone.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-123" offsetY="15"/>
+               <Dimensions x="54" y="54"/>
+           </Texture>
+
+           <Label name="$(parent)KeyLabel" font="ZoFontWinH2" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="54" y="54" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-113" offsetY="5"/>
+           </Label>
+         
+	   <!-- CembersLeft in bag -->
+           <Texture name="$(parent)BagIcon" textureFile="esoui/art/tooltips/icon_bag.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-59" offsetY="5"/>
+
+               <Dimensions x="20" y="20"/>
+           </Texture>
+           <Texture name="$(parent)DaedricEmbersIcon" textureFile="/esoui/art/icons/quest_daedricembers.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-59" offsetY="15"/>
+               <Dimensions x="54" y="54"/>
+           </Texture>
+
+           <Label name="$(parent)DaedricEmbersLabel" font="ZoFontWinH2" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="54" y="54" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-49" offsetY="5"/>
+           </Label>  
+
+	   <!-- CembersLeft in bank -->
+	   <Texture name="$(parent)BankIcon" textureFile="esoui/art/icons/servicemappins/servicepin_bank.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="5"/>
+               <Dimensions x="20" y="20"/>
+           </Texture>
+
+           <Texture name="$(parent)DaedricEmbersIcon2" textureFile="/esoui/art/icons/quest_daedricembers.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="15"/>
+               <Dimensions x="54" y="54"/>
+           </Texture>
+
+           <Label name="$(parent)DaedricEmbersLabel2" font="ZoFontWinH2" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+               <Dimensions x="54" y="54" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="10" offsetY="5"/>
+           </Label>  
+         
+	  <!-- Cash in bank -->
+	  <Label name="$(parent)GoldLabel" font="ZoFontGameSmall" color="ffffff" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT">			
+               <Dimensions x="90" y="20" />
+               <Anchor point="BOTTOMLEFT"  relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-40" offsetY="12"/>
+           </Label> 
+	  <Label name="$(parent)TelVarLabel" font="ZoFontGameSmall" color="5EA4FF" text="" verticalAlignment="CENTER" horizontalAlignment="RIGHT">			
+               <Dimensions x="90" y="20" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="46" offsetY="12"/>
+           </Label> 
+
+	  <!-- Cash in bags -->
+	  <Label name="$(parent)GoldLabel2" font="ZoFontGameSmall" color="ffffff" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT">			
+               <Dimensions x="90" y="20" />
+               <Anchor point="BOTTOMLEFT"  relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-40" offsetY="25"/>
+           </Label> 
+	  <Label name="$(parent)TelVarLabel2" font="ZoFontGameSmall" color="5EA4FF" text="" verticalAlignment="CENTER" horizontalAlignment="RIGHT">			
+               <Dimensions x="90" y="20" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="46" offsetY="25"/>
+           </Label>
+
+	<!-- Alliance points in bags -->
+	  <Label name="$(parent)AlliLabel" font="ZoFontGameSmall" color="ffffff" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT">			
+               <Dimensions x="90" y="20" />
+               <Anchor point="BOTTOMLEFT"  relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-40" offsetY="38"/>
+           </Label> 
+	  <Label name="$(parent)AlliLabel2" font="ZoFontGameSmall" color="5EA4FF" text="" verticalAlignment="CENTER" horizontalAlignment="RIGHT">			
+               <Dimensions x="90" y="20" />
+               <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="46" offsetY="38"/>
+           </Label>
+
+	  <!-- Armor repair icon --> 
+	<Texture name="$(parent)OutlineArmor1" textureFile="SwissArmyKnife/Img/outline.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="47" offsetY="110"/>
+               <Dimensions x="32" y="32"/>
+           </Texture>
+	<Texture name="$(parent)OutlineArmor2" textureFile="SwissArmyKnife/Img/outline.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="12" offsetY="110"/>
+               <Dimensions x="32" y="32"/>
+           </Texture>
+	<Texture name="$(parent)OutlineArmor3" textureFile="SwissArmyKnife/Img/outline.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-23" offsetY="110"/>
+               <Dimensions x="32" y="32"/>
+           </Texture>
+	<Texture name="$(parent)OutlineArmor4" textureFile="SwissArmyKnife/Img/outline.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-58" offsetY="110"/>
+               <Dimensions x="32" y="32"/>
+           </Texture>
+	<Texture name="$(parent)OutlineArmor5" textureFile="SwissArmyKnife/Img/outline.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-93" offsetY="110"/>
+               <Dimensions x="32" y="32"/>
+           </Texture>
+	<Texture name="$(parent)OutlineArmor6" textureFile="SwissArmyKnife/Img/outline.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-128" offsetY="110"/>
+               <Dimensions x="32" y="32"/>
+           </Texture>
+	<Texture name="$(parent)OutlineArmor7" textureFile="SwissArmyKnife/Img/outline.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-163" offsetY="110"/>
+               <Dimensions x="32" y="32"/>
+           </Texture>
+
+	<Texture name="$(parent)ArmorRepair1" textureFile="esoui/art/windows/gamepad/gp_grunge_scalable.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="47" offsetY="110"/>
+               <Dimensions x="30" y="30"/>
+           </Texture>
+	<Texture name="$(parent)ArmorRepair2" textureFile="esoui/art/windows/gamepad/gp_grunge_scalable.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="12" offsetY="110"/>
+               <Dimensions x="30" y="30"/>
+           </Texture>
+	<Texture name="$(parent)ArmorRepair3" textureFile="esoui/art/windows/gamepad/gp_grunge_scalable.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-23" offsetY="110"/>
+               <Dimensions x="30" y="30"/>
+           </Texture>
+	<Texture name="$(parent)ArmorRepair4" textureFile="esoui/art/windows/gamepad/gp_grunge_scalable.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-58" offsetY="110"/>
+               <Dimensions x="30" y="30"/>
+           </Texture>
+	<Texture name="$(parent)ArmorRepair5" textureFile="esoui/art/windows/gamepad/gp_grunge_scalable.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-93" offsetY="110"/>
+               <Dimensions x="30" y="30"/>
+           </Texture>
+	<Texture name="$(parent)ArmorRepair6" textureFile="esoui/art/windows/gamepad/gp_grunge_scalable.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-128" offsetY="110"/>
+               <Dimensions x="30" y="30"/>
+           </Texture>
+	<Texture name="$(parent)ArmorRepair7" textureFile="esoui/art/windows/gamepad/gp_grunge_scalable.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-163" offsetY="110"/>
+               <Dimensions x="30" y="30"/>
+           </Texture>
+
+	<!-- Weapon repair icon -->
+	<Texture name="$(parent)OutlineWeapon1" textureFile="SwissArmyKnife/Img/outline.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-198" offsetY="110"/>
+               <Dimensions x="32" y="32"/>
+           </Texture>
+	<Texture name="$(parent)OutlineWeapon2" textureFile="SwissArmyKnife/Img/outline.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-233" offsetY="110"/>
+               <Dimensions x="32" y="32"/>
+           </Texture>
+	<Texture name="$(parent)OutlineWeapon3" textureFile="SwissArmyKnife/Img/outline.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-268" offsetY="110"/>
+               <Dimensions x="32" y="32"/>
+           </Texture>
+	<Texture name="$(parent)OutlineWeapon4" textureFile="SwissArmyKnife/Img/outline.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-303" offsetY="110"/>
+               <Dimensions x="32" y="32"/>
+           </Texture>
+
+
+	<Texture name="$(parent)WeaponRepair1" textureFile="esoui/art/windows/gamepad/gp_grunge_scalable.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-198" offsetY="110"/>
+               <Dimensions x="30" y="30"/>
+           </Texture>
+	<Texture name="$(parent)WeaponRepair2" textureFile="esoui/art/windows/gamepad/gp_grunge_scalable.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-233" offsetY="110"/>
+               <Dimensions x="30" y="30"/>
+           </Texture>
+	<Texture name="$(parent)WeaponRepair3" textureFile="esoui/art/windows/gamepad/gp_grunge_scalable.dds">
+
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-268" offsetY="110"/>
+               <Dimensions x="30" y="30"/>
+           </Texture>
+	<Texture name="$(parent)WeaponRepair4" textureFile="esoui/art/windows/gamepad/gp_grunge_scalable.dds">
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-303" offsetY="110"/>
+               <Dimensions x="30" y="30"/>
+           </Texture>
+
+	<!-- Armor repair text -->
+	<Label name="$(parent)ArmorRepairLabel1" font="ZoFontGameSmall" color="000000" text="" verticalAlignment="TOPRIGHT" horizontalAlignment="TOPRIGHT">			
+           <Dimensions x="30" y="30" />
+           <Anchor point="TOPRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="50" offsetY="125"/>
+           </Label>
+	<Label name="$(parent)ArmorRepairLabel2" font="ZoFontGameSmall" color="000000" text="" verticalAlignment="TOPRIGHT" horizontalAlignment="TOPRIGHT">			
+           <Dimensions x="30" y="30" />
+           <Anchor point="TOPRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" offsetY="125"/>
+           </Label>
+	<Label name="$(parent)ArmorRepairLabel3" font="ZoFontGameSmall" color="000000" text="" verticalAlignment="TOPRIGHT" horizontalAlignment="TOPRIGHT">			
+           <Dimensions x="30" y="30" />
+           <Anchor point="TOPRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="125"/>
+           </Label>
+	<Label name="$(parent)ArmorRepairLabel4" font="ZoFontGameSmall" color="000000" text="" verticalAlignment="TOPRIGHT" horizontalAlignment="TOPRIGHT">			
+           <Dimensions x="30" y="30" />
+           <Anchor point="TOPRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-55" offsetY="125"/>
+           </Label>
+	<Label name="$(parent)ArmorRepairLabel5" font="ZoFontGameSmall" color="000000" text="" verticalAlignment="TOPRIGHT" horizontalAlignment="TOPRIGHT">			
+           <Dimensions x="30" y="30" />
+           <Anchor point="TOPRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-90" offsetY="125"/>
+           </Label>
+	<Label name="$(parent)ArmorRepairLabel6" font="ZoFontGameSmall" color="000000" text="" verticalAlignment="TOPRIGHT" horizontalAlignment="TOPRIGHT">			
+           <Dimensions x="30" y="30" />
+           <Anchor point="TOPRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-125" offsetY="125"/>
+           </Label>
+	<Label name="$(parent)ArmorRepairLabel7" font="ZoFontGameSmall" color="000000" text="" verticalAlignment="TOPRIGHT" horizontalAlignment="TOPRIGHT">			
+           <Dimensions x="30" y="30" />
+           <Anchor point="TOPRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-160" offsetY="125"/>
+           </Label>
+
+	<!-- Weapon repair text -->
+
+	<Label name="$(parent)WeaponRepairLabel1" font="ZoFontGameSmall" color="000000" text="" verticalAlignment="TOPRIGHT" horizontalAlignment="TOPRIGHT">			
+           <Dimensions x="30" y="30" />
+           <Anchor point="TOPRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-195" offsetY="125"/>
+           </Label>
+	<Label name="$(parent)WeaponRepairLabel2" font="ZoFontGameSmall" color="000000" text="" verticalAlignment="TOPRIGHT" horizontalAlignment="TOPRIGHT">			
+           <Dimensions x="30" y="30" />
+           <Anchor point="TOPRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-230" offsetY="125"/>
+           </Label>
+	<Label name="$(parent)WeaponRepairLabel3" font="ZoFontGameSmall" color="000000" text="" verticalAlignment="TOPRIGHT" horizontalAlignment="TOPRIGHT">			
+           <Dimensions x="30" y="30" />
+           <Anchor point="TOPRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-265" offsetY="125"/>
+           </Label>
+	<Label name="$(parent)WeaponRepairLabel4" font="ZoFontGameSmall" color="000000" text="" verticalAlignment="TOPRIGHT" horizontalAlignment="TOPRIGHT">			
+           <Dimensions x="30" y="30" />
+           <Anchor point="TOPRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-300" offsetY="125"/>
+           </Label>
+
+	<!-- cost repair -->
+	<Label name="$(parent)CostRepair" font="ZoFontWinH5" color="" text="" verticalAlignment="BOTTOMCENTER" horizontalAlignment="CENTER">			
+           <Dimensions x="294" y="30" />
+           <Anchor point="BOTTOMCENTER"  relativeTo="$(parent)" relativePoint="BOTTOMCENTER" offsetX="0" offsetY="141"/>
+           </Label>
+
+	<!-- Bag & bank Size -->
+	<Label name="$(parent)BagSize" font="ZoFontGameSmall" color="" text="" verticalAlignment="BOTTOMCENTER" horizontalAlignment="CENTER">			
+           <Dimensions x="294" y="30" />
+           <Anchor point="BOTTOMCENTER"  relativeTo="$(parent)" relativePoint="BOTTOMCENTER" offsetX="5" offsetY="158"/>
+           </Label>
+
+	<!-- Time Played -->
+	<Label name="$(parent)TimePlayed" font="ZoFontGameSmall" color="" text="" verticalAlignment="BOTTOMCENTER" horizontalAlignment="CENTER">			
+           <Dimensions x="294" y="30" />
+           <Anchor point="BOTTOMLEFT"  relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-155" offsetY="95"/>
+           </Label>
+
+	<!-- Time Played session -->
+	<Label name="$(parent)TimePlayedForSession" font="ZoFontGameSmall" color="" text="" verticalAlignment="BOTTOMCENTER" horizontalAlignment="RIGHT">			
+           <Dimensions x="294" y="30" />
+           <Anchor point="BOTTOMLEFT"  relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-270" offsetY="110"/>
+	 <OnUpdate>updateUI()</OnUpdate>
+           </Label>
+
+
+	<!-- Gold Per Hour -->
+	<Label name="$(parent)GoldHour" font="ZoFontGameSmall" color="" text="" verticalAlignment="BOTTOMCENTER" horizontalAlignment="RIGHT">			
+           <Dimensions x="294" y="30" />
+           <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="48" offsetY="95"/>
+           </Label>
+
+	<!-- Gold Per Hour moy -->
+	<Label name="$(parent)GoldHourMoy" font="ZoFontGameSmall" color="" text="" verticalAlignment="BOTTOMCENTER" horizontalAlignment="RIGHT">			
+           <Dimensions x="294" y="30" />
+           <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="48" offsetY="110"/>
+           </Label>
+
+      </Controls>
+   </TopLevelControl>
+   </Controls>
+</GuiXml>

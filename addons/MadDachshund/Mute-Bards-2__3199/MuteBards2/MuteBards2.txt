@@ -1,0 +1,14 @@
+## Title: MuteBards 2
+## Description: Mute Bards given subzones (like cities).  Type /mutebards to open the settings, where you can add or remove zones.  Make sure to click the refresh button when you're done to allow the changes to take effect.
+## APIVersion: 101031
+## Version: 2.0.6
+## AddOnVersion: 1
+## SavedVariables: MuteBards_Settings
+## DependsOn: LibAddonMenu-2.0>=31
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the
+## United States and/or other countries. All rights reserved.
+
+MuteBards2.lua
+MuteBardsOptions.lua

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Marcelovski/MarcelovskiMarkers__3645",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marcelovski",
+  "canonical_id": "esoui:3645",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3645",
+  "deleted": false,
+  "directories": [
+    "MarcelovskiMarkers"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3645/",
+  "fingerprint": "cc5e86809f96ceed40da82b656cff0ab4360d9e2b555fc8c247dae6e16601311",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12430.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13023.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12431.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3645",
+  "source_url": "https://www.esoui.com/downloads/info3645-MarcelovskiMarkers.html",
+  "stats": {
+    "downloads": 3081,
+    "favorites": 10,
+    "monthly_downloads": 35
+  },
+  "title": "MarcelovskiMarkers",
+  "updated_at": 1711443847000,
+  "version": "1.4.4"
+}

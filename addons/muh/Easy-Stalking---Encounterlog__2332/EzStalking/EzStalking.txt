@@ -1,0 +1,17 @@
+## Title: Easy Stalking
+## Author: muh
+## Description: Provides options to help you start '/encounterlog'ging things relevant to you.
+## Version: 1.4.6
+## APIVersion: 101040
+## SavedVariables: EzStalking_SavedVars
+## DependsOn: LibAddonMenu-2.0>=28
+## OptionalDependsOn: LibDialog
+
+lang\en.lua
+lang\$(language).lua
+
+EzStalking.lua
+EzStalkingMenu.lua
+EzStalkingIndicator.lua
+
+bindings.xml

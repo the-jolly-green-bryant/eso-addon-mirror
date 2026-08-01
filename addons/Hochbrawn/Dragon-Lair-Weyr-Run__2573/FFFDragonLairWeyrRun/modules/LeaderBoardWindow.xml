@@ -1,0 +1,63 @@
+<GuiXml>
+    <Controls>
+        <Control name="FFFDragonLairWeyrRunGUILeaderListItemTemplate" mouseEnabled="true" virtual="true">
+            <Dimensions x="190" y="15" />
+            <Anchor point="LEFT" relativeTo="$(parent)" offsetX="5" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-5" />
+            <Controls>
+                <Label name="$(parent)NameLabel" font="ZoFontGameSmall" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="_NAME_">
+                <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Label>
+                <Label name="$(parent)TotalLabel" font="ZoFontGameSmall" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="GOLDValue">
+                <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+                </Label>
+            </Controls>
+        </Control>
+        <TopLevelControl name="FFFDragonLairWeyrRunLeaderBoardWindow" mouseEnabled="true" movable="true" resizeHandleSize="8" hidden="true" alpha="1.0">
+            <Dimensions x="200" y="400" />
+            <DimensionConstraints minX="200" minY="200" />
+            <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetY="20" offsetX="-50" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.3" />
+                <Label name="$(parent)TitleLabel" font="$(ANTIQUE_FONT)|18|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Loot Leaders">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="5" offsetY="5" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="2" />
+                </Label>
+                <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						FFFDragonLairWeyrRun.HideLeaderStanding()
+					</OnClicked>
+				</Button>
+                <Control name="$(parent)DetailPanel" alpha="1.0">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="60" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.5"/>
+                        <Control name="$(parent)ItemList" inherits="ZO_ScrollList" >
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                        </Control>
+                    </Controls>
+                </Control>
+				<Button name="$(parent)ButtonShowLeaderTotals" mouseEnabled="true" inherits="ZO_DefaultButton">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="5" offsetY="25" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-5" offsetY="55" />
+                    <Controls>
+                        <Label name="$(parent)ButtonShowLeaderTotalLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" color="CFDCBD" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Farming">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                    <OnClicked>
+                        FFFDragonLairWeyrRun.ShowLeaderTotals()
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,19 @@
+## Title: |c0B2BF0AutoRidingTraining|r 0.6.0
+## Description: This addon fast forwards riding skill training
+## Version: 0.6.0
+## Author: |@Myzael|r
+## APIVersion: 100030
+## SavedVariables: AutoRidingTrainingVars
+
+lang/en.lua
+lang/$(language).lua
+AutoRidingTraining.lua
+
+; API https://esoapi.uesp.net/current/index.html
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

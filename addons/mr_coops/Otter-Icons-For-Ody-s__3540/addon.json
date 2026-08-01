@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/mr_coops/Otter-Icons-For-Ody-s__3540",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mr_coops",
+  "canonical_id": "esoui:3540",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3540",
+  "deleted": false,
+  "directories": [
+    "OtterSupportIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3540/",
+  "fingerprint": "b759076756176c698797766d88052afffab52441f28f0f3076aa71c5e89d076a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12030.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3540",
+  "source_url": "https://www.esoui.com/downloads/info3540-OtterIconsForOdys.html",
+  "stats": {
+    "downloads": 2326,
+    "favorites": 2,
+    "monthly_downloads": 16
+  },
+  "title": "Otter Icons For Ody's",
+  "updated_at": 1675804427000,
+  "version": "2"
+}

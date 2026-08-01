@@ -1,0 +1,10 @@
+## Title: |c00ffffTop Tier Crafting Bar|
+## Description: Show's you a bar with the top tier crafting nodes
+## Author: Jodynn
+## Version: 0.5
+## APIVersion: 100030
+## SavedVariables: TopTier_sv
+## DependsOn: LibAddonMenu-2.0
+
+TopTierBar.xml
+TopTierBar.lua

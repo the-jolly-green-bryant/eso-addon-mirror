@@ -1,0 +1,534 @@
+<GuiXml>
+	<Controls>
+		<Label name="ItemBrowserRowLabel" font="ZoFontGame" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" virtual="true" />
+		<Label name="ItemBrowserSearchLabel" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" virtual="true" />
+		<Control name="RarityDropdown" inherits="ZO_ComboBox" virtual="true">
+			<Dimensions x="200" />
+			<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="5" />
+		</Control>
+		<Label name="SpecificItemButton" font="ZoFontGameBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="ELLIPSIS" verticalAlignment="CENTER" mouseEnabled="true" virtual="true">
+			<OnMouseEnter>
+				SetJunker.highlightSpecificButton(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SetJunker.unHighlightSpecificButton(self)
+			</OnMouseExit>
+			<OnMouseDown>
+				SetJunker.toggleJunkSpecificItem(self)
+			</OnMouseDown>
+		</Label>
+		<Control name="ItemBrowserRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="30" />
+			<OnMouseEnter>
+				ItemBrowserRow_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				ItemBrowserRow_OnMouseExit(self)
+			</OnMouseExit>
+			<OnMouseUp>
+				ItemBrowserRow_OnMouseUp(self)
+			</OnMouseUp>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				<Label name="$(parent)Junk" inherits="ItemBrowserRowLabel" mouseEnabled="true">
+					<Anchor point="LEFT" />
+					<Dimensions x="40" y="30" />
+					<OnMouseDown>
+						SetJunker.toggleJunkSet(self)
+					</OnMouseDown>
+					<OnMouseEnter>
+						SetJunker.highlightSpecificButton(self)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SetJunker.unHighlightSpecificButton(self)
+						SetJunker.unHighlightTheRow(self)
+					</OnMouseExit>
+				</Label>
+				<Label name="$(parent)Name" inherits="ItemBrowserRowLabel">
+					<Anchor point="LEFT"  relativePoint="RIGHT" relativeTo="$(parent)Junk" />
+					<Dimensions x="300" y="30" />
+				</Label>
+				<Label name="$(parent)Type" inherits="ItemBrowserRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" />
+					<Dimensions x="120" y="30" />
+				</Label>
+				<Label name="$(parent)Source" inherits="ItemBrowserRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Type" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="-16" />
+					<Dimensions y="30" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="ItemBrowserFrame" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<Controls>
+				<Control name="$(parent)FilterDrop" inherits="ZO_ComboBox">
+					<Dimensions x="200" />
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-38" offsetY="14" />
+				</Control>
+
+				<Backdrop name="$(parent)Search" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+					<Anchor point="RIGHT" relativeTo="$(parent)FilterDrop" relativePoint="LEFT" offsetX="-12" offsetY="-1" />
+					<Dimensions x="250" />
+					<Controls>
+						<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" />
+					</Controls>
+				</Backdrop>
+
+				<Control name="$(parent)SearchDrop" resizeToFitDescendents="true" mouseEnabled="true">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)Search" />
+					<OnInitialized>
+						ZO_ComboBox:New(self)
+					</OnInitialized>
+					<OnMouseUp>
+						if (button == MOUSE_BUTTON_INDEX_LEFT and upInside) then
+							ZO_ComboBox_DropdownClicked(self)
+						end
+					</OnMouseUp>
+					<Controls>
+						<Label name="$(parent)Anchor" inherits="ItemBrowserSearchLabel">
+							<Anchor point="RIGHT" />
+						</Label>
+						<Label name="$(parent)ColonText" text=":" inherits="ItemBrowserSearchLabel">
+							<Anchor point="RIGHT" relativeTo="$(parent)Anchor" relativePoint="LEFT" offsetX="-8" />
+						</Label>
+						<Label name="$(parent)SelectedItemText" inherits="ItemBrowserSearchLabel">
+							<Anchor point="RIGHT" relativeTo="$(parent)ColonText" relativePoint="LEFT" offsetX="-1" />
+						</Label>
+						<Button name="$(parent)OpenDropdown" inherits="ZO_DropdownButton">
+							<Dimensions x="16" y="16" />
+							<Anchor point="RIGHT" relativeTo="$(parent)SelectedItemText" relativePoint="LEFT" offsetX="-3" />
+							<OnClicked>
+								ZO_ComboBox_DropdownClicked(self:GetParent())
+							</OnClicked>
+						</Button>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="51" />
+					<Anchor point="TOPRIGHT" offsetY="51" />
+					<Dimensions y="32" />
+					<Controls>
+						<Control name="$(parent)JKS" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_ITEMBROWSER_HEADER_JUNK), "junk", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" />
+							<Dimensions x="40" y="32" />
+						</Control>
+						<Control name="$(parent)Name" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_ITEMBROWSER_HEADER_NAME), "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT"  relativePoint="TOPRIGHT" relativeTo="$(parent)JKS" />
+							<Dimensions x="300" y="32" />
+						</Control>
+						<Control name="$(parent)Type" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_ITEMBROWSER_HEADER_TYPE), "itemType", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Name" />
+							<Dimensions x="120" y="32" />
+						</Control>
+						<Control name="$(parent)Source" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_ITEMBROWSER_HEADER_SOURCE), "source", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Type" />
+							<Dimensions y="32" />
+						</Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-35" offsetY="-32" />
+				</Control>
+
+				<Label name="$(parent)Counter" font="ZoFontGameSmall" horizontalAlignment="RIGHT" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)List" relativePoint="BOTTOMRIGHT" offsetY="6" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+		<TopLevelControl name="ItemBrowserTooltipTopLevel" inherits="TooltipTopLevel">
+			<Controls>
+				<Tooltip name="ItemBrowserTooltip" inherits="ZO_ItemIconTooltip" />
+			</Controls>
+		</TopLevelControl>
+		<!--	TODO: Translate those below	-->
+		<TopLevelControl name="SetDetailedOptions" inherits="ZO_LeftPanelBG" hidden="true">
+			<Controls>
+				<Control name="$(parent)Main">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+					<Controls>
+						<Label name="$(parent)Title" font="ZoFontWindowTitle" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="DETAILED OPTIONS">
+							<Anchor point="TOPLEFT" offsetX="20" />
+						</Label>
+						<Texture name="$(parent)DividerMain" inherits="ZO_DialogDivider">
+							<Anchor relativePoint="BOTTOMLEFT" point="CENTER" relativeTo="$(parent)Title" offsetX="260" offsetY="5" />
+							<Dimensions x="750" />
+						</Texture>
+					</Controls>
+				</Control>
+				<Control name="$(parent)JunkDuplicates">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Main" relativePoint="BOTTOMLEFT" offsetY="40" />
+					<Dimensions y="100" />
+					<Controls>
+						<Label name="$(parent)Enable" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Junk duplicate items (with trait priority):">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="10" offsetX="20" />
+						</Label>
+						<Label name="$(parent)JunkDuplicatesButton" font="ZoFontGameBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="ELLIPSIS" verticalAlignment="CENTER" mouseEnabled="true" text="OFF">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Enable" relativePoint="TOPRIGHT" offsetX="20" />
+							<OnMouseEnter>
+								SetJunker.highlightSpecificButton(self)
+							</OnMouseEnter>
+							<OnMouseExit>
+								SetJunker.unHighlightSpecificButton(self)
+							</OnMouseExit>
+							<OnMouseDown>
+								SetJunker.toggleJunkDuplicates()
+							</OnMouseDown>
+						</Label>
+						<Control name="$(parent)Traits">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="20" offsetY="40" />
+							<Dimensions x="520" />
+							<Controls name="$(parent)Traits">
+								<Label name="$(parent)Label" font="ZoFontGameSmall" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Preferred traits:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="10" />
+								</Label>
+								<Control name="$(parent)ArmorPreferredTrait" inherits="ZO_ComboBox">
+									<Dimensions x="200" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="5" />
+								</Control>
+								<Control name="$(parent)WeaponPreferredTrait" inherits="ZO_ComboBox">
+									<Dimensions x="200" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)ArmorPreferredTrait" relativePoint="TOPLEFT" offsetX="-5" />
+								</Control>
+							</Controls>
+						</Control>
+						<Texture name="$(parent)DividerKeep" inherits="ZO_DialogDivider">
+							<Anchor relativePoint="BOTTOMLEFT" point="CENTER" relativeTo="$(parent)" offsetX="260" />
+							<Dimensions x="750" />
+						</Texture>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Keep">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)JunkDuplicates" relativePoint="BOTTOMLEFT" />
+					<Dimensions y="200" />
+					<Controls>
+						<Control name="$(parent)NeverJunkJewels">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="20" offsetY="20" />
+							<Dimensions x="520" />
+							<Controls>
+								<Label font="ZoFontGameSmall" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Never junk jewels above rarity:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="10" />
+								</Label>
+								<Label name="$(parent)type" text="jewels" hidden="true" />
+								<Control name="$(parent)JewelRarity" inherits="RarityDropdown" />
+							</Controls>
+						</Control>
+						<Control name="$(parent)NeverJunkItems">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)NeverJunkJewels" relativePoint="BOTTOMLEFT" offsetY="40" />
+							<Dimensions x="520" />
+							<Controls>
+								<Label font="ZoFontGameSmall" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Never junk armors and weapons above rarity:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="10" />
+								</Label>
+								<Label name="$(parent)type" text="standardItems" hidden="true" />
+								<Control name="$(parent)ItemRarity" inherits="RarityDropdown" />
+							</Controls>
+						</Control>
+						<Control name="$(parent)NeverJunkGlyphs">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)NeverJunkItems" relativePoint="BOTTOMLEFT" offsetY="40" />
+							<Dimensions x="520" />
+							<Controls>
+								<Label font="ZoFontGameSmall" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Never junk glyphs above rarity:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="10" />
+								</Label>
+								<Label name="$(parent)type" text="glyphs" hidden="true" />
+								<Control name="$(parent)GlyphRarity" inherits="RarityDropdown" />
+							</Controls>
+						</Control>
+						<Control name="$(parent)NeverJunkIntricates">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)NeverJunkGlyphs" relativePoint="BOTTOMLEFT" offsetY="40" />
+							<Dimensions x="520" />
+							<Controls>
+								<Label font="ZoFontGameSmall" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Never junk intricate items:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="10" />
+								</Label>
+								<Label name="SetJunkerJunkIntricatesButton" font="ZoFontGameBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="ELLIPSIS" verticalAlignment="CENTER" mouseEnabled="true" text="OFF">
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-173" offsetY="8" />
+									<OnMouseEnter>
+										SetJunker.highlightSpecificButton(self)
+									</OnMouseEnter>
+									<OnMouseExit>
+										SetJunker.unHighlightSpecificButton(self)
+									</OnMouseExit>
+									<OnMouseDown>
+											SetJunker.toggleJunkIntricates()
+									</OnMouseDown>
+								</Label>
+							</Controls>
+						</Control>
+						<Texture name="$(parent)DividerKeep" inherits="ZO_DialogDivider">
+							<Anchor relativePoint="BOTTOMLEFT" point="CENTER" relativeTo="$(parent)" offsetX="260" />
+							<Dimensions x="750" />
+						</Texture>
+					</Controls>
+				</Control>
+				<Control name="$(parent)DetailedSetOptions" hidden="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Keep" relativePoint="BOTTOMLEFT" offsetY="20" />
+
+					<Controls>
+						<Label name="$(parent)DetailedSetOptions" font="ZoFontWindowSubtitle" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text=" ">
+							<Anchor point="TOPLEFT" offsetX="20"/>
+						</Label>
+						<Control name="$(parent)JunkArmors">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="20" offsetY="25" />
+							<Dimensions x="520" y="125" />
+							<Controls>
+								<Label name="$(parent)L1.1" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Chests:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="20" offsetY="10" />
+								</Label>
+								<Label name="$(parent)L1.1B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="11" offsetX="90" />
+									<Controls>
+										<Label name="$(parent)value" text="%EQUIP_TYPE_CHEST" hidden="true" />
+										<Label name="$(parent)type" text="armors" hidden="true" />
+									</Controls>
+								</Label>
+								<Label name="$(parent)L1.2" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Legs:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="200" offsetY="10" />
+								</Label>
+								<Label name="$(parent)L1.2B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="11" offsetX="280" />
+									<Controls>
+										<Label name="$(parent)value" text="%EQUIP_TYPE_LEGS" hidden="true" />
+										<Label name="$(parent)type" text="armors" hidden="true" />
+									</Controls>
+								</Label>
+								<Label name="$(parent)L1.3" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Feet:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="390" offsetY="10" />
+								</Label>
+								<Label name="$(parent)L1.3B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="11" offsetX="470" />
+									<Controls>
+										<Label name="$(parent)value" text="%EQUIP_TYPE_FEET" hidden="true" />
+										<Label name="$(parent)type" text="armors" hidden="true" />
+									</Controls>
+								</Label>
+
+								<Label name="$(parent)L2.1" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Waists:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L1.1" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L2.1B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L1.1B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%EQUIP_TYPE_WAIST" hidden="true" />
+										<Label name="$(parent)type" text="armors" hidden="true" />
+									</Controls>
+								</Label>
+								<Label name="$(parent)L2.2" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Gloves:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L1.2" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L2.2B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L1.2B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%EQUIP_TYPE_HAND" hidden="true" />
+										<Label name="$(parent)type" text="armors" hidden="true" />
+									</Controls>
+								</Label>
+								<Label name="$(parent)L2.3" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Shoulders:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L1.3" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L2.3B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L1.3B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%EQUIP_TYPE_SHOULDERS" hidden="true" />
+										<Label name="$(parent)type" text="armors" hidden="true" />
+									</Controls>
+								</Label>
+
+								<Label name="$(parent)L3.1" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Helms:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L2.1" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L3.1B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L2.1B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%EQUIP_TYPE_HEAD" hidden="true" />
+										<Label name="$(parent)type" text="armors" hidden="true" />
+									</Controls>
+								</Label>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)JunkWeaponsAndRings">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)JunkArmors" relativePoint="BOTTOMLEFT" offsetY="0" />
+							<Dimensions x="520" />
+							<Controls>
+								<Label name="$(parent)L1.1" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Axes 2H:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="20" />
+								</Label>
+								<Label name="$(parent)L1.1B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="1" offsetX="90" />
+									<Controls>
+										<Label name="$(parent)value" text="%WEAPONTYPE_TWO_HANDED_AXE" hidden="true" />
+										<Label name="$(parent)type" text="weapons" hidden="true" />
+									</Controls>
+								</Label>
+								<Label name="$(parent)L1.2" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Sword 2H:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="200" />
+								</Label>
+								<Label name="$(parent)L1.2B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="1" offsetX="280" />
+									<Controls>
+										<Label name="$(parent)value" text="%WEAPONTYPE_TWO_HANDED_SWORD" hidden="true" />
+										<Label name="$(parent)type" text="weapons" hidden="true" />
+									</Controls>
+								</Label>
+								<Label name="$(parent)L1.3" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Blunt 2H:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="390" />
+								</Label>
+								<Label name="$(parent)L1.3B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="1" offsetX="470" />
+									<Controls>
+										<Label name="$(parent)value" text="%WEAPONTYPE_TWO_HANDED_HAMMER" hidden="true" />
+										<Label name="$(parent)type" text="weapons" hidden="true" />
+									</Controls>
+								</Label>
+
+								<Label name="$(parent)L2.1" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Daggers">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L1.1" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L2.1B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L1.1B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%WEAPONTYPE_DAGGER" hidden="true" />
+										<Label name="$(parent)type" text="weapons" hidden="true" />
+									</Controls>
+								</Label>
+								<Label name="$(parent)L2.2" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Axes 1H:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L1.2" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L2.2B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L1.2B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%WEAPONTYPE_AXE" hidden="true" />
+										<Label name="$(parent)type" text="weapons" hidden="true" />
+									</Controls>
+								</Label>
+								<Label name="$(parent)L2.3" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Sword 1H:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L1.3" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L2.3B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L1.3B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%WEAPONTYPE_SWORD" hidden="true" />
+										<Label name="$(parent)type" text="weapons" hidden="true" />
+									</Controls>
+								</Label>
+
+								<Label name="$(parent)L3.1" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Blunt 1H:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L2.1" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L3.1B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L2.1B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%WEAPONTYPE_HAMMER" hidden="true" />
+										<Label name="$(parent)type" text="weapons" hidden="true" />
+									</Controls>
+								</Label>
+								<Label name="$(parent)L3.2" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text=" ">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L2.2" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L3.2B" font="ZoFontGameBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text=" ">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L2.2B" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L3.3" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text=" ">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L2.3" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L3.3B" font="ZoFontGameBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text=" ">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L2.3B" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+
+								<Label name="$(parent)L4.1" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Inferno:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L3.1" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L4.1B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L3.1B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%WEAPONTYPE_FIRE_STAFF" hidden="true" />
+										<Label name="$(parent)type" text="weapons" hidden="true" />
+									</Controls>
+								</Label>
+								<Label name="$(parent)L4.2" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Lighting:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L3.2" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L4.2B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L3.2B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%WEAPONTYPE_LIGHTNING_STAFF" hidden="true" />
+										<Label name="$(parent)type" text="weapons" hidden="true" />
+									</Controls>
+								</Label>
+								<Label name="$(parent)L4.3" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Ice:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L3.3" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L4.3B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L3.3B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%WEAPONTYPE_FROST_STAFF" hidden="true" />
+										<Label name="$(parent)type" text="weapons" hidden="true" />
+									</Controls>
+								</Label>
+
+								<Label name="$(parent)L5.1" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Resto:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L4.1" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L5.1B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L4.1B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%WEAPONTYPE_HEALING_STAFF" hidden="true" />
+										<Label name="$(parent)type" text="weapons" hidden="true" />
+									</Controls>
+								</Label>
+								<Label name="$(parent)L5.2" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Shields:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L4.2" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L5.2B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L4.2B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%WEAPONTYPE_SHIELD" hidden="true" />
+										<Label name="$(parent)type" text="weapons" hidden="true" />
+									</Controls>
+								</Label>
+
+								<Label name="$(parent)L6.1" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Necks:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L5.1" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L6.1B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L5.1B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%EQUIP_TYPE_NECK" hidden="true" />
+										<Label name="$(parent)type" text="armors" hidden="true" />
+									</Controls>
+								</Label>
+								<Label name="$(parent)L6.2" font="ZoFontGameMedium" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Rings:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L5.2" relativePoint="BOTTOMLEFT" offsetY="15" />
+								</Label>
+								<Label name="$(parent)L6.2B" inherits="SpecificItemButton" text="ON">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)L5.2B" relativePoint="BOTTOMLEFT" offsetY="15" />
+									<Controls>
+										<Label name="$(parent)value" text="%EQUIP_TYPE_RING" hidden="true" />
+										<Label name="$(parent)type" text="armors" hidden="true" />
+									</Controls>
+								</Label>
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

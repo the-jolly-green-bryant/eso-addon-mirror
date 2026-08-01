@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Hyborem/Hyborem-Assistant-Rotation__4410",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hyborem",
+  "canonical_id": "esoui:4410",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4410",
+  "deleted": false,
+  "directories": [
+    "HyboremAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4410/",
+  "fingerprint": "7f622b308e23461574f8237ad16ceb960f3252e8d17a6e76b182c26bd00c5d3d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4410",
+  "source_url": "https://www.esoui.com/downloads/info4410-HyboremAssistantRotation.html",
+  "stats": {
+    "downloads": 247,
+    "favorites": 0,
+    "monthly_downloads": 30
+  },
+  "title": "Hyborem Assistant Rotation",
+  "updated_at": 1780934555000,
+  "version": "v.1.6"
+}

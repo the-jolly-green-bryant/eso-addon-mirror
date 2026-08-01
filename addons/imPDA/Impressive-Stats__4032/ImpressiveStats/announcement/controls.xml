@@ -1,0 +1,19 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+		<TopLevelControl name="IMP_STATS_Announcement" hidden="true">
+            <OnInitialized>
+                IMP_STATS_Announcement_OnInitialized(self)
+            </OnInitialized>
+
+            <Anchor point="RIGHT" relativeTo="IMP_STATS_RightPanel" relativePoint="LEFT" offsetX="-50" />
+            <Dimensions x="640" y="875" />
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FF0000" centerColor="000000" />
+                <Label name="$(parent)Text" font="ZoFontGameMedium" horizontalAlignment="TOP">
+                    <Anchor point="TOPLEFT" />
+                    <Anchor point="TOPRIGHT" />
+                </Label>
+			</Controls>
+		</TopLevelControl>	
+    </Controls>
+</GuiXml>

@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/g4rr3t/Full-Moon__2107",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "g4rr3t",
+  "canonical_id": "esoui:2107",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:2107",
+  "deleted": false,
+  "directories": [
+    "FullMoon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2107/",
+  "fingerprint": "03a963a48c17b2d9b5e0031068f6d618c7618327aaa5ad19877ad8d91ae17196",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7119.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2107",
+  "source_url": "https://www.esoui.com/downloads/info2107-FullMoon.html",
+  "stats": {
+    "downloads": 29572,
+    "favorites": 3,
+    "monthly_downloads": 21
+  },
+  "title": "Full Moon",
+  "updated_at": 1558322262000,
+  "version": "1.2.4"
+}

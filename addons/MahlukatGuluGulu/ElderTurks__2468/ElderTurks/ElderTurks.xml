@@ -1,0 +1,46 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ElderTurksGuildHome" mouseEnabled="true">
+            <Dimensions x="180" y="130"/>
+            <Anchor point="TOP" relativeTo="ZO_GuildHomeTraderName" relativePoint="BOTTOM" offsetY="-80"/>
+            <Controls>
+                <Label name="$(parent)Title" width="180" height="20" font="ZoFontWinH3" inheritAlpha="true"
+                       color="FFFFFF"
+                       wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"
+                       text="Elder Turks\nLonca Evi">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="0"/>
+                </Label>
+                <Button name="$(parent)Image" inherits="ZO_ButtonBehaviorClickSound" mouseEnabled="true">
+                    <Dimensions x="85" y="85"/>
+                    <Anchor point="TOP" relativeTo="$(parent)Title" offsetY="20" relativePoint="CENTER"/>
+                    <Textures normal="/esoui/art/campaign/campaignbrowser_homecampaign.dds"/>
+                    <OnClicked>
+                        ElderTurks.TeleportToGuildHouse()
+                    </OnClicked>
+                </Button>
+                <Label name="$(parent)Label" width="180" height="20" font="ZoFontWinH3" inheritAlpha="true"
+                       color="C5C29E"
+                       wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"
+                       text="Linchal Grand Manor">
+                    <Anchor point="TOP" relativeTo="$(parent)Image" relativePoint="BOTTOM" offsetY="-5"/>
+                </Label>
+                <Label name="$(parent)Label2" width="180" height="20" font="ZoFontWinH4" inheritAlpha="true"
+                       color="C5C29E"
+                       wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"
+                       text="(Işınlanmak için resme tıkla)">
+                    <Anchor point="TOP" relativeTo="$(parent)Label" relativePoint="BOTTOM" offsetY="-2"/>
+                </Label>
+
+            </Controls>
+        </TopLevelControl>
+        <TopLevelControl name="ElderTurksFrameDummy">
+            <Dimensions x="10" y="10"/>
+            <Anchor point="LEFT"/>
+            <OnUpdate>
+                    if ElderTurks ~= nil then
+                        ElderTurks.UpdateUnitFrame();
+                    end
+            </OnUpdate>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

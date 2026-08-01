@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/MrPikPik/Fast-Travel-Spendings__2798",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:2798",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:2798",
+  "deleted": false,
+  "directories": [
+    "FastTravelSpendings"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2798/",
+  "fingerprint": "d8c443e6fa7375d599c0e3bd04f7825ceb9dc5670fc1783964e319b2c570920f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9464.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9465.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2798",
+  "source_url": "https://www.esoui.com/downloads/info2798-FastTravelSpendings.html",
+  "stats": {
+    "downloads": 6186,
+    "favorites": 7,
+    "monthly_downloads": 14
+  },
+  "title": "Fast Travel Spendings",
+  "updated_at": 1655570504000,
+  "version": "1.1"
+}

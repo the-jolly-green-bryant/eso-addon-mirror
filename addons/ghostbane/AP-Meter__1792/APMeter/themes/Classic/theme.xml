@@ -1,0 +1,147 @@
+<GuiXml>
+    <Animations>
+
+        <AnimationTimeline name="APMeter_Classic_RangeGlowIn">
+            <Animations>
+                <AlphaAnimation startAlpha="0.0" endAlpha="1.0" duration="500">
+                    <EasingFunction>
+                        return ZO_EaseInQuadratic(progress)
+                    </EasingFunction>
+                </AlphaAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="APMeter_Classic_RangeGlowOut">
+            <Animations>
+                <AlphaAnimation startAlpha="1.0" endAlpha="0.0" duration="500">
+                    <EasingFunction>
+                        return ZO_EaseInQuadratic(progress)
+                    </EasingFunction>
+                </AlphaAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="APMeter_Classic_EasingGreen">
+            <Animations>
+                <CustomAnimation duration="2000">
+                    <UpdateFunction>
+                        if self:GetTimeline()._previewMode then
+                            APMeter.Theme.Preview:AnimationCallback('GreenBarUpdate', progress)
+                        else
+                            APMeter.Theme.Selected():AnimationCallback('GreenBarUpdate', progress)
+                        end
+                    </UpdateFunction>
+                    <EasingFunction>
+                        return ZO_EaseOutQuadratic(progress)
+                    </EasingFunction>
+                    <OnStop>
+                        if self:GetTimeline()._previewMode then
+                            APMeter.Theme.Preview:AnimationCallback('GreenBarComplete', progress)
+                        else
+                            APMeter.Theme.Selected():AnimationCallback('GreenBarComplete', progress)
+                        end
+                    </OnStop>
+                </CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="APMeter_Classic_EasingBlue">
+            <Animations>
+                <CustomAnimation duration="2000">
+                    <UpdateFunction>
+                        if self:GetTimeline()._previewMode then
+                            APMeter.Theme.Preview:AnimationCallback('BlueBarUpdate', progress)
+                        else
+                            APMeter.Theme.Selected():AnimationCallback('BlueBarUpdate', progress)
+                        end
+                    </UpdateFunction>
+                    <EasingFunction>
+                        return ZO_EaseOutQuadratic(progress)
+                    </EasingFunction>
+                    <OnStop>
+                        if self:GetTimeline()._previewMode then
+                            APMeter.Theme.Preview:AnimationCallback('BlueBarComplete', progress)
+                        else
+                            APMeter.Theme.Selected():AnimationCallback('BlueBarComplete', progress)
+                        end
+                    </OnStop>
+                </CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+    
+    </Animations>
+    <Controls>
+
+        <Control name="APMeter_Theme_Classic" virtual="true">
+            <Dimensions x="255" y="128" />
+            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+            <Controls>
+                <Control name="$(parent)Classic" tier="1">
+                    <Dimensions x="256" y="128" />
+                    <AnchorFill/>
+                    <Controls>
+                        <Texture name="$(parent)BG" textureFile="APMeter/themes/Classic/textures/meter_frame_3tier.dds">
+                            <Dimensions x="256" y="128" />
+                            <TextureCoords left="1" right="0" top="1" bottom="0" />
+                            <AnchorFill/>
+                        </Texture>
+                        <Control name="$(parent)Bar" tier="MEDIUM" level="2">
+                            <Dimensions x="128" y="128" />
+                            <Anchor point="LEFT" offsetX="-14" offsetY="-18" />
+                            <Controls>
+                                <Cooldown name="$(parent)Fill" textureFile="EsoUI/Art/HUD/Telvar_Meter_Fill.dds" fillColor="00c717" tier="MEDIUM" level="1">
+                                    <Anchor point="TOPLEFT" />
+                                    <Dimensions x="128" y="128" />
+                                </Cooldown>
+                                <Cooldown name="$(parent)TargetFill" textureFile="EsoUI/Art/HUD/Telvar_Meter_Fill.dds" fillColor="1e9fce" tier="MEDIUM" level="2" hidden="true">
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+                                    <Dimensions x="108" y="108" />
+                                </Cooldown>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)MultiplierContainer" tier="MEDIUM" level="4">
+                            <Anchor point="CENTER" offsetX="79" offsetY="-18"/>
+                            <Dimensions x="51" y="51" />
+                            <Controls>
+                                <Label name="$(parent)TargetValue" hidden="true" text="0" font="$(BOLD_FONT)|$(KB_24)" color="1e9fce">
+                                    <Anchor point="RIGHT" relativePoint="LEFT" offsetX="-125" offsetY="-10"/>
+                                </Label>
+                                <Label name="$(parent)TargetGlobalValue" hidden="true" text="0" display="hidden" font="$(BOLD_FONT)|$(KB_18)" color="ffffff">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)TargetValue" offsetX="0" offsetY="23"/>
+                                </Label>
+                                <Label name="$(parent)WholePart" text="0" verticalAlignment="CENTER" font="ZoFontAnnounceLargeNoShadow">
+                                    <Anchor point="LEFT" relativePoint="LEFT" offsetX="-152" />
+                                </Label>
+                                <Label name="$(parent)FractionalPart" text="%" font="ZoFontHeaderNoShadow">
+                                    <Anchor point="LEFT" relativeTo="$(parent)WholePart" relativePoint="RIGHT" />
+                                </Label>
+                                <Label name="$(parent)FractionalTargetPart" text="%" hidden="true" font="$(BOLD_FONT)|$(KB_16)" color="1e9fce">
+                                    <Anchor point="LEFT" relativeTo="$(parent)TargetValue" relativePoint="RIGHT"/>
+                                </Label>
+                                <Label name="$(parent)FractionalTargetGlobalPart" text="%" hidden="true" font="$(BOLD_FONT)|$(KB_12)" color="ffffff">
+                                    <Anchor point="LEFT" relativeTo="$(parent)TargetGlobalValue" relativePoint="RIGHT"/>
+                                </Label>
+                            </Controls>
+                        </Control>
+                        <Label name="$(parent)Display" inherits="ZO_CurrencyTemplate" tier="MEDIUM" level="3">.
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="TOPLEFT" offsetX="100" offsetY="10" />
+                        </Label>
+                        <Button tier="MEDIUM" level="3">
+                            <Anchor point="TOPLEFT" offsetX="190" offsetY="9" relativeTo="$(parent)BG" relativePoint="TOPLEFT"/>
+                            <Dimensions x="28" y="28" />
+                            <Textures normal="esoui/art/buttons/info_up.dds" mouseOver="esoui/art/buttons/info_over.dds"/>
+                            <OnClicked>APMeter.Panel.Toggle()</OnClicked>
+                        </Button>
+                        <Label name="$(parent)Zone" font="$(BOLD_FONT)|$(KB_14)|soft-shadow-thin" color="EEEEEE" tier="MEDIUM" level="3">.
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="TOPLEFT" offsetX="103" offsetY="39" />
+                        </Label>
+                        <Label name="$(parent)ApH" font="$(BOLD_FONT)|$(KB_14)|soft-shadow-thin" color="999999" tier="MEDIUM" level="3" text="ApH: |c00a313 -">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Frame" relativePoint="TOPLEFT" offsetX="92" offsetY="61" />
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+
+    </Controls>
+</GuiXml>

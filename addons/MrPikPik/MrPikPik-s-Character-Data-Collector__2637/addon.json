@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/MrPikPik/MrPikPik-s-Character-Data-Collector__2637",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:2637",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2637",
+  "deleted": false,
+  "directories": [
+    "MPPCharDataCollector"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2637/",
+  "fingerprint": "2c7761309537122912092d4e365299a7ff71d26f1042e657201d5d974706e521",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2637",
+  "source_url": "https://www.esoui.com/downloads/info2637-MrPikPiksCharacterDataCollector.html",
+  "stats": {
+    "downloads": 3168,
+    "favorites": 2,
+    "monthly_downloads": 13
+  },
+  "title": "MrPikPik's Character Data Collector",
+  "updated_at": 1624562402000,
+  "version": "1.6"
+}

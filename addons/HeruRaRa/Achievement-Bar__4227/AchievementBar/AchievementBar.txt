@@ -1,0 +1,12 @@
+## Title: Achievement Bar
+## Author: HeruRaRa
+## Description: Displays a progress bar at the bottom of the screen for a tracked achievement. Once an achievement is complete, the addon will either show a bar for the follow-up achievement or disappear if there aren't any.
+## APIVersion: 101050
+## Version: 1.0.4
+## SavedVariables: AchievementBar_Data
+## DependsOn: LibCustomMenu
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved. https://account.elderscrollsonline.com/add-on-terms
+
+AchievementBar.xml
+AchievementBar.lua

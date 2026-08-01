@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/iiJonno/PyramidAttributes__2565",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "iiJonno",
+  "canonical_id": "esoui:2565",
+  "category_id": "21",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:2565",
+  "deleted": false,
+  "directories": [
+    "PyramidAttributes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2565/",
+  "fingerprint": "269db0c89c39e47b32fab3e74ba6a670052dfbe2d9ea01a2191ae1b699ee201c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8759.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8760.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2565",
+  "source_url": "https://www.esoui.com/downloads/info2565-PyramidAttributes.html",
+  "stats": {
+    "downloads": 13546,
+    "favorites": 11,
+    "monthly_downloads": 42
+  },
+  "title": "PyramidAttributes",
+  "updated_at": 1732136832000,
+  "version": "4.5"
+}

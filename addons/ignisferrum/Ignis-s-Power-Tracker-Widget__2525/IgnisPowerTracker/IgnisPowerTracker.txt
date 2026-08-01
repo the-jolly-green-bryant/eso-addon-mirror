@@ -1,0 +1,9 @@
+## Title: Ignis's Power Tracker Widget
+## APIVersion: 100029 100030
+## Author: Ignis Ferrum
+## Version: 1.4.6
+## Description: Adds a small widget to track Weapon and Spell Power and Critical values. Original author: Bronson. Thanks to Baertram.
+## SavedVariables: IgnisPowerTrackerVars
+
+IgnisPowerTracker.lua
+IgnisPowerTracker.xml

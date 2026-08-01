@@ -1,0 +1,9 @@
+## Title: |ccc33ffThank|r|cff66ccYou|r
+## Author: |c0040ff@im|r|c0050ff_ro|r|c0060ffok|r|c0070ffie|r
+## Description: I try to make Tamriel a friendlier place
+## APIVersion: 101041
+## AddOnVersion: 1.1
+## SavedVariables: ThankYouSavedVariables
+## DependsOn: LibAddonMenu-2.0>=34
+
+ThankYou.lua

@@ -1,0 +1,17 @@
+## Title: |c0099ffKInfo|r v1.4.5
+## Author: KostiK
+## Version: 1.4.5
+## Description: Zeigt nützliche Timer, Taschen/BanK Infos an.  ---------------- Chat: "/ki.help"
+## SavedVariables: KInfoVars
+## APIVersion: 100034
+##
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+_KInfo_CONFIG.lua
+KInfo.lua
+KInfo.xml

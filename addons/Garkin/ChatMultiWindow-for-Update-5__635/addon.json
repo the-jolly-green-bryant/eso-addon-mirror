@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Garkin/ChatMultiWindow-for-Update-5__635",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Garkin",
+  "canonical_id": "esoui:635",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    },
+    {
+      "name": "Update 4",
+      "version": "1.4.3"
+    }
+  ],
+  "content_id": "esoui:635",
+  "deleted": false,
+  "directories": [
+    "ChatMultiWindow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl635/",
+  "fingerprint": "2cd08a35300f24e2d3f05d07efc66d76af2188e4201e7c429d7d37305f898272",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1937.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "635",
+  "source_url": "https://www.esoui.com/downloads/info635-ChatMultiWindowforUpdate5.html",
+  "stats": {
+    "downloads": 11041,
+    "favorites": 6,
+    "monthly_downloads": 10
+  },
+  "title": "ChatMultiWindow (for Update 5)",
+  "updated_at": 1415042087000,
+  "version": "1.8c"
+}

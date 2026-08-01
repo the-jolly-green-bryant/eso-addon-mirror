@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/homeopatix/SwissArmyKnife__1562",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "homeopatix",
+  "canonical_id": "esoui:1562",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1562",
+  "deleted": false,
+  "directories": [
+    "SwissArmyKnife",
+    "__MACOSX"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1562/",
+  "fingerprint": "232d000d89d5655b9a057e3b55a9614212dab3e2aee5fd6be6aa9aac431009f8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6438.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6410.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6411.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6412.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6440.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6439.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6228.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6441.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6413.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5187.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6415.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5092.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1562",
+  "source_url": "https://www.esoui.com/downloads/info1562-SwissArmyKnife.html",
+  "stats": {
+    "downloads": 24648,
+    "favorites": 42,
+    "monthly_downloads": 15
+  },
+  "title": "SwissArmyKnife",
+  "updated_at": 1599311204000,
+  "version": "5.7.2"
+}

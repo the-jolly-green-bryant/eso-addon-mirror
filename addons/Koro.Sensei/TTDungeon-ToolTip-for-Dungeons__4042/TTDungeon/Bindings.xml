@@ -1,0 +1,7 @@
+<Bindings>
+    <Category name="TTDungeon">
+        <Action name="TTDUNGEON_TOGGLE" category="TTDungeon">
+            <Pressed> TTDungeon.ToggleUI() </Pressed>
+        </Action>
+    </Category>
+</Bindings>

@@ -1,0 +1,10 @@
+## Title: Achievement Date Formatter
+## Author: justinsane16
+## Version: 1.1
+## AddOnVersion: 2
+## APIVersion: 101049 101050
+## Description: Reformats achievement completion dates to a desired date format for the English client.
+## DependsOn: LibAddonMenu-2.0>=43
+## SavedVariables: AchievementDateFormatter_SavedVars
+
+AchievementDateFormatter.lua

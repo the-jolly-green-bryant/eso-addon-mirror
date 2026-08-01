@@ -1,0 +1,9 @@
+## Title: QuickBind
+## Description: Allows binding a hovered item in your inventory to your account via a configurable hotkey.
+## Author: Lazy
+## Version: 1.1.0
+## APIVersion: 101048
+## AddOnVersion: 2
+
+QuickBind.lua
+Bindings.xml

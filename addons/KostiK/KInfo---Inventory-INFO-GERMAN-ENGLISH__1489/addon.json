@@ -1,0 +1,52 @@
+{
+  "archive_path": "addons/KostiK/KInfo---Inventory-INFO-GERMAN-ENGLISH__1489",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KostiK",
+  "canonical_id": "esoui:1489",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1489",
+  "deleted": false,
+  "directories": [
+    "KInfo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1489/",
+  "fingerprint": "fcaf84301e4c908a0b96d567ea7cfe1fb3471347f1c9fdfeb08c8071a1fbf853",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4824.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4827.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4825.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4826.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1489",
+  "source_url": "https://www.esoui.com/downloads/info1489-KInfo-InventoryINFOGERMANENGLISH.html",
+  "stats": {
+    "downloads": 7765,
+    "favorites": 6,
+    "monthly_downloads": 9
+  },
+  "title": "KInfo - Inventory INFO [GERMAN / ENGLISH]",
+  "updated_at": 1618114828000,
+  "version": "1.4.5"
+}

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Kyoma/Kyoma-s-Runebox-Tooltip__2318",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyoma",
+  "canonical_id": "esoui:2318",
+  "category_id": "98",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2318",
+  "deleted": false,
+  "directories": [
+    "kyoRuneboxTT"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2318/",
+  "fingerprint": "d5c44b4fd28d71861b680cbba9eb9bec22894d071fd7ee6c277a675b6c860003",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7887.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7886.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7891.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7890.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7889.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2318",
+  "source_url": "https://www.esoui.com/downloads/info2318-KyomasRuneboxTooltip.html",
+  "stats": {
+    "downloads": 4972,
+    "favorites": 10,
+    "monthly_downloads": 25
+  },
+  "title": "Kyoma's Runebox Tooltip",
+  "updated_at": 1554213100000,
+  "version": "2.0"
+}

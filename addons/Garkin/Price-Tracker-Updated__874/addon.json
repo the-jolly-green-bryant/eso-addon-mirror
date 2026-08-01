@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Garkin/Price-Tracker-Updated__874",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Garkin",
+  "canonical_id": "esoui:874",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    }
+  ],
+  "content_id": "esoui:874",
+  "deleted": false,
+  "directories": [
+    "PriceTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl874/",
+  "fingerprint": "e1a878e0f6a1ec2b7d4f6c0e6586e7a6fbfb1f41108402bf9418d035d56e4a4d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2655.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "874",
+  "source_url": "https://www.esoui.com/downloads/info874-PriceTrackerUpdated.html",
+  "stats": {
+    "downloads": 104509,
+    "favorites": 114,
+    "monthly_downloads": 107
+  },
+  "title": "Price Tracker Updated",
+  "updated_at": 1459917656000,
+  "version": "2.6.3"
+}

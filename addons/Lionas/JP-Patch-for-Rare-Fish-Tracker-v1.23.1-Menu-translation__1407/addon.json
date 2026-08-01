@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Lionas/JP-Patch-for-Rare-Fish-Tracker-v1.23.1-Menu-translation__1407",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lionas",
+  "canonical_id": "esoui:1407",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:1407",
+  "deleted": false,
+  "directories": [
+    "RareFishTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1407/",
+  "fingerprint": "7b4b722dcf2a28dc67d70df96b2b7da0930a158d8112494ea102aeb3ffbc13e7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4564.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1407",
+  "source_url": "https://www.esoui.com/downloads/info1407-JPPatchforRareFishTrackerv1.23.1Menutranslation.html",
+  "stats": {
+    "downloads": 10413,
+    "favorites": 0,
+    "monthly_downloads": 17
+  },
+  "title": "JP Patch for Rare Fish Tracker v1.23.1(Menu translation)",
+  "updated_at": 1467289784000,
+  "version": "1.23.1"
+}

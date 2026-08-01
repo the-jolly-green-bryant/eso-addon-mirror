@@ -1,0 +1,90 @@
+Salutations ! Merci d’utiliser mon addon. Créateur @IgorSab. Si vous appréciez mon addon et souhaitez soutenir mon travail, voici quelques options de dons volontaires :
+
+    PayPal: Malheureusement, PayPal.Me pourrait ne pas être disponible dans ma région. Vous pouvez envoyer un don à jetixmax13@gmail.com. C’est moins pratique, mais je vous serais très reconnaissant pour votre soutien !
+    Ko-fi: Offrez-moi un café sur ko-fi.com/igorsab. C’est une manière simple et rapide de m’aider à continuer le développement.
+    Cryptomonnaie:
+        BTC: 1Cehu58Do9izGefUBDLou8WJqgJdqs4CcJ (Bitcoin uniquement)
+        ETH: 0xbea843c6c0359126b619fca220fc841bcff6c931 (Ethereum uniquement)
+        USDT: 0xbea843c6c0359126b619fca220fc841bcff6c931 (réseau ERC-20 uniquement)
+        Tous les dons sont volontaires et soutiennent mon travail sur l’addon. Merci pour votre générosité et aide !
+        J’apprécierais aussi de l’or en jeu, des objets précieux ou des cadeaux de la Boutique à Couronnes à @IgorSab sur le serveur EU/PC.
+
+InventaryManagerTESO:
+
+InventaryManagerTESO est un addon de gestion d’inventaire pour The Elder Scrolls Online, ajoutant une fenêtre pratique avec des fonctions avancées de tri, filtrage, catégorisation et gestion des objets. Voici la liste complète de ses capacités :
+
+    Fenêtre d’inventaire améliorée
+    Affiche jusqu’à 200 objets dans une grille 10×20 (44×44 pixels par case).
+    Montre les icônes des objets, leur quantité en pile et des indicateurs visuels (par exemple, coche pour la sélection, assombrissement pour les objets verrouillés).
+    Affiche le total des emplacements occupés et disponibles (exemple : "125/200").
+    Affiche l’or du personnage avec mise en forme (exemple : "1 860 657").
+    Tri des objets
+    Par défaut : Trie par catégories (armes, armures, consommables, matériaux d’artisanat, etc.) avec priorité (exemple : équipement verrouillé avant nourriture).
+    Change la direction du tri (ascendant/descendant) en recliquant sur le bouton de tri.
+    Bouton "All" pour réinitialiser les filtres et afficher tous les objets.
+    Filtrage par catégories
+    Catégories disponibles : "Weapon" (armes), "Armor" (armures), "Furnishings" (meubles), "Consumables" (consommables), "Crafting" (matériaux d’artisanat).
+    Chaque catégorie a un bouton avec icône et infobulle.
+    Sélectionner une catégorie affiche uniquement les objets correspondants.
+    Recliquer sur une catégorie active réinitialise le filtre.
+    Recherche d’objets
+    Champ de saisie pour rechercher des objets par nom.
+    Recherche en temps réel : la liste se filtre au fur et à mesure de la saisie.
+    Prend en charge la recherche dans toutes les langues (selon la localisation du jeu).
+    Gestion des objets
+
+    Sélection: Clic gauche sur une case pour sélectionner/désélectionner un objet (coche verte). Les objets verrouillés ne peuvent pas être sélectionnés pendant le commerce.
+    Menu contextuel: Clic droit sur un objet pour des actions (exemple : "Équiper", "Utiliser"). "Détruire" est bloqué pour éviter une suppression accidentelle.
+    Équiper/Utiliser: Compatible avec l’équipement d’armes, armures et bijoux selon la barre d’armes active (primaire ou secondaire). Utilisation des consommables (exemple : potions) via le menu contextuel.
+    Infobulles: Survoler un objet affiche des infos détaillées (comme l’interface par défaut).
+
+    Gestion du verrouillage
+    Bouton Lock : Verrouille les objets sélectionnés (armes, armures, bijoux et objets de compagnons uniquement).
+    Bouton Unlock : Déverrouille les objets sélectionnés.
+    Les objets verrouillés sont assombris (alpha 0.5) et ne peuvent pas être vendus pendant le commerce.
+    Sélection massive
+    Bouton Select All : Sélectionne tous les objets dans la vue actuelle (sauf les verrouillés pendant le commerce).
+    Recliquer désélectionne tout.
+    Vente d’objets
+    Bouton Sell : Vend tous les objets sélectionnés à un marchand (jusqu’à 50 à la fois).
+    Fonctionne uniquement avec une fenêtre de commerce ouverte (exemple : marchand NPC).
+    Les objets verrouillés ne sont pas vendus.
+    Affichage du temps de recharge
+    Pour les objets avec temps de recharge (exemple : potions), affiche un overlay et un minuteur en secondes.
+    Se met à jour chaque seconde si la fenêtre de l’addon est ouverte.
+    Interactivité et paramètres
+    La fenêtre de l’addon peut être déplacée à l’écran.
+    Contenu mis à jour périodiquement (toutes les secondes si ouverte).
+    La sélection se réinitialise automatiquement à la fermeture.
+    Touche pour ouvrir/fermer la fenêtre ("InventaryManagerTESO").
+    Fonctions supplémentaires
+    Gère les objets verrouillés pendant le commerce (empêche leur vente).
+    Met à jour automatiquement l’inventaire après des changements (exemple : après vente ou utilisation).
+    Compatible avec divers types d’objets, y compris ceux des compagnons, objets à Couronnes et cartes au trésor.
+
+Instructions:
+
+    Grille d’objets (gauche): Affiche jusqu’à 200 objets sous forme d’icônes (10×20).
+    Panneau de contrôle (droite):
+        Bouton All : Affiche tous les objets.
+        Champ de recherche : Filtre les objets par nom.
+        Boutons de catégories : "Weapon", "Armor", "Furnishings", "Consumables", "Crafting".
+        Boutons de contrôle : Lock, Unlock, Select All, Sell.
+        Info : En bas, affiche "Occupé/Total emplacements" (exemple : "125/200") et "Gold : <montant>" (exemple : "1 860 657").
+    Tri et filtrage:
+        Clique sur All pour afficher tous les objets.
+        Clique sur une catégorie (exemple : "Weapon") pour n’afficher que ces objets.
+        Reclique sur une catégorie active pour réinitialiser le filtre.
+        Tape dans le champ de recherche pour filtrer les objets par nom (en temps réel).
+    Gestion des objets:
+        Sélection: Clic gauche sur un objet pour le sélectionner (coche verte apparaît). Reclique pour désélectionner.
+        Sélection massive: Clique sur Select All pour tout sélectionner (sauf verrouillés pendant le commerce). Reclique pour tout désélectionner.
+        Verrouiller/Déverrouiller: Sélectionne des objets, puis clique sur Lock pour les verrouiller (ils s’assombrissent). Clique sur Unlock pour déverrouiller.
+        Vente: Ouvre une fenêtre de commerce avec un NPC (exemple : marchand). Sélectionne des objets et clique sur Sell (jusqu’à 50 à la fois). Les verrouillés ne sont pas vendus.
+        Équiper/Utiliser: Clic droit sur un objet pour ouvrir le menu contextuel. Choisis "Equip" pour armes/armures ou "Use" pour consommables.
+        Voir les infos: Survole un objet pour une infobulle avec sa description. Les objets avec recharge (exemple : potions) affichent un overlay et un minuteur.
+    Fermer la fenêtre: Clique sur "X" en haut à droite ou utilise la touche assignée. La sélection se réinitialise à la fermeture.
+    Conseils utiles:
+        Utilise le champ de recherche pour trouver rapidement.
+        Les objets verrouillés ne peuvent être ni sélectionnés ni vendus pendant le commerce.
+        La fenêtre se met à jour chaque seconde si ouverte.

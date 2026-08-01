@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/manavortex/Advanced-Autoloot---Update-Fix__831",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:831",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:831",
+  "deleted": false,
+  "directories": [
+    "AdvancedAutoLoot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl831/",
+  "fingerprint": "6e4728779d05f3008db9a280c1fa116e5527d76ac3ccea775a26bf9188c47521",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2547.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "831",
+  "source_url": "https://www.esoui.com/downloads/info831-AdvancedAutoloot-UpdateFix.html",
+  "stats": {
+    "downloads": 10151,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "Advanced Autoloot - Update / Fix",
+  "updated_at": 1416755558000,
+  "version": "1.3a"
+}

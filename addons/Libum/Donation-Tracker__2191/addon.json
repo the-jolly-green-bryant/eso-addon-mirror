@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Libum/Donation-Tracker__2191",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Libum",
+  "canonical_id": "esoui:2191",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2191",
+  "deleted": false,
+  "directories": [
+    "DonationTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2191/",
+  "fingerprint": "ed5c6db9dac93b1773d75dd9266c6b6f7a1924e58d2ce37c40d00eca30c2b602",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7497.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7496.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7498.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7482.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7477.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2191",
+  "source_url": "https://www.esoui.com/downloads/info2191-DonationTracker.html",
+  "stats": {
+    "downloads": 37142,
+    "favorites": 4,
+    "monthly_downloads": 158
+  },
+  "title": "Donation Tracker",
+  "updated_at": 1542063987000,
+  "version": "1.20"
+}

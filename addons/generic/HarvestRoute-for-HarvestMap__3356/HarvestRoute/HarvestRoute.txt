@@ -1,0 +1,14 @@
+## Title: HarvestRoute
+## Author: generic
+## APIVersion: 101036
+## AddOnVersion: 3
+## SavedVariables: HarvestRouteVars
+## DependsOn: HarvestMap LibAddonMenu-2.0>=32
+
+
+HarvestRoute.lua
+
+Localization/$(language).lua
+Localization/default.lua
+
+Tracker.xml

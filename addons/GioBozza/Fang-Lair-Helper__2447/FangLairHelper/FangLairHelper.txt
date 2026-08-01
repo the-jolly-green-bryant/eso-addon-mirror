@@ -1,0 +1,7 @@
+## Title: Fang Lair Helper
+## Author: GioBozza
+## Version: 1.0.0
+## APIVersion: 100028
+
+FangLairHelper.lua
+FangLairHelper.xml

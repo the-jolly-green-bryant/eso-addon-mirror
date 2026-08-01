@@ -1,0 +1,587 @@
+-- BetterUI Japanese Localization
+---
+--- Purpose: Defines localized string constants for Japanese.
+--- Mechanics: Registers string IDs with the ESO localization system (ZO_CreateStringId).
+---
+
+-- UI Labels (Resource Orb Frames)
+ZO_CreateStringId("SI_BETTERUI_LABEL_CAST_BAR", "キャストバー")
+ZO_CreateStringId("SI_BETTERUI_LABEL_MOUNT_STAMINA", "マウント持久力")
+
+-- List States
+ZO_CreateStringId("SI_BETTERUI_EMPTY_LIST", "リストに何もありません")
+ZO_CreateStringId("SI_BETTERUI_LOADING_LIST", "リストを読み込み中...")
+ZO_CreateStringId("SI_BETTERUI_SEARCH_NO_RESULTS", "アイテムが見つかりません")
+
+-- Market Price Tooltip Strings (TTC / MM / ATT integration)
+ZO_CreateStringId("SI_BETTERUI_MARKET_NO_PRICE_DATA", "<<1>>: 価格データなし")
+ZO_CreateStringId("SI_BETTERUI_MARKET_TTC_AVG_SUG", "TTC: Avg: <<1>> / Sug: <<2>>")
+ZO_CreateStringId("SI_BETTERUI_MARKET_TTC_AVG", "TTC: Avg: <<1>>")
+ZO_CreateStringId("SI_BETTERUI_MARKET_TTC_SUG", "TTC: Sug: <<1>>")
+ZO_CreateStringId("SI_BETTERUI_MARKET_TTC_STACK_AVG_SUG", "TTC: (<<1>>x) Avg: <<2>> / Sug: <<3>>")
+ZO_CreateStringId("SI_BETTERUI_MARKET_TTC_STACK_AVG", "TTC: (<<1>>x) Avg: <<2>>")
+ZO_CreateStringId("SI_BETTERUI_MARKET_TTC_STACK_SUG", "TTC: (<<1>>x) Sug: <<2>>")
+ZO_CreateStringId("SI_BETTERUI_MARKET_PRICE", "<<1>>: <<2>>")
+ZO_CreateStringId("SI_BETTERUI_MARKET_PRICE_STACK", "<<1>>: <<2>>, (<<3>>x) <<4>>")
+
+-- Footer Currency Labels
+ZO_CreateStringId("SI_BETTERUI_FOOTER_CARRY", "所持")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_GOLD", "ゴールド")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_KEYS", "アンドーンテッドキー")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_CRYSTALS", "変性クリスタル")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_CROWNS", "クラウン")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_GEMS", "クラウンジェム")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_BANK", "銀行")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_TELVAR", "Tel Var")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_AP", "AP")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_WRITS", "依頼書")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_TRADE_BARS", "トレードバー")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_OUTFIT_TOKENS", "衣装トークン")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_SEALS", "シール")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_TOME_POINTS", "トームポイント")
+
+-- Footer Currency Display Labels (short versions for footer display)
+ZO_CreateStringId("SI_BETTERUI_FOOTER_GOLD_LABEL", "ゴールド:")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_AP_LABEL", "AP:")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_TELVAR_LABEL", "TEL VAR:")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_KEYS_LABEL", "キー:")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_TRANSMUTE_LABEL", "変性:")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_CROWNS_LABEL", "クラウン:")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_GEMS_LABEL", "ジェム:")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_WRITS_LABEL", "依頼:")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_TRADE_BARS_LABEL", "バー:")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_OUTFIT_LABEL", "衣装:")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_SEALS_LABEL", "シール:")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_TOME_POINTS_LABEL", "トーム:")
+
+-- Currency limit alert
+
+
+-- Header Labels (Inventory/Guild Store)
+ZO_CreateStringId("SI_BETTERUI_FULL_INVENTORY_ALL", "全て")
+ZO_CreateStringId("SI_BETTERUI_EQUIP", "装備:")
+ZO_CreateStringId("SI_BETTERUI_BROWSE_LISTINGS", "商品を閲覧")
+ZO_CreateStringId("SI_BETTERUI_BROWSE_NAME", "名前")
+ZO_CreateStringId("SI_BETTERUI_BROWSE_SELLER", "売り手")
+ZO_CreateStringId("SI_BETTERUI_BROWSE_TIME_LEFT", "残り時間")
+ZO_CreateStringId("SI_BETTERUI_BROWSE_PROFIT", "利益")
+ZO_CreateStringId("SI_BETTERUI_BROWSE_PRICE", "価格")
+
+ZO_CreateStringId("SI_BETTERUI_INV_ITEM_ALL", "全アイテム")
+ZO_CreateStringId("SI_BETTERUI_INV_ITEM_MATERIALS", "素材")
+ZO_CreateStringId("SI_BETTERUI_INV_ITEM_WEAPONS", "武器")
+ZO_CreateStringId("SI_BETTERUI_INV_ITEM_APPAREL", "防具")
+ZO_CreateStringId("SI_BETTERUI_INV_ITEM_JEWELRY", "アクセサリ")
+ZO_CreateStringId("SI_BETTERUI_INV_ITEM_CONSUMABLE", "消耗アイテム")
+ZO_CreateStringId("SI_BETTERUI_INV_ITEM_MISC", "その他")
+ZO_CreateStringId("SI_BETTERUI_INV_ITEM_JUNK", "ジャンク")
+ZO_CreateStringId("SI_BETTERUI_INV_ITEM_EQUIPPED", "装備中のアイテム")
+ZO_CreateStringId("SI_BETTERUI_INV_ITEM_STOLEN", "盗品")
+ZO_CreateStringId("SI_BETTERUI_INV_ITEM_FURNISHING", "家具")
+
+ZO_CreateStringId("SI_BETTERUI_INV_EQUIPSLOT_TITLE", "アイテムを装備")
+ZO_CreateStringId("SI_BETTERUI_INV_EQUIPSLOT_MAIN", "メイン")
+
+ZO_CreateStringId("SI_BETTERUI_INV_EQUIP_PROMPT_MAIN", "メインハンド")
+ZO_CreateStringId("SI_BETTERUI_INV_EQUIP_PROMPT_BACKUP", "サブハンド")
+
+ZO_CreateStringId("SI_BETTERUI_INV_SWITCH_EQUIPSLOT", "武器を切り替え")
+ZO_CreateStringId("SI_BETTERUI_INV_ACTION_QUICKSLOT_ASSIGN", "クイックスロットに割り当て")
+
+ZO_CreateStringId("SI_BETTERUI_INV_EQUIPSLOT_BACKUP", "予備")
+ZO_CreateStringId("SI_BETTERUI_BANKING_WITHDRAW", "引き出し")
+ZO_CreateStringId("SI_BETTERUI_BANKING_DEPOSIT", "預け入れ")
+
+ZO_CreateStringId("SI_BETTERUI_INV_ACTION_TO_TEMPLATE", "<<1>>に移動")
+
+ZO_CreateStringId("SI_BETTERUI_INV_ACTION_CB", "クラフトバッグ")
+ZO_CreateStringId("SI_BETTERUI_INV_ACTION_INV", "全アイテム")
+
+ZO_CreateStringId("SI_BETTERUI_INV_SWITCH_INFO", "情報切り替え")
+ZO_CreateStringId("SI_BETTERUI_INV_EQUIP", "装備")
+ZO_CreateStringId("SI_BETTERUI_INV_FIRST_SLOT", "1番目のスロット")
+ZO_CreateStringId("SI_BETTERUI_INV_SECOND_SLOT", "2番目のスロット")
+ZO_CreateStringId("SI_BETTERUI_SAVE_EQUIP_CONFIRM_TITLE", "アイテムを装備")
+ZO_CreateStringId("SI_BETTERUI_SAVE_EQUIP_CONFIRM_EQUIP_BOE", "<<t:1>>を装備すると譲渡できなくなります。続行しますか？")
+ZO_CreateStringId("SI_BETTERUI_SAVE_EQUIP_EQUIP", "装備")
+ZO_CreateStringId("SI_BETTERUI_INV_EQUIP_ONE_HAND_WEAPON", "<<t:1>>を\n|cFF6600<<2>>|r武器としてメインハンドまたはサブハンドに装備しますか？")
+ZO_CreateStringId("SI_BETTERUI_INV_EQUIP_OTHER_WEAPON", "<<t:1>>を|cFF6600<<2>>|r武器として装備しますか？")
+ZO_CreateStringId("SI_BETTERUI_INV_EQUIP_RING", "<<t:1>>を指輪の1番または2番目のスロットに装備しますか？")
+ZO_CreateStringId("SI_BETTERUI_BANKING_TOGGLE_LIST", "リスト切り替え")
+ZO_CreateStringId("SI_BETTERUI_CONFIRM_AMOUNT", "数量を確定")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_GOLD", "ゴールド")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_TEL_VAR", "テルバー")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ALLIANCE_POINT", "同盟ポイント")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_WRIT_VOUCHER", "依頼達成証")
+ZO_CreateStringId("SI_BETTERUI_BANKING_COLUMN_NAME", "名前")
+ZO_CreateStringId("SI_BETTERUI_BANKING_COLUMN_TYPE", "タイプ")
+ZO_CreateStringId("SI_BETTERUI_BANKING_COLUMN_TRAIT", "特性")
+ZO_CreateStringId("SI_BETTERUI_BANKING_COLUMN_STAT", "ステータス")
+ZO_CreateStringId("SI_BETTERUI_BANKING_COLUMN_VALUE", "価値")
+ZO_CreateStringId("SI_BETTERUI_ACTION_UNMARK_AS_JUNK", "ジャンクから除外")
+ZO_CreateStringId("SI_BETTERUI_ACTION_MARK_AS_JUNK", "ジャンクに分類")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_COMPANION_JUNK", "コンパニオンのジャンク設定を有効化")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_COMPANION_JUNK_TOOLTIP",
+    "コンパニオンアイテムの「ジャンクとしてマーク」を有効にします。機能させるにはFCO Companion等の互換アドオンが必要です。")
+ZO_CreateStringId("SI_BETTERUI_MASTER_SETTINGS_HEADER", "マスター設定")
+ZO_CreateStringId("SI_BETTERUI_MASTER_SETTINGS_TITLE", "アドオンマスター設定")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_GLOBAL_SETTINGS", "グローバル設定を使用")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_GLOBAL_TOOLTIP", "有効にすると、設定はキャラクターごとではなくアカウント全体で保存されます。")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_TOOLTIPS", "|c0066FFインターフェース改善|rを有効化")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_TOOLTIPS_TOOLTIP", "ツールチップとUIの大幅な改善 (ゲームパッドUIのみ)")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_INVENTORY", "|c0066FF拡張インベントリ|rを有効化")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_INVENTORY_TOOLTIP", "インベントリインターフェースを完全に再設計 (ゲームパッドUIのみ)")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_BANKING", "|c0066FF拡張バンキング|rを有効化")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_BANKING_TOOLTIP", "銀行インターフェースを完全に再設計 (ゲームパッドUIのみ)")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_WRITS", "|c0066FFデイリークラフト依頼|rを有効化")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_WRITS_TOOLTIP", "各クラフトステーションでデイリー依頼と進捗を表示")
+ZO_CreateStringId("SI_BETTERUI_MASTER_RESET_ALL", "すべてをデフォルトにリセット")
+ZO_CreateStringId("SI_BETTERUI_MASTER_RESET_ALL_TOOLTIP",
+    "BetterUI のすべての設定を既定値に戻します。復元した既定値を完全に適用するには、その後 UI を再読み込みしてください。")
+
+
+ZO_CreateStringId("SI_BETTERUI_STOLEN", "盗品")
+ZO_CreateStringId("SI_BETTERUI_CATEGORY_STYLE_MATERIAL", "スタイル素材")
+ZO_CreateStringId("SI_BETTERUI_CATEGORY_ENCHANTING", "付魔")
+ZO_CreateStringId("SI_BETTERUI_CLEAR_SEARCH", "検索をクリア")
+ZO_CreateStringId("SI_BETTERUI_INV_RECIPE_KNOWN", "既知")
+ZO_CreateStringId("SI_BETTERUI_INV_RECIPE_UNKNOWN", "未知")
+
+
+-- Crafting Bag Categories (Inventory/Banking)
+ZO_CreateStringId("SI_BETTERUI_CATEGORY_ALCHEMY", "錬金術")
+ZO_CreateStringId("SI_BETTERUI_CATEGORY_BLACKSMITHING", "鍛冶")
+ZO_CreateStringId("SI_BETTERUI_CATEGORY_CLOTHING", "裁縫")
+ZO_CreateStringId("SI_BETTERUI_CATEGORY_JEWELRY_CRAFTING", "宝飾")
+ZO_CreateStringId("SI_BETTERUI_CATEGORY_PROVISIONING", "調理/釣り")
+ZO_CreateStringId("SI_BETTERUI_CATEGORY_WOODWORKING", "木工")
+ZO_CreateStringId("SI_BETTERUI_CATEGORY_CRAFTING_BAG", "クラフトバッグ")
+ZO_CreateStringId("SI_BETTERUI_CATEGORY_TRAIT_GEMS", "特性宝石")
+
+-- Currency Visibility Settings
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_SUBMENU", "通貨の表示と順序")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_DESC", "表示する通貨とその順序を設定します。プリセットで素早く設定するか、個別にカスタマイズできます。")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_PRESET", "クイックプリセット")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_PRESET_TOOLTIP", "通貨表示のプリセット設定を適用します。カスタム設定は上書きされます。")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_PRESET_DEFAULT", "デフォルト（すべて表示）")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_PRESET_PVP", "PvPフォーカス")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_PRESET_CRAFTER", "クラフターフォーカス")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_PRESET_EVENTS", "イベントフォーカス")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_PRESET_CUSTOM", "カスタム")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_RESET", "通貨表示と並び順の設定をリセット")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_RESET_TOOLTIP", "すべての通貨表示と順序設定をデフォルト値にリセットします。")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ENABLE_LIMIT_WARNING",
+    "表示できる通貨の上限 (<<1>>) に達しました。別の通貨を有効化する前に1つ無効化してください。")
+ZO_CreateStringId("SI_BETTERUI_GENERAL_RESET", "一般設定をリセット")
+ZO_CreateStringId("SI_BETTERUI_GENERAL_RESET_TOOLTIP",
+    "この一般セクションの設定をすべてデフォルト値に戻します。")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_POS_1", "1番目")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_POS_2", "2番目")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_POS_3", "3番目")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_POS_4", "4番目")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_POS_5", "5番目")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_POS_6", "6番目")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_POS_7", "7番目")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_POS_8", "8番目")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_POS_9", "9番目")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_POS_10", "10番目")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_POS_11", "11番目")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_POS_12", "12番目")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_SHOW_GOLD", "ゴールドを表示")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ORDER_GOLD", "ゴールドの位置")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_SHOW_AP", "同盟ポイントを表示")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ORDER_AP", "APの位置")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_SHOW_TELVAR", "テルバーストーンを表示")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ORDER_TELVAR", "テルバーの位置")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_SHOW_KEYS", "アンドーンテッドキーを表示")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ORDER_KEYS", "キーの位置")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_SHOW_TRANSMUTE", "変性クリスタルを表示")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ORDER_TRANSMUTE", "変性の位置")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_SHOW_CROWNS", "クラウンを表示")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ORDER_CROWNS", "クラウンの位置")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_SHOW_GEMS", "クラウンジェムを表示")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ORDER_GEMS", "ジェムの位置")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_SHOW_WRITS", "依頼達成証を表示")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ORDER_WRITS", "達成証の位置")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_SHOW_TRADE_BARS", "トレードバーを表示")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ORDER_TRADE_BARS", "バーの位置")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_SHOW_OUTFIT", "コスチュームトークンを表示")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ORDER_OUTFIT", "コスチュームの位置")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_SHOW_SEALS", "シールを表示")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ORDER_SEALS", "シールの位置")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_SHOW_TOME_POINTS", "トームポイントを表示")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ORDER_TOME_POINTS", "トームの位置")
+
+-- Enhanced Nameplates
+ZO_CreateStringId("SI_BETTERUI_NAMEPLATES_HEADER", "ネームプレート強化")
+ZO_CreateStringId("SI_BETTERUI_NAMEPLATES_DESC", "プレイヤーとNPCのネームプレートのフォント、スタイル、サイズをカスタマイズします。")
+ZO_CreateStringId("SI_BETTERUI_NAMEPLATES_ENABLED", "ネームプレート強化を有効にする")
+ZO_CreateStringId("SI_BETTERUI_NAMEPLATES_ENABLED_TOOLTIP", "ネームプレート強化機能を切り替えます。有効にすると、カスタムフォント設定がすべてのネームプレートに適用されます。")
+ZO_CreateStringId("SI_BETTERUI_NAMEPLATES_FONT", "フォント")
+ZO_CreateStringId("SI_BETTERUI_NAMEPLATES_FONT_TOOLTIP", "ネームプレートに使用するフォントをESOの組み込みフォントから選択します。")
+ZO_CreateStringId("SI_BETTERUI_NAMEPLATES_STYLE", "フォントスタイル")
+ZO_CreateStringId("SI_BETTERUI_NAMEPLATES_STYLE_TOOLTIP", "ネームプレートテキストのスタイル効果（アウトライン、影など）を選択します。")
+ZO_CreateStringId("SI_BETTERUI_NAMEPLATES_SIZE", "サイズ")
+ZO_CreateStringId("SI_BETTERUI_NAMEPLATES_SIZE_TOOLTIP", "ネームプレートテキストのサイズを調整します。デフォルトは16です。")
+ZO_CreateStringId("SI_BETTERUI_NAMEPLATES_RESET", "ネームプレート設定をリセット")
+ZO_CreateStringId("SI_BETTERUI_NAMEPLATES_RESET_TOOLTIP", "すべてのネームプレート設定をデフォルト値にリセットします。")
+
+-- Inventory General Settings
+ZO_CreateStringId("SI_BETTERUI_INV_GENERAL_HEADER", "一般")
+ZO_CreateStringId("SI_BETTERUI_INV_GENERAL_DESC", "インベントリの基本動作を設定します。ナビゲーション、保護、操作に関するオプションを調整できます。これらの設定はゲームパッドUIのみに適用されます。")
+
+-- Inventory Font Settings
+ZO_CreateStringId("SI_BETTERUI_INV_FONT_HEADER", "フォントカスタマイズ")
+ZO_CreateStringId("SI_BETTERUI_INV_FONT_DESC", "インベントリリストのフォントをカスタマイズします。名前列と他の列（タイプ、特性、ステータス、価値）に異なるフォントを設定できます。")
+
+
+-- Inventory Name Column Font Settings
+ZO_CreateStringId("SI_BETTERUI_INV_NAME_FONT_SUBMENU", "名前列フォント")
+ZO_CreateStringId("SI_BETTERUI_INV_NAME_FONT", "フォント")
+ZO_CreateStringId("SI_BETTERUI_INV_NAME_FONT_TOOLTIP", "アイテム名のフォントを選択します。")
+ZO_CreateStringId("SI_BETTERUI_INV_NAME_FONT_SIZE", "サイズ")
+ZO_CreateStringId("SI_BETTERUI_INV_NAME_FONT_SIZE_TOOLTIP", "アイテム名のフォントサイズを選択します。")
+ZO_CreateStringId("SI_BETTERUI_INV_NAME_FONT_STYLE", "フォントスタイル")
+ZO_CreateStringId("SI_BETTERUI_INV_NAME_FONT_STYLE_TOOLTIP", "アイテム名のフォントスタイルを選択します。")
+
+-- Inventory Column Font Settings (Type, Trait, Stat, Value)
+ZO_CreateStringId("SI_BETTERUI_INV_COLUMN_FONT_SUBMENU", "他の列フォント（タイプ、特性、ステータス、価値）")
+ZO_CreateStringId("SI_BETTERUI_INV_COLUMN_FONT", "フォント")
+ZO_CreateStringId("SI_BETTERUI_INV_COLUMN_FONT_TOOLTIP", "列データ（タイプ、特性、ステータス、価値）のフォントを選択します。")
+ZO_CreateStringId("SI_BETTERUI_INV_COLUMN_FONT_SIZE", "サイズ")
+ZO_CreateStringId("SI_BETTERUI_INV_COLUMN_FONT_SIZE_TOOLTIP", "列データのフォントサイズを選択します。")
+ZO_CreateStringId("SI_BETTERUI_INV_COLUMN_FONT_STYLE", "フォントスタイル")
+ZO_CreateStringId("SI_BETTERUI_INV_COLUMN_FONT_STYLE_TOOLTIP", "列データのフォントスタイルを選択します。")
+
+-- Banking General Settings
+ZO_CreateStringId("SI_BETTERUI_BANK_GENERAL_HEADER", "一般")
+ZO_CreateStringId("SI_BETTERUI_BANK_GENERAL_DESC", "銀行の基本動作を設定します。ナビゲーションと操作に関するオプションを調整できます。これらの設定はゲームパッドUIのみに適用されます。")
+
+-- Banking Font Settings
+ZO_CreateStringId("SI_BETTERUI_BANK_FONT_HEADER", "フォントカスタマイズ")
+ZO_CreateStringId("SI_BETTERUI_BANK_FONT_DESC", "銀行リストのフォントをカスタマイズします。名前列と他の列（タイプ、特性、ステータス、価値）に異なるフォントを設定できます。")
+
+
+-- Banking Name Column Font Settings
+ZO_CreateStringId("SI_BETTERUI_BANK_NAME_FONT_SUBMENU", "名前列フォント")
+ZO_CreateStringId("SI_BETTERUI_BANK_NAME_FONT", "フォント")
+ZO_CreateStringId("SI_BETTERUI_BANK_NAME_FONT_TOOLTIP", "アイテム名のフォントを選択します。")
+ZO_CreateStringId("SI_BETTERUI_BANK_NAME_FONT_SIZE", "サイズ")
+ZO_CreateStringId("SI_BETTERUI_BANK_NAME_FONT_SIZE_TOOLTIP", "アイテム名のフォントサイズを選択します。")
+ZO_CreateStringId("SI_BETTERUI_BANK_NAME_FONT_STYLE", "フォントスタイル")
+ZO_CreateStringId("SI_BETTERUI_BANK_NAME_FONT_STYLE_TOOLTIP", "アイテム名のフォントスタイルを選択します。")
+
+-- Banking Column Font Settings (Type, Trait, Stat, Value)
+ZO_CreateStringId("SI_BETTERUI_BANK_COLUMN_FONT_SUBMENU", "他の列フォント（タイプ、特性、ステータス、価値）")
+ZO_CreateStringId("SI_BETTERUI_BANK_COLUMN_FONT", "フォント")
+ZO_CreateStringId("SI_BETTERUI_BANK_COLUMN_FONT_TOOLTIP", "列データ（タイプ、特性、ステータス、価値）のフォントを選択します。")
+ZO_CreateStringId("SI_BETTERUI_BANK_COLUMN_FONT_SIZE", "サイズ")
+ZO_CreateStringId("SI_BETTERUI_BANK_COLUMN_FONT_SIZE_TOOLTIP", "列データのフォントサイズを選択します。")
+ZO_CreateStringId("SI_BETTERUI_BANK_COLUMN_FONT_STYLE", "フォントスタイル")
+ZO_CreateStringId("SI_BETTERUI_BANK_COLUMN_FONT_STYLE_TOOLTIP", "列データのフォントスタイルを選択します。")
+
+-- Individual Reset Strings
+ZO_CreateStringId("SI_BETTERUI_NAME_FONT_RESET", "名前列フォント設定をリセット")
+ZO_CreateStringId("SI_BETTERUI_NAME_FONT_RESET_TOOLTIP", "名前フォント設定をデフォルトにリセットします。")
+ZO_CreateStringId("SI_BETTERUI_COLUMN_FONT_RESET", "その他列フォント設定をリセット")
+ZO_CreateStringId("SI_BETTERUI_COLUMN_FONT_RESET_TOOLTIP", "列フォント設定をデフォルトにリセットします。")
+
+-- Orb Text Settings
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_HEALTH_SIZE", "体力テキストサイズ")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_HEALTH_SIZE_TOOLTIP", "体力テキストのフォントサイズを調整")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_HEALTH_COLOR", "体力テキスト色")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_HEALTH_COLOR_TOOLTIP", "体力テキストの色を調整")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_MAGICKA_SIZE", "マジカテキストサイズ")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_MAGICKA_SIZE_TOOLTIP", "マジカテキストのフォントサイズを調整")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_MAGICKA_COLOR", "マジカテキスト色")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_MAGICKA_COLOR_TOOLTIP", "マジカテキストの色を調整")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_STAMINA_SIZE", "スタミナテキストサイズ")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_STAMINA_SIZE_TOOLTIP", "スタミナテキストのフォントサイズを調整")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_STAMINA_COLOR", "スタミナテキスト色")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_STAMINA_COLOR_TOOLTIP", "スタミナテキストの色を調整")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_SHIELD_SIZE", "シールドテキストサイズ")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_SHIELD_SIZE_TOOLTIP", "シールドテキストのフォントサイズを調整")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_SHIELD_COLOR", "シールドテキスト色")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_SHIELD_COLOR_TOOLTIP", "シールドテキストの色を調整")
+ZO_CreateStringId("SI_BETTERUI_ORB_VISUALS_HEADER", "オーブ表示")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_SETTINGS_HEADER", "オーブテキスト")
+
+-- Resource Orb Frames
+ZO_CreateStringId("SI_BETTERUI_RESOURCE_ORB_FRAMES_HEADER", "一般")
+ZO_CreateStringId("SI_BETTERUI_RESOURCE_ORB_FRAMES_DESC", "リソースオーブHUDオーバーレイを設定します。ゲームパッドとキーボードUI両方で動作します。")
+
+ZO_CreateStringId("SI_BETTERUI_RESOURCE_ORB_FRAMES_SCALE", "スケール")
+ZO_CreateStringId("SI_BETTERUI_RESOURCE_ORB_FRAMES_SCALE_TOOLTIP", "フレーム全体のサイズ。")
+ZO_CreateStringId("SI_BETTERUI_RESOURCE_ORB_FRAMES_OFFSET", "垂直オフセット（上/下）")
+ZO_CreateStringId("SI_BETTERUI_RESOURCE_ORB_FRAMES_OFFSET_TOOLTIP", "フレームを上下に移動します。正の値は上に、負の値は下に移動します。")
+ZO_CreateStringId("SI_BETTERUI_RESOURCE_ORB_FRAMES_OFFSET_X", "水平オフセット（左/右）")
+ZO_CreateStringId("SI_BETTERUI_RESOURCE_ORB_FRAMES_OFFSET_X_TOOLTIP", "フレームを左右に移動します。負の値は左に、正の値は右に移動します。")
+ZO_CreateStringId("SI_BETTERUI_RESOURCE_ORB_FRAMES_RESET", "一般設定をリセット")
+ZO_CreateStringId("SI_BETTERUI_RESOURCE_ORB_FRAMES_RESET_TOOLTIP", "このセクションの設定をデフォルト値にリセットします。")
+
+ZO_CreateStringId("SI_BETTERUI_HIDE_LEFT_ORNAMENT", "左オーナメントを非表示")
+ZO_CreateStringId("SI_BETTERUI_HIDE_LEFT_ORNAMENT_TOOLTIP", "左（体力）オーブ周りの装飾オーナメントを非表示にします")
+ZO_CreateStringId("SI_BETTERUI_LEFT_ORB_SIZE", "左オーブのサイズ")
+ZO_CreateStringId("SI_BETTERUI_LEFT_ORB_SIZE_TOOLTIP", "オーナメント非表示時の左オーブのサイズ調整。1.0 = 100%、1.1 = 110%、1.2 = 120%")
+ZO_CreateStringId("SI_BETTERUI_HIDE_RIGHT_ORNAMENT", "右オーナメントを非表示")
+ZO_CreateStringId("SI_BETTERUI_HIDE_RIGHT_ORNAMENT_TOOLTIP", "右（マジカ/スタミナ）オーブ周りの装飾オーナメントを非表示にします")
+ZO_CreateStringId("SI_BETTERUI_RIGHT_ORB_SIZE", "右オーブのサイズ")
+ZO_CreateStringId("SI_BETTERUI_RIGHT_ORB_SIZE_TOOLTIP", "オーナメント非表示時の右オーブのサイズ調整。1.0 = 100%、1.1 = 110%、1.2 = 120%")
+
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_SUBMENU", "オーブ設定")
+ZO_CreateStringId("SI_BETTERUI_XP_BAR_SUBMENU", "経験値バー")
+ZO_CreateStringId("SI_BETTERUI_CAST_BAR_SUBMENU", "キャストバー")
+ZO_CreateStringId("SI_BETTERUI_MOUNT_STAMINA_BAR_SUBMENU", "マウントスタミナバー")
+
+ZO_CreateStringId("SI_BETTERUI_ENABLE_CAROUSEL_NAV", "カルーセルナビゲーションを有効化")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_CAROUSEL_NAV_TOOLTIP", "従来のタブバーの代わりに、モダンなカルーセルスタイルのナビゲーションを使用します。")
+
+-- Generic / Shared Settings
+ZO_CreateStringId("SI_BETTERUI_FONT_COLOR", "フォントカラー")
+
+-- General Interface Settings
+ZO_CreateStringId("SI_BETTERUI_GENERAL_INTERFACE_GENERAL_HEADER", "一般")
+ZO_CreateStringId("SI_BETTERUI_GENERAL_INTERFACE_GENERAL_DESC", "インターフェースの基本動作、ツールチップ連携、利便性オプションを設定します。これらの設定はゲームパッドUIのみに適用されます。")
+ZO_CreateStringId("SI_BETTERUI_ENHANCED_TOOLTIPS_HEADER", "強化ツールチップ")
+ZO_CreateStringId("SI_BETTERUI_ENHANCED_TOOLTIPS_DESC", "スタイル/特性情報やフォントサイズを含む、強化ツールチップの動作をカスタマイズします。")
+ZO_CreateStringId("SI_BETTERUI_ENHANCED_TOOLTIPS_RESET", "ツールチップ設定をリセット")
+ZO_CreateStringId("SI_BETTERUI_ENHANCED_TOOLTIPS_RESET_TOOLTIP", "この強化ツールチップセクションの設定をすべてデフォルト値に戻します。")
+ZO_CreateStringId("SI_BETTERUI_MARKET_INTEGRATION_HEADER", "マーケット価格連携")
+ZO_CreateStringId("SI_BETTERUI_MARKET_INTEGRATION_DESC", "アイテムツールチップのマーケット価格ソースを設定します。価格は所持品・銀行の価値列、デフォルトUIToolTip、およびBetterUI強化ツールチップに表示されます（ギルドストア、商人、アシスタント、他）。")
+ZO_CreateStringId("SI_BETTERUI_MARKET_INTEGRATION_RESET", "マーケット設定をリセット")
+ZO_CreateStringId("SI_BETTERUI_MARKET_INTEGRATION_RESET_TOOLTIP", "このマーケット価格連携セクションの設定をすべてデフォルト値に戻します。")
+ZO_CreateStringId("SI_BETTERUI_MARKET_PRICE_PRIORITY", "マーケット価格ソースの優先順位")
+ZO_CreateStringId("SI_BETTERUI_MARKET_PRICE_PRIORITY_TOOLTIP",
+    "インベントリと銀行の価値列を置き換える際に使用するソース順を選択します。")
+ZO_CreateStringId("SI_BETTERUI_MARKET_PRIORITY_MM_ATT_TTC",
+    "Master Merchant > Arkadius Trade Tools > Tamriel Trade Centre")
+ZO_CreateStringId("SI_BETTERUI_MARKET_PRIORITY_MM_TTC_ATT",
+    "Master Merchant > Tamriel Trade Centre > Arkadius Trade Tools")
+ZO_CreateStringId("SI_BETTERUI_MARKET_PRIORITY_ATT_MM_TTC",
+    "Arkadius Trade Tools > Master Merchant > Tamriel Trade Centre")
+ZO_CreateStringId("SI_BETTERUI_MARKET_PRIORITY_ATT_TTC_MM",
+    "Arkadius Trade Tools > Tamriel Trade Centre > Master Merchant")
+ZO_CreateStringId("SI_BETTERUI_MARKET_PRIORITY_TTC_MM_ATT",
+    "Tamriel Trade Centre > Master Merchant > Arkadius Trade Tools")
+ZO_CreateStringId("SI_BETTERUI_MARKET_PRIORITY_TTC_ATT_MM",
+    "Tamriel Trade Centre > Arkadius Trade Tools > Master Merchant")
+ZO_CreateStringId("SI_BETTERUI_GS_ERROR_SUPPRESS", "ギルドストアエラー抑制")
+ZO_CreateStringId("SI_BETTERUI_GS_ERROR_SUPPRESS_TOOLTIP", "MMまたはATTによって引き起こされるギルドストアエラーメッセージを削除します")
+ZO_CreateStringId("SI_BETTERUI_ATT_INTEGRATION", "Arkadius Trade Tools")
+ZO_CreateStringId("SI_BETTERUI_ATT_INTEGRATION_TOOLTIP", "ATT価格情報をアイテムツールチップに表示")
+ZO_CreateStringId("SI_BETTERUI_MM_INTEGRATION", "Master Merchant統合")
+ZO_CreateStringId("SI_BETTERUI_MM_INTEGRATION_TOOLTIP", "Master Merchant情報をアイテムツールチップに表示")
+ZO_CreateStringId("SI_BETTERUI_TTC_INTEGRATION", "Tamriel Trade Centre統合")
+ZO_CreateStringId("SI_BETTERUI_TTC_INTEGRATION_TOOLTIP", "TTC価格情報をアイテムツールチップに表示")
+ZO_CreateStringId("SI_BETTERUI_ADDON_NOT_DETECTED_TOOLTIP", "アドオンが検出されません: <<1>>。")
+ZO_CreateStringId("SI_BETTERUI_SHOW_STYLE_TRAIT", "ツールチップ - スタイルと特性情報")
+ZO_CreateStringId("SI_BETTERUI_SHOW_STYLE_TRAIT_TOOLTIP", "強化ツールチップにアイテムのスタイルと研究可能な特性情報を表示します。アイテム一覧アイコンとは別機能です。")
+ZO_CreateStringId("SI_BETTERUI_SHOW_KNOWLEDGE_STATUS", "ツールチップ - レシピ・本の知識ステータス")
+ZO_CreateStringId("SI_BETTERUI_SHOW_KNOWLEDGE_STATUS_TOOLTIP",
+    "強化ツールチップに、レシピ・モチーフ・ロア本が既知かまだ未知かを表示します。すべてのシーンで機能します。")
+ZO_CreateStringId("SI_BETTERUI_CHAT_HISTORY", "チャットウィンドウ履歴サイズ")
+ZO_CreateStringId("SI_BETTERUI_CHAT_HISTORY_TOOLTIP", "チャットバッファに保存する行数を変更、デフォルト=200")
+ZO_CreateStringId("SI_BETTERUI_REMOVE_DELETE_MAIL_CONFIRM", "メール削除確認を省略")
+ZO_CreateStringId("SI_BETTERUI_MOUSE_SCROLL_SPEED", "左手ツールチップのマウススクロール速度")
+ZO_CreateStringId("SI_BETTERUI_MOUSE_SCROLL_SPEED_TOOLTIP", "トリガーを押したときのメニュースキップ速度を変更します。")
+ZO_CreateStringId("SI_BETTERUI_TRIGGER_SKIP", "トリガーごとのスキップ行数")
+ZO_CreateStringId("SI_BETTERUI_TRIGGER_SKIP_TOOLTIP", "トリガーを押したときのメニュースキップ速度を変更します。")
+ZO_CreateStringId("SI_BETTERUI_TOOLTIP_FONT_SIZE", "ツールチップフォントサイズ")
+ZO_CreateStringId("SI_BETTERUI_TOOLTIP_FONT_SIZE_TOOLTIP", "ツールチップに一度に表示できる情報量を調整します")
+
+-- Skill Bars Settings (ResourceOrbFrames)
+ZO_CreateStringId("SI_BETTERUI_SKILL_BARS_SUBMENU", "スキルバー")
+ZO_CreateStringId("SI_BETTERUI_SKILL_COOLDOWN_TIMER_HEADER", "スキルクールダウンタイマー")
+ZO_CreateStringId("SI_BETTERUI_SKILL_COOLDOWN_SCALE_TOOLTIP", "スキルクールダウンタイマーのフォントサイズを調整")
+ZO_CreateStringId("SI_BETTERUI_SKILL_COOLDOWN_COLOR_TOOLTIP", "スキルクールダウンタイマーの色を調整")
+ZO_CreateStringId("SI_BETTERUI_QUICKSLOTS_HEADER", "クイックスロット")
+ZO_CreateStringId("SI_BETTERUI_QUICKSLOT_SCALE_TOOLTIP", "クイックスロットカウントのフォントサイズを調整")
+ZO_CreateStringId("SI_BETTERUI_QUICKSLOT_COLOR_TOOLTIP", "クイックスロットカウントの色を調整")
+ZO_CreateStringId("SI_BETTERUI_BACK_BAR_HEADER", "バックバーの外観")
+ZO_CreateStringId("SI_BETTERUI_BACK_BAR_OPACITY", "バックバーの不透明度")
+ZO_CreateStringId("SI_BETTERUI_BACK_BAR_OPACITY_TOOLTIP", "バックバーアイコンの暗さを調整します。低い値ほど目立たなくなります。")
+ZO_CreateStringId("SI_BETTERUI_HIDE_BACK_BAR", "バックバーを非表示")
+ZO_CreateStringId("SI_BETTERUI_HIDE_BACK_BAR_TOOLTIP", "バックバー（上部スキルバー）を完全に非表示にします。オーケンソウルやワンバービルドに便利です。")
+ZO_CreateStringId("SI_BETTERUI_RESET_SKILL_BAR", "スキルバー設定をリセット")
+ZO_CreateStringId("SI_BETTERUI_ORB_TEXT_RESET", "オーブ設定をリセット")
+ZO_CreateStringId("SI_BETTERUI_XP_BAR_RESET", "EXPバー設定をリセット")
+ZO_CreateStringId("SI_BETTERUI_CAST_BAR_RESET", "キャストバー設定をリセット")
+ZO_CreateStringId("SI_BETTERUI_MOUNT_STAMINA_BAR_RESET", "マウントバー設定をリセット")
+
+-- XP Bar Settings
+ZO_CreateStringId("SI_BETTERUI_XP_BAR_ENABLED", "経験値バーを有効化")
+ZO_CreateStringId("SI_BETTERUI_XP_BAR_ENABLED_TOOLTIP", "上部スキルバーの上に経験値/チャンピオンポイントバーを表示")
+ZO_CreateStringId("SI_BETTERUI_XP_BAR_TEXT_SIZE", "経験値テキストサイズ")
+ZO_CreateStringId("SI_BETTERUI_XP_BAR_TEXT_SIZE_TOOLTIP", "経験値テキストのフォントサイズを調整")
+ZO_CreateStringId("SI_BETTERUI_XP_BAR_TEXT_COLOR", "経験値テキスト色")
+ZO_CreateStringId("SI_BETTERUI_XP_BAR_TEXT_COLOR_TOOLTIP", "経験値テキストの色を調整")
+
+-- Cast Bar Settings
+ZO_CreateStringId("SI_BETTERUI_CAST_BAR_ENABLED", "キャストバーを有効化")
+ZO_CreateStringId("SI_BETTERUI_CAST_BAR_ENABLED_TOOLTIP", "経験値バーの上にキャストバーを表示")
+ZO_CreateStringId("SI_BETTERUI_CAST_BAR_ALWAYS_SHOW", "キャストバーを常に表示")
+ZO_CreateStringId("SI_BETTERUI_CAST_BAR_ALWAYS_SHOW_TOOLTIP", "有効にすると、キャストバーフレームが常に表示されます。無効にすると、キャスト中のみ表示されます。")
+ZO_CreateStringId("SI_BETTERUI_CAST_BAR_TEXT_SIZE", "キャストテキストサイズ")
+ZO_CreateStringId("SI_BETTERUI_CAST_BAR_TEXT_SIZE_TOOLTIP", "キャストタイマーのフォントサイズを調整")
+ZO_CreateStringId("SI_BETTERUI_CAST_BAR_TEXT_COLOR", "キャストテキスト色")
+ZO_CreateStringId("SI_BETTERUI_CAST_BAR_TEXT_COLOR_TOOLTIP", "キャストタイマーテキストの色を調整")
+
+-- Mount Stamina Bar Settings
+ZO_CreateStringId("SI_BETTERUI_MOUNT_BAR_ENABLED", "マウントスタミナバーを有効化")
+ZO_CreateStringId("SI_BETTERUI_MOUNT_BAR_ENABLED_TOOLTIP", "騎乗時に右オーナメントの下にマウントスタミナバーを表示")
+ZO_CreateStringId("SI_BETTERUI_MOUNT_BAR_TEXT_SIZE", "マウントスタミナテキストサイズ")
+ZO_CreateStringId("SI_BETTERUI_MOUNT_BAR_TEXT_SIZE_TOOLTIP", "マウントスタミナテキストのフォントサイズを調整")
+ZO_CreateStringId("SI_BETTERUI_MOUNT_BAR_TEXT_COLOR", "マウントスタミナテキスト色")
+ZO_CreateStringId("SI_BETTERUI_MOUNT_BAR_TEXT_COLOR_TOOLTIP", "マウントスタミナテキストの色を調整")
+
+-- Inventory / Banking Shared Icon Settings
+ZO_CreateStringId("SI_BETTERUI_ICON_UNBOUND", "アイテムアイコン - 未結合アイテム")
+ZO_CreateStringId("SI_BETTERUI_ICON_UNBOUND_TOOLTIP", "未結合アイテムの後にアイコンを表示します。")
+ZO_CreateStringId("SI_BETTERUI_ICON_ENCHANTMENT", "アイテムアイコン - 付魔")
+ZO_CreateStringId("SI_BETTERUI_ICON_ENCHANTMENT_TOOLTIP", "付魔されたアイテムの後にアイコンを表示します。")
+ZO_CreateStringId("SI_BETTERUI_ICON_SET_GEAR", "アイテムアイコン - セット装備")
+ZO_CreateStringId("SI_BETTERUI_ICON_SET_GEAR_TOOLTIP", "セット装備の後にアイコンを表示します。")
+ZO_CreateStringId("SI_BETTERUI_ICON_RESEARCHABLE_TRAIT", "アイテムアイコン - 研究可能な特性")
+ZO_CreateStringId("SI_BETTERUI_ICON_RESEARCHABLE_TRAIT_TOOLTIP",
+    "研究可能な特性を持つアイテムの後にアイコンを表示します。")
+ZO_CreateStringId("SI_BETTERUI_ICON_UNKNOWN_RECIPE", "アイテムアイコン - 未習得レシピ")
+ZO_CreateStringId("SI_BETTERUI_ICON_UNKNOWN_RECIPE_TOOLTIP",
+    "まだ習得していないレシピアイテムの後にアイコンを表示します。")
+ZO_CreateStringId("SI_BETTERUI_ICON_UNKNOWN_BOOK", "アイテムアイコン - 未習得の本")
+ZO_CreateStringId("SI_BETTERUI_ICON_UNKNOWN_BOOK_TOOLTIP",
+    "まだ習得していない本や伝承書の後にアイコンを表示します。")
+ZO_CreateStringId("SI_BETTERUI_ICON_SUBMENU_HEADER", "アイテムアイコンのカスタマイズ")
+ZO_CreateStringId("SI_BETTERUI_ICON_SUBMENU_TOOLTIP", "アイテム名の横に表示する状態アイコンを設定します。")
+ZO_CreateStringId("SI_BETTERUI_ICON_SUBMENU_DESC",
+    "インベントリと銀行リストに表示するアイテム状態アイコンを選択します。アイコンは名前列のフォントサイズに合わせて拡大縮小され、個別に切り替えできます。")
+ZO_CreateStringId("SI_BETTERUI_ICON_SUBMENU_RESET", "アイテムアイコン設定をリセット")
+ZO_CreateStringId("SI_BETTERUI_ICON_SUBMENU_RESET_TOOLTIP", "アイテムアイコン設定をデフォルト値にリセットします。")
+
+-- Inventory Specific Settings
+ZO_CreateStringId("SI_BETTERUI_QUICK_DESTROY", "クイック破棄機能を有効化")
+ZO_CreateStringId("SI_BETTERUI_QUICK_DESTROY_TOOLTIP", "**注意して使用** 確認ダイアログなしでアイテムを素早く破棄します！")
+ZO_CreateStringId("SI_BETTERUI_TRIGGER_SKIP_TYPE", "トリガーで次のアイテムへ移動")
+ZO_CreateStringId("SI_BETTERUI_TRIGGER_SKIP_TYPE_TOOLTIP", "トリガーを押すたびに一定数のアイテムをスキップする（デフォルトの動作）代わりに、次のアイテムに移動します")
+ZO_CreateStringId("SI_BETTERUI_BOE_PROTECTION", "装備時バインド保護")
+ZO_CreateStringId("SI_BETTERUI_BOE_PROTECTION_TOOLTIP", "装備時にバインドされるアイテムを装備する前にダイアログを表示")
+
+-- Event Tickets
+ZO_CreateStringId("SI_BETTERUI_FOOTER_EVENT_TICKETS_LABEL", "TICKETS:")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_SHOW_EVENT_TICKETS", "イベントチケットを表示")
+ZO_CreateStringId("SI_BETTERUI_CURRENCY_ORDER_EVENT_TICKETS", "イベントチケットの位置")
+
+-- Resource Orb Frames
+ZO_CreateStringId("SI_BETTERUI_ENABLE_ORBS", "|c0066FFリソースオーブフレーム|rを有効化")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_ORBS_TOOLTIP", "ARPG風リソースオーブとスキルバー置換 (ゲームパッド＆キーボードUI)")
+
+-- Skill Bars Settings
+ZO_CreateStringId("SI_BETTERUI_SHOW_QUICKSLOT_COOLDOWN", "クイックスロットクールダウンを表示")
+ZO_CreateStringId("SI_BETTERUI_SHOW_QUICKSLOT_COOLDOWN_TOOLTIP",
+    "クイックスロットボタンにクールダウンタイマーを表示します。")
+
+-- Ultimate Number Display Settings
+ZO_CreateStringId("SI_BETTERUI_ULTIMATE_DISPLAY_HEADER", "アルティメット数値表示")
+ZO_CreateStringId("SI_BETTERUI_SHOW_ULTIMATE_NUMBER", "アルティメット数値を表示")
+ZO_CreateStringId("SI_BETTERUI_SHOW_ULTIMATE_NUMBER_TOOLTIP",
+    "アルティメットボタンに現在のアルティメット値を表示します。")
+ZO_CreateStringId("SI_BETTERUI_ULTIMATE_TEXT_SIZE", "アルティメットテキストサイズ")
+ZO_CreateStringId("SI_BETTERUI_ULTIMATE_TEXT_SIZE_TOOLTIP", "アルティメット数値表示のフォントサイズ。")
+ZO_CreateStringId("SI_BETTERUI_ULTIMATE_TEXT_COLOR", "アルティメットテキスト色")
+ZO_CreateStringId("SI_BETTERUI_ULTIMATE_TEXT_COLOR_TOOLTIP", "アルティメット数値表示の色。")
+
+-- Combat Indicators Settings
+ZO_CreateStringId("SI_BETTERUI_COMBAT_INDICATORS_HEADER", "戦闘インジケーター")
+ZO_CreateStringId("SI_BETTERUI_COMBAT_GLOW_ENABLED", "戦闘グローを有効化")
+ZO_CreateStringId("SI_BETTERUI_COMBAT_GLOW_ENABLED_TOOLTIP",
+    "戦闘中にスキルバーの周りに赤/オレンジの脈動するグローを表示します。")
+ZO_CreateStringId("SI_BETTERUI_COMBAT_ICON_ENABLED", "戦闘アイコンを有効化")
+ZO_CreateStringId("SI_BETTERUI_COMBAT_ICON_ENABLED_TOOLTIP", "戦闘中に交差した剣のアイコンを表示します。")
+ZO_CreateStringId("SI_BETTERUI_COMBAT_AUDIO_ENABLED", "戦闘音声キューを有効化")
+ZO_CreateStringId("SI_BETTERUI_COMBAT_AUDIO_ENABLED_TOOLTIP", "戦闘の開始と終了時に音を再生します。")
+
+-- Banking Specific Strings
+ZO_CreateStringId("SI_BETTERUI_BANK_HOUSE_EMPTY", "ハウスバンクが空です！")
+ZO_CreateStringId("SI_BETTERUI_BANK_HOUSE", "ハウスバンク")
+ZO_CreateStringId("SI_BETTERUI_BANK_FURNITURE_VAULT_EMPTY", "家具の宝物庫が空です！")
+ZO_CreateStringId("SI_BETTERUI_BANK_PLAYER_EMPTY", "プレイヤーバッグが空です！")
+ZO_CreateStringId("SI_BETTERUI_BANK_PLAYER", "プレイヤーバッグ")
+ZO_CreateStringId("SI_BETTERUI_BANK_NO_FUNDS", "転送に必要な資金が不足しています。")
+ZO_CreateStringId("SI_BETTERUI_BANK_TITLE", "拡張バンキング")
+
+-- Imagery strings
+ZO_CreateStringId("SI_BETTERUI_INV_EQUIP_TEXT_HIGHLIGHT", "|cFF6600<<1>>|r")
+ZO_CreateStringId("SI_BETTERUI_INV_EQUIP_TEXT_NORMAL", "|cCCCCCC<<1>>|r")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_BAG_CAPACITY", "バッグ:")
+ZO_CreateStringId("SI_BETTERUI_FOOTER_BANK_CAPACITY", "銀行:")
+ZO_CreateStringId("SI_BETTERUI_DESTROY_CONFIRM_FORMAT", "<<1>>を破棄しますか？この操作は取り消せません。")
+ZO_CreateStringId("SI_BETTERUI_DESTROY_CONFIRM_GENERIC",
+    "このアイテムを破棄しますか？この操作は取り消せません。")
+ZO_CreateStringId("SI_BETTERUI_INV_ACTION_QUICKSLOT_UNASSIGN", "クイックスロット解除")
+ZO_CreateStringId("SI_BETTERUI_INV_EQUIP", "装備")
+ZO_CreateStringId("SI_BETTERUI_FEATURE_FLAGS_HEADER", "実験的機能")
+ZO_CreateStringId("SI_BETTERUI_FEATURE_FLAGS_DESC",
+    "実験的またはオプション機能を切り替えます。一部の変更には/reloaduiが必要な場合があります。")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_TOOLTIP_ENHANCEMENTS", "ツールチップ強化を有効化")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_TOOLTIP_ENHANCEMENTS_TOOLTIP",
+    "カスタム改善、フォントスケーリング、ツールチップヘッダーへの追加情報を有効にします。無効にすると、マーケット価格のみ追加されたネイティブUIに戻ります。")
+ZO_CreateStringId("SI_BETTERUI_QUICK_DESTROY_WARNING",
+    "警告：アイテムは確認なしで破棄されます。永久的なアイテム損失につながる可能性があります。")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_BATCH_DESTROY", "複数選択での破棄を有効にする")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_BATCH_DESTROY_TOOLTIP",
+    "**注意して使用** 有効にすると、複数選択の一括アクションメニューに破棄アクションが表示されます。通常の単一アイテム破棄には影響しません。")
+ZO_CreateStringId("SI_BETTERUI_ENABLE_BATCH_DESTROY_WARNING",
+    "警告：BetterUIは誤って破棄されたアイテムについて責任を負いません。一括破棄は元に戻せません。慎重に使用してください。")
+ZO_CreateStringId("SI_BETTERUI_REMOVE_DELETE_WARNING",
+    "警告：メールは確認なしで削除されます。添付アイテムが失われる可能性があります。")
+ZO_CreateStringId("SI_BETTERUI_ROF_WEAPON_SWAP_ANIMATION", "武器切り替えアニメーションを有効化")
+ZO_CreateStringId("SI_BETTERUI_ROF_WEAPON_SWAP_ANIMATION_TOOLTIP",
+    "メインと予備の武器バー間で切り替える際にスライドアニメーションを再生します。")
+ZO_CreateStringId("SI_BETTERUI_ROF_ORB_ANIMATIONS", "オーブアニメーションを有効化")
+ZO_CreateStringId("SI_BETTERUI_ROF_ORB_ANIMATIONS_TOOLTIP",
+    "オーブ要素に繊細なアニメーションを追加します。リソースの充填がゆるやかに揺れ、シールドオーバーレイがゆっくり回転します。")
+ZO_CreateStringId("SI_BETTERUI_SHOW_QUICKSLOT_QUANTITY", "クイックスロット数量を表示")
+ZO_CreateStringId("SI_BETTERUI_SHOW_QUICKSLOT_QUANTITY_TOOLTIP",
+    "現在のクイックスロットアイテムの数量を表示します。")
+ZO_CreateStringId("SI_BETTERUI_BANK_DEPOSIT_QUANTITY", "預け入れる数量は？")
+ZO_CreateStringId("SI_BETTERUI_BANK_WITHDRAW_QUANTITY", "引き出す数量は？")
+ZO_CreateStringId("SI_BETTERUI_BANK_WITHDRAW_MAX", "すべて引き出す")
+ZO_CreateStringId("SI_BETTERUI_BANK_DEPOSIT_MAX", "すべて預け入れる")
+ZO_CreateStringId("SI_BETTERUI_BANK_SLIDER_MIN", "最小")
+ZO_CreateStringId("SI_BETTERUI_BANK_SLIDER_MAX", "最大")
+ZO_CreateStringId("SI_BETTERUI_SHOW_MARKET_PRICE", "「価値」をマーケット価格に置換")
+ZO_CreateStringId("SI_BETTERUI_SHOW_MARKET_PRICE_TOOLTIP", "インベントリと銀行の「価値」列を、利用可能な場合は MM・ATT・TTC の相場価格に置き換えます。")
+ZO_CreateStringId("SI_BETTERUI_BANK_DEPOSIT_PROMPT", "預入額を選択してください")
+ZO_CreateStringId("SI_BETTERUI_BANK_WITHDRAW_PROMPT", "引き出し額を選択してください")
+ZO_CreateStringId("SI_BETTERUI_HEADER_SORT", "ソート")
+ZO_CreateStringId("SI_BETTERUI_DESELECT_ALL", "すべて選択解除")
+ZO_CreateStringId("SI_BETTERUI_SELECTED_COUNT", "<<1>>個選択中")
+ZO_CreateStringId("SI_BETTERUI_BATCH_ACTIONS", "一括操作")
+ZO_CreateStringId("SI_BETTERUI_BATCH_PROCESSING_COMPLETE", "<<1>>個のアイテムを処理しました。")
+-- Added from en.lua
+ZO_CreateStringId("SI_BETTERUI_MULTI_SELECT", "複数選択")
+ZO_CreateStringId("SI_BETTERUI_DESELECT_ITEM", "選択解除")
+ZO_CreateStringId("SI_BETTERUI_SELECT_WITH_COUNT", "選択 (<<1>>)")
+ZO_CreateStringId("SI_BETTERUI_SELECT_ALL", "すべて選択")
+ZO_CreateStringId("SI_BETTERUI_BATCH_ACTIONS_DESC", "選択したアイテムに適用するアクションを選択してください。ロックされたアイテムは特定のアクションに対応していない場合があります。")
+ZO_CreateStringId("SI_BETTERUI_FONT_WARNING_CJK",
+    "|t24:24:EsoUI/Art/Miscellaneous/ESO_Icon_Warning.dds|t このフォントは中国語/日本語の文字を正しく表示できない場合があります。ローカライズされたフォントオプションの使用を検討してください。")
+ZO_CreateStringId("SI_BETTERUI_FONT_WARNING_CYRILLIC",
+    "|t24:24:EsoUI/Art/Miscellaneous/ESO_Icon_Warning.dds|t このフォントはロシア語の文字を正しく表示できない場合があります。ローカライズされたフォントオプションの使用を検討してください。")
+ZO_CreateStringId("SI_BETTERUI_BIND_FOR_COLLECTION", "コレクションのためにバインド")
+ZO_CreateStringId("SI_BETTERUI_BATCH_ABORTED_COMPLETE", "中止しました。<<2>>個中<<1>>個を処理しました。")
+ZO_CreateStringId("SI_BETTERUI_BATCH_ABORTED_SCENE_EXIT", "<<1>>を終了したため中止しました。<<3>>個中<<2>>個を処理しました。")
+ZO_CreateStringId("SI_BETTERUI_SCENE_BANKING", "銀行")
+ZO_CreateStringId("SI_BETTERUI_SCENE_INVENTORY", "所持品")
+ZO_CreateStringId("SI_BETTERUI_ABORT_ACTION", "操作中止")
+ZO_CreateStringId("SI_BETTERUI_BATCH_DURATION_SECONDS", "<<1>>秒")
+ZO_CreateStringId("SI_BETTERUI_BATCH_DURATION_MINUTES_SECONDS", "<<1>>分 <<2>>秒")
+ZO_CreateStringId("SI_BETTERUI_STOW_QUANTITY", "いくつ収納しますか？")
+ZO_CreateStringId("SI_BETTERUI_RETRIEVE_QUANTITY", "いくつ取り出しますか？")
+ZO_CreateStringId("SI_BETTERUI_STOW_PROMPT", "収納する数量を選択")
+ZO_CreateStringId("SI_BETTERUI_RETRIEVE_PROMPT", "取り出す数量を選択")
+ZO_CreateStringId("SI_BETTERUI_STOW_STACK", "スタックを収納")
+ZO_CreateStringId("SI_BETTERUI_RETRIEVE_STACK", "スタックを取り出す")
+ZO_CreateStringId("SI_BETTERUI_CLEAR_SORT", "ソートをクリア")
+ZO_CreateStringId("SI_BETTERUI_BATCH_PARTIAL_SUCCESS", "完了: <<2>>個中<<1>>個を処理しました。一部スキップ。")
+ZO_CreateStringId("SI_BETTERUI_BATCH_BAG_FULL", "バッグが一杯です: <<2>>個中<<1>>個を処理しました。")
+ZO_CreateStringId("SI_BETTERUI_TEXT_SIZE", "テキストサイズ")

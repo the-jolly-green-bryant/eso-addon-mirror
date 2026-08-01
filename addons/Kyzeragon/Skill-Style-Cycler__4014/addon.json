@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Kyzeragon/Skill-Style-Cycler__4014",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyzeragon",
+  "canonical_id": "esoui:4014",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4014",
+  "deleted": false,
+  "directories": [
+    "SkillStyleCycler"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4014/",
+  "fingerprint": "b24e6225741ecae3a0c955a613bff1546b7159a023018570c989dca5bef1b1e2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13611.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13612.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4014",
+  "source_url": "https://www.esoui.com/downloads/info4014-SkillStyleCycler.html",
+  "stats": {
+    "downloads": 1709,
+    "favorites": 4,
+    "monthly_downloads": 25
+  },
+  "title": "Skill Style Cycler",
+  "updated_at": 1773452841000,
+  "version": "1.4.2"
+}

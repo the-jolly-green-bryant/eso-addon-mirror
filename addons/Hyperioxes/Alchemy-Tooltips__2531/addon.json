@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Hyperioxes/Alchemy-Tooltips__2531",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hyperioxes",
+  "canonical_id": "esoui:2531",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2531",
+  "deleted": false,
+  "directories": [
+    "AlchemyTooltips"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2531/",
+  "fingerprint": "7507311af14379fc40fe0bb39a8516924fd505d1a8571c1ef9a625ca0616405d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9653.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9650.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9651.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9652.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9654.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9655.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8773.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8772.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8774.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2531",
+  "source_url": "https://www.esoui.com/downloads/info2531-AlchemyTooltips.html",
+  "stats": {
+    "downloads": 63975,
+    "favorites": 110,
+    "monthly_downloads": 167
+  },
+  "title": "Alchemy Tooltips",
+  "updated_at": 1766238777000,
+  "version": "1.30"
+}

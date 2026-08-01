@@ -1,0 +1,130 @@
+[SIZE="2"]
+[B][COLOR="DarkOrchid"]Intro[/COLOR][/B]
+
+Achievement Filter is a standalone achievement browser that makes it easy to find [I]exactly[/I] the achievements you care about – for example:
+[LIST]
+[*]only achievements that reward collectibles such as mounts, pets, skins, dyes or titles
+[*]unearned achievements worth a certain number of points
+[*]achievements completed in the last few days / this month / this year
+[*]anything matching specific words in the title, description, source or reward name
+[/LIST]
+Instead of scrolling through categories, you get a sortable table with powerful filters so you can quickly spot what to work on next.
+Use Achievement Filter whenever you want to quickly answer questions like:
+[LIST]
+[*]“Which unearned achievements reward a mount?”
+[*]“What did I complete in the last week?”
+[*]“Which high‑point achievements am I still missing in this DLC?”
+[/LIST]
+
+[B][COLOR="darkorchid"]How to open[/COLOR][/B]
+[LIST]
+[*]Slash command: [B]/af[/B]
+[*]Keybind: Go to [I]Controls -> Addon Keybinds -> Achievement Filter[/I] and set a key for "Toggle Window".
+[*]The default Achievements UI is not modified – this is a separate window.
+[/LIST]
+
+[B][COLOR="darkorchid"]Filters[/COLOR][/B]
+
+All filters work together; you can combine several at once.
+[LIST]
+[*]Reward type filter button
+[LIST]
+[*]Button: “Filters”
+[*]Opens a menu where you can toggle reward types: Title, Dye, Item, Collectible, Tribute.
+[*]You can select multiple types (OR logic).
+[*]Example: enable Collectible and type “Mount” in the [I]Reward[/I] search box to find achievements that reward mounts.
+[/LIST]
+[*]Points filter button
+[LIST]
+[*]Button: “Points”
+[*]Shows a list of all point values used by achievements (5, 10, 15, …).
+[*]Tick one or more values to only show achievements with those point values.
+[*]Leave everything unticked to show all point values again.
+[/LIST]
+[*]Earned dropdown
+[LIST]
+[*]Options: All / Earned / Unearned.
+[*]Set to Unearned if you only want to see achievements you still have to complete.
+[/LIST]
+[*]Finished date presets
+[LIST]
+[*]Dropdown: Any time, Today, Last 7 days, Last 30 days, This month, Last month, This year, Last year, Older than 1 year, Custom range…
+[*]Use this to find recently completed achievements or very old ones.
+[/LIST]
+[*]Custom date range
+[LIST]
+[*]When you choose “Custom range…”, two date fields appear: From and To.
+[*]Accepted formats (examples): 2025-10-30, 30.10.2025, 10/30/2025.
+[*]Leave one of them empty to have only a lower or upper bound.
+[/LIST]
+[*]Text search row
+Second row of filters contains four text boxes:
+[LIST]
+[*]Title – matches words in the achievement’s title
+[*]Source – matches the category / subcategory path
+[*]Description – matches the achievement description and listed criteria
+[*]Reward – matches all reward names (including collectible categories like “Mount”, “Non‑Combat Pet”, etc.)
+Searches are case‑insensitive and update results as you type.
+[/LIST]
+[*]Clear button
+[LIST]
+[*]Button: “Clear”
+[*]Resets all filters and text searches back to “show everything”.
+[/LIST]
+[/LIST]
+
+[B][COLOR="darkorchid"]Results table & sorting[/COLOR][/B]
+
+The main list shows achievements in a table with these columns:
+[LIST]
+[*]Icon – achievement icon
+[*]Title
+[*]Source – category / subcategory path
+[*]Reward Type – combined reward types (e.g. “Title, Collectible”)
+[*]Reward Name – reward names; if there are several rewards, it shows “Multiple” and a tooltip with the full list
+[*]Pts – achievement points
+[*]Prog – progress across criteria, formatted as current/max (XX%)
+[*]Finished – date the achievement was completed (or blank if unearned)
+[/LIST]Sorting
+[LIST]
+[*]Left‑click on a column header to sort by that column.
+[LIST]
+[*]Click again to toggle between ascending and descending.
+[/LIST]
+[*]Sort types:
+[LIST]
+[*]Title, Source, Reward Type, Reward Name → alphabetical
+[*]Pts → numeric (lowest to highest or highest to lowest)
+[*]Prog → by numeric percentage (0–100%), not by the text
+[*]Finished → by completion date (older ↔ newer; uncompleted grouped accordingly)
+[/LIST]
+[*]Your last chosen sort column and direction are saved and restored next time you open the addon.
+[/LIST]
+Mouse actions
+[LIST]
+[*]Left‑click a row
+[LIST]
+[*]Opens the standard in‑game Achievements window and focuses that achievement, so you can see its full description, criteria and rewards there.
+[/LIST]
+[*]Left‑click the reward name
+[LIST]
+[*]Same as clicking the row: opens the normal Achievements UI and shows that achievement.
+[/LIST]
+[*]Hover the reward name (when it shows “Multiple”)
+[LIST]
+[*]Shows a tooltip listing all individual rewards (for example multiple collectibles, title + dye, etc.).
+[/LIST]
+[*]Hover any row
+[LIST]
+[*]Highlights the row and shows the achievement description in the panel below the table.
+[*]If the achievement has listed criteria, they are appended as comma‑separated text.
+[/LIST]
+[/LIST]
+Additional info
+[LIST]
+[*]A result counter shows how many achievements match your current filters.
+[*]A stats label shows completed achievements and earned points across all achievements (not just the filtered ones).
+[*]Settings (filters, sort column, sort direction) are saved account‑wide.
+[*]Requires: [B]LibCustomMenu[/B]
+[/LIST]
+[/SIZE]

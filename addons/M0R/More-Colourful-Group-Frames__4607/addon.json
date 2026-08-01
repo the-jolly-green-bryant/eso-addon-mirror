@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/M0R/More-Colourful-Group-Frames__4607",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "M0R",
+  "canonical_id": "esoui:4607",
+  "category_id": "21",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4607",
+  "deleted": false,
+  "directories": [
+    "MoreColourfulGroupFrames"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4607/",
+  "fingerprint": "4c11c45e842ae580eff9eadfa85ad4054fc51dad243bf522f98a753205de1f8d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16170.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16171.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16172.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16173.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4607",
+  "source_url": "https://www.esoui.com/downloads/info4607-MoreColourfulGroupFrames.html",
+  "stats": {
+    "downloads": 102,
+    "favorites": 3,
+    "monthly_downloads": 26
+  },
+  "title": "More Colourful Group Frames",
+  "updated_at": 1780363197000,
+  "version": "1"
+}

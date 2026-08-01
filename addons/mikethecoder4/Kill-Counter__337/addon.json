@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/mikethecoder4/Kill-Counter__337",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mikethecoder4",
+  "canonical_id": "esoui:337",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:337",
+  "deleted": false,
+  "directories": [
+    "KillCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl337/",
+  "fingerprint": "d5044a345acf4306db4cdf6fbbb3f9eb392d0abcd5df74dc3a9edc8b4a38d4e6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8462.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8471.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8465.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8466.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8467.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8468.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8470.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8469.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8332.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "337",
+  "source_url": "https://www.esoui.com/downloads/info337-KillCounter.html",
+  "stats": {
+    "downloads": 578092,
+    "favorites": 312,
+    "monthly_downloads": 498
+  },
+  "title": "Kill Counter",
+  "updated_at": 1701924866000,
+  "version": "3.5.1"
+}

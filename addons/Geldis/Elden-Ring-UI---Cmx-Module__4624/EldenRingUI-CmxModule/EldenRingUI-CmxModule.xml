@@ -1,0 +1,13 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="EldenRingUI_CmxModule_UI" mouseEnabled="false" movable="false" clampedToScreen="true" hidden="false">
+            <Dimensions x="150" y="40" />
+            <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="-62" offsetY="-24" />
+            <Controls>
+                <Label name="$(parent)Label" font="$(GAMEPAD_BOLD_FONT)|$(KB_22)|soft-shadow-thick" color="FFFFFF" text="0" horizontalAlignment="RIGHT" verticalAlignment="CENTER" alpha="0.85">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

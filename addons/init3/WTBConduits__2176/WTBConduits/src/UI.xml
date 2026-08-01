@@ -1,0 +1,43 @@
+<GuiXml>
+     <Controls>
+          <TopLevelControl name="WTBConduitsFrame" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true">
+               <Dimensions x="325" y="35"/>
+               <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="250" offsetY="330"/>
+               <OnMoveStop>
+                    WTBConduits.SavePosition()
+               </OnMoveStop>
+               <Controls>
+                    <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" color="eeeeee" text="TANK needs a conduit!" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+                         <Dimensions x="950" y="50"/>
+                         <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                    </Label>
+               </Controls>
+          </TopLevelControl>
+          <TopLevelControl name="WTBConduitsFrame2" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true">
+               <Dimensions x="325" y="35"/>
+               <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="250" offsetY="330"/>
+               <OnMoveStop>
+                    WTBConduits.SavePosition()
+               </OnMoveStop>
+               <Controls>
+                    <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" color="eeeeee" text="TANK2 needs a conduit!" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+                         <Dimensions x="950" y="50"/>
+                         <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                    </Label>
+               </Controls>
+          </TopLevelControl>
+          <TopLevelControl name="WTBConduitsFrame3" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true">
+               <Dimensions x="325" y="35"/>
+               <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="250" offsetY="330"/>
+               <OnMoveStop>
+                    WTBConduits.SavePosition()
+               </OnMoveStop>
+               <Controls>
+                    <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" color="eeeeee" text="TANK3 needs a conduit!" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+                         <Dimensions x="950" y="50"/>
+                         <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                    </Label>
+               </Controls>
+          </TopLevelControl>
+     </Controls>
+</GuiXml>

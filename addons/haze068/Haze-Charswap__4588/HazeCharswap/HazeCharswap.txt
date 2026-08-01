@@ -1,0 +1,18 @@
+## Title: Haze Charswap
+## Author: |c09e8ech|r|c4509eca|r|c094decz|r|c09e8ece|r|cec09e5068|r
+## Version: 1.0.0
+## APIVersion: 101048 101049 101050
+## SavedVariables: HazeCharswapSavedVars
+## Description: Mark items to a transfer list and move them between inventory and bank in one click. Supports profiles (Tank, DD, Healer...) and keybinds.
+## DependsOn: LibAddonMenu-2.0>=41
+
+Bindings.xml
+
+lang/en.lua
+
+HazeCharswap.lua
+
+HazeCharswap_UI.xml
+HazeCharswap_UI.lua
+
+HazeCharswap_Settings.lua

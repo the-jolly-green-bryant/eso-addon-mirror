@@ -1,0 +1,14 @@
+<!----------------------------------------------------------
+	* Test 
+	* Version 0.1
+----------------------------------------------------------->
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="SalesCalc" mouseEnabled="false">
+      <OnUpdate>
+        SCalc.Update()
+      </OnUpdate>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>
+

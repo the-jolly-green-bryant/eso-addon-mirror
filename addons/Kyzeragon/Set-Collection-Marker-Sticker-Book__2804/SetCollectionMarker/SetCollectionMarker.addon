@@ -1,0 +1,29 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: SetCollectionMarker
+## Description: Mark uncollected set items in inventories and chat
+## Author: Kyzeragon
+## Contributors: Friday-The13-rus for showing icons in gamepad mode (no longer used, but thank you regardless!)
+## Version: 3.0.0
+## AddOnVersion: 30000
+## APIVersion: 101049
+
+## DependsOn: LibAddonMenu-2.0>=41
+## OptionalDependsOn: pChat rChat LibDebugLogger>=196
+
+## SavedVariables: SetCollectionMarkerSavedVariables
+
+src/SetCollectionMarker.lua
+src/Settings.lua
+src/ChatFormatter.lua
+
+src/Bindings.xml
+
+src/requested/Whisper.lua
+src/requested/Trade.lua
+src/requested/Mail.lua
+src/requested/Buttons.xml

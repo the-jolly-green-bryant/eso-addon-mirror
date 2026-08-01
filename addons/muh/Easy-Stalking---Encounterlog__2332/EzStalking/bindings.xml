@@ -1,0 +1,9 @@
+<Bindings>
+    <Layer name = "SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name = "Easy Stalking">
+            <Action name = "EZSTALKING_TOGGLE_LOGGING">
+                <Up>EzStalking_keybind_toggle()</Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Hyperioxes/CP-Hotkey__2953",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hyperioxes",
+  "canonical_id": "esoui:2953",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2953",
+  "deleted": false,
+  "directories": [
+    "CPHotkey"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2953/",
+  "fingerprint": "e68944a825572a9d3bbb5019965f9ed929e43d0418372112b533c589453d82f4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9997.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9996.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2953",
+  "source_url": "https://www.esoui.com/downloads/info2953-CPHotkey.html",
+  "stats": {
+    "downloads": 4103,
+    "favorites": 9,
+    "monthly_downloads": 12
+  },
+  "title": "CP Hotkey",
+  "updated_at": 1616284508000,
+  "version": "0.5"
+}

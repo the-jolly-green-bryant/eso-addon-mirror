@@ -1,0 +1,19 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="UltTrackerGUI" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="250" y="40" />
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-100" />
+			<OnInitialized>
+				UltTrackerGUI:SetHidden(not IsUnitInCombat("player"))
+			</OnInitialized>
+			<OnMoveStop>
+				UltTracker.OnIndicatorMoveStop()
+			</OnMoveStop>
+			<Controls>
+				<Label name="$(parent)Text" width="250" height="40" font="ZoFontWinH1" inheritAlpha="true" color="BBFF00" verticalAlignment="TOP" horizontalAlignment="CENTER">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="CENTER" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,103 @@
+Version: 0.9.23 ---------------
+1.APIVersion Up 100034
+
+
+Version: 0.9.22 ---------------
+1.APIVersion Up 100032
+
+
+Version: 0.9.21 ---------------
+1.APIVersion Up 100031
+
+
+Version: 0.9.20 ---------------
+1.APIVersion Up 100030
+2.LibMarify Outside.
+
+
+Version: 0.9.19 ---------------
+1.Bug fix
+LibMarify Update.
+
+
+Version: 0.9.18 ---------------
+1.Bug fix
+LibMarify Update.
+
+
+Version: 0.9.16 to 0.9.17 ---------------
+1.APIVersion Up 100029
+
+
+Version: 0.9.15 ---------------
+1.Bug fix
+LibMarify Update.
+
+
+Version: 0.9.14 ---------------
+1.mark items that are in our craft bag.
+
+
+Version: 0.9.13 ---------------
+1.APIVersion Up 100028
+2.Bug fix
+
+
+Version: 0.9.12 ---------------
+1.Bug fix
+LibMarify Update.
+
+
+Version: 0.9.11 ---------------
+1.Bug fix
+It is an error to join a new guild.
+
+
+Version: 0.9.10 ---------------
+1.Added support for AwesomeGuildStore.
+
+
+Version: 0.9.9 ---------------
+1.APIVersion Up 100027
+1.Bug fix
+It is an error to join a new guild.
+
+
+Version: 0.9.7 to 0.9.8 ---------------
+1.Add Add-on Setting Item.
+2.Add BETA function.
+3.LibAddonMenu-2.0 Update.
+
+
+Version: 0.9.6 ---------------
+1.Improved the screen refresh process.
+2.LibMarify Update.
+
+
+Version: 0.9.5 ---------------
+1.Bug fix
+Fix sorting function.
+
+
+Version: 0.9.4 ---------------
+1.Bug fix
+Fixed an issue that caused an error on the first start.
+
+
+Version: 0.9.3 ---------------
+1.Added Add guild selection dropdown.
+2.Added Window size change button& scroll.
+3.Added Close button.
+4.Add Add-on Setting Item.
+
+
+Version: 0.9.2 ---------------
+1.Added sorting function.
+2.Add Add-on Setting Item.
+
+
+Version: 0.9.1 ---------------
+1.Bug fix
+Fix the phenomenon that the window position goes wrong.
+
+

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/lahouari/Guild-Listing__3485",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "lahouari",
+  "canonical_id": "esoui:3485",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3485",
+  "deleted": false,
+  "directories": [
+    "GuildListing"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3485/",
+  "fingerprint": "21cea7a85728a928e4f1993da40367be556d1ee98313557b2dfb2926eeed0237",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3485",
+  "source_url": "https://www.esoui.com/downloads/info3485-GuildListing.html",
+  "stats": {
+    "downloads": 1998,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "Guild Listing",
+  "updated_at": 1665420737000,
+  "version": "1.0.1"
+}

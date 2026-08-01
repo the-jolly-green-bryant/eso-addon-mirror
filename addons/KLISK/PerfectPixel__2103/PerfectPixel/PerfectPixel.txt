@@ -1,0 +1,63 @@
+## APIVersion: 101050 101051
+## Version: 0.13.36
+## AddOnVersion: 001336
+## Title: PerfectPixel
+## Author: @KL1SK, Baertram, Dakjaniels
+## Description: PerfectPixle changes a lot UI elements.
+## SavedVariables: PerfectPixel
+
+## OptionalDependsOn: LibAddonMenu-2.0 LibCustomMenu LibMapPins-1.0 LibScrollableMenu LibVotansAddonList LibMediaProvider AdvancedFilters BeamMeUp FCOLockPicker ImprovedGoldenPursuits PreUpdate101046UI SpentSkillPoints
+
+Init.lua
+fonts.xml
+Media.lua
+Settings.lua
+
+lang/en.lua
+lang/$(language).lua
+
+functions.lua
+layouts.lua
+table.lua
+PerfectPixel.lua
+
+bindings.xml
+
+scenes\inventoryScene.lua
+scenes\tradingHouseScene.lua
+scenes\lootScene.lua
+scenes\restyleStationKeyboardSceneGroup.lua
+scenes\craftStationScenes.lua
+scenes\statsScene.lua
+scenes\challengeDifficultyScene.lua
+scenes\skillsScene.lua
+scenes\journalSceneGroup.lua
+scenes\collectionsSceneGroup.lua
+scenes\worldMapScene.lua
+scenes\groupMenuKeyboardScene.lua
+scenes\friendsListGroup.lua
+scenes\guildSceneGroup.lua
+scenes\allianceWarSceneGroup.lua
+scenes\mailSceneGroup.lua
+scenes\notificationsScene.lua
+scenes\helpSceneGroup.lua
+scenes\gameMenuInGameScene.lua
+scenes\companion.lua
+scenes\lockpickingScene.lua
+scenes\tamrielTomesScene.lua
+
+modules\chatWindow.lua
+modules\compass.lua
+modules\contextMenu.lua
+modules\dialogsMenu.lua
+modules\keybindStrip.lua
+modules\performanceMeter.lua
+;modules\playerProgressBar.lua
+modules\popupList.lua
+modules\reticle.lua
+modules\scrolling.lua
+modules\tabs.lua
+modules\tooltips.lua
+
+compatibility.lua
+compatibility.xml

@@ -1,0 +1,57 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: WishList
+## Description: Add armor sets you wish to farm to a list, get notified when it drops and who looted it
+## Author: Meai & Baertram
+## Version: 3.21
+## AddOnVersion: 321
+## APIVersion: 101043 101044
+## SavedVariables: WishList_Data WishList_Data_All_Servers
+## DependsOn: LibSets>=000700
+## DependsOn: LibAddonMenu-2.0>=37 LibCustomMenu>=722 LibMainMenu-2.0>=40400 LibScrollableMenu>=020301
+## OptionalDependsOn: DolgubonsLazyWritCreator FCOItemSaver>=239
+
+##Libraries
+##Libraries are not included anymore. For further details please read the addon comments at http://www.esoui.com/downloads/info1641-WishList.html
+
+##Localization
+lang/strings.lua
+lang/$(language).lua
+
+##Constant values
+src/constants.lua
+
+##Data
+data/WishListDataTypes.lua
+
+##Functions
+src/functions.lua
+
+##Addon source
+src/settingsmenu.lua
+WishList.lua
+src/WishListWindow.lua
+
+##Dialogs
+src/dialog/dialogs.lua
+src/dialog/WishListAddItemDialog.xml
+src/dialog/WishListRemoveItemDialog.xml
+src/dialog/WishListRemoveAllItemsDialog.xml
+src/dialog/WishListReloadItemsDialog.xml
+src/dialog/WishListChooseCharDialog.xml
+src/dialog/WishListClearHistoryDialog.xml
+src/dialog/WishListChangeQualityDialog.xml
+src/dialog/WishListAddGearMarkerDialog.xml
+src/dialog/WishListRemoveGearMarkerDialog.xml
+
+##XML
+src/xml/WishListWindow.xml
+
+
+## Keybindings
+bindings/Bindings.lua
+bindings/Bindings.xml

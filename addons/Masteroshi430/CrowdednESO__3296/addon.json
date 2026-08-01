@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Masteroshi430/CrowdednESO__3296",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:3296",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3296",
+  "deleted": false,
+  "directories": [
+    "CrowdednESO"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3296/",
+  "fingerprint": "529b0ccbdb9da27bfe4c2c24a1f8a35f1809c56e7cfedfeea52d5de708904baa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11427.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11428.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11429.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11432.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11437.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11426.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11205.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3296",
+  "source_url": "https://www.esoui.com/downloads/info3296-CrowdednESO.html",
+  "stats": {
+    "downloads": 5512,
+    "favorites": 8,
+    "monthly_downloads": 29
+  },
+  "title": "CrowdednESO",
+  "updated_at": 1783576975000,
+  "version": "2026.07.09"
+}

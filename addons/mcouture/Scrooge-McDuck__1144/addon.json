@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/mcouture/Scrooge-McDuck__1144",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mcouture",
+  "canonical_id": "esoui:1144",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1144",
+  "deleted": false,
+  "directories": [
+    "ScroogeMcDuck"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1144/",
+  "fingerprint": "0bb6414ddf58bd827569072f923f33f46fcf7474d2bcc3f34738d957c0d22e02",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3695.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1144",
+  "source_url": "https://www.esoui.com/downloads/info1144-ScroogeMcDuck.html",
+  "stats": {
+    "downloads": 3344,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "Scrooge McDuck",
+  "updated_at": 1436477932000,
+  "version": "1.1"
+}

@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Kaborgh/Descent__2821",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kaborgh",
+  "canonical_id": "esoui:2821",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2821",
+  "deleted": false,
+  "directories": [
+    "Descent"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2821/",
+  "fingerprint": "5b0cfa80cc7445bf2c3f27a7fdb023688f13aac27380c3c87befc3f07d3d70e2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9535.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2821",
+  "source_url": "https://www.esoui.com/downloads/info2821-Descent.html",
+  "stats": {
+    "downloads": 4163,
+    "favorites": 8,
+    "monthly_downloads": 11
+  },
+  "title": "Descent",
+  "updated_at": 1647299922000,
+  "version": "1.2"
+}

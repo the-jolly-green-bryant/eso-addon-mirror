@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Mladen90/Price-Tooltip-Gamepad__2221",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mladen90",
+  "canonical_id": "esoui:2221",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:2221",
+  "deleted": false,
+  "directories": [
+    "PriceTooltip"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2221/",
+  "fingerprint": "d37780b5754919685ec3d5e8cfcb384ddfd53c3e660027b4dede6f9b3a87b6fb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10879.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2221",
+  "source_url": "https://www.esoui.com/downloads/info2221-PriceTooltipGamepad.html",
+  "stats": {
+    "downloads": 104779,
+    "favorites": 98,
+    "monthly_downloads": 253
+  },
+  "title": "Price Tooltip (+Gamepad)",
+  "updated_at": 1724790993000,
+  "version": "1.7.2"
+}

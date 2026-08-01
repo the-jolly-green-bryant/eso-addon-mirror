@@ -1,0 +1,21 @@
+<GuiXml>
+    <Controls>
+        <Control name="JoGroup_Ult_Template" virtual="true">
+            <Dimensions x="72" y="18"/>
+            <Controls>
+                <Label name="$(parent)Percent" font="$(BOLD_FONT)|14|soft-shadow-thin" color="ffffff" text="0%"
+                        verticalAlignment="CENTER" horizontalAlignment="RIGHT" alpha="1">
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT"/>
+                </Label>
+                <Texture name="$(parent)Ult2" textureFile="esoui/art/icons/mapkey/mapkey_groupboss.dds" layer="2" level="2">
+                    <Dimensions x="18" y="18"/>
+                    <Anchor point="RIGHT" relativeTo="$(parent)Percent" relativePoint="LEFT" offsetX="-2"/>
+                </Texture>
+                <Texture name="$(parent)Ult1" textureFile="esoui/art/icons/mapkey/mapkey_groupboss.dds" layer="2" level="2">
+                    <Dimensions x="18" y="18"/>
+                    <Anchor point="RIGHT" relativeTo="$(parent)Ult2" relativePoint="LEFT" offsetX="-2"/>
+                </Texture>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

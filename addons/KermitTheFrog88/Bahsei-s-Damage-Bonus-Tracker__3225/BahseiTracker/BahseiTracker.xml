@@ -1,0 +1,79 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="BahseiTracker1" mouseEnabled="true" movable="true" resizeHandleSize="8">
+            <Dimensions x="200" y="70" />
+            <Anchor point="LEFT" />
+ 
+            <OnUpdate>
+                BahseiTracker.Update()
+            </OnUpdate>
+			
+			<OnMoveStop>
+				BahseiTracker.SaveLoc()
+			</OnMoveStop>
+			
+			<OnResizeStart>
+				BahseiTracker.ResizeStart()
+			</OnResizeStart>
+			
+			<OnResizeStop>
+				BahseiTracker.ResizeStop()
+			</OnResizeStop>
+			
+			
+            <Controls>
+                <Backdrop name="$(parent)BG1" inherits="ZO_ThinBackdrop" />
+                <Label name="$(parent)Bonus" font="ZoFontWindowSubtitle" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Bonus: ">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                </Label>
+				<StatusBar name="$(parent)BonusBar" color="3443EB" alpha="1" hidden="false">
+				<Dimensions x="200" y="35" />
+				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				<Limits min="0" max="12" />
+				</StatusBar>
+            </Controls>
+			<Controls>
+                <Backdrop name="$(parent)BG2" inherits="ZO_ThinBackdrop" />
+                <Label name="$(parent)Percent" font="ZoFontWindowSubtitle" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+                </Label>
+				<StatusBar name="$(parent)PercentBar" color="8A2BE2" alpha="1" hidden="false">
+				<Dimensions x="200" y="35" />
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+				<Limits min="0" max="100" />
+				</StatusBar>
+            </Controls>
+			
+        </TopLevelControl>
+		
+		<TopLevelControl name="BahseiTrackerDumpAlert" mouseEnabled="true" movable="true" >
+            <Dimensions x="400" y="40" />
+            <Anchor point="LEFT" />
+            <OnUpdate>
+            </OnUpdate>
+			<OnMoveStop>
+				BahseiTracker.SaveAlertLoc()
+			</OnMoveStop>
+			<OnMouseEnter>
+				BahseiTracker.ShowAlertBG()
+			</OnMouseEnter>
+			<OnMouseExit>
+				BahseiTracker.HideAlertBG()
+			</OnMouseExit>
+			
+			
+            <Controls>
+				
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.1"></Backdrop>
+					
+				<Label name="$(parent)MainText" font="ZoFontAnnounceLarge" text="|cf803fcDump Magicka!|r">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+				
+            </Controls>
+			
+        </TopLevelControl>
+		
+    </Controls>
+	
+</GuiXml>

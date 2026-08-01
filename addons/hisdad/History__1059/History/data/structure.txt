@@ -1,0 +1,61 @@
+Character Mode Trials Example
+
+NEED WORK
+
+
+me.Trials[trials_order]
+			me.Trials[i] = {}						-- Dungeon data storage
+			me.Trials[i].vet = Trials_Dat[i].vet
+			me.Trials[i].box = iup.matrix {numcol=1, numcol_visible=1, numlin=_size(Trials_Dat[i].id), widthdef=110}
+
+			me.Trials[i].box.ach = thischar.ach		-- Put the Achievements here so the mouseover can get the users details
+			me.Trials[i].box.dat = Trials_Dat[i]		-- for mouseover
+			me.Trials[i].box.mousemove_cb = box_mousemove_cb2
+			me.Trials[i].box.leavewindow_cb = box_leavewindow_cb
+
+Trials_Dat["N"].dat = {
+["1:1"] = {L=1, C=1, Ach=991},	-- "Hel Ra Citadel Completed",  "Defeat the Celestial Warrior, freeing him from the Serpent's control."
+
+Trials_Names2["N"] = {
+	["1:1"] = "Craglorn: Hel Ra Citadel Completed",
+	
+	
+Dungeon Mode
+
+Line is Achievement Name
+Column is Player ID
+Data is Y/N
+
+dung.Trials[i]= {}
+dung.Trials[i].name = L.Trial_TabName[i]
+dung.Trials[i].keys ={}   -- key lookup By playe ID
+dung.Trials[i].keys[key][PlayerID]= boolean   key is "L:C"
+
+
+
+
+dung.Trials[i].box = iup.matrix {numcol=#accounts[acc].playerIDs,  numlin=_size(Trials_Dat[i].id), widthdef=100}
+iup.SetAttribute(dung.Trials[i].box, "READONLY", "YES")
+
+dung.Trials[i].tab = iup.vbox {
+					["tabtitle"] =L.Trial_TabName[i],
+					dung.Trials[i].box,
+					iup.fill{},
+				}
+dung.Trials[i].box.dat = Trials_Dat[i]
+--	dung.Trials[i].box.mousemove_cb = box_mousemove_cb2
+dung.Trials[i].box.leavewindow_cb = box_leavewindow_cb
+
+Data files.
+
+In the game it comes from Categories. ( ie DLC and other crap which is filtered at source)
+They have category_ID but there is no indication its significant. its not monotonic with time.
+
+That has CategoryName, which isn't translated. Except when it is.
+
+So I get the en version as canonical and then use  that name to create the achievementID files for that DLC. DLC directory.
+These files just have  ints as keys.
+
+When presenting,  we do a Translation lookup on DLC_Names{}  which are in the lang directories.
+
+

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kierdavis/Can-I-Craft-This__2963",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kierdavis",
+  "canonical_id": "esoui:2963",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2963",
+  "deleted": false,
+  "directories": [
+    "CanICraftThis"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2963/",
+  "fingerprint": "fd31985bd293dc69a38cdd1b7351ff0f7279fa96af364ddfca246abda331590c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10001.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2963",
+  "source_url": "https://www.esoui.com/downloads/info2963-CanICraftThis.html",
+  "stats": {
+    "downloads": 3849,
+    "favorites": 2,
+    "monthly_downloads": 12
+  },
+  "title": "Can I Craft This?",
+  "updated_at": 1615853274000,
+  "version": "7"
+}

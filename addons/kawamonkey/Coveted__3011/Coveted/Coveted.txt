@@ -1,0 +1,8 @@
+## Title: Coveted
+## Author: Kawamonkey
+## APIVersion: 100034
+
+lang/en.lua
+lang/$(language).lua
+
+Coveted.lua

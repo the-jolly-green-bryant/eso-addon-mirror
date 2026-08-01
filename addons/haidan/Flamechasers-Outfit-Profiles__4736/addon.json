@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/haidan/Flamechasers-Outfit-Profiles__4736",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "haidan",
+  "canonical_id": "esoui:4736",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4736",
+  "deleted": false,
+  "directories": [
+    "OutfitCollectionProfiles"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4736/",
+  "fingerprint": "a2a8cbf0b7ba8e90891b60cd8876f11a64c84d447151cf3bb891edb8ef4e695a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16856.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4736",
+  "source_url": "https://www.esoui.com/downloads/info4736-FlamechasersOutfitProfiles.html",
+  "stats": {
+    "downloads": 11,
+    "favorites": 0,
+    "monthly_downloads": 4
+  },
+  "title": "Flamechasers Outfit Profiles",
+  "updated_at": 1785526399000,
+  "version": "0.3.8"
+}

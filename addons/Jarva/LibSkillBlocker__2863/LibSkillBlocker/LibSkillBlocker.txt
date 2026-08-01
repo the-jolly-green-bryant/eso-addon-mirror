@@ -1,0 +1,9 @@
+## Title: LibSkillBlocker
+## Author: @Jarva [EU], Baertram, notnear
+## APIVersion: 101048 101049
+## IsLibrary: true
+## Version: 1.1.0
+## AddOnVersion: 110
+## OptionalDependsOn: FancyActionBar FancyActionBar+
+
+LibSkillBlocker.lua

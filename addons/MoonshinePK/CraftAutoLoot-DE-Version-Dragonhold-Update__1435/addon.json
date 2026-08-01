@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/MoonshinePK/CraftAutoLoot-DE-Version-Dragonhold-Update__1435",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MoonshinePK",
+  "canonical_id": "esoui:1435",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1435",
+  "deleted": false,
+  "directories": [
+    "CraftAutoLoot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1435/",
+  "fingerprint": "d6a8d54e0814f8b775ed884d98b3650cc96deba3b17743e4750fc806fd149185",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4659.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1435",
+  "source_url": "https://www.esoui.com/downloads/info1435-CraftAutoLootDE-VersionDragonholdUpdate.html",
+  "stats": {
+    "downloads": 32496,
+    "favorites": 12,
+    "monthly_downloads": 40
+  },
+  "title": "CraftAutoLoot DE-Version [Dragonhold Update]",
+  "updated_at": 1572447060000,
+  "version": "2.1"
+}

@@ -1,0 +1,16 @@
+;This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+;The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+;All rights reserved.
+
+## Title: Taximeter
+## Description: A taximeter to collect your fare from people riding with you
+## Author: MrPikPik
+## APIVersion: 101037
+## AddOnVersion: 100
+## SavedVariables: TaximeterSavedVars
+
+lang/en.lua
+lang/$(language).lua
+
+Taximeter.lua
+Taximeter.xml

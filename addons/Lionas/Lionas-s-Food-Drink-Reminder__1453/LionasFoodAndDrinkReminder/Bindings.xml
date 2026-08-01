@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Lionas's Food and Drink Reminder">
+      <Action name="LIO_FADR_ACTIVATE">
+        <Down>toggleEnable()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

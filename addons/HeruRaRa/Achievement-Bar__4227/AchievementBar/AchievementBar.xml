@@ -1,0 +1,29 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="AchievementBarGUI" movable="false" mouseEnabled="true" clampedToScreen="true" hidden="true" tier="HIGH">
+            <Dimensions x="50%" y="0.9%" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="BOTTOM" offsetY="-10"/>
+            <Controls>
+                <Control name="$(parent)BarContainer">
+                    <Dimensions x="50%" y="0.9%" />
+                    <AnchorFill />
+                    <Controls>
+                        <!-- 1. Background bar (styled, always full) -->
+                        <StatusBar name="$(parent)BarBG" inherits="ZO_DefaultStatusBarBG">
+                            <AnchorFill />
+                        </StatusBar>
+                        <!-- 2. Filling bar (custom) -->
+                        <StatusBar name="$(parent)BarFill">
+                            <AnchorFill />
+                        </StatusBar>
+                        <!-- 3. Label -->
+                        <Label name="$(parent)BarLabel" font="ZoFontWinH3" color="FFFFFF">
+                            <Anchor point="CENTER" />
+                        </Label>
+                    </Controls>
+
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

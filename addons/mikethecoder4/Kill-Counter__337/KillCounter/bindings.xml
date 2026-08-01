@@ -1,0 +1,14 @@
+<Bindings>
+  <Layer name="General">
+    <Category name="Kill Counter">
+      <Action name="KILLCOUNTER_SHOW_PANEL">
+        <Down>KC_G.showStats()</Down>
+      </Action>
+      <Action name="KILLCOUNTER_SHOW_SETTINGS">
+        <Down>KC_G.showSettings()</Down>
+      </Action>
+    </Category>
+  </Layer>
+
+
+</Bindings>

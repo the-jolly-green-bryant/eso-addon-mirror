@@ -1,0 +1,184 @@
+<GuiXml>
+    <Controls>
+
+        <!--
+            Column layout (350px total):
+              Label  65px | gap 5 | Avg  70px | gap 10 | Min/Max 100px | gap 5 | Count  95px
+              x:     0              70          140      150             250     255
+
+            Row layout (126px) total:
+              Top padding: 10px
+              Static section height (FIXED_HEIGHT = 50px):
+                  HeaderRow(20) + MainDivider(3+1+3=7) + ColHeaderRow(16) + ColHeaderDivider(6+1=7) = 60
+                y:10              33                     37                 44
+
+              Dynamic data rows: each 20px tall, 2px gap — re-anchored by Lua (x3 = 66px): 60, 82, 104
+              Bottom padding: 10px
+
+            Total vertical: 134px
+        -->
+        <Control name="TTCTooltipPanel" virtual="true">
+            <Dimensions x="350" y="134" />
+            <OnEffectivelyHidden>
+                self:SetHidden(true)
+            </OnEffectivelyHidden>
+            <Controls>
+
+                <!-- ── Static header ──────────────────────────────────────── -->
+
+                <Control name="$(parent)HeaderRow">
+                    <Dimensions x="350" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
+                    <Controls>
+                        <!-- narrow: only needs to fit "TTC" -->
+                        <Label name="$(parent)Suggested" font="ZoFontGame" color="EECA2A"
+                               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Dimensions x="80" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                        </Label>
+                        <!-- wide: date strings can be long in some languages -->
+                        <Label name="$(parent)Date" font="ZoFontGame"
+                               horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+                            <Dimensions x="270" y="20" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Line name="$(parent)MainDivider" thickness="1"
+                      color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                    <Anchor point="TOPLEFT"  relativeTo="$(parent)HeaderRow" relativePoint="BOTTOMLEFT"  offsetX="0" offsetY="3" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)HeaderRow" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="3" />
+                </Line>
+
+                <!-- ── Column header row ──────────────────────────────────── -->
+
+                <Control name="$(parent)ColHeaderRow">
+                    <Dimensions x="350" y="16" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="37" />
+                    <Controls>
+                        <!-- no header for the row-label column (0–90px) -->
+                        <Label name="$(parent)AvgHeader" font="ZoFontGame" color="888888"
+                               horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+                            <Dimensions x="60" y="16" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)RangeHeader" font="ZoFontGame" color="888888"
+                               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Dimensions x="75" y="16" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="150" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)CountHeader" font="ZoFontGame" color="888888"
+                               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Dimensions x="95" y="16" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="255" offsetY="0" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Line name="$(parent)ColHeaderDivider" thickness="1"
+                      color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                    <Anchor point="TOPLEFT"  relativeTo="$(parent)ColHeaderRow" relativePoint="BOTTOMLEFT"  offsetX="0" offsetY="6" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)ColHeaderRow" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="6" />
+                </Line>
+
+                <!-- ── Data rows — Lua re-anchors these below ColHeaderDivider ──── -->
+
+                <Control name="$(parent)RecommRow">
+                    <Dimensions x="350" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="60" />
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontGame" color="888888"
+                               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Dimensions x="65" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Avg" font="ZoFontGame"
+                               horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+                            <Dimensions x="60" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Range" font="ZoFontGame" color="EECA2A"
+                               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Dimensions x="110" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="150" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Count" font="ZoFontGame"
+                               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Dimensions x="95" y="20" />
+                            <Anchor point="topleFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="255" offsetY="0" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)SaleRow">
+                    <Dimensions x="350" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="82" />
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontGame" color="888888"
+                               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Dimensions x="65" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Avg" font="ZoFontGame" color="EECA2A"
+                               horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+                            <Dimensions x="60" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Range" font="ZoFontGame"
+                               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Dimensions x="110" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Count" font="ZoFontGame"
+                               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Dimensions x="95" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="255" offsetY="0" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)ListRow">
+                    <Dimensions x="350" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="104" />
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontGame" color="888888"
+                               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Dimensions x="65" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Avg" font="ZoFontGame"
+                               horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+                            <Dimensions x="60" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="70" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Range" font="ZoFontGame"
+                               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Dimensions x="110" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="150" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Count" font="ZoFontGame"
+                               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Dimensions x="95" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="255" offsetY="0" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+            </Controls>
+        </Control>
+
+        <Control name="TTCTooltipItemTooltipTemplate" inherits="TTCTooltipPanel" virtual="true">
+            <OnInitialized>
+                TTCTooltip.Panel:New(self, ItemTooltip)
+            </OnInitialized>
+        </Control>
+
+        <Control name="TTCTooltipPopupTooltipTemplate" inherits="TTCTooltipPanel" virtual="true">
+            <OnInitialized>
+                TTCTooltip.Panel:New(self, PopupTooltip)
+            </OnInitialized>
+        </Control>
+
+    </Controls>
+</GuiXml>

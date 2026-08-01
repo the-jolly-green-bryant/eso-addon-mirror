@@ -1,0 +1,83 @@
+<GuiXml>
+  <Controls>   
+    <Control name="EasyFrameUI" mouseEnabled="true" movable="true" clampedToScreen="true" resizeHandleSize="5" virtual="true" alpha="1">
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-10" /> 
+      <!--
+      <OnMouseEnter>
+        d("MouseEnter")
+      </OnMouseEnter>
+      <OnMouseExit>
+        d("MouseExit")
+      </OnMouseExit>       
+      <OnMouseDown>
+        d("MouseDown")
+      </OnMouseDown>
+      -->
+      <Controls> 
+        <Backdrop hidden="true" name="$(parent)ChatEdgeBG" integralWrapping="true" inheritAlpha="false" centerColor="FFFFFFFF" alpha="1">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="-32" offsetY="-38"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="32" offsetY="32"/>
+          <Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeFileWidth="256" edgeFileHeight="256" edgeSize="64" />
+          <Center name="$(parent)Center" file="EsoUI/Art/ChatWindow/chat_BG_center.dds" hidden="true" />
+          <Insets left="64" top="64" right="-64" bottom="-64" />
+        </Backdrop>      
+
+        <Backdrop hidden="false" name="$(parent)DefaultBG" inherits="ZO_DefaultBackdrop" />
+        
+        <Label name="$(parent)TitleLabel" height="15" font="ZoFontGame" inheritAlpha="false" alpha="1" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="EasyFrame">
+          <Anchor point="TOPLEFT" offsetX="4"/>       
+        </Label>
+               
+        <Button name="$(parent)CloseButton" inherits="ZO_CloseButton">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-25" />                    
+				</Button>       
+       
+        <Button name="$(parent)ShrinkButton">
+          <Dimensions x="20" y="20" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)CloseButton" relativePoint="TOPLEFT" offsetX="-5" />
+          <Controls>          
+            <Texture name="$(parent)TextureShrink" textureFile="esoui/art/chatwindow/minimize_up.dds">
+              <AnchorFill />
+            </Texture>
+          <!--
+            <Texture name="$(parent)TextureShrink" textureFile="/esoui/art/minimap/minimap_minimize_up.dds">
+              <AnchorFill />
+            </Texture>
+            -->
+          </Controls>       
+        </Button>
+        
+        <Button name="$(parent)ReloadButton">
+          <Dimensions x="20" y="20" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)ShrinkButton" relativePoint="TOPLEFT" offsetX="-5" />
+          <Textures normal="/esoui/art/ava/ava_keepstatus_icon_collectionrate.dds" mouseOver="/esoui/art/miscellaneous/rateicon.dds" />
+
+            <!--
+          <Controls>
+            <Texture name="$(parent)TextureReloadRecipes" textureFile="esoui/art/miscellaneous/rateicon.dds">
+              <AnchorFill />
+            </Texture>
+          </Controls>         
+          -->
+        </Button>
+        </Controls>
+    </Control>
+  
+    <TopLevelControl name="EasyFrameDialogUI" hidden="true" tier="HIGH" mouseEnabled="true" virtual="true" allowBringToTop="true" >
+    <OnMouseDown>
+      --self:SetHidden(true)
+    </OnMouseDown>    
+    <Controls>       
+        <Control name="$(parent)Content" inherits="EasyFrameUI" mouseEnabled="true" movable="false" >
+          <Controls>
+      <Texture name="$(parent)SomeTexture" color="000000" inheritAlpha="false" alpha="1">
+        <Anchor point="TOPLEFT" relativeTo="$(parent)Content" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+        <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Content" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+      </Texture>           
+          </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>  
+  </Controls>
+</GuiXml>  

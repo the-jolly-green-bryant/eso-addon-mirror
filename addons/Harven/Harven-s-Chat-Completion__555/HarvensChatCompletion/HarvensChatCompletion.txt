@@ -1,0 +1,10 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: Harven's Chat Completion
+## APIVersion: 100020
+## Description: When you start typing a slash command in the chat entry box, a menu will appear which allows you to select commands/emotes that start with entered text.
+
+HarvensChatCompletion.lua

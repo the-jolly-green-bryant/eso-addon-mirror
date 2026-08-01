@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/KermitTheFrog88/Bahsei-s-Damage-Bonus-Tracker__3225",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KermitTheFrog88",
+  "canonical_id": "esoui:3225",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3225",
+  "deleted": false,
+  "directories": [
+    "BahseiTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3225/",
+  "fingerprint": "fa6070ed4cedba3e920a804054b56905ad287c27c62fd2c2bec1cf241bcfba6c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11274.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11275.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11272.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11273.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10999.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3225",
+  "source_url": "https://www.esoui.com/downloads/info3225-BahseisDamageBonusTracker.html",
+  "stats": {
+    "downloads": 9165,
+    "favorites": 3,
+    "monthly_downloads": 11
+  },
+  "title": "Bahsei's Damage Bonus Tracker",
+  "updated_at": 1686871748000,
+  "version": "0.23"
+}

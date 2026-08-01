@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/IsJustaGhost/IsJusta-Favorite-Collectibles__3119",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IsJustaGhost",
+  "canonical_id": "esoui:3119",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3119",
+  "deleted": false,
+  "directories": [
+    "IsJustaFavoriteCollectibles"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3119/",
+  "fingerprint": "12f42b561da080fe2ac38a885f01032316f788e2ebfe99d920cc381f5cb8cc0b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10697.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10536.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10502.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10537.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10503.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3119",
+  "source_url": "https://www.esoui.com/downloads/info3119-IsJustaFavoriteCollectibles.html",
+  "stats": {
+    "downloads": 18902,
+    "favorites": 38,
+    "monthly_downloads": 40
+  },
+  "title": "IsJusta Favorite Collectibles",
+  "updated_at": 1728175281000,
+  "version": "3.5.2"
+}

@@ -1,0 +1,6 @@
+## Title: |cFFD700Simple Vote|r
+## APIVersion: 100031
+## Description: A tool to add custom votes
+## Author: |c0DC1CF@M0R_Gaming|r
+
+SimpleVote.lua

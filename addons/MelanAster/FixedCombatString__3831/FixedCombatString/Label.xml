@@ -1,0 +1,7 @@
+<GuiXml>
+  <Font name="FIXCSDault" font="$(MEDIUM_FONT)|$(KB_18)" />
+  <Controls>
+    <Control name = "FIXCS_Location" hidden = "true" />
+    <Label name = "FIXCS_Temple_Label" virtual = "true" verticalAlignment = "CENTER" horizontalAlignment = "CENTER" wrapMode = "TRUNCATE" font = "FIXCSDault" tier = "HIGH" color = "C5C29E" hidden="true" />
+  </Controls>
+</GuiXml>

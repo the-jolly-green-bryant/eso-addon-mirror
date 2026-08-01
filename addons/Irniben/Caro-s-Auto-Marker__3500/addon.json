@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Irniben/Caro-s-Auto-Marker__3500",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Irniben",
+  "canonical_id": "esoui:3500",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3500",
+  "deleted": false,
+  "directories": [
+    "CarosAutoMarker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3500/",
+  "fingerprint": "d43a5dbdb77ac0b8452e4a7efaafd7128e5a943306e7dd6bbd536adb6ca0fa1c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11916.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11917.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3500",
+  "source_url": "https://www.esoui.com/downloads/info3500-CarosAutoMarker.html",
+  "stats": {
+    "downloads": 4405,
+    "favorites": 9,
+    "monthly_downloads": 39
+  },
+  "title": "Caro's Auto Marker",
+  "updated_at": 1667941482000,
+  "version": "0.1.2"
+}

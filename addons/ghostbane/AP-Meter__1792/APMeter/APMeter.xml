@@ -1,0 +1,703 @@
+<GuiXml>
+    <Animations>
+
+        <AnimationTimeline name="APM_KillingBlowScreenFrameAnimation">
+            <Animations>
+                <AlphaAnimation startAlpha="0.0" endAlpha="0.5" delay="200" duration="200">
+                    <EasingFunction>
+                        return ZO_EaseInQuadratic(progress)
+                    </EasingFunction>
+                </AlphaAnimation>
+                <AlphaAnimation startAlpha="0.5" endAlpha="0.0" delay="400" duration="800">
+                    <EasingFunction>
+                        return ZO_EaseOutQuadratic(progress)
+                    </EasingFunction>
+                </AlphaAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+    </Animations>
+    <Controls>
+
+        <TopLevelControl name="APM_KillingBlowScreenFrame" alpha="0" tier="HIGH">
+            <AnchorFill/>
+            <Controls>
+                <Backdrop name="$(parent)Overlay" edgeColor="39EE31">
+                    <AnchorFill/>
+                    <Center file="EsoUI/Art/HUD/UITelvarOverlayCenter.dds" />
+                    <Edge file="EsoUI/Art/HUD/UITelvarOverlayEdge.dds" edgeColor="000000" edgeFileWidth="2048" edgeFileHeight="256" />
+                    <Insets left="256" top="256" right="-256" bottom="-256" />
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="APMeterContainer" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" tier="HIGH">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+        </TopLevelControl>
+
+        <Control name="APMeterPreviewContainer" hidden="true" resizeToFitDescendents="true" clampedToScreen="true" mouseEnabled="false">
+            <Controls>
+                <Backdrop name="$(parent)Protection" level="20" mouseEnabled="false" tier="2">
+                    <AnchorFill />
+                    <OnInitialized>
+                        self:SetEdgeColor(0, 0, 0, 0)
+                        self:SetCenterColor(0, 0, 0, 0)
+                    </OnInitialized>
+                </Backdrop>
+            </Controls>
+        </Control>
+
+        <Control name="APMeter_Details_MenuOption" virtual="true">
+            <Dimensions x="100" y="80"/>
+            <Controls>
+                <Label name="$(parent)Label" text="Override me" color="ffffff" font="ZoFontGamepadCondensed34" mouseEnabled="true" verticalAlign="CENTER">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                    <Controls>
+                        <Texture name="$(parent)Arrow" textureFile="/esoui/art/miscellaneous/gamepad/spinner_arrow_right_disabled.dds" textureCoordsRotation="AP_METER_QUART_PI" layer="2">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-5" />
+                        </Texture>
+                    </Controls>
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="APMeter_Panel_ChecklistItem" virtual="true" resizeToFitDescendents="true">
+            <DimensionConstraints minY="80" />
+            <Controls>
+                <Label name="$(parent)Label" font="ZoFontGamepadCondensed36" color="ffffff">
+                    <Anchor point="TOPLEFT"/>
+                    <Dimensions y="30" />
+                    <Controls>
+                        <Label name="$(parent)Perc" color="fcba03" font="$(GAMEPAD_LIGHT_FONT)|22|soft-shadow-thick">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="5" />
+                        </Label>
+                    </Controls>
+                </Label>
+                <Texture name="$(parent)Frame" textureFile="/esoui/art/miscellaneous/gamepad/gp_passiveframe_128.dds">
+                    <Dimensions x="128" y="128" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="-32" offsetY="-5" />
+                    <Controls>
+                        <Texture name="$(parent)Icon" maskTextureFile="/APMeter/textures/circle_mask.dds" textureFile="/esoui/art/miscellaneous/gamepad/gp_passiveframe_128.dds" maskMode="BASIC" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+                            <Dimensions x="128" y="128" />
+                            <Anchor point="CENTER"/>
+                            <Controls>
+                                <Texture name="$(parent)File" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES" hidden="true">
+                                    <Dimensions x="64" y="64" />
+                                    <Anchor point="CENTER" />
+                                </Texture>
+                                <Texture name="$(parent)Warning" textureFile="/esoui/art/miscellaneous/eso_icon_warning.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+                                    <Dimensions x="32" y="32" />
+                                    <Anchor point="CENTER" offsetY="-3"/>
+                                </Texture>
+                            </Controls>
+                        </Texture>
+                    </Controls>
+                </Texture>
+
+                <Label name="$(parent)Name" color="fcba03" font="$(GAMEPAD_LIGHT_FONT)|32|soft-shadow-thick">
+                    <Anchor point="LEFT" relativeTo="$(parent)Frame" relativePoint="RIGHT" offsetX="-18" offsetY="-15" />
+                    <Controls>
+                        <Label name="$(parent)Desc" font="$(GAMEPAD_LIGHT_FONT)|20|soft-shadow-thick" multiLine="true" wrapMode="TEX_MODE_WRAP">
+                            <Dimensions x="360" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+                        </Label>
+                    </Controls>
+                </Label>
+                <Label name="$(parent)DefaultDesc" font="$(GAMEPAD_LIGHT_FONT)|20" multiLine="true" wrapMode="TEX_MODE_WRAP" linkEnabled="true" mouseEnabled="true">
+                    <Dimensions x="360" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Frame" relativePoint="RIGHT" offsetX="-18" />
+                    <OnLinkMouseUp>
+                        ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
+                    </OnLinkMouseUp>
+                </Label>
+
+                <StatusBar name="$(parent)Timer" color="fcba03">
+                    <Dimensions x="430" y="5" />
+                    <Anchor point="BOTTOMLEFT"  relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+                    <Limits min="0" max="100" />
+                    <OnInitialized>
+                        self:SetValue(0)
+                    </OnInitialized>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="222222" alpha="0.6">
+                            <Edge file="EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+                            <AnchorFill />
+                            <OnInitialized>
+                                self:SetEdgeColor(0, 0, 0, 0)
+                            </OnInitialized>
+                        </Backdrop>
+                        <Label name="$(parent)Display" color="fcba03" font="$(GAMEPAD_LIGHT_FONT)|20|soft-shadow-thin">
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+                        </Label>
+                    </Controls>
+                </StatusBar>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="APMeterPanel" inherits="ZO_Gamepad_BackgroundControl_Base_Template" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="500" y="600" />
+            <Anchor point="CENTER" relativePoint="CENTER" />
+            <Controls>
+                <Backdrop name="$(parent)_BG" inherits="ZO_DarkThinFrame">
+                    <AnchorFill />
+                    <Controls>
+                        <Texture name="$(parent)Bg" inherits="ZO_GamepadGrid_BackgroundTexture">
+                            <Dimensions x="496" y="596" />
+                            <Anchor offsetX="2" offsetY="2" />
+                            <TextureCoords left="ZO_GAMEPAD_QUADRANT_1_LEFT_COORD" right="ZO_GAMEPAD_QUADRANT_4_RIGHT_COORD" top="0" bottom="ZO_GAMEPAD_PANEL_BG_BOTTOM_COORD" />
+                        </Texture>
+                    </Controls>
+                </Backdrop>
+
+                <Label name="$(parent)AppName" color="07b00a" font="$(CHAT_FONT)|$(KB_14)|soft-shadow-thin" text="AP Meter">
+                    <Anchor point="TOPLEFT" offsetX="7" offsetY="3" />
+                </Label>
+                <Button name="$(parent)OpenSettings" mouseEnabled="true">
+                    <Anchor point="LEFT" relativeTo="$(parent)AppName" relativePoint="RIGHT" offsetX="5" />
+                    <Dimensions x="80" y="20" />
+                    <Controls>
+                        <Label name="$(parent)AppName" color="626262" font="$(CHAT_FONT)|$(KB_14)|soft-shadow-thin" text="- Open Settings">
+                            <Anchor point="CENTER" />
+                        </Label>
+                    </Controls>
+                    <OnClicked>
+                        LibAddonMenu2:OpenToPanel(APMeter.LAMSettings)
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton" override="true">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="5" />
+                    <OnClicked>
+                        APMeter.Panel.Hide()
+                    </OnClicked>
+                </Button>
+                
+                <Control name="$(parent)SessionButton" inherits="APMeter_Details_MenuOption">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="50" offsetY="15" />
+                    <Controls>
+                        <Label name="$(parent)Label" text="SESSION" override="true">
+                            <Controls>
+                                <Texture name="$(parent)Arrow" textureFile="/esoui/art/miscellaneous/gamepad/spinner_arrow_right_up.dds" override="true"/>
+                            </Controls>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)TicklistButton" inherits="APMeter_Details_MenuOption">
+                    <Anchor point="LEFT" relativeTo="$(parent)SessionButton" relativePoint="RIGHT" offsetX="50" />
+                    <Controls>
+                        <Label name="$(parent)Label" text="TICK LIST" alpha="0.3" override="true"/>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)BuffsButton" inherits="APMeter_Details_MenuOption">
+                    <Anchor point="LEFT" relativeTo="$(parent)TicklistButton" relativePoint="RIGHT" offsetX="50" />
+                    <Controls>
+                        <Label name="$(parent)Label" text="BUFFS" alpha="0.3" override="true"/>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Session" inherits="ZO_ScrollContainer">
+                    <Dimensions x="480" y="500" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="20" offsetY="100" />
+                    <Controls>
+                        <Control name="$(parent)Area">
+                            <Dimensions x="450" y="880" />
+                            <Controls>
+                                <Label name="$(parent)PlayerName" font="$(GAMEPAD_MEDIUM_FONT)|32|soft-shadow-thick">
+                                    <Anchor point="TOPLEFT" offsetY="15" />
+                                </Label>
+                                <Label name="$(parent)RankName" font="$(GAMEPAD_LIGHT_FONT)|24|soft-shadow-thin">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)PlayerName" relativePoint="BOTTOMLEFT" offsetX="2" offsetY="4" />                           
+                                </Label>
+                                <Label name="$(parent)APH" font="$(GAMEPAD_LIGHT_FONT)|32|soft-shadow-thick">
+                                    <Anchor point="TOPRIGHT" offsetY="15" />
+                                    <Controls>
+                                        <Label name="$(parent)Label" text="ApH:" color="999999" font="$(GAMEPAD_MEDIUM_FONT)|24|soft-shadow-thick">
+                                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="-5" />
+                                        </Label>
+                                    </Controls>
+                                </Label>
+                                <Label name="$(parent)APHTime" color="ffffff" font="$(GAMEPAD_LIGHT_FONT)|24|soft-shadow-thin">
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)APH" relativePoint="BOTTOMRIGHT" offsetX="-24" offsetY="4" />
+                                </Label>
+
+                                <Label name="$(parent)NextRank" font="$(GAMEPAD_LIGHT_FONT)|20|soft-shadow-thin">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)RankName" relativePoint="BOTTOMLEFT" offsetY="60" />
+                                    <Controls>
+                                        <Label name="$(parent)NextRank" text="until next rank" color="999999" font="$(GAMEPAD_LIGHT_FONT)|20|soft-shadow-thin">
+                                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="4" />
+                                        </Label>
+                                    </Controls>
+                                </Label>
+                                <StatusBar name="$(parent)NextRankProgress" color="27BC1D">
+                                    <Dimensions x="450" y="5" />
+                                    <Anchor point="TOPLEFT"  relativeTo="$(parent)NextRank" relativePoint="BOTTOMLEFT" offsetY="8" />
+                                    <Limits min="0" max="100" />
+                                    <Controls>
+                                        <Backdrop name="$(parent)BG" centerColor="222222" alpha="0.6">
+                                            <Edge file="EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Label name="$(parent)Perc" color="ffffff" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin">
+                                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BG" relativePoint="TOPRIGHT" offsetY="-4" />
+                                        </Label>
+                                        <Texture name="$(parent)Icon">
+                                            <Dimensions x="38" y="38"/>
+                                            <Anchor point="RIGHT" relativeTo="$(parent)Perc" relativePoint="LEFT" offsetY="-2"/>
+                                        </Texture>
+                                        <Label name="$(parent)Label" color="27BC1D" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|20|soft-shadow-thin">
+                                            <Anchor point="TOPRIGHT" relativeTo="$(parent)BG" relativePoint="BOTTOMRIGHT" offsetY="4"/>
+                                        </Label>
+                                    </Controls>
+                                </StatusBar>
+                                
+                                <Button name="$(parent)AddGoal" text="ADD GOAL" font="ZoFontGamepadCondensed34" verticalAlignment="CENTER" mouseEnabled="true">
+                                    <Anchor point="TOP" relativeTo="$(parent)NextRankProgress" relativePoint="BOTTOM" offsetY="80" />
+                                    <Dimensions x="180" y="40" />
+                                    <Controls>
+                                        <Texture textureFile="/esoui/art/progression/gamepad/addpoints_up.dds">
+                                            <Dimensions x="28" y="28" />
+                                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-68" offsetY="0" />
+                                        </Texture>
+                                    </Controls>
+                                    <OnClicked>
+                                        ZO_Dialogs_ShowDialog("ADD_APM_GOAL")
+                                    </OnClicked>
+                                </Button>
+                                <Label name="$(parent)GoalLabel" text="AP Goal" color="03a1fc" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin" hidden="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)NextRankProgress" relativePoint="BOTTOMLEFT" offsetY="50" />
+                                </Label>
+                                <StatusBar name="$(parent)GoalStatus" color="03a1fc" hidden="true">
+                                    <Dimensions x="450" y="5" />
+                                    <Anchor point="TOPLEFT"  relativeTo="$(parent)GoalLabel" relativePoint="BOTTOMLEFT" offsetY="5" />
+                                    <Limits min="0" max="100" />
+                                    <Controls>
+                                        <Backdrop name="$(parent)BG" centerColor="222222" alpha="0.6">
+                                            <Edge file="EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Label name="$(parent)Perc" text="72%" color="03a1fc" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin">
+                                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BG" relativePoint="TOPRIGHT" offsetY="-4" />
+                                        </Label>
+                                        <Label name="$(parent)AP" text="604,972 / 700,000" color="03a1fc" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|20|soft-shadow-thin">
+                                            <Anchor point="TOPRIGHT" relativeTo="$(parent)BG" relativePoint="TOPRIGHT"  offsetY="9"/>
+                                        </Label>
+                                        <Button name="$(parent)Remove" text="Remove" verticalAlignment="LEFT" font="$(GAMEPAD_LIGHT_FONT)|20|soft-shadow-thin" mouseEnabled="true">
+                                            <Dimensions x="45" y="25" />
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="BOTTOMLEFT"  offsetY="9"/>
+                                            <OnClicked>
+                                                APMeter.Panel.RemoveGoal()
+                                            </OnClicked>
+                                        </Button>
+                                    </Controls>
+                                </StatusBar> 
+
+                                <Label name="$(parent)StatsCombatLabel" text="Combat" color="ffffff" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)NextRankProgress" relativePoint="BOTTOMLEFT" offsetY="160" />
+                                </Label>
+                                <StatusBar name="$(parent)StatsCombat" color="27BC1D">
+                                    <Dimensions x="450" y="5" />
+                                    <Anchor point="TOPLEFT"  relativeTo="$(parent)StatsCombatLabel" relativePoint="BOTTOMLEFT" offsetY="5" />
+                                    <Limits min="0" max="100" />
+                                    <Controls>
+                                        <Backdrop name="$(parent)BG" centerColor="222222" alpha="0.6">
+                                            <Edge file="EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Label name="$(parent)Perc" text="72%" color="ffffff" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin">
+                                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BG" relativePoint="TOPRIGHT" offsetY="-5" />
+                                        </Label>
+                                        <Label name="$(parent)AP" color="27BC1D" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|20|soft-shadow-thin">
+                                            <Anchor point="TOPRIGHT" relativeTo="$(parent)BG" relativePoint="BOTTOMRIGHT" offsetY="7"/>
+                                        </Label>
+                                    </Controls>
+                                </StatusBar>
+
+                                <Label name="$(parent)StatsRepairsLabel" text="Repairs" color="ffffff" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)StatsCombat" relativePoint="BOTTOMLEFT" offsetY="80" />
+                                </Label>
+                                <StatusBar name="$(parent)StatsRepairs" color="27BC1D">
+                                    <Dimensions x="450" y="5" />
+                                    <Anchor point="TOPLEFT"  relativeTo="$(parent)StatsRepairsLabel" relativePoint="BOTTOMLEFT" offsetY="5" />
+                                    <Limits min="0" max="100" />
+                                    <Controls>
+                                        <Backdrop name="$(parent)BG" centerColor="222222" alpha="0.6">
+                                            <Edge file="EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Label name="$(parent)Perc" text="72%" color="ffffff" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin">
+                                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BG" relativePoint="TOPRIGHT" offsetY="-5" />
+                                        </Label>
+                                        <Label name="$(parent)AP" color="27BC1D" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|20|soft-shadow-thin">
+                                            <Anchor point="TOPRIGHT" relativeTo="$(parent)BG" relativePoint="BOTTOMRIGHT" offsetY="7"/>
+                                        </Label>
+                                    </Controls>
+                                </StatusBar>
+
+                                <Label name="$(parent)StatsDefenceLabel" text="Defence" color="ffffff" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)StatsRepairs" relativePoint="BOTTOMLEFT" offsetY="80" />
+                                </Label>
+                                <StatusBar name="$(parent)StatsDefence" color="27BC1D">
+                                    <Dimensions x="450" y="5" />
+                                    <Anchor point="TOPLEFT"  relativeTo="$(parent)StatsDefenceLabel" relativePoint="BOTTOMLEFT" offsetY="5" />
+                                    <Limits min="0" max="100" />
+                                    <Controls>
+                                        <Backdrop name="$(parent)BG" centerColor="222222" alpha="0.6">
+                                            <Edge file="EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Label name="$(parent)Perc" text="72%" color="ffffff" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin">
+                                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BG" relativePoint="TOPRIGHT" offsetY="-5" />
+                                        </Label>
+                                        <Label name="$(parent)AP" color="27BC1D" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|20|soft-shadow-thin">
+                                            <Anchor point="TOPRIGHT" relativeTo="$(parent)BG" relativePoint="BOTTOMRIGHT" offsetY="7"/>
+                                        </Label>
+                                    </Controls>
+                                </StatusBar>
+
+                                <Label name="$(parent)StatsCaptureLabel" text="Capture" color="ffffff" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)StatsDefence" relativePoint="BOTTOMLEFT" offsetY="80" />
+                                </Label>
+                                <StatusBar name="$(parent)StatsCapture" color="27BC1D">
+                                    <Dimensions x="450" y="5" />
+                                    <Anchor point="TOPLEFT"  relativeTo="$(parent)StatsCaptureLabel" relativePoint="BOTTOMLEFT" offsetY="5" />
+                                    <Limits min="0" max="100" />
+                                    <OnInitialized>
+                                        self:SetValue(8)
+                                    </OnInitialized>
+                                    <Controls>
+                                        <Backdrop name="$(parent)BG" centerColor="222222" alpha="0.6">
+                                            <Edge file="EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Label name="$(parent)Perc" text="72%" color="ffffff" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin">
+                                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BG" relativePoint="TOPRIGHT" offsetY="-5" />
+                                        </Label>
+                                        <Label name="$(parent)AP" color="27BC1D" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|20|soft-shadow-thin">
+                                            <Anchor point="TOPRIGHT" relativeTo="$(parent)BG" relativePoint="BOTTOMRIGHT" offsetY="7"/>
+                                        </Label>
+                                    </Controls>
+                                </StatusBar>
+
+                                <Label name="$(parent)StatsQuestsLabel" text="Quests" color="ffffff" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)StatsCapture" relativePoint="BOTTOMLEFT" offsetY="80" />
+                                </Label>
+                                <StatusBar name="$(parent)StatsQuests" color="27BC1D">
+                                    <Dimensions x="450" y="5" />
+                                    <Anchor point="TOPLEFT"  relativeTo="$(parent)StatsQuestsLabel" relativePoint="BOTTOMLEFT" offsetY="5" />
+                                    <Limits min="0" max="100" />
+                                    <Controls>
+                                        <Backdrop name="$(parent)BG" centerColor="222222" alpha="0.6">
+                                            <Edge file="EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Label name="$(parent)Perc" text="72%" color="ffffff" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin">
+                                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BG" relativePoint="TOPRIGHT" offsetY="-5" />
+                                        </Label>
+                                        <Label name="$(parent)AP" color="27BC1D" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|20|soft-shadow-thin">
+                                            <Anchor point="TOPRIGHT" relativeTo="$(parent)BG" relativePoint="BOTTOMRIGHT" offsetY="7"/>
+                                        </Label>
+                                    </Controls>
+                                </StatusBar>
+
+                                <Label name="$(parent)StatsResurrectionsLabel" text="Resurrections" color="ffffff" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)StatsQuests" relativePoint="BOTTOMLEFT" offsetY="80" />
+                                </Label>
+                                <StatusBar name="$(parent)StatsResurrections" color="27BC1D">
+                                    <Dimensions x="450" y="5" />
+                                    <Anchor point="TOPLEFT"  relativeTo="$(parent)StatsResurrectionsLabel" relativePoint="BOTTOMLEFT" offsetY="5" />
+                                    <Limits min="0" max="100" />
+                                    <Controls>
+                                        <Backdrop name="$(parent)BG" centerColor="222222" alpha="0.6">
+                                            <Edge file="EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Label name="$(parent)Perc" text="72%" color="ffffff" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|28|soft-shadow-thin">
+                                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BG" relativePoint="TOPRIGHT" offsetY="-5" />
+                                        </Label>
+                                        <Label name="$(parent)AP" color="27BC1D" verticalAlignment="RIGHT" font="$(GAMEPAD_LIGHT_FONT)|20|soft-shadow-thin">
+                                            <Anchor point="TOPRIGHT" relativeTo="$(parent)BG" relativePoint="BOTTOMRIGHT" offsetY="7"/>
+                                        </Label>
+                                    </Controls>
+                                </StatusBar>
+                                
+                                <Backdrop alpha="0" name="$(parent)FooterWeight">
+                                    <Dimensions y="80" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)StatsResurrections" relativePoint="BOTTOMLEFT" />
+                                </Backdrop>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Ticklist" inherits="ZO_ScrollContainer" hidden="true">
+                    <Dimensions x="480" y="500" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="20" offsetY="100" />
+                    <Controls>
+                        <Control name="$(parent)Area">
+                            <Dimensions />
+                            <Controls>
+                                <Label name="$(parent)Label" text="Defence Tick List" font="ZoFontGamepadCondensed36" color="ffffff">
+                                    <Anchor point="TOPLEFT"/>
+                                    <Dimensions y="30" />
+                                    <Controls>
+                                        <Button mouseEnabled="true">
+                                            <Dimensions x="32" y="32" />
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" />
+                                            <Textures normal="/esoui/art/login/login_icon_info.dds" />
+                                            <OnMouseEnter>
+local text = [[
+Whenever you earn AP in a tickable area ( like a keep ), it will be recorded here for reference so you can keep track of which defensive tick lists you are on.
+
+Earning AP in an identical category area will remove you from your current list of that category and place you in the new one.
+
+Example:
+If you earn AP in range of Castle Alessia, you are on the Keep tick list, for Castle Alessia.
+
+If you earn AP at another Keep before Alessia's defence tick goes off, you will not recieve it, as you will be on this new Keeps defence tick list.]]                                            
+                                                ZO_Tooltips_ShowTextTooltip(self, TOPRIGHT, text)
+                                            </OnMouseEnter>
+                                            <OnMouseExit>
+                                                ZO_Tooltips_HideTextTooltip()
+                                            </OnMouseExit>
+                                        </Button>
+                                    </Controls>
+                                </Label>
+
+                                <Control name="$(parent)Keep" alpha="0.6">
+                                    <Dimensions x="200" y="150" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetY="50" />
+                                    <Controls>
+                                        <Backdrop name="$(parent)BG" centerColor="323232" alpha="0.2">
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Backdrop name="$(parent)BG_Active" centerColor="32a852" alpha="0.4" hidden="true">
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon" textureFile="/esoui/art/compass/ava_largekeep_neutral.dds">
+                                            <Dimensions x="64" y="64" />
+                                            <Anchor point="CENTER" />
+                                        </Texture>
+                                        <Label name="$(parent)TimeAgo" text="" font="$(GAMEPAD_LIGHT_FONT)|18|soft-shadow-thin" color="ffffff" verticalAlignment="RIGHT">
+                                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-4" offsetY="1" />
+                                        </Label>
+                                        <Label name="$(parent)Label" text="KEEP" font="$(GAMEPAD_LIGHT_FONT)|$(GP_25)|soft-shadow-thick" color="ffffff" verticalAlignment="CENTER">
+                                            <Anchor point="BOTTOM" relativeTo="$(parent)Icon" relativePoint="TOP" offsetY="5" />
+                                        </Label>
+                                        <Label name="$(parent)Name" text="Fort Dragonclaw" font="$(GAMEPAD_MEDIUM_FONT)|26|soft-shadow-thick" color="ffffff" verticalAlignment="CENTER" hidden="true">
+                                            <Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="-4" />
+                                        </Label>
+                                        <Label name="$(parent)Inactive" text="Unassigned" font="$(GAMEPAD_MEDIUM_FONT)|30|soft-shadow-thick" color="555555" verticalAlignment="CENTER">
+                                            <Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="-8" />
+                                        </Label>
+                                    </Controls>
+                                </Control>
+
+                                <Control name="$(parent)Resource" alpha="0.6">
+                                    <Dimensions x="200" y="150" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Keep" relativePoint="RIGHT" offsetX="40" />
+                                    <Controls>
+                                        <Backdrop name="$(parent)BG" centerColor="323232" alpha="0.2">
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Backdrop name="$(parent)BG_Active" centerColor="32a852" alpha="0.4" hidden="true">
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon" textureFile="/esoui/art/compass/ava_mine_neutral.dds">
+                                            <Dimensions x="58" y="58" />
+                                            <Anchor point="CENTER" />
+                                            <Controls>
+                                                <Texture name="$(parent)Lumbermill" textureFile="/esoui/art/compass/ava_lumbermill_neutral.dds">
+                                                    <Dimensions x="44" y="44" />
+                                                    <Anchor point="CENTER" offsetX="-50" offsetY="4" />
+                                                </Texture>
+                                                <Texture name="$(parent)Farm" textureFile="/esoui/art/compass/ava_farm_neutral.dds">
+                                                    <Dimensions x="44" y="44" />
+                                                    <Anchor point="CENTER" offsetX="45" offsetY="2" />
+                                                </Texture>
+                                            </Controls>
+                                        </Texture>
+                                        <Label name="$(parent)TimeAgo" text="" font="$(GAMEPAD_LIGHT_FONT)|18|soft-shadow-thin" color="ffffff" verticalAlignment="RIGHT">
+                                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-4" offsetY="1" />
+                                        </Label>
+                                        <Label name="$(parent)Label" text="RESOURCE" font="$(GAMEPAD_LIGHT_FONT)|$(GP_25)|soft-shadow-thick" color="ffffff" verticalAlignment="CENTER">
+                                            <Anchor point="BOTTOM" relativeTo="$(parent)Icon" relativePoint="TOP" offsetY="5" />
+                                        </Label>
+                                        <Label name="$(parent)Name" text="Bloodmayne Lumbermill" font="$(GAMEPAD_MEDIUM_FONT)|26|soft-shadow-thick" color="ffffff" verticalAlignment="CENTER" hidden="true">
+                                            <Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="-4" />
+                                        </Label>
+                                        <Label name="$(parent)Inactive" text="Unassigned" font="$(GAMEPAD_MEDIUM_FONT)|30|soft-shadow-thick" color="666666" verticalAlignment="CENTER">
+                                            <Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="-8" />
+                                        </Label>
+                                    </Controls>
+                                </Control>
+
+                                <Control name="$(parent)Outpost" alpha="0.6">
+                                    <Dimensions x="200" y="150" />
+                                    <Anchor point="TOP" relativeTo="$(parent)Keep" relativePoint="BOTTOM" offsetY="40" />
+                                    <Controls>
+                                        <Backdrop name="$(parent)BG" centerColor="323232" alpha="0.2">
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Backdrop name="$(parent)BG_Active" centerColor="32a852" alpha="0.4" hidden="true">
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon" textureFile="/esoui/art/compass/ava_outpost_neutral.dds">
+                                            <Dimensions x="64" y="64" />
+                                            <Anchor point="CENTER" />
+                                        </Texture>
+                                        <Label name="$(parent)TimeAgo" text="" font="$(GAMEPAD_LIGHT_FONT)|18|soft-shadow-thin" color="ffffff" verticalAlignment="RIGHT">
+                                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-4" offsetY="1" />
+                                        </Label>
+                                        <Label name="$(parent)Label" text="OUTPOST" font="$(GAMEPAD_LIGHT_FONT)|$(GP_25)|soft-shadow-thick" color="ffffff" verticalAlignment="CENTER">
+                                            <Anchor point="BOTTOM" relativeTo="$(parent)Icon" relativePoint="TOP" offsetY="5" />
+                                        </Label>
+                                        <Label name="$(parent)Name" text="Fort Dragonclaw" font="$(GAMEPAD_MEDIUM_FONT)|26|soft-shadow-thick" color="ffffff" verticalAlignment="CENTER" hidden="true">
+                                            <Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="-4" />
+                                        </Label>
+                                        <Label name="$(parent)Inactive" text="Unassigned" font="$(GAMEPAD_MEDIUM_FONT)|30|soft-shadow-thick" color="555555" verticalAlignment="CENTER">
+                                            <Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="-8" />
+                                        </Label>
+                                    </Controls>
+                                </Control>
+
+                                <Control name="$(parent)Town" alpha="0.6">
+                                    <Dimensions x="200" y="150" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Outpost" relativePoint="RIGHT" offsetX="40" />
+                                    <Controls>
+                                       <Backdrop name="$(parent)BG" centerColor="323232" alpha="0.2">
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Backdrop name="$(parent)BG_Active" centerColor="32a852" alpha="0.4" hidden="true">
+                                            <AnchorFill />
+                                            <OnInitialized>
+                                                self:SetEdgeColor(0, 0, 0, 0)
+                                            </OnInitialized>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon" textureFile="/esoui/art/compass/ava_town_neutral.dds">
+                                            <Dimensions x="58" y="58" />
+                                            <Anchor point="CENTER" />
+                                        </Texture>
+                                        <Label name="$(parent)TimeAgo" text="" font="$(GAMEPAD_LIGHT_FONT)|18|soft-shadow-thin" color="ffffff" verticalAlignment="RIGHT">
+                                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-4" offsetY="1" />
+                                        </Label>
+                                        <Label name="$(parent)Label" text="TOWN" font="$(GAMEPAD_LIGHT_FONT)|$(GP_25)|soft-shadow-thick" color="ffffff" verticalAlignment="CENTER">
+                                            <Anchor point="BOTTOM" relativeTo="$(parent)Icon" relativePoint="TOP" offsetY="5" />
+                                        </Label>
+                                        <Label name="$(parent)Name" text="Fort Dragonclaw" font="$(GAMEPAD_MEDIUM_FONT)|26|soft-shadow-thick" color="ffffff" verticalAlignment="CENTER" hidden="true">
+                                            <Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="-4" />
+                                        </Label>
+                                        <Label name="$(parent)Inactive" text="Unassigned" font="$(GAMEPAD_MEDIUM_FONT)|30|soft-shadow-thick" color="555555" verticalAlignment="CENTER">
+                                            <Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="-8" />
+                                        </Label>
+                                    </Controls>
+                                </Control>
+
+
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Buffs" inherits="ZO_ScrollContainer" hidden="true">
+                    <Dimensions x="480" y="500" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="20" offsetY="100" />
+                    <Controls>
+                        <Control name="$(parent)Area">
+                            <Dimensions y="600" />
+                            <Controls>
+
+                                <Control name="$(parent)Cake" inherits="APMeter_Panel_ChecklistItem">
+                                    <Anchor point="TOPLEFT"/>
+                                </Control>
+                                
+                                <Control name="$(parent)Delve" inherits="APMeter_Panel_ChecklistItem">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Cake" relativePoint="BOTTOMLEFT" offsetY="30" />
+                                </Control>
+
+                                <Control name="$(parent)Event" inherits="APMeter_Panel_ChecklistItem">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Delve" relativePoint="BOTTOMLEFT" offsetY="30" />
+                                </Control>
+
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+        
+
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="APM_AddGoalDialog" inherits="ZO_CustomDialogBase" hidden="true" tier="HIGH" >
+            <Dimensions x="400"/>
+            <OnInitialized>
+                 APMeter.Panel.AddGoalDialog_OnInitialized( self )
+            </OnInitialized>
+            <Controls>
+                <Label name="$(parent)Intro" text="Enter your AP goal:" inherits="ZO_DialogContentAnchors" horizontalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="$(GAMEPAD_LIGHT_FONT)|$(GP_22)|soft-shadow-thick">
+                    <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetY="22" />
+                </Label>
+
+                <Backdrop name="$(parent)Edit" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+                    <Anchor point="TOP" relativeTo="$(parent)Intro" relativePoint="BOTTOM" offsetY="22" />
+                    <Dimensions x="160" y="30"/>
+                    <Controls>
+                        <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" textType="NUMERIC_UNSIGNED_INT"/>
+                    </Controls>
+                </Backdrop>
+
+                <Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton"/>
+                <Control name="$(parent)Save" inherits="ZO_CustomDialogButton"/>
+
+            </Controls>
+        </TopLevelControl>
+    
+    </Controls>
+</GuiXml>

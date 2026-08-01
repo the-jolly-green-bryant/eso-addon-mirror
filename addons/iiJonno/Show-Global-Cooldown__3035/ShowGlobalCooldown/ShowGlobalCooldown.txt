@@ -1,0 +1,12 @@
+## Title: Show Global Cooldown
+## Author: Valve
+## Description: Enables a global cooldown for the action bar
+## Version: 2.0.1
+## APIVersion: 100035
+## DependsOn: LibAddonMenu-2.0>=32
+## SavedVariables: ShowGlobalCooldown_dat
+
+lang\strings.lua
+lang\$(language).lua
+
+ShowGlobalCooldown.lua

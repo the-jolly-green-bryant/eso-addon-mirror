@@ -1,0 +1,388 @@
+<GuiXml>
+    <Controls>
+        <Backdrop name="Outfit_UI_ButtonBg" mouseEnabled="true" movable="true" clampedToScreen="true" edgeColor="80aaffff" centerColor="40aaffff" alpha="0">
+            <Anchor relativeTo="GuiRoot" relativePoint="TOPLEFT" point="TOPLEFT"/>
+            <Dimensions y="60" x="60"/>
+            <Edge edgeSize="1"/>
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+            <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_PAN);self:SetAlpha(1)</OnMouseEnter>
+            <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_DO_NOT_CARE);self:SetAlpha(0)</OnMouseExit>
+        </Backdrop>
+
+        <Button name="Outfit_UI_Button" topmost="true">
+            <Anchor relativeTo="Outfit_UI_ButtonBg" relativePoint="CENTER" point="CENTER"/>
+            <Dimensions y="40" x="40"/>
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+            <Textures normal="EsoUI/Art/Collections/collections_tabIcon_outfitStyles_up.dds"
+                      mouseOver="EsoUI/Art/Collections/collections_tabIcon_outfitStyles_over.dds" />
+            <Controls>
+                <Label name="Outfit_UI_ButtonLabel" font="ZoFontWinH4">
+                    <Anchor relativeTo="$(parent)" relativePoint="BOTTOM" point="TOP"/>
+                </Label>
+            </Controls>
+        </Button>
+
+    <!-- Virtuals {{{-->
+        <Backdrop name="Outfit_Edit" edgeColor="00000000" centerColor="77777766" alpha="1.0" virtual="true">
+            <Edge edgeSize="1" />
+            <Dimensions y="21" x="40" />
+            <Controls>
+                <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" maxInputCharacters="3" font="$(BOLD_FONT)|$(KB_15)" textType="3" color="INTERFACE_TEXT_COLOR_SELECTED:INTERFACE_TEXT_COLOR_NORMAL" >
+                </EditBox>
+            </Controls>
+        </Backdrop>
+
+        <Button name="Outfit_Button" font="ZoFontGame" virtual="true">
+            <Dimensions x="200" y="40" />
+            <Textures normal="esoui/art/buttons/button_xlarge_mouseup.dds"
+                      mouseOver="esoui/art/buttons/button_xlarge_mouseover.dds" />
+        </Button>
+
+        <Label name="Outfit_Label" font="ZoFontGame" virtual="true" horizontalAlignment="0" hidden="true">
+            <Dimensions x="0" y="0"/>
+        </Label>
+
+        <Texture name="Outfit_Icon" virtual="true">
+            <Dimensions x="50" y="50"/>
+        </Texture>
+
+        <Button name="Outfit_Item" virtual="true" font="ZoFontWinH3" horizontalAlignment="0">
+            <Dimensions x="50" y="50"/>
+            <Textures normal="NULL" mouseOver="EsoUI/Art/ActionBar/actionBar_mouseOver.dds" />
+
+            <Controls>
+
+                <Texture name="$(parent)_Icon" inherits="Outfit_Icon">
+                    <Anchor relativeTo="$(parent)" relativePoint="TOPRIGHT" point="TOPRIGHT"/>
+                </Texture>
+
+                <Label name="$(parent)_Label" inherits="Outfit_Label">
+                    <Anchor relativeTo="$(parent)" relativePoint="TOPRIGHT" point="TOPRIGHT"/>
+                </Label>
+
+            </Controls>
+        </Button>
+
+        <Control name="SandEmoteListRow" mouseEnabled="true" virtual="true">
+            <Dimensions y="30" />
+            <OnMouseEnter>
+                SandEmoteListRow_OnMouseEnter(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                SandEmoteListRow_OnMouseExit(self)
+            </OnMouseExit>
+            <OnMouseUp>
+                SandEmoteListRow_OnMouseUp(self, button, upInside)
+            </OnMouseUp>
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+                <Control name="$(parent)Spacer">
+                    <Anchor point="LEFT" />
+                    <Dimensions x="20" y="30" />
+                </Control>
+                <EditBox name="$(parent)Action" font="ZoFontGame" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" inherits="ZO_EditBox">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Spacer" offsetX="0"/>
+                    <Dimensions x="140" y="30" />
+                </EditBox>
+                <EditBox name="$(parent)Time" font="ZoFontGame" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" inherits="ZO_EditBox">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Action" offsetX="10"/>
+                    <Dimensions x="100" y="30" />
+                </EditBox>
+                <Control name="$(parent)Spacer2">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Time" offsetX="10"/>
+                    <Dimensions x="20" y="30" />
+                </Control>
+            </Controls>
+        </Control>
+
+
+    <!-- End Virtuals }}}-->
+
+        <TopLevelControl name="SandEWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="665" y="250" />
+            <Anchor point="CENTER" />
+
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+                <Label name="$(parent)Title" font="ZoFontWinH1" text="Style and Elegance" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="1" />
+                </Label>
+
+                <Button name="$(parent)CloseButton" inherits="ZO_ButtonBehaviorClickSound" >
+                    <Dimensions x="25" y="25" />
+                    <Textures normal="ESOUI/art/buttons/decline_up.dds"
+                        mouseOver="ESOUI/art/buttons/decline_over.dds" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+                </Button>
+
+                <Control name="$(parent)Dropdown" inherits="ZO_ScrollableComboBox" >
+                    <Dimensions x="150" y="30" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="5"/>
+                </Control>
+
+                <Control name="$(parent)Dropdown2" inherits="ZO_ScrollableComboBox" >
+                    <Dimensions x="150" y="30" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Dropdown" relativePoint="TOPRIGHT" offsetX="20" />
+                </Control>
+
+                <Control name="$(parent)Dropdown3" inherits="ZO_ScrollableComboBox" >
+                    <Dimensions x="250" y="30" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="45" offsetX="5" />
+                </Control>
+
+                <Backdrop name="$(parent)RenameEditBoxBackdrop" edgeColor="00000000" centerColor="77777766" alpha="1.0" hidden="true">
+                    <Edge edgeSize="1" />
+                    <Dimensions x="95" y="30" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Dropdown3" relativePoint="TOPRIGHT" offsetX="30" offsetY="-2" />
+                    <Controls>
+                        <EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditForBackdrop" >
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+
+                <Control name="$(parent)Dropdown4" inherits="ZO_ScrollableComboBox" >
+                    <Dimensions x="250" y="30" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)RenameEditBoxBackdrop" relativePoint="TOPRIGHT" offsetY="2" offsetX="30" />
+                </Control>
+
+                <Control name="$(parent)DropdownEmote" inherits="ZO_ScrollableComboBox" >
+                    <Dimensions x="250" y="30" />
+                    <Anchor point="TOP" relativeTo="$(parent)RenameEditBoxBackdrop" relativePoint="BOTTOM" offsetY="2" offsetX="0" />
+                </Control>
+
+                <Button name="$(parent)Stam_Check" inherits="ZO_CheckButton">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Dropdown3" relativePoint="BOTTOMLEFT" offsetY="1"/>
+                    <Controls>
+                        <Label name="$(parent)_Title" font="ZoFontGame" text="Stamina" >
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20"/>
+                        </Label>
+                    </Controls>
+                </Button>
+
+                <Button name="$(parent)Speed_Check" inherits="ZO_CheckButton">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Stam_Check" relativePoint="BOTTOMLEFT" offsetY="1"/>
+                    <Controls>
+                        <Label name="$(parent)_Title" font="ZoFontGame" text="Speed" >
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20"/>
+                        </Label>
+                    </Controls>
+                </Button>
+
+                <Button name="$(parent)Inventory_Check" inherits="ZO_CheckButton">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Speed_Check" relativePoint="BOTTOMLEFT" offsetY="1"/>
+                    <Controls>
+                        <Label name="$(parent)_Title" font="ZoFontGame" text="Inventory" >
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20"/>
+                        </Label>
+                    </Controls>
+                </Button>
+
+                <Button name="$(parent)_Item_2" inherits="Outfit_Item">
+                    <Anchor relativeTo="$(parent)" relativePoint="BOTTOMLEFT" point="BOTTOMLEFT" offsetX="7"/>
+                </Button>
+
+                <Button name="$(parent)_Item_3" inherits="Outfit_Item">
+                    <Anchor relativeTo="$(parent)_Item_2" relativePoint="TOPRIGHT" point="TOPLEFT"/>
+                </Button>
+
+                <Button name="$(parent)_Item_4" inherits="Outfit_Item">
+                    <Anchor relativeTo="$(parent)_Item_3" relativePoint="TOPRIGHT" point="TOPLEFT"/>
+                </Button>
+
+                <Button name="$(parent)_Item_9" inherits="Outfit_Item">
+                    <Anchor relativeTo="$(parent)_Item_4" relativePoint="TOPRIGHT" point="TOPLEFT"/>
+                </Button>
+
+                <Button name="$(parent)_Item_10" inherits="Outfit_Item">
+                    <Anchor relativeTo="$(parent)_Item_9" relativePoint="TOPRIGHT" point="TOPLEFT"/>
+                </Button>
+
+                <Button name="$(parent)_Item_11" inherits="Outfit_Item">
+                    <Anchor relativeTo="$(parent)_Item_10" relativePoint="TOPRIGHT" point="TOPLEFT"/>
+                </Button>
+
+                <Button name="$(parent)_Item_12" inherits="Outfit_Item">
+                    <Anchor relativeTo="$(parent)_Item_11" relativePoint="TOPRIGHT" point="TOPLEFT"/>
+                </Button>
+
+                <Button name="$(parent)_Item_13" inherits="Outfit_Item">
+                    <Anchor relativeTo="$(parent)_Item_12" relativePoint="TOPRIGHT" point="TOPLEFT"/>
+                </Button>
+
+                <Button name="$(parent)_Item_14" inherits="Outfit_Item">
+                    <Anchor relativeTo="$(parent)_Item_13" relativePoint="TOPRIGHT" point="TOPLEFT"/>
+                </Button>
+
+                <Button name="$(parent)_Item_15" inherits="Outfit_Item">
+                    <Anchor relativeTo="$(parent)_Item_14" relativePoint="TOPRIGHT" point="TOPLEFT"/>
+                </Button>
+
+                <Button name="$(parent)_Item_16" inherits="Outfit_Item">
+                    <Anchor relativeTo="$(parent)_Item_15" relativePoint="TOPRIGHT" point="TOPLEFT"/>
+                </Button>
+
+                <Button name="$(parent)_Item_17" inherits="Outfit_Item">
+                    <Anchor relativeTo="$(parent)_Item_16" relativePoint="TOPRIGHT" point="TOPLEFT"/>
+                </Button>
+
+                <Button name="$(parent)_Item_18" inherits="Outfit_Item">
+                    <Anchor relativeTo="$(parent)_Item_17" relativePoint="TOPRIGHT" point="TOPLEFT"/>
+                </Button>
+
+
+                <Button name="$(parent)DeleteButton" font="ZoFontGame">
+                    <Dimensions x="100" y="40" />
+                    <Anchor relativeTo="$(parent)" relativePoint="CENTER" point="CENTER" offsetX="-50" offsetY="20"/>
+                    <Textures normal="esoui/art/buttons/button_xlarge_mouseup.dds"
+                        mouseOver="esoui/art/buttons/button_xlarge_mouseover.dds" />
+                </Button>
+
+                <Button name="$(parent)SaveButton" font="ZoFontGame">
+                    <Dimensions x="100" y="40" />
+                    <Anchor relativeTo="$(parent)DeleteButton" relativePoint="LEFT" point="RIGHT" offsetX="-20"/>
+                    <Textures normal="esoui/art/buttons/button_xlarge_mouseup.dds"
+                        mouseOver="esoui/art/buttons/button_xlarge_mouseover.dds" />
+                </Button>
+
+                <Button name="$(parent)RandomButton" font="ZoFontGame">
+                    <Dimensions x="100" y="40" />
+                    <Anchor relativeTo="$(parent)" relativePoint="CENTER" point="CENTER" offsetX="70" offsetY="20"/>
+                    <Textures normal="esoui/art/buttons/button_xlarge_mouseup.dds"
+                        mouseOver="esoui/art/buttons/button_xlarge_mouseover.dds" />
+                </Button>
+
+
+                <Button name="$(parent)LoadButton" font="ZoFontGame">
+                    <Dimensions x="100" y="40" />
+                    <Anchor relativeTo="$(parent)" relativePoint="RIGHT" point="RIGHT" offsetY="20"/>
+                    <Textures normal="esoui/art/buttons/button_xlarge_mouseup.dds"
+                        mouseOver="esoui/art/buttons/button_xlarge_mouseover.dds" />
+                </Button>
+
+                <Control name="SandEWindowEmotes">
+                    <Dimensions x="665" y="300" />
+                    <Anchor relativeTo="SandEWindow" relativePoint="BOTTOM" point="TOP" offsetY="15"/>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+                        <Control name="$(parent)Container">
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+                            <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+                            <Controls>
+                                <Control name="$(parent)Dropdown" inherits="ZO_ScrollableComboBox" >
+                                    <Dimensions x="150" y="30" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-175" offsetY="5"/>
+                                </Control>
+
+                                <Control name="$(parent)Dropdown2" inherits="ZO_ScrollableComboBox" >
+                                    <Dimensions x="150" y="30" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Dropdown" relativePoint="TOPRIGHT" offsetX="20" />
+                                </Control>
+
+
+                                <Button name="$(parent)AddButton" font="ZoFontGame" hidden="True">
+                                    <Dimensions x="60" y="40" />
+                                    <Anchor relativeTo="$(parent)" relativePoint="TOPLEFT" point="TOPLEFT" offsetX="1" offsetY="5"/>
+                                    <Textures normal="esoui/art/buttons/button_xlarge_mouseup.dds"
+                                        mouseOver="esoui/art/buttons/button_xlarge_mouseover.dds" />
+                                </Button>
+
+                                <Button name="$(parent)DeleteButton" font="ZoFontGame" hidden="True">
+                                    <Dimensions x="60" y="40" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)AddButton" relativePoint="TOPRIGHT" offsetX="5" />
+                                    <Textures normal="esoui/art/buttons/button_xlarge_mouseup.dds"
+                                        mouseOver="esoui/art/buttons/button_xlarge_mouseover.dds" />
+                                </Button>
+
+                                <Backdrop name="$(parent)RenameBD" edgeColor="00000000" centerColor="77777766" alpha="1.0" hidden="true">
+                                    <Edge edgeSize="1" />
+                                    <Dimensions x="130" y="30" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)DeleteButton" relativePoint="TOPRIGHT" offsetX="20" offsetY="-1" />
+                                    <Controls>
+                                        <EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditForBackdrop" >
+                                        </EditBox>
+                                    </Controls>
+                                </Backdrop>
+
+                                <Label name="$(parent)Action" font="ZoFontWinH3" text="Action">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)AddButton" relativePoint="BOTTOMLEFT" offsetX="15" />
+                                    <Dimensions x="150" y="32" />
+                                </Label>
+
+                                <Label name="$(parent)Time" font="ZoFontWinH3" text="Time (s)">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Action" />
+                                    <Dimensions x="100" y="32" />
+                                </Label>
+
+                                <Control name="$(parent)ActionDropdown" inherits="ZO_ScrollableComboBox" hidden="true">
+                                    <Dimensions x="200" y="30" />
+                                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                                </Control>
+
+                                <Control name="$(parent)CopyDropdown" inherits="ZO_ScrollableComboBox" hidden="true">
+                                    <Dimensions x="200" y="30" />
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)ActionDropdown" relativePoint="TOPLEFT" offsetX="0" offsetY="-8"/>
+                                </Control>
+
+                                <Button name="$(parent)RandomCheck" inherits="ZO_CheckButton">
+                                    <Dimensions x="20" y="20" />
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)CopyDropdown" relativePoint="TOPLEFT" offsetY="-16"/>
+                                    <Controls>
+                                        <Label name="$(parent)_Title" font="ZoFontGame" text="Play Randomly" >
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20"/>
+                                        </Label>
+                                    </Controls>
+                                </Button>
+
+                                <Backdrop name="$(parent)SlashBD" edgeColor="00000000" centerColor="77777766" alpha="1.0" hidden="true">
+                                    <Edge edgeSize="1" />
+                                    <Dimensions x="160" y="30" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Time" relativePoint="TOPRIGHT" offsetX="0" offsetY="-1" />
+                                    <Controls>
+                                        <Label name="$(parent)Label" font="ZoFontGame" text="/slashEmote" color="99999966">
+                                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="7" offsetY="2"/>
+                                            <Dimensions x="130" y="30" />
+                                        </Label>
+
+                                        <EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditForBackdrop" >
+                                        </EditBox>
+                                    </Controls>
+                                </Backdrop>
+
+                                <Backdrop name="$(parent)TimeBD" edgeColor="00000000" centerColor="77777766" alpha="1.0" hidden="true">
+                                    <Edge edgeSize="1" />
+                                    <Dimensions x="130" y="30" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)SlashBD" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+                                    <Controls>
+                                        <Label name="$(parent)Label" font="ZoFontGame" text="Time (s)" color="99999966">
+                                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="7" offsetY="2"/>
+                                            <Dimensions x="130" y="30" />
+                                        </Label>
+                                        <EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditForBackdrop" >
+                                        </EditBox>
+                                    </Controls>
+                                </Backdrop>
+
+                                <Backdrop name="$(parent)ScrollListBackDrop" edgeColor="00000000" centerColor="00000000" alpha="1.0">
+                                    <Dimensions x="300" y="200" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Action" relativePoint="BOTTOMLEFT" offsetX="-25" offsetY="3" />
+                                    <Controls>
+                                        <Control name="SandEmoteScrollList" inherits="ZO_ScrollList">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="0" />
+                                            <Dimensions x="300" y="200" />
+                                        </Control>
+                                    </Controls>
+                                </Backdrop>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

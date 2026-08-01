@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Lionas/JP-Patch-for-Cyrodiil-Alert-2-v2.0.1__1413",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lionas",
+  "canonical_id": "esoui:1413",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:1413",
+  "deleted": false,
+  "directories": [
+    "CyrodiilAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1413/",
+  "fingerprint": "5462431235e3c470c230cde520d503028b9eef5feabebc78924d1b937c9b4163",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4589.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4590.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4591.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1413",
+  "source_url": "https://www.esoui.com/downloads/info1413-JPPatchforCyrodiilAlert2v2.0.1.html",
+  "stats": {
+    "downloads": 8116,
+    "favorites": 0,
+    "monthly_downloads": 17
+  },
+  "title": "JP Patch for Cyrodiil Alert 2 v2.0.1",
+  "updated_at": 1467815024000,
+  "version": "2.0.1"
+}

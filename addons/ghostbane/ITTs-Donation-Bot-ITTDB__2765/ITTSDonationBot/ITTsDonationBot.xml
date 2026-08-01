@@ -1,0 +1,53 @@
+<GuiXml>
+	<Controls>
+
+        <TopLevelControl name="DonationsTooltipTopLevel" inherits="TooltipTopLevel">
+            <Controls>
+                <Tooltip name="DonationsTooltip" inherits="ZO_BaseTooltip">
+                    <!-- <DimensionConstraints maxX="480" /> -->
+                    <Controls>
+
+                        <Label name="$(parent)Log1" font="ZoFontGameBold" color="ffffff" width="180" height="27" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="12" offsetY="12"/>
+                        </Label>
+                        
+                        <Label name="$(parent)Log2" font="ZoFontGameBold" color="ffffff" width="180" height="27" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Anchor point="TOP" relativeTo="$(parent)Log1" relativePoint="BOTTOM" />
+                        </Label>
+                        
+                        <Label name="$(parent)Log3" font="ZoFontGameBold" color="ffffff" width="180" height="27" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Anchor point="TOP" relativeTo="$(parent)Log2" relativePoint="BOTTOM" />
+                        </Label>
+                        
+                        <Label name="$(parent)Log4" font="ZoFontGameBold" color="ffffff" width="180" height="27" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Anchor point="TOP" relativeTo="$(parent)Log3" relativePoint="BOTTOM" />
+                        </Label>
+
+                        <Label name="$(parent)Log5" font="ZoFontGameBold" color="ffffff" width="180" height="27" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Anchor point="TOP" relativeTo="$(parent)Log4" relativePoint="BOTTOM" />
+                        </Label>
+
+
+                        <Label name="$(parent)Today" font="ZoFontGameBold" color="ffffff" width="180" height="27" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Anchor point="LEFT" relativeTo="$(parent)Log1" relativePoint="RIGHT" offsetX="20" />
+                        </Label>
+                        <Label name="$(parent)ThisWeek" font="ZoFontGameBold" color="ffffff" width="180" height="27" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Anchor point="LEFT" relativeTo="$(parent)Log2" relativePoint="RIGHT" offsetX="20" />
+                        </Label>
+                        <Label name="$(parent)LastWeek" font="ZoFontGameBold" color="ffffff" width="180" height="27" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Anchor point="LEFT" relativeTo="$(parent)Log3" relativePoint="RIGHT" offsetX="20" />
+                        </Label>
+                        <Label name="$(parent)PriorWeek" font="ZoFontGameBold" color="ffffff" width="180" height="27" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Anchor point="LEFT" relativeTo="$(parent)Log4" relativePoint="RIGHT" offsetX="20" />
+                        </Label>
+                        <Label name="$(parent)Total" font="ZoFontGameBold" color="ffffff" width="180" height="27" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Anchor point="LEFT" relativeTo="$(parent)Log5" relativePoint="RIGHT" offsetX="20" />
+                        </Label>
+                        
+                    </Controls>
+                </Tooltip>
+            </Controls>
+        </TopLevelControl>
+
+   	</Controls>
+</GuiXml>

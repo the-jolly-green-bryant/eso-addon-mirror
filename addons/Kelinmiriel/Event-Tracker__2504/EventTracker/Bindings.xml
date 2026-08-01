@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cAD00FFEvent Tracker|r">
+			<Action name="EVT_TOGGLE_UI">
+				<Down>EVT.ToggleUI()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/L8Knight/Inventory-Space-Display__222",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "L8Knight",
+  "canonical_id": "esoui:222",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:222",
+  "deleted": false,
+  "directories": [
+    "InventorySpaceDisplay"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl222/",
+  "fingerprint": "e6e93b66256ebdae6ed94416cff6ada5ca84e4beb8c4349b7d1617298fa3cb6d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw583.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "222",
+  "source_url": "https://www.esoui.com/downloads/info222-InventorySpaceDisplay.html",
+  "stats": {
+    "downloads": 16038,
+    "favorites": 45,
+    "monthly_downloads": 72
+  },
+  "title": "Inventory Space Display",
+  "updated_at": 1415080805000,
+  "version": "1.7"
+}

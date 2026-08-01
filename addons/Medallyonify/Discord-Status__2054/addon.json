@@ -1,0 +1,63 @@
+{
+  "archive_path": "addons/Medallyonify/Discord-Status__2054",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Medallyonify",
+  "canonical_id": "esoui:2054",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2054",
+  "deleted": false,
+  "directories": [
+    "DiscordStatus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2054/",
+  "fingerprint": "676a600017c7798bda34a67b905456e47d4a270fcdedfdfbf888d4d270381072",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8531.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6929.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6930.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2054",
+  "source_url": "https://www.esoui.com/downloads/info2054-DiscordStatus.html",
+  "stats": {
+    "downloads": 21219,
+    "favorites": 28,
+    "monthly_downloads": 53
+  },
+  "title": "Discord Status",
+  "updated_at": 1643126696000,
+  "version": "1.0.2"
+}

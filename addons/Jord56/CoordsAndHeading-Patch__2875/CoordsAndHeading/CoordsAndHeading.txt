@@ -1,0 +1,10 @@
+## Title: CoordsAndHeading
+## APIVersion: 100031
+## SavedVariables: CoordsAndHeading
+## Version 1.1
+## Description: Displays coordinates of the char and his heading for unique location determination
+
+## I use it to make screenshots, which contain beside the What also the Where
+
+CoordsAndHeading.lua
+CoordsAndHeading.xml

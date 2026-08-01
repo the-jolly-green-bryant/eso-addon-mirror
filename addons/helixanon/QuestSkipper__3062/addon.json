@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/helixanon/QuestSkipper__3062",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "helixanon",
+  "canonical_id": "esoui:3062",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3062",
+  "deleted": false,
+  "directories": [
+    "QuestSkipper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3062/",
+  "fingerprint": "03a68504ff3d5152eb9ec1119eb5355c5b3ca7f37ddcc4c326b1916353ab15e2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12027.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3062",
+  "source_url": "https://www.esoui.com/downloads/info3062-QuestSkipper.html",
+  "stats": {
+    "downloads": 10445,
+    "favorites": 12,
+    "monthly_downloads": 53
+  },
+  "title": "QuestSkipper",
+  "updated_at": 1674164742000,
+  "version": "1.4.0"
+}

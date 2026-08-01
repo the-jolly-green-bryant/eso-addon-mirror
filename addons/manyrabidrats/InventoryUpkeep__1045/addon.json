@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/manyrabidrats/InventoryUpkeep__1045",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manyrabidrats",
+  "canonical_id": "esoui:1045",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1045",
+  "deleted": false,
+  "directories": [
+    "InventoryUpkeep"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1045/",
+  "fingerprint": "6d064538e99b674f66f5f0ccbadee231d729a72b5ac6a35b3decec6d32e94bcc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3216.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3217.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3218.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1045",
+  "source_url": "https://www.esoui.com/downloads/info1045-InventoryUpkeep.html",
+  "stats": {
+    "downloads": 9096,
+    "favorites": 15,
+    "monthly_downloads": 16
+  },
+  "title": "InventoryUpkeep",
+  "updated_at": 1632071748000,
+  "version": "1.7.0.0"
+}

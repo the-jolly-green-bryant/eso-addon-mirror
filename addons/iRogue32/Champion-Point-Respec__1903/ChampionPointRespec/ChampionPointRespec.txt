@@ -1,0 +1,70 @@
+## Title: Champion Point Respec
+## Description:
+## Author: iRogue32
+## Version: 2.4.3
+## APIVersion: 100033
+## SavedVariables: ChampionPointRespec_sv CPR2
+## DependsOn: LibAddonMenu-2.0>=30
+
+;Version 2.4.3 (1/11/2021)
+; * Fixed Spelling Error in .txt
+;
+;Version 2.4.2 (1/4/2021)
+; * Removed lib folder
+; * Updated .txt do depend on LibAddonMenu-2.0
+;
+;Version 2.4.1 (1/2/2021)
+; * Updated API Version to Murkmire
+;
+; Changelog:
+;Version 2.4.0 (2/17/2019)
+; * Added Import and Export features
+; * Deleting a config no longer requires a reloadui
+; * updated some slash commands
+;
+;Version 2.2.0 (10/22/2018)
+; * Updated API Version to Murkmire
+;
+;Version 2.2.0 (9/25/2018)
+; * Added the ability to overwrite saved configurations
+;
+;Version 2.1.0 (9/6/2018)
+; * Mouse will enabled and disabled when the UI is opened or closed
+; * Added a settings panel 
+; * Can now disable gold cost warning
+; * Can now diable UI appearing in CP Menu
+; * Added slash command to load CP Config from chat
+;
+;Version 2.0.0 (9/4/2018)
+; * New, cleaner UI
+; * Can now save as many CP Configurations as you want
+; * Can now delete CP configurations
+; * Significantly reduced the size of the tables in saved variables
+;
+;Version 1.1.3 (8/27/2018)
+; * Update API Version to Wolfhunter Update
+; * Fixed Addon loading issue with Votan's Addon Menu
+;
+;Version 1.1.2 (6/7/2018)
+; * Updated API Version to Summerset Update
+;
+;Version 1.1.1 (2/22/2018)
+; * Updated APIVersion to Dragon Bones Update
+;
+;Version 1.1.0 (1/31/2018)
+; * Made changes to how the UI is generated
+; * UI now opens when user open Champion Point menu
+;
+;Version 1.0.1 (1/30/2018)
+; * fixed file name
+;
+; Version 1.0.0 (1/22/2018)
+; * Initial Release (Morrowind)
+
+ChampionPointRespecHelpers.lua
+ChampionPointRespecSettingsPanel.lua
+ChampionPointRespecImportExport.lua
+ChampionPointRespec.lua
+ChampionPointRespec.xml
+lang/en.lua
+bindings.xml

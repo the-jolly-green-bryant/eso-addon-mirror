@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Marify/GuildDonate__2266",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marify",
+  "canonical_id": "esoui:2266",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2266",
+  "deleted": false,
+  "directories": [
+    "GuildDonate"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2266/",
+  "fingerprint": "e66ddb2349916ee2a907b0cb022fbdec2392b37e63e8b7d5b99676aee7ccabfe",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8845.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8846.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8847.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8848.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2266",
+  "source_url": "https://www.esoui.com/downloads/info2266-GuildDonate.html",
+  "stats": {
+    "downloads": 17308,
+    "favorites": 22,
+    "monthly_downloads": 33
+  },
+  "title": "GuildDonate",
+  "updated_at": 1616923601000,
+  "version": "1.4.11"
+}

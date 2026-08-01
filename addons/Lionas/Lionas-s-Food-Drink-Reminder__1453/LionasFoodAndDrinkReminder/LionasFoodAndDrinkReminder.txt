@@ -1,0 +1,37 @@
+
+## Title: Lionas's Food and Drink Reminder
+## APIVersion: 100017
+## Version: 1.0.0
+## Author: Lionas
+## Description: Notify for food and drink when you entered in dungeon and expired.
+## OptionalDependsOn: LibStub LibAddonMenu-2.0
+## SavedVariables: LionasFoodAndDrinkReminder_SavedPrefs
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder ScrollsR and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+## Libraries:
+Libs/LibStub/LibStub.lua
+Libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+Libs/LibAddonMenu-2.0/controls/panel.lua
+Libs/LibAddonMenu-2.0/controls/submenu.lua
+Libs/LibAddonMenu-2.0/controls/button.lua
+Libs/LibAddonMenu-2.0/controls/checkbox.lua
+Libs/LibAddonMenu-2.0/controls/colorpicker.lua
+Libs/LibAddonMenu-2.0/controls/custom.lua
+Libs/LibAddonMenu-2.0/controls/description.lua
+Libs/LibAddonMenu-2.0/controls/dropdown.lua
+Libs/LibAddonMenu-2.0/controls/editbox.lua
+Libs/LibAddonMenu-2.0/controls/header.lua
+Libs/LibAddonMenu-2.0/controls/slider.lua
+Libs/LibAddonMenu-2.0/controls/texture.lua
+
+Lang/en.lua
+Lang/$(language).lua
+
+Bindings.xml
+LionasFoodAndDrinkReminder.xml
+
+LioFADR_CommonUtil.lua
+LioFADR_FoodsAndDrinksUtil.lua
+LionasFoodAndDrinkReminderMenu.lua
+LionasFoodAndDrinkReminder.lua

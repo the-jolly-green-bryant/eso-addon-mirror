@@ -1,0 +1,6 @@
+## Title: SurveyTheWorld
+#ä Author: manavortex
+## Version: 1.5a
+## APIVersion: 100024
+
+SurveyTheWorld.lua

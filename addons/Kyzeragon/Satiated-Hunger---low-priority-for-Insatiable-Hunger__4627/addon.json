@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Kyzeragon/Satiated-Hunger---low-priority-for-Insatiable-Hunger__4627",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyzeragon",
+  "canonical_id": "esoui:4627",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4627",
+  "deleted": false,
+  "directories": [
+    "SatiatedHunger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4627/",
+  "fingerprint": "bcc90eeaba509131a0984f1f31e754ee64f3df93ea5f100c14cdfadc7858d74a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16288.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4627",
+  "source_url": "https://www.esoui.com/downloads/info4627-SatiatedHunger-lowpriorityforInsatiableHunger.html",
+  "stats": {
+    "downloads": 173,
+    "favorites": 1,
+    "monthly_downloads": 56
+  },
+  "title": "Satiated Hunger - low priority for Insatiable Hunger",
+  "updated_at": 1781139249000,
+  "version": "1.0.0"
+}

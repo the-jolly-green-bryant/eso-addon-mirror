@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/kawamonkey/Coveted__3011",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3011",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3011",
+  "deleted": false,
+  "directories": [
+    "Coveted"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3011/",
+  "fingerprint": "3631131c53df69746f1dcc5e19578198aca1dd5c0e74b378138a7090d0e77189",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3011",
+  "source_url": "https://www.esoui.com/downloads/info3011-Coveted.html",
+  "stats": {
+    "downloads": 3491,
+    "favorites": 9,
+    "monthly_downloads": 26
+  },
+  "title": "Coveted",
+  "updated_at": 1617327985000,
+  "version": "1.0"
+}

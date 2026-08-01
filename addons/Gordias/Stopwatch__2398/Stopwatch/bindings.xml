@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Stopwatch">
+			<Action name="STW_STARTSTOP">
+				<Up>Stopwatch.StartStop()</Up>
+			</Action>
+			<Action name="STW_RESET">
+				<Up>Stopwatch.Reset()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

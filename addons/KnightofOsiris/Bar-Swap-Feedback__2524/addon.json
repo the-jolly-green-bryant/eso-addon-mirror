@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/KnightofOsiris/Bar-Swap-Feedback__2524",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KnightofOsiris",
+  "canonical_id": "esoui:2524",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:2524",
+  "deleted": false,
+  "directories": [
+    "BarSwapFeedback"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2524/",
+  "fingerprint": "ad1d4d6953eaa64f1ed5a8f4d0b5c8dd3fa8bf1737e114915cb26d26cc33aacb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8629.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8630.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8631.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2524",
+  "source_url": "https://www.esoui.com/downloads/info2524-BarSwapFeedback.html",
+  "stats": {
+    "downloads": 25886,
+    "favorites": 33,
+    "monthly_downloads": 92
+  },
+  "title": "Bar Swap Feedback",
+  "updated_at": 1668713058000,
+  "version": "101036.1"
+}

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/matheusbk2/RolePlayNeeds---Tamriel-Books__4167",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "matheusbk2",
+  "canonical_id": "esoui:4167",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4167",
+  "deleted": false,
+  "directories": [
+    "TamrielBooks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4167/",
+  "fingerprint": "73227e75f08ab3161ae6aba748e7692ee8a72b61632b57c8c945c288530c29ba",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14220.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14221.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14224.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14222.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14223.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4167",
+  "source_url": "https://www.esoui.com/downloads/info4167-RolePlayNeeds-TamrielBooks.html",
+  "stats": {
+    "downloads": 617,
+    "favorites": 4,
+    "monthly_downloads": 17
+  },
+  "title": "RolePlayNeeds - Tamriel Books",
+  "updated_at": 1751539860000,
+  "version": "0.1 BETA"
+}

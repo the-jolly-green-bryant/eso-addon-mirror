@@ -1,0 +1,164 @@
+<GuiXml>
+  <Controls>
+
+    <!-- Virtual template for a single research row -->
+    <Control name="TraitTimerResearchRow" virtual="true">
+      <Dimensions x="410" y="20" />
+      <Controls>
+        <!-- Item name (e.g., "Axes") -->
+        <Label name="$(parent)Item" font="ZoFontGameSmall" color="CCCCCC"
+               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="24" offsetY="0" />
+          <Dimensions x="110" y="20" />
+        </Label>
+
+        <!-- Trait name (e.g., "Precise") - flexible width, set from Lua -->
+        <Label name="$(parent)Trait" font="ZoFontGameSmall" color="AAAAAA"
+               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)Item" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+          <Dimensions x="170" y="20" />
+        </Label>
+
+        <!-- Timer countdown (e.g., "2h 14m 30s") -->
+        <Label name="$(parent)Timer" font="ZoFontGameSmall" color="FFFFFF"
+               horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+          <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-6" offsetY="0" />
+          <Dimensions x="100" y="20" />
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- Virtual template for a craft section header -->
+    <Control name="TraitTimerCraftHeader" virtual="true">
+      <Dimensions x="410" y="22" />
+      <Controls>
+        <!-- Craft name (aligned with item column at offsetX=24) -->
+        <Label name="$(parent)Name" font="ZoFontGameBold" color="E8B84F"
+               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="24" offsetY="0" />
+          <Dimensions x="200" y="22" />
+        </Label>
+
+        <!-- Craft icon (just left of name) -->
+        <Texture name="$(parent)Icon">
+          <Dimensions x="18" y="18" />
+          <Anchor point="RIGHT" relativeTo="$(parent)Name" relativePoint="LEFT" offsetX="-2" offsetY="0" />
+        </Texture>
+
+        <!-- Slot count (e.g., "2/3 slots") -->
+        <Label name="$(parent)Slots" font="ZoFontGameSmall" color="888888"
+               horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+          <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-6" offsetY="0" />
+          <Dimensions x="140" y="22" />
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- Main HUD Widget -->
+    <TopLevelControl name="TraitTimerHUD" mouseEnabled="true" movable="true"
+                     clampedToScreen="true" hidden="true" layer="OVERLAY" level="10"
+                     resizeHandleSize="8">
+      <Dimensions x="420" y="60" />
+      <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT"
+              offsetX="-20" offsetY="80" />
+
+      <OnMoveStop>
+        TraitTimer.OnHUDMoveStop()
+      </OnMoveStop>
+
+      <OnResizeStop>
+        TraitTimer.OnHUDResizeStop()
+      </OnResizeStop>
+
+      <Controls>
+        <!-- Background -->
+        <Backdrop name="$(parent)BG" alpha="0.80"
+                  centerColor="0C0C0C" edgeColor="333333">
+          <AnchorFill />
+          <Edge edgeSize="1" />
+        </Backdrop>
+
+        <!-- Header bar -->
+        <Control name="$(parent)Header" mouseEnabled="false">
+          <Dimensions x="420" y="24" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                  offsetX="0" offsetY="0" />
+          <Controls>
+            <!-- Title (drag only, no click action) -->
+            <Label name="$(parent)Title" font="ZoFontGameBold" color="E8B84F"
+                   horizontalAlignment="LEFT" verticalAlignment="CENTER"
+                   text="TraitTimer">
+              <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"
+                      offsetX="8" offsetY="0" />
+              <Dimensions x="260" y="24" />
+            </Label>
+
+            <!-- Minimize/Expand label (clickable) -->
+            <Label name="$(parent)MinBtn" mouseEnabled="true" font="ZoFontGameBold"
+                   color="E8B84F" horizontalAlignment="CENTER" verticalAlignment="CENTER"
+                   text="-">
+              <Dimensions x="20" y="20" />
+              <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT"
+                      offsetX="-6" offsetY="0" />
+              <OnMouseUp>
+                TraitTimer.ToggleMinimize()
+              </OnMouseUp>
+            </Label>
+
+            <!-- View mode toggle button -->
+            <Label name="$(parent)ViewBtn" mouseEnabled="true" font="ZoFontGameBold"
+                   color="E8B84F" horizontalAlignment="CENTER" verticalAlignment="CENTER"
+                   text="&gt;&lt;">
+              <Dimensions x="24" y="20" />
+              <Anchor point="RIGHT" relativeTo="$(parent)MinBtn" relativePoint="LEFT"
+                      offsetX="-2" offsetY="0" />
+              <OnMouseUp>
+                TraitTimer:ToggleViewMode()
+              </OnMouseUp>
+            </Label>
+
+            <!-- Summary label (visible when minimized) -->
+            <Label name="$(parent)Summary" font="ZoFontGameSmall" color="888888"
+                   horizontalAlignment="RIGHT" verticalAlignment="CENTER"
+                   hidden="true">
+              <Anchor point="RIGHT" relativeTo="$(parent)ViewBtn" relativePoint="LEFT"
+                      offsetX="-4" offsetY="0" />
+              <Dimensions x="160" y="24" />
+            </Label>
+          </Controls>
+        </Control>
+
+        <!-- Column headers row -->
+        <Control name="$(parent)ColHeaders">
+          <Dimensions x="420" y="18" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT"
+                  offsetX="0" offsetY="0" />
+          <Controls>
+            <Label name="$(parent)ColItem" font="ZoFontGameSmall" color="777777"
+                   horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Item">
+              <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="24" offsetY="0" />
+              <Dimensions x="110" y="18" />
+            </Label>
+            <Label name="$(parent)ColTrait" font="ZoFontGameSmall" color="777777"
+                   horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Trait">
+              <Anchor point="LEFT" relativeTo="$(parent)ColItem" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+              <Dimensions x="170" y="18" />
+            </Label>
+            <Label name="$(parent)ColTimer" font="ZoFontGameSmall" color="777777"
+                   horizontalAlignment="RIGHT" verticalAlignment="CENTER" text="Time">
+              <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-6" offsetY="0" />
+              <Dimensions x="100" y="18" />
+            </Label>
+          </Controls>
+        </Control>
+
+        <!-- Content container (scrollable) -->
+        <Control name="$(parent)Content" inherits="ZO_ScrollContainer">
+          <Dimensions x="420" y="30" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)ColHeaders" relativePoint="BOTTOMLEFT"
+                  offsetX="0" offsetY="2" />
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

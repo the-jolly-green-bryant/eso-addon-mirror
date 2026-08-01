@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/HoseB/SwitchInputMode__1862",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "HoseB",
+  "canonical_id": "esoui:1862",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:1862",
+  "deleted": false,
+  "directories": [
+    "SwitchInputMode"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1862/",
+  "fingerprint": "3e04d189e6193240a85c5a762505005e0bf34459230653cdda477484276513a6",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1862",
+  "source_url": "https://www.esoui.com/downloads/info1862-SwitchInputMode.html",
+  "stats": {
+    "downloads": 2941,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "SwitchInputMode",
+  "updated_at": 1512447198000,
+  "version": "1.0"
+}

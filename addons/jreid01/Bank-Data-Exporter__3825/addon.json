@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/jreid01/Bank-Data-Exporter__3825",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "jreid01",
+  "canonical_id": "esoui:3825",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3825",
+  "deleted": false,
+  "directories": [
+    "BankDataExporter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3825/",
+  "fingerprint": "5f85ccbc3ebfc0aae19fb5b5be77c536ec0eada3d83206e001594a0381277c68",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3825",
+  "source_url": "https://www.esoui.com/downloads/info3825-BankDataExporter.html",
+  "stats": {
+    "downloads": 1472,
+    "favorites": 1,
+    "monthly_downloads": 20
+  },
+  "title": "Bank Data Exporter",
+  "updated_at": 1755403230000,
+  "version": "1.0.3.1"
+}

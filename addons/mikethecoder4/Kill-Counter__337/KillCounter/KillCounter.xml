@@ -1,0 +1,47 @@
+<GuiXml>
+  <Controls >
+    <TopLevelControl  name="KillCounter" mouseEnabled="true" movable="true">
+      <Dimensions x="410" y="25" />
+      <Anchor point="TOPRIGHT" offsetX="0" offsetY="0" />
+      
+      <!-- <OnUpdate> -->
+      <!--     KC_G.AddOnUpdate() -->
+      <!-- </OnUpdate> -->
+      
+      <OnMoveStop>
+	KC_G.OnMoveStop()
+      </OnMoveStop>
+      
+      <OnInitialized>
+        KC_G.OnInitialized()
+      </OnInitialized>
+      
+	<Controls>
+         <Backdrop name="$(parent)_BG" inherits="ZO_ThinBackdrop" verticalAlignment="CENTER" edgeColor="241F1F" centerColor="241F1F" horizontalAlignment="CENTER" alpha="0.95">
+ 	  <Dimensions x="410" y="25" />
+	</Backdrop>
+        <Label name="$(parent)_Kills" font="ZoFontChat" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Kills : ">
+          <AnchorFill />
+          <Anchor point="TOPLEFT" offsetX="5" offsetY="1" />
+        </Label>
+        <Button name="$(parent)_Button">
+          <OnClicked>KC_G.showStats()</OnClicked>
+          <Dimensions x="150" y="19" />
+          <Anchor point="TOPLEFT" offsetX="0" offsetY="3" />
+          <!-- <Controls> -->
+          <!--   <Backdrop name="$(parent)_BG" inherits="ZO_ThinBackdrop" centerColor="333333" edgeColor="333333" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="0.7"/> -->
+          <!-- </Controls> -->
+        </Button>
+      </Controls>
+      <!-- Queue label -->
+      	<Controls>
+        <!-- <Backdrop name="$(parent)_QueueBG" inherits="ZO_ThinBackdrop" verticalAlignment="CENTER" edgeColor="FFFFFF" centerColor="FFFFFF" horizontalAlignment="CENTER" alpha="0.5"/> -->
+        <Label name="$(parent)_QueueStatus" hidden="true" alpha="0.0" font="ZoFontChat" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="">
+          <AnchorFill />
+          <Anchor point="TOPLEFT" offsetX="5" offsetY="25" />
+        </Label>
+	</Controls>
+
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

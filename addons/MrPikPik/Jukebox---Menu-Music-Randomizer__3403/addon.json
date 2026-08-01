@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/MrPikPik/Jukebox---Menu-Music-Randomizer__3403",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:3403",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3403",
+  "deleted": false,
+  "directories": [
+    "Jukebox"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3403/",
+  "fingerprint": "d440f7515de90dfc54cc3ba4a6041a65354863761bdec134df006aea82628b68",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3403",
+  "source_url": "https://www.esoui.com/downloads/info3403-Jukebox-MenuMusicRandomizer.html",
+  "stats": {
+    "downloads": 2759,
+    "favorites": 3,
+    "monthly_downloads": 21
+  },
+  "title": "Jukebox - Menu Music Randomizer",
+  "updated_at": 1712617130000,
+  "version": "2.1"
+}

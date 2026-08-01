@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/hatsune681/No-compass__1187",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "hatsune681",
+  "canonical_id": "esoui:1187",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:1187",
+  "deleted": false,
+  "directories": [
+    "NoCompass"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1187/",
+  "fingerprint": "7422b61c52e8fa362da79e9a37ec7cead21b98c679cb4120d34e6fc57daf3dc2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8419.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1187",
+  "source_url": "https://www.esoui.com/downloads/info1187-Nocompass.html",
+  "stats": {
+    "downloads": 27347,
+    "favorites": 24,
+    "monthly_downloads": 129
+  },
+  "title": "No compass",
+  "updated_at": 1654695194000,
+  "version": "11.101034"
+}

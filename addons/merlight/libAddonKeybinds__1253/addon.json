@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/merlight/libAddonKeybinds__1253",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "merlight",
+  "canonical_id": "esoui:1253",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:1253",
+  "deleted": false,
+  "directories": [
+    "libAddonKeybinds"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1253/",
+  "fingerprint": "a527e8efccd966a7ee2d38af02e550ea9f21a7208f53d8ff9bede2bbc5c3b269",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4054.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1253",
+  "source_url": "https://www.esoui.com/downloads/info1253-libAddonKeybinds.html",
+  "stats": {
+    "downloads": 564192,
+    "favorites": 306,
+    "monthly_downloads": 4041
+  },
+  "title": "libAddonKeybinds",
+  "updated_at": 1769344560000,
+  "version": "6"
+}

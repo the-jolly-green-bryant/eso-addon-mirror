@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/kecaj/Kecaj-Trial-Icons__3775",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kecaj",
+  "canonical_id": "esoui:3775",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3775",
+  "deleted": false,
+  "directories": [
+    "KecajTrialIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3775/",
+  "fingerprint": "5f690a9884d18791e7173cc04b30a0e9133c914ece6f8df0dda6215ffd0a4573",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3775",
+  "source_url": "https://www.esoui.com/downloads/info3775-KecajTrialIcons.html",
+  "stats": {
+    "downloads": 1237,
+    "favorites": 1,
+    "monthly_downloads": 6
+  },
+  "title": "Kecaj Trial Icons",
+  "updated_at": 1704149710000,
+  "version": "0.2.1"
+}

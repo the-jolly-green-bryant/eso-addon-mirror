@@ -1,0 +1,20 @@
+## Title: Morrowind Style UI
+## Description: Overhaul for an Morrowind style UI
+## Author: Half-Dead
+## APIVersion: 100026 100027
+## Version: 1.14
+## SavedVariables: MorrowindStyleUI_SavedVariables
+## OptionalDependsOn:  LibAddonMenu-2.0
+
+libs\LibAddonMenu-2.0\LibStub\LibStub.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\dropdown.lua
+
+MorrowindStyleUI.lua
+MorrowindStyleUISettings.lua
+PrettyAdditions.lua

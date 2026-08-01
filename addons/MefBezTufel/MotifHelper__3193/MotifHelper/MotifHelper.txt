@@ -1,0 +1,26 @@
+﻿## Title: MotifHelper
+## Author: MefBezTufel
+## Description: Motif helper to find what motifs are esiest to complete
+## APIVersion: 101032 101033
+## AddOnVersion: 002
+## Version: 0.0.2
+## IsLibrary: false
+## DependsOn: LibScroll
+
+# Language files
+/lang/en.lua
+/lang/$(language).lua
+
+# LUA files
+MotifHelper.lua
+
+# XML UI files
+MotifHelper.xml
+
+
+# This Addon is not created by, affiliated with, or sponsored by
+# ZeniMax Media Inc. or its affiliates
+# The Elder Scrolls (c) and related logos are registered trademarks
+# or trademarks of ZeniMax Media Inc. in the United States and/or
+# other countries.  All rights reserved
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

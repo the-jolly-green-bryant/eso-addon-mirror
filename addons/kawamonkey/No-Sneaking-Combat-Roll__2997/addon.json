@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/No-Sneaking-Combat-Roll__2997",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:2997",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2997",
+  "deleted": false,
+  "directories": [
+    "NoSneakingCombatRoll"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2997/",
+  "fingerprint": "a36e156ac8bf1ad291a4c7626bd3b8989ca929c9c14277de350ce313b996b683",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10108.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2997",
+  "source_url": "https://www.esoui.com/downloads/info2997-NoSneakingCombatRoll.html",
+  "stats": {
+    "downloads": 2584,
+    "favorites": 4,
+    "monthly_downloads": 12
+  },
+  "title": "No Sneaking Combat Roll",
+  "updated_at": 1617195954000,
+  "version": "1.0"
+}

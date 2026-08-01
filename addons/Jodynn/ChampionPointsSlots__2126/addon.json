@@ -1,0 +1,71 @@
+{
+  "archive_path": "addons/Jodynn/ChampionPointsSlots__2126",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jodynn",
+  "canonical_id": "esoui:2126",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2126",
+  "deleted": false,
+  "directories": [
+    "ChampionPointsSlots"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2126/",
+  "fingerprint": "e37ce794f861513e7d8bad7e52d45f471086b8d6bdfa5904ec0b9348515ad517",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10010.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10008.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10088.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2126",
+  "source_url": "https://www.esoui.com/downloads/info2126-ChampionPointsSlots.html",
+  "stats": {
+    "downloads": 137488,
+    "favorites": 162,
+    "monthly_downloads": 151
+  },
+  "title": "ChampionPointsSlots",
+  "updated_at": 1741711019000,
+  "version": "3.5.0"
+}

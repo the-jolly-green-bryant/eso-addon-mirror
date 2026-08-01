@@ -1,0 +1,23 @@
+## Title: RaffleHelper
+## APIVersion: 100011
+## SavedVariables: RaffleHelper_Save
+## OptionalDependsOn: LibAddonMenu-2.0
+
+RaffleHelper.lua
+RaffleHelper.xml
+bindings.xml
+
+lib/LibStub.lua
+lib/LAM/LibAddonMenu-2.0.lua
+lib/LAM/controls/panel.lua
+lib/LAM/controls/submenu.lua
+lib/LAM/controls/button.lua
+lib/LAM/controls/checkbox.lua
+lib/LAM/controls/colorpicker.lua
+lib/LAM/controls/custom.lua
+lib/LAM/controls/description.lua
+lib/LAM/controls/dropdown.lua 
+lib/LAM/controls/editbox.lua
+lib/LAM/controls/header.lua
+lib/LAM/controls/slider.lua
+lib/LAM/controls/texture.lua

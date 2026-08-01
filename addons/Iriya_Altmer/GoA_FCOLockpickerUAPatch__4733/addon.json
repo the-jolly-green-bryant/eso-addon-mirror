@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Iriya_Altmer/GoA_FCOLockpickerUAPatch__4733",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Iriya_Altmer",
+  "canonical_id": "esoui:4733",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4733",
+  "deleted": false,
+  "directories": [
+    "GoA_FCOLockpickerUAPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4733/",
+  "fingerprint": "849769e9cabfb808fe84c9ac27a959046eb87bb79d31b6ee3ccc1fa06079d8b1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16849.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16852.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16853.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4733",
+  "source_url": "https://www.esoui.com/downloads/info4733-GoA_FCOLockpickerUAPatch.html",
+  "stats": {
+    "downloads": 2,
+    "favorites": 0,
+    "monthly_downloads": 2
+  },
+  "title": "GoA_FCOLockpickerUAPatch",
+  "updated_at": 1785328252000,
+  "version": "1.0"
+}

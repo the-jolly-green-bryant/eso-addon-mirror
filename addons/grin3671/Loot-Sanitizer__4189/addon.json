@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/grin3671/Loot-Sanitizer__4189",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "grin3671",
+  "canonical_id": "esoui:4189",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4189",
+  "deleted": false,
+  "directories": [
+    "LootSanitizer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4189/",
+  "fingerprint": "fb52f16eb040e065b916f7a10d695cb128497d0137aa315e150a0755f64ec30f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14315.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14316.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14317.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4189",
+  "source_url": "https://www.esoui.com/downloads/info4189-LootSanitizer.html",
+  "stats": {
+    "downloads": 369,
+    "favorites": 0,
+    "monthly_downloads": 13
+  },
+  "title": "Loot Sanitizer",
+  "updated_at": 1759790863000,
+  "version": "0.20.0"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Marify/Fish-Breaker__3188",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marify",
+  "canonical_id": "esoui:3188",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:3188",
+  "deleted": false,
+  "directories": [
+    "FishBreaker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3188/",
+  "fingerprint": "748ea377cf19aa4f56f6b3492ac01f21358ae55b48723d36aef3f2abb6062105",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10812.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3188",
+  "source_url": "https://www.esoui.com/downloads/info3188-FishBreaker.html",
+  "stats": {
+    "downloads": 4518,
+    "favorites": 8,
+    "monthly_downloads": 17
+  },
+  "title": "Fish Breaker",
+  "updated_at": 1630480216000,
+  "version": "1.0.0"
+}

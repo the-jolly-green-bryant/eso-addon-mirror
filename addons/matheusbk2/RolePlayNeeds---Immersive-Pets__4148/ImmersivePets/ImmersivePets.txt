@@ -1,0 +1,10 @@
+## Title: RolePlayNeeds - Immersive Pets
+## APIVersion: 101046
+## Version: BETA 0.3
+## Author: Matheus Macedo & Leonardo Caon | @matheusbk2 & @caon420
+## Description: Immersive Pets Encounters
+## SavedVariables: RPN_PetSettings
+## DependsOn: LibAddonMenu-2.0
+
+ImmersivePets.lua
+bindings.xml

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Gamer1986PAN/LibTreasure__3227",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Gamer1986PAN",
+  "canonical_id": "esoui:3227",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3227",
+  "deleted": false,
+  "directories": [
+    "LibTreasure"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3227/",
+  "fingerprint": "8d585695053e12132ae8ab97c3a1ef677d10157b412caad450f1065e52e05925",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3227",
+  "source_url": "https://www.esoui.com/downloads/info3227-LibTreasure.html",
+  "stats": {
+    "downloads": 1934314,
+    "favorites": 513,
+    "monthly_downloads": 10160
+  },
+  "title": "LibTreasure",
+  "updated_at": 1773507407000,
+  "version": "24"
+}

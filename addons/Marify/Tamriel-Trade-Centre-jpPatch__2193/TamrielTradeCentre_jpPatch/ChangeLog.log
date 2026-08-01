@@ -1,0 +1,126 @@
+Version: 0.11.0 ---------------
+1.APIVersion Up 101038
+2.Add NPC.
+
+
+Version: 0.10.3 to 0.10.4 ---------------
+1.APIVersion Up 101036
+2.Add NPC.
+
+
+Version: 0.10.2 ---------------
+1.Add NPC.
+
+
+Version: 0.10.0 to 0.10.1 ---------------
+1.Synchronized with original.
+
+
+Version: 0.9.34 ---------------
+1.APIVersion Up 101033
+
+
+Version: 0.9.33 ---------------
+1.APIVersion Up 101032
+2.Add NPC.
+
+
+Version: 0.9.32 ---------------
+1.Add NPC.
+
+
+Version: 0.9.28 to 0.9.31 ---------------
+1.Add price in gamepad mode.
+
+
+Version: 0.9.27 ---------------
+1.APIVersion Up 100035
+
+
+Version: 0.9.26 ---------------
+1.APIVersion Up 100034
+
+
+Version: 0.9.25 ---------------
+1.APIVersion Up 100033
+
+
+Version: 0.9.24 ---------------
+1.Bug fix
+Fixed an error in gamepad mode.
+
+
+Version: 0.9.23 ---------------
+1.APIVersion Up 100032
+
+
+Version: 0.9.22 ---------------
+1.APIVersion Up 100031
+
+
+Version: 0.9.21 ---------------
+1.Linked to the [J2EUpdate] update.
+
+
+Version: 0.9.20 ---------------
+1.Add GamePad Mode.
+
+
+Version: 0.9.19 ---------------
+1.APIVersion Up 100030
+
+
+Version: 0.9.17 to 0.9.18 ---------------
+1.Add NPC.
+
+
+Version: 0.9.16 ---------------
+1.APIVersion Up 100029
+
+
+Version: 0.9.14 to 0.9.15 ---------------
+1.APIVersion Up 100028
+
+
+Version: 0.9.11 to 0.9.13 ---------------
+1.Add NPC.
+
+
+Version: 0.9.11 to 0.9.12 ---------------
+1.TamrielTradeCentre Update.
+
+
+Version: 0.9.10 ---------------
+1.Added support for AwesomeGuildStore.
+
+
+Version: 0.9.9 ---------------
+1.TamrielTradeCentre Update.
+
+
+Version: 0.9.7-0.9.8 ---------------
+1.Data Update.
+2.Added a delay to avoid conflicts with [AwesomeGuildStore].
+
+
+Version: 0.9.6 ---------------
+1.Update code.
+
+
+Version: 0.9.5 ---------------
+1.APIVersion Up 100026
+
+Version: 0.9.3 to 0.9.4 ---------------
+1.Data Update.
+
+Version: 0.9.2 ---------------
+1.File ReName [ItemLookUpTable_EN.lua] to [ItemLookUpTable_JP.lua]
+
+Version: 0.9.1 ---------------
+1.Bug fix
+Fixed that English environment does not work correctly.
+
+
+Version: 0.9 ---------------
+1.Start !
+

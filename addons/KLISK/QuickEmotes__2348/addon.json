@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/KLISK/QuickEmotes__2348",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KLISK",
+  "canonical_id": "esoui:2348",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2348",
+  "deleted": false,
+  "directories": [
+    "QuickEmotes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2348/",
+  "fingerprint": "30a43f487ef3e3604b48adb1115f2b69b1b1f7470f14a2111140f97e2e35e1a5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8031.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2348",
+  "source_url": "https://www.esoui.com/downloads/info2348-QuickEmotes.html",
+  "stats": {
+    "downloads": 33816,
+    "favorites": 84,
+    "monthly_downloads": 114
+  },
+  "title": "QuickEmotes",
+  "updated_at": 1595350020000,
+  "version": "1.0.4"
+}

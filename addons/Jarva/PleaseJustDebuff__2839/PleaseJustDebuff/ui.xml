@@ -1,0 +1,14 @@
+<GuiXml>
+	<Font name="PJD_FontLarge" font="$(MEDIUM_FONT)|$(KB_32)|thick-outline" />
+	<Font name="PJD_FontMedium" font="$(MEDIUM_FONT)|$(KB_21)|thick-outline" />
+	<Font name="PJD_FontSmall" font="$(MEDIUM_FONT)|$(KB_18)|thick-outline" />
+	<Controls>
+		<TopLevelControl name="PJD_Grid" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" allowBringToTop="false">
+			<Dimensions x="250" y="100" />
+			<Anchor point="LEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+			<OnMoveStop>
+				PJD.SavePosition()
+			</OnMoveStop>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

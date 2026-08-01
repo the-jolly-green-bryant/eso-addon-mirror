@@ -1,0 +1,73 @@
+<GuiXml>
+<Controls>
+	<Control name="ESOFarmBuddyItemTemplate" verticalAlignment="TOP" horizontalAlignment="LEFT" virtual="true">
+		<Dimensions x="420" y="65" />
+		<Anchor point="TOPLEFT" relativeTo="$(parent)ItemList" relativePoint="TOPLEFT" />
+		<Anchor point="TOPRIGHT" relativeTo="$(parent)ItemList" relativePoint="TOPRIGHT" />
+		<Controls>
+			<Button name="$(parent)ActionButton" clickSound="Click" horizontalAlignment="0" verticalAlignment="1" font="ZoFontGame" hidden="false">
+				<Anchor point="LEFT" offsetX="0" offsetY="0" />
+				<Dimensions x="420" y="65" />
+				<OnMouseUp>
+					ESOFarmBuddy.OnItemRightClick(self, button, upInside)
+				</OnMouseUp>
+			</Button>
+			<Texture name="$(parent)Icon" alpha="1">
+				<Dimensions x="48" y="48" />
+				<Anchor point="LEFT" offsetX="6" offsetY="2" />
+				<TextureCoords left="0" right="1" top="0" bottom="1" />
+			</Texture>
+			<Label name="$(parent)Name" font="ZoFontWinH4" color="3A92FF" wrapMode="TRUNCATE" verticalAlignment="TOPLEFT">
+				<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="70" offsetY="6" />
+			</Label>
+			<Label name="$(parent)ProgressText" font="ZoFontGameShadow" color="EDEDED" wrapMode="TRUNCATE" verticalAlignment="TOPLEFT">
+				<Anchor point="LEFT" relativeTo="$(parent)" offsetX="72" offsetY="13" />
+			</Label>
+
+			<StatusBar name="$(parent)ProgressBarMaterial" color="E2CC04" alpha="1">
+				<Dimensions x="320" y="25" />
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPLEFT" offsetX="0" offsetY="26"/>
+				<Controls>
+					<Label name="$(grandparent)ProgressMaterial" font="ZoFontGameShadow" color="EDEDED" wrapMode="TRUNCATE" verticalAlignment="TOPLEFT">
+						<Anchor point="LEFT" relativeTo="$(parent)" offsetX="4" offsetY="0" />
+					</Label>
+				</Controls>
+			</StatusBar>
+
+			<StatusBar name="$(parent)ProgressBarTextured" color="E2CC04" alpha="1" hidden="true" inherits="ZO_AchievementsStatusBar">
+				<Dimensions x="320" y="27" />
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPLEFT" offsetX="0" offsetY="26"/>
+			</StatusBar>
+		</Controls>
+	</Control>
+
+	<TopLevelControl name="ESOFarmBuddyWindow" mouseEnabled="true" movable="true" resizeHandleSize="8" clampedToScreen="true" topmost="false">
+		<Dimensions x="420" y="60" />
+		<DimensionConstraints minX="320" minY="60" />
+		<Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetY="-120" offsetX="-68" />
+
+		<Controls>
+			<Backdrop name="$(parent)BG" centerColor="000000" edgeColor="00000000" alpha="1.0">
+				<AnchorFill />
+				<Edge edgeSize="0" />
+			</Backdrop>
+		</Controls>
+
+		<Controls>
+			<Label name="$(parent)AddOnName" width="420" height="25" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="ESO Farm Buddy">
+				<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-30" />
+			</Label>
+			<Label name="$(parent)NoItemsInfo" width="420" height="25" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thin" inheritAlpha="true" color="FFF200" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" hidden="true" text="">
+				<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="20" />
+			</Label>
+		</Controls>
+		<Controls>
+			<Control name="$(parent)ItemList" verticalAlignment="TOP" horizontalAlignment="LEFT">
+				<Dimensions x="420" />
+				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				<Controls />
+			</Control>
+		</Controls>
+	</TopLevelControl>
+</Controls>
+</GuiXml>

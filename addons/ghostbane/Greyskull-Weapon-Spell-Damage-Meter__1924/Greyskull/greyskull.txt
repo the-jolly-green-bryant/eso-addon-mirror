@@ -1,0 +1,19 @@
+## Title: Greyskull
+## APIVersion: 101039
+## Description: Weapon / Spell Damage power tracker
+## Version: 1.1.1
+## AddOnVersion: 111
+## Author: |c00a313Ghostbane|r
+## SavedVariables: GreyskullSettings
+## DependsOn: LibAddonMenu-2.0>=32
+## OptionalDependsOn: APMeter
+
+greyskull.xml
+greyskull.lua
+settings.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

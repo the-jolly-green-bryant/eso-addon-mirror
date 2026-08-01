@@ -1,0 +1,49 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: RO Tracker
+## Description: Tracks who in your group has major slayer
+## Author: @Kalinfe
+## Version: 1.2.2
+## APIVersion: 100028
+## SavedVariables: ROTrackerSavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+ROTracker.lua
+ROTrackerData.lua
+ROTrackerMenu.lua
+ROTracker.xml
+
+; Changelog:
+;
+; Version 1.0.0 (2020/10/10)
+; * Initial version
+;
+; Version 1.1.0 (2020/22/10)
+; * Users now have cooldown numbers next to their names, and will change colors when they are in RO cooldown
+;
+; Version 1.1.0 (2021/17/2)
+; * No longer shows up when not wearing RO
+;
+; Version 1.1.2 (2021/29/9)
+; * Fixed not showing bug
+;
+; Version 1.2.0 (2022/22/11)
+; * Fixed negative number issue
+; * Fixed second timer sometimes not counting down
+; * Added Sound notifications
+; * Fixed LAM2.0 issues
+;
+; Version 1.2.1 (2022/23/11)
+; * Fixed sound playing when not wearing RO
+; * Added slider for when the notification sound plays
+;
+; Version 1.2.2 (2022/28/11)
+; * Actually fixed sound playing when not wearing RO
+; * Added setting for a single column layout
+;
+; Version 1.2.3 (2025/10/3)
+; * Added Resizability

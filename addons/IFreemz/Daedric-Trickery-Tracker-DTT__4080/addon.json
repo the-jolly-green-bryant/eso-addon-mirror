@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/IFreemz/Daedric-Trickery-Tracker-DTT__4080",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IFreemz",
+  "canonical_id": "esoui:4080",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4080",
+  "deleted": false,
+  "directories": [
+    "DaedricTrickeryTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4080/",
+  "fingerprint": "fda6043443fa7299aea7fd9247d6c06860f655c441a6404d8a8aa589441b0a56",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13926.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4080",
+  "source_url": "https://www.esoui.com/downloads/info4080-DaedricTrickeryTrackerDTT.html",
+  "stats": {
+    "downloads": 624,
+    "favorites": 1,
+    "monthly_downloads": 34
+  },
+  "title": "Daedric Trickery Tracker [DTT]",
+  "updated_at": 1743871826000,
+  "version": "1.01"
+}

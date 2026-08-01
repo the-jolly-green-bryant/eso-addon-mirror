@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/M0R/Group-Keys__4580",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "M0R",
+  "canonical_id": "esoui:4580",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4580",
+  "deleted": false,
+  "directories": [
+    "GroupKeys"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4580/",
+  "fingerprint": "f3078996e29dbac15b21238087d5522569d96b487c9425bf0055983ee6183f05",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16078.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16077.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16076.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16075.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4580",
+  "source_url": "https://www.esoui.com/downloads/info4580-GroupKeys.html",
+  "stats": {
+    "downloads": 87,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "Group Keys",
+  "updated_at": 1778957456000,
+  "version": "1.0"
+}

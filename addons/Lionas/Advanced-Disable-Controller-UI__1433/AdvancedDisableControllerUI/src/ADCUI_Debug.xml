@@ -1,0 +1,15 @@
+﻿<GuiXml>
+  <Controls>
+    <!--<TopLevelControl name="ADCUI_debug">
+      <Dimensions x="200" y="25" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="LEFT" />
+
+      <Controls>
+        <Label name="$(parent)Label" width="200" height="25" font="ZoFontWinH1" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="DEBUG">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>-->
+  </Controls>
+</GuiXml>

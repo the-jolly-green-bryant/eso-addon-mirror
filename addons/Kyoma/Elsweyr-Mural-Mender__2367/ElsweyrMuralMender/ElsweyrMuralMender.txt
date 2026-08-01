@@ -1,0 +1,21 @@
+## Title: |cD2B87BElsweyr Mural Mender|r
+## Description: This addon displays the tablet fragments needed to complete the Museum of History in Elsweyr
+## Version: 1.2
+## Author: |cFF5FF5Kyoma|r
+## APIVersion: 100031 100032
+## SavedVariables: ElsweyrMuralMender_SV
+## DependsOn: LibAddonMenu-2.0>=30 LibMapPins-1.0>=10022 CustomCompassPins
+
+lang/en.lua
+lang/$(language).lua
+
+Data.lua
+ElsweyrMuralMender.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

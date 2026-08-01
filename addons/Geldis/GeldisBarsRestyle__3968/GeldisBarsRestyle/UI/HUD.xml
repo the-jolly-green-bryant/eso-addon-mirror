@@ -1,0 +1,325 @@
+<GuiXml>
+<Controls>
+
+<!-- ---------------------------------------------------- 
+  (Static) Compass
+  ingame / compass / compass.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_Compass" virtual="true" hidden="false">
+  <Controls>
+
+    <Label name="$(parent)CenterOverPinLabel" font="EsoUI/Common/Fonts/ftn57.otf|20|soft-shadow-thick" hidden="true" alpha="0.0"/>
+
+    <Compass name="$(parent)Container" scale="0.9" alpha="1"/>
+
+    <Scroll name="$(parent)AreaOverride" hidden="false" alpha="1.0">
+      <Anchor point="BOTTOM" relativePoint="TOP" offsetY="-5"/>
+      <Controls>
+          <Label name="$(parent)Label" font="EsoUI/Common/Fonts/ftn57.otf|20|soft-shadow-thick" alpha="0.0"/>
+      </Controls>
+    </Scroll>
+
+  </Controls>
+</Control>
+
+<!-- ---------------------------------------------------- 
+  (Static) Compass Frame
+  ingame / compass / compassframe.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_CompassFrame" virtual="true" hidden="false">
+  <Dimensions x="700" y="24"/>
+  <Controls>
+
+    <Texture name="$(parent)Center" alpha="1.0" color = "111111">
+      <Controls>
+        <Texture name="$(parent)TopMungeOverlay" hidden="true"/>
+        <Texture name="$(parent)BottomMungeOverlay" hidden="true"/>
+      </Controls>
+    </Texture>
+
+    <Texture name="$(parent)Left" alpha="1.0" color = "111111">
+      <Dimensions x="16" y="24"/>
+    </Texture>
+
+    <Texture name="$(parent)Right" alpha="1.0" color = "111111">
+      <Dimensions x="16" y="24"/>
+    </Texture>
+
+  </Controls>
+</Control>
+
+<!-- ----------------------------------------------------
+  (Static) Boss Health Bar
+  ingame / unitframes / bossbar.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_BossBar" virtual="true">
+  <Controls>
+
+    <Control name="$(parent)Health">
+      <Controls>
+
+        <StatusBar name="$(parent)BarLeft">
+          <Dimensions y="14"/>
+          <Controls>
+            <StatusBar name="$(parent)Gloss" alpha="0.2"/>
+          </Controls>
+        </StatusBar>
+
+        <StatusBar name="$(parent)BarRight">
+          <Dimensions y="14"/>
+          <Controls>
+            <StatusBar name="$(parent)Gloss" alpha="0.2"/>
+          </Controls>
+        </StatusBar>
+
+        <Label name="$(parent)Text" font="EsoUI/Common/Fonts/ftn87.otf|18|soft-shadow-thick"/>
+
+      </Controls>
+    </Control>
+    <Texture name="$(parent)BracketLeft" alpha="0">
+	<Anchor point="CENTER" offsetX="0" offsetY="0"/>
+	</Texture>
+	
+    <Texture name="$(parent)BracketRight" alpha="0">
+		<Anchor point="CENTER" offsetX="0" offsetY="0"/>
+	</Texture>
+  </Controls>
+</Control>
+
+<!-- ----------------------------------------------------
+  (Static) Target Unit Frame
+  ingame / unitframes / unitframes.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_TargetUnitFrame" virtual="true">
+  <!-- <DimensionConstraints minX="500" maxX="500"/> -->
+  <!-- <Anchor point="TOP" relativeTo="GuiRoot" offsetY="65"/> -->
+  <Controls>
+
+    <Control name="$(parent)TextArea">
+     
+      <Controls>
+        <Label name="$(grandparent)Level" font="EsoUI/Common/Fonts/ftn57.otf|26|soft-shadow-thick"/>
+        <Label name="$(grandparent)Name" font="EsoUI/Common/Fonts/ftn57.otf|26|soft-shadow-thick"/>
+      </Controls>
+    </Control>
+      
+    <Label name="$(parent)Caption" font="EsoUI/Common/Fonts/ftn57.otf|24|soft-shadow-thick"/>
+
+    <Label name="$(parent)ResourceNumbers" font="EsoUI/Common/Fonts/ftn87.otf|20|soft-shadow-thick"/>
+ 
+
+    <StatusBar name="$(parent)BarLeft">
+      <Dimensions y="18"/>
+      <!-- <Anchor point="LEFT" offsetX="3"/> -->
+      <!-- <Anchor point="RIGHT" relativePoint="CENTER"/> -->
+      <Controls>
+        <StatusBar name="$(parent)Gloss" alpha="0.2"/>
+      </Controls>
+    </StatusBar>
+
+    <StatusBar name="$(parent)BarRight">
+      <Dimensions y="18"/>
+      <!-- <Anchor point="RIGHT" offsetX="-3"/> -->
+      <!-- <Anchor point="LEFT" relativePoint="CENTER"/> -->
+      <Controls>
+        <StatusBar name="$(parent)Gloss" alpha="0.2"/>
+      </Controls>
+    </StatusBar>
+
+    <Texture name="$(parent)FrameLeft" alpha="0.7" desaturation="0" color = "222222">
+      <Dimensions y="24"/>
+    </Texture>
+    
+    <Texture name="$(parent)FrameRight" alpha="0.7" desaturation="0" color = "222222">
+      <Dimensions y="24"/>
+    </Texture>
+      
+    <Texture name="$(parent)FrameCenter" alpha="0.7" desaturation="0" color = "222222">
+      <Controls>
+        <Texture name="$(parent)TopMunge" hidden="true"/>
+        <Texture name="$(parent)BottomMunge" hidden="true"/>
+      </Controls>
+    </Texture>
+
+  </Controls>
+</Control>
+
+<!-- ----------------------------------------------------
+  (Static) Attribute Bars
+  ingame / playerattributebars / playerattributebars.xml
+  ingame / playerattributebars / playerattributebartemplates.xml
+----------------------------------------------------- -->
+
+<StatusBar name="ALT_PlayerAttributeStatusBar" alpha="1" virtual="true">
+  <Dimensions y="20"/>
+  <LeadingEdge textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_leadingEdge.dds" width="10" height="20"/>
+  <Controls>
+    <StatusBar name="$(parent)Gloss" alpha="0.3" />
+  </Controls>
+</StatusBar>
+
+<Control name="ALT_PlayerAttributeContainer" alpha="1" virtual="true">
+  <Dimensions y="24" x="330"/>
+  <DimensionConstraints minX="330" maxX="330"/>
+  <Controls>
+
+    <Texture name="$(parent)FrameCenter" alpha="1" desaturation="0" color = "111111">
+      <Controls>
+        <Texture name="$(parent)TopMunge" hidden="true"/>
+        <Texture name="$(parent)BottomMunge" hidden="true"/>
+      </Controls>
+    </Texture>
+
+    <Texture name="$(parent)FrameLeft" alpha="1" desaturation="0" color = "111111">
+      <Dimensions y="24"/>
+      <Anchor point="LEFT" offsetX="-3"/>
+    </Texture>
+    
+    <Texture name="$(parent)FrameRight" alpha="1" desaturation="0" color = "111111">
+      <Dimensions y="24"/>
+      <Anchor point="RIGHT" offsetX="3"/>
+    </Texture>
+
+    <Control name="$(parent)BgContainer" alpha="1">
+      <DimensionConstraints minX="330" maxX="330" minY = "24" maxY="24"/>
+      <Controls>
+
+        <Texture name="$(parent)BgLeft">
+          <Anchor point="TOPLEFT"/>
+          <Anchor point="BOTTOMLEFT"/>
+        </Texture>
+
+        <Texture name="$(parent)BgRight">
+          <Anchor point="TOPRIGHT"/>
+          <Anchor point="BOTTOMRIGHT"/>
+        </Texture>
+
+      </Controls>
+    </Control>
+
+    <Control name="$(parent)Warner">
+      <AnchorFill/>
+      <Controls>
+
+        <Texture name="$(parent)Left">
+          <Dimensions x="33" y="68"/>
+          <Anchor point="LEFT" offsetX="-20"/>
+        </Texture>
+
+        <Texture name="$(parent)Right">
+          <Dimensions x="33" y="68"/>
+          <Anchor point="RIGHT" offsetX="20"/>
+        </Texture>
+
+      </Controls>
+    </Control>
+
+    <Label name="$(parent)ResourceNumbers" font="EsoUI/Common/Fonts/ftn87.otf|20|soft-shadow-thick">
+    </Label>
+
+  </Controls>
+</Control> 
+
+<TopLevelControl name="ALT_PlayerAttribute" virtual="true">
+  <Controls>
+
+    <Control name="$(parent)Magicka" inherits="ALT_PlayerAttributeContainer">
+      <Anchor point="RIGHT" relativePoint="CENTER" offsetX="-283" offsetY="-30"/>
+      <Controls>
+        <StatusBar name="$(parent)Bar" inherits="ALT_PlayerAttributeStatusBar"/>
+      </Controls>
+    </Control>
+
+    <Control name="$(parent)Health" inherits="ALT_PlayerAttributeContainer">
+      <Anchor point="CENTER" offsetY="-30"/>
+      <Controls>
+        <StatusBar name="$(parent)BarLeft" inherits="ALT_PlayerAttributeStatusBar"/>
+        <StatusBar name="$(parent)BarRight" inherits="ALT_PlayerAttributeStatusBar"/>
+      </Controls>
+    </Control>
+
+    <Control name="$(parent)Stamina" inherits="ALT_PlayerAttributeContainer">
+      <Anchor point="LEFT" relativePoint="CENTER" offsetX="283" offsetY="-30"/>
+      <Controls>
+        <StatusBar name="$(parent)Bar" inherits="ALT_PlayerAttributeStatusBar"/>
+      </Controls>
+    </Control>  
+	
+	<Control name="$(parent)Werewolf">
+      <Anchor point="TOPRIGHT" relativeTo="$(parent)Magicka" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="-1" />
+      <Controls>
+		<Texture name="$(parent)BgContainer" inherits="ZO_PlayerAttributeBgSmallRight" hidden="true"/>
+		<StatusBar name="$(parent)Bar" inherits="ZO_PlayerAttributeStatusBarSmall" hidden="true">
+		<Controls>
+            <StatusBar name="$(parent)Gloss" inherits="ZO_PlayerAttributeStatusBarGlossSmall" alpha="0.4"/>
+        </Controls>
+		</StatusBar>
+        <Texture name="$(parent)Frame" hidden="true" alpha="0.5" desaturation="0" color = "111111"/>		
+      </Controls>
+    </Control>
+	
+	<Control name="$(parent)SiegeHealth">
+      <Controls>
+	  <Texture name="$(parent)BgContainer" inherits="ZO_PlayerAttributeBgSmallRight" hidden="true"/>
+	<StatusBar name="$(parent)BarLeft" inherits="ZO_PlayerAttributeStatusBarSmall" barAlignment="REVERSE" hidden="true">
+    <Anchor point="LEFT" offsetX="8" />
+    <Anchor point="RIGHT" relativePoint="CENTER" />
+    <Controls>
+        <StatusBar name="$(parent)Gloss" inherits="ZO_PlayerAttributeStatusBarGlossSmall" barAlignment="REVERSE" alpha="0.4"/>
+     </Controls>
+        </StatusBar>
+        <StatusBar name="$(parent)BarRight" inherits="ZO_PlayerAttributeStatusBarSmall" hidden="true">
+            <Anchor point="RIGHT" offsetX="-8" />
+			<Anchor point="LEFT" relativePoint="CENTER" />
+            <Controls>
+                <StatusBar name="$(parent)Gloss" inherits="ZO_PlayerAttributeStatusBarGlossSmall"  alpha="0.4"/>
+            </Controls>
+		</StatusBar>
+		<Texture name="$(parent)Frame" hidden="true" alpha="0.5" desaturation="0" color = "111111"/>
+      </Controls>
+    </Control>
+	
+	<Control name="$(parent)MountStamina">
+	<Anchor point="TOPLEFT" relativeTo="$(parent)Stamina" relativePoint="BOTTOMLEFT" offsetX="-4" offsetY="-1" />
+      <Controls>
+		<Texture name="$(parent)BgContainer" inherits="ZO_PlayerAttributeBgSmallRight" hidden="true"/>
+		<StatusBar name="$(parent)Bar" inherits="ZO_PlayerAttributeStatusBarSmall" hidden="true">
+		<Controls>
+            <StatusBar name="$(parent)Gloss" inherits="ZO_PlayerAttributeStatusBarGlossSmall" alpha="0.4"/>
+        </Controls>
+		</StatusBar>
+        <Texture name="$(parent)Frame" hidden="true" alpha="0.5" desaturation="0" color = "111111"/>		
+      </Controls>
+    </Control>
+
+  </Controls>
+</TopLevelControl>
+
+<!-- ----------------------------------------------------
+  (Dynamic) Sheild Bars
+  ingame / unitattributevisualizer / modules / powershield.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_PowerShieldBar" virtual="true" alpha="1">
+  <Dimensions y="20"/>
+  <Controls>
+
+    <StatusBar name="$(parent)Gloss" alpha="0.3"/>
+    <StatusBar name="$(parent)Trauma" alpha="1"/>
+
+    <StatusBar name="$(parent)FakeHealth" alpha="1">
+      <Dimensions y="18"/>
+      <Controls>
+        <StatusBar name="$(parent)Gloss" alpha="0.3"/>
+      </Controls>
+    </StatusBar>
+
+  </Controls>
+</Control>
+
+</Controls>
+</GuiXml>

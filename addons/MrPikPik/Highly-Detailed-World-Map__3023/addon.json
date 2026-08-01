@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/MrPikPik/Highly-Detailed-World-Map__3023",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:3023",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3023",
+  "deleted": false,
+  "directories": [
+    "HighResWorldMap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3023/",
+  "fingerprint": "bf95a01aba853f4e3cca59122977c7f8d69e7f3e4a73c7a0be20d0c713de045e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10155.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13906.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13907.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3023",
+  "source_url": "https://www.esoui.com/downloads/info3023-HighlyDetailedWorldMap.html",
+  "stats": {
+    "downloads": 35405,
+    "favorites": 60,
+    "monthly_downloads": 126
+  },
+  "title": "Highly Detailed World Map",
+  "updated_at": 1761898626000,
+  "version": "1.9"
+}

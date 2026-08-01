@@ -1,0 +1,33 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Excessive Withdrawal GUI">
+      <Action name="EXCESSIVE_HIDE_GUI">
+        <Down>
+        	if ExcessiveWithdrawals.db.GUIshow == 1 then
+        		ExcessiveWithdrawals.db.GUIshow = 0
+    			ExcessiveWithdrawalsGUI:SetHidden(true)
+  			else
+  				ExcessiveWithdrawals.db.GUIshow = 1
+    			ExcessiveWithdrawalsGUI:SetHidden(false)
+  			end
+        </Down>
+      </Action>
+      <Action name="EXCESSIVE_EXIT_OVERIDE">
+        <Down>
+        	if ExcessiveWithdrawalsWarn:IsHidden() == false then
+        		tmpAllowExit = 1
+			    if ExcessiveWithdrawals.db.ExitMode == "ReloadUI" then 
+			      ReloadUI()
+			    elseif ExcessiveWithdrawals.db.ExitMode == "Logout" then 
+			      Logout()
+			    elseif ExcessiveWithdrawals.db.ExitMode == "Quit" then 
+			      Quit()
+			    end
+			else
+				--CHAT_SYSTEM:AddMessage("Exit Overide Keybind - Warning UI not shown!")
+  			end
+        </Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

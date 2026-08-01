@@ -1,0 +1,76 @@
+﻿## Title:  |cffff00A|r|c009ad6bility|r |c009ad6Frames|r
+## Description: Makes you able to change the frame border of Active and Passive abilities the way you like.
+## Version: 1.1
+## Author: |cffff00J|r|c009ad6ultzy|r
+## APIVersion: 100023
+## SavedVariables: ab_Vars
+## OptionalDependsOn: LibAddonMenu-2.0
+
+
+lib/LibStub/LibStub.lua
+
+lib/LAM/LibAddonMenu-2.0.lua
+lib/LAM/controls/panel.lua
+lib/LAM/controls/submenu.lua
+lib/LAM/controls/button.lua
+lib/LAM/controls/checkbox.lua
+lib/LAM/controls/colorpicker.lua
+lib/LAM/controls/custom.lua
+lib/LAM/controls/description.lua
+lib/LAM/controls/dropdown.lua
+lib/LAM/controls/editbox.lua
+lib/LAM/controls/header.lua
+lib/LAM/controls/slider.lua
+lib/LAM/controls/texture.lua
+lib/LAM/controls/iconpicker.lua
+
+AbilityFrames.lua
+Settings.lua
+
+; Vanilla Borders is the ESO Standard Borders
+; STANDARD FRAMES
+
+Vanilla/ability.lua
+Clean/ability.lua
+Black/ability.lua
+White/ability.lua
+
+; CASSIC FRAMES
+
+Orange/ability.lua
+Orange2/ability.lua
+Yellow/ability.lua
+Brown/ability.lua
+
+; CLASS FRAMES
+
+Dragonknight/ability.lua
+Sorcerer/ability.lua
+Templar/ability.lua
+Nightblade/ability.lua
+Warden/ability.lua
+
+; FLAG FRAMES
+
+Swedish/ability.lua
+
+; NEW FRAMES
+
+Yellow/ability.lua
+Ice/ability.lua
+
+; GUILD FRAMES
+
+Fiskarna/ability.lua
+
+; SPECIAL FRAMES
+
+; DISCLAIMER:
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

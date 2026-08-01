@@ -1,0 +1,16 @@
+## Title: ESO Grinder
+## Description: Log loot to your ESO save file and from there to a database via the EFSM Python service.
+## Author: Marc Jordan
+## Version: 2.1.0
+## AddOnVersion: 2.1.0
+## APIVersion: 100028 100033
+## SavedVariables: EsoGrinderSavedVariables
+
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+EsoGrinder.lua

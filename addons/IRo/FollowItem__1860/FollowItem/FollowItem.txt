@@ -1,0 +1,21 @@
+## Title: FollowItem
+## Author: IRo (@IRoYaLChieF on EU)
+## APIVersion: 100021
+## Version: 2.2
+## SavedVariables: FollowItemSavedVars
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Libs\LibStub\LibStub.lua
+Libs\LibCustomMenu\LibCustomMenu.lua
+
+Lang\strings.lua
+Lang\$(language).lua
+
+FollowItem.lua
+FollowItem.xml
+bindings.xml

@@ -1,0 +1,30 @@
+## Title: |cFFAA33AlphaStyle|r v1.0.0
+## APIVersion: 101032
+## Version: 1.0.0
+## SavedVariables: AlphaStyle_Settings
+## SavedVariables: AlphaStyle_Styles
+## Author: mesota
+## Description: Anything you need to manage your style. Use /alphastyle to show the main window. Integration with AlphaGear available!
+
+
+## Localization
+lang/en.lua
+lang/$(language).lua
+
+## Model
+src/ASModel.lua
+
+## UI
+src/ASUI.lua
+AlphaStyle.xml
+dialogs/ASEditStylePropertiesDialog.xml
+dialogs/ASEditStylePropertiesDialog.lua
+
+## Main
+AlphaStyle.lua
+
+## API
+ASAPI.lua
+
+## Key bindings
+Bindings.xml

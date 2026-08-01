@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/justinsane16/AchievementDateFormatter__4668",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "justinsane16",
+  "canonical_id": "esoui:4668",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4668",
+  "deleted": false,
+  "directories": [
+    "AchievementDateFormatter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4668/",
+  "fingerprint": "8257fa9c70231bcc4623a5ba82b3bf58accb5da11574b8e5636a67feebe52e87",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16485.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16486.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16487.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16488.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16489.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16490.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16491.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4668",
+  "source_url": "https://www.esoui.com/downloads/info4668-AchievementDateFormatter.html",
+  "stats": {
+    "downloads": 41,
+    "favorites": 0,
+    "monthly_downloads": 35
+  },
+  "title": "AchievementDateFormatter",
+  "updated_at": 1782835146000,
+  "version": "1.1"
+}

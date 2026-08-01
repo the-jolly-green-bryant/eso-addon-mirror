@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Masteroshi430/SpawnPoints__4220",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:4220",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4220",
+  "deleted": false,
+  "directories": [
+    "SpawnPoints"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4220/",
+  "fingerprint": "dac2204987a7e2e3ad8d3292ddcb2ecbd56d045affdd05941b9654fb398f5a10",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4220",
+  "source_url": "https://www.esoui.com/downloads/info4220-SpawnPoints.html",
+  "stats": {
+    "downloads": 429,
+    "favorites": 1,
+    "monthly_downloads": 33
+  },
+  "title": "SpawnPoints",
+  "updated_at": 1783598476000,
+  "version": "2026.07.09"
+}

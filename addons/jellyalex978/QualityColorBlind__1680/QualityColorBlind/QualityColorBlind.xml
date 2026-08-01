@@ -1,0 +1,16 @@
+<GuiXml>
+    <Controls>
+        <!-- tooltips -->
+        <Tooltip name="QCB_POPUP_TOOLTIP" hidden="true" mouseEnabled="false" movable="false" clampedToScreen="true" virtual="true" inherits="ItemTooltipBase">
+            <Dimensions  x="416" y="10" />
+            <Anchor point="BOTTOM" relativeTo="PopupTooltip" relativePoint="TOP" offsetX="0" offsetY="0" />
+            <Controls></Controls>
+        </Tooltip>
+
+        <Tooltip name="QCB_ITEM_TOOLTIP" hidden="true" mouseEnabled="false" movable="false" clampedToScreen="true" virtual="true" inherits="ItemTooltipBase">
+            <Dimensions  x="200" y="10" />
+            <Anchor point="BOTTOM" relativeTo="ItemTooltip" relativePoint="TOP" offsetX="0" offsetY="0" />
+            <Controls></Controls>
+        </Tooltip>
+    </Controls>
+</GuiXml>

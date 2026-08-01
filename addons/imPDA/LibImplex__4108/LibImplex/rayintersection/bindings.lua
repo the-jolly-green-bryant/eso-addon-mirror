@@ -1,0 +1,4 @@
+local CSI = ZO_CreateStringId
+
+CSI("SI_BINDING_NAME_LIBIMPLEX_RAYINTERSECTION_TOGGLE", "Ray intersection: toggle")
+CSI("SI_BINDING_NAME_LIBIMPLEX_RAYINTERSECTION_MEASURE", "Ray intersection: measure")

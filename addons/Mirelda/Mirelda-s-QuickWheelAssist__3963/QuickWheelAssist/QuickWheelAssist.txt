@@ -1,0 +1,6 @@
+## Title: QuickWheelAssist
+## Author: Mirelda
+## Version: 1.0
+## Description: Adds a cancel option to all quickwheels and enables persistent quickwheel for seamless gameplay.
+## APIVersion: 101144
+QuickWheelAssist.lua

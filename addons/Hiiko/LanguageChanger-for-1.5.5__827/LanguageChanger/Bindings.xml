@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="LanguageChanger">
+			<Action name="SET_ENGLISH">
+				<Down>LanguageChanger:SetEnglish()</Down>
+			</Action>
+			<Action name="SET_GERMAN">
+				<Down>LanguageChanger:SetGerman()</Down>
+			</Action>
+			<Action name="SET_FRENCH">
+				<Down>LanguageChanger:SetFrench()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

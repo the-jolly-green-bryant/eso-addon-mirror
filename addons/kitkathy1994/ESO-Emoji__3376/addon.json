@@ -1,0 +1,60 @@
+{
+  "archive_path": "addons/kitkathy1994/ESO-Emoji__3376",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kitkathy1994",
+  "canonical_id": "esoui:3376",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3376",
+  "deleted": false,
+  "directories": [
+    "ESOEmoji"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3376/",
+  "fingerprint": "2acd6360605f70965399d3c7e77e5dff0760c6e6631fe2f608217f5fcf2f2522",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11524.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12658.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12659.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12660.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3376",
+  "source_url": "https://www.esoui.com/downloads/info3376-ESOEmoji.html",
+  "stats": {
+    "downloads": 7518,
+    "favorites": 8,
+    "monthly_downloads": 56
+  },
+  "title": "ESO Emoji",
+  "updated_at": 1717980286000,
+  "version": "0.4.2"
+}

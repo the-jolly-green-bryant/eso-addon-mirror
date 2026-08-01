@@ -1,0 +1,12 @@
+## Title: MinistryOfNormalWalks
+## Equip different personalities when idling vs moving
+## Author: Kyzeragon
+## Contributors: Minker (idea, feedback) / TSTU (feedback) / Lev (naming)
+## Version: 1.0.0
+## APIVersion: 101044
+## DependsOn: LibAddonMenu-2.0>=31
+
+## SavedVariables: MinistryOfNormalWalksSavedVariables
+
+src/Main.lua
+src/Settings.lua

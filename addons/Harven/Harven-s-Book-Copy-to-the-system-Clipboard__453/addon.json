@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Book-Copy-to-the-system-Clipboard__453",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:453",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Update 4",
+      "version": "1.4.3"
+    }
+  ],
+  "content_id": "esoui:453",
+  "deleted": false,
+  "directories": [
+    "HarvensBookCopy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl453/",
+  "fingerprint": "b52f3c02fd0f8a91fd91ee542fa04455be0a0a35f1268f233fdba9ce2580216c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1294.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "453",
+  "source_url": "https://www.esoui.com/downloads/info453-HarvensBookCopytothesystemClipboard.html",
+  "stats": {
+    "downloads": 8759,
+    "favorites": 16,
+    "monthly_downloads": 14
+  },
+  "title": "Harven's Book Copy (to the system Clipboard)",
+  "updated_at": 1410907136000,
+  "version": "1.3"
+}

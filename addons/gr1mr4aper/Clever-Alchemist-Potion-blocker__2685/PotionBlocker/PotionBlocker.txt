@@ -1,0 +1,12 @@
+## Title: |cd7f442CleverAlchemistPotionBlocker|
+## Author: Gr1mr4aper
+## Version: 1.4
+## APIVersion: 100031
+## SavedVariables: PotionBlockerSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+
+PotionBlocker.lua
+PotionBlockerUI.lua
+PotionBlockerMenu.lua
+PotionBlocker.xml

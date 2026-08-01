@@ -1,0 +1,5 @@
+## APIVersion: 101032
+## Title: New Life Festival Wayshrines
+## Author: Kawamonkey
+
+NewLifeFestivalWayshrines.lua

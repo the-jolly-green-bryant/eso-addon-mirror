@@ -1,0 +1,364 @@
+<GuiXml>
+    <Controls>
+    	   	
+        <Control name="insJunkYardDisplay" inherits="ZO_Options_SectionTitle ZO_Options_PanelHeader">        		
+            <OnInitialized>
+                self.controlType = OPTIONS_SECTION_TITLE
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text =  "Global Settings"
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+        </Control>
+
+        <Control name="INSJY_Settings_GLOBAL" inherits="ZO_Options_Checkbox">
+            <Anchor point="TOPLEFT" relativeTo="insJunkYardDisplay" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_CHECKBOX
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTING_INSJY_Settings_GLOBAL
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "Enable accountwide Profile"
+                self.tooltipText = "Enable global profile use. When disabled it will use a profile per character"
+                self.events = {[true] = "profileTrue", [false] = "profileFalse",}
+                self.eventCallbacks =
+                {
+                ["profileTrue"]  = { function() if insJY.protect==0 then insJY.SVG.global=true ; return true  end end},
+                ["profileFalse"] = { function() if insJY.protect==0 then insJY.SVG.global=false; return false end end},
+                }                
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+            <Controls>
+                <Texture name="$(parent)WarningIcon" inherits="ZO_Options_WarningIcon" hidden="false">
+                    <Anchor point="RIGHT" relativeTo="$(parent)Checkbox" relativePoint="LEFT" offsetX="-5" />
+                    <OnInitialized>
+                        self.tooltipText = "RELOAD UI BEFORE CONFIGURING ANY OTHER OPTION!"
+                    </OnInitialized>
+                </Texture>
+            </Controls>
+        </Control>
+
+        <Control name="INSJY_Settings_GLOBALJUNK" inherits="ZO_Options_Checkbox">
+            <Anchor point="TOPLEFT" relativeTo="INSJY_Settings_GLOBAL" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_CHECKBOX
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTING_INSJY_Settings_GLOBALJUNK
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "Enable accountwide Junk List"
+                self.tooltipText = "Enable global junk list. When disabled, junk list is per character."
+                self.events = {[true] = "globaljunkTrue", [false] = "globaljunkFalse",}
+                self.eventCallbacks =
+                {
+                ["globaljunkTrue"]  = { function() if insJY.protect==0 then insJY.SVG.globaljunk=true ; return true end end},
+                ["globaljunkFalse"] = { function() if insJY.protect==0 then insJY.SVG.globaljunk=false; return false end end},
+                }                
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+            <Controls>
+                <Texture name="$(parent)WarningIcon" inherits="ZO_Options_WarningIcon" hidden="false">
+                    <Anchor point="RIGHT" relativeTo="$(parent)Checkbox" relativePoint="LEFT" offsetX="-5" />
+                    <OnInitialized>
+                        self.tooltipText = "RELOAD UI BEFORE CONFIGURING ANY OTHER OPTION!"
+                    </OnInitialized>
+                </Texture>
+            </Controls>
+        </Control>
+
+
+        <Control name="INSJY_Settings_MESSAGE" inherits="ZO_Options_Checkbox">
+            <Anchor point="TOPLEFT" relativeTo="INSJY_Settings_GLOBALJUNK" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_CHECKBOX
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTING_INSJY_Settings_MESSAGE
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "Enable Startup Message"
+                self.tooltipText = "Enable startup message"
+                self.events = {[true] = "messageTrue", [false] = "messageFalse",}
+                self.eventCallbacks =
+                {
+                ["messageTrue"]  = { function() if insJY.protect==0 then  insJY.SVG.launchmessage=true ; return true end end},
+                ["messageFalse"] = { function() if insJY.protect==0 then  insJY.SVG.launchmessage=false; return false end end},
+                }                
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+        </Control>
+
+
+
+
+        <Control name="insJunkYardCustomHeader" inherits="ZO_Options_SectionTitle_WithDivider">
+        	  <Anchor point="TOPLEFT" relativeTo="INSJY_Settings_MESSAGE" relativePoint="BOTTOMLEFT" offsetY="4" />   		
+            <OnInitialized>
+                self.controlType = OPTIONS_SECTION_TITLE
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text =  "Custom Settings"
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+        </Control>
+        
+        <Control name="INSJY_Settings_SALESPAM" inherits="ZO_Options_Checkbox">
+            <Anchor point="TOPLEFT" relativeTo="insJunkYardCustomHeader" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_CHECKBOX
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTING_INSJY_Settings_SALESPAM
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "Enable Vendor Sale Messages"
+                self.tooltipText = "Enable message for every item sold at vendor"
+                self.events = {[true] = "salespamTrue", [false] = "salespamFalse",}
+                self.eventCallbacks =
+                {
+                ["salespamTrue"]  = { function() if insJY.protect==0 then  insJY.SVP.salespam=true ; return true end end},
+                ["salespamFalse"] = { function() if insJY.protect==0 then  insJY.SVP.salespam=false; return false end end},
+                }                
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+        </Control>        
+
+        <Control name="INSJY_Settings_SUMMARY" inherits="ZO_Options_Checkbox">
+            <Anchor point="TOPLEFT" relativeTo="INSJY_Settings_SALESPAM" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_CHECKBOX
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTING_INSJY_Settings_SUMMARY
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "Enable Sale Summary"
+                self.tooltipText = "Enable sale summary when exiting vendors."
+                self.events = {[true] = "summaryTrue", [false] = "summaryFalse",}
+                self.eventCallbacks =
+                {
+                ["summaryTrue"]  = { function() if insJY.protect==0 then  insJY.SVP.summary=true ; return true end end},
+                ["summaryFalse"] = { function() if insJY.protect==0 then   insJY.SVP.summary=false; return false end end},
+                }                
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+        </Control>   
+
+       <Control name="INSJY_Settings_LOOT" inherits="ZO_Options_Checkbox">
+            <Anchor point="TOPLEFT" relativeTo="INSJY_Settings_SUMMARY" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_CHECKBOX
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTING_INSJY_Settings_LOOT
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "Enable Loot messages"
+                self.tooltipText = "Enable messages whenever you loot something."
+                self.events = {[true] = "lootTrue", [false] = "lootFalse",}
+                self.eventCallbacks =
+                {
+                ["lootTrue"]  = { function() if insJY.protect==0 then  insJY.SVP.loot=true ; return true end end},
+                ["lootFalse"] = { function() if insJY.protect==0 then   insJY.SVP.loot=false; return false end end},
+                }                
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+        </Control>   
+
+       <Control name="INSJY_Settings_PARTY" inherits="ZO_Options_Checkbox">
+            <Anchor point="TOPLEFT" relativeTo="INSJY_Settings_LOOT" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_CHECKBOX
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTING_INSJY_Settings_PARTY
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "Enable Party Loot messages"
+                self.tooltipText = "Enable messages whenever your party loots something."
+                self.events = {[true] = "partyTrue", [false] = "partyFalse",}
+                self.eventCallbacks =
+                {
+                ["partyTrue"]  = { function() if insJY.protect==0 then  insJY.SVP.party=true ; return true end end},
+                ["partyFalse"] = { function() if insJY.protect==0 then   insJY.SVP.party=false; return false end end},
+                }                
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+        </Control>   
+        
+       <Control name="INSJY_Settings_JUNKSPAM" inherits="ZO_Options_Checkbox">
+            <Anchor point="TOPLEFT" relativeTo="INSJY_Settings_PARTY" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_CHECKBOX
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTING_INSJY_Settings_JUNKSPAM
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "Junk Messages"
+                self.tooltipText = "Print a message whenever an item is junked."
+                self.events = {[true] = "junkspamTrue", [false] = "junkspamFalse",}
+                self.eventCallbacks =
+                {
+                ["junkspamTrue"]  = { function() if insJY.protect==0 then  insJY.SVP.junkspam=true ; return true end end},
+                ["junkspamFalse"] = { function() if insJY.protect==0 then  insJY.SVP.junkspam=false; return false end end},
+                }                
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+        </Control>                           
+
+       <Control name="INSJY_Settings_JUNKYARD" inherits="ZO_Options_Checkbox">
+            <Anchor point="TOPLEFT" relativeTo="INSJY_Settings_JUNKSPAM" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_CHECKBOX
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTING_INSJY_Settings_JUNKYARD
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "Autojunk Trash items"
+                self.tooltipText = "Automatically add TRASH items to junk"
+                self.events = {[true] = "junkyardTrue", [false] = "junkyardFalse",}
+                self.eventCallbacks =
+                {
+                ["junkyardTrue"]  = { function() if insJY.protect==0 then   insJY.SVP.junkyard=true ; return true end end},
+                ["junkyardFalse"] = { function() if insJY.protect==0 then  insJY.SVP.junkyard=false; return false end end},
+                }                
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+        </Control> 
+
+       <Control name="INSJY_Settings_TRAIT" inherits="ZO_Options_Checkbox">
+            <Anchor point="TOPLEFT" relativeTo="INSJY_Settings_JUNKYARD" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_CHECKBOX
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTING_INSJY_Settings_TRAIT
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "Autojunk Ornate Items"
+                self.tooltipText = "Automatically add items to Junk that sell to vendor for % price."
+                self.events = {[true] = "traitTrue", [false] = "traitFalse",}
+                self.eventCallbacks =
+                {
+                ["traitTrue"]  = { function() if insJY.protect==0 then  insJY.SVP.trait=true ; return true end end},
+                ["traitFalse"] = { function() if insJY.protect==0 then  insJY.SVP.trait=false; return false end end},
+                }                
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+        </Control> 
+
+        <Control name="INSJY_Settings_TRAITSETTINGS" inherits="ZO_Options_Dropdown">
+            <Anchor point="TOPLEFT" relativeTo="INSJY_Settings_TRAIT" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_DROPDOWN
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTINGS_INSJY_Settings_TRAITSETTINGS
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "Autojunk quality limit"
+                self.tooltipText = "Ornate items AT or BELOW this quality will be autojunked."
+                self.valid = { "0", "1", "2", "3", "4", "5" }
+                self.valueStringPrefix = "SI_ITEMQUALITY"
+                local dropdown = "INSJY_Settings_TRAITSETTINGS"
+                local dropmenu = ZO_ComboBox_ObjectFromContainer(GetControl(dropdown, "Dropdown"))
+                local setText = dropmenu.m_selectedItemText.SetText
+                local selectedName
+                ZO_PreHookHandler(dropmenu.m_selectedItemText, "OnTextChanged", function(self)
+                        if dropmenu.m_selectedItemData then
+                            selectedName = dropmenu.m_selectedItemData.name
+                            setText(self, selectedName)
+                            if insJY.protect==0 then 
+                            -- get ID from name selected... wth.
+                                    for k,v in ipairs(INSJY_Settings_TRAITSETTINGSDropdown["m_comboBox"]:GetItems()) do 
+                                        k = k-1
+                                        if v.name==selectedName then insJY.SVP.quality=k end
+                                    end
+                            end
+                        end
+                end)
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+        </Control>
+        
+        
+       <Control name="INSJY_Settings_AUTOMARK" inherits="ZO_Options_Checkbox">
+            <Anchor point="TOPLEFT" relativeTo="INSJY_Settings_TRAITSETTINGS" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_CHECKBOX
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTING_INSJY_Settings_AUTOMARK
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "Autoadd items to junkyard from UI"
+                self.tooltipText = "Automatically add items to the Junkyard list whenever you add something as JUNK in UI."
+                self.events = {[true] = "automarkTrue", [false] = "automarkFalse",}
+                self.eventCallbacks =
+                {
+                ["automarkTrue"]  = { function() if insJY.protect==0 then  insJY.SVP.autoadd=true ; return true end end},
+                ["automarkFalse"] = { function() if insJY.protect==0 then  insJY.SVP.autoadd=false; return false end end},
+                }                
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+        </Control> 
+
+       <Control name="INSJY_Settings_SELL" inherits="ZO_Options_Checkbox">
+            <Anchor point="TOPLEFT" relativeTo="INSJY_Settings_AUTOMARK" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_CHECKBOX
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTING_INSJY_Settings_SELL
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "Autosell Junk Items at vendor"
+                self.tooltipText = "Automatically sell items from junk when visiting vendors."
+                self.events = {[true] = "sellTrue", [false] = "sellFalse",}
+                self.eventCallbacks =
+                {
+                ["sellTrue"]  = { function() if insJY.protect==0 then  insJY.SVP.autosell=true ; return true end end},
+                ["sellFalse"] = { function() if insJY.protect==0 then  insJY.SVP.autosell=false; return false end end},
+                }                
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+        </Control> 
+                
+      <Control name="INSJY_Settings_WARN" inherits="ZO_Options_Checkbox">
+            <Anchor point="TOPLEFT" relativeTo="INSJY_Settings_SELL" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_CHECKBOX
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTING_INSJY_Settings_WARN
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "Warn on low bag space"
+                self.tooltipText = "Warn when your free bag space is low"
+                self.events = {[true] = "warnTrue", [false] = "warnFalse",}
+                self.eventCallbacks =
+                {
+                ["warnTrue"]  = { function() if insJY.protect==0 then  insJY.SVP.warn=true ; return true end end},
+                ["warnFalse"] = { function() if insJY.protect==0 then  insJY.SVP.warn=false; return false end end},
+                }                
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+        </Control> 
+        
+        
+                
+
+        <Control name="INSJY_Settings_DESTROY" inherits="ZO_Options_Checkbox">
+            <Anchor point="TOPLEFT" relativeTo="INSJY_Settings_WARN" relativePoint="BOTTOMLEFT" offsetY="4" />
+            <OnInitialized>
+                self.controlType = OPTIONS_CHECKBOX
+                self.system = SETTING_TYPE_UI
+                self.settingId = SETTING_INSJY_Settings_DESTROY
+                self.panel = "OPTIONS_PANEL_INSJUNKYARD2OPTIONS"
+                self.text = "AutoDestroy Worthless Junk"
+                self.tooltipText = "This option will automatically destroy items with 0 value that are set as JUNK and on the MARK list."
+                self.events = {[true] = "destroyTrue", [false] = "destroyFalse",}
+                self.eventCallbacks =
+                {
+                ["destroyTrue"]  = { function() if insJY.protect==0 then  insJY.SVP.destroy=true ; return true end end},
+                ["destroyFalse"] = { function() if insJY.protect==0 then  insJY.SVP.destroy=false; return false end end},
+                }                
+                
+                ZO_OptionsWindow_InitializeControl(self)
+            </OnInitialized>
+            <Controls>
+                <Texture name="$(parent)WarningIcon" inherits="ZO_Options_WarningIcon" hidden="false">
+                    <Anchor point="RIGHT" relativeTo="$(parent)Checkbox" relativePoint="LEFT" offsetX="-5" />
+                    <OnInitialized>
+                        self.tooltipText = "Make sure you understand what this does!"
+                    </OnInitialized>
+                </Texture>
+            </Controls>            
+            <Controls>
+                <Button name="insJunkYardDisplayOptions1Button" inherits="ZO_DefaultButton" text="CLICK HERE WHEN DONE" excludeFromResizeToFitExtents="true">
+                    <Dimensions x="210" />
+                    <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" offsetY="8" />
+                    <OnClicked>
+                       insJY.GuiExit()
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </Control>                
+                
+    </Controls>
+</GuiXml>

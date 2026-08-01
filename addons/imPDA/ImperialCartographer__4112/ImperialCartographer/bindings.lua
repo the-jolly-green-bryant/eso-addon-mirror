@@ -1,0 +1,1 @@
+ZO_CreateStringId("SI_BINDING_NAME_IMP_CART_TOGGLE_ACTIVE", "Toggle Active")

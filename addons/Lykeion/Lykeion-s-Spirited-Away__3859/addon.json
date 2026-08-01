@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Lykeion/Lykeion-s-Spirited-Away__3859",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lykeion",
+  "canonical_id": "esoui:3859",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3859",
+  "deleted": false,
+  "directories": [
+    "LykeionsSpiritedAway"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3859/",
+  "fingerprint": "468abcd1753b97b283c352e466c196f805fdf1f2a9d7f18792575c7883b00f6c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13102.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3859",
+  "source_url": "https://www.esoui.com/downloads/info3859-LykeionsSpiritedAway.html",
+  "stats": {
+    "downloads": 2268,
+    "favorites": 0,
+    "monthly_downloads": 16
+  },
+  "title": "Lykeion's Spirited Away",
+  "updated_at": 1775664482000,
+  "version": "1.2.5"
+}

@@ -1,0 +1,53 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Dynamic CP Lite
+## Description: Champion Point automatic presets, quality of life changes, and more!
+## Author: Kyzeragon
+## Contributors: from original Dynamic CP: Raijindono (UX), camrenis (testing & feedback), Plonkerr (testing & feedback)
+## Version: 1.0.1
+## AddOnVersion: 10001
+## APIVersion: 101048
+
+## DependsOn: LibAddonMenu-2.0>=41
+## PCDependsOn: LibDialog>=127
+## OptionalDependsOn: LibFilteredChatPanel
+
+## SavedVariables: DynamicCPLiteSavedVariables
+
+src/init.lua
+
+src/common/Style.lua
+src/common/Dialog.lua
+src/common/PointsStringBuilder.lua
+
+src/cooldown.lua
+src/screenUpdates.lua
+
+src/points.lua
+src/slottables.lua
+
+src/smartPresets/presets/blueAutoPve.lua
+src/smartPresets/presets/greenCombat.lua
+src/smartPresets/presets/greenLootGoblin.lua
+src/smartPresets/presets/greenThieving.lua
+src/smartPresets/presets/redAutoPve.lua
+src/smartPresets/smartPresets.lua
+
+PC/Settings.lua
+
+ui/presets.lua
+ui/pulldown.lua
+ui/quickstars.lua
+ui/quickstarsSlotGroupMenu.lua
+
+xml/infolabel.xml
+xml/warning.xml
+xml/mildWarning.xml
+xml/pulldown.xml
+xml/quickstars.xml
+
+PC/bindings.xml

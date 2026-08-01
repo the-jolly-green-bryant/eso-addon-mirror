@@ -1,0 +1,32 @@
+<GuiXml>
+<Controls>
+	<TopLevelControl name="ESOFarmBuddyGoalSetter" mouseEnabled="true" movable="true" resizeHandleSize="0" hidden="true">
+		<Dimensions x="250" y="120" />
+		<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="0" offsetX="0" />
+		<Controls>
+			<Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" />
+			<Label name="$(parent)Title" font="ZoFontWinH3" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOPLEFT">
+				<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="6" />
+			</Label>
+
+			<Label name="$(parent)EditBoxLabel" font="ZoFontChat" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOPLEFT">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="12" offsetY="40" />
+			</Label>
+			<Backdrop name="$(parent)EditBoxBg" inherits="ZO_EditBackdrop" alpha="1"  >
+				<Dimensions x="100" y="24" />
+				<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-6" offsetY="40" />
+			</Backdrop>
+			<EditBox name="$(parent)GoalCount" font="ZoFontChat" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="" editEnabled="true" textType="NUMERIC_UNSIGNED_INT" multiLine="false" newLineEnabled="false" inherits="ZO_DefaultEditForBackdrop">
+				<Dimensions x="100" y="24" />
+				<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-6" offsetY="40" />
+				<OnEnter>ESOFarmBuddy.SaveGoalCount(self)</OnEnter>
+				<OnEscape>ESOFarmBuddyGoalSetter:SetHidden(true)</OnEscape>
+			</EditBox>
+			<Button name="$(parent)SetButton" inherits="ZO_DefaultButton">
+				<Dimensions x="140" y="24" />
+				<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="85" />
+			</Button>
+		</Controls>
+	</TopLevelControl>
+</Controls>
+</GuiXml>

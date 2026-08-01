@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Aliases__380",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:380",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:380",
+  "deleted": false,
+  "directories": [
+    "HarvensAliases"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl380/",
+  "fingerprint": "7342ac418134ad3d6d66a8da7e5670a3721a46c31b8892bdf1bbd1a7e2ec959b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1053.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "380",
+  "source_url": "https://www.esoui.com/downloads/info380-HarvensAliases.html",
+  "stats": {
+    "downloads": 7665,
+    "favorites": 36,
+    "monthly_downloads": 11
+  },
+  "title": "Harven's Aliases",
+  "updated_at": 1749901604000,
+  "version": "1.5.0"
+}

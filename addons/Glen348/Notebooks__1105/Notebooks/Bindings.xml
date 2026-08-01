@@ -1,0 +1,17 @@
+<!-- Bindable key for NBUI -->
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<!-- Games Default User Interface Category -->
+		<Category name="SI_KEYBINDINGS_CATEGORY_USER_INTERFACE">
+			<Action name="NBUI_NB1TOGGLE">
+				<Up>NBUI.NB1KeyBindToggle()</Up>
+			</Action>
+			<Action name="NBUI_NB2TOGGLE">
+				<Up>NBUI.NB2KeyBindToggle()</Up>
+			</Action>
+			<Action name="NBUI_NB3TOGGLE">
+				<Up>NBUI.NB3KeyBindToggle()</Up>
+			</Action>			
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,10 @@
+## APIVersion: 100026
+## Title: Slightly Improved™ Dialogues
+## Version: 1.4.1
+## AddOnVersion: 141
+## License: MIT
+## SavedVariables: SlightlyImprovedDialogues_SavedVars
+## DependsOn: LibAddonMenu-2.0
+
+Settings.lua
+SlightlyImprovedDialogues.lua

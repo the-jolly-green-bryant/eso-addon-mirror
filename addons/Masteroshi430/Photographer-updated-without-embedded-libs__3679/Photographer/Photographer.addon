@@ -1,0 +1,11 @@
+## Title: Photographer
+## Author: Darkretailer, |c3CB371@Masteroshi430|r, MissBizz 
+## Version: 2026.07.09
+## APIVersion: 101050
+## SavedVariables: PhotographerSavedVars
+## DependsOn: LibAddonMenu-2.0>=28
+
+
+## Addon:
+Photographer.lua
+Bindings.xml

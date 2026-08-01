@@ -1,0 +1,7 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|cFFAA33AlphaStyle|r">
+            <Action name="SHOW_AS_WINDOW"><Down>ASUI.ToggleMain()</Down></Action>
+        </Category>
+    </Layer>
+</Bindings>

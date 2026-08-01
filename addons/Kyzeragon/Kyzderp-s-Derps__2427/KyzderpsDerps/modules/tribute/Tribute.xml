@@ -1,0 +1,13 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="KDD_Tribute" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="false">
+            <Dimensions x="500" y="50"/>
+            <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="0"/>
+            <Controls>
+                <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|40|soft-shadow-thick" color="FFFFFF" text="60s" verticalAlignment="CENTER" horizontalAlignment="RIGHT" alpha="1" hidden="true">
+                    <AnchorFill/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

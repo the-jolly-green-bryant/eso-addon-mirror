@@ -1,0 +1,122 @@
+<GuiXml>
+    <Controls>
+
+        <Line name="ABB_HP_Line_Template" thickness="2" level="501" tier="1" virtual="true">
+            <OnInitialized>
+                self:SetColor(1, 1, 1, 0.7)
+            </OnInitialized>
+            <!--
+            <Controls>
+                <Label name="$(parent)Mech" horizontalAlignment="CENTER" font="ZoFontGamepad22">
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="5"/>
+                </Label>
+            </Controls>
+            -->
+        </Line>
+
+        <Control name="ABB_BossBar_Keyboard_Template" virtual="true">
+            <Dimensions x="500" y="ZO_COMPASS_FRAME_HEIGHT_KEYBOARD"/>
+            <Controls>
+                <Control name="$(parent)Health">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="-10"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="10"/>
+
+                    <Controls>
+                        <StatusBar name="$(parent)Bar">
+                            <Dimensions y="23"/>
+                        </StatusBar>
+                        <StatusBar name="$(parent)LeftBgBar">
+                            <Dimensions x="18" y="23"/>
+                        </StatusBar>
+                        <Label name="$(parent)Text" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_20)|thick-outline" level="502" tier="1"/>
+                        <Label name="$(parent)Mech" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_20)|thick-outline" level="502" tier="1"/>
+                        <Label name="$(parent)Name" font="ZoFontGamepad22" level="502" tier="1"/>
+                    </Controls>
+                </Control>
+
+                <Texture name="$(parent)BgCenter" textureFile="$(COMPASS_PATH)compass.dds">
+                    <TextureCoords left="0.78125" right="1" top="0" bottom="0.609375" />
+                </Texture>
+
+                <Texture name="$(parent)BgLeft" textureFile="$(COMPASS_PATH)compass.dds">
+                    <Dimensions x="18" y="ZO_COMPASS_FRAME_HEIGHT_KEYBOARD" />
+                    <TextureCoords left="0" right="0.28125" top="0" bottom="0.609375" />
+                </Texture>
+
+                <Texture name="$(parent)BgRight" textureFile="$(COMPASS_PATH)compass.dds">
+                    <Dimensions x="18" y="ZO_COMPASS_FRAME_HEIGHT_KEYBOARD" />
+                    <TextureCoords left="0.28125" right="0" top="0" bottom="0.609375" />
+                </Texture>
+            </Controls>
+        </Control>
+
+        <Control name="ABB_BossBar_Gamepad_Template" inherits="ABB_BossBar_Keyboard_Template" virtual="true"/>
+
+        <Control name="ABB_BossBar" virtual="true">
+            <Controls>
+                <Control name="$(parent)Health" inherits="ZO_PlayerAttributeContainer">
+                    <Controls>
+                        <StatusBar name="$(parent)LeftBgBar" level="1" inherits="ZO_PlayerAttributeStatusBar" barAlignment="REVERSE" color="INTERFACE_COLOR_TYPE_POWER_START:POWERTYPE_HEALTH">
+                            <Anchor point="LEFT" />
+                            <Anchor point="RIGHT" relativePoint="LEFT" offsetX="18" />
+                            <OnInitialized>
+                                self.gloss = ABB_FakeGloss:New()
+                                self:SetMinMax(0,1)
+                                self:SetValue(1)
+                            </OnInitialized>
+                        </StatusBar>
+                        <StatusBar name="$(parent)Bar" inherits="ZO_PlayerAttributeStatusBar">
+                            <Anchor point="LEFT" offsetX="18" />
+                            <Anchor point="RIGHT" />
+                            <OnInitialized>
+                                self.gloss = ABB_FakeGloss:New()
+                            </OnInitialized>
+                        </StatusBar>
+                        <Label name="$(parent)Name" horizontalAlignment="CENTER">
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="15" offsetY="-1"/>
+                        </Label>
+                        <Label name="$(parent)Mech" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                            <Anchor point="TOP" relativeTo="$(parent)Bar" relativePoint="TOP" offsetY="1"/>
+                            <Anchor point="BOTTOM" relativeTo="$(parent)Bar" relativePoint="BOTTOM"/>
+                        </Label>
+                        <Label name="$(parent)Text" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Bar" relativePoint="TOPRIGHT" offsetX="-15" offsetY="1"/>
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Bar" relativePoint="BOTTOMRIGHT" offsetX="-15"/>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Texture name="$(parent)BgCenter">
+                    <AnchorFill />
+                    <Controls>
+                        <Texture name="$(parent)TopMungeOverlay" inherits="ZO_RandomizedMunge" level="1">
+                            <Dimensions y="4" />
+                            <Anchor point="TOPLEFT" offsetY="2" />
+                            <Anchor point="TOPRIGHT" offsetY="2" />
+                        </Texture>
+                        <Texture name="$(parent)BottomMungeOverlay" inherits="ZO_RandomizedMunge" level="1">
+                            <Dimensions y="3" />
+                            <Anchor point="BOTTOMLEFT" offsetY="-4" />
+                            <Anchor point="BOTTOMRIGHT" offsetY="-4" />
+                        </Texture>
+                    </Controls>
+                </Texture>
+
+                <Texture name="$(parent)BgLeft">
+                    <Anchor point="RIGHT" relativeTo="$(parent)BgCenter" relativePoint="LEFT" />
+                </Texture>
+
+                <Texture name="$(parent)BgRight">
+                    <Anchor point="LEFT" relativeTo="$(parent)BgCenter" relativePoint="RIGHT" />
+                </Texture>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="ABB_Container">
+            <Anchor point="TOP" relativeTo="ZO_CompassFrame" relativePoint="TOP" offsetX="0" offsetY="0"/>
+            <OnInitialized>
+                ABB_Initialize(self)
+            </OnInitialized>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

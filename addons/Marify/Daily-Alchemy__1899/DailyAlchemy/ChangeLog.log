@@ -1,0 +1,466 @@
+Version: 1.5.0 to 1.5.1 ---------------
+1.Update keyword.
+
+
+Version: 1.4.20 ---------------
+1.APIVersion Up 101036
+2.Update keyword.
+
+
+Version: 1.4.19 ---------------
+1.APIVersion Up 101034
+2.Update keyword.
+
+
+Version: 1.4.18 ---------------
+1.APIVersion Up 101033
+
+
+Version: 1.4.15 to 1.4.17 ---------------
+1.Add BR(Brazilian Portuguese) localization.
+
+
+Version: 1.4.14 ---------------
+1.Added warning message (don't know that ability[Laboratory Use])
+
+
+2.Added Setting(Delay time).
+
+
+Version: 1.4.13 ---------------
+1.APIVersion Up 100034
+
+2.Bug fix (Polish localization)
+Update keyword.
+
+
+Version: 1.4.12 ---------------
+1.APIVersion Up 100033
+
+
+Version: 1.4.11 ---------------
+1.Bug fix
+Fixed the display of the context menu.
+
+
+Version: 1.4.10 ---------------
+1.APIVersion Up 100032
+1.Bug fix
+Fixed a case where couldn't access the alchemy table.
+
+
+Version: 1.4.5 to 1.4.9 ---------------
+1.Bug fix (Russian localization)
+Update keyword
+
+
+Version: 1.4.4 ---------------
+1.Add /langru
+
+
+Version: 1.4.3 ---------------
+1.APIVersion Up 100031
+
+
+Version: 1.4.2 ---------------
+1.Bug fix
+Fixed a debugLog.
+
+
+Version: 1.4.1 ---------------
+1.Use LibCustomMenu.
+
+
+Version: 1.4.0 ---------------
+1.APIVersion Up 100030
+2.LibMarify Outside.
+
+
+Version: 1.3.11 ---------------
+1.add [Dragon Rheum].
+
+
+Version: 1.3.10 ---------------
+1.change the SavedVariables format.
+
+
+Version: 1.3.9 ---------------
+1.Bug fix
+Fixed a bug where items could not be acquired.
+
+
+Version: 1.3.8 ---------------
+1.Bug fix
+Fixed error when bulk creating.
+
+
+Version: 1.3.7 ---------------
+1.Bug fix
+operator + is not supported for number + nil.
+
+
+Version: 1.3.6 ---------------
+1.Added link to [ConfirmMasterWrit]
+
+
+Version: 1.3.3 to 1.3.5 ---------------
+1.Add Witches Festival Writ.
+2.Bug fix
+LibMarify Update.
+
+
+Version: 1.3.0 to 1.3.2 ---------------
+1.APIVersion Up 100029
+
+
+Version: 1.2.26 to 1.2.27 ---------------
+1.APIVersion Up 100028
+
+2.Add Polish translation.
+Thank you! tomkolp
+
+
+Version: 1.2.25 ---------------
+1.Bug fix
+LibMarify Update.
+
+2.Bug fix
+Fixed sort order when price is 0 gold.
+
+3.Add Reagent(Dragon's Blood, Dragon's Bile)
+
+
+Version: 1.2.24 ---------------
+1.APIVersion Up 100027
+
+
+Version: 1.2.23 ---------------
+1.Bug fix
+LibMarify Update.
+
+
+Version: 1.2.22 ---------------
+1.Added debug log.
+
+
+Version: 1.2.21 ---------------
+1.Change some logic
+
+
+Version: 1.2.20 ---------------
+1.Bug fix
+Remove trash
+
+
+Version: 1.2.19 ---------------
+1.Bug fix
+Fixed a bug that keeps creating the same item.
+
+2.Bug fix
+Crafting interface closing when no active writ.
+
+
+Version: 1.2.18 ---------------
+1.Bug fix
+Fix name mismatch error.
+
+
+Version: 1.2.17 ---------------
+1.Remove system bug patch. [GetCraftingSkillLineIndices]
+
+2.Bug fix
+Some users have string.lower() disabled?
+
+
+Version: 1.2.16 ---------------
+1.Bug fix
+Fixed recieving items from bank automatically.
+
+2.Bug fix
+Fixed sorting method by price.
+
+
+Version: 1.2.15 ---------------
+1.System bug patch. [GetCraftingSkillLineIndices]
+
+
+Version: 1.2.14 ---------------
+1.Bug fix
+Modified a bit of material acquisition method.
+
+2.APIVersion Up 100026
+
+
+Version: 1.2.13 ---------------
+1.Add Setting: Do not use locked items ... default ON
+
+
+Version: 1.2.12 ---------------
+1.Bug fix
+Fixed a little bit of processing to remove material from the box.
+
+2.Add log message
+
+
+Version: 1.2.11 ---------------
+1.Bug fix
+Fixed sorting method by price.
+
+
+Version: 1.2.9 to 1.2.10 ---------------
+1.Add Setting: Reagent priority ... Low price reagent at [ArkadiusTradeTools]
+
+
+Version: 1.2.8 ---------------
+1.Update LibStub
+
+2.Add Setting: Show log ... default ON
+
+3.Add Setting: Reagent priority ... Low price reagent at [TamrielTradeCentre]
+
+
+Version: 1.2.7 ---------------
+1.Bug fix
+Fix wording on setting screen
+
+
+Version: 1.2.6 ---------------
+1.APIVersion Up 100025
+
+
+Version: 1.2.5 ---------------
+1.Bug fix
+Fixed creating the wrong item when Master Writ.
+
+
+Version: 1.2.4 ---------------
+1.Bug fix (French localization)
+Update keyword.
+
+
+Version: 1.2.3 ---------------
+1.Bug fix
+Fixed a bug that caused errors when crafting with multiple characters.
+
+
+Version: 1.2.2 ---------------
+1.Bug fix (French localization)
+Update keyword.
+
+
+Version: 1.2.1 ---------------
+1.Bug fix (French localization)
+Update keyword.
+
+2.Update keyword(English localization)
+
+
+Version: 1.2.0 ---------------
+1.Started to support [FCO Item Saver].
+2.Bug fix (French localization)
+Update keyword.
+
+
+Version: 1.1.7 ---------------
+1.Bug fix (French localization)
+Add keyword.
+
+
+Version: 1.1.6 ---------------
+1.APIVersion Up 100024
+
+2.Change logic to retrieve items from bank
+
+3.Add functions when return home
+
+
+Version: 1.1.5 ---------------
+1.Bug fix (Russian localization)
+Update keyword
+
+
+Version: 1.1.4 ---------------
+1.Bug fix (Russian localization)
+Add keywords for item acquisition.
+
+
+Version: 1.1.3 ---------------
+1.Re-upload as version information is incorrect
+
+
+Version: 1.1.2 ---------------
+1.Using the new function GetItemLinkItemId(itemLink)
+
+2.Integrate setting items(Retrieve items from home storage)
+
+3.Bug fix (French localization)
+Delete item acquisition keywords
+
+4.Add information on new materials(Somerset)
+
+
+Version: 1.1.1 ---------------
+1.APIVersion Up 100023
+
+
+Version: 1.1.0 ---------------
+1.Add Function
+Fixed bug that master request material was not acquired correctly
+
+2.Change message output method
+
+3.Improve speed a little
+
+
+Version: 1.0.2 ---------------
+1.Update Russian translation.
+Thank you! KiriX
+
+2.Bug fix (Russian localization)
+Add keywords for item acquisition.
+
+3.Improve speed a little
+
+
+Version: 1.0.1 ---------------
+1.Bug fix
+Fixed error caused by not setting initial value of add-on
+
+2.Bug fix (Russian localization)
+Add keywords for item acquisition.
+
+3.Improve speed a little (still planned to improve)
+
+
+Version: 1.0.0 ---------------
+1.Priority to use reagent can now be selected. (Now Testing)
+
+
+Version: 0.9.22 ---------------
+1.Bug fix
+There are cases where an incorrect portion is taken out from a bank
+
+2.Language file Update(Russian localization)
+I am grateful for KiriX cooperation.
+
+
+Version: 0.9.21 ---------------
+1.made an alert message sparingly
+
+2.Changed the order of using items (Use bank items first than backpack)
+
+3.Bug fix
+Fixed a case of mistaken items to be created
+
+
+Version: 0.9.20 ---------------
+1.Added function to Alert of missing material. (Now Testing)
+
+
+Version: 0.9.19 ---------------
+1.Bug fix
+There are cases where an incorrect portion is taken out from a bank
+
+
+Version: 0.9.18 ---------------
+1.Change solvent selection method.
+
+
+Version: 0.9.17 ---------------
+1.Bug fix
+Too many call the server within a short time inside the add-on.
+
+
+Version: 0.9.16 ---------------
+1. Significant change in code
+
+
+Version: 0.9.15 ---------------
+1. Started to support Home Storage.
+
+
+Version: 0.9.14 ---------------
+1.Bug fix
+Fixed that the consideration of "cancelTrait" was missing at Master Writs
+
+2.Bug fix
+When it operates after other bank add-ons,
+Fixed a problem that can not get item from bank.
+
+3.Bug fix (French localization)
+Version: 0.9.7 bug fix was added.
+
+4.Bug fix (Japanese localization)
+Add keyword.
+
+
+Version: 0.9.13 ---------------
+1.Bug fix
+Fixed a bug that creates incorrect poison
+(Ex: created "Health Poison I" at the request of "Health Poison IX".)
+
+
+Version: 0.9.12 ---------------
+1.Add automatic exit function from craft station.
+
+
+Version: 0.9.11 ---------------
+1.changed the number of batch creation steps from 5 to 1
+
+
+Version: 0.9.10 ---------------
+1.Bug fix (French localization)
+Fix name variance (pied-de-lutin --> Bolet Lutin)
+
+
+Version: 0.9.9 ---------------
+1.Bug fix (German localization)
+Revised Version: 0.9.8 fix again
+
+
+Version: 0.9.8 ---------------
+1.APIVersion: UP to 100022
+
+2.Bug fix (German localization)
+Corresponding to unsupported recipe name, there was a leak, so modify keywords.
+
+
+Version: 0.9.7 ---------------
+1.Partial code correction for testing.
+
+2.Bug fix (German localization)
+Corresponding to unsupported recipe name, there was a leak, so modify keywords.
+A strange code(0xC2) is inserted instead of a space(0x20).
+
+3.Bug fix (French localization)
+Corresponding to unsupported recipe name, there was a leak, so modify keywords.
+Fix name variance (Poison de ravage --> Poison de Dégâts)
+
+
+Version: 0.9.6 ---------------
+1. Started to support Master request(German and French)
+
+2.Bug fix (English localization)
+English localization: Correcting items(-) containing hyphens
+
+3.Bug fix (French localization)
+Corrected differences by abbreviated expressions (xxx D' xxxx --> xxx de xxx)
+
+4.Bug fix (Japanese localization)
+Fix Greek figures and Arabic numerals mismatch
+
+
+Version: 0.9.5 ---------------
+1. Bug fix
+2. German and French language files added (Master request is not supported....)
+
+
+Version: 0.9.4 ---------------
+1. Fixed English language file
+
+Version: 0.9.3 ---------------
+1. Bulk Creation function added.
+2. Added debug log ON / OFF function
+3. Started to support German and French
+(Since it is still being tested, the language file was not included in the update)
+

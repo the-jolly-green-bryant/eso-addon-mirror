@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/MissingSemicolon/Camera-Shoulder-Swap__1555",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MissingSemicolon",
+  "canonical_id": "esoui:1555",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:1555",
+  "deleted": false,
+  "directories": [
+    "CameraShoulderSwap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1555/",
+  "fingerprint": "8283e6b5a9f2c441bc73edb58b05d2ecedb3e71f26a35704efad6276d199e3df",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5062.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5063.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5064.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1555",
+  "source_url": "https://www.esoui.com/downloads/info1555-CameraShoulderSwap.html",
+  "stats": {
+    "downloads": 6150,
+    "favorites": 13,
+    "monthly_downloads": 11
+  },
+  "title": "Camera Shoulder Swap",
+  "updated_at": 1618796194000,
+  "version": "1.0.6"
+}

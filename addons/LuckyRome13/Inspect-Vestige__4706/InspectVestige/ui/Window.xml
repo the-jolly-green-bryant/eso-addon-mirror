@@ -1,0 +1,45 @@
+<!--
+    Inspect Vestige window shell. The interior (gear/skill icons, section labels) is
+    built programmatically in src/Window.lua so layout logic lives in one place.
+-->
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="InspectVestigeWindow" hidden="true" clampedToScreen="true" movable="true" mouseEnabled="true">
+            <!-- 1060 wide -> Content = 1020 (20px margins) = two equal body columns (500 + 20 gap + 500). -->
+            <Dimensions x="1060" y="650" />
+            <Anchor point="CENTER" />
+
+            <Controls>
+                <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop">
+                    <Anchor point="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" />
+                </Backdrop>
+
+                <Label name="$(parent)Title" font="ZoFontWinH1" color="C5C29EFF" horizontalAlignment="CENTER">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="22" />
+                    <Anchor point="TOPRIGHT" offsetX="-20" offsetY="22" />
+                </Label>
+
+                <Label name="$(parent)Subtitle" font="ZoFontGame" color="BFBFBFFF" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetY="4" />
+                    <Dimensions x="1020" />
+                </Label>
+
+                <Label name="$(parent)Status" font="ZoFontGameSmall" color="9A9A9AFF" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)Subtitle" relativePoint="BOTTOM" offsetY="4" />
+                    <Dimensions x="1020" />
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-8" offsetY="8" />
+                    <OnClicked>InspectVestige.Window.Hide()</OnClicked>
+                </Button>
+
+                <Control name="$(parent)Content">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="92" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="-16" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

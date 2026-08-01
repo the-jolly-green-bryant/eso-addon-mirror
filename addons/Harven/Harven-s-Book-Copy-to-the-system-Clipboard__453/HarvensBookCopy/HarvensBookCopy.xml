@@ -1,0 +1,10 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="HarvensBookCopy" hidden="true">
+			<Anchor point="CENTER"/>
+			<Controls>
+				<EditBox name="$(parent)Clipboard" multiLine="true"/>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

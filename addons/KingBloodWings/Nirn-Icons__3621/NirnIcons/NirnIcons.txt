@@ -1,0 +1,35 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: |cff8534NirnIcons|r
+## Author: |c00A313@KingBloodWings|r
+## APIVersion: 101037
+## IsLibrary: false
+## DependsOn: OdySupportIcons
+
+NirnIcons.lua
+
+
+; Changelog : 
+; Version 1.0.1 (24/04/2023)
+; * Correction du chemin des icons
+;
+; Version 1.0.2 (24/04/2023)
+; * Correction de la version API
+; * Ajout d'un screenschot
+;
+; Version 1.0.3 (25/04/2023)
+; * Ajout de l'auteur
+; * Edition des changelog
+; * Ajout de la couleur du nom
+; * Ajout des logos Weyland, Xeno, Scrat, weed
+;
+; Version 1.0.4 (01/05/2023)
+; * Correction de certain logo
+:
+; Version 1.0.5 (22/05/2023)
+; * Ajout de 4 logo
+; * Ajout d'un screen

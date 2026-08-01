@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/kad/BuzzOff-Restored__3651",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kad",
+  "canonical_id": "esoui:3651",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3651",
+  "deleted": false,
+  "directories": [
+    "BuzzOff"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3651/",
+  "fingerprint": "8646cc2c0da16fb778e465f85d64aac6473d542a12096b425fd6b908f0b6cddb",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3651",
+  "source_url": "https://www.esoui.com/downloads/info3651-BuzzOffRestored.html",
+  "stats": {
+    "downloads": 1101,
+    "favorites": 6,
+    "monthly_downloads": 8
+  },
+  "title": "BuzzOff Restored",
+  "updated_at": 1686323453000,
+  "version": "1.01"
+}

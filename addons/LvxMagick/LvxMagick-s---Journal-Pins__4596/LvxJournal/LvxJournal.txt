@@ -1,0 +1,12 @@
+## Title: Lvx Journal - Chronicles
+## APIVersion: 101049 101046
+## Version: 2.4.45
+## AddOnVersion: 20445
+## Author: LvxMagick
+## Description: Open-book RP journal with archives, bookmarks, export support, tools, oracle, dice, coin toss, random destination/activity, daily checklist, stats, profile, codex, and selectable themes. Clock is optional.
+## SavedVariables: LvxJournalSavedVars LvxJournalExportVars
+## OptionalDependsOn: Clock LvxJournal_PersonalNotesBackup LibMapPins
+
+LvxJournal.lua
+LvxJournalTools.lua
+bindings.xml

@@ -1,0 +1,20 @@
+## Title: |cf49b42SpawnPoints|r
+## Description: This addon displays Volendrung spawn points on the Cyrodiil map.
+## Version: 2026.07.09
+## APIVersion: 101050
+## Author: |c3CB371@Masteroshi430|r |c00A313Teebow Ganx|r
+## SavedVariables: SpawnPoints_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=43 LibGPS>=73 LibMapPins-1.0>=10047 CustomCompassPins>=138
+
+i18n/en.lua
+i18n/$(language).lua
+SpawnPoints.lua
+
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

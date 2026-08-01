@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/Decluttered-Scrying-Leads__3009",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3009",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3009",
+  "deleted": false,
+  "directories": [
+    "DeclutteredScryingLeads"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3009/",
+  "fingerprint": "03c69d5920d1900c12c488c6da44a73a025bd6d3fdd97e70e75b9f655fb929dd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10129.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3009",
+  "source_url": "https://www.esoui.com/downloads/info3009-DeclutteredScryingLeads.html",
+  "stats": {
+    "downloads": 11267,
+    "favorites": 32,
+    "monthly_downloads": 682
+  },
+  "title": "Decluttered Scrying Leads",
+  "updated_at": 1617392771000,
+  "version": "1.0.1"
+}

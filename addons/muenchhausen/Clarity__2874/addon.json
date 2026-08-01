@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/muenchhausen/Clarity__2874",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "muenchhausen",
+  "canonical_id": "esoui:2874",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:2874",
+  "deleted": false,
+  "directories": [
+    "Clarity"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2874/",
+  "fingerprint": "fffeb04913935b6ccc620b06b42a7619c445dad2873ea505b731cc7a4c850a37",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2874",
+  "source_url": "https://www.esoui.com/downloads/info2874-Clarity.html",
+  "stats": {
+    "downloads": 6378,
+    "favorites": 14,
+    "monthly_downloads": 11
+  },
+  "title": "Clarity",
+  "updated_at": 1668071531000,
+  "version": "1.1.2"
+}

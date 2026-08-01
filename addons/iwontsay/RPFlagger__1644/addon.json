@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/iwontsay/RPFlagger__1644",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "iwontsay",
+  "canonical_id": "esoui:1644",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:1644",
+  "deleted": false,
+  "directories": [
+    "RPFlagger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1644/",
+  "fingerprint": "3070b97ef3092b868584b298ee0595bb55a4ea4ead6178496b52f9569f3ef527",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5392.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1644",
+  "source_url": "https://www.esoui.com/downloads/info1644-RPFlagger.html",
+  "stats": {
+    "downloads": 3631,
+    "favorites": 1,
+    "monthly_downloads": 7
+  },
+  "title": "RPFlagger",
+  "updated_at": 1490553575000,
+  "version": "1.1.0"
+}

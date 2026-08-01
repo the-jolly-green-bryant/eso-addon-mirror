@@ -1,0 +1,25 @@
+## Title: Leo's Dolmen Runner REDUX
+## APIVersion: 101038
+## Version: 2.1.5
+## AddOnVersion: 3
+## IsLibrary: False
+## Author: |c39B027@Kiasmalyn|r
+## SavedVariables: LeoDolmenRunnerRedux_Data
+## DependsOn: LibFeedback LibAddonMenu-2.0 LibSavedVars
+
+; languages
+lang/en.lua
+
+; files
+LeoDolmenRunnerRedux.lua
+
+modules/Utils.lua
+modules/Runner.lua
+modules/Inviter.lua
+modules/Ui.lua
+modules/cli.lua
+
+Settings.lua
+LeoDolmenRunnerRedux.xml
+Bindings.xml
+

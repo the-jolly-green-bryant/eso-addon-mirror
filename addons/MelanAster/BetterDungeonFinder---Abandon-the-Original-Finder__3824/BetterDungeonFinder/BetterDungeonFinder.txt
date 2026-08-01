@@ -1,0 +1,34 @@
+## Title: BetterDungeonFinder
+## Description: Dungeon Finder Extension.
+## Author: @MelanAster
+## APIVersion: 101048 101049
+## AddOnVersion: 191
+## Version: 1.91
+## DependsOn: LibAddonMenu-2.0>=38 LibSets>=000709
+## OptionalDependsOn: LibGroupBroadcast OdySupportIcons
+## SavedVariables: BetterActivityFinder_Vars
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Data.lua
+lang/en.lua
+lang/$(language).lua
+
+DungeonUpdate.lua
+ChestMarker.lua
+
+Finder.lua
+FinderUpdate.lua
+
+Coffer.lua
+
+Finder.xml
+bindings.xml
+
+Menu.lua
+
+Main.lua

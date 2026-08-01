@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/makos000/Makos-s-ContentHelper__3944",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "makos000",
+  "canonical_id": "esoui:3944",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:3944",
+  "deleted": false,
+  "directories": [
+    "ContentHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3944/",
+  "fingerprint": "83fc5bd3c8f8be80d7c4624d89bd7a4c1aaa00eb379eb8f0ba7b05e2c8fa1a9d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13349.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14012.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13351.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13352.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13353.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14030.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13354.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3944",
+  "source_url": "https://www.esoui.com/downloads/info3944-MakossContentHelper.html",
+  "stats": {
+    "downloads": 2679,
+    "favorites": 7,
+    "monthly_downloads": 43
+  },
+  "title": "Makos's ContentHelper",
+  "updated_at": 1749826522000,
+  "version": "2.2.0"
+}

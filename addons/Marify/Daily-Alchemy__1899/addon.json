@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Marify/Daily-Alchemy__1899",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marify",
+  "canonical_id": "esoui:1899",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:1899",
+  "deleted": false,
+  "directories": [
+    "DailyAlchemy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1899/",
+  "fingerprint": "0cd0c6e6f4d50cd5f67497afd79b76535238784f28af2f0325ec9db240453271",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6448.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6745.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6746.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1899",
+  "source_url": "https://www.esoui.com/downloads/info1899-DailyAlchemy.html",
+  "stats": {
+    "downloads": 1438644,
+    "favorites": 671,
+    "monthly_downloads": 1951
+  },
+  "title": "Daily Alchemy",
+  "updated_at": 1672924764000,
+  "version": "1.5.1"
+}

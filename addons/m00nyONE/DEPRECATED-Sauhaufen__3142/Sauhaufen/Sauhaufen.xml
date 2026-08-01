@@ -1,0 +1,526 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+  <Controls>
+    <!-- Menu Button -->
+    <TopLevelControl name="SauhaufenMenuButton" topmost="true" >
+        <Anchor point="128" relativePoint="128" relativeTo="GuiRoot"/>
+        <OnInitialized>self:SetDimensions(GuiRoot:GetWidth(),GuiRoot:GetHeight())</OnInitialized>
+        <Controls>
+            <Backdrop name="$(parent)ButtonBG" alpha="0" centerColor="40FFC0CB" edgeColor="60FFC0CB" clampedToScreen="true" movable="true" mouseEnabled="true">
+                <Dimensions x="60" y="60"/>
+                <Edge edgeSize="1"/>
+                <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12);self:SetAlpha(1)</OnMouseEnter>
+                <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0);self:SetAlpha(0)</OnMouseExit>
+                <OnMouseUp>Sauhaufen.savedVariables.GUI.SauhaufenMenuButton={self:GetLeft(),self:GetTop()}</OnMouseUp>
+            </Backdrop>
+            <Button name="$(parent)Button" topmost="true">
+                <Anchor point="128" relativePoint="128" relativeTo="$(parent)ButtonBG"/>
+                <Dimensions x="40" y="40"/>
+                <Controls>
+                    <Texture name="$(parent)Texture" textureFile="Sauhaufen/media/logo/logo_button_256x256.dds">
+                        <Anchor point="128"/>
+                        <Dimensions x="40" y="40"/>
+                    </Texture>
+                </Controls>
+                <OnMouseEnter>Sauhaufen.GUI.Scale(self, 1, 1.4)</OnMouseEnter>
+                <OnMouseExit>Sauhaufen.GUI.Scale(self, 1.4, 1)</OnMouseExit>
+                <OnClicked>Sauhaufen.GUIToggleMain()</OnClicked>
+            </Button>
+        </Controls>
+    </TopLevelControl>
+    <!-- MainMenu -->
+    <TopLevelControl name="SauhaufenMainMenu" hidden="true" movable="true" mouseEnabled="true" allowBringToTop="true" clampedToScreen="false" resizeHandleSize="10">
+        <Dimensions x="1125" y="550"/>
+        <DimensionConstraints minX="800" minY="350" maxX="800" maxY="350"/>
+        <ClampedToScreenInsets left="-20" top="-20" right="20" bottom="20" />
+        <OnMoveStop>Sauhaufen.savedVariables.GUI.SauhaufenMainMenu={self:GetLeft(),self:GetTop()}</OnMoveStop>
+        <Controls>
+            <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
+            <Label name="$(parent)WindowTitle" text="Sauhaufen" font="ZoFontWindowTitle" color="FFC0CB" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                <Anchor relativeTo="$(parent)"
+                    relativePoint="TOPLEFT"
+                    point="TOPLEFT"
+                    offsetX="10"
+                    offsetY="5" />
+            </Label>
+            <Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+					<Dimensions x="1000" y="4"/>
+					<Anchor point="TOP" 
+                            relativeTo="$(parent)"
+                            offsetY="55" 
+                    />
+			</Texture>
+            <!-- Close Button -->
+            <Button name="$(parent)Close" alpha="1">
+                <Textures
+                    normal="EsoUI/Art/Buttons/closeButton_up.dds"
+                    pressed="EsoUI/Art/Buttons/closeButton_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/closeButton_mouseOver.dds"
+                />
+                <Anchor relativeTo="$(parent)"
+                    relativePoint="TOPRIGHT"
+                    point="TOPRIGHT"
+                    offsetX="0"
+                    offsetY="0" />
+                <Dimensions x="20" y="20" />
+                <TextureCoords
+                    left="0"      top="0"
+                    right="0.625" bottom="0.625" />
+                <OnClicked>Sauhaufen.GUIToggleMain()</OnClicked>
+            </Button>
+            <!-- NavBar -->
+            <Control name="$(parent)NavBar">
+                <Dimensions x="400" y="50"/>
+                <Anchor point="CENTER" 
+                        relativeTo="$(parent)"
+                        relativePoint="TOP"
+                        offsetX="0"
+                        offsetY="25" />
+                <Controls>
+                    <!--
+                    <Backdrop name="$(parent)BG" alpha="1" centerColor="40FF0000" edgeColor="60FF0000">
+                        <Edge edgeSize="1"/>
+                        <Anchor point="TOPLEFT"
+                                relativeTo="$(parent)"
+                                relativePoint="TOPLEFT"
+                        />
+                        <Anchor point="BOTTOMRIGHT"
+                                relativeTo="$(parent)"
+                                relativePoint="BOTTOMRIGHT"
+                        />
+                    </Backdrop>
+                    -->                  
+                    <Button name="$(parent)InfoIcon" alpha="1">
+                        <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Info")</OnMouseEnter>
+                        <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                        <Textures
+                            normal="esoui/art/tradinghouse/tradinghouse_listings_tabicon_up.dds"
+                            pressed="esoui/art/tradinghouse/tradinghouse_listings_tabicon_down.dds"
+                            mouseOver="esoui/art/tradinghouse/tradinghouse_listings_tabicon_over.dds"
+                            disabled="esoui/art/tradinghouse/tradinghouse_listings_tabicon_down.dds"
+                        />
+                        <Anchor relativeTo="$(parent)"
+                            relativePoint="TOPLEFT"
+                            point="TOPLEFT"
+                            offsetX="0"
+                            offsetY="0"/>
+                        <Dimensions x="50" y="50" />
+                        <OnClicked>Sauhaufen.GUIHideAllSubWindows();self:SetEnabled(false);Sauhaufen.GUIActivateInfo()</OnClicked>
+                    </Button>
+                    <Button name="$(parent)GuildhallsIcon" alpha="1">
+                        <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Gildenhäuser")</OnMouseEnter>
+                        <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                        <Textures
+                            normal="esoui/art/worldmap/map_ava_tabicon_keepsummary_up.dds"
+                            pressed="esoui/art/worldmap/map_ava_tabicon_keepsummary_down.dds"
+                            mouseOver="esoui/art/worldmap/map_ava_tabicon_keepsummary_over.dds"
+                            disabled="esoui/art/worldmap/map_ava_tabicon_keepsummary_down.dds"
+                        />
+                        <Anchor relativeTo="$(parent)"
+                            relativePoint="TOPLEFT"
+                            point="TOPLEFT"
+                            offsetX="50"
+                            offsetY="0"/>
+                        <Dimensions x="50" y="50" />
+                        <OnClicked>Sauhaufen.GUIHideAllSubWindows();self:SetEnabled(false);Sauhaufen.GUIActivateGuildhalls()</OnClicked>
+                    </Button>
+                    <Button name="$(parent)EventIcon" alpha="1">
+                        <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Events")</OnMouseEnter>
+                        <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                        <Textures
+                            normal="esoui/art/worldmap/map_indexicon_quests_up.dds"
+                            pressed="esoui/art/worldmap/map_indexicon_quests_down.dds"
+                            mouseOver="esoui/art/worldmap/map_indexicon_quests_over.dds"
+                            disabled="esoui/art/worldmap/map_indexicon_quests_down.dds"
+                        />
+                        <Anchor relativeTo="$(parent)"
+                            relativePoint="TOPLEFT"
+                            point="TOPLEFT"
+                            offsetX="100"
+                            offsetY="0"/>
+                        <Dimensions x="50" y="50" />
+                        <OnClicked>Sauhaufen.GUIHideAllSubWindows();self:SetEnabled(false);Sauhaufen.GUIActivateEvents()</OnClicked>
+                    </Button>
+                    <Button name="$(parent)GamesIcon" alpha="1">
+                        <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Spiele")</OnMouseEnter>
+                        <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                        <Textures
+                            normal="esoui/art/guildfinder/keyboard/guildrecruitment_applications_up.dds"
+                            pressed="esoui/art/guildfinder/keyboard/guildrecruitment_applications_down.dds"
+                            mouseOver="esoui/art/guildfinder/keyboard/guildrecruitment_applications_over.dds"
+                            disabled="esoui/art/guildfinder/keyboard/guildrecruitment_applications_down.dds"
+                        />
+                        <Anchor relativeTo="$(parent)"
+                            relativePoint="TOPLEFT"
+                            point="TOPLEFT"
+                            offsetX="150"
+                            offsetY="0"/>
+                        <Dimensions x="50" y="50" />
+                        <OnClicked>Sauhaufen.GUIHideAllSubWindows();self:SetEnabled(false);Sauhaufen.GUIActivateGames()</OnClicked>
+                    </Button>
+                    <Button name="$(parent)HousingIcon" alpha="1">
+                        <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Housing")</OnMouseEnter>
+                        <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                        <Textures
+                            normal="esoui/art/collections/collections_tabicon_housing_up.dds"
+                            pressed="esoui/art/collections/collections_tabicon_housing_down.dds"
+                            mouseOver="esoui/art/collections/collections_tabicon_housing_over.dds"
+                            disabled="esoui/art/collections/collections_tabicon_housing_down.dds"
+                        />
+                        <Anchor relativeTo="$(parent)"
+                            relativePoint="TOPLEFT"
+                            point="TOPLEFT"
+                            offsetX="200"
+                            offsetY="0"/>
+                        <Dimensions x="50" y="50" />
+                        <OnClicked>Sauhaufen.GUIHideAllSubWindows();self:SetEnabled(false);Sauhaufen.GUIActivateHousing()</OnClicked>
+                    </Button>
+                    <Button name="$(parent)LfgIcon" alpha="1">
+                        <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "LFM")</OnMouseEnter>
+                        <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                        <Textures
+                            normal="esoui/art/lfg/lfg_indexicon_group_up.dds"
+                            pressed="esoui/art/lfg/lfg_indexicon_group_down.dds"
+                            mouseOver="esoui/art/lfg/lfg_indexicon_group_over.dds"
+                            disabled="esoui/art/lfg/lfg_indexicon_group_down.dds"
+                        />
+                        <Anchor relativeTo="$(parent)"
+                            relativePoint="TOPLEFT"
+                            point="TOPLEFT"
+                            offsetX="250"
+                            offsetY="0"/>
+                        <Dimensions x="50" y="50" />
+                        <OnClicked>Sauhaufen.GUIHideAllSubWindows();self:SetEnabled(false);Sauhaufen.GUIActivateLfg()</OnClicked>
+                    </Button>
+                    <Button name="$(parent)CrafterIcon" alpha="1">
+                        <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Meisterhandwerker")</OnMouseEnter>
+                        <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                        <Textures
+                            normal="/esoui/art/inventory/inventory_tabicon_crafting_up.dds"
+                            pressed="/esoui/art/inventory/inventory_tabicon_crafting_down.dds"
+                            mouseOver="/esoui/art/inventory/inventory_tabicon_crafting_over.dds"
+                            disabled="/esoui/art/inventory/inventory_tabicon_crafting_down.dds"
+                        />
+                        <Anchor relativeTo="$(parent)"
+                            relativePoint="TOPLEFT"
+                            point="TOPLEFT"
+                            offsetX="300"
+                            offsetY="0"/>
+                        <Dimensions x="50" y="50" />
+                        <OnClicked>Sauhaufen.GUIHideAllSubWindows();self:SetEnabled(false);Sauhaufen.GUIActivateCrafter()</OnClicked>
+                    </Button>
+                    <Button name="$(parent)WerewolfVampireIcon" alpha="1">
+                        <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Werwolf / Vampir")</OnMouseEnter>
+                        <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                        <Textures
+                            normal="/esoui/art/progression/progression_indexicon_world_up.dds"
+                            pressed="/esoui/art/progression/progression_indexicon_world_down.dds"
+                            mouseOver="/esoui/art/progression/progression_indexicon_world_over.dds"
+                            disabled="/esoui/art/progression/progression_indexicon_world_down.dds"
+                        />
+                        <Anchor relativeTo="$(parent)"
+                            relativePoint="TOPLEFT"
+                            point="TOPLEFT"
+                            offsetX="350"
+                            offsetY="0"/>
+                        <Dimensions x="50" y="50" />
+                        <OnClicked>Sauhaufen.GUIHideAllSubWindows();self:SetEnabled(false);Sauhaufen.GUIActivateWerewolfVampire()</OnClicked>
+                    </Button>
+
+                </Controls>
+            </Control>
+
+            <!-- Info Window -->
+            <Control name="$(parent)Info" alpha="1">
+                <Anchor point="TOPLEFT" 
+                        relativeTo="$(parent)"
+                        relativePoint="TOPLEFT"
+                        offsetX="5"
+                        offsetY="60" />
+                <Anchor point="BOTTOMRIGHT" 
+                        relativeTo="$(parent)"
+                        relativePoint="BOTTOMRIGHT"
+                        offsetX="-5"
+                        offsetY="-5" />
+                <Controls>
+                    <!--
+                    <Backdrop name="$(parent)BG" alpha="1" centerColor="40FF0000" edgeColor="60FF0000">
+                        <Edge edgeSize="1"/>
+                        <Anchor point="TOPLEFT" 
+                            relativeTo="$(parent)"
+                            relativePoint="TOPLEFT"/>
+                        <Anchor point="BOTTOMRIGHT" 
+                            relativeTo="$(parent)"
+                            relativePoint="BOTTOMRIGHT"/>
+                    </Backdrop>
+                    -->
+                    <Label name="$(parent)MOTD" text="" font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                        <Anchor relativeTo="$(parent)"
+                            relativePoint="TOPLEFT"
+                            point="TOPLEFT"
+                            offsetX="5"
+                            offsetY="10" />
+                    </Label>
+                     <Label name="$(parent)Chatguide" text="Für verfügbare Kurzbefehle gib einfach |c00FF00/sh|r in den Chat ein!" font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                        <Anchor relativeTo="$(parent)"
+                            relativePoint="BOTTOM"
+                            point="BOTTOM"
+                            offsetX="5"
+                            offsetY="-15" />
+                    </Label>
+                </Controls>
+            </Control>
+            <!-- Guildhalls Window -->
+            <Control name="$(parent)Guildhalls" alpha="1">
+                <Anchor point="TOPLEFT" 
+                        relativeTo="$(parent)"
+                        relativePoint="TOPLEFT"
+                        offsetX="5"
+                        offsetY="60" />
+                <Anchor point="BOTTOMRIGHT" 
+                        relativeTo="$(parent)"
+                        relativePoint="BOTTOMRIGHT"
+                        offsetX="-5"
+                        offsetY="-10" />
+                <Controls>
+                    <Control name="$(parent)Headers">
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                        <Dimensions y="25" />
+                        <Controls>
+                            <Label name="$(parent)Name" text="Name" font="ZoFontHeader3" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                                <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                                <OnInitialized>self:SetDimensions(SauhaufenMainMenuGuildhalls:GetWidth()/100*63, 32)</OnInitialized>
+                            </Label>
+                            <Label name="$(parent)Username" text="Spieler" font="ZoFontHeader3" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                                <Anchor point="TOPLEFT" relativeTo="$(parent)Name"  relativePoint="TOPRIGHT" offsetX="10"/>
+                                <OnInitialized>self:SetDimensions(SauhaufenMainMenuGuildhalls:GetWidth()/100*23, 32)</OnInitialized>
+                            </Label>
+                        </Controls>
+                    </Control>
+                </Controls>
+            </Control>
+            <!-- Events Window -->
+            <Control name="$(parent)Events" alpha="1">
+                <Anchor point="TOPLEFT" 
+                        relativeTo="$(parent)"
+                        relativePoint="TOPLEFT"
+                        offsetX="5"
+                        offsetY="60" />
+                <Anchor point="BOTTOMRIGHT" 
+                        relativeTo="$(parent)"
+                        relativePoint="BOTTOMRIGHT"
+                        offsetX="-5"
+                        offsetY="-5" />
+                <Controls>
+                    <Label name="$(parent)Text" hidden="true" text="Momentan sind keine Events aktiv." font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                        <Anchor relativeTo="$(parent)"
+                            relativePoint="CENTER"
+                            point="CENTER"
+                        />
+                    </Label>
+                    <Control name="$(parent)Headers">
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                        <Dimensions y="25" />
+                        <Controls>
+                            <Label name="$(parent)Name" text="Name" font="ZoFontHeader3" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                                <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                                <OnInitialized>self:SetDimensions(SauhaufenMainMenuEvents:GetWidth()/100*63, 32)</OnInitialized>
+                            </Label>
+                            <Label name="$(parent)Username" text="Spieler" font="ZoFontHeader3" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                                <Anchor point="TOPLEFT" relativeTo="$(parent)Name"  relativePoint="TOPRIGHT" offsetX="10"/>
+                                <OnInitialized>self:SetDimensions(SauhaufenMainMenuEvents:GetWidth()/100*23, 32)</OnInitialized>
+                            </Label>
+                        </Controls>
+                    </Control>
+                </Controls>
+            </Control>
+            <!-- Games Window -->
+            <Control name="$(parent)Games" alpha="1">
+                <Anchor point="TOPLEFT" 
+                        relativeTo="$(parent)"
+                        relativePoint="TOPLEFT"
+                        offsetX="5"
+                        offsetY="60" />
+                <Anchor point="BOTTOMRIGHT" 
+                        relativeTo="$(parent)"
+                        relativePoint="BOTTOMRIGHT"
+                        offsetX="-5"
+                        offsetY="-5" />
+                <Controls>
+                    <Label name="$(parent)Text" hidden="true" text="Momentan sind keine Spielehäuser aktiv." font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                        <Anchor relativeTo="$(parent)"
+                            relativePoint="CENTER"
+                            point="CENTER"
+                        />
+                    </Label>
+                    <Control name="$(parent)Headers">
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                        <Dimensions y="25" />
+                        <Controls>
+                            <Label name="$(parent)Name" text="Name" font="ZoFontHeader3" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                                <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                                <OnInitialized>self:SetDimensions(SauhaufenMainMenuGames:GetWidth()/100*63, 32)</OnInitialized>
+                            </Label>
+                            <Label name="$(parent)Username" text="Spieler" font="ZoFontHeader3" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                                <Anchor point="TOPLEFT" relativeTo="$(parent)Name"  relativePoint="TOPRIGHT" offsetX="10"/>
+                                <OnInitialized>self:SetDimensions(SauhaufenMainMenuGames:GetWidth()/100*23, 32)</OnInitialized>
+                            </Label>
+                        </Controls>
+                    </Control>
+                </Controls>
+            </Control>
+            <!-- Housing Window -->
+            <Control name="$(parent)Housing" alpha="1">
+                <Anchor point="TOPLEFT" 
+                        relativeTo="$(parent)"
+                        relativePoint="TOPLEFT"
+                        offsetX="5"
+                        offsetY="60" />
+                <Anchor point="BOTTOMRIGHT" 
+                        relativeTo="$(parent)"
+                        relativePoint="BOTTOMRIGHT"
+                        offsetX="-5"
+                        offsetY="-5" />
+                <Controls>
+                    <Label name="$(parent)Text" hidden="true" text="Momentan sind keine Häuser gelistet." font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                        <Anchor relativeTo="$(parent)"
+                            relativePoint="CENTER"
+                            point="CENTER"
+                        />
+                    </Label>
+                    <Control name="$(parent)Headers">
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                        <Dimensions y="25" />
+                        <Controls>
+                            <Label name="$(parent)Name" text="Name" font="ZoFontHeader3" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                                <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                                <OnInitialized>self:SetDimensions(SauhaufenMainMenuHousing:GetWidth()/100*33, 32)</OnInitialized>
+                            </Label>
+                            <Label name="$(parent)House" text="Haus" font="ZoFontHeader3" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                                <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="5"/>
+                                <OnInitialized>self:SetDimensions(SauhaufenMainMenuHousing:GetWidth()/100*30, 32)</OnInitialized>
+                            </Label>
+                            <Label name="$(parent)Username" text="Spieler" font="ZoFontHeader3" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                                <Anchor point="TOPLEFT" relativeTo="$(parent)House"  relativePoint="TOPRIGHT" offsetX="5"/>
+                                <OnInitialized>self:SetDimensions(SauhaufenMainMenuHousing:GetWidth()/100*23, 32)</OnInitialized>
+                            </Label>
+                        </Controls>
+                    </Control>
+                </Controls>
+            </Control>
+            <!-- LFG Window -->
+            <Control name="$(parent)Lfg" alpha="1">
+                <Anchor point="TOPLEFT" 
+                        relativeTo="$(parent)"
+                        relativePoint="TOPLEFT"
+                        offsetX="5"
+                        offsetY="60" />
+                <Anchor point="BOTTOMRIGHT" 
+                        relativeTo="$(parent)"
+                        relativePoint="BOTTOMRIGHT"
+                        offsetX="-5"
+                        offsetY="-5" />
+                <Controls>
+                </Controls>
+            </Control>
+            <!-- Crafter Window -->
+            <Control name="$(parent)Crafter" alpha="1">
+                <Anchor point="TOPLEFT" 
+                        relativeTo="$(parent)"
+                        relativePoint="TOPLEFT"
+                        offsetX="5"
+                        offsetY="60" />
+                <Anchor point="BOTTOMRIGHT" 
+                        relativeTo="$(parent)"
+                        relativePoint="BOTTOMRIGHT"
+                        offsetX="-5"
+                        offsetY="-5" />
+                <Controls>
+                </Controls>
+            </Control>
+            <!-- Werewolf / Vampire Window -->
+            <Control name="$(parent)WerewolfVampire" alpha="1">
+                <Anchor point="TOPLEFT" 
+                        relativeTo="$(parent)"
+                        relativePoint="TOPLEFT"
+                        offsetX="5"
+                        offsetY="60" />
+                <Anchor point="BOTTOMRIGHT" 
+                        relativeTo="$(parent)"
+                        relativePoint="BOTTOMRIGHT"
+                        offsetX="-5"
+                        offsetY="-5" />
+                <Controls>
+                </Controls>
+            </Control>
+        </Controls>
+
+    </TopLevelControl>
+
+    <Control name="HousingScrollListTemplate" virtual="true">
+        <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+        <Dimensions y="28"/>
+        <Controls>
+            <Label name="$(parent)Name" font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS">
+                <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                <OnInitialized>self:SetDimensions(SauhaufenMainMenuHousing:GetWidth()/100*33, 32)</OnInitialized>
+            </Label>
+            <Label name="$(parent)House" font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS">
+                <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="5"/>
+                <OnInitialized>self:SetDimensions(SauhaufenMainMenuHousing:GetWidth()/100*30, 32)</OnInitialized>
+            </Label>
+            <Label name="$(parent)Username" font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS">
+                <Anchor point="TOPLEFT" relativeTo="$(parent)House"  relativePoint="TOPRIGHT" offsetX="5"/>
+                <OnInitialized>self:SetDimensions(SauhaufenMainMenuHousing:GetWidth()/100*23, 32)</OnInitialized>
+            </Label>
+            <Button name="$(parent)Action" font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS" text="port">
+                <Anchor point="TOPLEFT" relativeTo="$(parent)Username" relativePoint="TOPRIGHT" offsetX="5"/>
+                <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5"/>
+                <Controls>
+                    <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"> 
+                        <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                        <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)"/>
+                    </Backdrop>
+                </Controls>
+            </Button>
+        </Controls>
+    </Control>
+
+    <Control name="NPPScrollListTemplate" virtual="true">
+        <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+        <Dimensions y="28"/>
+        <Controls>
+            <Label name="$(parent)Name" font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS">
+                <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                <OnInitialized>self:SetDimensions(SauhaufenMainMenuHousing:GetWidth()/100*63, 32)</OnInitialized>
+            </Label>
+            <Label name="$(parent)Username" font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS">
+                <Anchor point="TOPLEFT" relativeTo="$(parent)Name"  relativePoint="TOPRIGHT" offsetX="10"/>
+                <OnInitialized>self:SetDimensions(SauhaufenMainMenuHousing:GetWidth()/100*23, 32)</OnInitialized>
+            </Label>
+            <Button name="$(parent)Action" font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS" text="port">
+                <Anchor point="TOPLEFT" relativeTo="$(parent)Username" relativePoint="TOPRIGHT" offsetX="5"/>
+                <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5"/>
+                <Controls>
+                    <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"> 
+                        <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                        <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)"/>
+                    </Backdrop>
+                </Controls>
+            </Button>
+        </Controls>
+    </Control>
+  </Controls>
+</GuiXml>
+
+
+
+
+
+
+<!--
+
+/esoui/art/collections/collections_tabicon_collectibles_up.dds
+/esoui/art/crafting/retrait_tabicon_up.dds
+/esoui/art/guild/tabicon_ranks_up.dds
+/esoui/art/progression/progression_indexicon_world_up.dds
+-->

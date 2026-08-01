@@ -1,0 +1,9 @@
+## Title: Stopwatch
+## Description: Stopwatch Addon
+## APIVersion: 100028
+## SavedVariables: StopwatchVars StopWatchVars_AccountSettings
+## DependsOn: LibAddonMenu-2.0
+
+Stopwatch.lua
+bindings.xml
+Stopwatch.xml

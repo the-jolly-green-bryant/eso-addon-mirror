@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/L8Knight/Slightly-ImprovedTM-Experience-Bar__73",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "L8Knight",
+  "canonical_id": "esoui:73",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:73",
+  "deleted": false,
+  "directories": [
+    "SlightlyImprovedExperienceBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl73/",
+  "fingerprint": "ac242a8484a315da0e3a930a817e08d35af49a9f7b1b43ee13ab64653f9c0fe7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7730.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "73",
+  "source_url": "https://www.esoui.com/downloads/info73-SlightlyImprovedExperienceBar.html",
+  "stats": {
+    "downloads": 720750,
+    "favorites": 805,
+    "monthly_downloads": 683
+  },
+  "title": "Slightly Improved\u2122 Experience Bar",
+  "updated_at": 1684705219000,
+  "version": "3.0.1"
+}

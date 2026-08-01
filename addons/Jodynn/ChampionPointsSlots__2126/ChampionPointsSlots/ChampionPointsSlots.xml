@@ -1,0 +1,323 @@
+<GuiXml>
+    <Controls>
+
+        <!-- Floating button {{{-->
+        <Backdrop name="CPSlot_UI_ButtonBg" mouseEnabled="true" movable="true" clampedToScreen="true" edgeColor="80aaffff" centerColor="40aaffff" alpha="0">
+            <Anchor relativeTo="GuiRoot" relativePoint="TOPLEFT" point="TOPLEFT"/>
+            <Dimensions y="60" x="60"/>
+            <Edge edgeSize="1"/>
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+            <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_PAN);self:SetAlpha(1)</OnMouseEnter>
+            <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_DO_NOT_CARE);self:SetAlpha(0)</OnMouseExit>
+        </Backdrop>
+
+        <Button name="CPSlot_UI_Button" topmost="true">
+            <Anchor relativeTo="CPSlot_UI_ButtonBg" relativePoint="CENTER" point="CENTER"/>
+            <Dimensions y="40" x="40"/>
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+            <Textures normal="ChampionPointsSlots/star.dds"
+                      mouseOver="ChampionPointsSlots/starOver.dds"
+                      disabled="ChampionPointsSlots/starHalf.dds"/>
+            <Controls>
+                <Label name="CPSlot_UI_ButtonLabel" font="ZoFontWinH4">
+                    <Anchor relativeTo="$(parent)" relativePoint="TOPRIGHT" point="TOPLEFT"/>
+                </Label>
+            </Controls>
+        </Button>
+
+        <Backdrop name="CPSlot_UI_Timer_BG" mouseEnabled="true" movable="true" clampedToScreen="true" edgeColor="80aaffff" centerColor="40aaffff" alpha="0">
+            <Anchor relativeTo="GuiRoot" relativePoint="TOPLEFT" point="TOPLEFT"/>
+            <Dimensions y="60" x="60"/>
+            <Edge edgeSize="1"/>
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+            <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_PAN);self:SetAlpha(1)</OnMouseEnter>
+            <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_DO_NOT_CARE);self:SetAlpha(0)</OnMouseExit>
+        </Backdrop>
+
+        <Button name="CPSlot_UI_Timer" topmost="true">
+            <Anchor relativeTo="CPSlot_UI_Timer_BG" relativePoint="CENTER" point="CENTER"/>
+            <Dimensions y="40" x="40"/>
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+            <Controls>
+                <Label name="CPSlot_UI_TimerLabel" font="ZoFontWinH4">
+                    <Anchor relativeTo="$(parent)" relativePoint="CENTER" point="CENTER"/>
+                </Label>
+            </Controls>
+        </Button>
+        <!-- }}} -->
+
+    <!-- Virtuals {{{-->
+        <Button name="CPS_Check" inherits="ZO_CheckButton" virtual="true">
+            <Dimensions x="30" y="30" />
+            <Textures
+                pressed="ChampionPointsSlots/checked.dds"
+                pressedMouseOver="ChampionPointsSlots/hover.dds"
+
+                normal="ChampionPointsSlots/disabled.dds"
+                mouseOver="ChampionPointsSlots/hover.dds"
+
+                disabled="ChampionPointsSlots/disabled.dds"
+                disabledPressed="ChampionPointsSlots/checked.dds"
+                />
+        </Button>
+
+        <Backdrop name="CPS_Edit" edgeColor="00000000" centerColor="77777766" alpha="1.0" virtual="true" hidden="true">
+            <Edge edgeSize="1" />
+            <Dimensions y="21" x="40" />
+            <Controls>
+                <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" maxInputCharacters="3" font="$(BOLD_FONT)|$(KB_15)" textType="3" color="INTERFACE_TEXT_COLOR_SELECTED:INTERFACE_TEXT_COLOR_NORMAL" >
+                </EditBox>
+            </Controls>
+        </Backdrop>
+
+        <Button name="CPS_Button" font="ZoFontGame" virtual="true">
+            <Dimensions x="200" y="60" />
+            <Textures normal="esoui/art/buttons/button_xlarge_mouseup.dds"
+                      mouseOver="esoui/art/buttons/button_xlarge_mouseover.dds" />
+        </Button>
+
+        <Button name="CPS_Special_Star" font="ZoFontGame" virtual="true">
+            <Dimensions x="20" y="20"/>
+            <Textures normal="ChampionPointsSlots/star.dds"
+                mouseOver="ChampionPointsSlots/starOver.dds"
+                disabled="ChampionPointsSlots/starHalf.dds"/>
+        </Button>
+
+        <Button name="CPS_Dis" virtual="true" font="ZoFontWinH3" horizontalAlignment="0">
+            <Dimensions x="440" y="40"/>
+            <Textures normal="NULL"
+                      mouseOver="esoui/art/buttons/button_xlarge_mouseover.dds" />
+            <Controls>
+                <Label name="$(parent)Amt" font="ZoFontWinH3">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" />
+                </Label>
+
+                <Button name="$(parent)Slot1" inherits="CPS_Special_Star">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-40" />
+                </Button>
+
+                <Button name="$(parent)Slot2" inherits="CPS_Special_Star">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Slot1" relativePoint="TOPRIGHT" offsetX="1" />
+                </Button>
+
+                <Button name="$(parent)Slot3" inherits="CPS_Special_Star">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Slot2" relativePoint="TOPRIGHT" offsetX="1" />
+                </Button>
+
+                <Button name="$(parent)Slot4" inherits="CPS_Special_Star">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Slot3" relativePoint="TOPRIGHT" offsetX="1" />
+                </Button>
+
+            </Controls>
+        </Button>
+
+        <Button name="CPS_Star" virtual="true" font="ZoFontGame" horizontalAlignment="0">
+            <Dimensions x="180" y="40"/>
+            <Textures normal="NULL"
+                      mouseOver="esoui/art/buttons/button_xlarge_mouseover.dds" />
+            <Controls>
+                <Backdrop name="$(parent)Edge" edgeColor="00000000" centerColor="00000000" alpha="1.0">
+                    <Dimensions x="220" y="21"/>
+                    <Edge edgeSize="1" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                </Backdrop>
+
+                <Backdrop name="$(parent)Edit" font="ZoFontWinH3" inherits="CPS_Edit">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Amt" font="ZoFontGame">
+                    <Dimensions x="50" y="50"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" />
+                </Label>
+
+                <Button name="$(parent)Check" inherits="CPS_Check">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Edit" relativePoint="TOPRIGHT" offsetX="-20" offsetY="-3" />
+                </Button>
+
+            </Controls>
+        </Button>
+
+        <Button name="CPS_Star_Not_Slottable" virtual="true" font="ZoFontGame" horizontalAlignment="0">
+            <Dimensions x="180" y="40"/>
+            <Textures normal="NULL"
+                      mouseOver="esoui/art/buttons/button_xlarge_mouseover.dds" />
+            <Controls>
+                <Backdrop name="$(parent)Edge" edgeColor="00000000" centerColor="00000000" alpha="1.0">
+                    <Dimensions x="220" y="21"/>
+                    <Edge edgeSize="1" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                </Backdrop>
+
+                <Backdrop name="$(parent)Edit" font="ZoFontWinH3" inherits="CPS_Edit">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" />
+                </Backdrop>
+
+                <Label name="$(parent)Amt" font="ZoFontGame">
+                    <Dimensions x="50" y="50"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" />
+                </Label>
+
+            </Controls>
+        </Button>
+
+
+    <!-- End Virtuals }}}-->
+
+        <TopLevelControl name="CPS_Window" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" >
+            <Dimensions x="1600" y="900" />
+            <Anchor point="CENTER" />
+
+            <Controls>
+
+            <!-- Top {{{-->
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+                <Button name="$(parent)CloseButton" inherits="ZO_ButtonBehaviorClickSound" >
+                    <Dimensions x="25" y="25" />
+                    <Textures normal="ESOUI/art/buttons/decline_up.dds"
+                        mouseOver="ESOUI/art/buttons/decline_over.dds" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+                </Button>
+
+                <Label name="$(parent)Title" font="ZoFontWinH1" text="CP Slots" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="1" />
+                </Label>
+
+                <Label name="$(parent)Timer" font="ZoFontWinH4">
+                    <Anchor point="LEFT" relativeTo="$(parent)Title" relativePoint="RIGHT" offsetX="20" offsetY="0" />
+                </Label>
+
+                <Backdrop name="$(parent)Warning_BG" inherits="ZO_DefaultBackdrop" hidden="true" clampedToScreen="true">
+                    <Dimensions x="770" y="250" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+                    <Controls>
+                        <Label name="$(grandparent)WarningLabel" font="ZoFontWinH2" >
+                            <Dimensions x="770"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5"/>
+                        </Label>
+
+                        <Backdrop name="$(grandparent)HelpEdge" edgeColor="00000000" centerColor="00000000" alpha="1.0" >
+                            <Dimensions x="770" y="250"/>
+                            <Edge edgeSize="1" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                        </Backdrop>
+                        <Label name="$(grandparent)HelpLabel" font="ZoFontGame" >
+                            <Dimensions x="770"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5"/>
+                        </Label>
+                    </Controls>
+                </Backdrop>
+
+                <Control name="$(parent)ConfigDropdown" inherits="ZO_ScrollableComboBox" >
+                    <Dimensions x="200" y="30" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0"/>
+                </Control>
+
+                <Control name="$(parent)SlotDropdown" inherits="ZO_ScrollableComboBox" >
+                    <Dimensions x="200" y="30" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)ConfigDropdown" relativePoint="TOPRIGHT" offsetX="20" />
+                </Control>
+
+                <Label name="$(parent)CurrentSet" font="ZoFontWinH1" text="CP Slots" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)ConfigDropdown" relativePoint="TOPRIGHT" offsetX="10" offsetY="-5" />
+                </Label>
+
+                <Backdrop name="$(parent)RenameEditBoxBackdrop" edgeColor="00000000" centerColor="77777766" alpha="1.0" hidden="true">
+                    <Edge edgeSize="1" />
+                    <Dimensions x="200" y="30" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SlotDropdown" relativePoint="TOPRIGHT" offsetX="10" offsetY="1" />
+                    <Controls>
+                        <EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditForBackdrop" >
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+
+                <Label name="$(parent)EditLabel" font="ZoFontWinH3" text="Edit " >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="10" />
+                </Label>
+
+                <Button name="$(parent)EditCheck" inherits="CPS_Check">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)EditLabel" relativePoint="TOPRIGHT" offsetX="10" offsetY="-3" />
+                </Button>
+
+                <Control name="$(parent)TopDivider" inherits="ZO_DynamicHorizontalDivider"  >
+                    <Dimensions x="1600" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="45"/>
+                </Control>
+
+
+            <!-- EndTop }}}-->
+
+            <!-- Green {{{-->
+
+                <Button name="$(parent)CraftDis" inherits="CPS_Dis" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)TopDivider" relativePoint="BOTTOMLEFT" offsetY="10"/>
+                </Button>
+
+                <Control name="$(parent)DropdownGreen" inherits="ZO_ScrollableComboBox" >
+                    <Dimensions x="50" y="30" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)CraftDisSlot1" relativePoint="TOPLEFT"/>
+
+                </Control>
+
+            <!-- endGreen }}}-->
+
+            <!-- Blue {{{-->
+
+                <Button name="$(parent)WarfareDis" inherits="CPS_Dis" >
+                    <Anchor point="TOP" relativeTo="$(parent)TopDivider" relativePoint="TOP" offsetY="10" />
+                </Button>
+
+                <Control name="$(parent)DropdownBlue" inherits="ZO_ScrollableComboBox" >
+                    <Dimensions x="50" y="30" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)WarfareDisSlot1" relativePoint="TOPLFET" offsetX="-20"/>
+                </Control>
+
+            <!-- endBlue }}}-->
+
+            <!-- Red {{{-->
+
+                <Button name="$(parent)FitnessDis" inherits="CPS_Dis" >
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)TopDivider" relativePoint="BOTTOMRIGHT" offsetY="10" />
+                </Button>
+
+                <Control name="$(parent)DropdownRed" inherits="ZO_ScrollableComboBox" >
+                    <Dimensions x="50" y="30" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)FitnessDisSlot1" relativePoint="TOPLEFT"/>
+                </Control>
+
+            <!-- endRed }}}-->
+
+            <!-- Bottom {{{-->
+
+                <Button name="$(parent)SaveButton" font="ZoFontGame" inherits="CPS_Button" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="25" offsetY="-35" />
+                </Button>
+
+                <Button name="$(parent)CloneButton" font="ZoFontGame" inherits="CPS_Button" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="25" offsetY="-120" />
+                </Button>
+
+                <Button name="$(parent)DeleteButton" font="ZoFontGame" inherits="CPS_Button" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="325" offsetY="-120" />
+                </Button>
+
+                <Button name="$(parent)LoadButton" font="ZoFontGame" inherits="CPS_Button" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="325" offsetY="-35" />
+                </Button>
+
+                <!-- Slot button that doesn't work
+                <Button name="$(parent)SlotButton" font="ZoFontGame" inherits="CPS_Button" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="325" offsetY="-200" />
+                </Button>
+                -->
+
+                <Button name="$(parent)ResetButton" font="ZoFontGame" inherits="CPS_Button" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="185" offsetY="-120" />
+                </Button>
+            <!-- Bottom }}} -->
+
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

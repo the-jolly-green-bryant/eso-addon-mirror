@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/Lazy-Alik-r-Dolmen-Runner__3001",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3001",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3001",
+  "deleted": false,
+  "directories": [
+    "LazyAlikrDolmenRunner"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3001/",
+  "fingerprint": "1d8130d3acd1129b1bc1d0cb671460005d64a1af0a67e07028ec8df4a1548a92",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10116.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3001",
+  "source_url": "https://www.esoui.com/downloads/info3001-LazyAlikrDolmenRunner.html",
+  "stats": {
+    "downloads": 8687,
+    "favorites": 7,
+    "monthly_downloads": 135
+  },
+  "title": "Lazy Alik'r Dolmen Runner",
+  "updated_at": 1617206641000,
+  "version": "1.0"
+}

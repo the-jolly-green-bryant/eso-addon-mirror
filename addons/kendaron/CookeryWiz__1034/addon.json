@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/kendaron/CookeryWiz__1034",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kendaron",
+  "canonical_id": "esoui:1034",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    }
+  ],
+  "content_id": "esoui:1034",
+  "deleted": false,
+  "directories": [
+    "CookeryWiz",
+    "EasyFrame"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1034/",
+  "fingerprint": "df13e75e7a02f8eae5bff687576be76a6a042cbc399c9cffd7e15ac3c20c3862",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3811.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1034",
+  "source_url": "https://www.esoui.com/downloads/info1034-CookeryWiz.html",
+  "stats": {
+    "downloads": 239679,
+    "favorites": 269,
+    "monthly_downloads": 163
+  },
+  "title": "CookeryWiz",
+  "updated_at": 1579479384000,
+  "version": "1.0.71"
+}

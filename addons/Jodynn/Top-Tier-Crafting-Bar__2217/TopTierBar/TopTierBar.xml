@@ -1,0 +1,68 @@
+
+<GuiXml>
+    <Controls>
+        <Button name="Top_Tier_Object" virtual="true" horizontalAlignment="0">
+            <Dimensions x="50" y="25"/>
+            <Textures normal="NULL" mouseOver="EsoUI/Art/ActionBar/actionBar_mouseOver.dds" />
+
+            <Controls>
+                <Texture name="$(parent)Icon" textureFile="">
+                    <Dimensions x="25" y="25" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                </Texture>
+
+                <Label name="$(parent)Text" font="$(MEDIUM_FONT)|$(KB_14)|soft-shadow-thin" textureFile="" text="500">
+                    <Dimensions x="25" y="25" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="2" />
+                </Label>
+            </Controls>
+        </Button>
+
+        <Backdrop name="TopTierWindow" mouseEnabled="true" clampedToScreen="true" movable="true" edgeColor="aa000000" centerColor="aa000000" alpha="1" hidden="true">
+            <Dimensions x="300" y="100"/>
+            <Edge edgeSize="2"/>
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+            <Controls>
+                <Button name="$(parent)Metal" inherits="Top_Tier_Object" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="5"/>
+                </Button>
+
+                <Button name="$(parent)Cloth" inherits="Top_Tier_Object" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Metal" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Button>
+
+                <Button name="$(parent)Leather" inherits="Top_Tier_Object" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Cloth" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Button>
+
+                <Button name="$(parent)Wood" inherits="Top_Tier_Object" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Leather" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Button>
+
+                <Button name="$(parent)Jewel" inherits="Top_Tier_Object" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Wood" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Button>
+
+                <Button name="$(parent)RawMetal" inherits="Top_Tier_Object" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Metal" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                </Button>
+
+                <Button name="$(parent)RawCloth" inherits="Top_Tier_Object" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Cloth" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                </Button>
+
+                <Button name="$(parent)RawLeather" inherits="Top_Tier_Object" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Leather" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                </Button>
+
+                <Button name="$(parent)RawWood" inherits="Top_Tier_Object" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Wood" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                </Button>
+
+                <Button name="$(parent)RawJewel" inherits="Top_Tier_Object" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Jewel" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                </Button>
+            </Controls>
+        </Backdrop>
+    </Controls>
+</GuiXml>

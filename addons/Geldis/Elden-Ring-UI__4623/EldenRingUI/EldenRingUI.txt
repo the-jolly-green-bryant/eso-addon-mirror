@@ -1,0 +1,24 @@
+## Title: EldenRingUI
+## Author: Geldis1306
+## Description: Based ui
+## APIVersion: 101049 101050
+## Version: 1.3.8
+## SavedVariables: ERUiVars
+
+HUD\BossBar.xml
+HUD\PlayerResources.xml
+HUD\SimpleFoodTracker.xml
+
+BossBar.lua
+PlayerResources.lua
+
+SetTracker.lua
+Config.lua
+
+SimpleImage.lua
+SimpleFoodTracker.lua
+
+CustomCompass.lua
+
+
+

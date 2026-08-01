@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/HUMILIATION115/Port-to-H-s-House__2750",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "HUMILIATION115",
+  "canonical_id": "esoui:2750",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2750",
+  "deleted": false,
+  "directories": [
+    "PortToHsHouse"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2750/",
+  "fingerprint": "edf83a903750c8a7ad650f9acd52bbb9b4c048c2fe0b9d159da8177fcf2351ab",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2750",
+  "source_url": "https://www.esoui.com/downloads/info2750-PorttoHsHouse.html",
+  "stats": {
+    "downloads": 7428,
+    "favorites": 2,
+    "monthly_downloads": 20
+  },
+  "title": "Port to H's House",
+  "updated_at": 1717553867000,
+  "version": "3.1"
+}

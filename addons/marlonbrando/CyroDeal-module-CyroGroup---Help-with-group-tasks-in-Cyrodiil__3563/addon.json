@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/marlonbrando/CyroDeal-module-CyroGroup---Help-with-group-tasks-in-Cyrodiil__3563",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "marlonbrando",
+  "canonical_id": "esoui:3563",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3563",
+  "deleted": false,
+  "directories": [
+    "CyroGroup"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3563/",
+  "fingerprint": "f4f6641f907e3a9dc99ef44c48f1848197a77d8d5f3e94ba0a74cb6a77469e98",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12090.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12091.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3563",
+  "source_url": "https://www.esoui.com/downloads/info3563-CyroDealmoduleCyroGroup-HelpwithgrouptasksinCyrodiil.html",
+  "stats": {
+    "downloads": 1510,
+    "favorites": 1,
+    "monthly_downloads": 7
+  },
+  "title": "CyroDeal module: CyroGroup - Help with group tasks in Cyrodiil",
+  "updated_at": 1675457704000,
+  "version": "1.00"
+}

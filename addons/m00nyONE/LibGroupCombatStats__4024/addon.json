@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/m00nyONE/LibGroupCombatStats__4024",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "m00nyONE",
+  "canonical_id": "esoui:4024",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4024",
+  "deleted": false,
+  "directories": [
+    "LibGroupCombatStats"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4024/",
+  "fingerprint": "3cc49c2f31971664fc37eaf3275245c62b43528e0352390d8920c3e5d6375693",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4024",
+  "source_url": "https://www.esoui.com/downloads/info4024-LibGroupCombatStats.html",
+  "stats": {
+    "downloads": 225336,
+    "favorites": 70,
+    "monthly_downloads": 11375
+  },
+  "title": "LibGroupCombatStats",
+  "updated_at": 1785063064000,
+  "version": "2026-07-26"
+}

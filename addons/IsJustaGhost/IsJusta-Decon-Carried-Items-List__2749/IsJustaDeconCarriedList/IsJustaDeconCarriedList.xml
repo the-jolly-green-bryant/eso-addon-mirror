@@ -1,0 +1,9 @@
+<GuiXml>
+	<Controls>
+        <TopLevelControl name="IJA_Decon">
+            <OnInitialized>
+                IJA_Decon_Initialize(self)
+            </OnInitialized>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

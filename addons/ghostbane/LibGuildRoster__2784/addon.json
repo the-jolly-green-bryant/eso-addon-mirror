@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/ghostbane/LibGuildRoster__2784",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ghostbane",
+  "canonical_id": "esoui:2784",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2784",
+  "deleted": false,
+  "directories": [
+    "LibGuildRoster"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2784/",
+  "fingerprint": "b40cc4df0cbab15726e4c96b90657f7be3fbedc2622a728a2aa1a57ed34e2b9f",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2784",
+  "source_url": "https://www.esoui.com/downloads/info2784-LibGuildRoster.html",
+  "stats": {
+    "downloads": 625575,
+    "favorites": 322,
+    "monthly_downloads": 9907
+  },
+  "title": "LibGuildRoster",
+  "updated_at": 1781825762000,
+  "version": "1.0.4"
+}

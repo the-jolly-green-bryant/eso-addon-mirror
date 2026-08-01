@@ -1,0 +1,2131 @@
+<GuiXml>
+
+	<!-- New Font definition -->
+	<Font name="ZoFontBookTabletSmall" font="$(STONE_TABLET_FONT)|$(KB_24)|soft-shadow-thick" />
+	<Font name="ZoFontGameMini" font="$(BOLD_FONT)|$(KB_13)|soft-shadow-thin" />
+	<Font name="ZoFontGameMinor" font="$(BOLD_FONT)|$(KB_15)|soft-shadow-thin" />
+
+	<Controls>
+		<!-- Armodeniz Main Scene Champion Skill Template -->
+		<Control name="SuperStarChampionSkillFrame" virtual="true" mouseEnabled="true">
+			<Dimensions x="150" y="20"/>
+			<OnMouseEnter>
+				SuperStar_HoverRowOfCSkill(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SuperStar_ExitRowOfCSkill(self)
+			</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)Star" textureFile="EsoUI/Art/Champion/ActionBar/champion_bar_combat_slotted.dds">
+					<Dimensions x="16" y="16"/>
+					<Anchor relativeTo="$(parent)" point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Texture name="$(parent)StarSelect" textureFile="EsoUI/Art/Champion/ActionBar/champion_bar_combat_selection.dds">
+					<Dimensions x="16" y="16"/>
+					<Anchor relativeTo="$(parent)" point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Texture name="$(parent)StarBorder" textureFile="EsoUI/Art/Champion/ActionBar/champion_bar_slot_frame.dds">
+					<Dimensions x="16" y="16"/>
+					<Anchor relativeTo="$(parent)" point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Label name="$(parent)Name" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" wrapMode="ELLIPSIS">
+					<Dimensions x="110" y="20"/>
+					<Anchor relativeTo="$(parent)Star" point="LEFT" relativePoint="RIGHT" offsetX="2" offsetY="2"/>
+				</Label>
+				<Label name="$(parent)Value" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+					<Anchor relativeTo="$(parent)" point="LEFT" relativePoint="LEFT" offsetX="128" />
+				</Label>
+			</Controls>
+		</Control>
+		<!-- Lykeion Main Scene Scribing Skill Template -->
+		<Control name="SuperStarScribingSkillFrame" virtual="true" mouseEnabled="true">
+			<Dimensions x="300" y="50"/>
+			<OnMouseEnter>
+				SuperStar_HoverRowOfSlot(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SuperStar_ExitRowOfSlot(self)
+			</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)Icon" inherits="SuperStarXMLMainSlotTexture">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="9"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+				<Label name="$(parent)MainText" font="ZoFontGameShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_CONTRAST" wrapMode="ELLIPSIS">
+					<Dimensions x="250" y="15"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="38" offsetY="-3"/>
+				</Label>
+				<Label name="$(parent)SubText" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" wrapMode="ELLIPSIS">
+				<Dimensions x="290" y="15"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="26" />
+				</Label>
+				<Texture name="$(parent)Divider" textureFile="esoui\art\campaign\campaignbrowser_listdivider_right.dds">
+					<Dimensions x="300" y="2"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="17" />
+				</Texture>
+			</Controls>
+		</Control>
+		<!-- Lykeion Main Scene SkillLint Info Template -->
+		<Control name="SuperStarSkillLineFrame" virtual="true" mouseEnabled="true">
+			<Dimensions x="300" y="50"/>
+			<Controls>
+				<Texture name="$(parent)ClassIcon" inherits="SuperStarXMLMainSlotTexture" alpha="0.5" level="2">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-6" offsetY="0"/>
+					<Dimensions x="40" y="40"/>
+				</Texture>
+				<Texture name="$(parent)SkillLineIcon" inherits="SuperStarXMLMainSlotTexture" level="3">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="6" offsetY="12"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+				<Label name="$(parent)ClassName" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_CONTRAST" wrapMode="ELLIPSIS">
+				<Dimensions x="290" y="15"/>
+					<Anchor relativeTo="$(parent)ClassIcon" point="LEFT" relativePoint="RIGHT" offsetX="12" offsetY="-3" />
+				</Label>
+				<Texture name="$(parent)Divider" textureFile="esoui\art\campaign\campaignbrowser_listdivider_right.dds" level="1">
+					<Dimensions x="450" y="2"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ClassName" relativePoint="BOTTOMLEFT" offsetX="-20" offsetY="1" />
+				</Texture>
+				<Label name="$(parent)SkillLineName" font="ZoFontGameShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" wrapMode="ELLIPSIS">
+					<Dimensions x="170" y="15"/>
+					<Anchor relativeTo="$(parent)Divider" point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="40" offsetY="0"/>
+				</Label>
+				<Texture name="$(parent)ClassMasteryIcon" textureFile="esoui\art\miscellaneous\slot_blank.dds" hidden="true">
+					<Anchor point="LEFT" relativeTo="$(parent)SkillLineIcon" relativePoint="RIGHT" offsetX="215" offsetY="18"/>
+					<Dimensions x="26" y="26"/>
+				</Texture>
+				<!-- <Label name="$(parent)Name" font="ZoFontGameShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_CONTRAST" wrapMode="ELLIPSIS">
+					<Dimensions x="250" y="15"/>
+					<Anchor relativeTo="$(parent)" point="LEFT" relativePoint="LEFT" offsetX="45" offsetY="-4"/>
+				</Label> -->
+
+			</Controls>
+		</Control>
+		<!-- Lykeion Share Scene Scribing Skill Template -->
+		<Control name="SuperStarScribingSkillFrameReadOnly" virtual="true" mouseEnabled="true">
+			<Dimensions x="300" y="50"/>
+			<Controls>
+				<Texture name="$(parent)Icon" inherits="SuperStarXMLMainSlotTexture">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="9"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+				<Label name="$(parent)MainText" font="ZoFontGameShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_CONTRAST" wrapMode="ELLIPSIS">
+					<Dimensions x="250" y="15"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="38" offsetY="-3"/>
+				</Label>
+				<Label name="$(parent)SubText" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" wrapMode="ELLIPSIS">
+				<Dimensions x="290" y="15"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="26" />
+				</Label>
+				<Texture name="$(parent)Divider" textureFile="esoui\art\campaign\campaignbrowser_listdivider_right.dds">
+					<Dimensions x="300" y="2"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="17" />
+				</Texture>
+			</Controls>
+		</Control>
+		<!-- Scribing Scene Grimoire Option -->
+		<Control name="SuperStarScribingGrimoireOptionFrame" virtual="true" mouseEnabled="true">
+			<Dimensions x="200" y="80"/>
+			<OnMouseEnter>
+				SuperStar_HoverGrimoire(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SuperStar_ExitGrimoire(self)
+			</OnMouseExit>
+			<OnMouseDown>
+				SuperStar_PickSlot(self)
+			</OnMouseDown>
+			<Controls>
+				<Texture name="$(parent)Icon" inherits="SuperStarXMLMainSlotTexture">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Label name="$(parent)MainText" font="ZoFontGameShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_CONTRAST" wrapMode="ELLIPSIS">
+					<Dimensions x="120" y="10"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="53" offsetY="-14"/>
+				</Label>
+				<Texture name="$(parent)Divider" textureFile="esoui\art\campaign\campaignbrowser_listdivider_right.dds">
+					<Dimensions x="150" y="2"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="53" offsetY="2" />
+				</Texture>
+				<Label name="$(parent)SubText" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" wrapMode="ELLIPSIS">
+					<Dimensions x="150" y="10"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="53" offsetY="8"/>
+				</Label>
+				<Texture name="$(parent)Highlight" textureFile="esoui\art\hud\loothistory_highlight.dds" alpha="0.001" level="1">
+					<Dimensions x="120" y="80"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="-15" offsetY="9" />
+				</Texture>
+			</Controls>
+		</Control>
+		<!-- Scribing Scene Script Option -->
+		<Control name="SuperStarScribingScriptOptionFrame" virtual="true" mouseEnabled="true">
+			<Dimensions x="200" y="80"/>
+			<OnMouseEnter>
+				SuperStar_HoverScript(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SuperStar_ExitScript(self)
+			</OnMouseExit>
+			<OnMouseDown>
+				SuperStar_PickSlot(self)
+			</OnMouseDown>
+			<Controls>
+				<Texture name="$(parent)Icon" inherits="SuperStarXMLMainSlotTexture">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="6" offsetY="0"/>
+					<Dimensions x="40" y="40"/>
+				</Texture>
+				<Label name="$(parent)MainText" font="ZoFontGameShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_CONTRAST" wrapMode="ELLIPSIS">
+					<Dimensions x="150" y="10"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="47" offsetY="-6"/>
+				</Label>
+				<Texture name="$(parent)Divider" textureFile="esoui\art\campaign\campaignbrowser_listdivider_right.dds" alpha="0.001">
+					<Dimensions x="150" y="2"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="47" offsetY="10" />
+				</Texture>
+			</Controls>
+		</Control>
+		<!-- Scribing Scene Grimoire Chosen -->
+		<Control name="SuperStarScribingGrimoireChosenFrame" virtual="true" mouseEnabled="true">
+			<Dimensions x="200" y="80"/>
+			<OnMouseEnter>
+				SuperStar_HoverChosen(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SuperStar_ExitChosen(self)
+			</OnMouseExit>
+			<OnMouseWheel>
+				SuperStar_WheelChosen(self, delta)
+			</OnMouseWheel>
+			<OnMouseDown>
+				SuperStar_RenderSlot(self)
+			</OnMouseDown>
+			<Controls>
+				<Texture name="$(parent)Icon" inherits="SuperStarXMLMainSlotTexture">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Label name="$(parent)MainText" font="ZoFontGameShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_CONTRAST" wrapMode="ELLIPSIS">
+					<Dimensions x="200" y="10"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="53" offsetY="-14"/>
+				</Label>
+				<Texture name="$(parent)Divider" textureFile="esoui\art\campaign\campaignbrowser_listdivider_right.dds">
+					<Dimensions x="150" y="2"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="53" offsetY="2" />
+				</Texture>
+				<Label name="$(parent)SubText" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" wrapMode="ELLIPSIS">
+					<Dimensions x="200" y="10"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="53" offsetY="8"/>
+				</Label>
+				<Texture name="$(parent)Highlight" textureFile="esoui\art\hud\loothistory_highlight.dds" level="1">
+					<Dimensions x="120" y="80"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="-15" offsetY="9" />
+				</Texture>
+				<Control name="$(parent)Spinner" level="1" hidden="true">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+					<Dimensions x="200" y="80"/>
+					<Controls>
+						<Texture name="$(parent)Up" textureFile="esoui\art\hud\hotbar_spinner_uparrow.dds">
+							<Anchor point="TOP" relativeTo="$(parent)Spinner" relativePoint="TOP" offsetX="0" offsetY="0"/>
+							<Dimensions x="60" y="30"/>
+						</Texture>
+						<Texture name="$(parent)Down" textureFile="esoui\art\hud\hotbar_spinner_downarrow.dds">
+							<Anchor point="BOTTOM" relativeTo="$(parent)Spinner" relativePoint="BOTTOM" offsetX="0" offsetY="5"/>
+							<Dimensions x="60" y="30"/>
+						</Texture>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+		<!-- Scribing Scene Script Chosen -->
+		<Control name="SuperStarScribingScriptChosenFrame" virtual="true" mouseEnabled="true">
+			<Dimensions x="200" y="80"/>
+			<OnMouseEnter>
+				SuperStar_HoverChosen(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SuperStar_ExitChosen(self)
+			</OnMouseExit>
+			<OnMouseWheel>
+				SuperStar_WheelChosen(self, delta)
+			</OnMouseWheel>
+			<OnMouseDown>
+				SuperStar_RenderSlot(self)
+			</OnMouseDown>
+			<Controls>
+				<Texture name="$(parent)Icon" inherits="SuperStarXMLMainSlotTexture">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="7" offsetY="0"/>
+					<Dimensions x="40" y="40"/>
+				</Texture>
+				<Label name="$(parent)MainText" font="ZoFontGameShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_CONTRAST" wrapMode="ELLIPSIS">
+					<Dimensions x="200" y="10"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="47" offsetY="-6"/>
+				</Label>
+				<Texture name="$(parent)Divider" textureFile="esoui\art\campaign\campaignbrowser_listdivider_right.dds">
+					<Dimensions x="150" y="2"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="47" offsetY="10" />
+				</Texture>
+				<Control name="$(parent)Spinner" level="1" hidden="true">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+					<Dimensions x="200" y="80"/>
+					<Controls>
+						<Texture name="$(parent)Up" textureFile="esoui\art\hud\hotbar_spinner_uparrow.dds">
+							<Anchor point="TOP" relativeTo="$(parent)Spinner" relativePoint="TOP" offsetX="0" offsetY="0"/>
+							<Dimensions x="60" y="30"/>
+						</Texture>
+						<Texture name="$(parent)Down" textureFile="esoui\art\hud\hotbar_spinner_downarrow.dds">
+							<Anchor point="BOTTOM" relativeTo="$(parent)Spinner" relativePoint="BOTTOM" offsetX="0" offsetY="5"/>
+							<Dimensions x="60" y="30"/>
+						</Texture>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+		<!-- Scribing Scene Sidebar History Template -->
+		<Control name="SuperStarScribingHistory" virtual="true" mouseEnabled="true">
+			<Dimensions x="240" y="60"/>
+			<OnMouseEnter>
+				SuperStar_HoverSidebar(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SuperStar_ExitSidebar(self)
+			</OnMouseExit>
+			<OnMouseDown>
+				SuperStar_PickHistory(self)
+			</OnMouseDown>
+			<Controls>
+				<Texture name="$(parent)Icon" inherits="SuperStarXMLMainSlotTexture">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="9"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+				<Label name="$(parent)MainText" font="ZoFontGameShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_CONTRAST" wrapMode="ELLIPSIS">
+					<Dimensions x="250" y="15"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="38" offsetY="-3"/>
+				</Label>
+				<Label name="$(parent)SubText" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" wrapMode="ELLIPSIS">
+				<Dimensions x="250" y="15"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="26" />
+				</Label>
+				<Texture name="$(parent)Divider" textureFile="esoui\art\campaign\campaignbrowser_listdivider_right.dds">
+					<Dimensions x="250" y="2"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="17" />
+				</Texture>
+					<Texture name="$(parent)Highlight" textureFile="esoui\art\hud\loothistory_highlight.dds" alpha="0.001" level="1">
+					<Dimensions x="120" y="79"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="LEFT" offsetX="-22" offsetY="15" />
+				</Texture>
+				<Texture name="$(parent)Lock" textureFile="esoui\art\miscellaneous\locked_up.dds" hidden="true">
+					<Dimensions x="20" y="20"/>
+					<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="RIGHT" offsetX="200" offsetY="0" />
+				</Texture>
+			</Controls>
+		</Control>
+		<!-- Scribing Scene Favorite Template -->
+		<Control name="SuperStarScribingFavorite" virtual="true" mouseEnabled="true" inherits="SuperStarScribingHistory">
+			<Dimensions x="240" y="60"/>
+			<OnMouseDown>
+				SuperStar_PickFavorite(self)
+			</OnMouseDown>
+		</Control>
+		<!-- SuperStar Favorites Scene - Favorite Row -->
+		<Control name="SuperStarXMLFavoriteRowTemplate" virtual="true" mouseEnabled="true">
+			<OnMouseEnter>
+				SuperStar_HoverRowOfFavorite(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SuperStar_ExitRowOfFavorite(self)
+			</OnMouseExit>
+			<Dimensions x="600" y="30" />
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+
+				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER">
+					<Dimensions x="350" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+				</Label>
+				<Label name="$(parent)CP" font="ZoFontGame" verticalAlignment="CENTER">
+					<Dimensions x="75" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" />
+				</Label>
+				<Label name="$(parent)SP" font="ZoFontGame" verticalAlignment="CENTER">
+					<Dimensions x="75" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)CP" relativePoint="TOPRIGHT" />
+				</Label>
+				<Label name="$(parent)Attr" font="ZoFontGame" verticalAlignment="CENTER">
+					<Dimensions x="75" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)SP" relativePoint="TOPRIGHT" />
+				</Label>
+
+			</Controls>
+		</Control>
+		<!-- Armodeniz -->
+		<Control name="SuperStarXMLImportHashTemplate" virtual="true">
+			<Controls>
+				<Texture name="$(parent)MagickaAttributeIcon" textureFile="/esoui/art/characterwindow/Gamepad/gp_characterSheet_magickaIcon.dds">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="0" />
+					<Dimensions x="48" y="48"/>
+				</Texture>
+				<Texture name="$(parent)HealthAttributeIcon" textureFile="/esoui/art/characterwindow/Gamepad/gp_characterSheet_healthIcon.dds">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="120" offsetY="0" />
+					<Dimensions x="48" y="48"/>
+				</Texture>
+				<Texture name="$(parent)StaminaAttributeIcon" textureFile="/esoui/art/characterwindow/Gamepad/gp_characterSheet_staminaIcon.dds">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="200" offsetY="0" />
+					<Dimensions x="48" y="48"/>
+				</Texture>
+
+				<Label name="$(parent)MagickaAttributeLabel" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" text="64">
+					<Anchor relativeTo="$(parent)MagickaAttributeIcon" point="LEFT" relativePoint="RIGHT" />
+				</Label>
+				<Label name="$(parent)HealthAttributeLabel" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" text="64">
+					<Anchor relativeTo="$(parent)HealthAttributeIcon" point="LEFT" relativePoint="RIGHT" />
+				</Label>
+				<Label name="$(parent)StaminaAttributeLabel" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" text="64">
+					<Anchor relativeTo="$(parent)StaminaAttributeIcon" point="LEFT" relativePoint="RIGHT" />
+				</Label>
+
+				<Label name="$(parent)SkillPointsLabel" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SUPERSTAR_XML_SKILLPOINTS">
+					<Anchor relativeTo="$(parent)" relativePoint="TOPLEFT" point="TOPLEFT" offsetX="40" offsetY="50" />
+				</Label>
+				<Label name="$(parent)SkillPointsValue" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" text="291">
+					<Anchor relativeTo="$(parent)SkillPointsLabel" point="LEFT" relativePoint="RIGHT" offsetX="10" />
+				</Label>
+				<Control name="$(parent)Discipline1">
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="0" offsetY="100" />
+					<Dimensions x="300" y="200"/>
+					<Controls>
+						<Texture name="$(parent)Icon" textureFile="esoui\art\champion\champion_points_magicka_icon.dds">
+							<Dimensions x="20" y="20"/>
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Texture>
+						<Label name="$(parent)Name" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Warfare">
+							<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+						</Label>
+						<Label name="$(parent)Points" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+							<Anchor relativeTo="$(parent)Name" point="LEFT" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Discipline2">
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="0" offsetY="300" />
+					<Dimensions x="300" y="200"/>
+					<Controls>
+						<Texture name="$(parent)Icon" textureFile="esoui\art\champion\champion_points_health_icon.dds">
+							<Dimensions x="20" y="20"/>
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Texture>
+						<Label name="$(parent)Name" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Fitness">
+							<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+						</Label>
+						<Label name="$(parent)Points" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+							<Anchor relativeTo="$(parent)Name" point="LEFT" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Discipline3">
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="0" offsetY="500" />
+					<Dimensions x="300" y="200"/>
+					<Controls>
+						<Texture name="$(parent)Icon" textureFile="esoui\art\champion\champion_points_stamina_icon.dds">
+							<Dimensions x="20" y="20"/>
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Texture>
+						<Label name="$(parent)Name" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Craft">
+							<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+						</Label>
+						<Label name="$(parent)Points" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+							<Anchor relativeTo="$(parent)Name" point="LEFT" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+
+		<!-- SuperStar Skills Scene - Tree -->
+		<Label name="SuperStarXMLSkillsNavigationEntry" virtual="true" font="ZoFontHeader" inherits="ZO_SelectableLabel">
+			<OnMouseUp>
+				ZO_TreeEntry_OnMouseUp(self, upInside)
+			</OnMouseUp>
+		</Label>
+
+		<!-- SuperStar Skills Scene - Refund button (the "-") -->
+		<Button name="SuperStarXMLSkillsAbilityCancel" virtual="true">
+			<Dimensions x="64" y="64"/>
+			<OnClicked>
+				SuperStar_AbilityRefund_OnClicked(self)
+			</OnClicked>
+		</Button>
+
+		<!-- SuperStar Skills Scene - Purchase & Upgrade button (the "+" & "^") -->
+		<Button name="SuperStarXMLSkillsAbilityAlert" virtual="true">
+			<Dimensions x="64" y="64"/>
+			<OnClicked>
+				SuperStar_AbilityAlert_OnClicked(self)
+			</OnClicked>
+		</Button>
+
+		<!-- SuperStar Skills Scene - Ability Icon -->
+		<Button name="SuperStarXMLSkillsAbilitySlot" virtual="true" level="1">
+			<Dimensions x="56" y="56"/>
+			<Textures
+				normal="EsoUI/Art/ActionBar/abilityFrame64_up.dds"
+				pressed="EsoUI/Art/ActionBar/abilityFrame64_down.dds"
+				mouseOver="EsoUI/Art/ActionBar/actionBar_mouseOver.dds"
+				disabled="EsoUI/Art/ActionBar/abilityFrame64_up.dds"
+				/>
+
+			<OnMouseEnter>
+				SuperStar_AbilitySlot_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SuperStar_AbilitySlot_OnMouseExit(self)
+			</OnMouseExit>
+
+			<Controls>
+				<Texture name="$(parent)Icon" textureFile="EsoUI/Art/Icons/icon_missing.dds">
+					<Anchor point="TOPLEFT" offsetX="2" offsetY="2" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2" />
+				</Texture>
+			</Controls>
+		</Button>
+		<Control name="SuperStarXMLSkillsAbility" virtual="true">
+			<Dimensions x="580" y="70"/>
+			<OnInitialized>
+				self.nameLabel = GetControl(self, "Name")
+				self.alert = GetControl(self, "Alert")
+				self.alert.ability = self
+				self.cancel = GetControl(self, "Cancel")
+				self.cancel.ability = self
+				self.decrease = GetControl(self, "Decrease")
+				self.slot = GetControl(self, "Slot")
+				self.slot.icon = GetControl(self.slot, "Icon")
+				self.slot.ability = self
+				self.lock = GetControl(self.slot, "Lock")
+			</OnInitialized>
+			<Controls>
+				<!-- SuperStar Skills Scene - Ability Slot -->
+				<Button name="$(parent)Slot" inherits="SuperStarXMLSkillsAbilitySlot">
+					<Anchor point="LEFT" offsetX="125" />
+					<OnMouseUp>
+						SuperStarSkills_OnClickedAbility(self, button)
+					</OnMouseUp>
+					<Controls>
+						<Texture name="$(parent)Lock" textureFile="EsoUI/Art/Progression/lock.dds" tier="HIGH" hidden="true">
+							<Dimensions x="32" y="32"/>
+							<Anchor point="CENTER" relativeTo="$(parent)Icon" />
+						</Texture>
+					</Controls>
+				</Button>
+
+				<Button name="$(parent)Cancel" inherits="SuperStarXMLSkillsAbilityCancel" hidden="true">
+					<Anchor point="LEFT" relativePoint="LEFT" />
+				</Button>
+
+				<Button name="$(parent)Alert" inherits="SuperStarXMLSkillsAbilityAlert" hidden="true">
+					<Anchor point="LEFT" relativePoint="LEFT" offsetX="55"/>
+				</Button>
+
+				<Label name="$(parent)Name" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<!-- Anchor set in Lua-->
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="SuperStarXMLSkillsAbilityTypeHeader" virtual="true">
+			<Dimensions y="32"/>
+			<Controls>
+				<Label name="$(parent)Label" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" modifyTextType="UPPERCASE">
+					<Anchor point="LEFT" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="SuperStarXMLSkillsSkillHeader" mouseEnabled="true" virtual="true">
+			<Dimensions x="370" y="65" />
+			<OnInitialized>
+				self.name = GetControl(self, "Name")
+			</OnInitialized>
+
+			<Controls>
+
+				<Label name="$(parent)Name" font="ZoFontHeader2" modifyTextType="UPPERCASE">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" offsetY="9" />
+				</Label>
+
+			</Controls>
+		</Control>
+
+		<!-- SuperStar Skills Scene - Ability slot disabled -->
+		<Button name="SuperStarXMLSkillsAbilitySlot_NonClickable" virtual="true" inherits="SuperStarXMLSkillsAbilitySlot">
+			<ButtonState state="DISABLED" locked="true" />
+		</Button>
+
+		<!-- SuperStar Skills Scene - Morph button (the "^") -->
+		<Button name="SuperStarXMLSkillsMorphAbilitySlot" virtual="true" inherits="SuperStarXMLSkillsAbilitySlot">
+			<OnClicked>
+				SuperStarSkillsMorphAbilitySlot_OnClicked(self)
+			</OnClicked>
+			<Controls>
+				<Texture name="$(parent)SelectedCallout" layer="OVERLAY" hidden="true" textureFile="EsoUI/Art/ActionBar/actionBar_mouseOver.dds">
+					<AnchorFill />
+				</Texture>
+			</Controls>
+		</Button>
+
+		<!-- SuperStar Skills Scene - Skill Icon -->
+		<Button name="SuperStarXMLSkillsUpgradeAbilitySlot" virtual="true" inherits="SuperStarXMLSkillsAbilitySlot_NonClickable">
+			<OnMouseEnter>
+				SuperStar_AbilitySlot_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SuperStar_AbilitySlot_OnMouseExit(self)
+			</OnMouseExit>
+		</Button>
+
+		<!-- SuperStar Skills & Main Scene - Ability tooltip -->
+		<TopLevelControl name="SuperStarAbilityTooltipTopLevel" inherits="TooltipTopLevel">
+			<Controls>
+				<Tooltip name="SuperStarAbilityTooltip"  inherits="ZO_BaseTooltip" />
+			</Controls>
+		</TopLevelControl>
+
+		<!-- SuperStar Scribing Scene - Result tooltip -->
+		<TopLevelControl name="SuperStarScribingResultTooltipTopLevel" inherits="TooltipTopLevel">
+			<Controls>
+				<Tooltip name="SuperStarScribingResultTooltip"  inherits="ZO_BaseTooltip" />
+			</Controls>
+		</TopLevelControl>
+
+		<!-- SuperStar Skills Scene - Confirm Dialog (Skill isn't unlocked yet) -->
+		<TopLevelControl name="SuperStarXMLSkillsConfirmDialog" inherits="ZO_CustomDialogBase">
+			<Controls>
+				<Label name="$(parent)Description" inherits="ZO_DialogContentAnchors" font="ZoFontGameMedium" text="SI_SKILLS_CONFIRM_DESCRIPTION"  color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"/>
+
+				<Button name="$(parent)Ability" inherits="SuperStarXMLSkillsAbilitySlot_NonClickable">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Description" relativePoint="BOTTOMLEFT" offsetX="30" offsetY="20" />
+				</Button>
+
+				<Label name="$(parent)AbilityName" font="ZoFontGameLargeBold" text="SI_SKILLS_CONFIRM_DESCRIPTION">
+					<Anchor point="LEFT" relativeTo="$(parent)Ability" relativePoint="RIGHT" offsetX="10" />
+				</Label>
+
+				<!-- <Label name="$(parent)Warning" font="ZoFontGameMedium" horizontalAlignment="CENTER" text="SI_SKILLS_IMPROVEMENT_COST"  color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Ability" relativePoint="BOTTOMLEFT" offsetX="-30" offsetY="20" />
+				</Label> -->
+
+				<Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton"/>
+				<Control name="$(parent)Confirm" inherits="ZO_CustomDialogButton"/>
+			</Controls>
+		</TopLevelControl>
+
+		<!-- SuperStar Skills Scene - Morph Dialog (Active/Ultimate skill morph) -->
+		<TopLevelControl name="SuperStarXMLSkillsMorphDialog" inherits="ZO_CustomDialogBase">
+			<Controls>
+				<Label name="$(parent)Description" inherits="ZO_DialogContentAnchors" font="ZoFontGameMedium" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"/>
+
+				<Texture name="$(parent)Track" textureFile="EsoUI/Art/Progression/morph_graphic.dds">
+					<Dimensions x="128" y="128"/>
+					<Anchor point="TOP" relativeTo="$(parent)Description" relativePoint="BOTTOM" offsetX="15" offsetY="30" />
+				</Texture>
+
+				<Button name="$(parent)BaseAbility" inherits="SuperStarXMLSkillsAbilitySlot_NonClickable">
+					<Anchor point="RIGHT" relativeTo="$(parent)Track" relativePoint="LEFT" />
+				</Button>
+
+				<Button name="$(parent)MorphAbility1" inherits="SuperStarXMLSkillsMorphAbilitySlot">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Track" offsetX="15" offsetY="-10" />
+				</Button>
+
+				<Button name="$(parent)MorphAbility2" inherits="SuperStarXMLSkillsMorphAbilitySlot">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Track" offsetX="15" offsetY="10" />
+				</Button>
+
+				<!-- <Label name="$(parent)Warning" font="ZoFontGameMedium" text="SI_SKILLS_IMPROVEMENT_COST" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Description" offsetY="230" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Description" offsetY="230" />
+				</Label> -->
+
+				<Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton"/>
+				<Control name="$(parent)Confirm" inherits="ZO_CustomDialogButton"/>
+			</Controls>
+		</TopLevelControl>
+
+		<!-- SuperStar Skills Scene - Upgrade Dialog (Passive skill upgrade) -->
+		<TopLevelControl name="SuperStarXMLSkillsUpgradeDialog" inherits="ZO_CustomDialogBase">
+			<Controls>
+				<Label name="$(parent)Description" inherits="ZO_DialogContentAnchors" font="ZoFontGameMedium" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"/>
+
+				<Texture name="$(parent)Track" textureFile="EsoUI/Art/Progression/passive_arrow_graphic.dds">
+					<Dimensions x="128" y="64"/>
+					<Anchor point="TOP" relativeTo="$(parent)Description" relativePoint="BOTTOM" offsetX="25" offsetY="20" />
+				</Texture>
+
+				<Button name="$(parent)BaseAbility" inherits="SuperStarXMLSkillsAbilitySlot_NonClickable">
+					<Anchor point="RIGHT" relativeTo="$(parent)Track" relativePoint="LEFT" offsetX="-25" />
+				</Button>
+
+				<Button name="$(parent)UpgradeAbility" inherits="SuperStarXMLSkillsUpgradeAbilitySlot">
+					<Anchor point="LEFT" relativeTo="$(parent)Track" relativePoint="RIGHT" offsetX="-38" />
+				</Button>
+
+				<!-- <Label name="$(parent)Warning" font="ZoFontGameMedium" horizontalAlignment="CENTER" text="SI_SKILLS_IMPROVEMENT_COST" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Description" offsetY="145" />
+				</Label> -->
+
+				<Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton"/>
+				<Control name="$(parent)Confirm" inherits="ZO_CustomDialogButton"/>
+			</Controls>
+		</TopLevelControl>
+
+		<!-- SuperStar Main Scene - Slots Tooltips -->
+		<Texture name="SuperStarXMLMainSlotTexture" mouseEnabled="true" virtual="true">
+			<OnMouseEnter>
+				SuperStar_HoverRowOfSlot(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SuperStar_ExitRowOfSlot(self)
+			</OnMouseExit>
+			<Dimensions x="32" y="32"/>
+		</Texture>
+
+		<!-- SuperStar Main Scene - Stuff Labels -->
+		<Label name="SuperStarXMLMainStuff" mouseEnabled="true" font="ZoFontGameLargeBold" virtual="true">
+			<OnMouseEnter>
+				SuperStar_HoverRowOfStuff(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SuperStar_ExitRowOfStuff(self)
+			</OnMouseExit>
+		</Label>
+
+		<!-- SuperStar Main Scene - CSkill Labels -->
+		<Label name="SuperStarXMLMainCSkill" mouseEnabled="true" font="ZoFontGameSmall" virtual="true">
+			<OnMouseEnter>
+				SuperStar_HoverRowOfCSkill(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SuperStar_ExitRowOfCSkill(self)
+			</OnMouseExit>
+		</Label>
+
+		<!-- SuperStar Main Scene - CSkill Labels -->
+		<Label name="SuperStarXMLMainStat" mouseEnabled="true" font="ZoFontGameBold" virtual="true" />
+
+		<Texture name="SuperStarXMLMainBuffIconTemplate" virtual="true">
+			<Dimensions x="24" y="24"/>
+		</Texture>
+
+		<Control name="SuperStarXMLFoodBuffRowTemplate" virtual="true" font="ZoFontWinT2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" wrapMode="ELLIPSIS">
+			<Controls>
+				<Label name="$(parent)Label" font="ZoFontWinT2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" wrapMode="ELLIPSIS">
+					<Dimensions x="180" y="18"/>
+				</Label>
+				<Texture name="$(parent)Divider" textureFile="esoui\art\campaign\campaignbrowser_listdivider_right.dds">
+					<Dimensions x="280" y="4"/>
+					<Anchor relativeTo="$(parent)Label" point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+				</Texture>
+			</Controls>
+		</Control>
+
+		<Control name="SuperStarXMLMainStuffRowTemplate" virtual="true">
+			<Controls>
+				<Label name="$(parent)Label" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" />
+				<Label name="$(parent)Level" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+					<Anchor relativeTo="$(parent)Label" point="RIGHT" relativePoint="LEFT" offsetX="215" />
+				</Label>
+				<Label name="$(parent)Value" inherits="SuperStarXMLMainStuff" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+					<Anchor relativeTo="$(parent)Label" point="LEFT" relativePoint="LEFT" offsetX="220" />
+				</Label>
+				<Label name="$(parent)Trait" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+					<Anchor relativeTo="$(parent)Label" point="LEFT" relativePoint="LEFT" offsetX="220" offsetY="20" />
+				</Label>
+				<Label name="$(parent)Enchant" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+					<Anchor relativeTo="$(parent)Label" point="LEFT" relativePoint="LEFT" offsetX="320" offsetY="20" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<!-- SuperStar Main Scene - Item tooltip -->
+		<TopLevelControl name="SuperStarItemTooltipTopLevel" inherits="TooltipTopLevel">
+			<Controls>
+				<Tooltip name="SuperStarItemTooltip"  inherits="ItemTooltipBase" />
+			</Controls>
+		</TopLevelControl>
+
+		<!-- SuperStar Main Scene - CSkill tooltip -->
+		<TopLevelControl name="SuperStarCSkillTooltipTopLevel" inherits="TooltipTopLevel">
+			<Controls>
+				<Tooltip name="SuperStarCSkillTooltip"  inherits="ItemTooltipBase" />
+			</Controls>
+		</TopLevelControl>
+
+		<!-- SuperStar Scribing Scene - SSkill tooltip -->
+		<TopLevelControl name="SuperStarSSkillTooltipTopLevel" inherits="TooltipTopLevel">
+			<Controls>
+				<Tooltip name="SuperStarSSkillTooltip"  inherits="ItemTooltipBase" />
+			</Controls>
+		</TopLevelControl>
+
+		<!-- SuperStar Companion Scene - Stuff Template -->
+		<Control name="SuperStarXMLCompStuffTemplate" virtual="true">
+			<Controls>
+				<Label name="$(parent)Label" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+				</Label>
+				<Label name="$(parent)Level" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+					<Anchor relativeTo="$(parent)Label" point="RIGHT" relativePoint="LEFT" offsetX="215" />
+				</Label>
+				<Label name="$(parent)Name" inherits="SuperStarXMLMainStuff" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+					<Anchor relativeTo="$(parent)Label" point="LEFT" relativePoint="LEFT" offsetX="220" />
+				</Label>
+				<Label name="$(parent)Trait" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+					<Anchor relativeTo="$(parent)Label" point="LEFT" relativePoint="LEFT" offsetX="220" offsetY="20" />
+				</Label>
+				<Label name="$(parent)TraitDesc" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+					<Anchor relativeTo="$(parent)Label" point="LEFT" relativePoint="LEFT" offsetX="320" offsetY="20" />
+				</Label>
+			</Controls>
+		</Control>
+
+
+		<!-- SuperStar Main Scene -->
+		<TopLevelControl name="SuperStarXMLMain" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<Controls>
+				<Control name="$(parent)Character">
+					<Dimensions x="930" y="690" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+					<Controls>
+						<Texture name="$(parent)AllianceTexture" font="ZoFontGameLargeBold">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="15" />
+							<Dimensions x="64" y="64"/>
+						</Texture>
+
+						<Texture name="$(parent)CPIcon">
+							<Anchor  relativeTo="$(parent)AllianceTexture" point="LEFT" relativePoint="RIGHT" offsetX="3" offsetY="-17" />
+							<Dimensions x="36" y="36"/>
+						</Texture>
+						<Label name="$(parent)LevelValue" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)CPIcon" point="CENTER" relativePoint="RIGHT" offsetX="25"/>
+						</Label>
+						<Texture name="$(parent)ShareRaceIcon" hidden="true">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10"/>
+							<Dimensions x="72" y="72"/>
+						</Texture>
+						<Texture name="$(parent)ShareClassIcon" hidden="true">
+							<Anchor point="LEFT" relativeTo="$(parent)ShareRaceIcon" relativePoint="RIGHT" offsetX="-20" offsetY="0"/>
+							<Dimensions x="72" y="72"/>
+						</Texture>
+						<Label name="$(parent)ClassAndRaceValue" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+							<Anchor relativeTo="$(parent)AllianceTexture" point="LEFT" relativePoint="RIGHT" offsetX="95" offsetY="-17" />
+						</Label>
+
+						<Texture name="$(parent)AvaRankTexture" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)AllianceTexture" point="LEFT" relativePoint="RIGHT" offsetY="17" />
+							<Dimensions x="42" y="42"/>
+						</Texture>
+						<Label name="$(parent)AvaRankValue" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)AvaRankTexture" point="CENTER" relativePoint="RIGHT" offsetX="22" />
+						</Label>
+						<Label name="$(parent)AvaRankName" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+							<Anchor relativeTo="$(parent)AllianceTexture" point="LEFT" relativePoint="RIGHT" offsetX="95" offsetY="17" />
+						</Label>
+
+						<Label name="$(parent)SkillPointsLabel" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SUPERSTAR_XML_SKILLPOINTS">
+							<Anchor relativeTo="$(parent)" relativePoint="TOPRIGHT" point="TOPRIGHT" offsetX="-20" offsetY="10" />
+						</Label>
+						<Label name="$(parent)SkillPointsValue" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)SkillPointsLabel" relativePoint="LEFT" point="RIGHT" offsetX="-10" />
+						</Label>
+
+						<Label name="$(parent)ChampionPointsLabel" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SUPERSTAR_XML_CHAMPIONPOINTS">
+							<Anchor relativeTo="$(parent)" relativePoint="TOPRIGHT" point="TOPRIGHT" offsetX="-20" offsetY="40" />
+						</Label>
+						<Label name="$(parent)ChampionPointsValue" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)ChampionPointsLabel" relativePoint="LEFT" point="RIGHT" offsetX="-10" />
+						</Label>
+
+						<Texture name="$(parent)ActiveMWeapon">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="405" offsetY="15" />
+							<Dimensions x="32" y="32"/>
+						</Texture>
+						<Texture name="$(parent)ActiveMSkill1" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="440" offsetY="15"/>
+						</Texture>
+						<Texture name="$(parent)ActiveMSkill2" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="475" offsetY="15"/>
+						</Texture>
+						<Texture name="$(parent)ActiveMSkill3" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="510" offsetY="15"/>
+						</Texture>
+						<Texture name="$(parent)ActiveMSkill4" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="545" offsetY="15"/>
+						</Texture>
+						<Texture name="$(parent)ActiveMSkill5" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="580" offsetY="15"/>
+						</Texture>
+						<Texture name="$(parent)ActiveMSkill6" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="15"/>
+						</Texture>
+
+						<Texture name="$(parent)ActiveOWeapon">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="405" offsetY="50" />
+							<Dimensions x="32" y="32"/>
+						</Texture>
+						<Texture name="$(parent)ActiveOSkill1" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="440" offsetY="50" />
+						</Texture>
+						<Texture name="$(parent)ActiveOSkill2" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="475" offsetY="50" />
+						</Texture>
+						<Texture name="$(parent)ActiveOSkill3" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="510" offsetY="50" />
+						</Texture>
+						<Texture name="$(parent)ActiveOSkill4" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="545" offsetY="50" />
+							<Dimensions x="32" y="32"/>
+						</Texture>
+						<Texture name="$(parent)ActiveOSkill5" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="580" offsetY="50" />
+						</Texture>
+						<Texture name="$(parent)ActiveOSkill6" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="50" />
+						</Texture>
+
+						<Texture name="$(parent)ActiveSSkill1" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-195" offsetY="65" />
+						</Texture>
+						<Texture name="$(parent)ActiveSSkill2" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-160" offsetY="65" />
+						</Texture>
+						<Texture name="$(parent)ActiveSSkill3" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-125" offsetY="65" />
+						</Texture>
+						<Texture name="$(parent)ActiveSSkill4" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-90" offsetY="65" />
+						</Texture>
+						<Texture name="$(parent)ActiveSSkill5" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-55" offsetY="65" />
+						</Texture>
+						<Texture name="$(parent)ActiveSSkill6" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="65" />
+						</Texture>
+						<Texture name="$(parent)ActiveSWeapon">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15" offsetY="65" />
+							<Dimensions x="32" y="32"/>
+						</Texture>
+
+						<Texture name="$(parent)MagickaAttributeIcon" textureFile="/esoui/art/characterwindow/Gamepad/gp_characterSheet_magickaIcon.dds">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="80" />
+							<Dimensions x="48" y="48"/>
+						</Texture>
+						<Texture name="$(parent)HealthAttributeIcon" textureFile="/esoui/art/characterwindow/Gamepad/gp_characterSheet_healthIcon.dds">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="110" />
+							<Dimensions x="48" y="48"/>
+						</Texture>
+						<Texture name="$(parent)StaminaAttributeIcon" textureFile="/esoui/art/characterwindow/Gamepad/gp_characterSheet_staminaIcon.dds">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="140" />
+							<Dimensions x="48" y="48"/>
+						</Texture>
+
+						<Label name="$(parent)MagickaAttributeLabel" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+							<Anchor relativeTo="$(parent)MagickaAttributeIcon" point="LEFT" relativePoint="RIGHT" />
+						</Label>
+						<Label name="$(parent)HealthAttributeLabel" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+							<Anchor relativeTo="$(parent)HealthAttributeIcon" point="LEFT" relativePoint="RIGHT" />
+						</Label>
+						<Label name="$(parent)StaminaAttributeLabel" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+							<Anchor relativeTo="$(parent)StaminaAttributeIcon" point="LEFT" relativePoint="RIGHT" />
+						</Label>
+
+						<Texture name="$(parent)MaxMagicka" font="ZoFontGameLargeBold" textureFile="/esoui/art/chatwindow/chat_scrollbar_uparrow_up.dds">
+							<Anchor relativeTo="$(parent)MagickaAttributeIcon" point="LEFT" relativePoint="RIGHT" offsetX="25"/>
+							<Dimensions x="16" y="16"/>
+						</Texture>
+						<Texture name="$(parent)MaxHealth" font="ZoFontGameLargeBold" textureFile="/esoui/art/chatwindow/chat_scrollbar_uparrow_up.dds">
+							<Anchor relativeTo="$(parent)HealthAttributeIcon" point="LEFT" relativePoint="RIGHT" offsetX="25"/>
+							<Dimensions x="16" y="16"/>
+						</Texture>
+						<Texture name="$(parent)MaxStamina" font="ZoFontGameLargeBold" textureFile="/esoui/art/chatwindow/chat_scrollbar_uparrow_up.dds">
+							<Anchor relativeTo="$(parent)StaminaAttributeIcon" point="LEFT" relativePoint="RIGHT" offsetX="25" />
+							<Dimensions x="16" y="16"/>
+						</Texture>
+
+						<Texture name="$(parent)RegenMagicka" font="ZoFontGameLargeBold" textureFile="/esoui/art/chatwindow/chat_scrollbar_uparrow_up.dds">
+							<Anchor relativeTo="$(parent)MagickaAttributeIcon" point="LEFT" relativePoint="RIGHT" offsetX="95"/>
+							<Dimensions x="16" y="16"/>
+						</Texture>
+						<Texture name="$(parent)RegenHealth" font="ZoFontGameLargeBold" textureFile="/esoui/art/chatwindow/chat_scrollbar_uparrow_up.dds">
+							<Anchor relativeTo="$(parent)HealthAttributeIcon" point="LEFT" relativePoint="RIGHT" offsetX="95"/>
+							<Dimensions x="16" y="16"/>
+						</Texture>
+						<Texture name="$(parent)RegenStamina" font="ZoFontGameLargeBold" textureFile="/esoui/art/chatwindow/chat_scrollbar_uparrow_up.dds">
+							<Anchor relativeTo="$(parent)StaminaAttributeIcon" point="LEFT" relativePoint="RIGHT" offsetX="95" />
+							<Dimensions x="16" y="16"/>
+						</Texture>				
+
+						<Label name="$(parent)MagickaAttributePoints" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)MagickaAttributeIcon" point="LEFT" relativePoint="RIGHT" offsetX="40"/>
+						</Label>
+						<Label name="$(parent)HealthAttributePoints" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)HealthAttributeIcon" point="LEFT" relativePoint="RIGHT" offsetX="40"/>
+						</Label>
+						<Label name="$(parent)StaminaAttributePoints" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)StaminaAttributeIcon" point="LEFT" relativePoint="RIGHT" offsetX="40" />
+						</Label>
+
+						<Label name="$(parent)MagickaAttributeRegen" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)MagickaAttributeIcon" point="LEFT" relativePoint="RIGHT" offsetX="108"/>
+						</Label>
+						<Label name="$(parent)HealthAttributeRegen" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)HealthAttributeIcon" point="LEFT" relativePoint="RIGHT" offsetX="108"/>
+						</Label>
+						<Label name="$(parent)StaminaAttributeRegen" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)StaminaAttributeIcon" point="LEFT" relativePoint="RIGHT" offsetX="108" />
+						</Label>				
+
+						<!-- Food Buff Info Panel (replaces 3x3 buff icon grid) -->
+						<Control name="$(parent)FoodBuffInfo">
+							<Anchor point="CENTER" relativeTo="$(parent)MagickaAttributeIcon" relativePoint="RIGHT" offsetX="145" offsetY="30"/>
+							<Controls>
+								<Texture name="$(parent)Icon">
+									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32"/>
+								</Texture>
+							</Controls>
+						</Control>
+						<Label name="$(parent)DmgLabel" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" text="SUPERSTAR_XML_DMG">
+							<Anchor relativeTo="$(parent)MagickaAttributeIcon" point="CENTER" relativePoint="RIGHT" offsetX="380" offsetY="-5"/>
+						</Label>
+						<Label name="$(parent)MagickaDmg" inherits="SuperStarXMLMainStat">
+							<Anchor relativeTo="$(parent)DmgLabel" point="CENTER" relativePoint="CENTER" offsetY="20"/>
+						</Label>
+						<Label name="$(parent)StaminaDmg" inherits="SuperStarXMLMainStat">
+							<Anchor relativeTo="$(parent)DmgLabel" point="CENTER" relativePoint="CENTER" offsetY="56"/>
+						</Label>
+
+						<Label name="$(parent)CritLabel" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" text="SUPERSTAR_XML_CRIT">
+							<Anchor relativeTo="$(parent)MagickaAttributeIcon" point="CENTER" relativePoint="RIGHT" offsetX="450" offsetY="-5"/>
+						</Label>
+						<Label name="$(parent)MagickaCritPercent" inherits="SuperStarXMLMainStat">
+							<Anchor relativeTo="$(parent)CritLabel" point="CENTER" relativePoint="CENTER" offsetY="20"/>
+						</Label>
+						<Label name="$(parent)MagickaCrit" inherits="SuperStarXMLMainStat" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+							<Anchor relativeTo="$(parent)CritLabel" point="CENTER" relativePoint="CENTER" offsetY="36"/>
+						</Label>
+						<Label name="$(parent)StaminaCritPercent" inherits="SuperStarXMLMainStat">
+							<Anchor relativeTo="$(parent)CritLabel" point="CENTER" relativePoint="CENTER" offsetY="56"/>
+						</Label>
+						<Label name="$(parent)StaminaCrit" inherits="SuperStarXMLMainStat" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+							<Anchor relativeTo="$(parent)CritLabel" point="CENTER" relativePoint="CENTER" offsetY="72"/>
+						</Label>
+
+						<Label name="$(parent)PeneLabel" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" text="SUPERSTAR_XML_PENE">
+							<Anchor relativeTo="$(parent)MagickaAttributeIcon" point="CENTER" relativePoint="RIGHT" offsetX="520" offsetY="-5"/>
+						</Label>
+						<Label name="$(parent)MagickaPene" inherits="SuperStarXMLMainStat">
+							<Anchor relativeTo="$(parent)PeneLabel" point="CENTER" relativePoint="CENTER" offsetY="20"/>
+						</Label>
+						<Label name="$(parent)StaminaPene" inherits="SuperStarXMLMainStat">
+							<Anchor relativeTo="$(parent)PeneLabel" point="CENTER" relativePoint="CENTER" offsetY="56"/>
+						</Label>
+
+						<Label name="$(parent)ResistLabel" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" text="SUPERSTAR_XML_RESIST">
+							<Anchor relativeTo="$(parent)MagickaAttributeIcon" point="CENTER" relativePoint="RIGHT" offsetX="600" offsetY="-5"/>
+						</Label>
+						<Label name="$(parent)MagickaResistPercent" inherits="SuperStarXMLMainStat">
+							<Anchor relativeTo="$(parent)ResistLabel" point="CENTER" relativePoint="CENTER" offsetY="20"/>
+						</Label>
+						<Label name="$(parent)MagickaResist" inherits="SuperStarXMLMainStat" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+							<Anchor relativeTo="$(parent)ResistLabel" point="CENTER" relativePoint="CENTER" offsetY="36"/>
+						</Label>
+						<Label name="$(parent)StaminaResistPercent" inherits="SuperStarXMLMainStat">
+							<Anchor relativeTo="$(parent)ResistLabel" point="CENTER" relativePoint="CENTER" offsetY="56"/>
+						</Label>
+						<Label name="$(parent)StaminaResist" inherits="SuperStarXMLMainStat" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+							<Anchor relativeTo="$(parent)ResistLabel" point="CENTER" relativePoint="CENTER" offsetY="72"/>
+						</Label>
+
+						<Texture name="$(parent)VampWWVIcon">
+							<Anchor relativeTo="$(parent)" relativePoint="TOPRIGHT" point="TOPRIGHT" offsetX="-20" offsetY="100" />
+							<Dimensions x="24" y="24"/>
+						</Texture>
+						<Label name="$(parent)VampWWValue" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)VampWWVIcon" point="RIGHT" relativePoint="LEFT" offsetX="-10" />
+						</Label>
+
+						<Texture name="$(parent)MundusBoonIcon">
+							<Anchor relativeTo="$(parent)" relativePoint="TOPRIGHT" point="TOPRIGHT" offsetX="-20" offsetY="130" />
+							<Dimensions x="24" y="24"/>
+						</Texture>
+						<Label name="$(parent)MundusBoonValue" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)MundusBoonIcon" point="RIGHT" relativePoint="LEFT" offsetX="-10" />
+						</Label>
+						<Texture name="$(parent)MundusBoonIcon2">
+							<Anchor relativeTo="$(parent)" relativePoint="TOPRIGHT" point="TOPRIGHT" offsetX="-20" offsetY="160" />
+							<Dimensions x="24" y="24"/>
+						</Texture>
+						<Label name="$(parent)MundusBoonValue2" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)MundusBoonIcon2" point="RIGHT" relativePoint="LEFT" offsetX="-10" />
+						</Label>
+
+						<!-- Armodeniz-->
+						<Control name="$(parent)Discipline1">
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="-300" offsetY="180" />
+							<Dimensions x="300" y="70"/>
+							<Controls>
+								<Texture name="$(parent)Icon" textureFile="esoui\art\champion\champion_points_magicka_icon.dds">
+									<Dimensions x="20" y="20"/>
+									<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+								</Texture>
+								<Label name="$(parent)Name" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Warfare">
+									<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+								</Label>
+								<Label name="$(parent)Points" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+									<Anchor relativeTo="$(parent)Name" point="LEFT" relativePoint="RIGHT" offsetX="10" offsetY="1" />
+								</Label>
+							</Controls>
+						</Control>
+						<Control name="$(parent)Discipline2">
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="-300" offsetY="270" />
+							<Dimensions x="300" y="70"/>
+							<Controls>
+								<Texture name="$(parent)Icon" textureFile="esoui\art\champion\champion_points_health_icon.dds">
+									<Dimensions x="20" y="20"/>
+									<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+								</Texture>
+								<Label name="$(parent)Name" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Fitness">
+									<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+								</Label>
+								<Label name="$(parent)Points" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+									<Anchor relativeTo="$(parent)Name" point="LEFT" relativePoint="RIGHT" offsetX="10" offsetY="1" />
+								</Label>
+							</Controls>
+						</Control>
+						<Control name="$(parent)Discipline3">
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="-300" offsetY="360" />
+							<Dimensions x="300" y="70"/>
+							<Controls>
+								<Texture name="$(parent)Icon" textureFile="esoui\art\champion\champion_points_stamina_icon.dds">
+									<Dimensions x="20" y="20"/>
+									<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+								</Texture>
+								<Label name="$(parent)Name" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Craft">
+									<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+								</Label>
+								<Label name="$(parent)Points" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+									<Anchor relativeTo="$(parent)Name" point="LEFT" relativePoint="RIGHT" offsetX="10" offsetY="1" />
+								</Label>
+							</Controls>
+						</Control>
+
+						<!-- Lykeion -->
+						<Control name="$(parent)SkillLine">
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="-300" offsetY="450" />
+							<Dimensions x="300" y="700"/>
+							<Controls>
+								<Control name="$(parent)List">
+									<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+								</Control>
+							</Controls>
+						</Control>
+
+						<!-- Lykeion -->
+						<Control name="$(parent)Scribing">
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="-300" offsetY="590" />
+							<Dimensions x="300" y="500"/>
+							<Controls>
+								<!-- <Texture name="$(parent)Icon" textureFile="esoui\art\crafting\retrait_tabicon_up.dds"> -->
+								<!-- <Texture name="$(parent)Icon" textureFile="esoui\art\icons\u42_scribing_coin.dds">
+									<Dimensions x="30" y="30"/>
+									<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+								</Texture>
+								<Label name="$(parent)Name" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_TRADESKILLTYPE8">
+									<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+								</Label> -->
+								<Control name="$(parent)List">
+									<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+								</Control>
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+					
+				<Control name="$(parent)Companion">
+					<Dimensions x="930" y="690" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+					<Controls>
+						<Texture name="$(parent)CompanionIcon">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="15" />
+							<Dimensions x="64" y="64"/>
+						</Texture>
+						<Label name="$(parent)Level" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" mouseEnabled="true">
+							<Anchor relativeTo="$(parent)CompanionIcon" point="LEFT" relativePoint="RIGHT" offsetX="45" offsetY="-17" />
+							<OnMouseEnter>
+								ZO_CompanionProgressBar_Keyboard:OnMouseEnter(self)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ZO_CompanionProgressBar_Keyboard:OnMouseExit(self)
+							</OnMouseExit>
+						</Label>
+						<Label name="$(parent)Name" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+							<Anchor relativeTo="$(parent)CompanionIcon" point="LEFT" relativePoint="RIGHT" offsetX="95" offsetY="-17" />
+						</Label>
+
+						<Texture name="$(parent)RapportIcon" textureFile="\esoui\art\companion\keyboard\category_u30_rapport_up.dds">
+							<Anchor relativeTo="$(parent)CompanionIcon" point="LEFT" relativePoint="RIGHT" offsetY="17" />
+							<Dimensions x="42" y="42"/>
+						</Texture>
+						<Label name="$(parent)Rapport" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)RapportIcon" point="CENTER" relativePoint="RIGHT" offsetX="22" />
+						</Label>
+						<Label name="$(parent)RapportLevel" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" mouseEnabled="true">
+							<Anchor relativeTo="$(parent)CompanionIcon" point="LEFT" relativePoint="RIGHT" offsetX="95" offsetY="17" />
+							<OnMouseEnter>
+								SuperStar_Companion_RapportLevel_OnMouseEnter(self)
+							</OnMouseEnter>
+							<OnMouseExit>
+								SuperStar_Companion_RapportLevel_OnMouseExit(self)
+							</OnMouseExit>
+						</Label>
+
+						<Control name="$(parent)PassivePerk" mouseEnabled="true">
+							<Dimensions x="290" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="100" />
+							<OnMouseEnter>
+								SuperStar_Companion_PassivePerk_OnMouseEnter(self)
+							</OnMouseEnter>
+							<OnMouseExit>
+								SuperStar_Companion_PassivePerk_OnMouseExit(self)
+							</OnMouseExit>
+							<Controls>
+								<Label name="$(parent)Title" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_COMPANION_OVERVIEW_PERK">
+									<Anchor point="LEFT"/>
+								</Label>
+								<Label name="$(parent)Value" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+									<Anchor point="LEFT" relativeTo="$(parent)Title" relativePoint="RIGHT" offsetX="10" offsetY="0"/>
+								</Label>
+							</Controls>
+						</Control>
+
+						<Texture name="$(parent)HealthAttributeIcon" textureFile="/esoui/art/characterwindow/Gamepad/gp_characterSheet_healthIcon.dds">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="130" />
+							<Dimensions x="42" y="42"/>
+						</Texture>
+						<Label name="$(parent)MaxHealthPoints" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor relativeTo="$(parent)HealthAttributeIcon" point="LEFT" relativePoint="RIGHT" offsetX="5" />
+						</Label>
+
+						<Texture name="$(parent)ActiveWeapon">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="405" offsetY="15" />
+							<Dimensions x="32" y="32"/>
+						</Texture>
+						<Texture name="$(parent)ActiveSkill1" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="440" offsetY="15"/>
+						</Texture>
+						<Texture name="$(parent)ActiveSkill2" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="475" offsetY="15"/>
+						</Texture>
+						<Texture name="$(parent)ActiveSkill3" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="510" offsetY="15"/>
+						</Texture>
+						<Texture name="$(parent)ActiveSkill4" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="545" offsetY="15"/>
+						</Texture>
+						<Texture name="$(parent)ActiveSkill5" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="580" offsetY="15"/>
+						</Texture>
+						<Texture name="$(parent)ActiveSkill6" inherits="SuperStarXMLMainSlotTexture">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="15"/>
+						</Texture>
+
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<!-- SuperStar Skills Scene (pre-2nd) -->
+		<TopLevelControl name="SuperStarXMLSkillsPreSelector" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<Dimensions x="930" y="690" />
+			<Controls>
+				<!-- <Label name="$(parent)SPLabel" font="ZoFontBookTabletSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SUPERSTAR_XML_SKILLPOINTS" horizontalAlignment="CENTER" >
+					<Dimensions x="275" />
+					<Anchor point="TOPLEFT" offsetY="75" offsetX="0" />
+				</Label> -->
+				<Label name="$(parent)SBLabel" font="ZoFontHeader4" horizontalAlignment="CENTER" text="SUPERSTAR_XML_SKILL_BUILD">
+					<Dimensions x="250" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="5" offsetY="75" />
+				</Label>
+
+				<Label name="$(parent)SBExplain" font="ZoFontGameShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="CENTER" text="SUPERSTAR_XML_SKILL_BUILD_EXPLAIN">
+					<Dimensions x="250" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="5" offsetY="140" />
+				</Label>
+
+				<!-- <Label name="$(parent)ClassName" font="ZoFontCallout" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_SKILLTYPE1">
+					<Anchor point="TOP"  offsetX="120" offsetY="75" />
+				</Label>
+
+				<Button name="$(parent)Class1" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="120" offsetX="-120" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_dragonguardicon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_dragonguardicon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_dragonguardicon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_dragonguardicon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverClass(self, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitClass()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderClass(1)
+					</OnClicked>
+
+				</Button>
+
+				<Button name="$(parent)Class2" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="120" offsetX="-40"/>
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_sorceroricon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_sorceroricon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_sorceroricon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_sorceroricon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverClass(self, 2)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitClass()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderClass(2)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Class3" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="120" offsetX="40" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_nightbladeicon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_nightbladeicon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_nightbladeicon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_nightbladeicon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverClass(self, 3)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitClass()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderClass(3)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Class6" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="120" offsetX="120" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_templaricon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_templaricon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_templaricon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_templaricon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverClass(self, 6)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitClass()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderClass(6)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Class4" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="120" offsetX="200" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_wardenicon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_wardenicon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_wardenicon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_wardenicon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverClass(self, 4)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitClass()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderClass(4)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Class5" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="120" offsetX="280" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_necromancericon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_necromancericon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_necromancericon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_necromancericon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverClass(self, 5)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitClass()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderClass(5)
+					</OnClicked>
+				</Button>
+				<Button name="$(parent)Class117" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="120" offsetX="360" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_arcanisticon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_arcanisticon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_arcanisticon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_arcanisticon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverClass(self, 117)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitClass()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderClass(117)
+					</OnClicked>
+				</Button> -->
+				
+
+				<Label name="$(parent)RaceName" font="ZoFontCallout" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SUPERSTAR_SCENE_SKILL_RACE_LABEL">
+					<Anchor point="TOP" offsetX="120" offsetY="100" />
+				</Label>
+
+				<Button name="$(parent)Race1" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="180" offsetX="0" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_bretonicon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_bretonicon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_bretonicon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_bretonicon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverRace(self, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitRace()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderRace(1)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Race7" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="180" offsetX="120" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_altmericon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_altmericon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_altmericon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_altmericon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverRace(self, 7)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitRace()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderRace(7)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Race6" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="180" offsetX="240" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_argonianicon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_argonianicon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_argonianicon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_argonianicon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverRace(self, 6)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitRace()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderRace(6)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Race3" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="280" offsetX="0" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_orcicon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_orcicon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_orcicon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_orcicon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverRace(self, 3)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitRace()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderRace(3)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Race8" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="280" offsetX="120" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_bosmericon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_bosmericon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_bosmericon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_bosmericon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverRace(self, 8)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitRace()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderRace(8)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Race4" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="280" offsetX="240" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_dunmericon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_dunmericon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_dunmericon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_dunmericon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverRace(self, 4)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitRace()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderRace(4)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Race2" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="380" offsetX="0"/>
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_redguardicon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_redguardicon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_redguardicon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_redguardicon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverRace(self, 2)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitRace()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderRace(2)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Race9" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="380" offsetX="120" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_khajiiticon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_khajiiticon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_khajiiticon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_khajiiticon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverRace(self, 9)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitRace()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderRace(9)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Race5" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="380" offsetX="240" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_nordicon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_nordicon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_nordicon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_nordicon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverRace(self, 5)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitRace()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderRace(5)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Race10" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOP" offsetY="490" offsetX="120" />
+					<Textures
+						normal="EsoUI/Art/CharacterCreate/charactercreate_imperialicon_up.dds"
+						pressed="EsoUI/Art/CharacterCreate/charactercreate_imperialicon_down.dds"
+						mouseOver="EsoUI/Art/CharacterCreate/charactercreate_imperialicon_over.dds"
+						disabled="EsoUI/Art/CharacterCreate/charactercreate_imperialicon_disabled.dds"
+						/>
+
+					<OnMouseEnter>
+						SuperStar_SkillBuilderPreselector_HoverRace(self, 10)
+					</OnMouseEnter>
+					<OnMouseExit>
+						SuperStar_SkillBuilderPreselector_ExitRace()
+					</OnMouseExit>
+					<OnClicked>
+						SuperStar_SetSkillBuilderRace(10)
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)StartBuild" font="ZoFontBookTabletTitle" inherits="ZO_ButtonBehaviorClickSound" text="SUPERSTAR_XML_BUTTON_START">
+					<Dimensions x="200" y="100"/>
+					<Anchor point="TOP" offsetX="125" offsetY="595" />
+					<FontColors
+						normalColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+						pressedColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+						mouseOverColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT"
+						disabledColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED"
+						/>
+					<OnClicked>
+						SuperStar_StartSkillBuilder()
+					</OnClicked>
+				</Button>
+
+			</Controls>
+		</TopLevelControl>
+
+		<!-- SuperStar Skills Scene -->
+		<TopLevelControl name="SuperStarXMLSkills" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<OnEffectivelyShown>
+				SuperStar_ShowSkills(self)
+			</OnEffectivelyShown>
+			<Controls>
+
+				<!-- Menu Tree -->
+
+				<Label name="$(parent)AvailablePoints" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" alpha="0">
+					<Anchor point="TOPLEFT" offsetX="5" offsetY="7" />
+				</Label>
+
+				<Control name="$(parent)NavigationContainer" inherits="ZO_ScrollContainer">
+					<Dimensions x="335"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)AvailablePoints" relativePoint="BOTTOMLEFT" offsetY="25" />
+					<Anchor point="BOTTOMLEFT" offsetX="5" offsetY="-55" />
+				</Control>
+
+				<!-- Right Side -->
+
+				<Control name="$(parent)SkillInfo" inherits="SuperStarXMLSkillsSkillHeader">
+					<Anchor point="TOPRIGHT" offsetX="-213" offsetY="-5" />
+				</Control>
+
+				<Control name="$(parent)AbilityList" inherits="ZO_ScrollList">
+					<Dimensions x="550"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)SkillInfo" relativePoint="BOTTOMRIGHT" offsetY="5" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-33" offsetY="-55" />
+				</Control>
+
+			</Controls>
+		</TopLevelControl>
+
+		<!-- SuperStar Import Scene -->
+		<!-- <TopLevelControl name="SuperStarXMLImport" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<Controls>
+
+				<Label name="$(parent)ImportLabel" font="ZoFontHeader4" horizontalAlignment="CENTER" text="SUPERSTAR_IMPORT_MENU_TITLE">
+					<Dimensions x="250" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="5" offsetY="75" />
+				</Label>
+
+				<Label name="$(parent)ImportExplain" font="ZoFontGameShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="CENTER" text="SUPERSTAR_XML_IMPORT_EXPLAIN">
+					<Dimensions x="250" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="5" offsetY="120" />
+				</Label>
+
+				<Label name="$(parent)MyBuildTitle" font="ZoFontHeader4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SUPERSTAR_IMPORT_MYBUILD">
+					<Dimensions x="250" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="650" offsetY="50" />
+				</Label>
+
+				<Button name="$(parent)MyBuildIclAttr" inherits="ZO_DefaultButton" text="SUPERSTAR_IMPORT_ATTR_ENABLED">
+					<OnClicked>
+						SuperStar_ToggleImportAttr()
+					</OnClicked>
+					<Dimensions x="225" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="300" offsetY="110" />
+				</Button>
+
+				<Button name="$(parent)MyBuildIclSP" inherits="ZO_DefaultButton" text="SUPERSTAR_IMPORT_SP_ENABLED">
+					<OnClicked>
+						SuperStar_ToggleImportSP()
+					</OnClicked>
+					<Dimensions x="225" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="300" offsetY="160" />
+				</Button>
+
+				<Button name="$(parent)MyBuildIclCP" inherits="ZO_DefaultButton" text="SUPERSTAR_IMPORT_CP_ENABLED">
+					<OnClicked>
+						SuperStar_ToggleImportCP()
+					</OnClicked>
+					<Dimensions x="225" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="300" offsetY="210" />
+				</Button>
+
+				<Backdrop name="$(parent)MyBuildValue" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="550" offsetY="100" />
+					<Dimensions x="350" y="150" />
+					<Controls>
+						<EditBox name="$(parent)Edit" editEnabled="false" font="ZoFontWinT2" inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" maxInputCharacters="600" />
+					</Controls>
+				</Backdrop>
+
+				<Label name="$(parent)ImportTitle" font="ZoFontHeader4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SUPERSTAR_IMPORT_BUILD_LABEL">
+					<Dimensions x="500" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="320" offsetY="300" />
+				</Label>
+
+				<Backdrop name="$(parent)ImportValue" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="320" offsetY="350" />
+					<Dimensions x="590" y="150" />
+					<Controls>
+						<EditBox name="$(parent)Edit" font="ZoFontWinT2" inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" maxInputCharacters="600">
+							<OnTextChanged>
+								SuperStar_CheckImportedBuild(self)
+							</OnTextChanged>
+						</EditBox>
+					</Controls>
+				</Backdrop>
+
+				<Control name="$(parent)Container" inherits="ZO_ScrollContainer" hidden="true">
+					<Dimensions x="320" y="375"/>
+					<OnInitialized>
+						ZO_Scroll_Initialize(self)
+					</OnInitialized>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)ImportValue" relativePoint="TOPLEFT" offsetX="-5" />
+				</Control>
+
+				<Control name="$(parent)HashData" inherits="SuperStarXMLImportHashTemplate">
+					<OnInitialized>
+						self:SetParent(GetControl("SuperStarXMLImportContainerScrollChild"))
+						self:SetAnchor(TOPLEFT, SuperStarXMLImportContainerScrollChild, TOPLEFT, 4, 4)
+					</OnInitialized>
+				</Control>
+
+				<Button name="$(parent)ImportSeeBuild" inherits="ZO_DefaultButton" text="SUPERSTAR_SEE_BUILD" hidden="true">
+					<OnClicked>
+						SuperStar_SeeImportedBuild()
+					</OnClicked>
+					<Dimensions x="300" y="64" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="475" offsetY="550" />
+				</Button>
+
+			</Controls>			
+		</TopLevelControl> -->
+
+		<!-- SuperStar Favorites Scene -->
+		<TopLevelControl name="SuperStarXMLFavorites" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<Controls>
+
+				<Label name="$(parent)FavoritesLabel" font="ZoFontHeader4" horizontalAlignment="CENTER" text="SI_GAMEPAD_OPTIONS_TEMPLATES">
+					<Dimensions x="250" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="5" offsetY="75" />
+				</Label>
+
+				<Label name="$(parent)FavoritesExplain" font="ZoFontGameShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="CENTER" text="SUPERSTAR_XML_FAVORITES_EXPLAIN">
+					<Dimensions x="250" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="5" offsetY="140" />
+				</Label>
+
+				<Control name="$(parent)Headers">
+					<Dimensions x="600" y="32" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="50"/>
+					<Controls>
+
+						<Control name="$(parent)Name" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SUPERSTAR_XML_FAVORITES_HEADER_NAME), "name", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+							<Dimensions x="350" y="32" />
+						</Control>
+
+						<Control name="$(parent)CPCount" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SUPERSTAR_XML_FAVORITES_HEADER_CP), "cp", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT"/>
+							<Dimensions x="75" y="32" />
+						</Control>
+
+						<Control name="$(parent)SPCount" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SUPERSTAR_XML_FAVORITES_HEADER_SP), "sp", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)CPCount" relativePoint="TOPRIGHT"/>
+							<Dimensions x="75" y="32" />
+						</Control>
+
+						<Control name="$(parent)AttrCount" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SUPERSTAR_XML_FAVORITES_HEADER_ATTR), "attr", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)SPCount" relativePoint="TOPRIGHT"/>
+							<Dimensions x="75" y="32" />
+						</Control>
+
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Dimensions x="600" y="575" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="TOPLEFT" offsetX="0" offsetY="40" />
+				</Control>
+
+				<Control name="$(parent)Respec">
+					<Dimensions x="600" y="575" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="TOPLEFT" offsetX="0" offsetY="40" />
+					<Controls>
+						<Label name="$(parent)Title" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" mouseEnabled="true" horizontalAlignment="CENTER">
+							<Dimensions x="600"/>
+							<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="TOP" offsetY="100" />
+						</Label>
+
+						<Label name="$(parent)Warning" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" mouseEnabled="true" horizontalAlignment="CENTER">
+							<Dimensions x="600"/>
+							<Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetY="20" />
+						</Label>
+
+						<Label name="$(parent)SkillLines" font="ZoFontHeader2" color="FF0000" mouseEnabled="true" horizontalAlignment="CENTER">
+							<Dimensions x="800"/>
+							<Anchor point="TOP" relativeTo="$(parent)Warning" relativePoint="BOTTOM" offsetY="20" />
+						</Label>
+
+						<Button name="$(parent)Respec" font="ZoFontHeader4" verticalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound" hidden="true" text="SUPERSTAR_XML_BUTTON_RESPEC">
+
+							<Dimensions x="250" y="50" />
+							<PressedOffset x="1" y="1" />
+
+							<FontColors
+								normalColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+								pressedColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+								mouseOverColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT"
+								disabledColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED"
+								/>
+
+							<Textures
+								normal="EsoUI/Art/Buttons/ESO_buttonLarge_normal.dds"
+								pressed="EsoUI/Art/Buttons/ESO_buttonlLarge_mouseDown.dds"
+								mouseOver="EsoUI/Art/Buttons/ESO_buttonLarge_mouseOver.dds"
+								disabled="EsoUI/Art/Buttons/ESO_buttonLarge_disabled.dds"
+								/>
+
+							<Anchor point="TOP" relativeTo="$(parent)SkillLines" relativePoint="BOTTOM" offsetY="120" />
+
+							<OnClicked>
+								SuperStar_DoRespec()
+							</OnClicked>
+						</Button>
+
+						<Button name="$(parent)Back" font="ZoFontHeader2" verticalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound" hidden="true" text="SI_GAMEPAD_BACK_OPTION">
+
+							<Dimensions x="250" y="30" />
+							<PressedOffset x="1" y="1" />
+
+							<FontColors
+								normalColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+								pressedColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+								mouseOverColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT"
+								disabledColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED"
+								/>
+
+							<Textures
+								normal="EsoUI/Art/Buttons/ESO_buttonLarge_normal.dds"
+								pressed="EsoUI/Art/Buttons/ESO_buttonlLarge_mouseDown.dds"
+								mouseOver="EsoUI/Art/Buttons/ESO_buttonLarge_mouseOver.dds"
+								disabled="EsoUI/Art/Buttons/ESO_buttonLarge_disabled.dds"
+								/>
+
+							<Anchor point="TOP" relativeTo="$(parent)Respec" relativePoint="BOTTOM" offsetY="40" />
+
+							<OnClicked>
+								SuperStar_DoBack()
+							</OnClicked>
+						</Button>
+
+					</Controls>
+				</Control>
+
+			</Controls>
+		</TopLevelControl>
+
+		<!-- SuperStar Respec Scene -->
+		<TopLevelControl name="SuperStarXMLRespec" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<Controls>
+
+				<Label name="$(parent)Title" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" mouseEnabled="true">
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="TOP" offsetY="100" />
+				</Label>
+
+				<Label name="$(parent)Warning" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" mouseEnabled="true" horizontalAlignment="CENTER">
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="TOP" offsetY="180" />
+				</Label>
+
+				<Label name="$(parent)SkillLines" font="ZoFontHeader2" color="FF0000" mouseEnabled="true" horizontalAlignment="CENTER">
+					<Dimensions x="800"/>
+					<Anchor point="TOP" relativeTo="$(parent)Warning" relativePoint="BOTTOM" offsetY="20" />
+				</Label>
+
+				<Button name="$(parent)Respec" font="ZoFontHeader4" verticalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound" hidden="true" text="SUPERSTAR_XML_BUTTON_RESPEC">
+
+					<Dimensions x="250" y="50" />
+					<PressedOffset x="1" y="1" />
+
+					<FontColors
+						normalColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+						pressedColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+						mouseOverColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT"
+						disabledColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED"
+						/>
+
+					<Textures
+						normal="EsoUI/Art/Buttons/ESO_buttonLarge_normal.dds"
+						pressed="EsoUI/Art/Buttons/ESO_buttonlLarge_mouseDown.dds"
+						mouseOver="EsoUI/Art/Buttons/ESO_buttonLarge_mouseOver.dds"
+						disabled="EsoUI/Art/Buttons/ESO_buttonLarge_disabled.dds"
+						/>
+
+					<Anchor point="TOP" relativeTo="$(parent)SkillLines" relativePoint="BOTTOM" offsetY="60" />
+
+					<OnClicked>
+						SuperStar_DoRespec()
+					</OnClicked>
+				</Button>
+
+			</Controls>
+		</TopLevelControl>		
+
+
+		<!-- Scribing Scene -->
+		<TopLevelControl name="SuperStarXMLScribing" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<Controls>
+				<Control name="$(parent)Sidebar">
+					<Dimensions x="200" y="30"/>	
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="80" />
+					<Controls>
+						<Control name="$(parent)History" mouseEnabled="true">
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="0" />
+							<Dimensions x="80" y="30"/>
+							<OnMouseDown>
+								SuperStar_PickTab(self)
+							</OnMouseDown>
+							<Controls>
+								<Label name="$(parent)Text" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" text="SI_WINDOW_TITLE_GUILD_HISTORY">
+									<Anchor relativeTo="$(parent)" point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="0" />
+								</Label>
+								<Texture name="$(parent)Divider" textureFile="esoui\art\campaign\campaignbrowser_listdivider_right.dds">
+									<Dimensions x="120" y="2"/>
+									<Anchor relativeTo="$(parent)Text" point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="-2" offsetY="2" />
+								</Texture>
+							</Controls>
+						</Control>
+						<Texture name="$(parent)Divider" textureFile="esoui\art\hud\xpbar_divider.dds">
+							<Dimensions x="5" y="30"/>
+							<Anchor relativeTo="$(parent)History" point="LEFT" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+						</Texture>
+						<Control name="$(parent)Favorites" mouseEnabled="true">
+							<Anchor relativeTo="$(parent)Divider" point="LEFT" relativePoint="RIGHT" offsetX="28" offsetY="0" />
+							<Dimensions x="80" y="30"/>
+							<OnMouseDown>
+								SuperStar_PickTab(self)
+							</OnMouseDown>
+							<Controls>
+								<Label name="$(parent)Text" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_COLLECTIONS_FAVORITES_CATEGORY_HEADER">
+									<Anchor relativeTo="$(parent)" point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="0" />
+								</Label>
+								<Texture name="$(parent)Divider" textureFile="esoui\art\campaign\campaignbrowser_listdivider_right.dds" hidden="true">
+									<Dimensions x="120" y="2"/>
+									<Anchor relativeTo="$(parent)Text" point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="-2" offsetY="2" />
+								</Texture>
+							</Controls>
+						</Control>
+
+						<Texture name="$(parent)Icon" textureFile="esoui\art\tradinghouse\tradinghouse_trophy_treasure_map_up.dds">
+							<Dimensions x="50" y="50"/>
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="-10" offsetY="8" />
+						</Texture>
+						<Label name="$(parent)Title" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_WINDOW_TITLE_GUILD_HISTORY">
+							<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="RIGHT" offsetX="-3" offsetY="-8" />
+						</Label>
+						<Label name="$(parent)Tooltip" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" text="SI_NOTIFICATIONS_MORE_INFO_TOOLTIP">
+							<Anchor relativeTo="$(parent)Icon" point="LEFT" relativePoint="RIGHT" offsetX="-2" offsetY="10" />
+						</Label>
+
+						<Control name="$(parent)List">
+							<Anchor relativeTo="$(parent)Icon" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="9" offsetY="50" />
+						</Control>
+
+						<Control name="$(parent)Spinner" hidden="false" mouseEnabled="true">
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="560" />
+							<Dimensions x="200" y="50" />
+							<OnMouseWheel>
+								SuperStar_Favorite_WheelPage(delta)
+							</OnMouseWheel>
+							<Controls>
+								<Label name="$(parent)PageNum" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="1" hidden="false">
+									<Anchor relativeTo="$(parent)" point="CENTER" relativePoint="CENTER" offsetX="0" offsetY="0" />
+								</Label>
+
+								<Button name="$(parent)Left" level="1">
+									<Anchor relativeTo="$(parent)PageNum" point="RIGHT" relativePoint="LEFT" offsetX="-50" offsetY="0" />
+									<Dimensions x="56" y="56"/>
+									<Textures
+										normal="EsoUI/Art/Buttons/large_leftarrow_up.dds"
+										pressed="EsoUI/Art/Buttons/large_leftarrow_down.dds"
+										mouseOver="EsoUI/Art/Buttons/large_leftarrow_over.dds"
+										disabled="EsoUI/Art/Buttons/large_leftarrow_disabled.dds"
+										/>
+									<OnClicked>
+										SuperStar_Favorite_TurnPage(-1)
+									</OnClicked>
+								</Button>
+
+								<Button name="$(parent)Right" level="1">
+									<Anchor relativeTo="$(parent)PageNum" point="LEFT" relativePoint="RIGHT" offsetX="50" offsetY="0" />
+									<Dimensions x="56" y="56"/>
+									<Textures
+										normal="EsoUI/Art/Buttons/large_rightarrow_up.dds"
+										pressed="EsoUI/Art/Buttons/large_rightarrow_down.dds"
+										mouseOver="EsoUI/Art/Buttons/large_rightarrow_over.dds"
+										disabled="EsoUI/Art/Buttons/large_rightarrow_disabled.dds"
+										/>
+									<OnClicked>
+										SuperStar_Favorite_TurnPage(1)
+									</OnClicked>
+								</Button>
+							</Controls>
+						</Control>
+
+						
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Grimoire" mouseEnabled="true">
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="300" offsetY="100" />
+					<Dimensions x="200" y="30"/>
+					<OnMouseDown>
+						SuperStar_RenderSlot(self)
+					</OnMouseDown>
+					<Controls>
+						<Texture name="$(parent)Icon" textureFile="esoui\art\crafting\scribing_activescript_icon.dds">
+							<Dimensions x="30" y="30"/>
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Texture>
+						<Label name="$(parent)Name" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_SCRIBING_CRAFTED_ABILITY_SLOT_NAME">
+							<Anchor relativeTo="$(parent)Icon" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="32" offsetY="5" />
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Primary" mouseEnabled="true">
+					<Anchor relativeTo="$(parent)Grimoire" point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+					<Dimensions x="200" y="30"/>
+					<OnMouseDown>
+						SuperStar_RenderSlot(self)
+					</OnMouseDown>
+					<Controls>
+						<Texture name="$(parent)Icon" textureFile="esoui\art\crafting\scribing_activescript_icon.dds">
+							<Dimensions x="30" y="30"/>
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Texture>
+						<Label name="$(parent)Name" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_SCRIBINGSLOT1">
+							<Anchor relativeTo="$(parent)Icon" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="32" offsetY="5" />
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Secondary" mouseEnabled="true">
+					<Anchor relativeTo="$(parent)Primary" point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+					<Dimensions x="200" y="30"/>
+					<OnMouseDown>
+						SuperStar_RenderSlot(self)
+					</OnMouseDown>
+					<Controls>
+						<Texture name="$(parent)Icon" textureFile="esoui\art\crafting\scribing_activescript_icon.dds">
+							<Dimensions x="30" y="30"/>
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Texture>
+						<Label name="$(parent)Name" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_SCRIBINGSLOT2">
+							<Anchor relativeTo="$(parent)Icon" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="32" offsetY="5" />
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Tertiary" mouseEnabled="true">
+					<Anchor relativeTo="$(parent)Secondary" point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+					<Dimensions x="200" y="30"/>
+					<OnMouseDown>
+						SuperStar_RenderSlot(self)
+					</OnMouseDown>
+					<Controls>
+						<Texture name="$(parent)Icon" textureFile="esoui\art\crafting\scribing_activescript_icon.dds">
+							<Dimensions x="30" y="30"/>
+							<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Texture>
+						<Label name="$(parent)Name" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_SCRIBINGSLOT3">
+							<Anchor relativeTo="$(parent)Icon" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="32" offsetY="5" />
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Result" alpha="0.001">
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="480" offsetY="100" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/muh/Easy-Stalking---Encounterlog__2332",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "muh",
+  "canonical_id": "esoui:2332",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:2332",
+  "deleted": false,
+  "directories": [
+    "EzStalking"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2332/",
+  "fingerprint": "2dbc7b2e66bf99c4312e1a19ceaaff15227cd6fd03885139542e2d6872b7be07",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10853.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10854.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7957.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2332",
+  "source_url": "https://www.esoui.com/downloads/info2332-EasyStalking-Encounterlog.html",
+  "stats": {
+    "downloads": 25571,
+    "favorites": 19,
+    "monthly_downloads": 69
+  },
+  "title": "Easy Stalking - Encounterlog",
+  "updated_at": 1698888202000,
+  "version": "1.4.6"
+}

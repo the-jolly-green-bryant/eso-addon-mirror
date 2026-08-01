@@ -1,0 +1,5 @@
+## Title: Sneak Thief
+## Author: Kawamonkey
+## APIVersion: 100034
+
+SneakThief.lua

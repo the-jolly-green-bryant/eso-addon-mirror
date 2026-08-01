@@ -1,0 +1,30 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|cFF6A00Khrill|r Language Selector">
+      <Action name="KLS_EN">
+        <Down>KLS_Change("en")</Down>
+      </Action>
+      <Action name="KLS_FR">
+        <Down>KLS_Change("fr")</Down>
+      </Action>
+      <Action name="KLS_DE">
+        <Down>KLS_Change("de")</Down>
+      </Action>
+      <Action name="KLS_ES">
+        <Down>KLS_Change("es")</Down>
+      </Action>
+      <Action name="KLS_IT">
+        <Down>KLS_Change("it")</Down>
+      </Action>
+      <Action name="KLS_BR">
+        <Down>KLS_Change("br")</Down>
+      </Action>
+      <Action name="KLS_RU">
+        <Down>KLS_Change("ru")</Down>
+      </Action>
+      <Action name="KLS_TR">
+        <Down>KLS_Change("tr")</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

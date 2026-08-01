@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/manavortex/Stacked__896",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:896",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:896",
+  "deleted": false,
+  "directories": [
+    "Stacked"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl896/",
+  "fingerprint": "282c3baf9f53839f107d668a332dd9613043aef4e3faa4a90abcbbf5ad034155",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2713.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "896",
+  "source_url": "https://www.esoui.com/downloads/info896-Stacked.html",
+  "stats": {
+    "downloads": 6378,
+    "favorites": 6,
+    "monthly_downloads": 10
+  },
+  "title": "Stacked",
+  "updated_at": 1429878619000,
+  "version": "1.7"
+}

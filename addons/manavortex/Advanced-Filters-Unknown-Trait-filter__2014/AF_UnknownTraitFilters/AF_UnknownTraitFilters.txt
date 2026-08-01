@@ -1,0 +1,7 @@
+## Title: Advanced Filters - Unknown Trait Filters
+## Author: manavortex
+## Version: 1.0.0
+## APIVersion: 100022 100023
+## DependsOn: AdvancedFilters
+
+AF_UnknownTraitFilters.lua

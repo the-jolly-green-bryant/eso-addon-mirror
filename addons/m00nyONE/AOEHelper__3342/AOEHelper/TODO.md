@@ -1,0 +1,4 @@
+- link in chat colors ( look at WizardsWardrobe how to do links )
+- export
+- import
+- 3 preset colors

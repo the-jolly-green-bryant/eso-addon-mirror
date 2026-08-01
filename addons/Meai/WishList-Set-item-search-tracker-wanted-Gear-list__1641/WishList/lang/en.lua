@@ -1,0 +1,2 @@
+--Wishlist English text
+-->Empty file because the English text is already defined in the strings.lua file!

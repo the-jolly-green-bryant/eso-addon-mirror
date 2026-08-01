@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/No-Accidental-Learning__4017",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:4017",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4017",
+  "deleted": false,
+  "directories": [
+    "NoAccidentalLearning"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4017/",
+  "fingerprint": "17345d5f5a1e0661fad683b9981d03b5cf7ef2ff86f34e78dd3e03f2f648c52d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13641.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4017",
+  "source_url": "https://www.esoui.com/downloads/info4017-NoAccidentalLearning.html",
+  "stats": {
+    "downloads": 809,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "No Accidental Learning",
+  "updated_at": 1735486986000,
+  "version": "1.0"
+}

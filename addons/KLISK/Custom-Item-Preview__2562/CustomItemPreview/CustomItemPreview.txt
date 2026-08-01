@@ -1,0 +1,7 @@
+## Title: Custom Item Preview
+## Author: @KL1SK
+## Description:
+## APIVersion: 100034
+## Version: 1.0
+
+CustomItemPreview.lua

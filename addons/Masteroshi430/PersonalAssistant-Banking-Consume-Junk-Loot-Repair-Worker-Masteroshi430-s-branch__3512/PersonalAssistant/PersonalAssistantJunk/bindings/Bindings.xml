@@ -1,0 +1,15 @@
+<Bindings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esobindings.xsd">
+    <Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS" >
+        <Category name="SI_KEYBINDINGS_CATEGORY_PA_JUNK">
+            <Action name="PA_JUNK_TOGGLE_ITEM">
+                <Down>PersonalAssistant.Junk.KeybindStrip.toggleItemMarkedAsJunk()</Down>
+            </Action>
+            <Action name="PA_JUNK_PERMANENT_TOGGLE_ITEM">
+                <Down>PersonalAssistant.Junk.KeybindStrip.toggleItemMarkedAsPermanentJunk()</Down>
+            </Action>
+            <Action name="PA_JUNK_DESTROY_ITEM">
+                <Down>PersonalAssistant.Junk.KeybindStrip.destroyItemNoWarning()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

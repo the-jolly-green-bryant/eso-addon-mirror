@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<Bindings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esobindings.xsd">
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|c5282BDTDAddon|r">
+      <Action name="TDADDON_PASSENGER_HOP">
+        <Down>TDAddon.PassengerHop()</Down>
+      </Action>
+      <Action name="TDADDON_RESPAWN_CAMP">
+        <Down>TDAddon.RespawnToClosestCamp()</Down>
+      </Action>
+      <Action name="TDADDON_RESPAWN_KEEP">
+        <Down>TDAddon.RespawnToClosestKeep()</Down>
+      </Action>
+      <Action name="TDADDON_RECALL">
+        <Down>TDAddon.GoToBase()</Down>
+      </Action>
+      <Action name="TDADDON_ALL">
+        <Down>TDAddon.AllInOne()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

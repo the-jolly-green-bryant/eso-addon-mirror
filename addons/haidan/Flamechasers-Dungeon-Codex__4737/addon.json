@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/haidan/Flamechasers-Dungeon-Codex__4737",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "haidan",
+  "canonical_id": "esoui:4737",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4737",
+  "deleted": false,
+  "directories": [
+    "DungeonMechsCodex"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4737/",
+  "fingerprint": "d2d3075ebf4ff73bd63717f01a305df8a0da25eca28fe500bf812d7b8ec1a288",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16857.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4737",
+  "source_url": "https://www.esoui.com/downloads/info4737-FlamechasersDungeonCodex.html",
+  "stats": {
+    "downloads": 15,
+    "favorites": 0,
+    "monthly_downloads": 5
+  },
+  "title": "Flamechasers Dungeon Codex",
+  "updated_at": 1785526356000,
+  "version": "0.2.55"
+}

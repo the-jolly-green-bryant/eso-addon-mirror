@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/leviatan64/TankHelper-Spanish-Translation__2745",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "leviatan64",
+  "canonical_id": "esoui:2745",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2745",
+  "deleted": false,
+  "directories": [
+    "1604351732-1598276882-TankHelper 1.0.1"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2745/",
+  "fingerprint": "3c65bcd42ee62a1d0f04f5569cb8b56a325b172cf9d8d328415c6d11c22a50a6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9290.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2745",
+  "source_url": "https://www.esoui.com/downloads/info2745-TankHelperSpanishTranslation.html",
+  "stats": {
+    "downloads": 4441,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "TankHelper Spanish Translation",
+  "updated_at": 1622570695000,
+  "version": "1.0.4"
+}

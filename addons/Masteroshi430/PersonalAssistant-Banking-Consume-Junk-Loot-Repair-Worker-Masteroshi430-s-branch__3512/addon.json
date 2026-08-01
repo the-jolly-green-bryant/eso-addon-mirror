@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Masteroshi430/PersonalAssistant-Banking-Consume-Junk-Loot-Repair-Worker-Masteroshi430-s-branch__3512",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:3512",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3512",
+  "deleted": false,
+  "directories": [
+    "PersonalAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3512/",
+  "fingerprint": "394afa0dd0acf29b1df4c19efca9c319eeb283683f5b1f1c01a66886619cb504",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12182.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12181.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12183.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12184.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12185.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12186.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12187.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3512",
+  "source_url": "https://www.esoui.com/downloads/info3512-PersonalAssistantBankingConsumeJunkLootRepairWorkerMasteroshi430sbranch.html",
+  "stats": {
+    "downloads": 509437,
+    "favorites": 170,
+    "monthly_downloads": 16394
+  },
+  "title": "PersonalAssistant (Banking, Consume, Junk, Loot, Repair, Worker) [Masteroshi430's branch]",
+  "updated_at": 1785476773000,
+  "version": "2026.07.31"
+}

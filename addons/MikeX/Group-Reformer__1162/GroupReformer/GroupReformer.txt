@@ -1,0 +1,14 @@
+## Title: Group Reformer
+## APIVersion: 100012
+## Author: MikeX of Guild UMBRA
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: SV_GroupReformer_Settings
+
+lib/LibStub/LibStub.lua
+lib/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+lib/LibAddonMenu-2.0/controls/panel.lua
+lib/LibAddonMenu-2.0/controls/checkbox.lua
+lib/LibAddonMenu-2.0/controls/dropdown.lua
+
+GroupReformer.lua
+bindings.xml

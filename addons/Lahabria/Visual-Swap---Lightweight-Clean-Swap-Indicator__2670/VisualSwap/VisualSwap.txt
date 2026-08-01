@@ -1,0 +1,11 @@
+## Title: VisualSwap
+## Author: Lahabria
+## AddOnVersion: 1
+## Version: 1.0
+## Description: Clean weapons swap indicator and crosshair.
+## SavedVariables: VisualSwap
+## APIVersion: 100030 100031
+
+VisualSwap.lua
+VisualSwap.xml
+

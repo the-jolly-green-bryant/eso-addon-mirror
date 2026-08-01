@@ -1,0 +1,55 @@
+## Title: |cAFD3FFLibImplex|r
+## Description: Simple (hope so) marker "engine"
+## Author: |c7c42f2imPDA|r
+## AddOnVersion: 24
+## APIVersion: 101049
+## IsLibrary: true
+## SavedVariables: LibImplexSavedVariables
+## OptionalDependsOn: LibDebugLogger>=268 LibAddonMenu-2.0>=41 LibSubzones>=1
+
+logger.lua
+
+class.lua
+
+vector.lua
+controls.xml
+; objects.lua
+; test/objects.lua
+
+; movewriting.lua
+
+main.lua
+
+objects_v2.lua
+
+debug/origin.lua
+debug/controls.xml
+debug/main.lua
+
+textures.lua
+writing.lua
+
+rayintersection/controls.xml
+rayintersection/main.lua
+rayintersection/bindings.lua
+rayintersection/bindings.xml
+
+; examples/groundmarkers.lua
+; examples/circle.lua
+; examples/cube.lua
+; examples/rotations.lua
+; examples/text.lua
+; examples/worldspace.lua
+; examples/dimensions.lua
+; examples/circle.lua
+
+; v2
+; examples/snake.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

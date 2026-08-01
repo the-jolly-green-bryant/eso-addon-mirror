@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/maximoz/Werewolf-Timer-Bar__2911",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "maximoz",
+  "canonical_id": "esoui:2911",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2911",
+  "deleted": false,
+  "directories": [
+    "WerewolfTimerBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2911/",
+  "fingerprint": "436901b39a07729c33181f6a5871875d652a667d34bd3cd7fd7b491b35e0f01f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9823.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9821.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9822.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9820.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2911",
+  "source_url": "https://www.esoui.com/downloads/info2911-WerewolfTimerBar.html",
+  "stats": {
+    "downloads": 11439,
+    "favorites": 15,
+    "monthly_downloads": 219
+  },
+  "title": "Werewolf Timer Bar",
+  "updated_at": 1629785964000,
+  "version": "2.6"
+}

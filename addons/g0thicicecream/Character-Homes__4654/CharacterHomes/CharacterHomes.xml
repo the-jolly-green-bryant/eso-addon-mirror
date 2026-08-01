@@ -1,0 +1,201 @@
+<?xml version="1.0"?>
+<GuiXml>
+  <Controls>
+
+    <TopLevelControl name="CharacterHomesDialog" hidden="true" movable="true" mouseEnabled="true" clampedToScreen="true" allowBringToTop="true">
+      <Anchor point="CENTER" relativePoint="CENTER" relativeTo="GuiRoot"/>
+      <Dimensions x="1180" y="720"/>
+      <Controls>
+
+        <Backdrop name="$(parent)Bg" centerColor="0A0A0A" edgeColor="6B5C2E">
+          <AnchorFill/>
+          <Edge edgeSize="2"/>
+        </Backdrop>
+
+        <Label name="$(parent)Title" font="ZoFontWinH1" color="EBD17A" text="Character Homes">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="12" offsetY="8"/>
+        </Label>
+
+        <Button name="$(parent)CloseButton" clickSound="Click">
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="10"/>
+          <Dimensions x="24" y="24"/>
+          <Textures normal="esoui/art/buttons/decline_up.dds" mouseOver="esoui/art/buttons/decline_over.dds" pressed="esoui/art/buttons/decline_down.dds"/>
+          <OnClicked>CharacterHomesDialog:SetHidden(true) SetGameCameraUIMode(false)</OnClicked>
+        </Button>
+
+        <Backdrop name="$(parent)Divider1" centerColor="00000000" edgeColor="6B5C2E">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="12" offsetY="46"/>
+          <Dimensions x="1156" y="2"/>
+          <Edge edgeSize="1"/>
+        </Backdrop>
+
+        <!-- Search box + optional addon links (populated by Lua) -->
+        <Backdrop name="$(parent)SearchFilterBg" inherits="ZO_EditBackdrop">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="70" offsetY="53"/>
+          <Dimensions x="600" y="28"/>
+          <Controls>
+            <EditBox name="$(parent)Edit" font="ZoFontGame" color="FFFFFF" maxInputCharacters="64" inherits="ZO_DefaultEditForBackdrop">
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="4" offsetY="0"/>
+              <Dimensions x="592" y="28"/>
+              <OnTextChanged>CharacterHomes.OnFilterChanged()</OnTextChanged>
+            </EditBox>
+          </Controls>
+        </Backdrop>
+
+        <Label name="$(parent)SearchLabel" font="ZoFontGame" color="888888" text="Search:">
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)SearchFilterBg" offsetX="-4" offsetY="0"/>
+        </Label>
+
+        <Control name="$(parent)OwnerFilterCombo" inherits="ZO_ComboBox">
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-16" offsetY="53"/>
+          <Dimensions x="200" y="28"/>
+        </Control>
+
+        <Label name="$(parent)OwnerFilterLabel" font="ZoFontGame" color="888888" text="Owner:">
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)OwnerFilterCombo" offsetX="-4" offsetY="0"/>
+        </Label>
+
+        <Backdrop name="$(parent)Divider2" centerColor="00000000" edgeColor="6B5C2E">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="12" offsetY="88"/>
+          <Dimensions x="1156" y="2"/>
+          <Edge edgeSize="1"/>
+        </Backdrop>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             friend housing bar  (60px zone: divider at -120, controls centred at -76)
+             X layout (1180px window):
+               x=78   Friend combo  w=200  → ends  278   (label right=74)
+               x=286  Type   combo  w=160  → ends  446   (no label — gap too tight)
+               x=554  House  combo  w=270  → ends  824   (label right=550)
+               x=880  Name editbox  w=216  → ends 1096   (label RIGHT←LEFT -4)
+               BOTTOMRIGHT -44  Save (checkmark) 28×28  → left 1108
+               BOTTOMRIGHT  -8  Tele (wayshrine) 28×28  → left 1144
+        ════════════════════════════════════════════════════════════════════ -->
+        <Backdrop name="$(parent)FHDivider" centerColor="00000000" edgeColor="6B5C2E">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)" offsetX="12" offsetY="-120"/>
+          <Dimensions x="1156" y="2"/><Edge edgeSize="1"/>
+        </Backdrop>
+
+        <!-- Invisible 1px×28 reference for friend housing bar Y-centering -->
+        <Backdrop name="$(parent)FHRefBg" centerColor="00000000" edgeColor="00000000">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)" offsetX="0" offsetY="-76"/>
+          <Dimensions x="1" y="28"/>
+        </Backdrop>
+
+        <Label name="$(parent)FHFriendLabel" font="ZoFontGame" color="888888" text="Friend:">
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)FHRefBg" offsetX="74" offsetY="0"/>
+        </Label>
+
+        <Label name="$(parent)FHHouseLabel" font="ZoFontGame" color="888888" text="House:">
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)FHRefBg" offsetX="550" offsetY="0"/>
+        </Label>
+
+        <Backdrop name="$(parent)FHNameBg" inherits="ZO_EditBackdrop">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)" offsetX="880" offsetY="-76"/>
+          <Dimensions x="216" y="28"/>
+          <Controls>
+            <EditBox name="$(parent)Edit" font="ZoFontGame" color="FFFFFF" maxInputCharacters="64" inherits="ZO_DefaultEditForBackdrop">
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="4" offsetY="0"/>
+              <Dimensions x="208" y="28"/>
+            </EditBox>
+          </Controls>
+        </Backdrop>
+
+        <Label name="$(parent)FHNameLabel" font="ZoFontGame" color="888888" text="Name:">
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)FHNameBg" offsetX="-4" offsetY="0"/>
+        </Label>
+
+        <Button name="$(parent)FHSaveButton" clickSound="Click">
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-44" offsetY="-76"/>
+          <Dimensions x="28" y="28"/>
+          <Textures normal="esoui/art/buttons/accept_up.dds" mouseOver="esoui/art/buttons/accept_over.dds" pressed="esoui/art/buttons/accept_down.dds"/>
+        </Button>
+
+        <Button name="$(parent)FHTeleButton" clickSound="Click">
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-8" offsetY="-76"/>
+          <Dimensions x="28" y="28"/>
+          <Textures normal="esoui/art/icons/mapkey/mapkey_wayshrine.dds"
+                    mouseOver="esoui/art/icons/mapkey/mapkey_wayshrine.dds"
+                    pressed="esoui/art/icons/mapkey/mapkey_wayshrine.dds"/>
+        </Button>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             Add bar  (60px zone: divider at -60, controls centred at -30)
+             X layout (1180px window) — mirrors friend housing bar column positions:
+               x=78   Type  combo  w=200  → ends  278   (label right=74, "Type:")
+               x=554  House combo  w=270  → ends  824   (label right=550, "House:")
+               x=880  Name editbox w=216  → ends 1096   (label RIGHT←LEFT -4, "Name:")
+               BOTTOMRIGHT -44  Save (checkmark) 28×28  → left 1108
+               BOTTOMRIGHT  -8  Tele (wayshrine) 28×28  → left 1144
+        ════════════════════════════════════════════════════════════════════ -->
+        <Backdrop name="$(parent)AddDivider" centerColor="00000000" edgeColor="6B5C2E">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)" offsetX="12" offsetY="-60"/>
+          <Dimensions x="1156" y="2"/><Edge edgeSize="1"/>
+        </Backdrop>
+
+        <!-- Invisible 1px×28 reference for add bar Y-centering (offsetY=-16 matches buttons/editbox) -->
+        <Backdrop name="$(parent)AddRefBg" centerColor="00000000" edgeColor="00000000">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)" offsetX="0" offsetY="-16"/>
+          <Dimensions x="1" y="28"/>
+        </Backdrop>
+
+        <!-- Differentiating label left-aligned with friend housing "Friend:" label -->
+        <Label name="$(parent)AddBarLabel" font="ZoFontGame" color="888888" text="My homes:">
+          <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)AddRefBg" offsetX="25" offsetY="0"/>
+        </Label>
+
+        <!-- House label (mirrors FHHouseLabel position) -->
+        <Label name="$(parent)AddHouseLabel" font="ZoFontGame" color="888888" text="House:">
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)AddRefBg" offsetX="550" offsetY="0"/>
+        </Label>
+
+        <!-- Name editbox (mirrors FHNameBg position) -->
+        <Backdrop name="$(parent)AddLabelBg" inherits="ZO_EditBackdrop">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)" offsetX="880" offsetY="-16"/>
+          <Dimensions x="216" y="28"/>
+          <Controls>
+            <EditBox name="$(parent)Edit" font="ZoFontGame" color="FFFFFF" maxInputCharacters="64" inherits="ZO_DefaultEditForBackdrop">
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="4" offsetY="0"/>
+              <Dimensions x="208" y="28"/>
+            </EditBox>
+          </Controls>
+        </Backdrop>
+
+        <Label name="$(parent)AddNameLabel" font="ZoFontGame" color="888888" text="Name:">
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)AddLabelBg" offsetX="-4" offsetY="0"/>
+        </Label>
+
+        <Button name="$(parent)SetHomeButton" clickSound="Click">
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-44" offsetY="-16"/>
+          <Dimensions x="28" y="28"/>
+          <Textures normal="esoui/art/buttons/accept_up.dds" mouseOver="esoui/art/buttons/accept_over.dds" pressed="esoui/art/buttons/accept_down.dds"/>
+        </Button>
+
+        <Button name="$(parent)ClearButton" clickSound="Click">
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-8" offsetY="-16"/>
+          <Dimensions x="28" y="28"/>
+          <Textures normal="esoui/art/icons/mapkey/mapkey_wayshrine.dds"
+                    mouseOver="esoui/art/icons/mapkey/mapkey_wayshrine.dds"
+                    pressed="esoui/art/icons/mapkey/mapkey_wayshrine.dds"/>
+        </Button>
+
+        <!-- Scrollable list -->
+        <Backdrop name="$(parent)ScrollPanel" centerColor="00000000" edgeColor="00000000" inherits="ZO_ScrollContainerBase">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="12" offsetY="94"/>
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-12" offsetY="-132"/>
+          <OnInitialized>ZO_Scroll_Initialize(self)</OnInitialized>
+          <Controls>
+            <Control name="$(parent)ScrollChild" resizeToFitDescendents="true">
+              <OnInitialized>
+                self:SetParent(self:GetParent():GetNamedChild("Scroll"))
+                self:SetAnchor(TOPLEFT, nil, TOPLEFT, 0, 0)
+              </OnInitialized>
+            </Control>
+          </Controls>
+        </Backdrop>
+
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

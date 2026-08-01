@@ -1,0 +1,20 @@
+## Title: |ce5ca5cMer|r Character Sheet
+## Description: Adds |ce5ca5cCrafting Research|r and |ce5ca5cAlt Riding Skill|r timers to |c76bcc3Character|r sheet, and allows you to reorder sections by dragging their headers.
+## Author: Merlight, mod. by Baertram
+## APIVersion: 101034 101035
+## AddOnVersion: 5300
+## DependsOn: LibGetText>=10
+## SavedVariables: merCharacterSheet_SavedVariables
+
+lang/$(language).lua
+
+DeepTable.lua
+LogTimerBar.lua
+merCharacterSheet.lua
+merCharacterSheet.xml
+
+#  This add-on is not created by, affiliated with or sponsored by
+#  ZeniMax Media Inc. or its affiliates.
+#  The Elder Scrolls® and related logos are registered trademarks
+#  or trademarks of ZeniMax Media Inc. in the United States and/or
+#  other countries. Some wrongs reversed.

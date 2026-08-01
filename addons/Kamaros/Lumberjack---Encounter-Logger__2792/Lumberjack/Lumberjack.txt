@@ -1,0 +1,13 @@
+## Title: Lumberjack
+## Description: Prompts you to enable/disable encounter logging in trials and arenas 
+## Author: Kamaros, Mod:|c02fcffLost.Seeker|r
+## AddOnVersion: 1.0.7
+## APIVersion: 101046
+## SavedVariables: LumberjackSavedVariables
+## DependsOn: LibAddonMenu-2.0>=40
+
+Lumberjack.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

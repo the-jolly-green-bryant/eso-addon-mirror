@@ -1,0 +1,20 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Chatinput Viewer">
+			<!-- AlphaGear examples -
+			<Action name="SHOW_AG_WINDOW">
+				<Down>AG.ShowMain()</Down>
+			</Action>
+			<Action name="AG_UNDRESS">
+				<Down>AG.Undress(1)</Down>
+			</Action>
+			<Action name="AG_NEXT_SET">
+				<Down>AG.LoadNextSet()</Down>
+			</Action>
+			-->
+			<Action name="CIV_TOGGLE_WINDOW">
+				<Down>ToggleViewer()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

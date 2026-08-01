@@ -1,0 +1,115 @@
+<GuiXml>
+    <Controls>
+        <!-- Search paramters screen -->
+        <TopLevelControl name="EnchantMaker" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions x="740" y="590" />
+            <Controls>
+                <Button name="$(parent)CloseButton" font="ZoFontGame" mouseEnabled="true" 
+                        text="X" hidden="false" inherits="ZO_DefaultButton" >
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="TOPRIGHT" offsetX="0" offsetY="0" />
+                    <OnMouseDown>EnchMaker.close()</OnMouseDown>
+                </Button>
+
+                <Label name="EnchantMakerLabel" font="ZoFontHeader4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Enchant Maker" >
+                    <Anchor point="TOP"  offsetY="10" />
+                </Label>
+                <Label name="EnchantMakerPotencyLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Potency" >
+                    <Anchor point="TOPLEFT" offsetY="50" offsetX="20" />
+                </Label>
+                <Label name="EnchantMakerEssenceLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Essence:" >
+                    <Anchor point="TOPLEFT"  offsetY="50" offsetX="265" />
+                </Label>
+                <Label name="EnchantMakerAspectLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Aspect:" >
+                    <Anchor point="TOPLEFT"  offsetY="50" offsetX="560" />
+                </Label>
+
+                <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" />
+
+                <Backdrop name="$(parent)SearchBG" inherits="ZO_ThinBackdrop" >
+                    <Dimensions x="720" y="390" />
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="80" />
+                </Backdrop>
+
+                <Button name="$(parent)SearchButton" font="ZoFontGame" color="CFDCBD" mouseEnabled="true" 
+                        verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Search" hidden="false" inherits="ZO_DefaultButton" >
+                    <Dimensions x="160" y="30" />
+                    <Anchor point="CENTER" offsetX="0" offsetY="250" />
+                    <OnMouseDown>EnchMaker.search()</OnMouseDown>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Search Results Screen -->
+        <TopLevelControl name="EnchantMakerOutput" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions x="600" y="570" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" />
+                <Backdrop name="$(parent)ResultsBG" inherits="ZO_ThinBackdrop" >
+                    <Dimensions x="580" y="448" />
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="50" />
+                </Backdrop>
+
+                <Label name="EnchantMakerOutputLabel" font="ZoFontHeader4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Search Results" >
+                    <Anchor point="TOP"  offsetY="10" />
+                </Label>
+
+                <Button name="$(parent)SearchButton" font="ZoFontGame" color="CFDCBD" mouseEnabled="true" 
+                        verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Search again" hidden="false" inherits="ZO_DefaultButton" >
+                    <Dimensions x="250" y="30" />
+                    <Anchor point="CENTER" offsetX="0" offsetY="250" />
+                    <OnMouseDown> EnchMaker.searchAgain() </OnMouseDown>
+                </Button>
+
+                <Button name="$(parent)NextButton" font="ZoFontGame" color="CFDCBD" mouseEnabled="true" 
+                        verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Next" hidden="false" inherits="ZO_DefaultButton" >
+                    <Dimensions x="150" y="30" />
+                    <Anchor point="RIGHT" offsetX="-20" offsetY="250" />
+                    <OnMouseDown> EnchMaker.next() </OnMouseDown>
+                </Button>
+
+                <Button name="$(parent)PreviousButton" font="ZoFontGame" color="CFDCBD" mouseEnabled="true" 
+                        verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Previous" hidden="false" inherits="ZO_DefaultButton" >
+                    <Dimensions x="150" y="30" />
+                    <Anchor point="LEFT" offsetX="20" offsetY="250" />
+                    <OnMouseDown> EnchMaker.previous() </OnMouseDown>
+                </Button>
+
+                <Button name="$(parent)CloseButton" font="ZoFontGame" mouseEnabled="true" 
+                        text="X" hidden="false" inherits="ZO_DefaultButton" >
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="TOPRIGHT" offsetX="0" offsetY="0" />
+                    <OnMouseDown> EnchMaker.close() </OnMouseDown>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Template for checkbox -->
+        <Button name="EnchantMakerCheckBox" inherits="ZO_CheckButton" virtual="true" text="">
+            <Dimensions x="20" y="20" />
+            <Anchor point="TOPLEFT" offsetX="50" offsetY="50" />
+        </Button>
+
+        <!-- Template for checkbox text -->
+        <Label name="EnchantMakerCheckBoxText" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" virtual="true" text="" >
+            <Anchor point="LEFT" relativePoint="RIGHT" offsetX="10" />
+        </Label>
+
+        <!-- Template for Result Line -->
+        <Label name="EnchantMakerResult" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" virtual="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text=":">
+            <Dimensions x="580" y="28" />
+            <Anchor point="TOPLEFT" offsetX="50" offsetY="50" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" />
+               
+                <Button name="$(parent)ShowButton" font="ZoFontGameSmall" color="CFDCBD" mouseEnabled="true" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Show">
+                    <Dimensions x="60" y="28" />
+                    <Anchor point="RIGHT" />
+                     <OnMouseDown> EnchMaker.Enchant.show(self) </OnMouseDown> 
+                </Button>
+            </Controls>
+        </Label>
+
+        <Backdrop name="EnchantMakerVirtualBG" inherits="ZO_ThinBackdrop" virtual="true" />
+    </Controls>
+</GuiXml>

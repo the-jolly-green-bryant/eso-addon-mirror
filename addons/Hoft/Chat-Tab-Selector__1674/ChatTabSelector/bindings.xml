@@ -1,0 +1,39 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c4B8BFEChat Tab Selector|r">
+			<Action name="JUMP_WAYSHRINE">
+				<Down>CTS_JumpToWayshrine()</Down>
+			</Action>
+			<Action name="JUMP_HOME">
+				<Down>CTS_JumpToHome()</Down>
+			</Action>
+			<Action name="JUMP_FRIEND">
+				<Down>CTS_JumpToFriend()</Down>
+			</Action>
+			<Action name="JUMP_GUILDHALL">
+				<Down>CTS_JumpToGuildhall()</Down>
+			</Action>
+			<Action name="SELECT_TAB_1">
+				<Down>CTS_SelectChatTab(1)</Down>
+			</Action>
+			<Action name="SELECT_TAB_2">
+				<Down>CTS_SelectChatTab(2)</Down>
+			</Action>
+			<Action name="SELECT_TAB_3">
+				<Down>CTS_SelectChatTab(3)</Down>
+			</Action>
+			<Action name="SELECT_TAB_4">
+				<Down>CTS_SelectChatTab(4)</Down>
+			</Action>
+			<Action name="SELECT_TAB_5">
+				<Down>CTS_SelectChatTab(5)</Down>
+			</Action>
+			<Action name="SELECT_TAB_6">
+				<Down>CTS_SelectChatTab(6)</Down>
+			</Action>
+			<Action name="SELECT_TAB_7">
+				<Down>CTS_SelectChatTab(7)</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

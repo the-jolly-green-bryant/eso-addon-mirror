@@ -1,0 +1,14 @@
+## Title: Mudballed
+## Author: Kyzeragon
+## Version: 1.0.2
+## APIVersion: 101045
+## DependsOn: LibAddonMenu-2.0>=38
+
+## SavedVariables: MudballedSavedVariables
+
+src/init.lua
+src/core.lua
+src/command.lua
+src/settings.lua
+src/display.lua
+src/tally.xml

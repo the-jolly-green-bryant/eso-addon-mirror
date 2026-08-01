@@ -1,0 +1,17 @@
+## Title: CyroQuickslots
+## Author: Gerrit
+## APIVersion: 101031
+## AddOnVersion: 3
+## Version: 1.31.1
+## SavedVariables: CQSCharVars
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.
+
+# You find the full terms here: https://account.elderscrollsonline.com/add-on-terms
+
+# This Add-on is based on "Static's Quickslot Profiles" with his permission and therefore
+# not allowed to be duplicated / replicated / borrowed / ported or redistributed without my and his expresss permission.
+
+CyroQuickslots.lua

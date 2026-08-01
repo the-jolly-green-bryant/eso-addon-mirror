@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Lykeion/SuperStar---Seasonal-Update__3648",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lykeion",
+  "canonical_id": "esoui:3648",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3648",
+  "deleted": false,
+  "directories": [
+    "SuperStar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3648/",
+  "fingerprint": "54535775bd6f682017f9d43ddb2b668a9bd0dd013876e0c3d1adac7445d60626",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14210.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14211.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14212.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14213.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14214.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13362.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3648",
+  "source_url": "https://www.esoui.com/downloads/info3648-SuperStar-SeasonalUpdate.html",
+  "stats": {
+    "downloads": 183848,
+    "favorites": 65,
+    "monthly_downloads": 2517
+  },
+  "title": "SuperStar - Seasonal Update",
+  "updated_at": 1780937021000,
+  "version": "8.0.0"
+}

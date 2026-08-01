@@ -1,0 +1,1 @@
+ZO_CreateStringId("SI_BINDING_NAME_ULTIMATE_UI_HIDER", "Ultimate UI Hider Toggle")

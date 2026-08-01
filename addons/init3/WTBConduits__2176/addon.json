@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/init3/WTBConduits__2176",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "init3",
+  "canonical_id": "esoui:2176",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2176",
+  "deleted": false,
+  "directories": [
+    "WTBConduits"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2176/",
+  "fingerprint": "2c035934ea7cd3cb71d209581e7eef2e51a6e00ae7ce5e472f39fcbc9b3b799e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2176",
+  "source_url": "https://www.esoui.com/downloads/info2176-WTBConduits.html",
+  "stats": {
+    "downloads": 7522,
+    "favorites": 10,
+    "monthly_downloads": 30
+  },
+  "title": "WTBConduits",
+  "updated_at": 1564088933000,
+  "version": "3.1"
+}

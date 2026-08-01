@@ -1,0 +1,12 @@
+## Title: |ce036ffRose |cFFFFFFGuilds
+## Author: |c235cffK|r|c3070ffa|c3d83ffy.|c56a9ffC|c63bdffe|c70d0ffe
+## Description: |cFFFFFFAdds icons to a RoseGuilds member, Hard-coded for certain ranks. Adds buttons to the chat window for easy access to Rose Guildhalls, Guild Links, Website and Discord.
+## Version: 07.14.26
+## APIVersion: 101050
+## SavedVariables: RoseGuildsSavedVariables
+## DependsOn: LibAddonMenu-2.0>=41 LibCustomMenu>=730
+icons.lua
+icons_table.lua
+icons_row_hooks.lua
+RoseGuilds.lua
+Bindings.xml

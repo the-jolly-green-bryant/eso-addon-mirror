@@ -1,0 +1,31 @@
+<GuiXml>
+  <Controls>
+
+    <TopLevelControl name="J2EWindow" hidden="true" 
+                                      mouseEnabled="false" 
+                                      clampedToScreen="false" 
+                                      resizeToFitDescendents="false" 
+                                      tier="LOW"
+                                      level="3">
+      <Dimensions x="10" y="10" />
+      <Anchor point="TOPLEFT" />
+
+
+      <Controls>
+      </Controls>
+    </TopLevelControl>
+
+
+    <!-- Template -->
+    <Label name="J2ELabelTemplate" virtual="true"
+                                   mouseEnabled="true" 
+                                   movable="true"
+                                   color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" 
+                                   font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thin">
+      <OnMoveStop>
+        J2EUpdate:OnMoveLabel(self)
+      </OnMoveStop>
+    </Label>
+
+  </Controls>
+</GuiXml>

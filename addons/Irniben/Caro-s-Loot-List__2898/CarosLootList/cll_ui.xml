@@ -1,0 +1,217 @@
+<GuiXml>
+	<Controls>
+		  <Control name="CarosLootList_ListDiagItemRow" inherits="ZO_ListEntry_BackdropAndHighlight_Template" virtual="true">
+            <Dimensions y="42" />
+			<OnMouseEnter>ZO_ScrollList_MouseEnter(CarosLootList.cllSLDiag.list, self)</OnMouseEnter>
+			<OnMouseExit>ZO_ScrollList_MouseExit(CarosLootList.cllSLDiag.list, self)</OnMouseExit>
+            <Controls>
+                <Texture name="$(parent)Selected" textureFile="EsoUI/Art/Miscellaneous/listItem_selectedHighlight.dds">
+                    <AnchorFill />
+                    <TextureCoords left="0" right="1" top="0" bottom=".625" />
+                </Texture>
+
+                <Texture name="$(parent)Icon" >
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="CENTER" relativePoint="LEFT" offsetX="60" />
+                </Texture>
+
+                <Label name="$(parent)Name" font="ZoFontGameShadow" wrapMode="ELLIPSIS">
+                    <Dimensions x="250" />
+                    <Anchor point="LEFT" offsetX="90" />
+                </Label>
+            </Controls>
+        </Control>
+		
+		<TopLevelControl name="CarosLootList_TransferDiag" inherits="ZO_DialogBase" resizeToFitDescendents="true">
+            <DimensionConstraints minX="440" maxX="512" />
+            <ResizeToFitPadding height="80" />
+		
+            <OnHide>CarosLootList.OnTransferDialogHide(self)</OnHide>
+            
+            <Controls>
+                <Control name="$(parent)TopCustomControlContainer" resizeToFitDescendents="true" inherits="ZO_DialogContentAnchors"/>
+				<Control name="$(parent)Filters1" resizeToFitDescendents="true">
+					<DimensionConstraints minX="440" maxX="512" />
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)TopCustomControlContainer" />
+					<Controls>
+						<Button name="$(parent)Recipes" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="15" />
+							<OnInitialized>
+								CarosLootList.initFilterButton(self, "recipes")
+							</OnInitialized>
+						</Button>
+						<Button name="$(parent)Motifs" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="5" />
+							<OnInitialized>
+								CarosLootList.initFilterButton(self, "motifs")
+							</OnInitialized>
+						</Button>
+					
+						<Button name="$(parent)Furniture" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Recipes" relativePoint="BOTTOMLEFT"  offsetY="15" />
+							<OnInitialized>
+								CarosLootList.initFilterButton(self, "furniture")
+							</OnInitialized>
+						</Button>
+						<Button name="$(parent)Styles" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Motifs" relativePoint="BOTTOMLEFT" offsetY="15" />
+							<OnInitialized>
+								CarosLootList.initFilterButton(self, "style")
+							</OnInitialized>
+						</Button>
+						<Button name="$(parent)Writs" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Furniture" relativePoint="BOTTOMLEFT" offsetY="15" />
+							<OnInitialized>
+								CarosLootList.initFilterButton(self, "writs")
+							</OnInitialized>
+						</Button>
+						<Button name="$(parent)Known" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Writs" relativePoint="BOTTOMLEFT"  offsetY="25" />
+							<OnInitialized>
+								CarosLootList.initFilterButton(self, "known")
+							</OnInitialized>
+						</Button>
+						<Button name="$(parent)Unknown" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Known" relativePoint="TOPLEFT"  constrains="Y"  />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Motifs" relativePoint="BOTTOMLEFT"   constrains="X"/>
+							<OnInitialized>
+								CarosLootList.initFilterButton(self, "unknown")
+							</OnInitialized>
+						</Button>
+						<Button name="$(parent)FilterForPriceLowerThan" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Known" relativePoint="BOTTOMLEFT"  offsetY="25" />
+							<OnInitialized>
+								CarosLootList.initFilterButton(self, "filterForPriceLowerThan")
+								self.edit = GetControl(self, "Edit")
+								self.edit:SetAnchor(LEFT, self.label, RIGHT, 5)
+							</OnInitialized>
+							<Controls>
+								<Backdrop name="$(parent)Edit" inherits="ZO_SingleLineEditBackdrop_Keyboard" >
+								   <Dimensions y="24" />
+								   <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" />
+								   <Anchor point="RIGHT" relativeTo="$(grandparent)" relativePoint="CENTER"  constrains="X" offsetX="-10" />
+								   <OnInitialized>
+											self.editBox = GetControl(self, "Box")
+									</OnInitialized>
+								   <Controls>
+										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" textType="TEXT_TYPE_NUMERIC_UNSIGNED_INT" maxInputCharacters="10">
+											<OnInitialized>
+												self:SetTextType(TEXT_TYPE_NUMERIC_UNSIGNED_INT)
+											</OnInitialized>
+											<OnTextChanged>
+												local newValue = tonumber(self:GetText()) or false 
+												CarosLootList.setCustomBankingNumber("pul", newValue)
+											</OnTextChanged>
+										</EditBox>
+									</Controls>
+								</Backdrop>
+							</Controls>
+						</Button>
+						<Button name="$(parent)FilterForCostLowerThan" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Unknown" relativePoint="BOTTOMLEFT"  offsetY="25" />
+							<OnInitialized>
+								CarosLootList.initFilterButton(self, "filterForCostLowerThan")
+								self.edit = GetControl(self, "Edit")
+								self.edit:SetAnchor(LEFT, self.label, RIGHT, 5)
+							</OnInitialized>
+							<Controls>
+								<Backdrop name="$(parent)Edit" inherits="ZO_SingleLineEditBackdrop_Keyboard" >
+								   <Dimensions y="24" />
+								   <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" />
+								   <Anchor point="RIGHT" relativeTo="$(grandparent)" relativePoint="RIGHT"  constrains="X" offsetX="-15" />
+								   <OnInitialized>
+											self.editBox = GetControl(self, "Box")
+									</OnInitialized>
+								   <Controls>
+										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" textType="TEXT_TYPE_NUMERIC_UNSIGNED_INT" maxInputCharacters="10">
+											<OnInitialized>self:SetTextType(TEXT_TYPE_NUMERIC_UNSIGNED_INT)</OnInitialized>
+											<OnTextChanged>
+												local newValue = tonumber(self:GetText()) or false 
+												CarosLootList.setCustomBankingNumber("cul", newValue)
+											</OnTextChanged>
+										</EditBox>
+									</Controls>
+								</Backdrop>
+							</Controls>
+						</Button>
+						<Button name="$(parent)FilterForPriceHigherThan" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)FilterForPriceLowerThan" relativePoint="BOTTOMLEFT"  offsetY="15" />
+							<OnInitialized>
+								CarosLootList.initFilterButton(self, "filterForPriceHigherThan")
+								self.edit = GetControl(self, "Edit")
+								self.edit:SetAnchor(LEFT, self.label, RIGHT, 5)
+							</OnInitialized>
+							<Controls>
+								<Backdrop name="$(parent)Edit" inherits="ZO_SingleLineEditBackdrop_Keyboard" >
+								   <Dimensions y="24" />
+								   <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" />
+								   <Anchor point="RIGHT" relativeTo="$(grandparent)" relativePoint="CENTER"  constrains="X" offsetX="-10" />
+								   <OnInitialized>
+											self.editBox = GetControl(self, "Box")
+									</OnInitialized>
+								   <Controls>
+										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" textType="TEXT_TYPE_NUMERIC_UNSIGNED_INT" maxInputCharacters="10">
+											<OnInitialized>self:SetTextType(TEXT_TYPE_NUMERIC_UNSIGNED_INT)</OnInitialized>
+											<OnTextChanged>
+												local newValue = tonumber(self:GetText()) or false 
+												CarosLootList.setCustomBankingNumber("pll", newValue)
+											</OnTextChanged>
+										</EditBox>
+									</Controls>
+								</Backdrop>
+							</Controls>
+						</Button>
+						<Button name="$(parent)FilterForCostHigherThan" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)FilterForCostLowerThan" relativePoint="BOTTOMLEFT"  offsetY="15" />
+							<OnInitialized>
+								CarosLootList.initFilterButton(self, "filterForCostHigherThan")
+								self.edit = GetControl(self, "Edit")
+								self.edit:SetAnchor(LEFT, self.label, RIGHT, 5)
+							</OnInitialized>
+							<Controls>
+								<Backdrop name="$(parent)Edit" inherits="ZO_SingleLineEditBackdrop_Keyboard" >
+								   <Dimensions y="24" />
+								   <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" />
+								   <Anchor point="RIGHT" relativeTo="$(grandparent)" relativePoint="RIGHT"  constrains="X" offsetX="-15" />
+								   <OnInitialized>
+											self.editBox = GetControl(self, "Box")
+									</OnInitialized>
+								   <Controls>
+										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" textType="TEXT_TYPE_NUMERIC_UNSIGNED_INT" maxInputCharacters="10">
+											<OnInitialized>self:SetTextType(TEXT_TYPE_NUMERIC_UNSIGNED_INT)</OnInitialized>
+											<OnTextChanged>
+												local newValue = tonumber(self:GetText()) or false 
+												CarosLootList.setCustomBankingNumber("cll", newValue)
+											</OnTextChanged>
+										</EditBox>
+									</Controls>
+								</Backdrop>
+							</Controls>
+						</Button>
+						<Button name="$(parent)OneCopyOnly" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)FilterForPriceHigherThan" relativePoint="BOTTOMLEFT" offsetY="25" />
+							<OnInitialized>
+								CarosLootList.initFilterButton(self, "oneCopyOnly")
+							</OnInitialized>
+						</Button>
+						<Button name="$(parent)FilterForMain" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)OneCopyOnly" relativePoint="BOTTOMLEFT" offsetY="10" />
+							<OnInitialized>
+								CarosLootList.initFilterButton(self, "filterForMain")
+							</OnInitialized>
+						</Button>
+						<Button name="$(parent)AutoLearn" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)FilterForMain" relativePoint="BOTTOMLEFT" offsetY="10" />
+							<OnInitialized>
+								CarosLootList.initFilterButton(self, "autoLearn")
+							</OnInitialized>
+						</Button>
+					</Controls>
+				</Control>
+                <Control name="$(parent)Button2" inherits="ZO_CustomDialogButton" excludeFromResizeToFitExtents="true" />
+                <Control name="$(parent)Button1" inherits="ZO_CustomDialogButton" excludeFromResizeToFitExtents="true" />
+            </Controls>
+        </TopLevelControl>
+		
+	</Controls>
+</GuiXml>

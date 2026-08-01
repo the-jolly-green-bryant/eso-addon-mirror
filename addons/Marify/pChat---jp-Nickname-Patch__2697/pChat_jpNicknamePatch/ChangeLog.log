@@ -1,0 +1,50 @@
+Version: 1.3.12 ---------------
+1.APIVersion Up 101036
+
+
+Version: 1.3.11 ---------------
+1.APIVersion Up 101033
+
+
+Version: 1.3.10 ---------------
+1.Bug fix
+nil Error in UpdateNickname()
+
+
+Version: 1.3.9 ---------------
+1.Bug fix
+nil Error in Rewrite()
+
+
+Version: 1.3.7 to 1.3.8 ---------------
+1.APIVersion Up 100034
+
+
+Version: 1.3.6 ---------------
+1.Update filter.
+
+
+Version: 1.3.5 ---------------
+1.APIVersion Up 100032
+
+
+Version: 1.3.3 to 1.3.4 ---------------
+1.Add. AUI's Bugg patch.
+
+
+Version: 1.3.0 to 1.3.2 ---------------
+1.Support for [LuiExtended].
+2.Add Japanese font.
+
+
+Version: 1.2.0 ---------------
+1.Support for [ThurisazGuildInfo].
+
+
+Version: 1.1.0 ---------------
+1.Add. friendsList/ignoreList/groupList
+
+
+Version: 1.0.0 ---------------
+Start.
+

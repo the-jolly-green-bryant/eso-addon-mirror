@@ -1,0 +1,16 @@
+<Bindings>
+	<!-- using this layer allows binding general bound keys -->
+	<Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">
+		<Category name="Stacked">
+			<Action name="STACKED_STACK">
+				<Down>
+					if not ZO_PlayerInventory:IsHidden() or not ZO_PlayerBank:IsHidden() then
+						SLASH_COMMANDS['/stack']()
+					elseif not ZO_GuildBank:IsHidden() then
+						SLASH_COMMANDS['/stackgb']()
+					end
+				</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

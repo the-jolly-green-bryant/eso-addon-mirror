@@ -1,0 +1,39 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="Mision" clampedToScreen="false" movable="true" mouseEnabled="true" hidden="true" resizeHandleSize="10">
+            <Dimensions x="1346" y="938"/>
+            <Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <Controls>
+                <!-- Mision en grande -->
+                <Texture name="MGrande" textureFile="CerconeAddon/Assets/MissionBoard/PergaminodelClan.dds">
+                    <Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+                    <Dimensions x="620" y="892"/>
+                </Texture>
+
+                <!-- Cerrar la mision -->
+                <Button name="CerrarMision">
+                    <Dimensions x="85" y="90" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-325" offsetY="0" />
+                    <Textures normal="CerconeAddon/Assets/Scroll/Boton_X.dds" pressed="CerconeAddon/Assets/Scroll/X.dds" disabled="CerconeAddon/Assets/Scroll/Boton_X.dds"/>
+                    <OnClicked>CerconeAddon.CloseMissionPanel()</OnClicked>
+                </Button>
+
+                <!-- Textos -->
+                <Label name="$(parent)T" font="$(ANTIQUE_FONT)|48" verticalAlignment="TOP" horizontalAlignment="CENTER" color="6C3C28">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="-250"/>
+                    <Dimensions x="600" y="100"/>
+                </Label>
+                
+                <Label name="$(parent)Texto" font="$(ANTIQUE_FONT)|26" verticalAlignment="TOP" horizontalAlignment="CENTER" color="6C3C28">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="15" />
+                    <Dimensions x="600" y="400"/>
+                </Label>
+                
+                <Label name="$(parent)Req" font="$(ANTIQUE_FONT)|22" verticalAlignment="TOP" horizontalAlignment="LEFT" color="6C3C28">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="310" offsetX="-100"/>
+                    <Dimensions x="400" y="150"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

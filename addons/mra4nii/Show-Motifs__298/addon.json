@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/mra4nii/Show-Motifs__298",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mra4nii",
+  "canonical_id": "esoui:298",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:298",
+  "deleted": false,
+  "directories": [
+    "ShowMotifs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl298/",
+  "fingerprint": "7069e8cbe43af1ee554ec7be72007fe7f8f0b2e96d90447b95ba5c48ac74f3e2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9304.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9305.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "298",
+  "source_url": "https://www.esoui.com/downloads/info298-ShowMotifs.html",
+  "stats": {
+    "downloads": 203752,
+    "favorites": 345,
+    "monthly_downloads": 86
+  },
+  "title": "Show Motifs",
+  "updated_at": 1629728372000,
+  "version": "1.1.8"
+}

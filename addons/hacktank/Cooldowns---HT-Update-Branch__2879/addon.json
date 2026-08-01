@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/hacktank/Cooldowns---HT-Update-Branch__2879",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "hacktank",
+  "canonical_id": "esoui:2879",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2879",
+  "deleted": false,
+  "directories": [
+    "Cooldowns"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2879/",
+  "fingerprint": "6b8b0daa3cc477a77d15aec12d058ebbb147e1c821a1187eaa8b7226204a2e7c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2879",
+  "source_url": "https://www.esoui.com/downloads/info2879-Cooldowns-HTUpdateBranch.html",
+  "stats": {
+    "downloads": 9183,
+    "favorites": 3,
+    "monthly_downloads": 12
+  },
+  "title": "Cooldowns - HT Update Branch",
+  "updated_at": 1609140082000,
+  "version": "1.8.0"
+}

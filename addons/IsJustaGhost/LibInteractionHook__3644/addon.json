@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/IsJustaGhost/LibInteractionHook__3644",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IsJustaGhost",
+  "canonical_id": "esoui:3644",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3644",
+  "deleted": false,
+  "directories": [
+    "LibInteractionHook"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3644/",
+  "fingerprint": "19512d924be7d99e72bb7754860d6745c702f4f5a7a7541f1d276896b3559ff7",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3644",
+  "source_url": "https://www.esoui.com/downloads/info3644-LibInteractionHook.html",
+  "stats": {
+    "downloads": 38720,
+    "favorites": 5,
+    "monthly_downloads": 389
+  },
+  "title": "LibInteractionHook",
+  "updated_at": 1718233427000,
+  "version": "3.2"
+}

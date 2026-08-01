@@ -1,0 +1,451 @@
+﻿<GuiXml>
+    <Controls>
+		<!--	Der Alerter	 -->
+		<TopLevelControl name="timAlerter" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="60" y="60" /><Anchor point="CENTER" />
+			<OnUpdate>tim.AlerterUpdate()</OnUpdate>
+			<OnMoveStop>tim.AlerterMoveStop()</OnMoveStop>
+			<Controls>
+				<Texture name="$(parent)Bubble" alpha="0.2" mouseEnabled="true" movable="true" textureFile="/esoui/art/hud/radialicon_whisper_up.dds"><Dimensions x="60" y="60"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tim.AlerterClick()</OnMouseUp>
+					<OnMoveStop>tim.AlerterBubbleMoveStop()</OnMoveStop>
+				</Texture>
+			</Controls>
+        </TopLevelControl>
+		<!--	Das Hauptfenster	 -->
+        <TopLevelControl name="timWindow" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="600" y="310" /><Anchor point="CENTER" />
+			<OnMoveStop>tim.WindowMoveStop()</OnMoveStop>
+			<OnMouseWheel>tim.sliderMouseWheel(self,delta)</OnMouseWheel>
+			<Controls>
+				<Texture name="$(parent)Background" alpha="0.5" textureFile="/esoui/art/chatwindow/chat_bg_center.dds">
+					<AnchorFill /></Texture>
+				<Texture name="$(parent)Bubble" mouseEnabled="true" movable="false"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>
+				<Label name="$(parent)Head1" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="TESO Ingame Messenger (TIM 5)">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"></Anchor>
+				</Label>
+				<Texture name="$(parent)Closer" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tim.AlerterClick()</OnMouseUp>
+				</Texture>
+				<Texture name="$(parent)Line1" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="580" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="35"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Line2" hidden="false" mouseEnabled="false" textureFile="/esoui/art/interaction/conversation_verticalborder.dds"><Dimensions x="2" y="260"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="155" offsetY="36"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Line3" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="430" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="156" offsetY="295"></Anchor>
+				</Texture>
+				<Label name="$(parent)ActiveGov" font="ZoFontGameBold" color="E0E0A0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="...">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Closer" relativePoint="BOTTOMLEFT" offsetX="-20" offsetY="0"></Anchor>
+				</Label>
+				<TextBuffer name="$(parent)Rolle" linkEnabled="true" mouseEnabled="true" font="ZoFontChat" hidden="false" linefade="0,0" inheritalpha="true">
+					<Dimensions x="410" y="240"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPLEFT" offsetX="165" offsetY="45"></Anchor>
+					<OnMouseUp>tim.RolleClick(button)</OnMouseUp>
+					<OnMouseWheel>tim.slider2MouseWheel(self,delta)</OnMouseWheel>
+				</TextBuffer>
+				<Texture name="$(parent)Kill" mouseEnabled="true" textureFile="/esoui/art/buttons/edit_cancel_up.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)" point="BOTTOMLEFT" offsetX="5" offsetY="-10"></Anchor>
+					<OnMouseUp>tim.killGovClick()</OnMouseUp>
+				</Texture>
+				<Texture name="$(parent)Answer" mouseEnabled="true" textureFile="/esoui/art/buttons/edit_up.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)Kill" point="TOPRIGHT" offsetX="25" offsetY="0"></Anchor>
+					<OnMouseUp>tim.answerGovClick()</OnMouseUp>
+				</Texture>
+				<Texture name="$(parent)Magic" mouseEnabled="true" textureFile="/esoui/art/buttons/edit_save_up.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)Answer" point="TOPRIGHT" offsetX="25" offsetY="0"></Anchor>
+					<OnMouseUp>tim.magicGovClick()</OnMouseUp>
+				</Texture>
+				<Texture name="$(parent)Rotate" mouseEnabled="true" textureFile="/esoui/art/ava/ava_resourcestatus_tabicon_production.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)Magic" point="TOPRIGHT" offsetX="25" offsetY="0"></Anchor>
+					<OnMouseUp>tim.talkHistoryRotate(true)</OnMouseUp>
+				</Texture>
+				<Texture name="$(parent)Guild" mouseEnabled="true" textureFile="/esoui/art/progression/progression_indexicon_guilds_up.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)Rotate" point="TOPRIGHT" offsetX="25" offsetY="0"></Anchor>
+					<OnMouseUp>tim.guildClick()</OnMouseUp>
+				</Texture>
+				<Texture name="$(parent)Catacomb" mouseEnabled="true" textureFile="/esoui/art/progression/progression_indexicon_race_up.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)Guild" point="TOPRIGHT" offsetX="25" offsetY="0"></Anchor>
+					<OnMouseUp>tim.catacombClick()</OnMouseUp>
+				</Texture>
+				<Label name="$(parent)CryptLbl" font="ZoFontGameBold" color="A0A090" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="TIMish:"><Dimensions x="50" y="25"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Closer" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="30"></Anchor>
+				</Label>
+				<EditBox name="$(parent)Crypt" inherit="ZO_DefaultTextEdit" keyboardEnabled="false" mouseEnabled="true"><Dimensions x="250" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="20" offsetY="30"></Anchor>
+					<OnMouseDown>tim.EditStart()</OnMouseDown>
+					<OnEnter>tim.EditEnde(true)</OnEnter>
+					<OnEscape>tim.EditEnde(false)</OnEscape>
+					<OnFocusLost>tim.EditEnde(false)</OnFocusLost>
+					<Controls><Backdrop name="$(parent)CryptBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+				</EditBox>
+			</Controls>
+        </TopLevelControl>
+		<!--	Das Magiefenster	 -->
+        <TopLevelControl name="timMagic" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="600" y="310" /><Anchor point="CENTER" />
+			<OnMoveStop>tim.MagicMoveStop()</OnMoveStop>
+			<Controls>
+				<Texture name="$(parent)Background" alpha="0.5" textureFile="/esoui/art/chatwindow/chat_bg_center.dds">
+					<AnchorFill /></Texture>
+				<Texture name="$(parent)Bubble"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>
+				<Label name="$(parent)Head1" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="TIM - Magic Messages">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"></Anchor>
+				</Label>
+				<Texture name="$(parent)Closer" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tim.MagicCloseClick()</OnMouseUp>
+				</Texture>
+				<Texture name="$(parent)Line1" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="580" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40"></Anchor>
+				</Texture>
+				<Label name="$(parent)Desc" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Beschreibung"><Dimensions x="560" y="160"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPLEFT" offsetX="10" offsetY="10"></Anchor>
+				</Label>
+			</Controls>
+        </TopLevelControl>
+		<!--	Das Gildenfenster	 -->
+        <TopLevelControl name="timGuild" alpha="1" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="600" y="700" /><Anchor point="CENTER" />
+			<OnMoveStop>tim.GuildMoveStop()</OnMoveStop>
+			<OnMouseWheel>tim.slider3MouseWheel(self,delta)</OnMouseWheel>
+			<Controls>
+				<Texture name="$(parent)Background" alpha="1" textureFile="/esoui/art/chatwindow/chat_bg_center.dds">
+					<AnchorFill /></Texture>
+				<Texture name="$(parent)Bubble"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>
+				<Label name="$(parent)Head1" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="TIM - Guild functions">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"></Anchor>
+				</Label>
+				<Texture name="$(parent)Closer" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tim.GuildCloseClick()</OnMouseUp>
+				</Texture>
+				<Texture name="$(parent)Next" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Closer" relativePoint="TOPLEFT" offsetX="0" offsetY="3"></Anchor>
+					<OnMouseUp>tim.NextGuildClick()</OnMouseUp>
+				</Texture>
+				<Label name="$(parent)Gilde" font="ZoFontGameBold" color="E0E0A0" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT" verticalAlignment="CENTER" text="-Gilde-">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Next" relativePoint="TOPLEFT" offsetX="-5" offsetY="5"></Anchor>
+				</Label>
+				<Texture name="$(parent)Line1" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="580" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Switch" hidden="false" mouseEnabled="true" textureFile="/esoui/art/contacts/tabicon_friends_up.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPLEFT" offsetX="8" offsetY="50"></Anchor>
+					<OnMouseUp>tim.toggleAcountClick()</OnMouseUp>
+				</Texture>
+				<Label name="$(parent)qrySuche" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="xSuche"><Dimensions x="70" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="50"></Anchor>
+				</Label>
+				<Label name="$(parent)qryAuswahl" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="xOFFLINE"><Dimensions x="80" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)qrySuche" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"></Anchor>
+					<OnMouseUp>tim.queryAuswahlClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)qryZusatz" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="xwobei"><Dimensions x="130" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)qryAuswahl" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"></Anchor>
+				</Label>
+				<Label name="$(parent)qryGtlt" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="="><Dimensions x="13" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)qryZusatz" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"></Anchor>
+					<OnMouseUp>tim.queryGtltClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)qryAnzahl" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="24"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)qryGtlt" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"></Anchor>
+					<OnMouseUp>tim.queryAnzahlClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)qryEinheit" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="xStunden"><Dimensions x="75" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)qryAnzahl" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"></Anchor>
+					<OnMouseUp>tim.queryEinheitClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)qryMode" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="xberuecksichtigt"><Dimensions x="150" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)qryEinheit" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"></Anchor>
+					<OnMouseUp>tim.queryModeClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Texture name="$(parent)Line2" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="580" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="80"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Line3" hidden="false" mouseEnabled="false" textureFile="/esoui/art/interaction/conversation_verticalborder.dds"><Dimensions x="2" y="620"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="200" offsetY="80"></Anchor>
+				</Texture>
+				<Label name="$(parent)BetreffLBL" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="xBetreff:"><Dimensions x="80" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="210" offsetY="670"></Anchor>
+				</Label>
+				<EditBox name="$(parent)Betreff" inherit="ZO_DefaultTextEdit" keyboardEnabled="false" mouseEnabled="true"><Dimensions x="270" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="220" offsetY="50"></Anchor>
+					<Controls><Backdrop name="$(parent)BetreffBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+					<OnMouseDown>tim.BetreffStart()</OnMouseDown>
+					<OnEnter>tim.BetreffEnde(false)</OnEnter>
+					<OnEscape>tim.BetreffEnde(false)</OnEscape>
+					<OnTab>tim.BetreffEnde(true)</OnTab>
+					<OnFocusLost>tim.BetreffEnde(false)</OnFocusLost>
+				</EditBox>
+				<EditBox name="$(parent)Nachricht" inherit="ZO_DefaultTextEdit" linkEnabled="true" keyboardEnabled="false" mouseEnabled="true"><Dimensions x="360" y="470"></Dimensions>
+					<Anchor relativeTo="$(parent)BetreffLBL" point="TOPLEFT" offsetX="0" offsetY="60"></Anchor>
+					<Controls><Backdrop name="$(parent)NachrichtBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+					<OnMouseDown>tim.NachrichtStart()</OnMouseDown>
+					<OnEscape>tim.NachrichtEnde(false)</OnEscape>
+					<OnTab>tim.NachrichtEnde(true)</OnTab>
+					<OnFocusLost>tim.NachrichtEnde(false)</OnFocusLost>
+				</EditBox>
+				<Texture name="$(parent)NachrichtCancel" hidden="false" mouseEnabled="true" textureFile="/esoui/art/buttons/decline_down.dds"><Dimensions x="20" y="20"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Nachricht" relativePoint="TOPRIGHT" offsetX="0" offsetY="-7"></Anchor>
+					<OnMouseUp>timGuildNachricht:Clear()</OnMouseUp>
+				</Texture>
+				<Texture name="$(parent)Line4" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="400" y="2"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-45"></Anchor>
+				</Texture>
+				<Texture name="$(parent)FooterLMT" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/icon_lmb.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="210" offsetY="-10"></Anchor>
+				</Texture>
+				<Label name="$(parent)FooterLMTAction" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="LMTaction"><Dimensions x="150" y="25"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)FooterLMT" relativePoint="BOTTOMRIGHT" offsetX="10" offsetY="0"></Anchor>
+					<OnMouseUp>tim.queryLMTClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Texture name="$(parent)FooterRMT" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/icon_rmb.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-10"></Anchor>
+				</Texture>
+				<Label name="$(parent)FooterRMTAction" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="RMTaction"><Dimensions x="150" y="25"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FooterRMT" relativePoint="BOTTOMLEFT" offsetX="-10" offsetY="0"></Anchor>
+					<OnMouseUp>tim.queryRMTClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)FooterDisplayed" mouseEnabled="false" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="summe"><Dimensions x="155" y="25"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="-10"></Anchor>
+				</Label>
+				<Texture name="$(parent)Refresh" hidden="false" mouseEnabled="true" textureFile="/esoui/art/ava/ava_resourcestatus_tabicon_production.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)FooterDisplayed" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor>
+					<OnMouseUp>tim.RefreshGuildClick()</OnMouseUp>
+				</Texture>
+			</Controls>
+        </TopLevelControl>
+		<!--	Die Katakomben	 -->
+        <TopLevelControl name="timCatacomb" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="450" y="660" /><Anchor point="CENTER" />
+			<OnMoveStop>tim.CatacombMoveStop()</OnMoveStop>
+			<Controls>
+				<Texture name="$(parent)Background" alpha="0.8" textureFile="/esoui/art/chatwindow/chat_bg_center.dds">
+					<AnchorFill /></Texture>
+				<Texture name="$(parent)Bubble"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>
+				<Label name="$(parent)Head1" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Katakomben">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"></Anchor>
+				</Label>
+				<Texture name="$(parent)Closer" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tim.CatacombCloseClick()</OnMouseUp>
+				</Texture>
+				<Texture name="$(parent)Scan" mouseEnabled="true" textureFile="/esoui/art/campaign/overview_indexicon_scoring_up.dds"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Closer" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"></Anchor>
+					<OnMouseUp>tim.scanToggle()</OnMouseUp>
+				</Texture>
+				<Texture name="$(parent)Help" mouseEnabled="true" textureFile="/esoui/art/buttons/info_down.dds"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Scan" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Line1" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="430" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40"></Anchor>
+				</Texture>
+				<Label name="$(parent)Output" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="#chat#"><Dimensions x="160" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPLEFT" offsetX="10" offsetY="50"></Anchor>
+					<Controls><Backdrop name="$(parent)BG" alpha="0.8" centerColor="0F0F0F" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)TargetTxt" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Target:"><Dimensions x="80" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Output" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"></Anchor>
+				</Label>
+				<EditBox name="$(parent)Target" inherit="ZO_DefaultTextEdit" keyboardEnabled="false" mouseEnabled="true"><Dimensions x="175" y="24"></Dimensions>
+					<Anchor relativeTo="$(parent)TargetTxt" point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor>
+					<OnMouseDown>tim.CatacombTargetStart()</OnMouseDown>
+					<OnEnter>tim.CatacombTargetEnde()</OnEnter>
+					<OnEscape>tim.CatacombTargetEnde()</OnEscape>
+					<OnFocusLost>tim.CatacombTargetEnde()</OnFocusLost>
+					<Controls><Backdrop name="$(parent)TargetBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+				</EditBox>
+				<EditBox name="$(parent)Edit" inherit="ZO_DefaultTextEdit" keyboardEnabled="false" linkEnabled="true" mouseEnabled="true"><Dimensions x="430" y="100"></Dimensions>
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="10" offsetY="90"></Anchor>
+					<OnEscape>tim.CatacombEditEnde()</OnEscape>
+					<OnFocusLost>tim.CatacombEditEnde()</OnFocusLost>
+					<Controls><Backdrop name="$(parent)EditBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="2" /></Backdrop></Controls>
+				</EditBox>
+				<Texture name="$(parent)Line2" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="430" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="205"></Anchor>
+				</Texture>
+				<Label name="$(parent)ScrollsTxt1" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Scrolls:"><Dimensions x="70" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="215"></Anchor>
+				</Label>
+				<Label name="$(parent)ScrollsTxt2" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Page:"><Dimensions x="50" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ScrollsTxt1" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+				</Label>
+				<Texture name="$(parent)ScrollsMin" mouseEnabled="true" textureFile="/esoui/art/charactercreate/charactercreate_leftarrow_up.dds"><Dimensions x="24" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ScrollsTxt2" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"></Anchor>
+					<OnMouseUp>tim.CatacombScrollPageClick(false)</OnMouseUp>
+				</Texture>
+				<Label name="$(parent)ScrollsPage" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="50"><Dimensions x="30" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ScrollsMin" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor>
+					<Controls><Backdrop name="$(parent)BG" alpha="0.8" centerColor="0F0F0F" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Texture name="$(parent)ScrollsMor" mouseEnabled="true" textureFile="/esoui/art/charactercreate/charactercreate_rightarrow_up.dds"><Dimensions x="24" y="24"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ScrollsPage" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor>
+					<OnMouseUp>tim.CatacombScrollPageClick(true)</OnMouseUp>
+				</Texture>
+			</Controls>
+        </TopLevelControl>
+		<!--	timScan	 -->
+        <TopLevelControl name="timScan" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="250" y="560" /><Anchor point="CENTER" />
+			<OnMoveStop>tim.ScanMoveStop()</OnMoveStop>
+			<Controls>
+				<Texture name="$(parent)Background" alpha="0.8" textureFile="/esoui/art/chatwindow/chat_bg_center.dds">
+					<AnchorFill /></Texture>
+				<Texture name="$(parent)Bubble"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>
+				<Label name="$(parent)Head1" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="#Scan">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"></Anchor>
+				</Label>
+				<Texture name="$(parent)Closer" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tim.ScanCloseClick()</OnMouseUp>
+				</Texture>
+				<Texture name="$(parent)Clear" mouseEnabled="true" textureFile="/esoui/art/buttons/edit_cancel_up.dds"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Closer" relativePoint="TOPLEFT" offsetX="0" offsetY="5"></Anchor>
+					<OnMouseUp>tim.scanClearClick()</OnMouseUp>
+				</Texture>
+				<Texture name="$(parent)Line1" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="230" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40"></Anchor>
+				</Texture>
+				<Texture name="$(parent)FooterLMT" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/icon_lmb.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"></Anchor>
+				</Texture>
+				<Label name="$(parent)FooterLMTAction" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="RMTaction"><Dimensions x="100" y="25"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)FooterLMT" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"></Anchor>
+				</Label>
+				<Texture name="$(parent)FooterRMT" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/icon_rmb.dds"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"></Anchor>
+				</Texture>
+				<Texture name="$(parent)Line2" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="230" y="2"></Dimensions>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="-25"></Anchor>
+				</Texture>
+				<Label name="$(parent)FooterRMTAction" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="RMTaction"><Dimensions x="100" y="25"></Dimensions>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FooterRMT" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"></Anchor>
+				</Label>
+			</Controls>
+        </TopLevelControl>
+		<!--	timMail	 -->
+        <TopLevelControl name="timMail" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="400" y="620" /><Anchor point="CENTER" />
+			<OnMoveStop>tim.MailMoveStop()</OnMoveStop>
+			<Controls>
+				<Texture name="$(parent)Background" alpha="0.8" textureFile="/esoui/art/chatwindow/chat_bg_center.dds">
+					<AnchorFill /></Texture>
+				<Texture name="$(parent)Bubble"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>
+				<Label name="$(parent)Head1" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="#Scan">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bubble" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"></Anchor>
+				</Label>
+				<Texture name="$(parent)Closer" mouseEnabled="true"><Dimensions x="30" y="30"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>tim.MailCloseClick()</OnMouseUp>
+				</Texture>
+				<Texture name="$(parent)Line1" hidden="false" mouseEnabled="false" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds"><Dimensions x="380" y="2"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40"></Anchor>
+				</Texture>
+				<Label name="$(parent)TargetLBL" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="#target:"><Dimensions x="80" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="50"></Anchor>
+				</Label>
+				<EditBox name="$(parent)Target" inherit="ZO_DefaultTextEdit" keyboardEnabled="false" mouseEnabled="true"><Dimensions x="350" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)TargetLBL" point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"></Anchor>
+					<Controls><Backdrop name="$(parent)BetreffBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+					<OnMouseDown>tim.MailZielStart()</OnMouseDown>
+					<OnEnter>tim.MailZielEnde(false)</OnEnter>
+					<OnEscape>tim.MailZielEnde(false)</OnEscape>
+					<OnTab>tim.MailZielEnde(true)</OnTab>
+					<OnFocusLost>tim.MailZielEnde(false)</OnFocusLost>
+				</EditBox>
+				<Label name="$(parent)BetreffLBL" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="xBetreff:"><Dimensions x="80" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Target" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10"></Anchor>
+				</Label>
+				<EditBox name="$(parent)Betreff" inherit="ZO_DefaultTextEdit" keyboardEnabled="false" mouseEnabled="true"><Dimensions x="350" y="25"></Dimensions>
+					<Anchor relativeTo="$(parent)BetreffLBL" point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"></Anchor>
+					<Controls><Backdrop name="$(parent)BetreffBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+					<OnMouseDown>tim.MailBetreffStart()</OnMouseDown>
+					<OnEnter>tim.MailBetreffEnde(false)</OnEnter>
+					<OnEscape>tim.MailBetreffEnde(false)</OnEscape>
+					<OnTab>tim.MailBetreffEnde(true)</OnTab>
+					<OnFocusLost>tim.MailBetreffEnde(false)</OnFocusLost>
+				</EditBox>
+				<EditBox name="$(parent)Nachricht" inherit="ZO_DefaultTextEdit" linkEnabled="true" keyboardEnabled="false" mouseEnabled="true"><Dimensions x="380" y="400"></Dimensions>
+					<Anchor relativeTo="$(parent)Betreff" point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10"></Anchor>
+					<Controls><Backdrop name="$(parent)NachrichtBG" alpha="0.2" centerColor="E0E0C0" edgeColor="E0E0C0"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+					<OnMouseDown>tim.MailNachrichtStart()</OnMouseDown>
+					<OnEscape>tim.MailNachrichtEnde(false)</OnEscape>
+					<OnTab>tim.MailNachrichtEnde(true)</OnTab>
+					<OnFocusLost>tim.MailNachrichtEnde(false)</OnFocusLost>
+				</EditBox>
+				<Label name="$(parent)SendAction" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="RMTaction"><Dimensions x="150" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Nachricht" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="15"></Anchor>
+					<OnMouseUp>tim.MailSendActionClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+				<Label name="$(parent)CancelAction" mouseEnabled="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="RMTaction"><Dimensions x="150" y="25"></Dimensions>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Nachricht" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="15"></Anchor>
+					<OnMouseUp>tim.MailCancelActionClick(button)</OnMouseUp>
+					<Controls><Backdrop name="$(parent)BD" alpha="0.2" centerColor="FFFFFF" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+				</Label>
+			</Controls>
+        </TopLevelControl>
+	</Controls>
+	<!-- Virtuelle Controls	-->
+	<Controls>
+		<Label name="govButton" virtual="true" mouseEnabled="true" text="gov" verticalAlignment="TOP" horizontalAlignment="CENTER">
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+			<Controls>
+				<Backdrop name="$(parent)BG" alpha="0" centerColor="FFFFFF" edgeColor="808080">
+					<AnchorFill /><Edge edgeSize="1" />
+				</Backdrop>
+			</Controls>
+		</Label>
+		<Label name="guildButton" virtual="true" mouseEnabled="true" text="guild" verticalAlignment="TOP" horizontalAlignment="LEFT">
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+			<Controls>
+				<Backdrop name="$(parent)BG" alpha="0" centerColor="FFFFFF" edgeColor="808080">
+					<AnchorFill /><Edge edgeSize="1" />
+				</Backdrop>
+			</Controls>
+		</Label>
+		<Texture name="guildStatusButton" virtual="true" mouseEnabled="true">
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+		</Texture>
+		<Texture name="MagicBack" virtual="true" mouseEnabled="false" textureFile="/esoui/art/actionbar/quickslotbg.dds"><Dimensions x="75" y="24"></Dimensions>
+			<Anchor relativeTo="$(parent)Desc" point="BOTTOMLEFT" offsetX="0" offsetY="0"></Anchor>
+		</Texture>
+		<Texture name="InsKill" virtual="true" mouseEnabled="true" textureFile="/esoui/art/inventory/inventory_tabicon_quickslot_up.dds"><Dimensions x="25" y="25"></Dimensions>
+			<Anchor relativeTo="$(parent)Kill" point="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+			<OnMouseUp>tim.CatacombButtonHandler(self,button)</OnMouseUp>
+		</Texture>
+		<Label name="CataText" virtual="true" font="ZoFontGameBold" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" mouseEnabled="false" text="CataText"><Dimensions x="370" y="24"></Dimensions>
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+			<Controls><Backdrop name="$(parent)BG" alpha="0.4" centerColor="0F0F0F" edgeColor="808080"><AnchorFill /><Edge edgeSize="1" /></Backdrop></Controls>
+		</Label>
+		<Texture name="SndEdt" virtual="true" mouseEnabled="true" textureFile="/esoui/art/buttons/edit_up.dds"><Dimensions x="30" y="30"></Dimensions>
+			<Anchor relativeTo="$(parent)Kill" point="TOPRIGHT" offsetX="0" offsetY="0"></Anchor>
+			<OnMouseUp>tim.CatacombButtonHandler(self,button)</OnMouseUp>
+		</Texture>
+		<Label name="scanButton" virtual="true" mouseEnabled="true" verticalAlignment="TOP" horizontalAlignment="LEFT">
+			<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+			<Controls>
+				<Backdrop name="$(parent)BG" alpha="0" centerColor="FFFFFF" edgeColor="808080">
+					<AnchorFill /><Edge edgeSize="1" />
+				</Backdrop>
+			</Controls>
+		</Label>
+	</Controls>
+</GuiXml>

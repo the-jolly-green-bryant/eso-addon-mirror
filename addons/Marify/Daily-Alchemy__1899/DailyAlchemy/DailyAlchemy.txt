@@ -1,0 +1,22 @@
+
+## Title: |c3CB371Daily Alchemy|r
+## Author: |c3CB371@Marify|r
+## APIVersion: 101036
+## Version: 1.5.1
+## DependsOn: LibAddonMenu-2.0 LibCustomMenu LibMarify
+## OptionalDependsOn: DolgubonsLazyWritCreator RuESO EsoPL FCOItemSaver MasterMerchant TamrielTradeCentre ArkadiusTradeTools
+## SavedVariables: DailyAlchemyVariables
+
+## Thanks for help me... Dolgubon / Baertram / KiriX / daimon / mychaelo / tomkolp
+
+
+DailyAlchemy.lua
+Setting.lua
+Bank.lua
+Advisor.lua
+PotionAndPoison.lua
+
+
+lang/en.lua
+lang/$(language).lua
+

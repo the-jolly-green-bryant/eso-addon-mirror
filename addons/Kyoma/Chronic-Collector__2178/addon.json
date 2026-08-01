@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Kyoma/Chronic-Collector__2178",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyoma",
+  "canonical_id": "esoui:2178",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2178",
+  "deleted": false,
+  "directories": [
+    "ChronicCollector"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2178/",
+  "fingerprint": "ff5a39627b155107773d4ac297fe21d31761a1c7c9146ea77ece110c27b0925e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7420.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2178",
+  "source_url": "https://www.esoui.com/downloads/info2178-ChronicCollector.html",
+  "stats": {
+    "downloads": 13920,
+    "favorites": 30,
+    "monthly_downloads": 25
+  },
+  "title": "Chronic Collector",
+  "updated_at": 1592239967000,
+  "version": "1.2"
+}

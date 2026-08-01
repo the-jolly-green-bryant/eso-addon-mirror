@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Experience-Notify__338",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:338",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:338",
+  "deleted": false,
+  "directories": [
+    "HarvensXPNotify"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl338/",
+  "fingerprint": "6e363d047df61bd09f178f3a43304e229200e9af8f15d75c05228490c30bdb79",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1308.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1307.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1145.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1087.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1309.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "338",
+  "source_url": "https://www.esoui.com/downloads/info338-HarvensExperienceNotify.html",
+  "stats": {
+    "downloads": 64871,
+    "favorites": 176,
+    "monthly_downloads": 41
+  },
+  "title": "Harven's Experience Notify",
+  "updated_at": 1644154348000,
+  "version": "3.7"
+}

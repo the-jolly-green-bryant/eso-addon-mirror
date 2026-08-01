@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/matheusbk2/RolePlayNeeds---Tamriel-Survival__4147",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "matheusbk2",
+  "canonical_id": "esoui:4147",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4147",
+  "deleted": false,
+  "directories": [
+    "RolePlayNeeds"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4147/",
+  "fingerprint": "50c5c8ab5e804b502a1c9974fa429855661fb1c14a56e08e90a0bf5aab4869e5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14230.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14228.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14229.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14227.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14219.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14152.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14151.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14162.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4147",
+  "source_url": "https://www.esoui.com/downloads/info4147-RolePlayNeeds-TamrielSurvival.html",
+  "stats": {
+    "downloads": 939,
+    "favorites": 5,
+    "monthly_downloads": 37
+  },
+  "title": "RolePlayNeeds - Tamriel Survival!",
+  "updated_at": 1751807535000,
+  "version": "0.7.1"
+}

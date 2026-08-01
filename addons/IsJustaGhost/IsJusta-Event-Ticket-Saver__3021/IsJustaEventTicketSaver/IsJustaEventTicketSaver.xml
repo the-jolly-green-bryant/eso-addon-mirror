@@ -1,0 +1,53 @@
+<GuiXml>
+	<Controls>
+		<Control name="IJA_EventTicketSaver_Row_Template" virtual="true">
+			<Dimensions x="0" y="32"/>
+			<Controls>
+				<Texture name="$(parent)Icon" textureFile="/esoui/art/currency/gamepad/gp_eventticket.dds" alpha="1" hidden="false">
+					<Dimensions x="32" y="32"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Label name="$(parent)Name" font="ZoFontHeader4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" text="">
+					<Dimensions x="250" y="32"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)Values" horizontalAlignment="RIGHT" font="ZoFontHeader4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" text="">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+			</Controls>
+		</Control>
+	
+        <TopLevelControl name="IJA_EventTicketSaver" clampedToScreen="true" mouseEnabled="true" movable="true" drawlayer="3" hidden="true">
+			<Dimensions x="450" y="180"/>-- 140
+			<Anchor point="TOP" relativeTo="ZO_CompassFrameCenter" relativePoint="BOTTOM" offsetX="0" offsetY="20"/>
+            <OnInitialized>
+                IJA_EventTicketSaver_Initialize(self)
+				
+				self.tickets = self:GetNamedChild('Tickets')
+				self.daily = self:GetNamedChild('Daily')
+				self.reset = self:GetNamedChild('Reset')
+            </OnInitialized>
+			
+			
+            <OnUpdate>
+                self:GetNamedChild('Reset'):SetText(zo_strformat(SI_DAILY_LOGIN_REWARDS_CHANGES_IN, ZO_FormatTime(IJA_Seasonal_Event_Manager:GetDailyResetTimeRemainingSeconds(), TIME_FORMAT_STYLE_COLONS, TIME_FORMAT_PRECISION_TWELVE_HOUR)))
+            </OnUpdate>
+
+			<Controls>
+				<Texture name="$(parent)Background" textureFile="/esoui/art/loot/loot_windowbg.dds" alpha="0.7" hidden="false">
+					<AnchorFill/>
+				</Texture>
+				<Control name="$(parent)Tickets" inherits="IJA_EventTicketSaver_Row_Template">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Background" relativePoint="TOPLEFT" offsetX="55" offsetY="25"/>
+				</Control>
+				<Control name="$(parent)Daily" inherits="IJA_EventTicketSaver_Row_Template">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Tickets" relativePoint="BOTTOMLEFT" offsetX="2" offsetY="2"/>
+				</Control>
+				<Label name="$(parent)Reset" font="ZoFontHeader4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" >
+					<Dimensions x="250" y="32"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Daily" relativePoint="BOTTOMLEFT" offsetX="42" offsetY="2"/>
+				</Label>
+			</Controls>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

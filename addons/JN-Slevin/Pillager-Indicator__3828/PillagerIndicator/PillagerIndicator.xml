@@ -1,0 +1,23 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Animations>
+        <AnimationTimeline name="PillagerIndicatorFrameAnimation">
+            <Animations>
+                <AlphaAnimation startAlpha="0" endAlpha="0.4" duration="250"> </AlphaAnimation>
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+    <Controls>
+        <TopLevelControl name="PillagerIndicatorFrame" alpha="0" tier="DT_HIGH">
+            <AnchorFill />
+            <Controls>
+                <Backdrop name="$(parent)Overlay" edgeColor="51CEA3">
+                    <AnchorFill />
+                    <Center file="EsoUI/Art/HUD/UITelvarOverlayCenter.dds" />
+                    <Edge file="EsoUI/Art/HUD/UITelvarOverlayEdge.dds" edgeFileWidth="2048" edgeFileHeight="256" />
+                    <Insets left="256" top="256" right="-256" bottom="-256" />
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>
+    

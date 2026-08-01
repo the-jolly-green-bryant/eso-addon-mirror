@@ -1,0 +1,47 @@
+<GuiXml>
+    <Controls>
+        <!-- ========================================================= -->
+        <!--  ROW TEMPLATE                                             -->
+        <!-- ========================================================= -->
+        <Control name="DsRGuildPersonalJunkRow" virtual="true" mouseEnabled="true">
+            <Dimensions x="820" y="40" />
+
+            <OnMouseUp>
+                DsRGuildPersonalJunkTableList_OnMouseUp(self, button)
+            </OnMouseUp>
+
+            <Controls>
+                <!-- Icon -->
+                <Label name="$(parent)Icon" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="40" y="40" />
+                    <Anchor point="LEFT" offsetX="0" offsetY="0" />
+                </Label>
+
+                <!-- ID -->
+                <Label name="$(parent)ID" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="80" y="40" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="10" />
+                </Label>
+
+                <!-- Name -->
+                <Label name="$(parent)Name" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="420" y="40" />
+                    <Anchor point="LEFT" relativeTo="$(parent)ID" relativePoint="RIGHT" offsetX="0" />
+                </Label>
+                
+                <!-- Typ -->
+                <Label name="$(parent)Typ" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="160" y="40" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="0" />
+                </Label>
+
+                <!-- Mark -->
+                <Label name="$(parent)Mark" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" mouseEnabled="false">
+                    <Dimensions x="100" y="40" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Typ" relativePoint="RIGHT" offsetX="0" />
+                </Label>
+            </Controls>
+        </Control>
+
+    </Controls>
+</GuiXml>

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/mgsnakes/Hide-UI__4083",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mgsnakes",
+  "canonical_id": "esoui:4083",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4083",
+  "deleted": false,
+  "directories": [
+    "HideUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4083/",
+  "fingerprint": "d1538c679c93da73c702a9de827c5d5f37dda3ac692ea859ebb3caccc720e5e5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13934.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13933.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13932.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4083",
+  "source_url": "https://www.esoui.com/downloads/info4083-HideUI.html",
+  "stats": {
+    "downloads": 796,
+    "favorites": 1,
+    "monthly_downloads": 21
+  },
+  "title": "Hide UI",
+  "updated_at": 1744196083000,
+  "version": "1.0"
+}

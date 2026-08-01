@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Masteroshi430/Unboxer__1655",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:1655",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:1655",
+  "deleted": false,
+  "directories": [
+    "Unboxer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1655/",
+  "fingerprint": "23e9e1bbe9af02b6336ffae0d826b4c1a0549fb088f32c111b73d970250b16ab",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8199.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8200.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8201.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8197.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8198.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1655",
+  "source_url": "https://www.esoui.com/downloads/info1655-Unboxer.html",
+  "stats": {
+    "downloads": 141108,
+    "favorites": 98,
+    "monthly_downloads": 429
+  },
+  "title": "Unboxer",
+  "updated_at": 1780860215000,
+  "version": "2026.06.07"
+}

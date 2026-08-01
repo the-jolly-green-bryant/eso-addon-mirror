@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/helixanon/Cruxweaver__3781",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "helixanon",
+  "canonical_id": "esoui:3781",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3781",
+  "deleted": false,
+  "directories": [
+    "Cruxweaver"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3781/",
+  "fingerprint": "608dba681cb2ac09e18f8cd10d795e4e9557a8f1770719fe1796bbab189a5743",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12845.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12844.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12846.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3781",
+  "source_url": "https://www.esoui.com/downloads/info3781-Cruxweaver.html",
+  "stats": {
+    "downloads": 2257,
+    "favorites": 4,
+    "monthly_downloads": 22
+  },
+  "title": "Cruxweaver",
+  "updated_at": 1705192568000,
+  "version": "1.0.2"
+}

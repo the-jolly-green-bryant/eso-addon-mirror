@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Hyborem/Daily-Mail__4406",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hyborem",
+  "canonical_id": "esoui:4406",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4406",
+  "deleted": false,
+  "directories": [
+    "DailyMail"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4406/",
+  "fingerprint": "e1ab65e586d851d71255b8f86a19c213b76053dc52c6e7c22812a2838ad1272d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4406",
+  "source_url": "https://www.esoui.com/downloads/info4406-DailyMail.html",
+  "stats": {
+    "downloads": 320,
+    "favorites": 1,
+    "monthly_downloads": 36
+  },
+  "title": "Daily Mail",
+  "updated_at": 1780934135000,
+  "version": "v.1.1.2"
+}

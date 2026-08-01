@@ -1,0 +1,47 @@
+## Title: Flamechasers Dungeon Codex
+## APIVersion: 101050
+## Author: Flamechasers
+## Version: 0.2.55
+## AddOnVersion: 255
+## Description: Flamechasers-branded in-game dungeon mechanic notes with challenge-banner focused UI, plain paste-ready snippets, Full/Quick/role view modes, move/cast labels, paste-ready snippets, scrollable summary panes, split boss-summary paste buttons, flat readable scrollbars, session-only selection memory, and visual mechanic card numbers, and auto cursor mode on open.
+## SavedVariables: DungeonMechsCodex_SavedVars
+
+Core.lua
+Data/00_DataRegistry.lua
+Data/01_DLC_Index.lua
+Data/02_ImperialCityPrison.lua
+Data/03_WhiteGoldTower.lua
+Data/04_CradleOfShadows.lua
+Data/05_RuinsOfMazzatun.lua
+Data/10_BlackDrakeVilla.lua
+Data/11_BlackGemFoundry.lua
+Data/12_BloodrootForge.lua
+Data/13_FalkreathHold.lua
+Data/14_FangLair.lua
+Data/15_ScalecallerPeak.lua
+Data/16_MoonHunterKeep.lua
+Data/17_MarchOfSacrifices.lua
+Data/18_Frostvault.lua
+Data/19_DepthsOfMalatar.lua
+Data/20_MoongraveFane.lua
+Data/21_LairOfMaarselok.lua
+Data/22_Icereach.lua
+Data/23_UnhallowedGrave.lua
+Data/24_StoneGarden.lua
+Data/25_CastleThorn.lua
+Data/26_TheCauldron.lua
+Data/27_RedPetalBastion.lua
+Data/28_TheDreadCellar.lua
+Data/29_CoralAerie.lua
+Data/30_ShipwrightsRegret.lua
+Data/31_EarthenRootEnclave.lua
+Data/32_GravenDeep.lua
+Data/33_BalSunnar.lua
+Data/34_ScrivenersHall.lua
+Data/35_OathswornPit.lua
+Data/36_BedlamVeil.lua
+Data/37_ExiledRedoubt.lua
+Data/38_LepSeclusa.lua
+Data/39_NajCaldeesh.lua
+UI.lua
+Bindings.xml

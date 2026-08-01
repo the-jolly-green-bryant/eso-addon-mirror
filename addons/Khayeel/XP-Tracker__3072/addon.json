@@ -1,0 +1,70 @@
+{
+  "archive_path": "addons/Khayeel/XP-Tracker__3072",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Khayeel",
+  "canonical_id": "esoui:3072",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3072",
+  "deleted": false,
+  "directories": [
+    "XPTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3072/",
+  "fingerprint": "e0ee7409d56be8eef212c2f15a6382bce3026c2e16f050a1443669947b5f57bc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10298.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10299.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3072",
+  "source_url": "https://www.esoui.com/downloads/info3072-XPTracker.html",
+  "stats": {
+    "downloads": 12409,
+    "favorites": 7,
+    "monthly_downloads": 40
+  },
+  "title": "XP Tracker",
+  "updated_at": 1652393729000,
+  "version": "1.3"
+}

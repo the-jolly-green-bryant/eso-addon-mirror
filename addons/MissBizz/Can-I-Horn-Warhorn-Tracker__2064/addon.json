@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/MissBizz/Can-I-Horn-Warhorn-Tracker__2064",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MissBizz",
+  "canonical_id": "esoui:2064",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2064",
+  "deleted": false,
+  "directories": [
+    "CanIHorn"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2064/",
+  "fingerprint": "7f8200d25fcfde71a97388ed7efa0fb01a6c246c7273090133b7d01c57817c22",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6964.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6965.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6966.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2064",
+  "source_url": "https://www.esoui.com/downloads/info2064-CanIHornWarhornTracker.html",
+  "stats": {
+    "downloads": 22099,
+    "favorites": 27,
+    "monthly_downloads": 21
+  },
+  "title": "Can I Horn? (Warhorn Tracker)",
+  "updated_at": 1582559646000,
+  "version": "1.4.1"
+}

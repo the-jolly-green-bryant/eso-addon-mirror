@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Mirelda/Mirelda-s-CraftAutoLoot-Upgrade__4299",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mirelda",
+  "canonical_id": "esoui:4299",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4299",
+  "deleted": false,
+  "directories": [
+    "CraftAutoLootUpgrade"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4299/",
+  "fingerprint": "943b09d584d44f9c3456aca56e686aabc7714eb433d92d1462089815ccefeaab",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14776.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4299",
+  "source_url": "https://www.esoui.com/downloads/info4299-MireldasCraftAutoLootUpgrade.html",
+  "stats": {
+    "downloads": 470,
+    "favorites": 0,
+    "monthly_downloads": 19
+  },
+  "title": "Mirelda's CraftAutoLoot Upgrade",
+  "updated_at": 1764459781000,
+  "version": "1.0"
+}

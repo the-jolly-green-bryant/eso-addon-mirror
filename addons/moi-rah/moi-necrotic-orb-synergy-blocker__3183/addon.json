@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/moi-rah/moi-necrotic-orb-synergy-blocker__3183",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "moi-rah",
+  "canonical_id": "esoui:3183",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:3183",
+  "deleted": false,
+  "directories": [
+    "moiorbblock"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3183/",
+  "fingerprint": "ec26a3572fd5a5c2983afff825c9017a49fc96e4998ba0ceb303644c07aa4dc3",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3183",
+  "source_url": "https://www.esoui.com/downloads/info3183-moinecroticorbsynergyblocker.html",
+  "stats": {
+    "downloads": 2081,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "moi necrotic orb synergy blocker",
+  "updated_at": 1630275785000,
+  "version": "0.1.1"
+}

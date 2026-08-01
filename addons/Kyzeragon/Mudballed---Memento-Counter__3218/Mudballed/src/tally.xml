@@ -1,0 +1,254 @@
+<GuiXml>
+    <Controls>
+        <Label name="MudballedDummyText" font="ZoFontGame" hidden="true"></Label>
+        <TopLevelControl name="MudballedContainer" mouseEnabled="false" movable="false">
+            <OnInitialized>
+                HUD_SCENE:AddFragment(ZO_SimpleSceneFragment:New(self))
+                HUD_UI_SCENE:AddFragment(ZO_SimpleSceneFragment:New(self))
+            </OnInitialized>
+            <Controls>
+<!-- ======================================================================================================================= -->
+                <Control name="MudballedSourceTally" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+                    <Dimensions x="220" y="100"/>
+                    <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                    <OnMoveStop>
+                        Mudballed.SavePosition()
+                    </OnMoveStop>
+                    <Controls>
+                        <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="00000000" hidden="false"><AnchorFill/></Backdrop>
+                        <Control name="$(parent)Buttons">
+                            <Dimensions x="220" y="24"/>
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+                            <Controls>
+                                <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="00000000" hidden="false"><AnchorFill/></Backdrop>
+                                <Texture name="$(parent)Pie" textureFile="/esoui/art/icons/event_jestersfestival_revelerypie.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseUp>Mudballed.OnButtonClicked("pie", true)</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include |H1:item:147300:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Snowball" textureFile="/esoui/art/icons/collectible_memento_snowball.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)Pie" relativePoint="LEFT"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseUp>Mudballed.OnButtonClicked("snowball", true)</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include |H1:collectible:6932|h|h in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Mudball" textureFile="/esoui/art/icons/collectible_memento_mudball_bag.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)Snowball" relativePoint="LEFT"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseUp>Mudballed.OnButtonClicked("mudball", true)</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include |H1:collectible:601|h|h in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Blossom" textureFile="/art/fx/texture/cherryblossomground_01.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="LEFT" relativeTo="$(parent)Pie" relativePoint="RIGHT"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseUp>Mudballed.OnButtonClicked("blossom", true)</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include |H1:collectible:1108|h|h in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Crow" textureFile="/esoui/art/icons/achievement_update16_016.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="LEFT" relativeTo="$(parent)Blossom" relativePoint="RIGHT"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseUp>Mudballed.OnButtonClicked("crow", true)</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include |H1:collectible:1385|h|h in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)AllSession" textureFile="/esoui/art/buttons/radiobuttondown.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="8"/>
+                                    <Dimensions x="16" y="16"/>
+                                    <OnMouseUp>Mudballed.OnButtonClicked("all", true)</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to show tally for all-time or session only")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Button name="$(parent)Close" alpha="1" topmost="true">
+                                    <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+                                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                    <Dimensions x="36" y="36"/>
+                                    <OnClicked>
+                                        Mudballed.savedOptions.sourceDisplay.show = false
+                                        MudballedSourceTally:SetHidden(true)
+                                    </OnClicked>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Hide this panel")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Button>
+                                <Button name="$(parent)Options" alpha="1" topmost="true">
+                                    <Textures normal="/esoui/art/chatwindow/chat_options_up.dds" mouseOver="/esoui/art/chatwindow/chat_options_over.dds"/>
+                                    <Anchor point="RIGHT" relativeTo="$(parent)Close" relativePoint="LEFT" offsetX="12" offsetY="-1"/>
+                                    <Dimensions x="32" y="32" />
+                                    <OnClicked>Mudballed.OpenSettingsMenu()</OnClicked>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Open the addon settings")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Button>
+                            </Controls>
+                        </Control>
+                        <Label name="$(parent)Header" font="ZoFontGame" color="FFFFFF" text="Mudball Victims" horizontalAlignment="CENTER">
+                            <Dimensions x="220" y="26"/>
+                            <Anchor point="TOP" relativeTo="$(parent)Buttons" relativePoint="BOTTOM"/>
+                            <Controls>
+                                <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="00000000" hidden="false"><AnchorFill/></Backdrop>
+                            </Controls>
+                        </Label>
+                        <Control name="$(parent)ScrollContainer" inherits="ZO_ScrollContainer">
+                            <Dimensions x="202" y="60"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT"/>
+                        </Control>
+                        <Label name="$(parent)Count" font="ZoFontGame" color="FFFFFF" text="420&#13;&#10;3&#13;&#10;1&#13;&#10;1" horizontalAlignment="RIGHT" wrapMode="TRUNCATE">
+                            <Dimensions x="80" y="60"/>
+                            <OnInitialized>
+                                self:SetParent(GetControl("MudballedSourceTallyScrollContainerScrollChild"))
+                                self:SetAnchor(TOPRIGHT, GetControl("MudballedSourceTallyScrollContainerScrollChild"), TOPRIGHT)
+                            </OnInitialized>
+                        </Label>
+                        <Label name="$(parent)Names" font="ZoFontGame" color="FFFFFF" text="Test Name&#13;&#10;Another Test Name&#13;&#10;Third Test Name&#13;&#10;Last Test" horizontalAlignment="LEFT" wrapMode="TRUNCATE">
+                            <Dimensions x="184" y="60"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Count" relativePoint="TOPRIGHT"/>
+                            <OnInitialized>
+                                self:SetParent(GetControl("MudballedSourceTallyScrollContainerScrollChild"))
+                            </OnInitialized>
+                        </Label>
+                    </Controls>
+                </Control>
+<!-- ======================================================================================================================= -->
+                <Control name="MudballedTargetTally" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+                    <Dimensions x="220" y="100"/>
+                    <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                    <OnMoveStop>
+                        Mudballed.SavePosition()
+                    </OnMoveStop>
+                    <Controls>
+                        <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="00000000" hidden="false"><AnchorFill/></Backdrop>
+                        <Control name="$(parent)Buttons">
+                            <Dimensions x="220" y="24"/>
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+                            <Controls>
+                                <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="00000000" hidden="false"><AnchorFill/></Backdrop>
+                                <Texture name="$(parent)Pie" textureFile="/esoui/art/icons/event_jestersfestival_revelerypie.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseUp>Mudballed.OnButtonClicked("pie", false)</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include |H1:item:147300:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Snowball" textureFile="/esoui/art/icons/collectible_memento_snowball.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)Pie" relativePoint="LEFT"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseUp>Mudballed.OnButtonClicked("snowball", false)</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include |H1:collectible:6932|h|h in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Mudball" textureFile="/esoui/art/icons/collectible_memento_mudball_bag.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)Snowball" relativePoint="LEFT"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseUp>Mudballed.OnButtonClicked("mudball", false)</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include |H1:collectible:601|h|h in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Blossom" textureFile="/art/fx/texture/cherryblossomground_01.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="LEFT" relativeTo="$(parent)Pie" relativePoint="RIGHT"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseUp>Mudballed.OnButtonClicked("blossom", false)</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include |H1:collectible:1108|h|h in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Crow" textureFile="/esoui/art/icons/achievement_update16_016.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="LEFT" relativeTo="$(parent)Blossom" relativePoint="RIGHT"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseUp>Mudballed.OnButtonClicked("crow", false)</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to include |H1:collectible:1385|h|h in the tally")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)AllSession" textureFile="/esoui/art/buttons/radiobuttondown.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="8"/>
+                                    <Dimensions x="16" y="16"/>
+                                    <OnMouseUp>Mudballed.OnButtonClicked("all", false)</OnMouseUp>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Toggle whether to show tally for all-time or session only")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Button name="$(parent)Close" alpha="1" topmost="true">
+                                    <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+                                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="10"/>
+                                    <Dimensions x="36" y="36"/>
+                                    <OnClicked>
+                                        Mudballed.savedOptions.targetDisplay.show = false
+                                        MudballedTargetTally:SetHidden(true)
+                                    </OnClicked>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Hide this panel")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Button>
+                                <Button name="$(parent)Options" alpha="1" topmost="true">
+                                    <Textures normal="/esoui/art/chatwindow/chat_options_up.dds" mouseOver="/esoui/art/chatwindow/chat_options_over.dds"/>
+                                    <Anchor point="RIGHT" relativeTo="$(parent)Close" relativePoint="LEFT" offsetX="12" offsetY="-1"/>
+                                    <Dimensions x="32" y="32" />
+                                    <OnClicked>Mudballed.OpenSettingsMenu()</OnClicked>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Open the addon settings")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Button>
+                            </Controls>
+                        </Control>
+                        <Label name="$(parent)Header" font="ZoFontGame" color="FFFFFF" text="Mudball Victims" horizontalAlignment="CENTER">
+                            <Dimensions x="220" y="26"/>
+                            <Anchor point="TOP" relativeTo="$(parent)Buttons" relativePoint="BOTTOM"/>
+                            <Controls>
+                                <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="00000000" hidden="false"><AnchorFill/></Backdrop>
+                            </Controls>
+                        </Label>
+                        <Control name="$(parent)ScrollContainer" inherits="ZO_ScrollContainer">
+                            <Dimensions x="202" y="60"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT"/>
+                        </Control>
+                        <Label name="$(parent)Count" font="ZoFontGame" color="FFFFFF" text="420&#13;&#10;3&#13;&#10;1&#13;&#10;1" horizontalAlignment="RIGHT" wrapMode="TRUNCATE">
+                            <Dimensions x="80" y="60"/>
+                            <OnInitialized>
+                                self:SetParent(GetControl("MudballedTargetTallyScrollContainerScrollChild"))
+                                self:SetAnchor(TOPRIGHT, GetControl("MudballedTargetTallyScrollContainerScrollChild"), TOPRIGHT)
+                            </OnInitialized>
+                        </Label>
+                        <Label name="$(parent)Names" font="ZoFontGame" color="FFFFFF" text="Test Name&#13;&#10;Another Test Name&#13;&#10;Third Test Name&#13;&#10;Last Test" horizontalAlignment="LEFT" wrapMode="TRUNCATE">
+                            <Dimensions x="184" y="60"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Count" relativePoint="TOPRIGHT"/>
+                            <OnInitialized>
+                                self:SetParent(GetControl("MudballedTargetTallyScrollContainerScrollChild"))
+                            </OnInitialized>
+                        </Label>
+                    </Controls>
+                </Control>
+<!-- ======================================================================================================================= -->
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,14 @@
+## Title: |c3CB371pChat_jpNicknamePatch|r
+## APIVersion: 101036
+## Version: 1.3.12
+## Author: |c3CB371@Marify|r
+## DependsOn: LibAddonMenu-2.0 LibMarify pChat
+## OptionalDependsOn: ThurisazGuildInfo LuiExtended AUI EsoPL
+## SavedVariables: pChat_jpNicknamePatchVariables
+
+
+fonts\fontstrings_$(language).xml
+i18n\jp.lua
+lang\jp.lua
+pChat_jpNicknamePatch.lua
+

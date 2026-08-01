@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Masteroshi430/Is-Target-Guildie__3717",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:3717",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3717",
+  "deleted": false,
+  "directories": [
+    "IsTargetGuildie"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3717/",
+  "fingerprint": "fad144d5f504fccb96d75f161f312c01513ec97ad0bf12728fa5f45a27068bf7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12595.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12596.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12597.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3717",
+  "source_url": "https://www.esoui.com/downloads/info3717-IsTargetGuildie.html",
+  "stats": {
+    "downloads": 3342,
+    "favorites": 7,
+    "monthly_downloads": 104
+  },
+  "title": "Is Target Guildie?",
+  "updated_at": 1783374232000,
+  "version": "2026.07.06"
+}

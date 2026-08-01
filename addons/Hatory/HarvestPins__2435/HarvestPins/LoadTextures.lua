@@ -1,0 +1,48 @@
+Harvest.settings:RegisterPreset(
+	"HarvestPins icons and colors",
+	{
+		[Harvest.UNKNOWN]		={texture="esoui/art/icons/poi/poi_crafting_complete.dds",	tint = ZO_ColorDef:New(1.000, 1.000, 1.000) },
+		[Harvest.BLACKSMITH]	={texture="HarvestPins/Textures/Map/mining.dds",			tint = ZO_ColorDef:New(200/255, 200/255, 150/255, 200/255) },
+		[Harvest.CLOTHING]		={texture="HarvestPins/Textures/Map/clothing.dds",			tint = ZO_ColorDef:New(200/255, 200/255, 150/255, 200/255) },
+		[Harvest.WOODWORKING]	={texture="HarvestPins/Textures/Map/wood.dds",				tint = ZO_ColorDef:New(200/255, 200/255, 150/255, 200/255) },
+		[Harvest.ENCHANTING]	={texture="HarvestPins/Textures/Map/enchanting.dds",		tint = ZO_ColorDef:New(200/255, 100/255,  50/255, 200/255) },
+		[Harvest.MUSHROOM]		={texture="HarvestPins/Textures/Map/mushroom.dds",			tint = ZO_ColorDef:New(100/255, 200/255, 100/255, 200/255) },
+		[Harvest.FLOWER]		={texture="HarvestPins/Textures/Map/flower.dds",			tint = ZO_ColorDef:New(100/255, 200/255, 100/255, 200/255) },
+		[Harvest.WATERPLANT]	={texture="HarvestPins/Textures/Map/waterplant.dds",		tint = ZO_ColorDef:New(100/255, 200/255, 100/255, 200/255) },
+		[Harvest.CRIMSON]		={texture="HarvestPins/Textures/Map/waterplant.dds",		tint = ZO_ColorDef:New(100/255, 200/255, 100/255, 200/255) },
+		[Harvest.HERBALIST]		={texture="HarvestPins/Textures/Map/alchemy.dds",			tint = ZO_ColorDef:New(100/255, 200/255, 100/255, 200/255) },
+		[Harvest.WATER]			={texture="HarvestPins/Textures/Map/solvent.dds",			tint = ZO_ColorDef:New(100/255, 150/255, 200/255, 200/255) },
+		[Harvest.FISHING]		={texture="HarvestPins/Textures/Map/fish.dds",				tint = ZO_ColorDef:New(100/255, 150/255, 200/255, 200/255) },
+		[Harvest.HEAVYSACK]		={texture="HarvestPins/Textures/Map/heavysack.dds",			tint = ZO_ColorDef:New(150/255, 200/255, 100/255, 200/255) },
+		[Harvest.CLAM]			={texture="HarvestPins/Textures/Map/clam.dds",				tint = ZO_ColorDef:New(150/255, 200/255, 100/255, 200/255) },
+		[Harvest.CHESTS]		={texture="HarvestPins/Textures/Map/chest.dds",				tint = ZO_ColorDef:New(100/255, 200/255, 200/255, 200/255) },
+		[Harvest.TROVE]			={texture="HarvestPins/Textures/Map/trove.dds",				tint = ZO_ColorDef:New(150/255, 100/255, 200/255, 200/255) },
+		[Harvest.JUSTICE]		={texture="HarvestPins/Textures/Map/justice.dds",			tint = ZO_ColorDef:New(200/255, 100/255, 200/255, 200/255) },
+		[Harvest.STASH]			={texture="HarvestPins/Textures/Map/stash.dds",				tint = ZO_ColorDef:New(200/255, 100/255, 200/255, 200/255) },
+		worldBase={texture="HarvestPins/Textures/worldMarker.dds" },
+	}
+)
+Harvest.settings:RegisterPreset(
+	"HarvestPins icons only",
+	{
+		[Harvest.UNKNOWN]		={texture="esoui/art/icons/poi/poi_crafting_complete.dds" },
+		[Harvest.BLACKSMITH]	={texture="HarvestPins/Textures/Map/mining.dds" },
+		[Harvest.CLOTHING]		={texture="HarvestPins/Textures/Map/clothing.dds" },
+		[Harvest.WOODWORKING]	={texture="HarvestPins/Textures/Map/wood.dds" },
+		[Harvest.ENCHANTING]	={texture="HarvestPins/Textures/Map/enchanting.dds" },
+		[Harvest.MUSHROOM]		={texture="HarvestPins/Textures/Map/mushroom.dds" },
+		[Harvest.FLOWER]		={texture="HarvestPins/Textures/Map/flower.dds" },
+		[Harvest.WATERPLANT]	={texture="HarvestPins/Textures/Map/waterplant.dds" },
+		[Harvest.CRIMSON]		={texture="HarvestPins/Textures/Map/waterplant.dds" },
+		[Harvest.HERBALIST]		={texture="HarvestPins/Textures/Map/alchemy.dds" },
+		[Harvest.WATER]			={texture="HarvestPins/Textures/Map/solvent.dds" },
+		[Harvest.FISHING]		={texture="HarvestPins/Textures/Map/fish.dds" },
+		[Harvest.HEAVYSACK]		={texture="HarvestPins/Textures/Map/heavysack.dds" },
+		[Harvest.CLAM]			={texture="HarvestPins/Textures/Map/clam.dds" },
+		[Harvest.CHESTS]		={texture="HarvestPins/Textures/Map/chest.dds" },
+		[Harvest.TROVE]			={texture="HarvestPins/Textures/Map/trove.dds" },
+		[Harvest.JUSTICE]		={texture="HarvestPins/Textures/Map/justice.dds" },
+		[Harvest.STASH]			={texture="HarvestPins/Textures/Map/stash.dds" },
+		worldBase={texture="HarvestPins/Textures/worldMarker.dds" },
+	}
+)

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/imPDA/Impified-UI__4141",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "imPDA",
+  "canonical_id": "esoui:4141",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4141",
+  "deleted": false,
+  "directories": [
+    "ImpifiedUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4141/",
+  "fingerprint": "bd51d5efd218dc76b958ffcdf000ac7afb0a6f710af8105baa99bea5ca5ebb92",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14136.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14137.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14138.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4141",
+  "source_url": "https://www.esoui.com/downloads/info4141-ImpifiedUI.html",
+  "stats": {
+    "downloads": 449,
+    "favorites": 1,
+    "monthly_downloads": 29
+  },
+  "title": "Impified UI",
+  "updated_at": 1750763479000,
+  "version": "2"
+}

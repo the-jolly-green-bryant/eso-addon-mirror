@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Harven's Research Timers">
+			<Action name="TOGGLE_HARVENSRESEARCHTIMERS">
+				<Down>HarvensResearchTimersToggle()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

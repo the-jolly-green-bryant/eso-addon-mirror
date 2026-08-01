@@ -1,0 +1,70 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c9e0911Caro's|r Skill Point Saver">
+			<Action name="CSPS_SHOW">
+				<Down>CSPSWindow:SetHidden(not CSPSWindow:IsHidden())</Down>
+			</Action>
+			<Action name="CSPS_CPHK1">
+				<Up>CSPS.groupShortkeyUp(1)</Up>
+			</Action>
+			<Action name="CSPS_CPHK2">
+				<Up>CSPS.groupShortkeyUp(2)</Up>
+			</Action>
+			<Action name="CSPS_CPHK3">
+				<Up>CSPS.groupShortkeyUp(3)</Up>
+			</Action>
+			<Action name="CSPS_CPHK4">
+				<Up>CSPS.groupShortkeyUp(4)</Up>
+			</Action>
+			<Action name="CSPS_CPHK5">
+				<Up>CSPS.groupShortkeyUp(5)</Up>
+			</Action>
+			<Action name="CSPS_CPHK6">
+				<Up>CSPS.groupShortkeyUp(6)</Up>
+			</Action>
+			<Action name="CSPS_CPHK7">
+				<Up>CSPS.groupShortkeyUp(7)</Up>
+			</Action>
+			<Action name="CSPS_CPHK8">
+				<Up>CSPS.groupShortkeyUp(8)</Up>
+			</Action>
+			<Action name="CSPS_CPHK9">
+				<Up>CSPS.groupShortkeyUp(9)</Up>
+			</Action>
+			<Action name="CSPS_CPHK10">
+				<Up>CSPS.groupShortkeyUp(10)</Up>
+			</Action>			
+			<Action name="CSPS_CPHK11">
+				<Up>CSPS.groupShortkeyUp(11)</Up>
+			</Action>
+			<Action name="CSPS_CPHK12">
+				<Up>CSPS.groupShortkeyUp(12)</Up>
+			</Action>
+			<Action name="CSPS_CPHK13">
+				<Up>CSPS.groupShortkeyUp(13)</Up>
+			</Action>
+			<Action name="CSPS_CPHK14">
+				<Up>CSPS.groupShortkeyUp(14)</Up>
+			</Action>
+			<Action name="CSPS_CPHK15">
+				<Up>CSPS.groupShortkeyUp(15)</Up>
+			</Action>
+			<Action name="CSPS_CPHK16">
+				<Up>CSPS.groupShortkeyUp(16)</Up>
+			</Action>
+			<Action name="CSPS_CPHK17">
+				<Up>CSPS.groupShortkeyUp(17)</Up>
+			</Action>
+			<Action name="CSPS_CPHK18">
+				<Up>CSPS.groupShortkeyUp(18)</Up>
+			</Action>
+			<Action name="CSPS_CPHK19">
+				<Up>CSPS.groupShortkeyUp(19)</Up>
+			</Action>
+			<Action name="CSPS_CPHK20">
+				<Up>CSPS.groupShortkeyUp(20)</Up>
+			</Action>			
+			
+		</Category>
+	</Layer>
+</Bindings>

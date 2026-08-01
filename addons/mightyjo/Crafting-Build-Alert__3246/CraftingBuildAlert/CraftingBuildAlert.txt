@@ -1,0 +1,14 @@
+## Title: Crafting Build Alert
+## APIVersion: 101042 101043
+## Version: 1.2.0
+## AddonVersion: 8
+## SavedVariables: CraftingBuildAlertVariables
+## Author: mightyjo
+## DependsOn: LibAddonMenu-2.0>=32
+## OptionalDependsOn: LibDebugLogger>=180 LibZone>=077
+
+
+CraftingBuildAlert.lua
+
+lang/en.lua
+lang/$(language).lua

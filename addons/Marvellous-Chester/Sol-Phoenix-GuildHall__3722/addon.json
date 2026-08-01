@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Marvellous-Chester/Sol-Phoenix-GuildHall__3722",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marvellous Chester",
+  "canonical_id": "esoui:3722",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3722",
+  "deleted": false,
+  "directories": [
+    "Sol_Guild_Hall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3722/",
+  "fingerprint": "909d9e2113ac382b2ed33764a09b4f804170e0f6c741952c344b58e50c5f6c3a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12832.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12833.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12834.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12835.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3722",
+  "source_url": "https://www.esoui.com/downloads/info3722-SolPhoenixGuildHall.html",
+  "stats": {
+    "downloads": 1440,
+    "favorites": 2,
+    "monthly_downloads": 11
+  },
+  "title": "Sol Phoenix GuildHall",
+  "updated_at": 1704648140000,
+  "version": "1.0"
+}

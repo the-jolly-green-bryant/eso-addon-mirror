@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/kawamonkey/Wiki-Links__3005",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3005",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3005",
+  "deleted": false,
+  "directories": [
+    "WikiLinks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3005/",
+  "fingerprint": "734cbcb4f0422d22aff517fd718f43e34e93611b0705f5905df762ed1a884f52",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3005",
+  "source_url": "https://www.esoui.com/downloads/info3005-WikiLinks.html",
+  "stats": {
+    "downloads": 2041,
+    "favorites": 2,
+    "monthly_downloads": 12
+  },
+  "title": "Wiki Links",
+  "updated_at": 1617301048000,
+  "version": "1.0"
+}

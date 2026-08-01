@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Lucifer1309/Font-Accessibility---Font-Changer-based-on-Pawksicles__4012",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lucifer1309",
+  "canonical_id": "esoui:4012",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:4012",
+  "deleted": false,
+  "directories": [
+    "Fontaccessibility"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4012/",
+  "fingerprint": "f607d66eae018a8756dacb76cd1df84682dac1f898e828f0370158b6fef20d31",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13594.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4012",
+  "source_url": "https://www.esoui.com/downloads/info4012-FontAccessibility-FontChangerbasedonPawksicles.html",
+  "stats": {
+    "downloads": 1437,
+    "favorites": 5,
+    "monthly_downloads": 37
+  },
+  "title": "Font Accessibility - Font Changer based on Pawksicles",
+  "updated_at": 1741641257000,
+  "version": "1.7.0"
+}

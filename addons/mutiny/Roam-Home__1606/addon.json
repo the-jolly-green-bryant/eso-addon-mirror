@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/mutiny/Roam-Home__1606",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mutiny",
+  "canonical_id": "esoui:1606",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:1606",
+  "deleted": false,
+  "directories": [
+    "RoamHome"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1606/",
+  "fingerprint": "edf130a9b1b471d39491e3b40c5bba6e8e23e27ac2a1f58162b83c6967b547ae",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5370.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5291.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5369.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5372.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1606",
+  "source_url": "https://www.esoui.com/downloads/info1606-RoamHome.html",
+  "stats": {
+    "downloads": 17304,
+    "favorites": 33,
+    "monthly_downloads": 15
+  },
+  "title": "Roam Home",
+  "updated_at": 1510430415000,
+  "version": "1.7.2"
+}

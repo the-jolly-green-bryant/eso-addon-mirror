@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Lionas/JP-Patch-for-AutoInvite-v2.3.1__1405",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lionas",
+  "canonical_id": "esoui:1405",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    }
+  ],
+  "content_id": "esoui:1405",
+  "deleted": false,
+  "directories": [
+    "AutoInvite_JP_Patch_2_3_1"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1405/",
+  "fingerprint": "de0bca7da64cd08248aeffc33d14bc28d56a28d53a0d69d6f269d02e92a81ab2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4562.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1405",
+  "source_url": "https://www.esoui.com/downloads/info1405-JPPatchforAutoInvitev2.3.1.html",
+  "stats": {
+    "downloads": 7027,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "JP Patch for AutoInvite v2.3.1",
+  "updated_at": 1467287972000,
+  "version": "2.3.1"
+}

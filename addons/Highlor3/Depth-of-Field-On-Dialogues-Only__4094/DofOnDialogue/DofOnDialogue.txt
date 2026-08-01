@@ -1,0 +1,12 @@
+## Title: DoF On Dialogues Only
+## APIVersion: 101046
+## Description: Enables Depth of Field during NPC conversations only.
+## Version: 1.1.46c
+## Author: Highlor3 & ChatGPT
+## SavedVariables: DofOnDialogueSaved
+## DependsOn: LibAddonMenu-2.0>=40
+
+Languages/default.lua
+Languages/$(language).lua
+
+DofOnDialogue.lua

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Harven/Harven-s-In-Combat-Audio-Volume__457",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:457",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:457",
+  "deleted": false,
+  "directories": [
+    "HarvensInCombatAudioVolume"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl457/",
+  "fingerprint": "a32f465d37172f983f30be78f54a161ff4c81b3dea01a5b6a56f301ae0d240db",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1313.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "457",
+  "source_url": "https://www.esoui.com/downloads/info457-HarvensIn-CombatAudioVolume.html",
+  "stats": {
+    "downloads": 11578,
+    "favorites": 38,
+    "monthly_downloads": 12
+  },
+  "title": "Harven's In-Combat Audio Volume",
+  "updated_at": 1585512475000,
+  "version": "1.7"
+}

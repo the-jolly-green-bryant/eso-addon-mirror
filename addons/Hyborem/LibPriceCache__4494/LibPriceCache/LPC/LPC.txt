@@ -1,0 +1,19 @@
+## Title: LPC_Core
+## APIVersion: 101049
+## Version: 1.1.7
+## AddOnVersion: 10105
+## IsLibrary: true
+## Description: Core logic for LibPriceCache
+
+## DependsOn: LibSavedVars>=60007 
+## SavedVariables: LibPriceCacheSettings
+
+LPC.lua
+LPC_Cache.lua
+LPC_Calc.lua
+LPC_Report.lua
+LPC_Utils.lua
+LPC_Scanner.lua
+LPC_Extensions.lua
+LPC_PriceOverride.lua
+LPCLAM.lua

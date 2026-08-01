@@ -1,0 +1,212 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <Label name="IMP_STATS_Duels_Listing_Column1" horizontalAlignment="RIGHT" virtual="true"><Dimensions x="40" y="32" /></Label>
+		<Label name="IMP_STATS_Duels_Listing_Column9" virtual="true"><Dimensions x="50" y="32" /></Label>
+		<Label name="IMP_STATS_Duels_Listing_Column2" virtual="true"><Dimensions x="32" y="32" /></Label>
+		<Label name="IMP_STATS_Duels_Listing_Column11" virtual="true"><Dimensions x="36" y="32" /></Label>
+		<Label name="IMP_STATS_Duels_Listing_Column3" virtual="true"><Dimensions x="170" y="32" /></Label>
+		<Label name="IMP_STATS_Duels_Listing_Column4" virtual="true"><Dimensions x="32" y="32" /></Label>
+		<Label name="IMP_STATS_Duels_Listing_Column12" virtual="true"><Dimensions x="36" y="32" /></Label>
+		<Label name="IMP_STATS_Duels_Listing_Column5" virtual="true"><Dimensions x="170" y="32" /></Label>
+		<Label name="IMP_STATS_Duels_Listing_Column6" horizontalAlignment="CENTER" virtual="true"><Dimensions x="70" y="32" /></Label>
+		<Label name="IMP_STATS_Duels_Listing_Column7" horizontalAlignment="CENTER" virtual="true"><Dimensions x="70" y="32" /></Label>
+		<Label name="IMP_STATS_Duels_Listing_Column8" horizontalAlignment="CENTER" virtual="true"><Dimensions x="70" y="32" /></Label>
+		<Label name="IMP_STATS_Duels_Listing_Column10" horizontalAlignment="CENTER" virtual="true"><Dimensions x="70" y="32" /></Label>
+		
+		<Label name="IMP_STATS_DuelSummaryRow" inherits="ZO_SelectableLabel" virtual="true">
+			<Dimensions y="32" />
+			<Controls>
+				<!-- TODO: texture order -->
+				<Texture name="$(parent)BG" textureFile="EsoUI/Art/Miscellaneous/listItem_selectedHighlight.dds" hidden="true">
+					<Dimensions x="900" y="52" />
+					<Anchor point="TOPLEFT" />
+					<!-- TODO: ideally, get rid of Dimensions -->
+					<!-- TODO: find out why this texture less than row with height 32 -->
+				</Texture>
+				<Label name="$(parent)Index" inherits="IMP_STATS_Listing_Cell IMP_STATS_Duels_Listing_Column1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+				</Label>
+				<Label name="$(parent)Duration" inherits="IMP_STATS_Listing_Cell IMP_STATS_Duels_Listing_Column9">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Index" relativePoint="TOPRIGHT" offsetX="20" />
+				</Label>
+				<Label name="$(parent)PlayerClass" inherits="IMP_STATS_Duels_Listing_Column2">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Duration" relativePoint="TOPRIGHT" />
+					<Controls>
+						<Texture name="$(parent)ClassIcon" textureFile="EsoUI/Art/Icons/icon_missing.dds">
+							<Anchor point="TOPLEFT" />
+							<Dimensions x="32" y="32" />
+						</Texture>
+					</Controls>
+				</Label>
+				<Label name="$(parent)PlayerRace" inherits="IMP_STATS_Duels_Listing_Column11">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)PlayerClass" relativePoint="TOPRIGHT" />
+					<Controls>
+						<Texture name="$(parent)RaceIcon" textureFile="EsoUI/Art/Icons/icon_missing.dds">
+							<Anchor point="TOPLEFT" />
+							<Dimensions x="32" y="32" />
+						</Texture>
+					</Controls>
+				</Label>
+				<Label name="$(parent)PlayerCharacterName" inherits="IMP_STATS_Listing_Cell IMP_STATS_Duels_Listing_Column3">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)PlayerRace" relativePoint="TOPRIGHT" />
+				</Label>
+
+				<Label name="$(parent)OpponentClass" inherits="IMP_STATS_Duels_Listing_Column4">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)PlayerCharacterName" relativePoint="TOPRIGHT" />
+					<Controls>
+						<Texture name="$(parent)ClassIcon" textureFile="EsoUI/Art/Icons/icon_missing.dds">
+							<Anchor point="TOPLEFT" />
+							<Dimensions x="32" y="32" />
+						</Texture>
+					</Controls>
+				</Label>
+				<Label name="$(parent)OpponentRace" inherits="IMP_STATS_Duels_Listing_Column12">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)OpponentClass" relativePoint="TOPRIGHT" />
+					<Controls>
+						<Texture name="$(parent)RaceIcon" textureFile="EsoUI/Art/Icons/icon_missing.dds">
+							<Anchor point="TOPLEFT" />
+							<Dimensions x="32" y="32" />
+						</Texture>
+					</Controls>
+				</Label>
+				<Label name="$(parent)OpponentCharacterName" inherits="IMP_STATS_Listing_Cell IMP_STATS_Duels_Listing_Column5">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)OpponentRace" relativePoint="TOPRIGHT" />
+				</Label>
+
+				<Label name="$(parent)DamageDone" inherits="IMP_STATS_Listing_Cell IMP_STATS_Duels_Listing_Column6">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)OpponentCharacterName" relativePoint="TOPRIGHT" />
+				</Label>
+				<Label name="$(parent)DamageTaken" inherits="IMP_STATS_Listing_Cell IMP_STATS_Duels_Listing_Column8">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)DamageDone" relativePoint="TOPRIGHT" />
+				</Label>
+				<Label name="$(parent)HealingTaken" inherits="IMP_STATS_Listing_Cell IMP_STATS_Duels_Listing_Column7">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)DamageTaken" relativePoint="TOPRIGHT" />
+				</Label>
+				<Label name="$(parent)DamageShielded" inherits="IMP_STATS_Listing_Cell IMP_STATS_Duels_Listing_Column10">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)HealingTaken" relativePoint="TOPRIGHT" />
+				</Label>
+
+				<Button name="$(parent)Build" tier="HIGH" mouseOverBlendMode="ADD" mouseEnabled="true" enabled="true">  <!-- inherits="ZO_ButtonBehaviorClickSound" -->
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="LEFT" relativeTo="$(parent)DamageShielded" relativePoint="RIGHT" offsetX="12" />
+					<TextureCoords left="0.10" right="0.9" top="0.10" bottom="0.90"/>
+
+                    <Textures normal="esoui/art/tradinghouse/tradinghouse_apparel_chest_up.dds"
+                              pressed="esoui/art/tradinghouse/tradinghouse_apparel_chest_down.dds"
+                              mouseOver="esoui/art/tradinghouse/tradinghouse_apparel_chest_over.dds"
+                              disabled="esoui/art/tradinghouse/tradinghouse_apparel_chest_disabled.dds" />
+
+                    <!-- <OnMouseEnter>
+                    </OnMouseEnter> -->
+					
+                    <!-- <OnMouseExit>
+                    </OnMouseExit> -->
+                    
+                    <OnClicked>
+						IMP_STATS_Duels_UI:LayoutBuildFor(self:GetParent())
+                    </OnClicked>
+                </Button>
+			</Controls>
+		</Label>
+
+		<TopLevelControl name="IMP_STATS_DUELS" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<!-- <AnchorFill /> -->
+			<Controls>
+				<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FFFF00" centerColor="000000" /> -->
+
+				<Texture name="$(parent)Warning" textureFile="EsoUI/Art/Miscellaneous/eso_icon_warning.dds" color="FFFF00" level="1" hidden="true">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="150" />
+					<Dimensions x="48" y="48"/>
+				</Texture>
+
+				<!-- Move it to stat block -->
+	
+				<!-- <Backdrop name="$(parent)PlayerSearch" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+                    <Anchor point="TOPRIGHT" offsetX="-16" offsetY="8" />
+                    <Dimensions x="270" />
+                    <Controls>
+                        <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" defaultText="SI_REQUEST_NAME_INSTRUCTIONS" />
+						<Label name="$(parent)Label" inherits="IMP_STATS_StatName" text="Player:">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-4" />
+						</Label>
+                    </Controls>
+                </Backdrop> -->
+
+				<Backdrop name="$(parent)OpponentSearch" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+					<Anchor point="TOPRIGHT" offsetX="-32" offsetY="8" />
+                    <Dimensions x="270" />
+                    <Controls>
+                        <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" defaultText="SI_REQUEST_NAME_INSTRUCTIONS" />
+						<Label name="$(parent)Label" inherits="IMP_STATS_StatName" text="Opponent:">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-4" />
+						</Label>
+                    </Controls>
+                </Backdrop>
+
+				<Control name="$(parent)CharactersFilter" inherits="ZO_MultiselectComboBox">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)OpponentSearch" relativePoint="BOTTOMRIGHT" offsetX="2" offsetY="8" />
+					<Dimensions x="270" y="32" />
+					<Controls>
+						<!-- TODO: virtualize filter -->
+						<Button name="$(parent)SelectButton" inherits="ZO_DefaultButton" text="Select All">
+							<Dimensions x="200" />
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" />
+						</Button>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)StatsBlock">
+					<Anchor point="TOPLEFT" offsetX="-8" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="150" />
+					<Controls>
+						<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FF0000" centerColor="00FF00" /> -->
+						<Control name="$(parent)GaugeKDAMeter" inherits="IMP_STATS_GaugeKDAMeter">
+							<Anchor point="TOPLEFT" />
+						</Control>
+
+						<Label name="$(parent)TotalDuels" inherits="IMP_STATS_StatName" text="Duels recorded:">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="110" offsetY="6" />
+						</Label>
+						<Label name="$(parent)TotalDuelsValue" inherits="IMP_STATS_StatValue">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)TotalDuels" relativePoint="TOPRIGHT" offsetX="5" />
+						</Label>
+
+						<Label name="$(parent)Winrate" inherits="IMP_STATS_StatName" text="Winrate:">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)TotalDuels" relativePoint="BOTTOMLEFT" offsetY="6"/>
+						</Label>
+						<Label name="$(parent)WinrateValue" inherits="IMP_STATS_StatValue">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Winrate" relativePoint="TOPRIGHT" offsetX="5" />
+						</Label>
+
+						<Label name="$(parent)Totals" inherits="IMP_STATS_StatName" text="Total damage/healing/damage taken:">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Winrate" relativePoint="BOTTOMLEFT" offsetY="6"/>
+						</Label>
+						<Label name="$(parent)TotalsValue" inherits="IMP_STATS_StatValue">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Totals" relativePoint="TOPRIGHT" offsetX="5" />
+						</Label>
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)Divider">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)StatsBlock" relativePoint="BOTTOMLEFT" offsetY="10" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)StatsBlock" relativePoint="BOTTOMRIGHT" offsetY="24" />
+					<Controls>
+						<Texture name="$(parent)Left" textureFile="EsoUI/Art/Guild/sectionDivider_left.dds">
+							<Anchor point="TOPLEFT"/>
+							<Dimensions x="880" y="4"/>
+						</Texture>
+						<Texture name="$(parent)Right" textureFile="EsoUI/Art/Guild/sectionDivider_right.dds">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Left" relativePoint="TOPRIGHT"/>
+							<Dimensions x="100" y="4"/>
+						</Texture>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Listing">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" offsetX="-8" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-16" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

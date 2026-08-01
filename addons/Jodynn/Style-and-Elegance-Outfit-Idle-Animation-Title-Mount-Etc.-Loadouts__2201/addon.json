@@ -1,0 +1,78 @@
+{
+  "archive_path": "addons/Jodynn/Style-and-Elegance-Outfit-Idle-Animation-Title-Mount-Etc.-Loadouts__2201",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jodynn",
+  "canonical_id": "esoui:2201",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2201",
+  "deleted": false,
+  "directories": [
+    "SandE"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2201/",
+  "fingerprint": "30160c392d58eaf721c54332ddd225b0cb980ff58c9f68f774998fa378a1f510",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9704.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9705.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7536.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7545.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7606.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8655.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7534.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7535.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7537.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7538.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2201",
+  "source_url": "https://www.esoui.com/downloads/info2201-StyleandEleganceOutfitIdleAnimationTitleMountEtc.Loadouts.html",
+  "stats": {
+    "downloads": 15920,
+    "favorites": 39,
+    "monthly_downloads": 33
+  },
+  "title": "Style and Elegance ( Outfit, Idle Animation, Title, Mount, Etc. Loadouts )",
+  "updated_at": 1741643718000,
+  "version": "2.13"
+}

@@ -1,0 +1,41 @@
+<!----------------------------------------------------------
+	* Test 
+	* Version 0.1
+----------------------------------------------------------->
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+   <Category name="Easy Quick Slots">
+      <Action name="SET_QSLOT_1">
+        <Down>EQS.SetQSlot(1)</Down>
+      </Action>
+      <Action name="SET_QSLOT_2">
+        <Down>EQS.SetQSlot(2)</Down>
+      </Action>
+      <Action name="SET_QSLOT_3">
+        <Down>EQS.SetQSlot(3)</Down>
+      </Action>
+      <Action name="SET_QSLOT_4">
+        <Down>EQS.SetQSlot(4)</Down>
+      </Action>
+      <Action name="SET_QSLOT_5">
+        <Down>EQS.SetQSlot(5)</Down>
+      </Action>
+      <Action name="SET_QSLOT_6">
+        <Down>EQS.SetQSlot(6)</Down>
+      </Action>
+      <Action name="SET_QSLOT_7">
+        <Down>EQS.SetQSlot(7)</Down>
+      </Action>
+      <Action name="SET_QSLOT_8">
+        <Down>EQS.SetQSlot(8)</Down>
+      </Action>
+     <Action name="CYCLE_QSLOT_UP">
+       <Up>EQS.CycleQSlot(1)</Up>
+     </Action>
+     <Action name="CYCLE_QSLOT_DOWN">
+       <Up>EQS.CycleQSlot(0)</Up>
+     </Action>
+   </Category>
+  </Layer>
+</Bindings>
+

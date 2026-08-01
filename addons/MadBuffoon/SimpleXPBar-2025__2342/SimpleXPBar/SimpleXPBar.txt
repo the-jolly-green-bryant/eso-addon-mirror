@@ -1,0 +1,34 @@
+## Title: SimpleXPBar
+## APIVersion: 2.0
+## Author: Buffoon
+## SavedVariables: SimpleXPBar_Settings
+## Version: 2.0
+## OptionalDependsOn: LibAddonMenu-2.0
+
+libs\LibStub\LibStub.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\controls\submenu.lua
+libs\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\controls\colorpicker.lua
+libs\LibAddonMenu-2.0\controls\custom.lua
+libs\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\controls\dropdown.lua
+libs\LibAddonMenu-2.0\controls\editbox.lua
+libs\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\controls\slider.lua
+libs\LibAddonMenu-2.0\controls\texture.lua
+libs\LibAddonMenu-2.0\controls\iconpicker.lua
+libs\LibMediaProvider-1.0\LibMediaProvider-1.0.lua
+
+langs/simplexpbar_en.lua
+langs/simplexpbar_$(language).lua
+
+libs\terril_lib.lua
+
+SimpleXPBar.lua
+SimpleXPBar.xml
+SimpleXPBar.Menu.lua
+SimpleXPBar.Settings.lua
+SimpleXPBar.Fonts.lua

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/MrPikPik/Improved-Golden-Pursuit-Filters__4005",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:4005",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4005",
+  "deleted": false,
+  "directories": [
+    "ImprovedGoldenPursuits"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4005/",
+  "fingerprint": "c2f5e3417a9e214e7018ca7a45e867f58e9da9128bc4aa87d51178be3bce5517",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13568.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4005",
+  "source_url": "https://www.esoui.com/downloads/info4005-ImprovedGoldenPursuitFilters.html",
+  "stats": {
+    "downloads": 3614,
+    "favorites": 19,
+    "monthly_downloads": 45
+  },
+  "title": "Improved Golden Pursuit Filters",
+  "updated_at": 1756063034000,
+  "version": "1.5.1"
+}

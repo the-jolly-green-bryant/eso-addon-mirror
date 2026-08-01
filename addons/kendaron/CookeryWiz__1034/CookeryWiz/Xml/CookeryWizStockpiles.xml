@@ -1,0 +1,395 @@
+<GuiXml>
+  <Controls>
+  
+     <!-------------------------------------------------------------------------- 
+        StockpileSelectionRowTemplate: template gui controls for selecting which storage to use
+    ---------------------------------------------------------------------------->
+ 		<Control name="StockpileSelectionRowTemplate" mouseEnabled="true" tier="MEDIUM" layer="CONTROLS" virtual="true">
+      <Dimensions y="60" /> 
+      <Anchor point="TOPLEFT" offsetX="0" />
+      <Anchor point="BOTTOMRIGHT" offsetX="0" />  
+      <OnMouseEnter>
+        CookeryWizStockpiles:SetStockpileHighlight(self, true)
+      </OnMouseEnter>
+      <OnMouseExit>
+        CookeryWizStockpiles:SetStockpileHighlight(self, false)
+      </OnMouseExit>
+      <OnMouseUp>
+        CookeryWizStockpiles:OnStockpileSelectionMouseUp(self)
+      </OnMouseUp>      
+			<Controls>
+        <Label name="$(parent)Name" font="ZoFontGameShadow" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="blah" horizontalAlignment="CENTER">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="1" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-1" offsetY="-24"/>
+        </Label>
+        
+				<Texture name="$(parent)Highlight" hidden="true" textureFile="EsoUI/Art/Miscellaneous/listItem_highlight.dds" alpha="0.3">
+					<TextureCoords left="0" right="1" top="0" bottom="0.6" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" /> 
+				</Texture>
+        
+        <Control name="$(parent)Icon">
+          <Anchor point="CENTER" relativeTo="$(parent)" />        
+          <Anchor point="TOP" relativeTo="$(parent)" offsetX="0" offsetY="5"/>
+          <Dimensions x="32" y="32" />
+          <Controls>
+            <Texture name="$(parent)IconTexture" textureFile="/esoui/art/tooltips/icon_bag.dds">
+              <AnchorFill />
+            </Texture>            
+          </Controls>           
+        </Control>       
+			</Controls>
+    </Control>
+    
+     <!-------------------------------------------------------------------------- 
+        StockpileRowTemplate: template gui controls for displaying stock/ingredient levels
+    ---------------------------------------------------------------------------->
+ 		<Control name="StockpileRowTemplate" mouseEnabled="true" tier="MEDIUM" layer="CONTROLS" virtual="true">
+			<Dimensions y="24" />
+          <OnMouseEnter>
+            CookeryWizStockpiles:ShowStockpileToolTip(self, true)
+            CookeryWizStockpiles:SetStockpileHighlight(self, true)
+          </OnMouseEnter>
+          <OnMouseExit>
+            CookeryWizStockpiles:ShowStockpileToolTip(self, false)
+            CookeryWizStockpiles:SetStockpileHighlight(self, false)
+          </OnMouseExit> 
+			<Controls>
+      <!--
+				<Texture name="$(parent)Bg" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds">
+					<AnchorFill />
+					<TextureCoords left="0" right="1" top="0" bottom=".8125" />
+				</Texture>
+        -->      
+				<Texture name="$(parent)Highlight" hidden="true" textureFile="EsoUI/Art/Miscellaneous/listItem_highlight.dds" alpha="0.5">
+					<AnchorFill />
+					<TextureCoords left="0" right="1" top="0" bottom=".625" />
+				</Texture>
+ 
+        <Button name="$(parent)EnableStockpileCheckButton" enabled="false" inherits="ZO_CheckButton" text="only">
+          <Dimensions x="24" y="24" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0"/>
+          <OnInitialized>
+            CookeryWizStockpiles:OnEnableStockpileCheckButtonInitialized(self)
+          </OnInitialized> 
+
+          <OnClicked>
+            CookeryWizStockpiles:OnEnableStockpileCheckButtonClicked(...)
+          </OnClicked>
+
+        </Button>   
+
+        <Label name="$(parent)TotalQuantityLabel" color="798896" text="100" font="ZoFontGameShadow">
+          <Dimensions x="55" y="24" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)EnableStockpileCheckButton" relativePoint="TOPRIGHT" offsetX="20" />
+        </Label>
+        
+        <EditBox name="$(parent)EditMaximum" inherits="ZO_DefaultEditForBackdrop" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+        <Dimensions x="32" y="24" />
+          <OnInitialized>
+          --CookeryWiz:OnEditSearchInitialized(self)
+          </OnInitialized>
+          <OnFocusGained>
+          --CookeryWiz:OnEditSearchFocusGained(self)
+          </OnFocusGained> 
+          <OnFocusLost>
+          --CookeryWiz:OnEditSearchFocusLost(self)
+          </OnFocusLost>             
+          <OnTextChanged>
+            CookeryWizStockpiles:OnEditMaximimChanged(self)
+          </OnTextChanged>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)TotalQuantityLabel" relativePoint="TOPRIGHT" offsetX="10"/>
+          <Controls>
+            <Backdrop name="$(parent)EditMaxBackpackQuantityBackdrop" inherits="ZO_EditBackdrop">
+              <AnchorFill/>
+            </Backdrop>
+          </Controls>
+        </EditBox>
+        
+        
+				<Label name="$(parent)Name" font="ZoFontGameShadow" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Dimensions x="130" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)EditMaximum" relativePoint="TOPRIGHT" offsetX="35" />
+				</Label>
+      </Controls>
+    </Control>
+
+   <!-------------------------------------------------------------------------- 
+        CookeryWizStockpileUI: dialog used to maintain ingredient levels
+    ---------------------------------------------------------------------------->
+    <TopLevelControl name="CookeryWizStockpilesUI" tier="MEDIUM" layer="CONTROLS" hidden="true" inherits="EasyFrameDialogUI" >
+      <OnInitialized>
+        CookeryWizStockpiles:OnCookeryWizStockpilesInitialized(self)
+      </OnInitialized>      
+      <Controls> 
+        <Control name="$(parent)Content" override="true">
+          <Dimensions x="680" y="470" />
+          <Controls>
+            <Label name="$(parent)TitleLabel" override="true" color="FF00FF">      
+            </Label>
+            
+            <Backdrop name="$(parent)SelectionBackdrop" alpha="0.3" centerColor="87DADD" edgeColor="">
+              <AnchorFill/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Content" relativePoint="TOPLEFT" offsetX="5" offsetY="30"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Content" relativePoint="BOTTOMLEFT" offsetX="170" offsetY="-5" />
+              <Edge file="" edgeFileWidth="1" edgeFileHeight="1" edgeSize="1" edgeFilePadding="1" />
+              <Controls>
+                <Control name="$(parent)StockpileSelection" inherits="ZO_ScrollList" inheritAlpha="false" color="000000">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)SelectionBackdrop" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                  <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)SelectionBackdrop" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                  <OnInitialized>
+                    CookeryWizStockpiles:OnStockpileSelectionInitialized(self)
+                  </OnInitialized>          
+                </Control>
+              </Controls>
+            </Backdrop>  
+            
+           
+            <Control name="$(parent)ItemTypeCombo" inherits="ZO_ComboBox">
+            <Dimensions x="130" y="50" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)SelectionBackdrop" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)Content" relativePoint="TOPRIGHT" offsetX="-5" offsetY="30" />
+              <!--
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)QualityDownButton" relativePoint="BOTTOMLEFT" offsetX="-40" offsetY="0"/>
+              -->
+              <OnInitialized>
+                CookeryWizStockpiles:OnItemTypeComboInitialized(self)
+              </OnInitialized> 
+            </Control>
+
+            <Button name="$(parent)EnableStockpilesCheckButton" inherits="ZO_CheckButton" text="only">
+              <Dimensions x="24" y="24" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)ItemTypeCombo" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
+
+              <OnInitialized>
+                CookeryWizStockpiles:OnEnableStockpilesCheckButtonInitialized(self)
+              </OnInitialized> 
+              <OnMouseEnter>
+                CookeryWizStockpiles:OnMouseEnterEnableStockpilesCheckButton(...)
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip() 
+              </OnMouseExit>
+              <OnClicked>
+                CookeryWizStockpiles:OnEnableStockpilesCheckButtonClicked(...)
+              </OnClicked>
+
+            </Button>
+
+            <Label name="$(parent)EnableStockpilesText" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="only" resizeToFitDescendents="1">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)EnableStockpilesCheckButton" relativePoint="TOPRIGHT" offsetX="10" offsetY="2" />
+              <OnInitialized>
+                CookeryWizStockpiles:OnEnableStockpilesLabelInitialized(self)
+              </OnInitialized>               
+            </Label>
+
+            
+            <Line name="$(parent)GeneralLine" thickness="10" textureFile="/esoui/art/miscellaneous/wide_divider_left.dds">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)ItemTypeCombo" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="40"/>
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)ItemTypeCombo" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="40" />
+            </Line>
+                        
+          
+<!--
+            <Button name="$(parent)EnableAllStockpilesCheckButton" enabled="true" inherits="ZO_TriStateCheckButton" text="only">
+              <Dimensions x="24" y="24" />
+              <Anchor point="BOTTOMLEFT" relativeTo="$(parent)GeneralLine" relativePoint="TOPLEFT" offsetX="0" offsetY="-5"/>
+              <OnInitialized>
+                CookeryWizStockpiles:OnEnableAllStockpilesCheckButtonInitialized(self)
+              </OnInitialized> 
+              <OnMouseEnter>
+                CookeryWizStockpiles:OnMouseEnterEnableAllStockpilesCheckButton(...)
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip() 
+              </OnMouseExit>
+              <OnClicked>
+                CookeryWizStockpiles:OnEnableAllStockpilesCheckButtonClicked(...)
+              </OnClicked>
+            </Button> 
+            
+            <Label name="$(parent)EnableAllStockpilesLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="only" resizeToFitDescendents="1">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)EnableAllStockpilesCheckButton" relativePoint="TOPRIGHT" offsetX="10" offsetY="3" />
+              <OnInitialized>
+                CookeryWizStockpiles:OnEnableAllStockpilesLabelInitialized(self)
+              </OnInitialized>               
+            </Label>
+            -->
+            
+            <EditBox name="$(parent)DefaultMaximumEdit" inherits="ZO_DefaultEditForBackdrop" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+            <Dimensions x="32" y="24" />
+              <OnInitialized>
+                CookeryWizStockpiles:OnDefaultMaximumEditInitialized(self)
+              </OnInitialized>
+              <OnFocusGained>
+              --CookeryWiz:OnEditSearchFocusGained(self)
+              </OnFocusGained> 
+              <OnFocusLost>
+              --CookeryWiz:OnEditSearchFocusLost(self)
+              </OnFocusLost>             
+              <OnTextChanged>
+                --CookeryWizStockpiles:OnEditMaximimChanged(self)
+              </OnTextChanged>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)GeneralLine" relativePoint="TOPRIGHT" offsetX="0" offsetY="-5"/>
+              <Controls>
+                <Backdrop name="$(parent)DefaultMaximumEditBackdrop" inherits="ZO_EditBackdrop">
+                  <AnchorFill/>
+                </Backdrop>
+              </Controls>
+            </EditBox>            
+            
+            <Label name="$(parent)DefaultMaximumLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="only" resizeToFitDescendents="1">
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)DefaultMaximumEdit" relativePoint="BOTTOMLEFT" offsetX="-10" offsetY="-3" />
+              <OnInitialized>
+                CookeryWizStockpiles:OnDefaultMaximumLabelInitialized(self)
+              </OnInitialized>               
+            </Label>
+            
+            <Button name="$(parent)HeaderEnableButton" mouseEnabled="true" horizontalAlignment="LEFT" font="ZoFontGameShadow" wrapMode="ELLIPSIS">
+              <Dimensions y="24" x="24"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)GeneralLine" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10"/>
+              <OnInitialized>
+                CookeryWizStockpiles:OnHeaderEnableButtonInitialized(self) 
+              </OnInitialized>          
+              <OnClicked>
+                CookeryWizStockpiles:OnHeaderEnableButtonClicked(...)
+              </OnClicked>
+              <Textures scale="1" normal="/esoui/art/buttons/accept_up.dds" pressed="/esoui/art/buttons/accept_down.dds"
+            mouseOver="/esoui/art/buttons/accept_over.dds" />
+            </Button>            
+
+            <Button name="$(parent)HeaderTotalButton" mouseEnabled="true" horizontalAlignment="LEFT" font="ZoFontGameShadow" wrapMode="ELLIPSIS">
+              <Dimensions y="22" x="22"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)GeneralLine" relativePoint="BOTTOMLEFT" offsetX="40" offsetY="10"/>
+              <OnInitialized>
+                CookeryWizStockpiles:OnHeaderTotalButtonInitialized(self) 
+              </OnInitialized>          
+              <OnClicked>
+                CookeryWizStockpiles:OnHeaderTotalButtonClicked(...)
+              </OnClicked>
+              <Textures scale="1" normal="CookeryWiz/Graphics/sigma_up.dds" pressed="CookeryWiz/Graphics/sigma_up.dds"
+            mouseOver="CookeryWiz/Graphics/sigma_over.dds" />
+            </Button>
+
+            <Button name="$(parent)HeaderMaximumButton" mouseEnabled="true" horizontalAlignment="LEFT" font="ZoFontGameShadow" wrapMode="ELLIPSIS">
+              <Dimensions y="24" x="70"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)GeneralLine" relativePoint="BOTTOMLEFT" offsetX="108" offsetY="10"/>              
+              <OnInitialized>
+                CookeryWizStockpiles:OnHeaderMaximumButtonInitialized(self) 
+              </OnInitialized>          
+              <OnClicked>
+                CookeryWizStockpiles:OnHeaderMaximumButtonClicked(...)
+              </OnClicked>
+              <FontColors normalColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" mouseOverColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT" pressedColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" disabledColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" />
+            </Button>
+            
+            <Button name="$(parent)HeaderNameButton" mouseEnabled="true" horizontalAlignment="LEFT" font="ZoFontGameShadow" wrapMode="ELLIPSIS">
+              <Dimensions y="24" x="50"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)GeneralLine" relativePoint="BOTTOMLEFT" offsetX="173" offsetY="10"/>              
+              <OnInitialized>
+                CookeryWizStockpiles:OnHeaderNameButtonInitialized(self) 
+              </OnInitialized>          
+              <OnClicked>
+                CookeryWizStockpiles:OnHeaderNameButtonClicked(...)
+              </OnClicked>
+              <FontColors normalColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" mouseOverColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT" pressedColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" disabledColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" />
+            </Button>
+
+            <!--
+            <Button name="$(parent)SetDefaultQuantityButton" inheritAlpha="false" text="Set Limits to Default" inherits="ZO_DefaultButton">
+              <Dimensions x="100" y="25" />
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Content" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5"/>
+              <OnClicked>
+                CookeryWizStockpiles:OnSetDefaultQuantityButtonClicked(self)
+              </OnClicked>                 
+                
+              <OnInitialized>
+                CookeryWizStockpiles:OnSetDefaultQuantityButtonInitialized(self)
+              </OnInitialized>          
+            </Button> 
+          -->
+          <Control name="$(parent)ActionCombo" inherits="ZO_ComboBox" wrapMode="TEXT_WRAP_MODE_TRUNCATE">
+          <Dimensions x="260" y="25" />
+            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Content" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5"/>            
+            <OnInitialized>
+              CookeryWizStockpiles:OnActionComboInitialized(self)
+            </OnInitialized> 
+          </Control>
+          <!--
+            <Label name="$(parent)SetEnabledQualityToLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="only" resizeToFitDescendents="1">
+            <Dimensions x="92" y="24" />
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ActionCombo" relativePoint="BOTTOMLEFT" offsetX="-5" offsetY="-6" />
+              <OnInitialized>
+                CookeryWizStockpiles:OnSetEnabledQualityLabelToInitialized(self)
+              </OnInitialized>               
+            </Label>
+            -->
+            
+          <Button name="$(parent)QualityDownButton">
+            <Dimensions x="25" y="25" />
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ActionCombo" relativePoint="BOTTOMLEFT" offsetX="-5" offsetY="0" />
+            <OnInitialized>
+              CookeryWizStockpiles:OnQualityDownButtonInitialized(self)
+            </OnInitialized>            
+            <Textures normal="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_up.dds" pressed="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_down.dds" mouseOver="EsoUI/Art/ChatWindow/chat_scrollbar_downArrow_over.dds"/>            
+          </Button>   
+          
+          <Backdrop name="$(parent)OutputBackDrop" inherits="ZO_DefaultBackdrop">
+            <Dimensions x="42" y="30" />
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)QualityDownButton" relativePoint="TOPLEFT" offsetY="-1" offsetX="0"/>
+            <Controls>
+              <Button name="$(parent)SelectedQuality" inherits="QualityRowTemplate" >
+              <Anchor point="TOPLEFT" relativeTo="$(parent)OutputBackDrop" relativePoint="TOPLEFT" offsetY="0" offsetX="0"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)OutputBackDrop" relativePoint="BOTTOMRIGHT" offsetY="0" offsetX="0"/>              
+              <OnInitialized>
+                CookeryWizStockpiles:OnSelectedQualityButtonInitialized(self)
+              </OnInitialized>
+              </Button>
+            </Controls>
+          </Backdrop>  
+          
+            <Label name="$(parent)SetActionLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="only" resizeToFitDescendents="1">
+            <Dimensions x="42" y="30" />
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)QualityDownButton" relativePoint="BOTTOMLEFT" offsetX="-33" offsetY="-3" />
+              <OnInitialized>
+                CookeryWizStockpiles:OnActionLabelInitialized(self)
+              </OnInitialized>               
+            </Label>
+            
+          <Control name="$(parent)ListQuality" inherits="ZO_ScrollList" inheritAlpha="true" color="000000" hidden="true">
+            <Dimensions x="50" y="100" />          
+            <Anchor point="TOPLEFT" relativeTo="$(parent)OutputBackDrop" relativePoint="TOPRIGHT" offsetX="1" offsetY="2"/>            
+            
+            <OnInitialized>
+              CookeryWizStockpiles:OnListQualityInitialized(self)
+            </OnInitialized>
+            
+            <Controls>
+              <Texture name="$(parent)TextureListIngredients" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds">
+                <AnchorFill />
+              </Texture>
+            </Controls>           
+          </Control>
+          
+            <Control name="$(parent)StockpileList" inherits="ZO_ScrollList" inheritAlpha="true" color="000000">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)GeneralLine" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="40"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Content" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-35" />
+              <OnInitialized>
+                CookeryWizStockpiles:OnStockpileListInitialized(self)
+              </OnInitialized>          
+            </Control> 
+                        
+          </Controls>
+        </Control>
+        <Tooltip name="$(parent)Tooltip" inherits="ZO_ItemIconTooltip" mouseEnabled="true" movable="true" hidden="true">
+            <ResizeToFitPadding width="48" height="57"/>
+            <DimensionConstraints minX="416" maxX="416" />
+            <OnInitialized>
+              --CookeryWiz:OnIngredientsTooltipInitialized(self)
+            </OnInitialized>           
+        </Tooltip>        
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml> 

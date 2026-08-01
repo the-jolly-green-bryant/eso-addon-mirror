@@ -1,0 +1,12 @@
+## Title: WhereAreYou
+## Author: kadeer
+## Description:
+## Version: 0.3 alpha
+## APIVersion: 100032 100033 100034
+## AddOnVersion: 3
+## SavedVariables: WhereAreYouSettings
+## DependsOn: LibAddonMenu-2.0 Lib3DArrow Lib3D LibGPS LibMapPing
+
+WhereAreYou_Constants.lua
+WhereAreYou_Menu.lua
+WhereAreYou.lua

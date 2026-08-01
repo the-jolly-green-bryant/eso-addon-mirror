@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/KesBruun/Grandparents-holiday-Guildhall__3272",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KesBruun",
+  "canonical_id": "esoui:3272",
+  "category_id": "95",
+  "compatibility": [],
+  "content_id": "esoui:3272",
+  "deleted": false,
+  "directories": [
+    "Grandparents"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3272/",
+  "fingerprint": "f2adad7f5151f2cde9540d2f318d46ce9e8120a04c1882ad38131587de553dea",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11150.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3272",
+  "source_url": "https://www.esoui.com/downloads/info3272-GrandparentsholidayGuildhall.html",
+  "stats": {
+    "downloads": 2592,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "Grandparents holiday Guildhall",
+  "updated_at": 1704887795000,
+  "version": "0.0.1.1"
+}

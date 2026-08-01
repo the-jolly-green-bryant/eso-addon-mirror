@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Lionas/JP-Patch-for-Provisions-Team-Formation-v1.2.3__1457",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lionas",
+  "canonical_id": "esoui:1457",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    }
+  ],
+  "content_id": "esoui:1457",
+  "deleted": false,
+  "directories": [
+    "ProvisionsTeamFormation"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1457/",
+  "fingerprint": "b3a625cc804ffae8d8234b8ca0ce7a94c3affda0cdf66091ac2d75a5c40142aa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4723.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1457",
+  "source_url": "https://www.esoui.com/downloads/info1457-JPPatchforProvisionsTeamFormationv1.2.3.html",
+  "stats": {
+    "downloads": 8918,
+    "favorites": 6,
+    "monthly_downloads": 12
+  },
+  "title": "JP Patch for Provisions Team Formation v1.2.3",
+  "updated_at": 1471345735000,
+  "version": "1.2.3"
+}

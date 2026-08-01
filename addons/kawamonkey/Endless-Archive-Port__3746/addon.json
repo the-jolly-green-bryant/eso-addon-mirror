@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/Endless-Archive-Port__3746",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3746",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3746",
+  "deleted": false,
+  "directories": [
+    "EndlessArchivePort"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3746/",
+  "fingerprint": "2f69543d6516a9dd16fd132949252a188244fabb8210ff722ffc120cb2859be6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12680.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3746",
+  "source_url": "https://www.esoui.com/downloads/info3746-EndlessArchivePort.html",
+  "stats": {
+    "downloads": 1789,
+    "favorites": 2,
+    "monthly_downloads": 17
+  },
+  "title": "Endless Archive Port",
+  "updated_at": 1699369016000,
+  "version": "1.0"
+}

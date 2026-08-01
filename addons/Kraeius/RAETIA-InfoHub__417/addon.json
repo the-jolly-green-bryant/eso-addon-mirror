@@ -1,0 +1,73 @@
+{
+  "archive_path": "addons/Kraeius/RAETIA-InfoHub__417",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kraeius",
+  "canonical_id": "esoui:417",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:417",
+  "deleted": false,
+  "directories": [
+    "RAETIA_InfoHub"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl417/",
+  "fingerprint": "cdc7b814b2fda967b3440cdfdd527c80870b2beb6bf0a74b9fd75ae516ae8e9d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3537.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3539.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3651.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3538.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3540.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "417",
+  "source_url": "https://www.esoui.com/downloads/info417-RAETIAInfoHub.html",
+  "stats": {
+    "downloads": 55742,
+    "favorites": 170,
+    "monthly_downloads": 24
+  },
+  "title": "RAETIA InfoHub",
+  "updated_at": 1655367077000,
+  "version": "1.2.4"
+}

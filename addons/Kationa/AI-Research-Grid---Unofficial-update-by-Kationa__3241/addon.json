@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Kationa/AI-Research-Grid---Unofficial-update-by-Kationa__3241",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kationa",
+  "canonical_id": "esoui:3241",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3241",
+  "deleted": false,
+  "directories": [
+    "AIResearchGrid"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3241/",
+  "fingerprint": "ca9e9b3ee79493a1ac3aa84b7fdb6293dc6e97a406c1c6c8c1bb329477c91526",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3241",
+  "source_url": "https://www.esoui.com/downloads/info3241-AIResearchGrid-UnofficialupdatebyKationa.html",
+  "stats": {
+    "downloads": 29207,
+    "favorites": 9,
+    "monthly_downloads": 23
+  },
+  "title": "AI Research Grid - Unofficial update by Kationa",
+  "updated_at": 1637856274000,
+  "version": "11.5.2"
+}

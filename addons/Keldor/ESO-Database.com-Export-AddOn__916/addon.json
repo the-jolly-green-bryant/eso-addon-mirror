@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Keldor/ESO-Database.com-Export-AddOn__916",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Keldor",
+  "canonical_id": "esoui:916",
+  "category_id": "26",
+  "compatibility": [],
+  "content_id": "esoui:916",
+  "deleted": false,
+  "directories": [
+    "ESODatabaseExport"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl916/",
+  "fingerprint": "f5d10b883a06fe21b746056ca1ee53588f2e9e860fb5105cc8a3712e5c9c3197",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9815.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2761.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2762.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9812.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9813.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9814.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "916",
+  "source_url": "https://www.esoui.com/downloads/info916-ESO-Database.comExportAddOn.html",
+  "stats": {
+    "downloads": 273156,
+    "favorites": 83,
+    "monthly_downloads": 104
+  },
+  "title": "ESO-Database.com Export AddOn",
+  "updated_at": 1763565292000,
+  "version": "4.6.18"
+}

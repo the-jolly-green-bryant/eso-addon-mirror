@@ -1,0 +1,113 @@
+<!-- see : esoui/libraries/zo_templates/scrolltemplates.lua
+           esoui/libraries/zo_templates/scrolltemplates.xml
+
+     base: esoui/libraries/zo_sortfilterlist/zo_sortfilterlist.lua
+           esoui/libraries/zo_sortfilterlist/zo_sortfilterlist.xml
+-->
+<GuiXml>
+  <Controls>
+
+    <TopLevelControl name="GDHistoryWindow" hidden="true" 
+                                            mouseEnabled="true" 
+                                            movable="true" 
+                                            clampedToScreen="true" 
+                                            resizeToFitDescendents="true" 
+                                            tier="LOW">
+      <Dimensions x="450" y="280" />
+      <Anchor point="TOPLEFT" offsetX="100" offsetY="100"  />
+      <OnMoveStop>
+        GDHistory:MoveStop()
+      </OnMoveStop>
+
+
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" centerColor="020202" alpha="1.0" edgeSize="2" edgeColor="888888">
+          <AnchorFill />
+        </Backdrop>
+
+        <Button name="$(parent)Close" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="32" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="420" offsetY="7" />
+          <Textures normal    ="esoui/art/buttons/closebutton_up.dds"
+                    pressed   ="esoui/art/buttons/closebutton_down.dds"
+                    mouseOver ="esoui/art/buttons/closebutton_over.dds" />
+          <OnClicked>
+            GDHistory:Close()
+          </OnClicked>
+        </Button>
+
+        <Label name="$(parent)Title" height="22" font="ZoFontGame">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="10" />
+        </Label>
+
+        <Texture name="$(parent)Div" textureFile="esoui/art/quest/questjournal_divider.dds" tier="HIGH">
+          <Dimensions x="400" y="3"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="-8" offsetY="0"/>
+        </Texture>
+
+
+        <!-- Header -->
+        <Control name="$(parent)Headers">
+          <Dimensions y="22" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Div" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+          <Controls>
+            <Control name="$(parent)Date" inherits="ZO_SortHeader">
+              <Dimensions x="100" y="22" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="0" />
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Date", "date", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "$(MEDIUM_FONT)|$(KB_15)|soft-shadow-thin")
+              </OnInitialized>
+            </Control>
+
+            <Control name="$(parent)Name" inherits="ZO_SortHeader">
+              <Dimensions x="100" y="22" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Date" relativePoint="TOPRIGHT" offsetX="70" offsetY="0" />
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Name", "name", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "$(MEDIUM_FONT)|$(KB_15)|soft-shadow-thin")
+              </OnInitialized>
+            </Control>
+
+          </Controls>
+        </Control>
+
+
+        <!-- ZO_ScrollList -->
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Dimensions x="420" y="200" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Div" relativePoint="BOTTOMLEFT" offsetX="8" offsetY="20" />
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!-- RowTemplate -->
+    <Control name="GDHistoryRowTemplate" mouseEnabled="true" virtual="true">
+      <Dimensions y="22"/>
+      <Anchor point="TOPLEFT" />
+      <OnMouseEnter>
+        GuildDonate.history:EnterRow(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+        GuildDonate.history:ExitRow(self)
+      </OnMouseExit>
+
+      <Controls>
+        <Label name="$(parent)RowDate" height="22" font="$(MEDIUM_FONT)|$(KB_15)|soft-shadow-thin">
+          <Dimensions x="160" y="22" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+        </Label>
+
+        <Label name="$(parent)RowName" height="22" font="$(MEDIUM_FONT)|$(KB_15)|soft-shadow-thin">
+          <Dimensions x="140" y="22" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)RowDate" relativePoint="TOPRIGHT" offsetX="10" />
+        </Label>
+
+        <Label name="$(parent)RowAmount" height="22" font="$(MEDIUM_FONT)|$(KB_15)|soft-shadow-thin" horizontalAlignment="RIGHT">
+          <Dimensions x="80" y="22" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)RowName" relativePoint="TOPRIGHT" offsetX="10" />
+        </Label>
+      </Controls>
+    </Control>
+
+  </Controls>
+</GuiXml>

@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/manavortex/Palantir---with-toggle-button__925",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:925",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:925",
+  "deleted": false,
+  "directories": [
+    "Palantir"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl925/",
+  "fingerprint": "5f42a3858b73aa2633e03c82186385461afe66b36b0b07cdaeef8fcc79146c0d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2811.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "925",
+  "source_url": "https://www.esoui.com/downloads/info925-Palantir-withtogglebutton.html",
+  "stats": {
+    "downloads": 4043,
+    "favorites": 0,
+    "monthly_downloads": 6
+  },
+  "title": "Palantir - with toggle button",
+  "updated_at": 1423553996000,
+  "version": "1.0a"
+}

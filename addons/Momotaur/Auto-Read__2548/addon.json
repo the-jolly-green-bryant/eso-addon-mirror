@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/Momotaur/Auto-Read__2548",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Momotaur",
+  "canonical_id": "esoui:2548",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2548",
+  "deleted": false,
+  "directories": [
+    "AutoRead"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2548/",
+  "fingerprint": "03b05c451a33b16cb49e0d2d0f3598b07e95360c9d97665742ab48a1bc1e6b54",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8722.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2548",
+  "source_url": "https://www.esoui.com/downloads/info2548-AutoRead.html",
+  "stats": {
+    "downloads": 8934,
+    "favorites": 10,
+    "monthly_downloads": 51
+  },
+  "title": "Auto Read",
+  "updated_at": 1583099012000,
+  "version": "1.0.3"
+}

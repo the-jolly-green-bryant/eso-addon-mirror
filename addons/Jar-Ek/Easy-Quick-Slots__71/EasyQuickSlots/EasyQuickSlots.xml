@@ -1,0 +1,15 @@
+<!----------------------------------------------------------
+	* Test 
+	* Version 0.1
+----------------------------------------------------------->
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="EasyQuickSlots" mouseEnabled="false">
+	
+      <OnUpdate>
+        EQS.Update()
+      </OnUpdate>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>
+

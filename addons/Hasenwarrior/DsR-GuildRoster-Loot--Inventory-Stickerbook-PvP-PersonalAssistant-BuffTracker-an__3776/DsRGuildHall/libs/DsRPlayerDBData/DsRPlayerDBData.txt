@@ -1,0 +1,11 @@
+## APIVersion: 101048 101049
+## Title: |c9fb6cdDsR CountPlayer DB-1.0|r
+## Author: |cD8F781Has|r|cF3F781enw|r|cF5DA81arr|r|cF7BE81ior|r
+## Description: DsRPlayer Stores Data for DsR GuildRoster
+## Version 1.0.0
+## AddOnVersion: 100
+## SavedVariables: DsRPlayerDBData_SV
+## DisableSavedVariablesAutoSaving: 1
+## IsLibrary: true
+
+DsRPlayerDBData.lua

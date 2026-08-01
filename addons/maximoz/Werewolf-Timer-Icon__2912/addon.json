@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/maximoz/Werewolf-Timer-Icon__2912",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "maximoz",
+  "canonical_id": "esoui:2912",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2912",
+  "deleted": false,
+  "directories": [
+    "WerewolfTimerIcon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2912/",
+  "fingerprint": "1a50e603a5101a8d8d2c77ba0001dda5ecc3a2254579d5807731b82aa4fbef80",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9824.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9825.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9826.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9827.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2912",
+  "source_url": "https://www.esoui.com/downloads/info2912-WerewolfTimerIcon.html",
+  "stats": {
+    "downloads": 5115,
+    "favorites": 7,
+    "monthly_downloads": 41
+  },
+  "title": "Werewolf Timer Icon",
+  "updated_at": 1629785932000,
+  "version": "2.6"
+}

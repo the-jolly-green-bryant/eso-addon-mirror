@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/mooNylo/ExecuteNow__2058",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mooNylo",
+  "canonical_id": "esoui:2058",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2058",
+  "deleted": false,
+  "directories": [
+    "ExecuteNow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2058/",
+  "fingerprint": "31d8ae664e4a3de7b0d2166a5520beb0e7f4e7a7e74e38663988c826354491c9",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2058",
+  "source_url": "https://www.esoui.com/downloads/info2058-ExecuteNow.html",
+  "stats": {
+    "downloads": 19212,
+    "favorites": 15,
+    "monthly_downloads": 52
+  },
+  "title": "ExecuteNow",
+  "updated_at": 1530556312000,
+  "version": "0.2"
+}

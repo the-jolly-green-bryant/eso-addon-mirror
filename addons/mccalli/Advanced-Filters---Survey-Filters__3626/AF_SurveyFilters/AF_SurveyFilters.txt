@@ -1,0 +1,7 @@
+## Title: Advanced Filters - Survey Filters
+## Author: mccalli
+## Version: 1.2.1
+## APIVersion: 101044
+## DependsOn: AdvancedFilters
+
+AF_SurveyFilters.lua

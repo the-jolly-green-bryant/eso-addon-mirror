@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Jacoboon/TraitBuster__2075",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jacoboon",
+  "canonical_id": "esoui:2075",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2075",
+  "deleted": false,
+  "directories": [
+    "TraitBuster"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2075/",
+  "fingerprint": "4e783e232f21afd42b15bb9d371ac9f9ecd943349cacb13b2fdee0d1a5bbc42a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7010.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7011.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7006.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7007.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7008.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7009.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2075",
+  "source_url": "https://www.esoui.com/downloads/info2075-TraitBuster.html",
+  "stats": {
+    "downloads": 8268,
+    "favorites": 20,
+    "monthly_downloads": 12
+  },
+  "title": "TraitBuster",
+  "updated_at": 1534510114000,
+  "version": "1.1"
+}

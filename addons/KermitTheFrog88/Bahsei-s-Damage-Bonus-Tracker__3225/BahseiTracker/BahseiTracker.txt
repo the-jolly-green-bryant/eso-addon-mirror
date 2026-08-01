@@ -1,0 +1,8 @@
+## Title: Bahsei Damage Bonus Tracker
+## APIVersion: 101038
+## Author: @KermitTheFrog88
+## OptionalDependsOn: LibAddonMenu-2.0>=28
+## SavedVariables: BahseiTrackerVars
+
+BahseiTracker.lua
+BahseiTracker.xml

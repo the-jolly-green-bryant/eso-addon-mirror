@@ -1,0 +1,21 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; Full terms: https://account.elderscrollsonline.com/add-on-terms
+
+## Title: LibShifterBox
+## Description: A library to aid in the creation of ShifterBoxes (aka Dual-ListBoxes)
+## Version: 0.7.0
+## AddOnVersion: 000700
+## Author: Klingo, Baertram
+## APIVersion: 101045 101046
+## IsLibrary: true
+## OptionalDependsOn: LibAddonMenu-2.0>=38
+
+localization\en.lua
+localization\$(language).lua
+
+ShifterBox\ShifterBoxTemplate.xml
+
+LibShifterBox.lua

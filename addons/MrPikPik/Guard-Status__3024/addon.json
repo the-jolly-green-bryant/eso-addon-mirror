@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/MrPikPik/Guard-Status__3024",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:3024",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3024",
+  "deleted": false,
+  "directories": [
+    "GuardStatus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3024/",
+  "fingerprint": "5cf9607a60ad486f8ee7bdeeefeb01b3d428ef22f1fb48a1d1f6e6faf710fb93",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10158.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10157.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10159.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10160.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3024",
+  "source_url": "https://www.esoui.com/downloads/info3024-GuardStatus.html",
+  "stats": {
+    "downloads": 6045,
+    "favorites": 5,
+    "monthly_downloads": 16
+  },
+  "title": "Guard Status",
+  "updated_at": 1666296802000,
+  "version": "1.2.1"
+}

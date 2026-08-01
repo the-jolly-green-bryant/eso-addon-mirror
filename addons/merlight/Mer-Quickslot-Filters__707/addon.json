@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/merlight/Mer-Quickslot-Filters__707",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "merlight",
+  "canonical_id": "esoui:707",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:707",
+  "deleted": false,
+  "directories": [
+    "merQuickslotFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl707/",
+  "fingerprint": "2a3329782cc65dde7e887e05af6cb21725a6c0237134f2ff2d442b7de4eacde6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2913.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2914.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2915.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2916.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "707",
+  "source_url": "https://www.esoui.com/downloads/info707-MerQuickslotFilters.html",
+  "stats": {
+    "downloads": 13750,
+    "favorites": 39,
+    "monthly_downloads": 14
+  },
+  "title": "Mer Quickslot Filters",
+  "updated_at": 1475919407000,
+  "version": "1.8"
+}

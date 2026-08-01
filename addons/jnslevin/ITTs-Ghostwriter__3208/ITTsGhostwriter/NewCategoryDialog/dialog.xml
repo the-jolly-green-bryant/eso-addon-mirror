@@ -1,0 +1,93 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <TopLevelControl name="GW_DialogControls" inherits="ZO_CustomDialogBase" hidden="true" tier="DT_LOW">
+            <Dimensions x="600" />
+            <OnInitialized> ITT_GW_AddNewCategoryDialog_OnInitialized(self) </OnInitialized>
+            <Controls>
+                <Control name="$(parent)ContentContainer" inherits="ZO_DialogContentAnchors">
+                    <Controls>
+                        <Label name="$(parent)NameHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGame" text="Category Name">
+                            <Anchor point="TOPLEFT" offsetX="-12" />
+                        </Label>
+
+                        <Backdrop name="$(parent)Edit" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)NameHeader" relativePoint="BOTTOMLEFT" offsetY="5" />
+                            <Dimensions x="340" />
+                            <Controls>
+                                <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" defaultText="Your custom name">
+                                    <OnEffectivelyShown>
+                                        self:TakeFocus()
+                                    </OnEffectivelyShown>
+                                </EditBox>
+                            </Controls>
+                        </Backdrop>
+
+                        <Label name="$(parent)IconHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGame" text="Select category icon">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Edit" relativePoint="BOTTOMLEFT" offsetY="10" />
+                        </Label>
+
+                        <Control name="$(parent)CategoryIconPicker" inherits="ZO_GridScrollList_Keyboard">
+                            <Dimensions x="380" y="320" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)IconHeader" relativePoint="BOTTOMLEFT" offsetY="5" />
+                        </Control>
+                        <Label name="$(parent)SliderHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGame" text="Select priority">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)CategoryIconPicker" relativePoint="BOTTOMLEFT" offsetY="10" />
+
+                        </Label>
+                        <Button name="$(parent)InfoIcon">
+                            <Textures
+                                normal="/esoui/art/buttons/info_up.dds"
+                                mouseOver="/esoui/art/buttons/info_over.dds"
+                            />
+                            <Dimensions x="32" y="32" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)CategoryIconPicker" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="10" />
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, "Items are first sorted by priority.\n0 indicates no priority, 1 is the lowest, and 999 is the highest.\n\nItems with the same (or 0) priority are then sorted alphabetically.") </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+
+                        </Button>
+                        <Slider name="$(parent)Slider" inherits="ZO_Slider" step="1">
+                            <OnValueChanged>self:GetNamedChild("EditBox"):SetText(self:GetValue())</OnValueChanged>
+                            <Dimensions x="275" y="16" />
+
+                            <!--TODO  <OnMouseWheel>self:SetValue(delta)</OnMouseWheel> -->
+                            <Anchor point="BOTTOM" relativeTo="$(parent)CategoryIconPicker" relativePoint="BOTTOM" offsetX="0" offsetY="80" />
+                            <Limits min="0" max="999" />
+
+                            <Controls>
+                                <Backdrop name="$(parent)Edit" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-30" />
+                                    <Dimensions x="42" />
+                                    <Controls>
+                                        <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" textType="3">
+
+                                            <OnTextChanged> GW_DialogControlsContentContainerSlider:SetValue(self:GetText())</OnTextChanged>
+                                        </EditBox>
+                                    </Controls>
+                                </Backdrop>
+                                <Button name="$(parent)Decrement" inherits="ZO_PreviousArrowButton">
+                                    <Anchor point="RIGHT" relativePoint="LEFT" offsetX="-4" />
+                                    <OnMouseDown> GW_DialogControlsContentContainerSlider:SetValue(GW_DialogControlsContentContainerSlider:GetValue() - 1)</OnMouseDown>
+                                    <OnMouseDoubleClick> GW_DialogControlsContentContainerSlider:SetValue(GW_DialogControlsContentContainerSlider:GetValue() - 10)</OnMouseDoubleClick>
+                                    <OnMouseWheel>GW_DialogControlsContentContainerSlider:SetValue(GW_DialogControlsContentContainerSlider:GetValue() - 1) </OnMouseWheel>
+                                </Button>
+
+                                <Button name="$(parent)Increment" inherits="ZO_NextArrowButton">
+                                    <Anchor point="LEFT" relativePoint="RIGHT" offsetX="4" />
+                                    <OnMouseDown> GW_DialogControlsContentContainerSlider:SetValue(GW_DialogControlsContentContainerSlider:GetValue() + 1)</OnMouseDown>
+                                    <OnMouseDoubleClick> GW_DialogControlsContentContainerSlider:SetValue(GW_DialogControlsContentContainerSlider:GetValue() + 10)</OnMouseDoubleClick>
+                                    <OnMouseWheel>GW_DialogControlsContentContainerSlider:SetValue(GW_DialogControlsContentContainerSlider:GetValue() + 1) </OnMouseWheel>
+                                </Button>
+
+
+                            </Controls>
+                        </Slider>
+
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton" />
+                <Control name="$(parent)Save" inherits="ZO_CustomDialogButton" />
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

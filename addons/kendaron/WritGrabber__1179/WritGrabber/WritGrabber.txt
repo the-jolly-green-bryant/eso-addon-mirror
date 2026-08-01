@@ -1,0 +1,15 @@
+## APIVersion: 100019
+## Author: kendaron
+## Title: Writ Grabber
+## Description: This addon will grab writ items from your bank or guild bank
+## Version 1.0.14
+## License: Distribution or use of addon or code without attribution to author is prohibited!
+## LastUpdated: Jun 2017
+## SavedVariables: WritGrabberSavedVariables
+## DependsOn: CookeryWiz
+Lang\en.lua
+Lang\$(language).lua
+WritGrabberAlchemy.lua
+WritGrabberEnchanting.lua
+WritGrabber.lua
+WritGrabber.xml

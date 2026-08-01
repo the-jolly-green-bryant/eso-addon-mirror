@@ -1,0 +1,12 @@
+## Title: Slots Count
+## APIVersion: 101035
+## Version: 1.0.5
+## AddOnVersion: 10005
+## Description: Merchants Slot Counting addon v 1.0.5; @lahouari EU
+## DependsOn: LibGuildRoster>=10
+## OptionalDependsOn: LibDebugLogger 
+## Author: |ca0a0F3|DLC
+## SavedVariables: SlotsCountData
+
+SlotsCount.lua
+bindings.xml

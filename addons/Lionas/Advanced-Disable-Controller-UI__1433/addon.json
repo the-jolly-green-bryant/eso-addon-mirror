@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Lionas/Advanced-Disable-Controller-UI__1433",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lionas",
+  "canonical_id": "esoui:1433",
+  "category_id": "24",
+  "compatibility": [],
+  "content_id": "esoui:1433",
+  "deleted": false,
+  "directories": [
+    "AdvancedDisableControllerUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1433/",
+  "fingerprint": "0fd805d1bc412b49b5fc69d949986904ce548db3fe4bacddd341f362313c983a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4649.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4650.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4711.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8208.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8209.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8210.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8211.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1433",
+  "source_url": "https://www.esoui.com/downloads/info1433-AdvancedDisableControllerUI.html",
+  "stats": {
+    "downloads": 54783,
+    "favorites": 51,
+    "monthly_downloads": 180
+  },
+  "title": "Advanced Disable Controller UI",
+  "updated_at": 1562639575000,
+  "version": "1.5.3"
+}

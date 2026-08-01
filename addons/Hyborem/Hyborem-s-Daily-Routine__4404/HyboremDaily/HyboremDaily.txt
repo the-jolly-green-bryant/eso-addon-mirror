@@ -1,0 +1,9 @@
+## Title: Hyborem's Daily Routine
+## APIVersion: 101048
+## Version: 1.3
+## Author: Hyborem & Gemini
+## SavedVariables: HyboremDaily_DB
+## DependsOn: LibAddonMenu-2.0>=41 LibSavedVars>=60007
+
+HyboremDaily.lua
+Bindings.xml

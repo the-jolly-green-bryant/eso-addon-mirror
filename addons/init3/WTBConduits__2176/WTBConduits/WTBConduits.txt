@@ -1,0 +1,28 @@
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+##
+
+## Title: |cff0096WTBConduits|r
+## Description: Provides Tanks Synergy CDs 
+## APIVersion: 100027 100028
+## Author: |cff0096init3|r
+## Version: 3.1
+## SavedVariables: WTBConduitsVars
+## DependsOn: LibAddonMenu-2.0
+
+libs/LibStub/LibStub.lua
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+libs/LibUnits/LibUnits.lua
+
+src/UI.xml
+src/Core.lua
+src/Settings.lua
+src/EventRegistration.lua
+src/Arrow.lua
+src/Indexing.lua
+src/UI.lua
+src/Units.lua

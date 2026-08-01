@@ -1,0 +1,1 @@
+ZO_CreateStringId("SI_BINDING_NAME_HSH_JUMP", "传送至糖碗套房")

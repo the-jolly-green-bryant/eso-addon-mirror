@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/Hide-Smugger-Fee__3000",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3000",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3000",
+  "deleted": false,
+  "directories": [
+    "HideSmugglerFee"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3000/",
+  "fingerprint": "cfe8ea961902e15b9844c40d83e549c69f5a74691018d08fc548e75504d0f67e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10114.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3000",
+  "source_url": "https://www.esoui.com/downloads/info3000-HideSmuggerFee.html",
+  "stats": {
+    "downloads": 2092,
+    "favorites": 0,
+    "monthly_downloads": 9
+  },
+  "title": "Hide Smugger Fee",
+  "updated_at": 1617203286000,
+  "version": "1.0"
+}

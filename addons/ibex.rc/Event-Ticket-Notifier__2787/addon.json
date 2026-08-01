@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/ibex.rc/Event-Ticket-Notifier__2787",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ibex.rc",
+  "canonical_id": "esoui:2787",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2787",
+  "deleted": false,
+  "directories": [
+    "EventTicketNotifier"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2787/",
+  "fingerprint": "3560040595f162202feaa46ae8a1cf72be705c1d47bce6404b593372c4c1a184",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2787",
+  "source_url": "https://www.esoui.com/downloads/info2787-EventTicketNotifier.html",
+  "stats": {
+    "downloads": 3906,
+    "favorites": 8,
+    "monthly_downloads": 10
+  },
+  "title": "Event Ticket Notifier",
+  "updated_at": 1616974710000,
+  "version": "12"
+}

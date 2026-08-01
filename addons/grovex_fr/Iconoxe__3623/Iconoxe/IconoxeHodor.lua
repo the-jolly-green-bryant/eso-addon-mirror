@@ -1,0 +1,20 @@
+local u = HodorReflexes.users
+local a = HodorReflexes.anim.users
+
+u["@Ewillan"] = {"Ewillan", "|cec1eb2E|r|ceb31baw|r|ceb44c1i|r|cea57c8l|r|cea6acfl|r|ce97dd7a|r|ce990den|r", "Iconoxe/users/Ewillan.dds"}
+u["@MissLijah"] = {"MissLijah", "|cFFFFFFMiss|r|cC21075L|r|cCE2580i|r|cDA3B8Bj|r|cE65196a|r|cF267A1h|r", "Iconoxe/users/Misslijah.dds"}
+u["@Helyos16"] = {"Helyos16", "|c0BB31BHelyos16|r", "Iconoxe/users/Helyos16.dds"}
+u["@P'titVal"] = {"P'tit Val", "|cFFFFFFP|r|cFFBFBF'|r|cFF7F7Ft|r|cFF3F3Fi|r|cFF0000t|r|cFF3F3F |r|cFF7F7FV|r|cFFBFBFa|r|cFFFFFFl|r", "Iconoxe/users/PtitVal.dds"}
+u["@TerraOct"] = {"TerraOct", "|c6408CCTerraOct|r", "Iconoxe/users/TerraOct.dds"}
+u["@LadyChiv"] = {"LadyChiv", "|cFFFFFFL|r|cFFF9C4a|r|cFFF389d|r|cFFED4Ey|r|cFFE814C|r|cFFED4Eh|r|cFFF389i|r|cFFF9C4v|r", "Iconoxe/users/LadyChiv.dds"}
+u["@StickeyBench"] = {"StickeyBench", "|c000000S|r|c2A0000t|r|c550000i|r|c7F0000c|r|cAA0000k|r|cD40000e|r|cFF0000y|r|cFD2A00B|r|cFC5500e|r|cFA7F00n|r|cF9AA00c|r|cF8D400h|r", "Iconoxe/users/Bench.dds"}
+u["@Hettyk.Haran"] = {"Hettyk Haran", "|c0000B3H|r|c2A0095e|r|c550077t|r|c7F0059t|r|cAA003By|r|cD4001DK|r|cFF0007 |r|cFD2A00H|r|cFC5500a|r|cFA7F00r|r|cF9AA00a|r|cF8D400n|r", "Iconoxe/users/Hettyk.dds"}
+u["@Nath_sanstitre01"] = {"Nath", "|cFF0000N|r|cDD0000a|r|cBB0000t|r|c990000h|r|c990000 |r|c550000<|r|c3300003|r", "Iconoxe/users/Nath_sanstitre01.dds"}
+u["@Divine69"] = {"Divine69", "|cFDEBA7Divine|r", "Iconoxe/users/Divine69.dds"}
+u["@Orkathewolf"] = {"Orka", "|cec1700Orka|r", "Iconoxe/users/Orka.dds"}
+u["@Ternel"] = {"Ternel", "|cec5d00Ternel|r", "Iconoxe/users/Ternel.dds"}
+u["@DuntHunter"] = {"Dunt", "|cd71974Dunt|r", "Iconoxe/users/DuntHunter.dds"}
+u["@Kasumi_CDC"] = {"Kasumi", "|cecbc00Kasumi|r", "Iconoxe/users/Kasumi_CDC.dds"}
+u["@Bacalao416"] = {"Baca", "|cc60500Baca|r", "Iconoxe/users/Bacalao416.dds"}
+u["@Avallona"] = {"Avallona", "|cdde3d8Avallona|r", "Iconoxe/users/Avallona.dds"}
+u["@Arquelune"] = {"Arquelune", "|ceeaa00Arquelune|r", "Iconoxe/users/Arquelune.dds"}

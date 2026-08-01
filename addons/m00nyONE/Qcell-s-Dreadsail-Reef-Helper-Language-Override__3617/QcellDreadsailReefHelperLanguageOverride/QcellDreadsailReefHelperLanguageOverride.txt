@@ -1,0 +1,10 @@
+## Title: Qcell's Dreadsail Reef Helper Language Override
+## Description: Multi Language support for Dreadsail Reef Helper by Qcell
+## Author: |c76c3f4@m00nyONE|r
+## DependsOn: QcellDreadsailReefHelper
+## Version: 1.1.0
+## APIVersion: 101035 101036
+
+lang/en.lua
+lang/$(language).lua
+QcellDreadsailReefHelperLanguageOverride.lua

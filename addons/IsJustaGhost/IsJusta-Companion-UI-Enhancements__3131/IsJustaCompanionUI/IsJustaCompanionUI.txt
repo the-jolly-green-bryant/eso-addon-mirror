@@ -1,0 +1,30 @@
+## Title: |cFF00FFIsJusta|r Companion UI Enhancements
+## Description: Makes the Companion group frame movable.
+## APIVersion: 101033 101034
+## Author: |cFF00FFIsJustaGhost|r
+## Version: 2.4.6
+## SavedVariables: IJA_CompanionUI_SavedVars
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: PlayerRoleIndicator BUI Azurah IsJustaGamepadHUD LibHaF>=01 LibJoCommon
+
+# The creation and use of Add-ons are subject to the Add-on Terms of Use,
+# available at https://account.elderscrollsonline.com/add-on-terms. 
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+# in the United States and/or other countries. All rights reserved.
+
+
+i18n\strings.lua
+i18n\$(language).lua
+
+IsJustaCompanionUI.lua
+IsJustaCompanionUI.xml
+
+loothistory.lua
+companionOverview.lua
+integratePlayerRoleIndicator.lua
+
+unitframes\companionFrames.lua
+unitframes\frames_ZOS.lua
+unitframes\frames_BUI.lua

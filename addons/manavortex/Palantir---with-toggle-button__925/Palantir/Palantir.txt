@@ -1,0 +1,28 @@
+## APIVersion: 100010
+## Title: |cE61919P|rala|c0091FFnt|c00FF91ir|r
+## Author: |c00C000SpellBuilder|r
+## Version: 1.0
+## Description: Simple round HUD to display players attributes during battle
+## OptionalDependsOn: LibStub LibAddonMenu-2.0
+## SavedVariables: PalantirSV
+
+#libs\LibStub.lua
+
+#libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+#libs\LibAddonMenu-2.0\controls\panel.lua
+#libs\LibAddonMenu-2.0\controls\submenu.lua
+#libs\LibAddonMenu-2.0\controls\button.lua
+#libs\LibAddonMenu-2.0\controls\checkbox.lua
+#libs\LibAddonMenu-2.0\controls\colorpicker.lua
+#libs\LibAddonMenu-2.0\controls\custom.lua
+#libs\LibAddonMenu-2.0\controls\description.lua
+#libs\LibAddonMenu-2.0\controls\dropdown.lua
+#libs\LibAddonMenu-2.0\controls\editbox.lua
+#libs\LibAddonMenu-2.0\controls\header.lua
+#libs\LibAddonMenu-2.0\controls\slider.lua
+#libs\LibAddonMenu-2.0\controls\texture.lua
+
+Bindings.xml
+Palantir.lua
+BarContainer.lua
+RoundBar.lua

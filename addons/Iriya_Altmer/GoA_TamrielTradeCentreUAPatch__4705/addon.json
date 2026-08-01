@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Iriya_Altmer/GoA_TamrielTradeCentreUAPatch__4705",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Iriya_Altmer",
+  "canonical_id": "esoui:4705",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4705",
+  "deleted": false,
+  "directories": [
+    "GoA_TamrielTradeCentreUAPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4705/",
+  "fingerprint": "d76d1c2c0854e515d2f661413850975a9cbede20eff9459dc863cb5f7ef6a442",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4705",
+  "source_url": "https://www.esoui.com/downloads/info4705-GoA_TamrielTradeCentreUAPatch.html",
+  "stats": {
+    "downloads": 54,
+    "favorites": 0,
+    "monthly_downloads": 52
+  },
+  "title": "GoA_TamrielTradeCentreUAPatch",
+  "updated_at": 1784210029000,
+  "version": "1.2"
+}

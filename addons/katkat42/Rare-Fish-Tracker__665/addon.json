@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/katkat42/Rare-Fish-Tracker__665",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "katkat42",
+  "canonical_id": "esoui:665",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:665",
+  "deleted": false,
+  "directories": [
+    "RareFishTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl665/",
+  "fingerprint": "ddb99313eb81ed9c856aa64eabaebae3fbfd229031bd5275c8503ba8f5d0d97e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2067.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4035.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "665",
+  "source_url": "https://www.esoui.com/downloads/info665-RareFishTracker.html",
+  "stats": {
+    "downloads": 1181331,
+    "favorites": 727,
+    "monthly_downloads": 2158
+  },
+  "title": "Rare Fish Tracker",
+  "updated_at": 1778752370000,
+  "version": "1.43.0"
+}

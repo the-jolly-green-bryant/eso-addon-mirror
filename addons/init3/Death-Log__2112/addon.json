@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/init3/Death-Log__2112",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "init3",
+  "canonical_id": "esoui:2112",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:2112",
+  "deleted": false,
+  "directories": [
+    "DeathLog"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2112/",
+  "fingerprint": "5169a5bf9673cfb8adec0162d053dd9c91d49c16cdc97e329774051cac3a8240",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7135.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7136.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2112",
+  "source_url": "https://www.esoui.com/downloads/info2112-DeathLog.html",
+  "stats": {
+    "downloads": 4064,
+    "favorites": 6,
+    "monthly_downloads": 14
+  },
+  "title": "Death Log",
+  "updated_at": 1535764611000,
+  "version": "1.2"
+}

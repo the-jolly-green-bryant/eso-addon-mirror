@@ -1,0 +1,94 @@
+<GuiXml>
+  <Controls>
+
+    <TopLevelControl name="UltibombGUI" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="180" y="35" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="RIGHT" />
+
+      <Controls>
+
+<!--         <Label name="$(parent)ScreenLabelTest" width="1000" height="300" color="f442d9" font="$(BOLD_FONT)|240|thick-outline" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="EAT YO FUCKEN FOOD">
+          <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+        </Label> -->
+
+
+        <Backdrop name="$(parent)ScreenHeader" centerColor="000000" alpha="1">
+          <Dimensions x="180" y="35" />
+          <Anchor point="TOPLEFT" />
+
+            <Controls>
+              <Label name="$(parent)ScreenLabel" width="250" height="35" color="ffffff" font="$(MEDIUM_FONT)|$(KB_18)|thick-outline" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Condémned">
+                    <Anchor point="CENTER" relativeTo="$(parent)ScreenHeader" relativePoint="CENTER" />
+              </Label>
+            </Controls>
+
+        </Backdrop>
+
+        <Backdrop name="$(parent)BlankHeader" centerColor="141414" alpha="0.8">
+          <Dimensions x="180" y="1" />
+          <Anchor point="TOP" relativeTo="$(parent)ScreenHeader" relativePoint="BOTTOM"/>
+        </Backdrop>
+      </Controls>
+
+    </TopLevelControl>
+
+
+<!--     <TopLevelControl name="UltibombScreen" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="250" y="30" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="RIGHT" offsetY="-40" />
+
+      <Controls>
+        <Backdrop name="$(parent)ScreenHeader" centerColor="000000" alpha="0.8">
+          <Dimensions x="250" y="30" />
+          <Anchor point="TOPLEFT" />
+        </Backdrop>
+
+        <Backdrop name="$(parent)BlankHeader" centerColor="000000" alpha="0.5">
+          <Dimensions x="250" y="10" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)ScreenHeader" offsetY="30"/>
+        </Backdrop>
+
+        <Backdrop name="$(parent)DestroHeader" centerColor="000000" alpha="0.8">
+          <Dimensions x="250" y="30" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BlankHeader" offsetY="10"/>
+        </Backdrop>
+
+        <Backdrop name="$(parent)DestroBody" centerColor="000000" alpha="0.5">
+          <Dimensions x="250" y="125" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)DestroHeader" offsetY="30"/>
+        </Backdrop>
+
+        <Backdrop name="$(parent)NegateHeader" centerColor="000000" alpha="0.8">
+          <Dimensions x="250" y="30"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)DestroBody" offsetY="125"/>
+        </Backdrop>
+
+        <Backdrop name="$(parent)NegateBody" centerColor="000000" alpha="0.5">
+          <Dimensions x="250" y="125" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)NegateHeader" offsetY="30"/>
+        </Backdrop>
+
+        <Label name="$(parent)ScreenLabel" width="200" height="30" color="777777" font="$(MEDIUM_FONT)|$(KB_14)|thick-outline" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="IVS Ultibomb">
+          <Anchor point="CENTER" relativeTo="$(parent)ScreenHeader" relativePoint="CENTER" />
+        </Label>
+
+        <Label name="$(parent)DestroLabel" width="200" height="25" font="$(CHAT_FONT)|22|soft-shadow-thick" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Destros">
+          <Anchor point="TOP" relativeTo="$(parent)DestroHeader" relativePoint="TOP" />
+        </Label>
+
+        <Label name="$(parent)NegateLabel" width="200" height="25" font="$(CHAT_FONT)|22|soft-shadow-thick" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Negates">
+          <Anchor point="TOP" relativeTo="$(parent)NegateHeader" relativePoint="TOP" />
+        </Label>
+
+        <Label name="$(parent)DestroBodyLabel" width="200" height="25" font="$(CHAT_FONT)|18|soft-shadow-thick" color="999999" inheritAlpha="true" wrapMode="TRUNCATE" horizontalAlignment="CENTER" text="- No Destros -">
+          <Anchor point="TOP" relativeTo="$(parent)DestroBody" relativePoint="TOP" offsetY="10" />
+        </Label>
+
+        <Label name="$(parent)NegateBodyLabel" width="200" height="25" font="$(CHAT_FONT)|18|soft-shadow-thick" color="999999" inheritAlpha="true" wrapMode="TRUNCATE" horizontalAlignment="CENTER" text="- No Negates -">
+          <Anchor point="TOP" relativeTo="$(parent)NegateBody" relativePoint="TOP" offsetY="10" />
+        </Label>
+      </Controls>
+    </TopLevelControl> -->
+
+  </Controls>
+</GuiXml>

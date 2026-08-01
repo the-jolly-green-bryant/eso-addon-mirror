@@ -1,0 +1,10 @@
+## Title: SimplePlayTime
+## Author: Gemini AI (for GrumpyEthilin)
+## Version: 1.1.3
+## APIVersion: 101050
+## SavedVariables: SimplePlayTimeVars
+## Description: Tracks account-wide playtime across characters and megaservers.
+
+SimplePlayTime.lua
+SimplePlayTime.xml
+bindings.xml

@@ -1,0 +1,6 @@
+## Title: RoyalGuildHalls
+## Author: Klainor
+## Version: 1.0
+## APIVersion: 100031
+
+RoyalGuildHalls.lua

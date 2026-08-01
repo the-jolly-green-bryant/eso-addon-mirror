@@ -1,0 +1,131 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ExcessiveWithdrawalsGUI" movable="true" mouseEnabled="true" moveable="true" resizeHandleSize="10" layer="0">
+            <Dimensions x="250" y="400" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            <OnUpdate>
+            </OnUpdate>
+            <OnInitialized>
+            </OnInitialized>
+            <OnMoveStop>
+            	ExcessiveWithdrawals.SaveLoc()
+         	</OnMoveStop>
+ 			<OnResizeStop>
+            	ExcessiveWithdrawals.SaveLoc()
+         	</OnResizeStop>
+            <Controls>
+            	<Backdrop name="$(parent)BG" edgeColor="00000000" inherits="ZO_ThinBackdrop">
+            		<AnchorFill />
+            	</Backdrop>
+		        <Label name="ExcessiveWithdrawalsGUIHeader" font="ZoFontGame" color="CFDCBD" layer="1" wrapMode="ELLIPSIS" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Excessive Withdrawals List">
+	        		<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="15" />
+	        		<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15" offsetY="45" />	   		
+	        	</Label>
+	        	<Label name="ExcessiveWithdrawalsGUIFooter" font="ZoFontGame" color="CFDCBD" layer="1" wrapMode="ELLIPSIS" verticalAlignment="BOTTOM" text="Data-Load Pending...">
+	        		<Anchor point="TOPLEFT" relativeTo="ExcessiveWithdrawalsGUIString" relativePoint="TOPLEFT" offsetX="15" offsetY="0" />
+	        		<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-15" offsetY="-15" />
+	        	</Label>
+	        	<Label name="ExcessiveWithdrawalsGUILeft" font="ZoFontGame" color="CFDCBD" layer="1" wrapMode="ELLIPSIS" verticalAlignment="TOP" text="">
+	        		<Anchor point="TOPLEFT" relativeTo="ExcessiveWithdrawalsGUIHeader" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+	        		<Anchor point="BOTTOMRIGHT" relativeTo="ExcessiveWithdrawalsGUIFooter" relativePoint="TOPRIGHT" offsetX="-140" offsetY="0" />	   		
+	        	</Label>
+				<Label name="ExcessiveWithdrawalsGUIMid" font="ZoFontGame" color="CFDCBD" layer="1" wrapMode="ELLIPSIS" verticalAlignment="TOP" horizontalAlignment="RIGHT" text="">
+	        		<Anchor point="TOPLEFT" relativeTo="ExcessiveWithdrawalsGUILeft" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+	        		<Anchor point="BOTTOMRIGHT" relativeTo="ExcessiveWithdrawalsGUILeft" relativePoint="BOTTOMRIGHT" offsetX="80" offsetY="0" />	   		
+	        	</Label>
+	        	<Label name="ExcessiveWithdrawalsGUIRight" font="ZoFontGame" color="CFDCBD" layer="1" wrapMode="ELLIPSIS" verticalAlignment="TOP" horizontalAlignment="RIGHT" text="">
+	        		<Anchor point="TOPLEFT" relativeTo="ExcessiveWithdrawalsGUIMid" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+	        		<Anchor point="BOTTOMRIGHT" relativeTo="ExcessiveWithdrawalsGUIFooter" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />	   		
+        		</Label>
+  			</Controls>
+        </TopLevelControl>
+        
+        <TopLevelControl name="ExcessiveWithdrawalsWarn" hidden="true" movable="false" mouseEnabled="true" layer="0">
+            <Dimensions x="400" y="200" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <OnUpdate>
+            </OnUpdate>
+            <OnInitialized>
+            </OnInitialized>
+            <OnMoveStop>
+         	</OnMoveStop>
+ 			<OnResizeStop>
+         	</OnResizeStop>
+            <Controls>
+            	<Backdrop name="$(parent)BG" edgeColor="00000000" inherits="ZO_ThinBackdrop">
+            		<AnchorFill />
+            	</Backdrop>
+		        <Label name="ExcessiveWithdrawalsWarnLabel" font="ZoFontGame" color="FF0000" layer="1" wrapMode="ELLIPSIS" verticalAlignment="TOP" horizontalAlignment="CENTER" text="**WARNING** - Guild Bank OPEN!">
+	        		<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="15" />
+	        		<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15" offsetY="0" />
+	        	</Label>
+
+	        	<Button name="ExcessiveWithdrawalsButtonReload" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="20" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						tmpAllowExit = 1
+						ReloadUI()
+					</OnClicked>
+				</Button>
+	        	
+	        	<Button name="ExcessiveWithdrawalsButtonQuit" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="100" offsetY="20" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						tmpAllowExit = 1
+						Quit()
+					</OnClicked>
+				</Button>
+				
+				<Button name="ExcessiveWithdrawalsButtonLogout" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-100" offsetY="20" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						tmpAllowExit = 1
+						Logout()
+					</OnClicked>
+				</Button>
+
+				<Button name="ExcessiveWithdrawalsButtonClose" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="10" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						tmpAllowExit = 0
+						ExcessiveWithdrawalsWarn:SetHidden(true)
+					</OnClicked>
+				</Button>.
+	        	
+	        	<Label name="ExcessiveWithdrawalsWarnLabelReload" font="ZoFontGame" color="FFFFFFFF" layer="1" wrapMode="ELLIPSIS" verticalAlignment="TOP" horizontalAlignment="CENTER" text="ReloadUI">
+	        		<Anchor point="CENTER" relativeTo="ExcessiveWithdrawalsButtonReload" relativePoint="CENTER" offsetX="-5" offsetY="-35" />
+	        	</Label>
+	        	<Label name="ExcessiveWithdrawalsWarnLabelQuit" font="ZoFontGame" color="FFFFFFFF" layer="1" wrapMode="ELLIPSIS" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Quit">
+	        		<Anchor point="CENTER" relativeTo="ExcessiveWithdrawalsButtonQuit" relativePoint="CENTER" offsetX="-5" offsetY="-35" />
+	        	</Label>
+	           	<Label name="ExcessiveWithdrawalsWarnLabelLogout" font="ZoFontGame" color="FFFFFFFF" layer="1" wrapMode="ELLIPSIS" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Logout">
+	        		<Anchor point="CENTER" relativeTo="ExcessiveWithdrawalsButtonLogout" relativePoint="CENTER" offsetX="-5" offsetY="-35" />
+	        	</Label>
+
+				<Label name="ExcessiveWithdrawalsOverideLabel" font="ZoFontGame" color="FFFFFF" layer="1" wrapMode="ELLIPSIS" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Overide Exit Keybind: ">
+	        		<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="60" />
+	        	</Label>
+  			</Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

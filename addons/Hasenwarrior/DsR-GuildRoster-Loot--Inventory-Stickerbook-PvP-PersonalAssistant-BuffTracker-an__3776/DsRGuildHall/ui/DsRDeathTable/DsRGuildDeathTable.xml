@@ -1,0 +1,62 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="DsRGuildDeathTableIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false">
+      <Dimensions x="250" y="50" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+      <OnMoveStop>
+        DsRGuildDeathTable.SaveLoc()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)Label" width="250" height="50" font="ZoFontWinH2" inheritAlpha="true" color="" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="DsRGuildDeathTable_Window">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+        <Control name="$(parent)Container" inherits="ZO_ScrollContainer">
+          <OnInitialized>
+                ZO_Scroll_Initialize(self)
+          </OnInitialized>
+          <Dimensions x="250" y="125"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Bg" relativePoint="TOPLEFT" offsetY="35" offsetX="40"/>
+        </Control>
+        <Label name="$(parent)Data" width="80" height="50" font="ZoFontWinH4" inheritAlpha="true" color="D3D3D3" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Bg" relativePoint="TOPLEFT" offsetY="40" offsetX="25"/>
+          <OnInitialized>
+                DsRGuildDeathTableIndicatorData:SetParent(GetControl("DsRGuildDeathTableIndicatorContainerScrollChild"))
+                DsRGuildDeathTableIndicatorData:SetAnchor(TOPLEFT, DsRGuildDeathTableIndicatorContainerScrollChild, TOPLEFT, 4, 4)
+          </OnInitialized>
+        </Label>
+        <Label name="$(parent)Data2" width="80" height="50" font="ZoFontWinH4" inheritAlpha="true" color="D3D3D3" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="RIGHT">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Bg" relativePoint="TOPRIGHT" offsetY="40" offsetX="-25"/>
+          <OnInitialized>
+                DsRGuildDeathTableIndicatorData2:SetParent(GetControl("DsRGuildDeathTableIndicatorContainerScrollChild"))
+                DsRGuildDeathTableIndicatorData2:SetAnchor(TOPLEFT, DsRGuildDeathTableIndicatorContainerScrollChild, TOP, 4, 4)
+          </OnInitialized>
+        </Label>
+        <Texture name="$(parent)Bg" excludeFromResizeToFitExtents="true" textureFile="/esoui/art/antiquities/codex_document.dds">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="15" offsetY="-8" />
+          <Dimensions x="260" y="70"/>
+        </Texture>
+        <Texture name="$(parent)Divider" textureFile="/esoui/art/miscellaneous/horizontaldivider_mythic.dds"
+            verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+            <Dimensions x="270" y="4" />
+            <Anchor point="TOPCENTER" relativeTo="$(parent)Label" relativePoint="TOPCENTER" offsetX="-70" offsetY="30"/>
+        </Texture>
+        <Button name="$(parent)ButtonClosTable" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="30" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Bg" relativePoint="TOPRIGHT" offsetX="-5" offsetY="10" />
+          <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds" pressed="EsoUI/Art/Buttons/closebutton_down.dds" mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds" disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+          <OnClicked>
+						DsRGuildDeathTable.ToggleWindow()
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)ButtonResetTable" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="25" y="25" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Bg" relativePoint="TOPRIGHT" offsetX="-35" offsetY="5" />
+          <Textures normal="EsoUI/Art/Buttons/edit_disabled.dds" pressed="EsoUI/Art/Buttons/edit_down.dds" mouseOver="EsoUI/Art/Buttons/edit_over.dds" disabled="EsoUI/Art/Buttons/edit_disabled.dds"/>
+          <OnClicked>
+						DsRGuildDeathTable.resetTable()
+          </OnClicked>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,28 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="LightAttackHelperWindow">
+            <Controls>
+
+                <Backdrop name="$(parent)LabelBG" alpha="0" centerColor="40FF0000" edgeColor="60FF0000" clampedToScreen="true" movable="true" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+                    <Dimensions x="100" y="100"/>
+                    <Edge edgeSize="1"/>
+                    <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12);self:SetAlpha(1)</OnMouseEnter>
+                    <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0);self:SetAlpha(0)</OnMouseExit>
+                    <OnMoveStop>LightAttackHelper.SavePosition()</OnMoveStop>
+                </Backdrop>
+
+                <Label name="$(parent)Label" font="ZoFontWinH1" color="ffffff" alpha="0.85" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                    <Anchor point="CENTER" relativeTo="$(parent)LabelBG" relativePoint="CENTER" offsetX="0" offsetY="-17"/>
+                    <Dimensions x="100" y="100" />
+                </Label>
+
+                <Label name="$(parent)Info" font="ZoFontWinH1" color="ffffff" alpha="0.85" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                    <Anchor point="CENTER" relativeTo="$(parent)Label" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                    <Dimensions x="300" y="100" />
+                </Label>
+
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

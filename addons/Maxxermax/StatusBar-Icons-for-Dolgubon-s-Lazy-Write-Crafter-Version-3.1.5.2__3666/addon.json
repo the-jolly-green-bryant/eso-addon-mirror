@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/Maxxermax/StatusBar-Icons-for-Dolgubon-s-Lazy-Write-Crafter-Version-3.1.5.2__3666",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Maxxermax",
+  "canonical_id": "esoui:3666",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:3666",
+  "deleted": false,
+  "directories": [
+    "DolgubonsLazyWritCreator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3666/",
+  "fingerprint": "2f016b550c136f30a20fa536678e4654daae6c460aa4c3bddd559d3a06ea5400",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12483.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3666",
+  "source_url": "https://www.esoui.com/downloads/info3666-StatusBarIconsforDolgubonsLazyWriteCrafterVersion3.1.5.2.html",
+  "stats": {
+    "downloads": 68224,
+    "favorites": 5,
+    "monthly_downloads": 499
+  },
+  "title": "StatusBar Icons for Dolgubon's Lazy Write Crafter Version: 3.1.5.2",
+  "updated_at": 1688127240000,
+  "version": "3.1.5.2f"
+}

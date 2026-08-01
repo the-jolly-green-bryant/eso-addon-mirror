@@ -1,0 +1,348 @@
+<?xml version="1.0"?>
+<GuiXml>
+    <Font name="AGFont" font="$(MEDIUM_FONT)|18"/>
+    <Font name="AGFontSmall" font="$(BOLD_FONT)|14"/>
+    <Font name="AGFontBold" font="$(BOLD_FONT)|22"/>
+    <Font name="AGFontBig" font="$(BOLD_FONT)|18|soft-shadow-thick"/>
+
+    <Controls>
+
+        <Backdrop name="AS_DefaultBG" virtual="true" alpha="0"> <!--  centerColor="40FF0000" edgeColor="40FF0000"  -->
+            <AnchorFill/>
+            <Edge edgeSize="1"/>
+        </Backdrop>
+
+        <Control name="AS_SimpleRow" mouseEnabled="true" virtual="true">
+            <Dimensions y="30" />
+			<OnMouseEnter>ASUI.SimpleRow_OnMouseEnter(self)</OnMouseEnter>
+			<OnMouseExit>ASUI.SimpleRow_OnMouseExit(self)</OnMouseExit>
+			<OnMouseUp>ASUI.SimpleRow_OnMouseUp(self, button, upInside)</OnMouseUp>
+
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				<Label name="$(parent)Name" font="AGFont" wrapMode="ELLIPSIS">
+					<AnchorFill/>
+				</Label>
+            </Controls>
+        </Control>
+
+        <Control name="AS_SetItemTemplate" mouseEnabled="true" virtual="true">
+            <Dimensions x="84" y="84" />
+			<OnMouseEnter></OnMouseEnter>
+			<OnMouseExit></OnMouseExit>
+			<OnMouseUp></OnMouseUp>
+
+            <Controls>
+                <Button name="$(parent)Icon">
+                    <Dimensions x="80" y="80" />
+                    <Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)"/>
+                </Button>
+                <Backdrop name="$(parent)BG" alpha="1">
+                    <AnchorFill/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+            </Controls>
+        </Control>
+
+        <Control name="AS_SetLabelTemplate" mouseEnabled="true" virtual="true">
+            <!-- Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="5"/>
+            <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetY="35"/ -->
+
+            <Controls>
+            <Backdrop name="$(parent)BG" inherits="AS_DefaultBG"/>
+				<Label name="$(parent)Label" font="AGFont" wrapMode="ELLIPSIS">
+                    <AnchorFill/>
+                </Label>
+            </Controls>
+        </Control>
+
+
+        <Control name="AS_SectionLabelTemplate" mouseEnabled="true" virtual="true">
+            <Dimensions x="150" y="25" />
+
+            <Controls>
+                <Button name="$(parent)Label" font="AGFont" wrapMode="ELLIPSIS">
+                    <AnchorFill/>
+                </Button>
+            </Controls>
+        </Control>
+
+        <Control name="AS_SetItem" mouseEnabled="true" virtual="true">
+            <Dimensions x="200" y="40" />
+			<OnMouseEnter></OnMouseEnter>
+			<OnMouseExit></OnMouseExit>
+			<OnMouseUp></OnMouseUp>
+
+            <Controls>
+                <Button name="$(parent)Icon">
+                    <Dimensions x="40" y="40" />
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                </Button>
+				<Label name="$(parent)Name" font="AGFont" wrapMode="ELLIPSIS">
+                    <Dimensions x="155" y="40" />
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="5"/>
+				</Label>
+            </Controls>
+        </Control>
+
+        <EditBox name="AS_DefaultNameEdit" inherits="ZO_EditDefaultText ZO_DefaultEditForDarkBackdrop" virtual="true">
+            <OnFocusLost></OnFocusLost>
+            <OnEscape>self:LoseFocus()</OnEscape>
+            <OnEnter>self:LoseFocus()</OnEnter>
+            <!--Controls>
+                <Backdrop name="$(parent)BG" alpha="0.25" centerColor="FFFFFFFF" edgeColor="FFFFFFFF">
+                    <AnchorFill/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+            </Controls-->
+        </EditBox>
+
+
+        <Control name="AS_SetDetailsTemplate" virtual="true">
+            <AnchorFill />
+            <!-- Controls>
+                <Backdrop name="$(parent)NameEditBG" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="5"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetY="35"/>
+                    <Controls>
+                        <EditBox name="$(grandparent)NameEdit" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText"/>
+                    </Controls>
+                </Backdrop>
+
+                <! - - Controls for Set-Items are created programmatically - - >  
+            </Controls-->
+        </Control>
+
+
+        <Button name="AS_DefaultButton" virtual="true">
+            <Dimensions x="40" y="40" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="AS_DefaultBG"/>
+                <Label name="$(parent)Name" font="AGFont" color="FFFFFF" text="Hallo">
+                    <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="4"/>
+                </Label>
+            </Controls>
+        </Button>
+
+        <!-- List/Detail Template -->
+
+        <Control name="AS_ListDetailPanel" virtual="true">
+            <Controls>
+                <Control name="$(parent)ListContainer">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)" offsetX="200"/>
+
+                    <Controls>
+                        <!-- Backdrop name="$(parent)BG" inherits="AS_DefaultBG"/ -->
+
+                        <!-- List-Toolbar with Add/Delete -->
+                        <Control name="$(parent)Toolbar">
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                            <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetY="40"/>
+                            <Controls>
+                                <Button name="$(parent)Add" clickSound="Click">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                                    <Dimensions y="40" x="40"/>
+                                    <OnMouseEnter>ASUI.ShowEditorTooltip(self, 'Add Style') </OnMouseEnter>
+                                    <OnMouseExit>ASUI.HideEditorTooltip()</OnMouseExit>
+                                    <Textures normal="esoui/art/buttons/plus_up.dds" pressed="esoui/art/buttons/plus_down.dds" mouseOver="esoui/art/buttons/plus_over.dds"/>
+                                    <OnClicked>ASUI.OnListAdd()</OnClicked>
+                                </Button>
+                            </Controls>
+                            <Controls>
+                                <Button name="$(parent)Delete" clickSound="Click">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Add"/>
+                                    <Dimensions y="40" x="40"/>
+                                    <OnMouseEnter>ASUI.ShowEditorTooltip(self, 'Delete Style') </OnMouseEnter>
+                                    <OnMouseExit>ASUI.HideEditorTooltip()</OnMouseExit>
+                                    <Textures normal="esoui/art/buttons/minus_up.dds" pressed="esoui/art/buttons/minus_down.dds" mouseOver="esoui/art/buttons/minus_over.dds"/>
+                                    <OnClicked>ASUI.OnListDelete()</OnClicked>
+                                </Button>
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)List" mouseEnabled="true" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Toolbar" offsetX="10" offsetY="5"/>
+                            <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="-5"/>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)DetailContainer">
+                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)ListContainer" offsetX="10"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)"/>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="AS_DefaultBG"/>
+
+                        <!-- Detail-Toolbar with Edit -->
+                        <Control name="$(parent)Toolbar">
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                            <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetY="40"/>
+                            <Controls>
+	                            <Button name="$(parent)EditStyleMeta" clickSound="Click">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+				                    <Dimensions y="40" x="40"/>
+                                    <OnMouseEnter>ASUI.ShowEditorTooltip(self, 'Edit Style Properties') </OnMouseEnter>
+                                    <OnMouseExit>ASUI.HideEditorTooltip()</OnMouseExit>
+                                    <Textures normal="esoui/art/buttons/edit_up.dds" pressed="esoui/art/buttons/edit_down.dds" mouseOver="esoui/art/buttons/edit_over.dds"/>
+				                    <OnClicked>ASUI.OnEditStyleProperties()</OnClicked>
+			                    </Button>	                            
+                                <Button name="$(parent)Use" clickSound="Click">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)EditStyleMeta"/>
+                                    <Dimensions y="40" x="40"/>
+                                    <OnMouseEnter>ASUI.ShowEditorTooltip(self, 'Use Style') </OnMouseEnter>
+                                    <OnMouseExit>ASUI.HideEditorTooltip()</OnMouseExit>
+                                    <Textures normal="esoui/art/buttons/accept_up.dds" pressed="esoui/art/buttons/accept_down.dds" mouseOver="esoui/art/buttons/accept_over.dds"/>
+                                    <OnClicked>ASUI.OnUseStyle()</OnClicked>
+                                </Button>
+                                <Button name="$(parent)Reload" clickSound="Click">
+                                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Use"/>
+                                    <Dimensions y="40" x="40"/>
+                                    <OnMouseEnter>ASUI.ShowEditorTooltip(self, 'Reload Style form Charcter') </OnMouseEnter>
+                                    <OnMouseExit>ASUI.HideEditorTooltip()</OnMouseExit>
+                                    <Textures normal="esoui/art/help/help_tabicon_feedback_up.dds" pressed="esoui/art/help/help_tabicon_feedback_down.dds" mouseOver="esoui/art/help/help_tabicon_feedback_over.dds"/>
+
+                                    <OnClicked>ASUI.OnReloadStyle()</OnClicked>
+                                </Button>
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)Details">
+                            <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Toolbar" offsetX="10" offsetY="5"/>
+                            <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)"/>
+                            <Controls>
+                                <Control name="$(parent)StyleSetDetails" inherits="AS_SetDetailsTemplate" hidden="true"/>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+
+
+        <!-- New Stile Main Panel -->
+        <TopLevelControl name="AS_Main" clampedToScreen="true" movable="true" mouseEnabled="true" allowBringToTop="true"  hidden="true">
+            <Dimensions x="605" y="650" />
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="GuiRoot"/>
+            <OnInitialized>ASUI.OnInitMain()</OnInitialized>
+
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+                <!--Backdrop name="$(parent)BG" integralWrapping="true" centerColor="F0000000"> 
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="-8" offsetY="-6"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="4"/>
+                    <Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeFileWidth="256" edgeFileHeight="256" edgeSize="32"/>
+                    <!- - Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" / - - >
+                    <Insets left="32" top="32" right="-32" bottom="-32" />
+                </Backdrop-->
+
+                <!-- Header/Title -->
+                <Control name="$(parent)Header">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="10"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="40"/>
+
+                    <Controls>
+
+                        <Backdrop name="$(parent)BG" inherits="AS_DefaultBG"/>
+
+                        <Label name="$(parent)Headline" font="AGFont" color="FFFFFF">
+                            <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)"/>
+                            <OnInitialized>self:SetText("|cFFAA33"..ASApp.displayname.."|r "..ASApp.version)</OnInitialized>
+                        </Label>
+
+                        <Button name="$(parent)CloseButton" clickSound="Click">
+                            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" />
+                            <Dimensions y="25" x="25"/>
+                            <Textures normal="esoui/art/buttons/decline_up.dds" pressed="esoui/art/buttons/decline_down.dds" mouseOver="esoui/art/buttons/decline_over.dds"/>
+                            <OnClicked>ASUI.HideMain()</OnClicked>
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <!-- Divider -->
+                <Texture name="$(parent)Divider1" textureFile="EsoUI/Art/Miscellaneous/centerscreen_topDivider.dds">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Header" offsetX="10" offsetY="5" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Header" offsetX="-10" offsetY="8" />
+                </Texture>
+
+                <!-- Toolbar -->
+                <!-- Control name="$(parent)Toolbar">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Header" offsetY="13"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Header" offsetY="53"/>
+
+                    <Controls>
+                        <!- - Backdrop name="$(parent)BG" inherits="AS_DefaultBG"/ - ->
+
+                        <Button name="$(parent)ProfileButton" clickSound="Click">
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                            <Dimensions y="40" x="40"/>
+                            <OnMouseEnter>AG.ShowEditorTooltip(self,"Profiles")</OnMouseEnter>
+                            <OnMouseExit>AG.HideEditorTooltip()</OnMouseExit>
+                            <Textures normal="esoui/art/mainmenu/menubar_character_up.dds" pressed="esoui/art/mainmenu/menubar_character_down.dds" mouseOver="esoui/art/mainmenu/menubar_character_over.dds"/>
+                            <OnClicked>AG.ShowProfilesTab()</OnClicked>
+                        </Button>
+
+                        <Control name="$(parent)ProfileCombo" inherits="ZO_ComboBox">
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)ProfileButton" offsetX="5"/>
+                            <Dimensions y="30" x="250"/>
+                            <OnMouseEnter>AG.ShowEditorTooltip(self,"Profile Selection")</OnMouseEnter>
+                            <OnMouseExit>AG.HideEditorTooltip()</OnMouseExit>
+                        </Control>
+
+
+
+                        <Button name="$(parent)BuildsButton" font="AGFont" clickSound="Click">
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)ProfileCombo" offsetX="40"/>
+                            <Dimensions y="40" x="40"/>
+                            <OnMouseEnter>AG.ShowEditorTooltip(self, "Builds")</OnMouseEnter>
+                            <OnMouseExit>AG.HideEditorTooltip()</OnMouseExit>
+                            <Textures normal="esoui/art/mainmenu/menubar_champion_up.dds" pressed="esoui/art/mainmenu/menubar_champion_down.dds" mouseOver="esoui/art/mainmenu/menubar_champion_over.dds"/>
+                            <OnClicked>AG.ShowBuildsTab()</OnClicked>
+                        </Button>
+                        <Button name="$(parent)GearSetsButton" font="AGFont" clickSound="Click">
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)BuildsButton" offsetX="0"/>
+                            <Dimensions y="40" x="40"/>
+                            <OnMouseEnter>AG.ShowEditorTooltip(self, "Gear Sets")</OnMouseEnter>
+                            <OnMouseExit>AG.HideEditorTooltip()</OnMouseExit>
+                            <Textures normal="esoui/art/mainmenu/menubar_inventory_up.dds" pressed="esoui/art/mainmenu/menubar_inventory_down.dds" mouseOver="esoui/art/mainmenu/menubar_inventory_over.dds"/>
+                            <OnClicked>AG.ShowGearSetsTab()</OnClicked>
+                        </Button>
+                        <Button name="$(parent)SkillSetsButton" font="AGFont" clickSound="Click">
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)GearSetsButton" offsetX="0"/>
+                            <Dimensions y="40" x="40"/>
+                            <OnMouseEnter>AG.ShowEditorTooltip(self, "Skill Sets")</OnMouseEnter>
+                            <OnMouseExit>AG.HideEditorTooltip()</OnMouseExit>
+                            <Textures normal="esoui/art/mainmenu/menubar_skills_up.dds" pressed="esoui/art/mainmenu/menubar_skills_down.dds" mouseOver="esoui/art/mainmenu/menubar_skills_over.dds"/>
+                            <OnClicked>AG.ShowSkillSetsTab()</OnClicked>
+                        </Button>
+
+                        <Button name="$(parent)StileSetsButton" font="AGFont" clickSound="Click">
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)SkillSetsButton" offsetX="30"/>
+                            <Dimensions y="40" x="40"/>
+                            <OnMouseEnter>AG.ShowEditorTooltip(self, "Stile Sets")</OnMouseEnter>
+                            <OnMouseExit>AG.HideEditorTooltip()</OnMouseExit>
+                            <Textures normal="esoui/art/mainmenu/menubar_collections_up.dds" pressed="esoui/art/mainmenu/menubar_collections_down.dds" mouseOver="esoui/art/mainmenu/menubar_collections_over.dds"/>
+                            <OnClicked>AG.ShowStileSetsTab()</OnClicked>
+                        </Button>
+
+                    </Controls>
+                </Control -->
+
+                <!-- Divider 2 -->
+                <!-- Texture name="$(parent)Divider2" textureFile="EsoUI/Art/Miscellaneous/centerscreen_topDivider.dds">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Toolbar" offsetX="10" offsetY="5" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Toolbar" offsetX="-10" offsetY="8" />
+                </Texture -->
+
+                <!-- ListDetailPanel -->
+                <Control name="$(parent)ListDetail" inherits="AS_ListDetailPanel">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Header" offsetY="13"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="-10"/>
+                </Control>
+
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+
+</GuiXml>

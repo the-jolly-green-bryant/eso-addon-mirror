@@ -1,0 +1,17 @@
+<GuiXml>
+    <Controls>
+		<TopLevelControl name="GHButton" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="47" y="41" />
+			<Anchor point="CENTER" />
+			<OnUpdate>ChaoticTools.guildHallIconUpdate()</OnUpdate>
+			<Controls>
+				<Texture name="$(parent)House" alpha="1" layer="CONTROLS" mouseEnabled="true" movable="true">
+				<Dimensions x="47" y="41"></Dimensions>
+					<Anchor point="TOPLEFT" offsetX="0" offsetY="0"></Anchor>
+					<OnMouseUp>if button == MOUSE_BUTTON_INDEX_LEFT then ChaoticTools.guildHallButtonClick() end</OnMouseUp>
+					<OnMoveStop>ChaoticTools.guildHallButtonDragStop()</OnMoveStop> 
+				</Texture>
+			</Controls>
+        </TopLevelControl>
+ 	</Controls>
+ </GuiXml>

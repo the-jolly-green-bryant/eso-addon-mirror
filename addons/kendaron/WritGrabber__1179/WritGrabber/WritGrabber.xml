@@ -1,0 +1,8 @@
+<GuiXml>
+  <Controls>    
+    <TopLevelControl name="WritGrabberUI" hidden="true" tier="MEDIUM" inherits="EasyFrameUI">
+      <DimensionConstraints minX="300" minY="100" />
+    </TopLevelControl>
+  </Controls>    
+</GuiXml>
+    

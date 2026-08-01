@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="General">
+		<Category name="COMBAT LOG STATISTICS">
+			<Action name="DISPLAY_COMBAT_LOG">
+				<Down>FCL.DisplayFCL()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

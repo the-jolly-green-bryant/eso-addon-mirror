@@ -1,0 +1,63 @@
+{
+  "archive_path": "addons/mightyjo/Crafting-Build-Alert__3246",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mightyjo",
+  "canonical_id": "esoui:3246",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3246",
+  "deleted": false,
+  "directories": [
+    "CraftingBuildAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3246/",
+  "fingerprint": "f972548369aec03f555774b08b7073182b0ca655505c924b90eead31c7135f42",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11062.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11650.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11651.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3246",
+  "source_url": "https://www.esoui.com/downloads/info3246-CraftingBuildAlert.html",
+  "stats": {
+    "downloads": 7746,
+    "favorites": 3,
+    "monthly_downloads": 13
+  },
+  "title": "Crafting Build Alert",
+  "updated_at": 1720735879000,
+  "version": "1.2.0"
+}

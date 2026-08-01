@@ -1,0 +1,37 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="AntiSpudEquipped" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="true">
+            <Dimensions x="200" y="80"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-120"/>
+            <Controls>
+                <Label name="$(parent)Label" font="$(BOLD_FONT)|30|soft-shadow-thick" color="FF0000" text="REEE" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                    <AnchorFill/>
+                </Label>
+                <Button name="$(parent)Snooze" alpha="1" topmost="true" color="C6C29F">
+                    <Textures normal="/esoui/art/miscellaneous/timer_64.dds" color="C6C29F"/>
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+                    <Dimensions x="32" y="32"/>
+                    <OnClicked>KyzderpsDerps.AntiSpud.SnoozeCurrent()</OnClicked>
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Snooze this warning (configure length of time in settings)")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                </Button>
+                <Button name="$(parent)Options" alpha="1" topmost="true">
+                    <Textures normal="/esoui/art/chatwindow/chat_options_up.dds" mouseOver="/esoui/art/chatwindow/chat_options_over.dds"/>
+                    <Anchor point="RIGHT" relativeTo="$(parent)Snooze" relativePoint="LEFT"/>
+                    <Dimensions x="40" y="40" />
+                    <OnClicked>KyzderpsDerps.OpenSettingsMenu()</OnClicked>
+                </Button>
+                <Button name="$(parent)Close" alpha="1" topmost="true">
+                    <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Snooze" relativePoint="RIGHT" offsetX="-10" />
+                    <Dimensions x="54" y="54"/>
+                    <OnClicked>KyzderpsDerps.AntiSpud.DismissCurrent()</OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

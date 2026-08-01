@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/MelanAster/FixedCombatString__3831",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MelanAster",
+  "canonical_id": "esoui:3831",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3831",
+  "deleted": false,
+  "directories": [
+    "FixedCombatString"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3831/",
+  "fingerprint": "64f0b89947ea17c8b987d2c4bc04a338bfc8905cbe08eeeab4b144940c1c2e46",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13027.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3831",
+  "source_url": "https://www.esoui.com/downloads/info3831-FixedCombatString.html",
+  "stats": {
+    "downloads": 1726,
+    "favorites": 2,
+    "monthly_downloads": 11
+  },
+  "title": "FixedCombatString",
+  "updated_at": 1717421883000,
+  "version": "0.30"
+}

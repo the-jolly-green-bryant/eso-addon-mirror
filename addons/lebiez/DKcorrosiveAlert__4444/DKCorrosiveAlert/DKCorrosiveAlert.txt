@@ -1,0 +1,7 @@
+## Title: DK Corrosive Alert
+## Author: Lebiez
+## Version: 3.01
+## APIVersion: 101041
+## DependsOn: LibAddonMenu-2.0>=40
+
+DKCorrosiveAlert.lua

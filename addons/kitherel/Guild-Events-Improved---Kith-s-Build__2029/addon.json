@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kitherel/Guild-Events-Improved---Kith-s-Build__2029",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kitherel",
+  "canonical_id": "esoui:2029",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2029",
+  "deleted": false,
+  "directories": [
+    "GuildEventsImproved"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2029/",
+  "fingerprint": "1804872dd2eac345c6ace31aa2504aeacaeb0d46c31d27554734ce440ea12415",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6834.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2029",
+  "source_url": "https://www.esoui.com/downloads/info2029-GuildEventsImproved-KithsBuild.html",
+  "stats": {
+    "downloads": 3096,
+    "favorites": 3,
+    "monthly_downloads": 7
+  },
+  "title": "Guild Events Improved - Kith's Build",
+  "updated_at": 1528315315000,
+  "version": "1"
+}

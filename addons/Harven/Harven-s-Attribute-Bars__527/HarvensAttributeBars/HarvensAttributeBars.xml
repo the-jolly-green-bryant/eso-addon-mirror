@@ -1,0 +1,42 @@
+<GuiXml>
+	<Animations>
+		<AnimationTimeline name="HarvensAttributeBarsDiffFade">
+			<Animations>
+				<AlphaAnimation duration="50" startAlpha="0" endAlpha="0" />
+				<AlphaAnimation delay="50" duration="50" startAlpha="0" endAlpha="1" />
+				<AlphaAnimation delay="2500" duration="400" startAlpha="1" endAlpha="0" />
+			</Animations>
+		</AnimationTimeline>
+	</Animations>
+	<Controls>
+		<Label name="HarvensAttributeBarsLabel" font="$(MEDIUM_FONT)|14|thick-outline" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" virtual="true" />
+		
+		<!--Control name="ReticleMagickaBar" inherits="ZO_PlayerAttributeContainerSmall" virtual="true">
+			<Controls>
+				<Texture name="$(parent)BgContainer" inherits="ZO_PlayerAttributeBgSmallLeft" />
+
+				<StatusBar name="$(parent)Bar" inherits="ZO_PlayerAttributeStatusBarSmall" barAlignment="REVERSE">
+					<Controls>
+						<StatusBar name="$(parent)Gloss" inherits="ZO_PlayerAttributeStatusBarGlossSmall" barAlignment="REVERSE"/>
+					</Controls>
+				</StatusBar>
+
+				<Texture name="$(parent)Frame" inherits="ZO_PlayerAttributeFrameSmallLeft" />
+			</Controls>
+		</Control>
+		
+		<Control name="ReticleStaminaBar" inherits="ZO_PlayerAttributeContainerSmall" virtual="true">
+			<Controls>
+				<Texture name="$(parent)BgContainer" inherits="ZO_PlayerAttributeBgSmallRight" />
+
+				<StatusBar name="$(parent)Bar" inherits="ZO_PlayerAttributeStatusBarSmall">
+					<Controls>
+						<StatusBar name="$(parent)Gloss" inherits="ZO_PlayerAttributeStatusBarGlossSmall" />
+					</Controls>
+				</StatusBar>
+
+				<Texture name="$(parent)Frame" inherits="ZO_PlayerAttributeFrameSmallRight" />
+			</Controls>
+		</Control-->
+	</Controls>
+</GuiXml>

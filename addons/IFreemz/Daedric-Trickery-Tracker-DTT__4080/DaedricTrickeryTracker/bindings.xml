@@ -1,0 +1,5 @@
+<Bindings>
+    <SlashCommand name="/dtt">
+        DTT_SlashCommand(args)
+    </SlashCommand>
+    </Bindings>

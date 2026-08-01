@@ -1,0 +1,7 @@
+AddOn>
+    <Name>StyleTracker</Name>
+    <Author>Kryne</Author>
+    <Version>1.0.0</Version>
+    <Description>Tracks learned styles for all characters in the account.</Description>
+    <Website>https://github.com/KryneDev/Style-Tracker-for-ESO</Website>
+</AddOn>

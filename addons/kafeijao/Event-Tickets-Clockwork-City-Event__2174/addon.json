@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/kafeijao/Event-Tickets-Clockwork-City-Event__2174",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kafeijao",
+  "canonical_id": "esoui:2174",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2174",
+  "deleted": false,
+  "directories": [
+    "EventTickets"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2174/",
+  "fingerprint": "82077487c6ac532f82b8496a306686c0190e6809d82e30f8825fe4be5f6daa4b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7522.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7423.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7424.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2174",
+  "source_url": "https://www.esoui.com/downloads/info2174-EventTicketsClockworkCityEvent.html",
+  "stats": {
+    "downloads": 12313,
+    "favorites": 23,
+    "monthly_downloads": 10
+  },
+  "title": "Event Tickets (Clockwork City Event)",
+  "updated_at": 1542338844000,
+  "version": "2.0"
+}

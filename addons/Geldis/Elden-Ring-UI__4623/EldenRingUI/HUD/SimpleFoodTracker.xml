@@ -1,0 +1,16 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="SimpleFoodTrackerWindow" movable="false" mouseEnabled="false" clampedToScreen="true">
+            <Dimensions x="250" y="40" />
+            
+            <Anchor point="LEFT" relativeTo="GuiRoot" relativePoint="BOTTOMLEFT" offsetX="80" offsetY="-389" />
+            
+            <Controls>
+                <Label name="$(parent)Label" font="EsoUI/Common/Fonts/FTN87.otf|20|soft-shadow-thick" color="FFFFFF" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="No Food Active">
+                    <Anchor point="TOPLEFT" offsetX="10" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-10" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

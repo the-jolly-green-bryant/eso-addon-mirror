@@ -1,0 +1,22 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="WarhornTrackerWindow" clampedToScreen="true" >
+			<Dimensions x="200" y="25" />
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetY="500" offsetX="500" />
+		
+			<OnMoveStop>
+				Warhorn.OnMoveStop()
+			</OnMoveStop>
+		
+			<Controls>
+				<Label name="$(parent)Title" width="200" height="25" font="ZoFontWinH3" inheritAlpha="true" color="db4130" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" >
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+
+				<Label name = "$(parent)Timer" width="200" height="25" font="ZoFontWinT1" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" >
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="25"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

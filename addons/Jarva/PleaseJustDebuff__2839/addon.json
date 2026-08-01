@@ -1,0 +1,34 @@
+{
+  "archive_path": "addons/Jarva/PleaseJustDebuff__2839",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jarva",
+  "canonical_id": "esoui:2839",
+  "category_id": "22",
+  "compatibility": [],
+  "content_id": "esoui:2839",
+  "deleted": false,
+  "directories": [
+    "PleaseJustDebuff"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2839/",
+  "fingerprint": "06c05da14b00e86a3bacb00961d3f9e09e86de9b30cc566159f127f5e0aabd2d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9691.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9692.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9693.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2839",
+  "source_url": "https://www.esoui.com/downloads/info2839-PleaseJustDebuff.html",
+  "stats": {
+    "downloads": 9096,
+    "favorites": 4,
+    "monthly_downloads": 22
+  },
+  "title": "PleaseJustDebuff",
+  "updated_at": 1652974213000,
+  "version": "1.0.12"
+}

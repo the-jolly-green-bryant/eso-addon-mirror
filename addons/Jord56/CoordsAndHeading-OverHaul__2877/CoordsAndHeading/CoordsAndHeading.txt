@@ -1,0 +1,17 @@
+## Title: CoordsAndHeading
+## Authors: TheNamesJT
+## Contributer: Andre
+## APIVersion: 100033
+## SavedVariables: CoordsAndHeadingVars
+## Version 1.2
+## OptionalDependsOn: LibAddonMenu-2.0>=30
+## Description: Displays coordinates of the char and his heading for unique location determination
+
+## I use it to make screenshots, which contain beside the What also the Where
+
+CoordsAndHeading.lua
+CoordsAndHeading.xml
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

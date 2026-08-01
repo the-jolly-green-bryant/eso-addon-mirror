@@ -1,0 +1,84 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="M0RMarkersToplevel" layer="0">
+		</TopLevelControl>
+
+		<TopLevelControl name="M0RMarkersCameraToplevel" layer="0" hidden="true">
+			<OnInitialized>
+				self:Create3DRenderSpace()
+			</OnInitialized>
+		</TopLevelControl>
+
+		<Control name="M0RMarkersTemplate" virtual="true" space="WORLD">
+			<Dimensions x="100" y="100" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+			<Controls>
+				<Texture name="$(parent)Background" hidden="true" layer="1">
+					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)"/>
+					<Dimensions x="100" y="100" />
+					<Controls>
+						<Label name="$(parent)Text" font="$(GAMEPAD_BOLD_FONT)|$(GP_20)|thick-outline" horizontalAlignment="1" verticalAlignment="1" hidden="true" scale="4">
+							<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(grandparent)" offsetY="15"/>
+							<Dimensions x="200" y="100" />
+						</Label>
+						<Backdrop name="$(parent)Highlight" hidden="true" edgeColor="ff0000" centerColor="00000000" layer="0" tier="0">
+							<Edge edgeSize="10"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetY="-10" offsetX="-10"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="10" offsetX="10"/>
+						</Backdrop>
+					</Controls>
+				</Texture>
+				
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="M0RMarkerProgressMeter" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="320" y="180" />
+			<Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="-150" offsetY="150"/>
+			<Controls>
+				<Backdrop name="$(parent)BG" alpha="0.8" centerColor="000000" edgeColor="000000">
+					<AnchorFill />
+					<Edge edgeSize="3"/>
+				</Backdrop>
+
+				<Label name="$(parent)Name" font="ZoFontGamepadBold27" horizontalAlignment="1" verticalAlignment="1" text="Transmission Progress">
+					<Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetY="10" />
+					<Dimensions x="300" y="45" />
+				</Label>
+
+
+				<StatusBar name="$(parent)Bar" color="00630c">
+					<Dimensions x="300" y="25" />
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Name" offsetX="0" offsetY="15" />
+					<Limits min="0" max="100" />
+					<Controls>
+						<Backdrop name="$(parent)BG" alpha="1" centerColor="222222" edgeColor="000000">
+							<AnchorFill />
+							<Edge edgeSize="1"/>
+						</Backdrop>
+						<Label name="$(parent)Text" font="ZoFontGamepadBold20" horizontalAlignment="1" verticalAlignment="1" text="Progress (0%)">
+							<Dimensions x="300" y="25" />
+							<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+						</Label>
+					</Controls>
+					<OnValueChanged>
+						self:GetNamedChild("Text"):SetText(string.format("Progress (%.1f%%)",value))
+					</OnValueChanged>
+				</StatusBar>
+
+
+				<Label name="$(parent)Estimated" font="ZoFontGamepadBold20" horizontalAlignment="1" verticalAlignment="1" text="Estimated Time Remaining: 27000ms">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Bar" offsetX="0" offsetY="10" />
+					<Dimensions x="300" y="25" />
+				</Label>
+				<Label name="$(parent)Elapsed" font="ZoFontGamepadBold20" horizontalAlignment="1" verticalAlignment="1" text="Elapsed Time: 5000ms">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Estimated" offsetX="0" offsetY="10" />
+					<Dimensions x="300" y="25" />
+				</Label>
+
+				
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

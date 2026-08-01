@@ -1,0 +1,10 @@
+## Title: JacobsChannelCastBar
+## Author: Jacobs
+## Version: 1.0.1
+## AddOnVersion: 1
+## APIVersion: 101049
+## SavedVariables: JacobsChannelCastBar_SavedVars
+## DependsOn: LibAddonMenu-2.0>=41
+
+JacobsChannelCastBar.lua
+JacobsChannelCastBar_Settings.lua

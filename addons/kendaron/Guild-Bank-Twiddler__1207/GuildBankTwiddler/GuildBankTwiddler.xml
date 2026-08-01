@@ -1,0 +1,56 @@
+<GuiXml>
+  <Controls>
+  
+ 		<TopLevelControl name="GuildBankTwiddlerUI" hidden="true" mouseEnabled="true" movable="true" tier="MEDIUM" layer="CONTROLS">
+      <Dimensions x="235" y="40" />
+      <Anchor point="BOTTOMLEFT" relativeTo="ZO_SharedRightPanelBackground" relativePoint="TOPLEFT" offsetX="10" offsetY="-5" />
+      <OnInitialized>
+        GuildBankTwiddler:OnGuildBankTwiddlerUIInitialized(self) 
+      </OnInitialized>
+      <OnHide>
+        GuildBankTwiddler:OnGuildBankTwiddlerUIHide(...) 
+      </OnHide>       
+      <OnShow>
+        GuildBankTwiddler:OnGuildBankTwiddlerUIShow(...) 
+      </OnShow>       
+      <OnMoveStop>
+        GuildBankTwiddler:OnGuildBankTwiddlerUIMoveStop(self) 
+      </OnMoveStop>
+      <Controls>
+        <!--
+        <Texture name="$(parent)DebugTexture" color="FF0000" alpha="1">
+          <AnchorFill />
+        </Texture>
+        -->
+        
+        <Texture name="$(parent)EditTexture" color="4A4A4A" alpha="1">
+          <Dimensions x="24" y="18" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="10"/>
+        </Texture>
+        
+        <Button name="$(parent)TwiddleButton" enabled="false" hidden="true">
+          <Dimensions x="24" y="24" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="10"/>
+          <OnInitialized>
+            GuildBankTwiddler:OnTwiddleButtonInitialized(self)
+          </OnInitialized> 
+
+          <OnClicked>
+            GuildBankTwiddler:OnTwiddleButtonClicked(...)
+          </OnClicked>
+          <Textures normal="EsoUI/Art/characterwindow/swap_button_up.dds" pressed="EsoUI/Art/characterwindow/swap_button_down.dds" mouseOver="EsoUI/Art/characterwindow/swap_button_over.dds" disabled="EsoUI/Art/characterwindow/swap_button_disabled.dds"/>
+        </Button> 
+        
+        <Control name="$(parent)GuildCombo" inherits="ZO_ComboBox" font="ZoFontGame">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="5"/> 
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)TwiddleButton" relativePoint="BOTTOMLEFT" offsetX="-5" offsetY="4" /> 
+          <OnInitialized>
+            GuildBankTwiddler:OnGuildComboInitialized(self)
+          </OnInitialized> 
+        </Control>         
+       
+			</Controls>
+    </TopLevelControl>
+    
+  </Controls>
+</GuiXml>    

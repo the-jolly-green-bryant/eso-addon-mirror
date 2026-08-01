@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="QuickBind">
+            <Action name="QUICKBIND_BIND_ITEM">
+                <Down>QuickBind.BindHoveredItem()</Down>
+            </Action>
+            <Action name="QUICKBIND_BIND_UNCOLLECTED">
+                <Down>QuickBind.ScanAndBindUncollected()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

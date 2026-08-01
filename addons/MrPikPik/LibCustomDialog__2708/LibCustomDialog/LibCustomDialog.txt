@@ -1,0 +1,11 @@
+## Title: LibCustomDialog
+## Author: MrPikPik
+## APIVersion: 100031
+## AddonVersion: 3
+## Version: 0.01
+## IsLibrary: true
+## Description: Provides functionality to create and show custom dialog trees.
+
+LibCustomDialog.lua
+ExampleDialog.lua
+ExampleDialog2.lua

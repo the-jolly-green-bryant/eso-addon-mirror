@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/JGeurrie-Llivas/FadePins__4537",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "JGeurrie(@Llivas)",
+  "canonical_id": "esoui:4537",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4537",
+  "deleted": false,
+  "directories": [
+    "FadePins"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4537/",
+  "fingerprint": "7690f906a24a6f0968738b94bd9d9c616d8d011972164fcfd47805ddc2c0e0cc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15854.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4537",
+  "source_url": "https://www.esoui.com/downloads/info4537-FadePins.html",
+  "stats": {
+    "downloads": 170,
+    "favorites": 0,
+    "monthly_downloads": 30
+  },
+  "title": "FadePins",
+  "updated_at": 1776602108000,
+  "version": "1.0"
+}

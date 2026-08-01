@@ -1,0 +1,11 @@
+Add-on for groups without voice chat to allow for organization and timing in PvP (can be used anywhere, but there are probably better options for PvE).
+
+Press one to nine commands, configured as desired, to display a message for your group: "push", "leave combat", "heal", "focus him", everything is adjustable.
+
+Library required for this add-on:
+
+LibAddonMenu-2.0 LibGroupBroadcast LibGroupSocket
+
+Please enable "Enable Sending" so that the notification is sent to your group.
+
+Life in Tamriel is difficult, and feeding my 19 children is difficult. I am an Argonian happy with the little I have, but if you would like to support me with game gold, or if you would like a modification, or a special addon, my contract is @lebiez.

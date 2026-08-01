@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/ihause/AutoRefine__2175",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ihause",
+  "canonical_id": "esoui:2175",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2175",
+  "deleted": false,
+  "directories": [
+    "AutoRefine"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2175/",
+  "fingerprint": "6c9d28bf64e8e40badac1d084d0c437d52301cb5e0b7c47cb6e490c79e0e97b6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9561.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9560.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9562.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9563.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9564.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2175",
+  "source_url": "https://www.esoui.com/downloads/info2175-AutoRefine.html",
+  "stats": {
+    "downloads": 48601,
+    "favorites": 67,
+    "monthly_downloads": 47
+  },
+  "title": "AutoRefine",
+  "updated_at": 1604693910000,
+  "version": "0.9.1"
+}

@@ -1,0 +1,33 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Masquerade">
+      <Action name="MASQ_SLOT_1">
+        <Down>masqueradeAddon.bindHandler(1)</Down>
+      </Action>
+      <Action name="MASQ_SLOT_2">
+        <Down>masqueradeAddon.bindHandler(2)</Down>
+      </Action>
+      <Action name="MASQ_SLOT_3">
+        <Down>masqueradeAddon.bindHandler(3)</Down>
+      </Action>
+      <Action name="MASQ_SLOT_4">
+        <Down>masqueradeAddon.bindHandler(4)</Down>
+      </Action>
+      <Action name="MASQ_SLOT_5">
+        <Down>masqueradeAddon.bindHandler(5)</Down>
+      </Action>
+      <Action name="MASQ_SLOT_6">
+        <Down>masqueradeAddon.bindHandler(6)</Down>
+      </Action>
+      <Action name="MASQ_SLOT_7">
+        <Down>masqueradeAddon.bindHandler(7)</Down>
+      </Action>
+      <Action name="MASQ_SLOT_8">
+        <Down>masqueradeAddon.bindHandler(8)</Down>
+      </Action>
+      <Action name="MASQ_SLOT_9">
+        <Down>masqueradeAddon.bindHandler(9)</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

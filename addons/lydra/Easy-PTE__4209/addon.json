@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/lydra/Easy-PTE__4209",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "lydra",
+  "canonical_id": "esoui:4209",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4209",
+  "deleted": false,
+  "directories": [
+    "EasyPTE"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4209/",
+  "fingerprint": "3e17c563b3fcbdb1cf545d3411e8cfa2b750eb78dd6432fca0ac5f3c6a2ab928",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14384.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4209",
+  "source_url": "https://www.esoui.com/downloads/info4209-EasyPTE.html",
+  "stats": {
+    "downloads": 472,
+    "favorites": 0,
+    "monthly_downloads": 24
+  },
+  "title": "Easy PTE",
+  "updated_at": 1771112216000,
+  "version": "1.1"
+}

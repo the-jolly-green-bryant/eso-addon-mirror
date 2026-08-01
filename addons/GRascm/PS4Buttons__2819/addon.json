@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/GRascm/PS4Buttons__2819",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "GRascm",
+  "canonical_id": "esoui:2819",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2819",
+  "deleted": false,
+  "directories": [
+    "PS4Buttons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2819/",
+  "fingerprint": "8ff0afea8b9b6fcaac5075b75c96fea4f780f0aaf2fd43b451ee7daef48c2589",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9531.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9532.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2819",
+  "source_url": "https://www.esoui.com/downloads/info2819-PS4Buttons.html",
+  "stats": {
+    "downloads": 17986,
+    "favorites": 7,
+    "monthly_downloads": 118
+  },
+  "title": "PS4Buttons",
+  "updated_at": 1604010614000,
+  "version": "1.0.0"
+}

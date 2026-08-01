@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Harbonah/No-stealth-text-for-Update-6__1081",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harbonah",
+  "canonical_id": "esoui:1081",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1081",
+  "deleted": false,
+  "directories": [
+    "StealthMod"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1081/",
+  "fingerprint": "be858f11db8c654da658332ac9689826e97f0e9098ef658dd062ceddee5972a4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3392.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1081",
+  "source_url": "https://www.esoui.com/downloads/info1081-NostealthtextforUpdate6.html",
+  "stats": {
+    "downloads": 4416,
+    "favorites": 5,
+    "monthly_downloads": 20
+  },
+  "title": "No stealth text (for Update 6)",
+  "updated_at": 1431037627000,
+  "version": "1.0.3"
+}

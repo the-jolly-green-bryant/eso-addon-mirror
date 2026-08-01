@@ -1,0 +1,18 @@
+## Title: Joviex's Addon Settings Transfer
+## Description: Transfer settings (non-global, character specific) to any character(s) per addon
+## APIVersion: 100031
+## Author: Joviex updated by juniiim
+## Version: 1.6.6
+## SavedVariables: jovAST
+## OptionalDependsOn: LibAddonMenu-2.0
+
+jovAST.lua
+bindings.xml
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

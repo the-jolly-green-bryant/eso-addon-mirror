@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/merlight/Mer-Crafting-Writ-Filters__1170",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "merlight",
+  "canonical_id": "esoui:1170",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1170",
+  "deleted": false,
+  "directories": [
+    "merCraftingWritFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1170/",
+  "fingerprint": "9f95bdf25ff3603daa501d5f4c3b5daf94f88c1cb6690e4108bb68528fb9bb7e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3766.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1170",
+  "source_url": "https://www.esoui.com/downloads/info1170-MerCraftingWritFilters.html",
+  "stats": {
+    "downloads": 6138,
+    "favorites": 3,
+    "monthly_downloads": 6
+  },
+  "title": "Mer Crafting Writ Filters",
+  "updated_at": 1453151244000,
+  "version": "1.3"
+}

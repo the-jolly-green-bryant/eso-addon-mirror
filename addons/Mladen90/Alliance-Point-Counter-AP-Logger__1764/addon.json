@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Mladen90/Alliance-Point-Counter-AP-Logger__1764",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mladen90",
+  "canonical_id": "esoui:1764",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:1764",
+  "deleted": false,
+  "directories": [
+    "APCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1764/",
+  "fingerprint": "2a218004eccbbac2e01332af8f1dcc9b0db0b9ee609b5397c2e0e131b77680af",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10871.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1764",
+  "source_url": "https://www.esoui.com/downloads/info1764-AlliancePointCounterAPLogger.html",
+  "stats": {
+    "downloads": 19325,
+    "favorites": 14,
+    "monthly_downloads": 33
+  },
+  "title": "Alliance Point Counter (AP Logger)",
+  "updated_at": 1632062302000,
+  "version": "1.6.0"
+}

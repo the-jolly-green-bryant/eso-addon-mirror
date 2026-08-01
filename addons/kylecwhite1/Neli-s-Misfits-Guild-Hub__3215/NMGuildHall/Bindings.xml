@@ -1,0 +1,31 @@
+<Bindings>
+    <!-- allowFallthrough omitted: default is true; specifying it can cause crashes (ESOUI wiki) -->
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|cFFFF00NMGuildHub|r">
+            <Action name="NMGH_TOGGLE">
+                <Down>NMGuildHall.UI.Toggle(NMGuildHall.UI)</Down>
+            </Action>
+            <Action name="NMGH_TAB_NEXT">
+                <Down>NMGuildHall.UI.NextTab(NMGuildHall.UI)</Down>
+            </Action>
+            <Action name="NMGH_TAB_PREV">
+                <Down>NMGuildHall.UI.PreviousTab(NMGuildHall.UI)</Down>
+            </Action>
+            <Action name="NMGH_HOME">
+                <Down>NMGuildHall.UI.ShowTab(NMGuildHall.UI, "home")</Down>
+            </Action>
+            <Action name="NMGH_TELEPORT">
+                <Down>NMGuildHall.UI.ShowTab(NMGuildHall.UI, "teleport")</Down>
+            </Action>
+            <Action name="NMGH_PLEDGES">
+                <Down>NMGuildHall.UI.ShowTab(NMGuildHall.UI, "pledges")</Down>
+            </Action>
+            <Action name="NMGH_GROUP">
+                <Down>NMGuildHall.UI.ShowTab(NMGuildHall.UI, "group")</Down>
+            </Action>
+            <Action name="NMGH_CAMPAIGN">
+                <Down>NMGuildHall.UI.ShowTab(NMGuildHall.UI, "campaign")</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

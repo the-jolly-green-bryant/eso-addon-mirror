@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/mgsnakes/Zmaja-Timer__3739",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mgsnakes",
+  "canonical_id": "esoui:3739",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3739",
+  "deleted": false,
+  "directories": [
+    "ZMajaTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3739/",
+  "fingerprint": "5a3edc3b364ecde5bb53f7ac96997fbe6672bb56541df7ce55f13d143e8805bd",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3739",
+  "source_url": "https://www.esoui.com/downloads/info3739-ZmajaTimer.html",
+  "stats": {
+    "downloads": 1636,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "Zmaja Timer",
+  "updated_at": 1722672030000,
+  "version": "1.0"
+}

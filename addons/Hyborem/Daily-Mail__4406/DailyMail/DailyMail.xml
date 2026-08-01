@@ -1,0 +1,26 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="DailyMailIcon" hidden="true" mouseEnabled="true" drawLayer="DL_OVERLAY" tier="DT_HIGH" pixelPerfect="true">
+            <Dimensions x="500" y="600" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" offsetY="-50" />
+            <Controls>
+                <Label name="DailyMailIconLabel" font="ZoFontWinH1" color="FFFFFF" outline="true" modifyTextType="UPPERCASE" horizontalAlignment="CENTER">
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetY="-210" />
+                </Label>
+                <Texture name="$(parent)Shadow" textureFile="/esoui/art/chatwindow/chat_mail_up.dds" color="000000">
+                    <Dimensions x="410" y="410" />
+                    <Anchor point="CENTER" />
+                </Texture>
+                <Button name="DailyMailIconBtn" mouseEnabled="true">
+                    <Dimensions x="400" y="400" />
+                    <Anchor point="CENTER" />
+                    <Textures normal="/esoui/art/chatwindow/chat_mail_up.dds" mouseOver="/esoui/art/chatwindow/chat_mail_over.dds" />
+                </Button>
+                <Button name="DailyMailCancelBtn" inherits="ZO_DefaultButton" text="CLOSE">
+                    <Dimensions x="250" y="50" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="CENTER" offsetY="210" />
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,91 @@
+{
+  "archive_path": "addons/mattiellosa/Hammerfell-Name-Change__1801",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mattiellosa",
+  "canonical_id": "esoui:1801",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    },
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1801",
+  "deleted": false,
+  "directories": [
+    "Hammerfell Name Change"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1801/",
+  "fingerprint": "8b04a85fa45d0fd272948838e7f03d8d57d065b651c9af67e1f03524d0c6650f",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1801",
+  "source_url": "https://www.esoui.com/downloads/info1801-HammerfellNameChange.html",
+  "stats": {
+    "downloads": 4669,
+    "favorites": 0,
+    "monthly_downloads": 14
+  },
+  "title": "Hammerfell Name Change",
+  "updated_at": 1562844296000,
+  "version": "1.1.2"
+}

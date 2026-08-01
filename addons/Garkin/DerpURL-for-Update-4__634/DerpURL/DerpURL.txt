@@ -1,0 +1,16 @@
+## Author: Nah@Altmeri-EU
+## Version: 1.6
+## Description: Dat chat url links. v1.6
+## APIVersion: 100009
+## Title: Derp|c1888FF[URL]|r v1.6
+
+DerpURL.lua
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

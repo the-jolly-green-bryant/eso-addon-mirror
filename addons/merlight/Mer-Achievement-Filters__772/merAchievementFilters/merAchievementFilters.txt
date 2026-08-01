@@ -1,0 +1,15 @@
+; This add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: |ce5ca5cMer|r Achievement Filters
+## Author: Merlight
+## APIVersion: 100013
+## Description: Adds filters to |ce5ca5cAchievements|r for showing only those which |ce5ca5c1)|r you |c76bcc3started|r working on, but not yet completed |ce5ca5c2)|r grant extra |c76bcc3reward|r.
+
+localization/strings.lua
+localization/strings.$(language).lua
+
+merAchievementFilters.lua
+

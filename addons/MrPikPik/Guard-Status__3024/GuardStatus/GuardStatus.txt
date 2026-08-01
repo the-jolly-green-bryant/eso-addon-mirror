@@ -1,0 +1,18 @@
+;This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+;The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+;All rights reserved.
+
+## Title: Guard Status
+## Description: Displays if and who you're guarding and if you lose the guard. 
+## Author: MrPikPik
+## APIVersion: 101036
+## AddOnVersion: 121
+## Version: 1.2.1
+## SavedVariables: GuardStatusSavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0>=31 OdySupportIcons
+
+lang/en.lua
+lang/$(language).lua
+
+GuardStatus.lua
+GuardStatus.xml

@@ -1,0 +1,13 @@
+## APIVersion: 101031
+## Title: Currency Balancer
+## Version: 1.0.2
+## Author: Mladen90 (@Mladen90 EU)
+## Description: Balances your Inventory Currencies and shows Warnings
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: CurrencyBalancer_Settings
+
+
+CurrencyBalancer.lua
+CurrencyBalancer_Default.lua
+CurrencyBalancer_Globals.lua
+CurrencyBalancer_Menu.lua

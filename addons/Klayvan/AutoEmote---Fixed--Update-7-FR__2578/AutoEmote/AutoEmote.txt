@@ -1,0 +1,13 @@
+## Title: AutoEmoteFR
+## Author update FR: Klayvan Original Author: Tajin & @awesomebilly
+## Version: 1.1
+## APIVersion: 100011
+## SavedVariables: AutoEmoteSaved
+
+
+AutoEmoteFilter.lua
+AutoEmote.lua
+AutoEmote.xml
+
+
+;Please see license

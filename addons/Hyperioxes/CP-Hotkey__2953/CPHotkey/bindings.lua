@@ -1,0 +1,6 @@
+ZO_CreateStringId("SI_BINDING_NAME_SETUP_1","Setup 1")
+ZO_CreateStringId("SI_BINDING_NAME_SETUP_2","Setup 2")
+ZO_CreateStringId("SI_BINDING_NAME_SETUP_3","Setup 3")
+ZO_CreateStringId("SI_BINDING_NAME_SETUP_4","Setup 4")
+ZO_CreateStringId("SI_BINDING_NAME_SETUP_5","Setup 5")
+ZO_CreateStringId("SI_BINDING_NAME_SETUP_6","Setup 6")

@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/m00nyONE/m00ny-s-SupportIconsExtension---icon-pack-for-OdySupportIcons__3558",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "m00nyONE",
+  "canonical_id": "esoui:3558",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3558",
+  "deleted": false,
+  "directories": [
+    "m00SupportIconsExtension"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3558/",
+  "fingerprint": "bbdaa1661b86138920744e258dca5aa9dbdb4ac60b0247a7d33ccae20da824e6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12078.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3558",
+  "source_url": "https://www.esoui.com/downloads/info3558-m00nysSupportIconsExtension-iconpackforOdySupportIcons.html",
+  "stats": {
+    "downloads": 3188,
+    "favorites": 5,
+    "monthly_downloads": 32
+  },
+  "title": "m00ny's SupportIconsExtension  - icon pack for OdySupportIcons",
+  "updated_at": 1712177631000,
+  "version": "1.1.0"
+}

@@ -1,0 +1,19 @@
+﻿## Title: GuildNotificator
+## Description: GuildNotificator notice you in chat when a guild mate logs in and logs out
+## AddOnVersion: 101
+## Version: 1.0.1
+## Author: @Llether, (Old: Ayantir, calia1120)
+## APIVersion: 101037
+## SavedVariables: GNOTIFICATOR
+## DependsOn: LibChatMessage
+## OptionalDependsOn: LibAddonMenu-2.0
+
+lang/en.lua
+lang/$(language).lua
+
+GuildNotificator.lua
+
+## This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+## and/or other countries. All rights reserved.
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

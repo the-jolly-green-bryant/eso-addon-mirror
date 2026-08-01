@@ -1,0 +1,9 @@
+## APIVersion: 100011
+## Version: 0.1
+## Title: AutoLootKey
+## Author: Goemaat
+## OptionalDependsOn:
+## SavedVariables: ALK_SavedVariables
+
+AutoLootKey.lua
+AutoLootKey.xml

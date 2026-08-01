@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/lastguest/Guiild-For-The-Soloiists---Guild-Halls__3047",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "lastguest",
+  "canonical_id": "esoui:3047",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3047",
+  "deleted": false,
+  "directories": [
+    "SoloiistGuildHalls"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3047/",
+  "fingerprint": "43ab9cfb6bb5c5ef83b8561e7c43824b56cea53e8b59d2f3b84452751b1f08cd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10242.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3047",
+  "source_url": "https://www.esoui.com/downloads/info3047-GuiildForTheSoloiists-GuildHalls.html",
+  "stats": {
+    "downloads": 2118,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "Guiild For The Soloiists - Guild Halls",
+  "updated_at": 1619532213000,
+  "version": "1.0.0"
+}

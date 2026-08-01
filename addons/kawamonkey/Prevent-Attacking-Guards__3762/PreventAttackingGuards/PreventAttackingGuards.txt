@@ -1,0 +1,6 @@
+## Title: Prevent Attacking Guards
+## Author: Kawamonkey
+## APIVersion: 101036
+## Version: 1.0.1
+
+PreventAttackingGuards.lua

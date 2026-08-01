@@ -1,0 +1,13 @@
+
+## Title: |c3CB371Fish Breaker|r
+## Author: @Marify
+## APIVersion: 101031
+## Version: 1.0.0
+## DependsOn: LibMarify LibAsync
+## OptionalDependsOn: 
+## SavedVariables: FishBreakerVariables
+
+
+FishBreaker.lua
+
+

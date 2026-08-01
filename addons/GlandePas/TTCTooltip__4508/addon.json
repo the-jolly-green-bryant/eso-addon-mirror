@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/GlandePas/TTCTooltip__4508",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "GlandePas",
+  "canonical_id": "esoui:4508",
+  "category_id": "98",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4508",
+  "deleted": false,
+  "directories": [
+    "TTCTooltip"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4508/",
+  "fingerprint": "0cd8cd6bd278fec7ccf5076ff85423f6c3ac88ac78067c98e23e5ef2419c3d71",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15734.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15730.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15732.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15733.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4508",
+  "source_url": "https://www.esoui.com/downloads/info4508-TTCTooltip.html",
+  "stats": {
+    "downloads": 277,
+    "favorites": 2,
+    "monthly_downloads": 40
+  },
+  "title": "TTCTooltip",
+  "updated_at": 1775899683000,
+  "version": "1"
+}

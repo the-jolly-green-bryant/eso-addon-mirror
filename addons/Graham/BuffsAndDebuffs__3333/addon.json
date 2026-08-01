@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Graham/BuffsAndDebuffs__3333",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Graham",
+  "canonical_id": "esoui:3333",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3333",
+  "deleted": false,
+  "directories": [
+    "BuffsAndDebuffs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3333/",
+  "fingerprint": "f4d07c2b5fcf4ec6ddf7b5971986287a98884640dad39df923ae4e6f14d42aa1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11320.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11321.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3333",
+  "source_url": "https://www.esoui.com/downloads/info3333-BuffsAndDebuffs.html",
+  "stats": {
+    "downloads": 2667,
+    "favorites": 2,
+    "monthly_downloads": 16
+  },
+  "title": "BuffsAndDebuffs",
+  "updated_at": 1648332894000,
+  "version": "1.3Pre"
+}

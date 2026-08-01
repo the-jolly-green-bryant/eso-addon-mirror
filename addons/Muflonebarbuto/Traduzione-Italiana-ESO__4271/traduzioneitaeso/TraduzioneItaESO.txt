@@ -1,0 +1,22 @@
+## Title: TraduzioneItalianaESO
+## Version: 1.1.8
+## APIVersion: 101042
+## AddOnVersion: 117
+## SavedVariables: TraduzioneItaESO_Vars
+## DependsOn: LibAddonMenu-2.0>=41
+## OptionalDependsOn: LibGPS DolgubonsLazyWritCreator TamrielTradeCentre Destinations ResourceRadar
+## Description: Traduzione italiana completa per Elder Scrolls Online. Supporto mappa Tamriel e Aurbis con nomi bilingui. Integrazione TTC e DolgubonsLazyWritCreator.
+##
+
+TraduzioneItaESO.xml
+npc_it.lua
+zone_it.lua
+items_it.lua
+TraduzioneItaESO.lua
+# Addon specifici (caricati per ultimi per evitare errori)
+#addon/SrendarrIT/SrendarrIT.lua
+addon/DolgubonsLazyWritCreatorIT/it.lua
+addon/TamrielTradeCentreIT/it.lua
+addon/ResourceRadarIT/it.lua
+addon/DestinationsIT/it.lua
+

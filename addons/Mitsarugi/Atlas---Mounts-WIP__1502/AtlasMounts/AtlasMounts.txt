@@ -1,0 +1,9 @@
+## Title: Atlas Mounts
+## Author: Mitsarugi
+## Description: Adds Mount Info to Atlas's Interface
+## Version: 0.1a
+## APIVersion: 100017
+## DependsOn: AtlasDelves&Dungeons
+## SavedVariables: AtlasMounts_SavedVariables
+
+AtlasMounts.lua

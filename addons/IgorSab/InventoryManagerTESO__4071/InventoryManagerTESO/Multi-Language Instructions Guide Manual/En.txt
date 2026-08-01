@@ -1,0 +1,90 @@
+Greetings! Thank you for using my addon. Creator @IgorSab. If you like my addon and want to support my work, here are some voluntary donation options:
+
+    PayPal: Unfortunately, PayPal.Me may not be available in my region. You can send a donation to jetixmax13@gmail.com. It’s less convenient, but I’d be very grateful for your support!
+    Ko-fi: Treat me to a coffee at ko-fi.com/igorsab. It’s a simple and quick way to help me continue development.
+    Cryptocurrency:
+        BTC: 1Cehu58Do9izGefUBDLou8WJqgJdqs4CcJ (Bitcoin only)
+        ETH: 0xbea843c6c0359126b619fca220fc841bcff6c931 (Ethereum only)
+        USDT: 0xbea843c6c0359126b619fca220fc841bcff6c931 (ERC-20 network only)
+        All donations are voluntary and support my work on the addon. Thank you for your generosity and help!
+        I’d also greatly appreciate in-game gold, valuable items, or Crown Store gifts to @IgorSab on the EU/PC server.
+
+InventaryManagerTESO:
+
+InventaryManagerTESO is an inventory management addon for The Elder Scrolls Online, adding a convenient window with advanced sorting, filtering, categorization, and item management features. Here’s the full list of its capabilities:
+
+    Enhanced Inventory Window
+    Displays up to 200 items in a 10×20 grid (44×44 pixels per cell).
+    Shows item icons, stack counts, and visual indicators (e.g., checkmarks for selected items, dimming for locked items).
+    Displays total occupied and available bag slots (e.g., "125/200").
+    Shows character gold with formatting (e.g., "1,860,657").
+    Item Sorting
+    Default: Sorts by category (weapons, armor, consumables, crafting materials, etc.) with priority (e.g., locked gear above food).
+    Toggle sort direction (ascending/descending) by re-clicking the sort button.
+    "All" button resets filters and shows all items.
+    Category Filtering
+    Available categories: "Weapon," "Armor," "Furnishings," "Consumables," "Crafting."
+    Each category has a button with an icon and tooltip.
+    Selecting a category shows only items in that category.
+    Re-click an active category to reset the filter.
+    Item Search
+    Input field for searching items by name.
+    Search works in real-time, filtering items as you type.
+    Supports searches in any language (based on game localization).
+    Item Management
+
+    Selection: Left-click a cell to select/deselect an item (green checkmark). Locked items can’t be selected during trading.
+    Context Menu: Right-click an item for actions (e.g., "Equip," "Use"). "Destroy" is disabled to prevent accidental deletion.
+    Equip/Use: Supports equipping weapons, armor, and jewelry based on the active weapon bar (primary or backup). Consumables (e.g., potions) can be used via the context menu.
+    Tooltips: Hover over an item to see detailed info (like the game’s default UI).
+
+    Item Locking Management
+    Lock button: Locks selected items (weapons, armor, jewelry, companion items only).
+    Unlock button: Unlocks selected items.
+    Locked items are dimmed (alpha 0.5) and can’t be sold during trading.
+    Mass Selection
+    Select All button: Selects all items in the current view (except locked items during trading).
+    Re-click to deselect all items.
+    Item Selling
+    Sell button: Sells all selected items to a merchant (up to 50 at once).
+    Only works when a trading window (e.g., NPC merchant) is open.
+    Locked items aren’t sold.
+    Cooldown Display
+    For items with cooldowns (e.g., potions), shows an overlay and timer in seconds.
+    Updates every second when the addon window is open.
+    Interactivity and Settings
+    Addon window is movable on-screen.
+    Content updates periodically (every second when open).
+    Selection resets automatically when the window closes.
+    Keybind to open/close the window ("InventaryManagerTESO").
+    Additional Features
+    Supports locked items during trading (prevents selling).
+    Auto-updates inventory on changes (e.g., after selling or using items).
+    Compatible with various item types, including companion items, Crown items, and treasure maps.
+
+Instructions:
+
+    Item Grid (Left): Displays up to 200 items as icons (10×20).
+    Control Panel (Right):
+        All button: Shows all items.
+        Search field: Filters items by name.
+        Category buttons: "Weapon," "Armor," "Furnishings," "Consumables," "Crafting."
+        Control buttons: Lock, Unlock, Select All, Sell.
+        Info: Displays "Occupied/Total Slots" (e.g., "125/200") and "Gold: <amount>" (e.g., "1,860,657").
+    Sorting and Filtering:
+        Click All to show all items.
+        Click a category (e.g., "Weapon") to show only those items.
+        Re-click an active category to reset the filter.
+        Type in the search field to filter items by name (real-time).
+    Item Management:
+        Selection: Left-click an item to select it (green checkmark appears). Re-click to deselect.
+        Mass Selection: Click Select All to select all items (except locked ones during trading). Re-click to deselect.
+        Lock/Unlock: Select items, then click Lock to lock them (they dim). Click Unlock to unlock.
+        Selling: Open a trade window with an NPC (e.g., merchant). Select items and click Sell (up to 50 at once). Locked items won’t sell.
+        Equip/Use: Right-click an item for the context menu. Choose "Equip" for weapons/armor or "Use" for consumables.
+        View Info: Hover over an item for a tooltip with its description. Cooldown items (e.g., potions) show an overlay and timer.
+    Closing the Window: Click "X" in the top-right or use the assigned key. Selection resets on close.
+    Tips:
+        Use the search field for quick finds.
+        Locked items can’t be selected or sold during trading.
+        The window updates every second when open.

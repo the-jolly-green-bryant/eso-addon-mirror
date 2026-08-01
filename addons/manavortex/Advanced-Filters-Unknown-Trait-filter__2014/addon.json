@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/manavortex/Advanced-Filters-Unknown-Trait-filter__2014",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:2014",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2014",
+  "deleted": false,
+  "directories": [
+    "AF_UnknownTraitFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2014/",
+  "fingerprint": "35a521243a47c9243c955f88aaabd30cf5ffb6068a8a2f980d56a81b6f8491ea",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6781.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2014",
+  "source_url": "https://www.esoui.com/downloads/info2014-AdvancedFiltersUnknownTraitfilter.html",
+  "stats": {
+    "downloads": 13360,
+    "favorites": 10,
+    "monthly_downloads": 46
+  },
+  "title": "Advanced Filters: Unknown Trait filter",
+  "updated_at": 1527417894000,
+  "version": "1.0.0"
+}

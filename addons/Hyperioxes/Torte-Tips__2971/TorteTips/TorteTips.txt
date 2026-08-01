@@ -1,0 +1,13 @@
+## APIVersion: 100034
+## Title: TorteTips
+## Version: 1.0
+## Author: Hyperioxes
+## Description: Gives a reminder about torte AP buff
+## SavedVariables: TorteTipsSV
+## DependsOn: LibAddonMenu-2.0>=31
+
+
+
+
+TorteTips.lua
+Settings.lua

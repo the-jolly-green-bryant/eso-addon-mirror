@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/GhostwheelAI/GhostwheelAI-Shortcuts__2675",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "GhostwheelAI",
+  "canonical_id": "esoui:2675",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2675",
+  "deleted": false,
+  "directories": [
+    "GhostwheelAIShortcuts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2675/",
+  "fingerprint": "2ce060809e6761040719bfe69555517b824e6b9d5a824516e471f033a6bbc698",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9218.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2675",
+  "source_url": "https://www.esoui.com/downloads/info2675-GhostwheelAIShortcuts.html",
+  "stats": {
+    "downloads": 2641,
+    "favorites": 0,
+    "monthly_downloads": 7
+  },
+  "title": "GhostwheelAI Shortcuts",
+  "updated_at": 1595974469000,
+  "version": "1.0.3"
+}

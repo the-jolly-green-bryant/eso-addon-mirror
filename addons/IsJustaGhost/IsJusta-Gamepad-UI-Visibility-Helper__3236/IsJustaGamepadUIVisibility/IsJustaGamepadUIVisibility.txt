@@ -1,0 +1,24 @@
+## Title: |cFF00FFIsJusta|r Gamepad UI Visibility Helper.
+## Description: The purpose of this addon is to move certain UI objects from where they would normally be covered by others.
+## APIVersion: 101041 101042
+## Author: |cFF00FFIsJustaGhost|r
+## SavedVariables: IJA_GamepadUIVisibility_SavedVars
+## Version: 1.9.5
+## DependsOn: LibAddonMenu-2.0
+
+i18n/strings.lua
+i18n/$(language).lua
+
+IsJustaGamepadUIVisibility.lua
+IsJustaGamepadUIVisibility.xml
+
+optionals/dynamicChat.lua
+optionals/lootHistory.lua
+optionals/hudMeters.lua
+
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

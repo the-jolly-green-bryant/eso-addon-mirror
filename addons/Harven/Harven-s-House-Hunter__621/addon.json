@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Harven/Harven-s-House-Hunter__621",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:621",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:621",
+  "deleted": false,
+  "directories": [
+    "HarvensHouseHunter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl621/",
+  "fingerprint": "98ec1634454fd50c7b72fd6ee5284323d99cf17aa049b37632f19d92aef99d0b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1912.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "621",
+  "source_url": "https://www.esoui.com/downloads/info621-HarvensHouseHunter.html",
+  "stats": {
+    "downloads": 36988,
+    "favorites": 130,
+    "monthly_downloads": 57
+  },
+  "title": "Harven's House Hunter",
+  "updated_at": 1686230866000,
+  "version": "1.12.0"
+}

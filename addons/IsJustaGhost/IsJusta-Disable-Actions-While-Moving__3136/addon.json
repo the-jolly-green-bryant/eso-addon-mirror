@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/IsJustaGhost/IsJusta-Disable-Actions-While-Moving__3136",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IsJustaGhost",
+  "canonical_id": "esoui:3136",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3136",
+  "deleted": false,
+  "directories": [
+    "IsJustaDIWM"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3136/",
+  "fingerprint": "fedee8567ab0fa072270b9bc38df3ed94b6b6123f1e783164013a39add9e872e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10629.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10630.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3136",
+  "source_url": "https://www.esoui.com/downloads/info3136-IsJustaDisableActionsWhileMoving.html",
+  "stats": {
+    "downloads": 6402,
+    "favorites": 11,
+    "monthly_downloads": 9
+  },
+  "title": "IsJusta Disable Actions While Moving",
+  "updated_at": 1687137567000,
+  "version": "2.1.1"
+}

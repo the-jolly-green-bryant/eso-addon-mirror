@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/KLISK/MarkPledges__2261",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KLISK",
+  "canonical_id": "esoui:2261",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2261",
+  "deleted": false,
+  "directories": [
+    "MarkPledges"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2261/",
+  "fingerprint": "c141087c5653ed8a67e2f64754053577e1fbd67e97b88cb3505ed0b9029d9da2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7837.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2261",
+  "source_url": "https://www.esoui.com/downloads/info2261-MarkPledges.html",
+  "stats": {
+    "downloads": 28568,
+    "favorites": 62,
+    "monthly_downloads": 132
+  },
+  "title": "MarkPledges",
+  "updated_at": 1591561590000,
+  "version": "1.0.5"
+}

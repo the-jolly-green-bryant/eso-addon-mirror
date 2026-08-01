@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/mightyjo/Take-One__3076",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mightyjo",
+  "canonical_id": "esoui:3076",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3076",
+  "deleted": false,
+  "directories": [
+    "TakeOne"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3076/",
+  "fingerprint": "9996f4ed4efb13fa9309b3c9dce5128b790a76cddef12fa76e2185bee1e652db",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10290.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10291.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3076",
+  "source_url": "https://www.esoui.com/downloads/info3076-TakeOne.html",
+  "stats": {
+    "downloads": 18629,
+    "favorites": 37,
+    "monthly_downloads": 62
+  },
+  "title": "Take One",
+  "updated_at": 1720807689000,
+  "version": "1.2.0"
+}

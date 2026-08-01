@@ -1,0 +1,12 @@
+ZO_CreateStringId("SI_BINDING_NAME_AVT_SWITCH", "Manœuvre rapide")
+local put = AssistVampireTrade.putText
+put("Account wide configuration", "Configuration à l'échelle du compte")
+put("Revert when skill is used", "Revenir en arrière lorsque la compétence est utilisée")
+put("Ability slot to use", "Emplacement de compétence à utiliser")
+put("There is a hot key to switch manually.", "Il existe une touche de raccourci pour basculer manuellement.")
+put("Info", "Info")
+put("You will need to add a keybind for this to work.", "Vous devrez ajouter un raccourci clavier pour que cela fonctionne.")
+put("Keybindings", "Raccourcis clavier")
+put("The keybind options can be found in: Controls > Keybinds > Assist Vampire Trade.", "Les options de raccourcis clavier se trouvent dans : Contrôles > Raccourcis clavier > Assist Vampire Trade.")
+put("Where can I do this?", "Où puis-je faire cela ?")
+put("You no longer need to worry about having your weapon out before using Mesmerize. I've implemented a fix that ensures a smoother and more intuitive experience.", "Vous n'avez plus besoin de vous soucier d'avoir votre arme dégainée avant d'utiliser Manœuvre rapide. J'ai implémenté une correction qui garantit une expérience plus fluide et intuitive.")

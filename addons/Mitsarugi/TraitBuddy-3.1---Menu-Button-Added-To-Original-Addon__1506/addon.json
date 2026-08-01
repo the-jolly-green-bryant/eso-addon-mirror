@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/Mitsarugi/TraitBuddy-3.1---Menu-Button-Added-To-Original-Addon__1506",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mitsarugi",
+  "canonical_id": "esoui:1506",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1506",
+  "deleted": false,
+  "directories": [
+    "TraitBuddy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1506/",
+  "fingerprint": "361e16e37fb91b1be32fb8c9a087c076932a7d050d977fc1281499b6d7d008fa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4903.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1506",
+  "source_url": "https://www.esoui.com/downloads/info1506-TraitBuddy3.1-MenuButtonAddedToOriginalAddon.html",
+  "stats": {
+    "downloads": 13959,
+    "favorites": 7,
+    "monthly_downloads": 42
+  },
+  "title": "TraitBuddy [3.1 - Menu Button] [Added To Original Addon]",
+  "updated_at": 1476831654000,
+  "version": "3.1"
+}

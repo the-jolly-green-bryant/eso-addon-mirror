@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/ghostbane/Ultibomb__2163",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ghostbane",
+  "canonical_id": "esoui:2163",
+  "category_id": "27",
+  "compatibility": [],
+  "content_id": "esoui:2163",
+  "deleted": false,
+  "directories": [
+    "Ultibomb"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2163/",
+  "fingerprint": "72c43e974eeef284f3098bcc0e7b8d882665b7a459b3394b9e978b500ab036fd",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2163",
+  "source_url": "https://www.esoui.com/downloads/info2163-Ultibomb.html",
+  "stats": {
+    "downloads": 4881,
+    "favorites": 1,
+    "monthly_downloads": 11
+  },
+  "title": "Ultibomb",
+  "updated_at": 1572734619000,
+  "version": "0.7.5"
+}

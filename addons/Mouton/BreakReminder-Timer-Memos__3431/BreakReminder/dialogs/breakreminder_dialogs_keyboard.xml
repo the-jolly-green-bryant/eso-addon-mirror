@@ -1,0 +1,65 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="BreakReminder_EditDialog" inherits="ZO_CustomDialogBase" hidden="true">
+            <OnInitialized>
+                BreakReminder_EditDialog_OnItilialized(self)
+            </OnInitialized>
+            <Controls>
+                <!-- Needed to positions controls -->
+                <Label name="$(parent)Anchors" inherits="ZO_DialogContentAnchors"></Label>
+
+                <Label name="$(parent)Instruction" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGame" text="BREAKREMINDER_DIALOG_INSTRUCTION">
+                    <Dimensions y="30" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Anchors" relativePoint="BOTTOMLEFT" offsetY="0"/>
+                </Label>
+
+                <Backdrop name="$(parent)Timer" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+                    <Dimensions x="56" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Instruction" relativePoint="TOPRIGHT" offsetX="5"/>
+                    <Controls>
+                        <!--
+                        <Slider name="$(parent)Slider" inherits="ZO_Slider" value="10" step="1">
+                            <Dimensions x="150"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Instruction" relativePoint="BOTTOMLEFT" offsetY="0"/>
+                            <Limits min="1" max="1200"/>
+                            <OnValueChanged> BreakReminder_EditDialog_SetSlider(self, value) </OnValueChanged>
+                        </Slider>
+                        -->
+                        <EditBox name="$(parent)Edit" textType="NUMERIC" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" maxInputCharacters="5" defaultText="10">
+                            <OnEffectivelyShown>
+                                self:TakeFocus()
+                            </OnEffectivelyShown>
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+                
+                <Label name="$(parent)Minutes" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGame" text="BREAKREMINDER_DIALOG_MINUTES">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Timer" relativePoint="TOPRIGHT" offsetX="5"/>
+                </Label>
+
+                <Backdrop name="$(parent)Note" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+                    <Dimensions y="265" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Anchors" relativePoint="BOTTOMLEFT" offsetY="45"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Anchors" relativePoint="BOTTOMRIGHT" offsetY="45"/>
+                    <Controls>
+                        <EditBox name="$(parent)Edit" maxInputCharacters="254" inherits="ZO_DefaultEditMultiLineForBackdrop" defaultText="SI_EDIT_NOTE_DEFAULT_TEXT">
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+
+                <Control name="$(parent)Remember" resizeToFitDescendents="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Note" relativePoint="BOTTOMLEFT" offsetY="10" />
+                    <Controls>
+                        <Button name="$(parent)CheckBox" inherits="ZO_CheckButton">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Remember" relativePoint="TOPLEFT" offsetX="5" offsetY="4" />
+                            <OnInitialized> ZO_CheckButton_SetLabelText(self, zo_strformat(BREAKREMINDER_DIALOG_REMEMBER)) </OnInitialized>
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton"/>
+                <Control name="$(parent)Save" inherits="ZO_CustomDialogButton"/>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

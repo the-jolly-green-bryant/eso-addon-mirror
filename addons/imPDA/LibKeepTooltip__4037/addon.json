@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/imPDA/LibKeepTooltip__4037",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "imPDA",
+  "canonical_id": "esoui:4037",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4037",
+  "deleted": false,
+  "directories": [
+    "LibKeepTooltip"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4037/",
+  "fingerprint": "2e25f2baf0ee63cbaa05fc0623680294fcbef4081bc8307865ef1abfcd595a40",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13749.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4037",
+  "source_url": "https://www.esoui.com/downloads/info4037-LibKeepTooltip.html",
+  "stats": {
+    "downloads": 13628,
+    "favorites": 8,
+    "monthly_downloads": 398
+  },
+  "title": "LibKeepTooltip",
+  "updated_at": 1750532753000,
+  "version": "1.0.1"
+}

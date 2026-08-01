@@ -1,0 +1,76 @@
+local Crutch = CrutchAlerts
+local C = Crutch.Constants
+
+
+---------------------------------------------------------------------
+-- Colors
+---------------------------------------------------------------------
+C.WHITE = {1, 1, 1}
+C.RED = {1, 0, 0}
+C.REDORANGE = {1, 0.35, 0}
+C.ORANGE = {1, 0.5, 0}
+C.YELLOW = {1, 1, 0}
+C.BLUE = {0, 0, 1}
+C.PURPLE = {0.8, 0.2, 1} -- for Z'Maja shades
+C.BLACK = {0, 0, 0}
+C.POISONGREEN = {0.4, 0.9, 0}
+C.PHYSICALTAN = {1, 0.95, 0.67}
+C.ICEBLUE = {0.56, 0.96, 0.96}
+
+-- vAS mini spoofed BHB colors
+C.LLOTHIS_FG = {15/255, 113/255, 0}
+C.LLOTHIS_BG = {5/255, 20/255, 0}
+C.FELMS_FG = {120/255, 15/255, 0}
+C.FELMS_BG = {30/255, 5/255, 0}
+C.DORMANT_FG = {92/255, 92/255, 92/255}
+C.DORMANT_BG = {28/255, 28/255, 28/255}
+
+-- Colors with alpha
+C.RED_2 = {1, 0, 0, 0.2}
+
+
+---------------------------------------------------------------------
+-- Tables
+---------------------------------------------------------------------
+C.ZERO_ORIENTATION = C.BLACK -- used for blank orientations
+C.FLAT_ORIENTATION = {-math.pi/2, 0, 0}
+
+
+---------------------------------------------------------------------
+-- Individual icons
+---------------------------------------------------------------------
+C.ICON_NONE = "None"
+C.CIRCLE = "Circle"
+C.DIAMOND = "Diamond"
+C.CHEVRON = "Chevron"
+C.CHEVRON_THIN = "Thin chevron"
+C.LCI = "LibCustomIcons (Hodor)"
+C.CUSTOM = "Custom texture"
+
+
+---------------------------------------------------------------------
+-- Attached icon priorities
+---------------------------------------------------------------------
+C.PRIORITY = {
+    SUPPRESS = 10001, -- 10000 is the highest valid priority for public calling
+    MECHANIC_2_PRIORITY = 510, -- Higher priority mechanic e.g. Roaring Flare over Hoarfrost
+    MECHANIC_1_PRIORITY = 500,
+    GROUP_DEAD = 110,
+    ASPECT = 108, -- MoL twins aspects need to be lower priority than dead icons, which are also colored
+    INDIVIDUAL_ICONS = 107,
+    GROUP_CROWN = 105,
+    GROUP_ROLE = 100,
+}
+
+
+---------------------------------------------------------------------
+-- Fake IDs
+---------------------------------------------------------------------
+C.ID = {
+    DAMAGE_TAKEN = 888002, -- nDSA, nMA afk
+    COLOR_SWAP = 888003, -- MoL twins
+    STATIC = 888004, -- DSR Reef
+    POISON = 888006, -- DSR Reef
+    DROP_FROST = 888007, -- CR Hoarfrost
+    SEEKING_SURGE_DROPPED = 888008,
+}

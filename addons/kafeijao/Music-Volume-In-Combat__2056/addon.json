@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/kafeijao/Music-Volume-In-Combat__2056",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kafeijao",
+  "canonical_id": "esoui:2056",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2056",
+  "deleted": false,
+  "directories": [
+    "MusicVolumeInCombat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2056/",
+  "fingerprint": "f0417fbbfaeb14db2733b1c98e0eb160760469155f3632dc74d66e7063c57c8b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7383.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6939.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2056",
+  "source_url": "https://www.esoui.com/downloads/info2056-MusicVolumeInCombat.html",
+  "stats": {
+    "downloads": 6498,
+    "favorites": 8,
+    "monthly_downloads": 9
+  },
+  "title": "Music Volume In Combat",
+  "updated_at": 1616345107000,
+  "version": "1.3"
+}

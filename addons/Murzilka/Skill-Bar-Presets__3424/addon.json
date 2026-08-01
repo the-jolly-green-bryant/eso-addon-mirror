@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Murzilka/Skill-Bar-Presets__3424",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Murzilka",
+  "canonical_id": "esoui:3424",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3424",
+  "deleted": false,
+  "directories": [
+    "SkillBarPresets"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3424/",
+  "fingerprint": "a3d1c5b9ec9515ed229ec9e917149910d50043094605488912a6c8e029205551",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11749.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11750.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11751.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11752.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3424",
+  "source_url": "https://www.esoui.com/downloads/info3424-SkillBarPresets.html",
+  "stats": {
+    "downloads": 6708,
+    "favorites": 14,
+    "monthly_downloads": 189
+  },
+  "title": "Skill Bar Presets",
+  "updated_at": 1659829288000,
+  "version": "1.4"
+}

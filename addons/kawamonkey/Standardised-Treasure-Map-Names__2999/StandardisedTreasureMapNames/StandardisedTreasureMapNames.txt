@@ -1,0 +1,5 @@
+## Title: Standardised Treasure Map Names
+## Author: Kawamonkey
+## APIVersion: 100034
+
+StandardisedTreasureMapNames.lua

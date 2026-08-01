@@ -1,0 +1,71 @@
+{
+  "archive_path": "addons/IgorSab/BankManagerTESO__4072",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IgorSab",
+  "canonical_id": "esoui:4072",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:4072",
+  "deleted": false,
+  "directories": [
+    "BankManagerTESO"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4072/",
+  "fingerprint": "ce98842f5ddd562092e07de81e5da155fc7002f710af482deb13175bf5fb36aa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13876.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13877.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13878.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4072",
+  "source_url": "https://www.esoui.com/downloads/info4072-BankManagerTESO.html",
+  "stats": {
+    "downloads": 781,
+    "favorites": 1,
+    "monthly_downloads": 25
+  },
+  "title": "BankManagerTESO",
+  "updated_at": 1742553449000,
+  "version": "1"
+}

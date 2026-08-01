@@ -1,0 +1,23 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+
+<Bindings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esobindings.xsd">
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="MiniMap by |c006600Fyrakin|r">
+      <Action name="ZOOM_OUT">
+        <Down>FyrMM.ZoomOut()</Down>
+      </Action>
+      <Action name="ZOOM_IN">
+        <Down>FyrMM.ZoomIn()</Down>
+      </Action>
+      <Action name="TOGGLE_VISIBLE">
+        <Down>FyrMM.ToggleVisible()</Down>
+      </Action>
+      <Action name="RESET_MAP">
+        <Down>FyrMM.Reload()</Down>
+      </Action>
+      <Action name="TOGGLE_ACTIONMAP">
+        <Down>FyrMM.ActionMap.Toggle()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

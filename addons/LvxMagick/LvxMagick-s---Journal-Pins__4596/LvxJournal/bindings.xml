@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Lvx Journal">
+            <Action name="LVX_JOURNAL_OPEN">
+                <Down>LvxJournal_Toggle()</Down>
+            </Action>
+            <Action name="LVX_JOURNAL_NEW">
+                <Down>LvxJournal_NewEntryKeybind()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

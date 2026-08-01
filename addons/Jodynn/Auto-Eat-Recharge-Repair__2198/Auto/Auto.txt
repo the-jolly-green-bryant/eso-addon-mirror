@@ -1,0 +1,14 @@
+## Title: |c00ffffAuto|
+## Description: Does things for you
+## Author: Jodynn
+## Version: 1.1
+## APIVersion: 100033
+## SavedVariables: Auto_sv
+## DependsOn: LibFoodDrinkBuff LibAddonMenu-2.0
+
+linkdropdown.lua
+
+Auto.xml
+AutoEquip.xml
+AutoEnchant.xml
+Auto.lua

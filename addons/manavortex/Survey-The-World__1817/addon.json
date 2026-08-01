@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/manavortex/Survey-The-World__1817",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1817",
+  "category_id": "24",
+  "compatibility": [],
+  "content_id": "esoui:1817",
+  "deleted": false,
+  "directories": [
+    "SurveyTheWorld"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1817/",
+  "fingerprint": "38b7645fdb5b03485676411d1e767876f3a577b0432f4c2329bc29bf4c28ec14",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6153.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1817",
+  "source_url": "https://www.esoui.com/downloads/info1817-SurveyTheWorld.html",
+  "stats": {
+    "downloads": 30257,
+    "favorites": 27,
+    "monthly_downloads": 100
+  },
+  "title": "Survey The World",
+  "updated_at": 1536407158000,
+  "version": "1.5a"
+}

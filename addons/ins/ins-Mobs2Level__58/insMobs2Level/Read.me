@@ -1,0 +1,147 @@
+==========================
+       insMobs2Level
+       by: ins@ESOUI
+	   maintainer: mra4nii
+==========================
+
+
+ Introduction:
+==============
+ Mobs2Level is a simple AddOn that does two things
+ 
+ 1. It tells you how many XP gaining events (kills/quests/other events) you need to complete to reach a level up.
+ 2. It tells you how many CraftingXP gaining events you need to complete to reach next craft rank.
+
+ It is very customizable and supports 5 colours :)
+ 
+
+Using the AddOn:
+================
+ins:Mobs2Level comes supplied with one default output. 
+You can choose to either use the default options or create your own for every event and crafting.
+You can enable timestamp and indicate which chat tab should be used.
+
+All configuration is now done from settings.
+You can configure every aspect of what to display and how from settings menu.
+Pleaae note: ver 20160601 will override all your old settings!
+
+Other Events XP explanation:
+========================
+The AddOn have separate output for 2 xp givers events: KILL(include finesse exp) and QUEST.
+All the rest of XP givers events, like chest lockpick, discover new location, complete Daedra Anchor, are grouped in 3th output: EVENT.
+There are some events which, perhaps, should be grouped with KILL(like finesse). Still checking this.
+
+Filter Variables you can use for custom outputs:
+=============================
+Please note: These are CASE SENSITIVE
+
+  <1> = xp gain
+  <2> = xp to go
+  <3> = xp to go / xp gain = kills
+  <4> = Tradeskill name
+  <999> = Will show either Kill/Quest/Crafting/Event depending on what event occurred.
+  
+  <cW> - White
+  <cG> - Green
+  <cR> - Red
+  <cT> - Teal
+  <cY> - Yellow
+
+
+Examples of filter:
+==========================
+For skill: <cY>+<cG><1><cY>(<cT><4><cY>)
+
+The output will then for example look like: 
++125 (Woodworking)  : with colours
+
+For XP: +<1>XP (<2> to go) (<3) kills needed to level) 
++156XP (3623 to go) (400 kills needed to level) : with no colours
+
+
+Known Bugs:
+============
+Configure chat tab output does not work.
+ 
+Change Log:
+============
+20211111
+[CHANGE] - API Updated to 100028
+[CHANGE] - Discovered Jewelcrafting
+[CHANGE] - Got rid of a bug with outputting text
+[BUG] - Introduced a bug with printing out text to a selected chat tab (sorry, default for now).
+[CHANGE] - Removed libstub/libaddonmenu - Addon now requires LibAddonMenu-2.0
+
+
+20160601
+[CHANGE] - update API version (100011 --> 100015)
+[CHANGE] - all configuration is done from Settings menu
+[CHANGE] - replaced veteran with champion for DB support
+
+20150305
+[NEW] - add option to toggle timestamp: /m2l set ts
+[NEW] - add option to move output to another chat tab: /m2l set tab <tab_nr>
+[CHANGE] - update API version (100010 --> 100011)
+[CHANGE] - Menu output formatting
+[CHANGE] - Minor code standardization
+[BUGFIX] - problem with missing end color tag. Since i use now different way to post in chat, it bypass pChat and the bug is not manifested(but it's still there;))
+[BUGFIX] - fix menu for event XP display
+[BUGFIX] - fix menu for set
+[BUGFIX] - fix menu for set custom
+
+20141105
+[CHANGE] - update API version (100009 --> 100010)
+[CHANGE] - in output VP are gone, everything is XP now
+[BUGFIX] - bug with not showing output for VP
+
+20140918
+[CHANGE] - update API version (100008 --> 100009)
+
+20140806 -
+[CHANGE] - update API version (100007 --> 100008)
+
+20140713
+[NEW] - add Event XP output
+[NEW] - add debug output, disbled by default
+[BUGFIX] - bug with negative max exp for veteran ranks
+
+20140630.1
+[CHANGE] - disable debug output left from ver 20140630
+
+20140630
+[CHANGE] - update API version (100004 --> 100007)
+[NEW] - add Zenimax disclosure statement in manifest
+[CHANGE] - compatibility with new API and events return values
+[CHANGE] - VPGains are counted for quests
+
+20140427b
+[BUGFIX] Finally VPGains for KILLS are counted.  Will add the rest later. Thanks a lot Iaotle :)
+
+20140427
+[BUGFIX] Some display output and a if check that shouldn't be
+
+20140426
+[BUGFIX] AddOn would fail if users made filters ending with "]"
+
+
+20140422
+[NEW] - Export function for Custom XP/SKILL/QUEST 
+[NEW] - Quest XP have now optional output
+[ADDED]  - An extra default output
+[CHANGE] - Tried to do some formatting on the menu
+[BUGFIX] - Hopefully no 0 skill gain output
+
+
+20140420 - 100% Rewritten.
+[NEW] Custom output for KILLS or SKILLS with/without colours
+[NEW] Veteran Points Really should work this time! 
+[NEW] Localization for French and German clients (not translated, but they are available in the "Strings.lua")
+If anyone would care to translate :)    
+        
+ 
+  License:
+=========
+[URL="http://creativecommons.org/licenses/by-nc-sa/4.0/"][IMG]http://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png[/IMG][/URL]
+
+This work is licensed under a [URL="http://creativecommons.org/licenses/by-nc-sa/4.0/"]Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License[/URL]
+

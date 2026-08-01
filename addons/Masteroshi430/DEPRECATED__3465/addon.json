@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Masteroshi430/DEPRECATED__3465",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:3465",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3465",
+  "deleted": false,
+  "directories": [
+    "Grubmaster"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3465/",
+  "fingerprint": "505d4b41e1b78596ca3cf10bbd975e7e7a0e2f30d4099e29ba594d41a1ed6712",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3465",
+  "source_url": "https://www.esoui.com/downloads/info3465-DEPRECATED.html",
+  "stats": {
+    "downloads": 7313,
+    "favorites": 16,
+    "monthly_downloads": 14
+  },
+  "title": "DEPRECATED",
+  "updated_at": 1676325878000,
+  "version": "DEPRECATED"
+}

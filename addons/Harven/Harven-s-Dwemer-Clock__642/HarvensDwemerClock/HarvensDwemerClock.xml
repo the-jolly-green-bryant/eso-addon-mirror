@@ -1,0 +1,65 @@
+<GuiXml>
+	<Animations>
+		<AnimationTimeline name="HarvensClockGear1Rotate">
+			<Animations>
+				<TextureRotateAnimation duration="3000" startRotation="0" endRotation="6.28" />
+			</Animations>
+		</AnimationTimeline>
+		<AnimationTimeline name="HarvensClockGear2Rotate">
+			<Animations>
+				<TextureRotateAnimation duration="100" delay="500" startRotation="0" endRotation="0.2618" />
+				<TextureRotateAnimation duration="100" delay="1000" startRotation="0.2618" endRotation="0.5236" />
+				<TextureRotateAnimation duration="100" delay="1500" startRotation="0.5236" endRotation="0.7854" />
+				<TextureRotateAnimation duration="100" delay="2000" startRotation="0.7854" endRotation="1.0472" />
+				<TextureRotateAnimation duration="100" delay="2500" startRotation="1.0472" endRotation="1.309" />
+				<TextureRotateAnimation duration="100" delay="3000" startRotation="1.309" endRotation="1.5708" />
+				<TextureRotateAnimation duration="100" delay="3500" startRotation="1.5708" endRotation="1.8326" />
+				<TextureRotateAnimation duration="100" delay="4000" startRotation="1.8326" endRotation="2.0944" />
+				<TextureRotateAnimation duration="100" delay="4500" startRotation="2.0944" endRotation="2.3562" />
+				<TextureRotateAnimation duration="100" delay="5000" startRotation="2.3562" endRotation="2.618" />
+				<TextureRotateAnimation duration="100" delay="5500" startRotation="2.618" endRotation="2.8798" />
+				<TextureRotateAnimation duration="100" delay="6000" startRotation="2.8798" endRotation="3.1416" />
+				<TextureRotateAnimation duration="100" delay="6500" startRotation="3.1416" endRotation="3.4034" />
+				<TextureRotateAnimation duration="100" delay="7000" startRotation="3.4034" endRotation="3.6652" />
+				<TextureRotateAnimation duration="100" delay="7500" startRotation="3.6652" endRotation="3.927" />
+				<TextureRotateAnimation duration="100" delay="8000" startRotation="3.927" endRotation="4.1888" />
+				<TextureRotateAnimation duration="100" delay="8500" startRotation="4.1888" endRotation="4.4506" />
+				<TextureRotateAnimation duration="100" delay="9000" startRotation="4.4506" endRotation="4.7124" />
+				<TextureRotateAnimation duration="100" delay="9500" startRotation="4.7124" endRotation="4.9742" />
+				<TextureRotateAnimation duration="100" delay="10000" startRotation="4.9742" endRotation="5.236" />
+				<TextureRotateAnimation duration="100" delay="10500" startRotation="5.236" endRotation="5.4978" />
+				<TextureRotateAnimation duration="100" delay="11000" startRotation="5.4978" endRotation="5.7596" />
+				<TextureRotateAnimation duration="100" delay="11500" startRotation="5.7596" endRotation="6.0214" />
+				<TextureRotateAnimation duration="100" delay="12000" startRotation="6.0214" endRotation="6.2832" />
+			</Animations>
+		</AnimationTimeline>
+		<AnimationTimeline name="HarvensClockGear3Rotate">
+			<Animations>
+				<TextureRotateAnimation duration="60000" startRotation="0" endRotation="6.28" />
+			</Animations>
+		</AnimationTimeline>
+		<AnimationTimeline name="HarvensClockGear4Rotate">
+			<Animations>
+				<TextureRotateAnimation duration="6000" startRotation="0" endRotation="6.28" />
+			</Animations>
+		</AnimationTimeline>
+		<AnimationTimeline name="HarvensClockGear5Rotate">
+			<Animations>
+				<TextureRotateAnimation duration="500" startRotation="0" endRotation="3.1416">
+					<EasingFunction>
+						return ZO_EaseInOutQuintic(progress)
+					</EasingFunction>
+				</TextureRotateAnimation>
+			</Animations>
+		</AnimationTimeline>
+		<AnimationTimeline name="HarvensClockHandPulse">
+			<Animations>
+				<AlphaAnimation duration="3000" startAlpha="0.6" endAlpha="1">
+					<EasingFunction>
+						return ZO_EaseInOutCubic(progress)
+					</EasingFunction>
+				</AlphaAnimation>
+			</Animations>
+		</AnimationTimeline>
+	</Animations>
+</GuiXml>

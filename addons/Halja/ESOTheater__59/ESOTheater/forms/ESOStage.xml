@@ -1,0 +1,257 @@
+<GuiXml>
+    <Controls>
+
+<!--
+	Virtual Template controls
+-->
+		<Control name="ButtonFavoriteTemplate" virtual="true" >
+			<Dimensions x="150" y="35" />
+			<Controls>
+					<Button name="$(parent)ButtonFavorite" inherits="ZO_DefaultButton" >
+						<Anchor point="TOPLEFT" offsetX="2" offsetY="2"/>
+						<Controls>
+						</Controls>
+					</Button>
+					<Button name="$(parent)ButtonCfgFavorite"  text="">
+						<Dimensions x="30" y="30" />
+						<Anchor point="TOPLEFT" relativeTo="$(parent)ButtonFavorite" relativePoint="TOPLEFT" offsetX="-10" offsetY="-10" />
+						<Textures
+							normal="EsoUI/Art/chatwindow/chat_options_up.dds"
+							pressed="EsoUI/Art/chatwindow/chat_options_down.dds"
+							mouseOver="EsoUI/Art/chatwindow/chat_options_over.dds"
+						 />
+						<Controls>
+						</Controls>
+					</Button>
+			</Controls>
+		</Control>
+
+
+		<Control name="ButtonPanelTemplate"  virtual="true" >
+			<Dimensions x="150" y="30" />			
+			<Controls>
+				<Texture name="$(parent)BackGround" color="FF0000">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)BottomPanel"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BottomPanel"/>
+				</Texture>
+
+				<Control name="$(parent)Panel1" >
+					<Dimensions x="30" y="30" />
+					<Anchor point="LEFT" relativeTo="$(parent)BottomPanel"  relativePoint="LEFT"  />
+					<Controls>
+						<Texture name="$(parent)BackGround" color="000000">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Panel1"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Panel1"/>	
+						</Texture>
+						<Button name="$(parent)Button" inherits="ZO_DefaultTextButton" text="1">
+							<Dimensions x="30" y="30" />
+							<Anchor point="CENTER" relativeTo="$(parent)BackGround" relativepoint="CENTER"/>
+							<OnMouseEnter>
+								local pcontrol = self:GetParent()
+								local control = pcontrol:GetNamedChild("BackGround")
+								control:SetColor(1,0,0,1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								local pcontrol = self:GetParent()
+								local control = pcontrol:GetNamedChild("BackGround")
+								control:SetColor(0,0,0,1)
+							</OnMouseExit>
+						</Button>
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)Panel2" >
+					<Dimensions x="30" y="30" />
+					<Anchor point="LEFT" relativeTo="$(parent)Panel1"  relativePoint="RIGHT"  />
+					<Controls>
+						<Texture name="$(parent)BackGround" color="000000">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Panel2"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Panel2"/>	
+						</Texture>
+						<Button name="$(parent)Button" inherits="ZO_DefaultTextButton" text="2">
+							<Dimensions x="30" y="30" />
+							<Anchor point="CENTER" relativeTo="$(parent)BackGround" relativepoint="CENTER"/>
+							<OnMouseEnter>
+								local pcontrol = self:GetParent()
+								local control = pcontrol:GetNamedChild("BackGround")
+								control:SetColor(1,0,0,1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								local pcontrol = self:GetParent()
+								local control = pcontrol:GetNamedChild("BackGround")
+								control:SetColor(0,0,0,1)
+							</OnMouseExit>
+						</Button>
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)Panel3" >
+					<Dimensions x="30" y="30" />
+					<Anchor point="LEFT" relativeTo="$(parent)Panel2"  relativePoint="RIGHT"  />
+					<Controls>
+						<Texture name="$(parent)BackGround" color="000000">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Panel3"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Panel3"/>	
+						</Texture>
+						<Button name="$(parent)Button" inherits="ZO_DefaultTextButton" text="3">
+							<Dimensions x="30" y="30" />
+							<Anchor point="CENTER" relativeTo="$(parent)BackGround" relativepoint="CENTER"/>
+							<OnMouseEnter>
+								local pcontrol = self:GetParent()
+								local control = pcontrol:GetNamedChild("BackGround")
+								control:SetColor(1,0,0,1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								local pcontrol = self:GetParent()
+								local control = pcontrol:GetNamedChild("BackGround")
+								control:SetColor(0,0,0,1)
+							</OnMouseExit>
+						</Button>
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)Panel4" >
+					<Dimensions x="30" y="30" />
+					<Anchor point="LEFT" relativeTo="$(parent)Panel3"  relativePoint="RIGHT"  />
+					<Controls>
+						<Texture name="$(parent)BackGround" color="000000">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Panel4"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Panel4"/>	
+						</Texture>
+						<Button name="$(parent)Button" inherits="ZO_DefaultTextButton" text="4">
+							<Dimensions x="30" y="30" />
+							<Anchor point="CENTER" relativeTo="$(parent)BackGround" relativepoint="CENTER"/>
+							<OnMouseEnter>
+								local pcontrol = self:GetParent()
+								local control = pcontrol:GetNamedChild("BackGround")
+								control:SetColor(1,0,0,1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								local pcontrol = self:GetParent()
+								local control = pcontrol:GetNamedChild("BackGround")
+								control:SetColor(0,0,0,1)
+							</OnMouseExit>
+						</Button>
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)Panel5" >
+					<Dimensions x="30" y="30" />
+					<Anchor point="LEFT" relativeTo="$(parent)Panel4"  relativePoint="RIGHT"  />
+					<Controls>
+						<Texture name="$(parent)BackGround" color="000000">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Panel5"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Panel5"/>	
+						</Texture>
+						<Button name="$(parent)Button" inherits="ZO_DefaultTextButton" text="5">
+							<Dimensions x="30" y="30" />
+							<Anchor point="CENTER" relativeTo="$(parent)BackGround" relativepoint="CENTER"/>
+							<OnMouseEnter>
+								local pcontrol = self:GetParent()
+								local control = pcontrol:GetNamedChild("BackGround")
+								control:SetColor(1,0,0,1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								local pcontrol = self:GetParent()
+								local control = pcontrol:GetNamedChild("BackGround")
+								control:SetColor(0,0,0,1)
+							</OnMouseExit>
+						</Button>
+					</Controls>
+				</Control>
+				
+			</Controls>
+		</Control>
+
+<!---
+	Main Form of Add-on
+-->	
+        <TopLevelControl name="TheaterFrame"  movable="true"  tier="MEDIUM" mouseEnabled="true" >
+            <Dimensions x="300" y="215" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="60" offsetY="60"/>
+			<!-- Events -->
+			<!-- ************************************************************* -->
+			<OnInitialized>
+				 ESOTheater.AddonInitialized( self )
+			</OnInitialized>
+
+			<OnMoveStop>
+				ESOTheater.ESOStage.SaveWindowPosition()
+			</OnMoveStop>
+			<!-- ************************************************************* -->
+ 
+            <Controls>
+				<Backdrop name="$(parent)BackGround" inherits="ZO_DefaultBackdrop" alpha="0.7"/>
+
+				<Button name="$(parent)ButtonClose" >
+					<Dimensions x="30" y="30" />
+					<Anchor point="TOPRIGHT" offsetX="6" offsetY="1" />
+					<Textures
+						normal="EsoUI/Art/Buttons/closeButton_up.dds"
+						pressed="EsoUI/Art/Buttons/closeButton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closeButton_mouseOver.dds"
+						disabled="EsoUI/Art/Buttons/closeButton_disabled.dds"
+					 />
+				</Button>
+
+				<Button name="$(parent)ButtonMinimize" >
+					<Dimensions x="30" y="30" />
+					<Anchor point="TOPRIGHT" offsetX="-22" offsetY="-7" />
+					<Textures
+						normal="EsoUI/Art/Buttons/edit_save_up.dds"
+						pressed="EsoUI/Art/Buttons/edit_save_down.dds"
+						mouseOver="EsoUI/Art/Buttons/edit_save_over.dds"
+						disabled="EsoUI/Art/Buttons/edit_save_disabled.dds"
+					 />
+				</Button>
+
+                <Button name="$(parent)Checkbox"  font="ZoFontWinH4" inherits="ZO_CheckButton_Text">
+					<Anchor point="TOPLEFT" offsetX="5" offsetY="-2"/>	
+					<Dimensions x="40"  />
+					<FontColors
+						normalColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+						pressedColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+						mouseOverColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT"
+						disabledColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED"
+					/>
+                    <OnMouseEnter>
+                        self:SetPressedFontColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_HIGHLIGHT))
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        self:SetPressedFontColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_NORMAL))
+                    </OnMouseExit>
+
+				</Button>
+
+				<Texture name="$(parent)TopDivider2" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+                    <Dimensions y="4"/>
+                    <Anchor point="TOPLEFT" offsetX="-80" offsetY="25" />
+                    <Anchor point="TOPRIGHT" offsetX="80" offsetY="25" />
+                </Texture>
+				
+					<!--
+						******************************************************************************************************************************************************
+							Favorite buttons created dynamically from the virtual ButtonFavoriteTemplate and placed here in relation to the window
+						******************************************************************************************************************************************************  
+					-->
+
+                <Button name="$(parent)ButtonTesting" inherits="ZO_DefaultButton">
+                    <Anchor point="TOPLEFT" offsetX="2" offsetY="220"/>
+					<!-- Events -->
+					<!-- ************************************************************* -->
+					<OnClicked>
+						ESOTheater.TestFoo()
+					</OnClicked>
+					<!-- ************************************************************* -->
+                    <Controls>
+                        <Label name="$(parent)Label" verticalAlignment="CENTER" font="ZoFontGame" text="f(x) test" >
+                            <Anchor point="CENTER"/>
+                        </Label>
+                    </Controls>
+                </Button>
+				
+            </Controls>
+		</TopLevelControl>
+		
+    </Controls>
+</GuiXml>

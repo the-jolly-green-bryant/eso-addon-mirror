@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|c9400D3All Craft Deconstructor|r">
+      <Action name="ALLCRAFT_DECON_AUTO_DECONSTRUCT">
+        <Down>DeconstructKey()</Down>
+      </Action>
+      <Action name="ALLCRAFT_DECON_AUTO_REFINE">
+        <Down>RefineKey()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

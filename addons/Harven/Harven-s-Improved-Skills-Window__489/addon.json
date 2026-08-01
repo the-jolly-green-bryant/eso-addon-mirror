@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Improved-Skills-Window__489",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:489",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:489",
+  "deleted": false,
+  "directories": [
+    "HarvensImprovedSkillsWindow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl489/",
+  "fingerprint": "c11b3a4dce0178448d7a737c5be8cce2bca747a3f82e49497b8aeb1648e6c808",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5604.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1522.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1523.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1524.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1525.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1526.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1559.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "489",
+  "source_url": "https://www.esoui.com/downloads/info489-HarvensImprovedSkillsWindow.html",
+  "stats": {
+    "downloads": 1730727,
+    "favorites": 964,
+    "monthly_downloads": 1402
+  },
+  "title": "Harven's Improved Skills Window",
+  "updated_at": 1749388059000,
+  "version": "2.0.13"
+}

@@ -1,0 +1,103 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="GoldAccountantIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="200" y="130" />
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+			
+			<OnUpdate>if GoldAccountant ~= nil then GoldAccountant.OnUpdate() end</OnUpdate>
+			
+			<OnMoveStop>GoldAccountant.OnIndicatorMoveStop()</OnMoveStop>
+
+			<Controls>
+				<Label name="$(parent)SessionStart" layer="0" level="1" font="ZoFontChat" inheritAlpha="true" color="cccccc" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Session Start:">
+					<Dimensions x="190" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)SessionStartText" layer="0" level="1" font="ZoFontChat" inheritAlpha="true" color="FFAD00" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="">
+					<Dimensions x="190" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="0"/>
+				</Label>
+				
+				<Label name="$(parent)Income" layer="0" level="1" font="ZoFontChat" inheritAlpha="true" color="cccccc" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Income:">
+					<Dimensions x="190" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="20"/>
+				</Label>
+				<Label name="$(parent)IncomeText" layer="0" level="1" font="ZoFontChat" inheritAlpha="true" color="57FF00" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="">
+					<Dimensions x="190" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="20"/>
+				</Label>
+				
+				<Label name="$(parent)Expenditure" layer="0" level="1" font="ZoFontChat" inheritAlpha="true" color="cccccc" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Expenditure:">
+					<Dimensions x="190" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="40"/>
+				</Label>
+				<Label name="$(parent)ExpenditureText" layer="0" level="1" font="ZoFontChat" inheritAlpha="true" color="FF2F00" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="">
+					<Dimensions x="190" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="40"/>
+				</Label>
+
+				<Label name="$(parent)Balance" layer="0" level="1" font="ZoFontChat" inheritAlpha="true" color="cccccc" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Balance:">
+					<Dimensions x="190" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="60"/>
+				</Label>
+				<Label name="$(parent)BalanceText" layer="0" level="1" font="ZoFontChat" inheritAlpha="true" color="FFFE00" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="">
+					<Dimensions x="190" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="60"/>
+				</Label>
+				
+				<Label name="$(parent)Time" layer="0" level="1" font="ZoFontChat" inheritAlpha="true" color="cccccc" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Time:">
+					<Dimensions x="190" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="80"/>
+				</Label>
+				<Label name="$(parent)TimeText" layer="0" level="1" font="ZoFontChat" inheritAlpha="true" color="0079FF" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="">
+					<Dimensions x="190" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="80"/>
+				</Label>
+
+				<Label name="$(parent)GPH" layer="0" level="1" font="ZoFontChat" inheritAlpha="true" color="cccccc" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Gold Per Min:">
+					<Dimensions x="190" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="100"/>
+				</Label>
+				<Label name="$(parent)GPHText" layer="0" level="1" font="ZoFontChat" inheritAlpha="true" color="ADFF00" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="">
+					<Dimensions x="190" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="100"/>
+				</Label>
+				
+				<!--
+				<Label name="$(parent)HighGPH" font="ZoFontChat" inheritAlpha="true" color="cccccc" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Highest GPM:">
+					<Dimensions x="240" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="120"/>
+				</Label>
+				<Label name="$(parent)HighGPHText" font="ZoFontChat" inheritAlpha="true" color="ADFF00" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="">
+					<Dimensions x="240" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="120"/>
+				</Label>
+				-->
+				<Backdrop name="$(parent)Backdrop" alpha="0.75" centerColor="000000" edgeColor="dddddd" pixelRoundingEnabled="true" layer="0" level="0">
+					<Dimensions x="210" y="140" />
+					<Edge edgeSize="2" />
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+				</Backdrop>
+				
+				<Texture name="$(parent)coins"  inheritAlpha="true" textureFile="/esoui/art/icons/item_generic_coinbag.dds" layer="0" level="2">
+				<Dimensions x="40" y="40"/>
+				<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="TOP" offsetX="5" offsetY="8"/>
+				</Texture>
+				
+				<!--
+				<Texture name="$(parent)reset"  inheritAlpha="true" textureFile="/esoui/art/mounts/ridingskill_ready.dds" layer="0" level="3">
+				<Dimensions x="25" y="25"/>
+				<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="TOP" offsetX="100" offsetY="8"/>
+				</Texture>
+				-->
+				
+				<Button layer="0" level="3">
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="TOP" offsetX="100" offsetY="8"/>
+					<Dimensions x="28" y="28"/>
+					<Textures normal="/esoui/art/mounts/ridingskill_ready.dds"/>
+					<OnClicked>GoldAccountant.Reset()</OnClicked>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

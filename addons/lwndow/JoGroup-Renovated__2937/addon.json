@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/lwndow/JoGroup-Renovated__2937",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "lwndow",
+  "canonical_id": "esoui:2937",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2937",
+  "deleted": false,
+  "directories": [
+    "JoGroup"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2937/",
+  "fingerprint": "2063db55afe5daab3847aacebe452b12d16526d0c1cc5eea7b0eb4cb944532d6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10177.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2937",
+  "source_url": "https://www.esoui.com/downloads/info2937-JoGroupRenovated.html",
+  "stats": {
+    "downloads": 8774,
+    "favorites": 16,
+    "monthly_downloads": 25
+  },
+  "title": "JoGroup (Renovated)",
+  "updated_at": 1622404868000,
+  "version": "1.9.1"
+}

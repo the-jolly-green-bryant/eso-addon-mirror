@@ -1,0 +1,18 @@
+## Title: Another Quest Markers
+## Version: 1.0
+## Author: |c779cff@Hitsi|r [EU] 
+## APIVersion: 100030 100031
+## SavedVariables: AnotherQuestMarkers_SavedVariables
+## DependsOn: LibAddonMenu-2.0
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## Thanks Jhenox for textures and idea
+
+AQMConsts.lua
+i18n\en.lua
+i18n\$(language).lua
+AnotherQuestMarkers.lua
+AnotherQuestMarkers_Settings.lua

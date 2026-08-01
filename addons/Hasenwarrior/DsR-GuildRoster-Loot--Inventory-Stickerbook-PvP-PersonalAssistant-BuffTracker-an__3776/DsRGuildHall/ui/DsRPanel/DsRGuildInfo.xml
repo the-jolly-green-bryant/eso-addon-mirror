@@ -1,0 +1,161 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+  <Controls>
+    <TopLevelControl name="DsRGuildInfoFrame" hidden="true">
+      <Dimensions x="700" y="100" />
+      <Anchor point="TOPRIGHT" relativeTo="ZO_GuildHome" relativePoint="TOPLEFT" offsetX="-20" offsetY="50" />
+      <OnInitialized>
+            DsRGuildInfo.Check()
+      </OnInitialized>
+      <Controls>
+        <Control name="DsRGuildInformations"> 
+            <Controls>
+                <Texture name="DsRGuildInformationsBg" textureFile="/DsRGuildHall/misc/DsRInfoBG.dds" override="true">
+                    <Anchor point="TOPRIGHT" relativeTo="ZO_GuildHome" relativePoint="TOPLEFT" offsetX="-20" offsetY="-60" />
+                    <Dimensions x="700" y="600" />
+                </Texture>
+                <Texture name="DsRGuildInfoDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider_mythic.dds"
+                    verticalAlignment="LEFT" horizontalAlignment="LEFT" >
+                    <Dimensions x="900" y="10" />
+                    <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoFrame" relativePoint="TOPLEFT" offsetX="-90" offsetY="10"/>
+                </Texture>
+                <Label name="DsRGuildInfoTXT" width="700" height="25" font="ZoFontWinH2" inheritAlpha="true"  color="9fb6cd"
+                        wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="CENTER"  text="" modifyTextType="UPPERCASE">
+                        <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildInfoDivider" relativePoint="LEFT" offsetX="230" offsetY="35"/>
+                </Label>
+     <!-- Event-->
+                <!-- <Control name="DsRGuildInfoLotterie">  -->
+                    <!-- <Controls> -->
+                        <!-- <Label name="DsRGuildInfoLotterieTXT" width="700" height="10" font="ZoFontWinH4" inheritAlpha="true"  color="FF7F50" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="CENTER"  text="Lotterie" > -->
+                                <!-- <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildInfoTXT" relativePoint="LEFT" offsetX="10" offsetY="40"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildInfoLotterieZiehung" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoLotterieTXT" relativePoint="CENTERRIGHT" offsetX="100" offsetY="3"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildInfoLotterieLoskauf" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="CENTER"  text="" > -->
+                                <!-- <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildInfoLotterieTXT" relativePoint="LEFT" offsetX="10" offsetY="30"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildInfoLotterieLoskauf1" width="300" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="CENTER"  text="" > -->
+                                <!-- <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildInfoLotterieLoskauf" relativePoint="RIGHT" offsetX="15" offsetY="8"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildInfoLotterieLoskauf2" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="CENTER"  text="" > -->
+                                <!-- <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildInfoLotterieLoskauf" relativePoint="LEFT" offsetX="0" offsetY="25"/> -->
+                        <!-- </Label> -->
+
+                    <!-- </Controls> -->
+                <!-- </Control> -->
+     <!-- Event Auflistung -->
+                <Control name="DsRGuildInfoEvent"> 
+                    <Controls>
+                        <Label name="DsRGuildInfoEventTXT" width="700" height="10" font="ZoFontWinH4" inheritAlpha="true"  color="FF7F50"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="CENTER"  text="Events '26" >
+                                <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildInfoTXT" relativePoint="LEFT" offsetX="10" offsetY="40"/>
+                        </Label>
+                        <Label name="DsRGuildInfoEventInfo" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEventTXT" relativePoint="CENTERRIGHT" offsetX="100" offsetY="3"/>
+                        </Label>
+                            <!-- Event 1 -->
+                        <Label name="DsRGuildInfoEvent1" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildInfoEventTXT" relativePoint="LEFT" offsetX="10" offsetY="30"/>
+                        </Label>
+                        <Label name="DsRGuildInfoEvent1Start" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEvent1" relativePoint="CENTERRIGHT" offsetX="150" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildInfoEvent1Ende" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEvent1Start" relativePoint="CENTERRIGHT" offsetX="100" offsetY="0"/>
+                        </Label>
+                            <!-- Event 2 -->
+                        <!-- <Label name="DsRGuildInfoEvent2" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildInfoEvent1" relativePoint="LEFT" offsetX="0" offsetY="25"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildInfoEvent2Start" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEvent2" relativePoint="CENTERRIGHT" offsetX="150" offsetY="0"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildInfoEvent2Ende" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEvent2Start" relativePoint="CENTERRIGHT" offsetX="100" offsetY="0"/> -->
+                        <!-- </Label> -->
+                            <!-- Event 3 -->
+                        <!-- <Label name="DsRGuildInfoEvent3" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildInfoEvent2" relativePoint="LEFT" offsetX="0" offsetY="25"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildInfoEvent3Start" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEvent3" relativePoint="CENTERRIGHT" offsetX="150" offsetY="0"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildInfoEvent3Ende" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEvent3Start" relativePoint="CENTERRIGHT" offsetX="100" offsetY="0"/> -->
+                        <!-- </Label> -->
+                            <!-- Event 4 -->
+                        <!-- <Label name="DsRGuildInfoEvent4" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildInfoEvent3" relativePoint="LEFT" offsetX="0" offsetY="25"/>
+                        </Label>
+                        <Label name="DsRGuildInfoEvent4Start" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEvent4" relativePoint="CENTERRIGHT" offsetX="150" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildInfoEvent4Ende" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEvent4Start" relativePoint="CENTERRIGHT" offsetX="100" offsetY="0"/>
+                        </Label> -->
+                            <!-- Event 5 -->
+                        <!-- <Label name="DsRGuildInfoEvent5" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildInfoEvent4" relativePoint="LEFT" offsetX="0" offsetY="25"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildInfoEvent5Start" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEvent5" relativePoint="CENTERRIGHT" offsetX="150" offsetY="0"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildInfoEvent5Ende" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEvent5Start" relativePoint="CENTERRIGHT" offsetX="100" offsetY="0"/> -->
+                        <!-- </Label> -->
+                            <!-- Event 6 -->
+                        <!-- <Label name="DsRGuildInfoEvent6" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildInfoEvent5" relativePoint="LEFT" offsetX="0" offsetY="25"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildInfoEvent6Start" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEvent6" relativePoint="CENTERRIGHT" offsetX="150" offsetY="0"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildInfoEvent6Ende" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEvent6Start" relativePoint="CENTERRIGHT" offsetX="100" offsetY="0"/> -->
+                        <!-- </Label> -->
+                            <!-- Event 7 -->
+                        <!-- <Label name="DsRGuildInfoEvent7" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildInfoEvent6" relativePoint="LEFT" offsetX="0" offsetY="25"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildInfoEvent7Start" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEvent7" relativePoint="CENTERRIGHT" offsetX="150" offsetY="0"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildInfoEvent7Ende" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" > -->
+                                <!-- <Anchor point="TOPLEFT" relativeTo="DsRGuildInfoEvent7Start" relativePoint="CENTERRIGHT" offsetX="100" offsetY="0"/> -->
+                        <!-- </Label> -->
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>
+

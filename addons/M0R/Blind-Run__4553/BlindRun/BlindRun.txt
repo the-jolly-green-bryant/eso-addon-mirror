@@ -1,0 +1,9 @@
+## Title: Blind Run
+## Description: An addon which disables the world rendering, for experiencing a truly blind experience!
+## Author: |c0DC1CF@M0R_Gaming|r
+## APIVersion: 101050
+## Version: 1
+## AddOnVersion: 1
+
+textures.xml
+main.lua

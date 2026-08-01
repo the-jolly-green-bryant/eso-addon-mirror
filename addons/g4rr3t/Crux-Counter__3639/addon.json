@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/g4rr3t/Crux-Counter__3639",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "g4rr3t",
+  "canonical_id": "esoui:3639",
+  "category_id": "166",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3639",
+  "deleted": false,
+  "directories": [
+    "CruxCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3639/",
+  "fingerprint": "99edee7e1b11b10706c493cc6d4dbf77cf46146ab01e32d0477734e7a9c2769b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12402.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12403.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3639",
+  "source_url": "https://www.esoui.com/downloads/info3639-CruxCounter.html",
+  "stats": {
+    "downloads": 67287,
+    "favorites": 71,
+    "monthly_downloads": 787
+  },
+  "title": "Crux Counter",
+  "updated_at": 1730663191000,
+  "version": "1.3.0"
+}

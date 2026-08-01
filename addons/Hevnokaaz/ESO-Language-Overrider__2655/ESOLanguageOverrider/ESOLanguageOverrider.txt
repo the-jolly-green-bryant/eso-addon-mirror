@@ -1,0 +1,16 @@
+﻿; A ver como va esto...
+; Modificado para que ponga el nuevo nombre en el título
+
+## Title: ESOLanguageOverrider
+## APIVersion: 100031
+## Author: |cffff00Hevnokaaz|r
+## Description: Show original item names when you have another language
+## Version: 1.2.1
+## SavedVariables: ESOLanguageOverriderVariables
+## DependsOn: LibAddonMenu-2.0
+
+
+ESOLanguageOverrider.lua
+listaItems.lua
+listaPociones.lua
+listaSkills.lua

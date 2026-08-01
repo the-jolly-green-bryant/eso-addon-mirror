@@ -1,0 +1,18 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="XP Tracker">
+			<Action name="XPT_TOGGLE_UI_STATE">
+				<Down>XPTracker:HideState()</Down>
+			</Action>
+			<Action name="XPT_TOGGLE_UI_STATE1">
+				<Down>XPTracker:HideState1()</Down>
+			</Action>
+			<Action name="XPT_TOGGLE_UI_STATE2">
+				<Down>XPTracker:HideState2()</Down>
+			</Action>
+			<Action name="XPT_TOGGLE_UI_STATE3">
+				<Down>XPTracker:HideState3()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

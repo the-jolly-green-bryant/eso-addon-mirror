@@ -1,0 +1,54 @@
+{
+  "archive_path": "addons/Klainor/Royal-Guildhalls__2494",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Klainor",
+  "canonical_id": "esoui:2494",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:2494",
+  "deleted": false,
+  "directories": [
+    "RoyalGuildHalls"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2494/",
+  "fingerprint": "859a944415f243ba35c13da39014fa8ba10e716d126cb8d8d73601d61b147172",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11099.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11101.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2494",
+  "source_url": "https://www.esoui.com/downloads/info2494-RoyalGuildhalls.html",
+  "stats": {
+    "downloads": 5575,
+    "favorites": 3,
+    "monthly_downloads": 18
+  },
+  "title": "Royal Guildhalls",
+  "updated_at": 1595596584000,
+  "version": "1.1"
+}

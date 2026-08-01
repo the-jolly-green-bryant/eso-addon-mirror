@@ -1,0 +1,1 @@
+-- ru: fallback to english (en.lua already loaded)

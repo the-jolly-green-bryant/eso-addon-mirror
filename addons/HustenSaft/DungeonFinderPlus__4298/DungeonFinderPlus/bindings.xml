@@ -1,0 +1,17 @@
+<Bindings>
+
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="DungeonFinderPlus">
+      <Action name="DFP_TOGGLE">
+        <Down>DungeonFinderPlus.Toggle()</Down>
+      </Action>
+    </Category>
+  </Layer>
+
+
+  <Layer name="GamepadUIMode" allowFallthrough="false">
+    <Category>
+      <AllowAction name="DFP_TOGGLE"/>
+    </Category>
+  </Layer>
+</Bindings>

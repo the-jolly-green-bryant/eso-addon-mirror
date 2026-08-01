@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Kalinfe/RO-Tracker__2845",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kalinfe",
+  "canonical_id": "esoui:2845",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:2845",
+  "deleted": false,
+  "directories": [
+    "ROTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2845/",
+  "fingerprint": "138e1f3364ef22040f12923dafbc19915a8280f56fe9f9a472bd9c3d6476e53a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9617.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9618.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9620.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2845",
+  "source_url": "https://www.esoui.com/downloads/info2845-ROTracker.html",
+  "stats": {
+    "downloads": 15580,
+    "favorites": 7,
+    "monthly_downloads": 70
+  },
+  "title": "RO Tracker",
+  "updated_at": 1741724106000,
+  "version": "1.2.3"
+}

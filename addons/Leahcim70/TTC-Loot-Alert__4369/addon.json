@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Leahcim70/TTC-Loot-Alert__4369",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Leahcim70",
+  "canonical_id": "esoui:4369",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4369",
+  "deleted": false,
+  "directories": [
+    "TTCLootAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4369/",
+  "fingerprint": "16d53a54792d14e6385f525b3c5012448419d859f67f5e69d5af801bb3410ca9",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4369",
+  "source_url": "https://www.esoui.com/downloads/info4369-TTCLootAlert.html",
+  "stats": {
+    "downloads": 602,
+    "favorites": 0,
+    "monthly_downloads": 58
+  },
+  "title": "TTC Loot Alert",
+  "updated_at": 1771248770000,
+  "version": "1.0.10"
+}

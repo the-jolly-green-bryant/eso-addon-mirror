@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/MycroftJr/Filtered-Loot-Tracker__3932",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MycroftJr",
+  "canonical_id": "esoui:3932",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3932",
+  "deleted": false,
+  "directories": [
+    "FilteredLootTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3932/",
+  "fingerprint": "d7d3294ea95109623819362534b5f480307e35449d5b79a7c03e8b5903f17626",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13308.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13310.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13311.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13313.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3932",
+  "source_url": "https://www.esoui.com/downloads/info3932-FilteredLootTracker.html",
+  "stats": {
+    "downloads": 1415,
+    "favorites": 1,
+    "monthly_downloads": 5
+  },
+  "title": "Filtered Loot Tracker",
+  "updated_at": 1721956898000,
+  "version": "1.0.0"
+}

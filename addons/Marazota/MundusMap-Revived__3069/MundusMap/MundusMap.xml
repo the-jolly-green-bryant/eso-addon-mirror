@@ -1,0 +1,11 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="MundusMap">
+
+            <OnInitialized>
+                MundusMapInit()
+            </OnInitialized>
+
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

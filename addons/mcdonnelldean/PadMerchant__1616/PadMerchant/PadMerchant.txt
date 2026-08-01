@@ -1,0 +1,10 @@
+## Title: PadMerchant
+## Description: TCC integration for Gamepad Mode
+## APIVersion: 101040
+## Author: mcdonnelldean
+## Version: 2.0
+## DependsOn: TamrielTradeCentre
+
+; Addon Files
+Main.lua
+ToolTips.lua

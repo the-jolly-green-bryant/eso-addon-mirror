@@ -1,0 +1,15 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="InventorySpaceDisplay" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="200" y="42" />
+			<Anchor point="CENTER" />
+			<OnMoveStop>
+				ISD.MoveStop()
+			</OnMoveStop>
+			<Controls>
+				<Label name="$(parent)Label" font="ZoFontGameBold" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Inventory Space:" />
+				<Label name="$(parent)Count" font="ZoFontGameBold" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="00 / 00" />
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

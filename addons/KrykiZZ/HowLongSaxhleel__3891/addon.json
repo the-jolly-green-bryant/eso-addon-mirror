@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/KrykiZZ/HowLongSaxhleel__3891",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KrykiZZ",
+  "canonical_id": "esoui:3891",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3891",
+  "deleted": false,
+  "directories": [
+    "HowLongSaxhleel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3891/",
+  "fingerprint": "0861fb5dfb92de833391c7a21793c93cc56cb30970b8b97354590e7ef8745ff5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13200.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3891",
+  "source_url": "https://www.esoui.com/downloads/info3891-HowLongSaxhleel.html",
+  "stats": {
+    "downloads": 799,
+    "favorites": 0,
+    "monthly_downloads": 5
+  },
+  "title": "HowLongSaxhleel",
+  "updated_at": 1718053663000,
+  "version": "1.0.1"
+}

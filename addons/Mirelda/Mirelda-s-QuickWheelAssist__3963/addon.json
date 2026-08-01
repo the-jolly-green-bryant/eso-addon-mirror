@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Mirelda/Mirelda-s-QuickWheelAssist__3963",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mirelda",
+  "canonical_id": "esoui:3963",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:3963",
+  "deleted": false,
+  "directories": [
+    "QuickWheelAssist"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3963/",
+  "fingerprint": "53f341de67805457a3a59aa11454cccb0f8d769b88342fa20d804b0ba2d5defc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13433.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13434.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13435.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13436.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3963",
+  "source_url": "https://www.esoui.com/downloads/info3963-MireldasQuickWheelAssist.html",
+  "stats": {
+    "downloads": 1034,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "Mirelda's QuickWheelAssist",
+  "updated_at": 1727679548000,
+  "version": "1.0"
+}

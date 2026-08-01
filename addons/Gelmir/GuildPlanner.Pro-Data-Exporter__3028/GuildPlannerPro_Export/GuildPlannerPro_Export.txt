@@ -1,0 +1,30 @@
+## Title: |c66FF66GuildPlanner.Pro|r Export
+## Description: Data addon to collect and import your game data to GuildPlanner.Pro website.
+## Author: GuildPlanner.Pro
+## Version: 2.20.1
+## IntVersion: 220010001
+## APIVersion: 101050
+## SavedVariables: GuildPlannerPro_PlayerDataExport GuildPlannerPro_GameDataExport
+## DisableSavedVariablesAutoSaving: 0
+
+src/Lang/en.lua
+src/Cache/ItemSets.lua
+src/Core/GuildPlannerPro_Const.lua
+src/Core/GuildPlannerPro_Utils.lua
+src/Core/GuildPlannerPro_Command.lua
+src/Database/GuildPlannerPro_Achievements.lua
+src/Database/GuildPlannerPro_Armory.lua
+src/Database/GuildPlannerPro_Character.lua
+src/Database/GuildPlannerPro_Guilds.lua
+src/Database/GuildPlannerPro_Collectibles.lua
+src/Database/GuildPlannerPro_Sets.lua
+src/Database/GuildPlannerPro_Skills.lua
+src/GuildPlannerPro_Export.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

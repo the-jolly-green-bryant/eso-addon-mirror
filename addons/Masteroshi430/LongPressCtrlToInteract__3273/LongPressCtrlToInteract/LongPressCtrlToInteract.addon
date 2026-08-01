@@ -1,0 +1,12 @@
+﻿
+## Title: |cf49b42LongPressCtrlToInteract|r 
+## APIVersion: 101050
+## Author: |c3CB371@Masteroshi430|r
+## Description: Long press Ctrl+"Interact with Environment" keybind to interact with Companions and Followers. Alt, Shift and Cmd are also available.
+## DependsOn: LibAddonMenu-2.0>=41
+## SavedVariables: LongPressCtrlToInteractSavedVars
+## Version: 2026.07.19
+
+LongPressCtrlToInteract.lua
+lang/en.lua
+lang/$(language).lua

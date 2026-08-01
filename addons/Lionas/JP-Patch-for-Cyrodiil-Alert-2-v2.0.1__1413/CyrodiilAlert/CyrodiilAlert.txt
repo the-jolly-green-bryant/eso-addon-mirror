@@ -1,0 +1,30 @@
+## Title: |cD6660CCyrodiil Alert 2|r
+## Description: Alerts for Cyrodiil events. Originally by @Tanthul (AKA Nodens), leader of the Dark Moon PVP guild (Scourge EU). Updated by Enodoc of UESP.
+## Version: 2.0.1
+## Author: |c2ADC22Enodoc|r (original by |cB22222Tanthul|r)
+## APIVersion: 100015 100016
+## SavedVariables: CA_SavedVariables
+## OptionalDependsOn: LibStub LibAddonMenu-2.0
+
+Libs/LibStub/LibStub.lua
+Libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+Libs/AceTimer-3.0.lua
+Libs/LibAddonMenu-2.0/controls/panel.lua
+Libs/LibAddonMenu-2.0/controls/submenu.lua
+Libs/LibAddonMenu-2.0/controls/button.lua
+Libs/LibAddonMenu-2.0/controls/checkbox.lua
+Libs/LibAddonMenu-2.0/controls/colorpicker.lua
+Libs/LibAddonMenu-2.0/controls/custom.lua
+Libs/LibAddonMenu-2.0/controls/description.lua
+Libs/LibAddonMenu-2.0/controls/dropdown.lua
+Libs/LibAddonMenu-2.0/controls/editbox.lua
+Libs/LibAddonMenu-2.0/controls/header.lua
+Libs/LibAddonMenu-2.0/controls/slider.lua
+Libs/LibAddonMenu-2.0/controls/texture.lua
+
+CyrodiilAlert.lua
+CyrodiilAlertConfig.lua
+CyrodiilAlert.xml
+
+lang/en.lua
+lang/$(language).lua

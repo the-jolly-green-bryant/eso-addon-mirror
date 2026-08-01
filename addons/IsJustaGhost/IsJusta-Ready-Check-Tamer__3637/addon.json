@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/IsJustaGhost/IsJusta-Ready-Check-Tamer__3637",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IsJustaGhost",
+  "canonical_id": "esoui:3637",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3637",
+  "deleted": false,
+  "directories": [
+    "IsJustaReadyCheckTamer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3637/",
+  "fingerprint": "9a35184e66742dbc8e6cb66a268530eb389ad866d33f00fe410bbb9b0503a6e1",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3637",
+  "source_url": "https://www.esoui.com/downloads/info3637-IsJustaReadyCheckTamer.html",
+  "stats": {
+    "downloads": 1790,
+    "favorites": 2,
+    "monthly_downloads": 9
+  },
+  "title": "IsJusta Ready Check Tamer",
+  "updated_at": 1689185465000,
+  "version": "2.1"
+}

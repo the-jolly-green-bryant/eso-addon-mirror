@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Dwemer-Clock__642",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:642",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:642",
+  "deleted": false,
+  "directories": [
+    "HarvensDwemerClock"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl642/",
+  "fingerprint": "0da5edf02ee844b1c505183b2de26a1a76c49f77e3333ddcf4e5eca6d00aba6c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1943.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "642",
+  "source_url": "https://www.esoui.com/downloads/info642-HarvensDwemerClock.html",
+  "stats": {
+    "downloads": 34245,
+    "favorites": 85,
+    "monthly_downloads": 25
+  },
+  "title": "Harven's Dwemer Clock",
+  "updated_at": 1585512100000,
+  "version": "1.3"
+}

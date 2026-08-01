@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/Vulkhel-Guard-Guard__3004",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3004",
+  "category_id": "21",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3004",
+  "deleted": false,
+  "directories": [
+    "VulkhelGuardGuard"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3004/",
+  "fingerprint": "1e030c99398907e713709425697392a2d66f1c1870749a8f82eddf6fcd679c95",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10122.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3004",
+  "source_url": "https://www.esoui.com/downloads/info3004-VulkhelGuardGuard.html",
+  "stats": {
+    "downloads": 4053,
+    "favorites": 2,
+    "monthly_downloads": 13
+  },
+  "title": "Vulkhel Guard Guard",
+  "updated_at": 1617288033000,
+  "version": "1.0"
+}

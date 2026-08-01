@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Garkin/DerpURL-for-Update-4__634",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Garkin",
+  "canonical_id": "esoui:634",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 4",
+      "version": "1.4.3"
+    }
+  ],
+  "content_id": "esoui:634",
+  "deleted": false,
+  "directories": [
+    "DerpURL"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl634/",
+  "fingerprint": "4b9baaf2ae292e7cd91baa762cb5fb89fd87db7ee149cbf80a2c234a0e265f86",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1936.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "634",
+  "source_url": "https://www.esoui.com/downloads/info634-DerpURLforUpdate4.html",
+  "stats": {
+    "downloads": 6800,
+    "favorites": 5,
+    "monthly_downloads": 11
+  },
+  "title": "DerpURL (for Update 4)",
+  "updated_at": 1411522417000,
+  "version": "1.6"
+}

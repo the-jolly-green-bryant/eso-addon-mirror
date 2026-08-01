@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/m00nyONE/LibGroupPotionCooldowns__4190",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "m00nyONE",
+  "canonical_id": "esoui:4190",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4190",
+  "deleted": false,
+  "directories": [
+    "LibGroupPotionCooldowns"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4190/",
+  "fingerprint": "c668e866ba26cd00913c620445b1b512754fe1dcb2be044d1e6bb134066c3200",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4190",
+  "source_url": "https://www.esoui.com/downloads/info4190-LibGroupPotionCooldowns.html",
+  "stats": {
+    "downloads": 12030,
+    "favorites": 3,
+    "monthly_downloads": 542
+  },
+  "title": "LibGroupPotionCooldowns",
+  "updated_at": 1768124539000,
+  "version": "2026-01-11"
+}

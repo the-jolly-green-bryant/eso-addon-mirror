@@ -1,0 +1,10 @@
+## Title: GoA_ESO_UA
+## Author: GoA
+## APIVersion: 101049 101050
+## Version: 1.07
+## AddOnVersion: 107
+## Description: Укр локалізація «TESO»
+## SavedVariables: ESO_UA_GoA_settings
+
+ESO_UA_GoA.lua
+ESO_UA_GoA.xml

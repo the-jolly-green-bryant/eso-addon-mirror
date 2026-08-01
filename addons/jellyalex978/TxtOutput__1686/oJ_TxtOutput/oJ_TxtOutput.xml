@@ -1,0 +1,128 @@
+<GuiXml>
+    <Font font="$(MEDIUM_FONT)|18" name="OJTOPFont"/>
+    <Font font="$(BOLD_FONT)|14" name="OJTOPFontSmall"/>
+    <Font font="$(BOLD_FONT)|22" name="OJTOPFontBold"/>
+    <Font font="$(MEDIUM_FONT)|18" name="OJTOPFontDaddyItem"/>
+    <Font font="$(BOLD_FONT)|18|soft-shadow-thick" name="OJTOPFontBig"/>
+    <Controls>
+        <TopLevelControl name="OJ_TxtOutputPanelTLC" hidden="true" allowBringToTop="true" clampedToScreen="true" mouseEnabled="true" movable="true">
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="GuiRoot"/>
+            <Dimensions x="400" y="400"/>
+            <OnMouseUp>OJ_TxtOutput.OnUiPosSave('OJ_TxtOutputPanelTLC')</OnMouseUp>
+            <Controls>
+                <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill/>
+                </Backdrop>
+                <Backdrop name="$(parent)Header" centerColor="00000000" edgeColor="00000000">
+                    <Anchor offsetX="0" offsetY="0" point="TOPLEFT" relativePoint="TOPLEFT" />
+                    <Anchor offsetX="0" offsetY="45" point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
+                    <Controls>
+                        <Label name="$(parent)Title" color="FFFFFF" font="OJTOPFont">
+                            <Anchor offsetX="10" offsetY="10" point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                        </Label>
+                        <Backdrop name="$(parent)CloseBox" centerColor="00000000" edgeColor="00000000">
+                            <Anchor offsetX="-5" offsetY="5" point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" />
+                            <Dimensions x="27" y="27"/>
+                            <Controls>
+                                <Button clickSound="Click" name="$(parent)Btn">
+                                    <Anchor offsetX="-1" offsetY="0" point="CENTER" relativePoint="CENTER" relativeTo="$(parent)"/>
+                                    <Dimensions x="25" y="25"/>
+                                    <Textures mouseOver="esoui/art/buttons/decline_over.dds" normal="esoui/art/buttons/decline_up.dds" pressed="esoui/art/buttons/decline_down.dds"/>
+                                    <OnClicked>OJ_TxtOutput.toggleOJTOPPanelView()</OnClicked>
+                                </Button>
+                            </Controls>
+                        </Backdrop>
+                    </Controls>
+                </Backdrop>
+                <Backdrop name="$(parent)OutputBox" centerColor="00000000" edgeColor="00000000">
+                    <Anchor offsetX="10" offsetY="36" point="TOPLEFT" relativePoint="TOPLEFT" />
+                    <Anchor offsetX="-10" offsetY="-10" point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" centerColor="43443D" edgeColor="00000000" alpha="0.9">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <EditBox name="$(parent)TxtBox" color="FFFFFF" font="OJTOPFont" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="" editEnabled="true" maxInputCharacters="256" multiLine="true" newLineEnabled="true" inherits="ZO_DefaultEditMultiLineForBackdrop">
+                            <Anchor offsetX="5" offsetY="5" point="TOPLEFT" relativePoint="TOPLEFT" />
+                            <Anchor offsetX="-5" offsetY="-5" point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+                <!--
+                <Backdrop name="$(parent)CategoryIndex" centerColor="00000000" edgeColor="00000000">
+                    <Anchor offsetX="140" offsetY="10" point="TOPLEFT" relativePoint="TOPLEFT" />
+                    <Dimensions x="35" y="30"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" centerColor="43443D" edgeColor="00000000" alpha="0.9">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <EditBox name="$(parent)Val" color="FFFFFF" font="OJTOPFont" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" maxInputCharacters="100" >
+                            <Anchor offsetX="5" offsetY="4" point="TOPLEFT" relativePoint="TOPLEFT" />
+                            <Anchor offsetX="0" offsetY="34" point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+                <Backdrop name="$(parent)CollectionIndex" centerColor="00000000" edgeColor="00000000">
+                    <Anchor offsetX="180" offsetY="10" point="TOPLEFT" relativePoint="TOPLEFT" />
+                    <Dimensions x="35" y="30"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" centerColor="43443D" edgeColor="00000000" alpha="0.9">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <EditBox name="$(parent)Val" color="FFFFFF" font="OJTOPFont" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" maxInputCharacters="100" >
+                            <Anchor offsetX="5" offsetY="4" point="TOPLEFT" relativePoint="TOPLEFT" />
+                            <Anchor offsetX="0" offsetY="34" point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+                <Backdrop name="$(parent)BookIndex" centerColor="00000000" edgeColor="00000000">
+                    <Anchor offsetX="220" offsetY="10" point="TOPLEFT" relativePoint="TOPLEFT" />
+                    <Dimensions x="35" y="30"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" centerColor="43443D" edgeColor="00000000" alpha="0.9">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <EditBox name="$(parent)Val" color="FFFFFF" font="OJTOPFont" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" maxInputCharacters="100" >
+                            <Anchor offsetX="5" offsetY="4" point="TOPLEFT" relativePoint="TOPLEFT" />
+                            <Anchor offsetX="0" offsetY="34" point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+                <Button name="$(parent)BtnShowBook" text="ShowBook" inherits="ZO_DefaultButton" font="OJTOPFontSmall" >
+                    <Anchor offsetX="260" offsetY="10" point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                    <Dimensions x="100" y="30"/>
+                    <OnClicked>OJ_TxtOutput.ShowFilterBook()</OnClicked>
+                </Button>
+                -->
+            </Controls>
+        </TopLevelControl>
+        <TopLevelControl name="OJ_TxtOutputStatusTLC" hidden="true" mouseEnabled="true" movable="true">
+            <Anchor offsetX="-100" offsetY="-100" point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="GuiRoot"/>
+            <Dimensions x="50" y="50" />
+            <OnMouseUp>OJ_TxtOutput.OnUiPosSave('OJ_TxtOutputStatusTLC')</OnMouseUp>
+            <Controls>
+                <Backdrop name="$(parent)Bg" centerColor="010101" edgeColor="6B613B" alpha="0.5">
+                    <AnchorFill/>
+                    <Edge edgeSize="2"/>
+                </Backdrop>
+                <Backdrop name="$(parent)BtnBox" centerColor="00000000" edgeColor="00000000">
+                    <Anchor offsetX="0" offsetY="0" point="CENTER" relativePoint="CENTER" relativeTo="$(parent)" />
+                    <Dimensions x="40" y="40"/>
+                    <Controls>
+                        <Button clickSound="Click" name="$(parent)Btn">
+                            <AnchorFill/>
+                            <Textures normal="esoui/art/icons/quest_book_001_empty.dds" />
+                            <OnClicked>OJ_TxtOutput.statusOJTOPPanelView()</OnClicked>
+                        </Button>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

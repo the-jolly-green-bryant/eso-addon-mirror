@@ -1,0 +1,13 @@
+## Title: |cFF6A00Khrill|r Helm Control - FOV addin
+## Author: |cFF6A00Khrill|r
+## Description: FOV helm texture added in first person view
+## Version: 1.4.0
+## APIVersion: 100015
+## SavedVariables: KhrillHelmControlFOVaddin_settings
+
+## OptionalDependsOn: KhrillHelmControl
+
+KhrillHelmControlFOV.lua
+
+## default texture package
+Fov/default.lua

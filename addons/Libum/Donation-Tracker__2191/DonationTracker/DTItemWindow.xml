@@ -1,0 +1,226 @@
+<!--
+      UI layout file based on MM's layout file. Please see MM_license.
+-->
+<GuiXml>
+  <Controls>
+    
+    <!-- Listings Main Window -->
+    <TopLevelControl movable="true" mouseEnabled="true" name="DTItemWindow" hidden="true">
+      <Dimensions x="1200" y="692" />
+      <OnMoveStop>
+        DT.UI.OnWindowMoveStop(self)
+      </OnMoveStop>
+      <OnShow>
+        SetGameCameraUIMode(true)
+      </OnShow>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+        <Texture name="$(parent)SearchIcon" textureFile="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds" inheritAlpha="true">
+          <Dimensions x="40" y="40" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="3" />
+          <TextureCoords left="0" right="1" top="0" bottom="1" />
+        </Texture>
+        <Backdrop name="$(parent)SearchBG" inherits="ZO_EditBackdrop">
+          <Anchor point="LEFT" relativeTo="$(parent)SearchIcon" relativePoint="RIGHT" offsetX="2" offsetY="-2" />
+          <Dimensions x="175" />
+          <Controls>
+            <EditBox name="$(grandparent)Search" inherits="ZO_DefaultEditForBackdrop">
+              <OnTextChanged>
+                DT.UI.ItemScrollList:RefreshFilters()
+              </OnTextChanged>
+            </EditBox>
+          </Controls>
+        </Backdrop>
+        <!-- Menu buttons -->
+        <Button name="$(parent)DonorViewButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+	      <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-340" offsetY="-5" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/mainmenu/menubar_character_up.dds" mouseOver="/esoui/art/mainmenu/menubar_character_over.dds" pressed="/esoui/art/mainmenu/menubar_character_down.dds"/>
+          <OnClicked>
+            DT.UI.SwitchToView(DTDonorWindow)
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)AggregateViewOnButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+	      <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-290" offsetY="-5" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/emotes/emotes_indexicon_emotion_up.dds" mouseOver="/esoui/art/emotes/emotes_indexicon_emotion_over.dds" pressed="/esoui/art/emotes/emotes_indexicon_emotion_down.dds" />          
+          <OnClicked>
+            DT.UI.ItemScrollList:SwitchToAggregateView(true)
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)AggregateViewOffButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+	      <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-290" offsetY="-5" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/mainmenu/menubar_collections_up.dds" mouseOver="/esoui/art/mainmenu/menubar_collections_over.dds" pressed="/esoui/art/mainmenu/menubar_collections_down.dds" />          
+          <OnClicked>
+            DT.UI.ItemScrollList:SwitchToAggregateView(false)
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)GoldFilterOnButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+	      <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-240" offsetY="-5" />
+          <Dimensions x="48" y="48" />
+          <Controls>
+            <Texture name="$(parent)Icon" textureFile="/esoui/art/buttons/checkbox_checked.dds" alpha="1">
+            <Dimensions x="18" y="18" />
+            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="-10" />
+            <TextureCoords left="0" right="1" top="0" bottom="1" />
+            </Texture>
+          </Controls>
+          <Textures normal="/esoui/art/bank/bank_tabicon_gold_up.dds" mouseOver="/esoui/art/bank/bank_tabicon_gold_over.dds" pressed="/esoui/art/bank/bank_tabicon_gold_down.dds"/>
+          <OnClicked>
+            DT.UI.ItemScrollList:SwitchGoldFilterOn(true)
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)GoldFilterOffButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+	      <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-240" offsetY="-5" />
+          <Dimensions x="48" y="48" />
+          <Controls>
+            <Texture name="$(parent)Icon" textureFile="/esoui/art/buttons/checkbox_unchecked.dds" alpha="1">
+            <Dimensions x="18" y="18" />
+            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="-10" />
+            <TextureCoords left="0" right="1" top="0" bottom="1" />
+            </Texture>
+          </Controls>
+          <Textures normal="/esoui/art/bank/bank_tabicon_gold_up.dds" mouseOver="/esoui/art/bank/bank_tabicon_gold_over.dds" pressed="/esoui/art/bank/bank_tabicon_gold_down.dds"/>
+          <OnClicked>
+            DT.UI.ItemScrollList:SwitchGoldFilterOn(false)
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)RefreshAllButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+	      <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-190" offsetY="-5" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/help/help_tabicon_feedback_up.dds" mouseOver="/esoui/art/help/help_tabicon_feedback_over.dds" pressed="/esoui/art/help/help_tabicon_feedback_down.dds"/>
+        </Button>
+        <!-- End Menu buttons -->
+        <Label name="$(parent)Title" height="25" inheritAlpha="true" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Item Records">
+	        <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-10" offsetY="5" />
+        </Label>
+        <Button name="$(parent)CloseButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+          <OnClicked>
+            DTItemWindow:SetHidden(true)
+          </OnClicked>
+        </Button>
+        <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/centerscreen_topDivider.dds">
+          <Dimensions x="900" y="4" />
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-10" offsetY="47" />
+        </Texture>
+        <!-- Headers -->
+        <Control name="$(parent)Headers">
+            <Dimensions x="1200" y="32" />
+            <Anchor relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="51"/>
+            <Controls>       
+                <Control name="$(parent)Account" inherits="ZO_SortHeader">
+                  <Dimensions x="140" y="26" />
+                  <Anchor point="TOPLEFT" offsetX="5" offsetY="5" />
+                </Control>
+                <Control name="$(parent)Link" inherits="ZO_SortHeader">
+                  <Dimensions x="200" y="26" />
+                  <Anchor point="TOPLEFT" offsetX="185" offsetY="5" />
+                </Control>
+                <Control name="$(parent)Price" inherits="ZO_SortHeader">
+                  <Dimensions x="85" y="26" />
+                  <Anchor point="TOPLEFT" offsetX="385" offsetY="5" />
+                </Control>
+                <Control name="$(parent)PriceSource" inherits="ZO_SortHeader">
+                  <Dimensions x="140" y="26" />
+                  <Anchor point="TOPLEFT" offsetX="470" offsetY="5" />
+                </Control>
+                <Control name="$(parent)Category" inherits="ZO_SortHeader">
+                  <Dimensions x="150" y="26" />
+                  <Anchor point="TOPLEFT" offsetX="610" offsetY="5" />
+                </Control>
+                <Control name="$(parent)Multiplier" inherits="ZO_SortHeader">
+                  <Dimensions x="50" y="26" />
+                  <Anchor point="TOPLEFT" offsetX="750" offsetY="5" />
+                </Control>
+                <Control name="$(parent)ReceivedDate" inherits="ZO_SortHeader">
+                  <Dimensions x="90" y="26" />
+                  <Anchor point="TOPLEFT" offsetX="810" offsetY="5" />
+                </Control>
+                <Control name="$(parent)DonationSource" inherits="ZO_SortHeader">
+                  <Dimensions x="50" y="26" />
+                  <Anchor point="TOPLEFT" offsetX="910" offsetY="5" />
+                </Control>
+            </Controls>
+        </Control>
+        <!-- End Headers -->
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="1" />
+          <Anchor point="BOTTOMRIGHT" offsetY="-3" offsetX="-3" />
+        </Control>
+      </Controls>
+    </TopLevelControl>
+
+    <Control name="DTItemDataRow" horizontalAlignment="LEFT" verticalAlignment="CENTER" virtual="true">
+      <Dimensions x="1200" y="32" />
+      <Anchor point="TOPLEFT" offsetX="25" offsetY="0" />
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        <Label name="$(parent)Account" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" mouseEnabled="true">
+          <Dimensions x="140" y="26" />
+          <Anchor point="TOPLEFT" offsetX="5" offsetY="5" />
+        </Label>
+        <!-- Fancy item icons -->
+        <Texture name="$(parent)Icon" inheritAlpha="true">
+          <Dimensions x="32" y="32" />
+          <Anchor point="TOPLEFT" offsetX="150" offsetY="3" />
+          <TextureCoords left="0" right="1" top="0" bottom="1" />
+        </Texture>
+        <Label name="$(parent)Count" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+          <Dimensions x="32" y="18" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Icon" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+        </Label>
+        <!-- End item icons -->
+        <Label name="$(parent)Link" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" linkEnabled="true" mouseEnabled="true">
+          <Dimensions x="200" y="26" />
+          <Anchor point="TOPLEFT" offsetX="185" offsetY="5" />
+        </Label>
+        <Label name="$(parent)Price" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Dimensions x="85" y="26" />
+          <Anchor point="TOPLEFT" offsetX="385" offsetY="5" />
+        </Label>
+        <Label name="$(parent)PriceSource" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Dimensions x="140" y="26" />
+          <Anchor point="TOPLEFT" offsetX="470" offsetY="5" />
+        </Label>
+        <Label name="$(parent)Category" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Dimensions x="150" y="26" />
+          <Anchor point="TOPLEFT" offsetX="610" offsetY="5" />
+        </Label>
+        <Label name="$(parent)Multiplier" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Dimensions x="50" y="26" />
+          <Anchor point="TOPLEFT" offsetX="760" offsetY="5" />
+        </Label>
+        <Label name="$(parent)ReceivedDate" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Dimensions x="90" y="26" />
+          <Anchor point="TOPLEFT" offsetX="810" offsetY="5" />
+        </Label>
+        <Label name="$(parent)DonationSource" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+          <Dimensions x="50" y="26" />
+          <Anchor point="TOPLEFT" offsetX="900" offsetY="5" />
+        </Label>
+        <Button name="$(parent)EditButton" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+            <Anchor point="LEFT" offsetX="960" offsetY="2" />
+            <Dimensions x="32" y="32" />
+            <Textures normal="/esoui/art/buttons/edit_up.dds" mouseOver="/esoui/art/buttons/edit_over.dds" pressed="/esoui/art/buttons/edit_down.dds" />
+            <!-- OnClick handled dynamically -->>
+        </Button>
+        <Button name="$(parent)RefreshButton" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+            <Anchor point="LEFT" offsetX="995" offsetY="4" />
+            <Dimensions x="32" y="32" />
+            <Textures normal="/esoui/art/help/help_tabicon_feedback_up.dds" mouseOver="/esoui/art/help/help_tabicon_feedback_over.dds" pressed="/esoui/art/help/help_tabicon_feedback_down.dds" />
+        </Button>
+        <Button name="$(parent)DeleteButton" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+            <Anchor point="LEFT" offsetX="1030" offsetY="4" />
+            <Dimensions x="32" y="32" />
+            <Textures normal="/esoui/art/buttons/decline_up.dds" mouseOver="/esoui/art/buttons/decline_over.dds" pressed="/esoui/art/buttons/decline_down.dds" />
+        </Button>
+      </Controls>
+    </Control>
+
+    
+  </Controls>
+</GuiXml>

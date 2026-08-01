@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/iiJonno/Show-Global-Cooldown__3035",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "iiJonno",
+  "canonical_id": "esoui:3035",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3035",
+  "deleted": false,
+  "directories": [
+    "ShowGlobalCooldown"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3035/",
+  "fingerprint": "ef3f8260c17bb9c5c2bfa6e2cbbeca08c3ff28c68362bb03e397b9b2228774c4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10212.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3035",
+  "source_url": "https://www.esoui.com/downloads/info3035-ShowGlobalCooldown.html",
+  "stats": {
+    "downloads": 11245,
+    "favorites": 7,
+    "monthly_downloads": 41
+  },
+  "title": "Show Global Cooldown",
+  "updated_at": 1622633677000,
+  "version": "2.0.1"
+}

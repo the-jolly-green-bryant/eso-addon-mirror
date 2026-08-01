@@ -1,0 +1,48 @@
+## Title: Wizards Wardrobe Dungeons
+## Author: Kecaj
+## Version: 3.1
+## Description: Extension for Wizardwardrobe which adds dungeons. Based on Mephisto addon by Doc_Landerf.
+## APIVersion: 101041 101042
+## DependsOn: WizardsWardrobe
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lang/en.lua
+lang/$(language).lua
+
+dungeons/WGT.lua
+dungeons/ICP.lua
+dungeons/ROM.lua
+dungeons/COS.lua
+dungeons/FH.lua
+dungeons/BF.lua
+dungeons/FL.lua
+dungeons/SCP.lua
+dungeons/MHK.lua
+dungeons/MOS.lua
+dungeons/FV.lua
+dungeons/DOM.lua
+dungeons/LOM.lua
+dungeons/MGF.lua
+dungeons/IR.lua
+dungeons/UHG.lua
+dungeons/SG.lua
+dungeons/CT.lua
+dungeons/BDV.lua
+dungeons/TC.lua
+dungeons/RPB.lua
+dungeons/DC.lua
+dungeons/CA.lua
+dungeons/SR.lua
+dungeons/ERE.lua
+dungeons/GD.lua
+dungeons/BS.lua
+dungeons/SH.lua
+dungeons/BV.lua
+dungeons/OP.lua
+
+## WizardsWardrobeDungeons.lua

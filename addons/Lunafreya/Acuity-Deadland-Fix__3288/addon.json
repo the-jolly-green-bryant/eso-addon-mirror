@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Lunafreya/Acuity-Deadland-Fix__3288",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lunafreya",
+  "canonical_id": "esoui:3288",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3288",
+  "deleted": false,
+  "directories": [
+    "Acuity"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3288/",
+  "fingerprint": "8d0652ab4a2e1ffa2a7802607094db6c650d61297890d9c7e89a00806d01385c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3288",
+  "source_url": "https://www.esoui.com/downloads/info3288-AcuityDeadlandFix.html",
+  "stats": {
+    "downloads": 3534,
+    "favorites": 1,
+    "monthly_downloads": 17
+  },
+  "title": "Acuity Deadland Fix",
+  "updated_at": 1642536388000,
+  "version": "2.4"
+}

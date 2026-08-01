@@ -1,0 +1,108 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="Tablon" clampedToScreen="false" movable="true" mouseEnabled="true" hidden="true" resizeHandleSize="10">
+            <Dimensions x="1346" y="938"/>
+            <Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <Controls>
+                <Texture name="TablonMisiones" textureFile="CerconeAddon/Assets/MissionBoard/TablondeMisiones.dds">
+                    <Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" offsetX="0" offsetY="0" />
+                    <Dimensions x="1346" y="938"/>
+                </Texture>
+
+                <!-- Pergaminos -->
+                <Texture name="Pergamino1" textureFile="CerconeAddon/Assets/MissionBoard/PergaminodelClan.dds" hidden="true">
+                    <Anchor point="CENTER" relativeTo="TablonMisiones" relativePoint="CENTER" offsetX="-350" offsetY="80" />
+                    <Dimensions x="280" y="402"/>
+                </Texture>
+                <Button name="P1Boton" hidden="true">
+                    <Anchor point="CENTER" relativeTo="TablonMisiones" relativePoint="CENTER" offsetX="-350" offsetY="80" />
+                    <Dimensions x="280" y="402"/>
+                    <OnClicked>CerconeAddon.SelectMission(1)</OnClicked>
+                </Button>
+
+                <Texture name="Pergamino2" textureFile="CerconeAddon/Assets/MissionBoard/PergaminodelClan.dds" hidden="true">
+                    <Anchor point="CENTER" relativeTo="Pergamino1" relativePoint="CENTER" offsetX="350" offsetY="-100" />
+                    <Dimensions x="280" y="402"/>
+                </Texture>
+                <Button name="P2Boton" hidden="true">
+                    <Anchor point="CENTER" relativeTo="Pergamino1" relativePoint="CENTER" offsetX="350" offsetY="-100" />
+                    <Dimensions x="280" y="402"/>
+                    <OnClicked>CerconeAddon.SelectMission(2)</OnClicked>
+                </Button>
+
+                <Texture name="Pergamino3" textureFile="CerconeAddon/Assets/MissionBoard/PergaminodelClan.dds" hidden="true">
+                    <Anchor point="CENTER" relativeTo="Pergamino2" relativePoint="CENTER" offsetX="350" offsetY="100" />
+                    <Dimensions x="280" y="402"/>
+                </Texture>
+                <Button name="P3Boton" hidden="true">
+                    <Anchor point="CENTER" relativeTo="Pergamino2" relativePoint="CENTER" offsetX="350" offsetY="100" />
+                    <Dimensions x="280" y="402"/>
+                    <OnClicked>CerconeAddon.SelectMission(3)</OnClicked>
+                </Button>
+                
+                <!-- Texto - Pergamino 1 -->
+                <Label name="T1" font="$(ANTIQUE_FONT)|22" verticalAlignment="TOP" horizontalAlignment="CENTER" color="6C3C28">
+                    <Anchor point="TOP" relativeTo="Pergamino1" relativePoint="CENTER" offsetY="-150" offsetX="0"/>
+                    <Dimensions x="275" y="50"/>
+                </Label>
+                
+                <Label name="Texto1" font="$(ANTIQUE_FONT)|12" verticalAlignment="TOP" horizontalAlignment="CENTER" color="6C3C28">
+                    <Anchor point="TOP" relativeTo="Pergamino1" relativePoint="CENTER" offsetY="-100" />
+                    <Dimensions x="250" y="200"/>
+                </Label>
+                
+                <Label name="Req1" font="$(ANTIQUE_FONT)|11" verticalAlignment="TOP" horizontalAlignment="LEFT" color="6C3C28">
+                    <Anchor point="TOP" relativeTo="Pergamino1" relativePoint="CENTER" offsetY="115" offsetX="-35"/>
+                    <Dimensions x="190" y="80"/>
+                </Label>
+                
+                <!-- Texto - Pergamino 2 -->
+                <Label name="T2" font="$(ANTIQUE_FONT)|22" verticalAlignment="TOP" horizontalAlignment="CENTER" color="6C3C28">
+                    <Anchor point="TOP" relativeTo="Pergamino2" relativePoint="CENTER" offsetY="-150" offsetX="0"/>
+                    <Dimensions x="275" y="50"/>
+                </Label>
+                
+                <Label name="Texto2" font="$(ANTIQUE_FONT)|12" verticalAlignment="TOP" horizontalAlignment="CENTER" color="6C3C28">
+                    <Anchor point="TOP" relativeTo="Pergamino2" relativePoint="CENTER" offsetY="-100" />
+                    <Dimensions x="250" y="200"/>
+                </Label>
+                
+                <Label name="Req2" font="$(ANTIQUE_FONT)|11" verticalAlignment="TOP" horizontalAlignment="LEFT" color="6C3C28">
+                    <Anchor point="TOP" relativeTo="Pergamino2" relativePoint="CENTER" offsetY="115" offsetX="-35"/>
+                    <Dimensions x="190" y="80"/>
+                </Label>
+                
+                <!-- Texto - Pergamino 3 -->
+                <Label name="T3" font="$(ANTIQUE_FONT)|22" verticalAlignment="TOP" horizontalAlignment="CENTER" color="6C3C28">
+                    <Anchor point="TOP" relativeTo="Pergamino3" relativePoint="CENTER" offsetY="-150" offsetX="0"/>
+                    <Dimensions x="275" y="50"/>
+                </Label>
+                
+                <Label name="Texto3" font="$(ANTIQUE_FONT)|12" verticalAlignment="TOP" horizontalAlignment="CENTER" color="6C3C28">
+                    <Anchor point="TOP" relativeTo="Pergamino3" relativePoint="CENTER" offsetY="-100" />
+                    <Dimensions x="250" y="200"/>
+                </Label>
+                
+                <Label name="Req3" font="$(ANTIQUE_FONT)|11" verticalAlignment="TOP" horizontalAlignment="LEFT" color="6C3C28">
+                    <Anchor point="TOP" relativeTo="Pergamino3" relativePoint="CENTER" offsetY="115" offsetX="-35"/>
+                    <Dimensions x="190" y="80"/>
+                </Label>
+
+                
+                <!-- Navegacion -->
+                <Button name="FlechaIZQ" hidden="true">
+                    <Textures normal="CerconeAddon/Assets/MissionBoard/FlechaIZQ.dds" />
+                    <Anchor point="CENTER" relativeTo="TablonMisiones" relativePoint="CENTER" offsetX="-590" offsetY="390" />
+                    <Dimensions x="80" y="60"/>
+                    <OnClicked> CerconeAddon.ChangePage(-1)</OnClicked>
+                </Button>
+                <Button name="FlechaDER" hidden="true">
+                    <Textures normal="CerconeAddon/Assets/MissionBoard/FlechaDER.dds" />
+                    <Anchor point="CENTER" relativeTo="TablonMisiones" relativePoint="CENTER" offsetX="580" offsetY="390" />
+                    <Dimensions x="80" y="60"/>
+                    <OnClicked> CerconeAddon.ChangePage(1)</OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

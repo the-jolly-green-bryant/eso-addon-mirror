@@ -1,0 +1,16 @@
+## APIVersion: 101032
+## Title: LawfulNecromancy
+## Version: 0.4
+## AddOnVersion: 1.1
+## Author: muh
+## Description: LawfulNecromancy blocks every skill that is considered a Criminal Act in Overland activities only. This includes Necromancer abilities, as well as Werewolf and Vampire skills. It also provides a Keybind to temporarily unblock.
+## SavedVariables: LawfulNecromancy_SavedVariables
+## DependsOn: LibSkillBlocker
+## OptionalDependsOn: FancyActionBar FancyActionBar+
+
+Languages\en.lua
+Languages\$(language).lua
+
+Bindings.xml
+
+LawfulNecromancy.lua

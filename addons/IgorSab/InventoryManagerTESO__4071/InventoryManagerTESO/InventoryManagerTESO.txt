@@ -1,0 +1,9 @@
+## Title: InventoryManagerTESO
+## Description: Instructions in multiple languages and support info are in the addon folder. Thanks for using InventoryManagerTESO!
+## APIVersion: 101041
+## AddOnVersion: 1.0.2
+## Author: @IgorSab
+## DependsOn: LibCustomMenu
+## SavedVariables:
+
+InventoryManagerTESO.lua

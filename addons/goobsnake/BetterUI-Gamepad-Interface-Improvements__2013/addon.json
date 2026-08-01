@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/goobsnake/BetterUI-Gamepad-Interface-Improvements__2013",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "goobsnake",
+  "canonical_id": "esoui:2013",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2013",
+  "deleted": false,
+  "directories": [
+    "BetterUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2013/",
+  "fingerprint": "fd774488739da1c695f6bbf57d361796bf283bccd368913151aea689d9be5a24",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15430.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15432.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15428.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15426.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15425.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15433.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15427.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15429.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15431.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2013",
+  "source_url": "https://www.esoui.com/downloads/info2013-BetterUIGamepadInterfaceImprovements.html",
+  "stats": {
+    "downloads": 90885,
+    "favorites": 90,
+    "monthly_downloads": 376
+  },
+  "title": "BetterUI :: Gamepad Interface Improvements",
+  "updated_at": 1775862768000,
+  "version": "3.06"
+}

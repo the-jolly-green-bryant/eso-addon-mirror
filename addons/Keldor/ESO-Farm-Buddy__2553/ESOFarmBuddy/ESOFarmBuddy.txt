@@ -1,0 +1,30 @@
+## DisableSavedVariablesAutoSaving: 1
+## Title: ESO |cFCEB00Farm Buddy|r |c00C000v1.0.36|r
+## Description: Provides a GUI element and controls to keep track of farmed items.
+## Author: |cEFEBBEKeldor|r
+## Version: 1.0.36
+## IntVersion: 1036
+## APIVersion: 101048
+## SavedVariables: ESOFarmBuddySV
+## IsLibrary: false
+## DependsOn: LibCustomMenu>=730 LibAddonMenu-2.0>=40
+
+Language\en.lua
+Language\$(language).lua
+Core\Utils.lua
+Core\ControlUtils.lua
+Core\Notification.lua
+Core\Commands.lua
+Settings\Settings.lua
+ESOFarmBuddy.lua
+GUI\ESOFarmBuddy.xml
+GUI\ESOFarmBuddyGoalSetter.xml
+Bindings.xml
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

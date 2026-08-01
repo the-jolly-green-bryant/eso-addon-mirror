@@ -1,0 +1,26 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: |c00BFFFWings of Wind|r Guildhall
+## Description: This addon adds one simple button for travelling to the Wings of Wind guildhall.
+## Author: Viralissa
+## Version: 2.0.2
+## AddOnVersion: 20002
+## APIVersion: 101047 101048
+## SavedVariables: WingsOfWindGuildhallVariables
+## IsLibrary: false
+## DependsOn: LibCustomMenu
+## OptionalDependsOn: LibAddonMenu-2.0
+
+WingsOfWindGuildhall.lua
+
+UI/ChatButton.lua
+UI/PlayerContextMenu.lua
+Util.lua
+Settings.lua
+GuildMasterTools.lua
+
+Bindings.xml

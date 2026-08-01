@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/lastguest/Luminous-Ink-Tracker__3924",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "lastguest",
+  "canonical_id": "esoui:3924",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3924",
+  "deleted": false,
+  "directories": [
+    "InkTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3924/",
+  "fingerprint": "625f0aee5372dac3dd5f2888f005dd3218255eb1b10b4916891ffe11a34c8188",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13278.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3924",
+  "source_url": "https://www.esoui.com/downloads/info3924-LuminousInkTracker.html",
+  "stats": {
+    "downloads": 993,
+    "favorites": 3,
+    "monthly_downloads": 15
+  },
+  "title": "Luminous Ink Tracker",
+  "updated_at": 1720430023000,
+  "version": "1.0.0"
+}

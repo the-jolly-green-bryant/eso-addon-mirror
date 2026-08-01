@@ -1,0 +1,92 @@
+{
+  "archive_path": "addons/Maxim_ZG/AsylumTracker.LangPatch__2847",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Maxim_ZG",
+  "canonical_id": "esoui:2847",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2847",
+  "deleted": false,
+  "directories": [
+    "AsylumTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2847/",
+  "fingerprint": "7d6234c93c8699aa2b0273653549e0db2bf3cab3c536d7ad9222516fc66d31a6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9636.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12198.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12197.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12199.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2847",
+  "source_url": "https://www.esoui.com/downloads/info2847-AsylumTracker.LangPatch.html",
+  "stats": {
+    "downloads": 15613,
+    "favorites": 9,
+    "monthly_downloads": 156
+  },
+  "title": "AsylumTracker.LangPatch",
+  "updated_at": 1781523389000,
+  "version": "2.1.6"
+}

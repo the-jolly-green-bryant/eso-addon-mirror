@@ -1,0 +1,12 @@
+## APIVersion: 101033
+## Title: Descent
+## Version: 1.2
+## Author: Kaborgh
+## Description: Enhanced Dungeon Finder and more
+
+## OptionalDependsOn: LibDebugLogger>=180
+
+lang\$(language).lua
+
+Descent.xml
+Descent.lua

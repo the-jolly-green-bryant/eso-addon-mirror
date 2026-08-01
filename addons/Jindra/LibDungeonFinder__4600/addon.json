@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Jindra/LibDungeonFinder__4600",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jindra",
+  "canonical_id": "esoui:4600",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4600",
+  "deleted": false,
+  "directories": [
+    "LibDungeonFinder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4600/",
+  "fingerprint": "4eda9d5b30b694b4f06d0f8502173b1ae0aa2e6c96f8741314db1b6023b48739",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4600",
+  "source_url": "https://www.esoui.com/downloads/info4600-LibDungeonFinder.html",
+  "stats": {
+    "downloads": 1184,
+    "favorites": 0,
+    "monthly_downloads": 414
+  },
+  "title": "LibDungeonFinder",
+  "updated_at": 1780238385000,
+  "version": "1.2.0"
+}

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/M0R/Mara-M0R-s-Assorted-Radial-Actions__4418",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "M0R",
+  "canonical_id": "esoui:4418",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4418",
+  "deleted": false,
+  "directories": [
+    "MARA"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4418/",
+  "fingerprint": "02ad11b30992711e4d57a26e9003b733467e21774103076b4c2945ca3d6ca96e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15311.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4418",
+  "source_url": "https://www.esoui.com/downloads/info4418-MaraM0RsAssortedRadialActions.html",
+  "stats": {
+    "downloads": 187,
+    "favorites": 0,
+    "monthly_downloads": 38
+  },
+  "title": "Mara: M0R's Assorted Radial Actions",
+  "updated_at": 1783915122000,
+  "version": "6"
+}

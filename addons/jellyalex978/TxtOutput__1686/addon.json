@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/jellyalex978/TxtOutput__1686",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "jellyalex978",
+  "canonical_id": "esoui:1686",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:1686",
+  "deleted": false,
+  "directories": [
+    "oJ_TxtOutput"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1686/",
+  "fingerprint": "ec5f9023b1c2b8688044b9e99d1eb7732902f83825654725179b056c5122f95d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6883.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5575.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5576.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6900.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6901.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6902.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1686",
+  "source_url": "https://www.esoui.com/downloads/info1686-TxtOutput.html",
+  "stats": {
+    "downloads": 24450,
+    "favorites": 17,
+    "monthly_downloads": 22
+  },
+  "title": "TxtOutput",
+  "updated_at": 1781107417000,
+  "version": "1.4.5"
+}

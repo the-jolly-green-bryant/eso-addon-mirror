@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Iriya_Altmer/GoA_HarvestMapUAPatch__4707",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Iriya_Altmer",
+  "canonical_id": "esoui:4707",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4707",
+  "deleted": false,
+  "directories": [
+    "GoA_HarvestMapUAPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4707/",
+  "fingerprint": "fbb05d20f54d4e01380f16404fa8a5afab743731b3f16769cf152c3c97e10299",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16694.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4707",
+  "source_url": "https://www.esoui.com/downloads/info4707-GoA_HarvestMapUAPatch.html",
+  "stats": {
+    "downloads": 64,
+    "favorites": 0,
+    "monthly_downloads": 64
+  },
+  "title": "GoA_HarvestMapUAPatch",
+  "updated_at": 1784207996000,
+  "version": "1.1"
+}

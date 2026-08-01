@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Potions-Alert__562",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:562",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:562",
+  "deleted": false,
+  "directories": [
+    "HarvensPotionsAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl562/",
+  "fingerprint": "eaafaec657467030102714f14786855ae0b70a83e2361f7b3d9280f45631a221",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1693.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1694.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "562",
+  "source_url": "https://www.esoui.com/downloads/info562-HarvensPotionsAlert.html",
+  "stats": {
+    "downloads": 113063,
+    "favorites": 232,
+    "monthly_downloads": 73
+  },
+  "title": "Harven's Potions Alert",
+  "updated_at": 1716126525000,
+  "version": "2.2.2"
+}

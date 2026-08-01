@@ -1,0 +1,1 @@
+Simple Vote: do /vote [message] to vote

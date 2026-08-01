@@ -1,0 +1,19 @@
+
+## Title: |c3CB371Guild Donate|r
+## Author: @Marify
+## APIVersion: 100034
+## Version: 1.4.11
+## DependsOn: LibAddonMenu-2.0 LibMarify
+## OptionalDependsOn: Roomba
+## SavedVariables: GuildDonateVariables
+
+
+GuildDonate.lua
+History.xml
+History.lua
+
+lang/en.lua
+lang/$(language).lua
+
+bindings.xml
+

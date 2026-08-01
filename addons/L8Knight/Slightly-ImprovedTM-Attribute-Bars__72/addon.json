@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/L8Knight/Slightly-ImprovedTM-Attribute-Bars__72",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "L8Knight",
+  "canonical_id": "esoui:72",
+  "category_id": "21",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:72",
+  "deleted": false,
+  "directories": [
+    "SlightlyImprovedAttributeBars"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl72/",
+  "fingerprint": "f28079904a5c616425aa58dfa5b68c64b844ba039b02e2f41b9d8e475fc1224f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4459.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4460.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "72",
+  "source_url": "https://www.esoui.com/downloads/info72-SlightlyImprovedAttributeBars.html",
+  "stats": {
+    "downloads": 86708,
+    "favorites": 171,
+    "monthly_downloads": 185
+  },
+  "title": "Slightly Improved\u2122 Attribute Bars",
+  "updated_at": 1551624857000,
+  "version": "2.2.2"
+}

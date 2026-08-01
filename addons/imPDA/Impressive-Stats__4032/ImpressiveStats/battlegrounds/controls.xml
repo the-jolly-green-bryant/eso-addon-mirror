@@ -1,0 +1,244 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+		<TopLevelControl name="IMP_STATS_MATCHES" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<!-- <AnchorFill /> -->
+			<Controls>
+				<Control name="$(parent)TopBlock">
+					<Anchor point="TOPLEFT" offsetX="-8" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-8" offsetY="150" />
+					<Controls>
+						<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FF0000" centerColor="00FF00" /> -->
+						
+						<Control name="$(parent)Stats">
+							<Anchor point="TOPLEFT" />
+							<Controls>
+								<Control name="$(parent)GaugeKDAMeter" inherits="IMP_STATS_GaugeKDAMeter">
+									<Anchor point="TOPLEFT" />
+								</Control>
+
+								<Control name="$(parent)TopLeftCorner" hidden="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="110" offsetY="12" />
+								</Control>
+
+								<Label name="$(parent)TotalMatches" inherits="IMP_STATS_StatName" text="Matches recorded:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)TopLeftCorner" />
+								</Label>
+								<Label name="$(parent)TotalMatchesValue" inherits="IMP_STATS_StatValue">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)TotalMatches" relativePoint="TOPRIGHT" offsetX="5" />
+								</Label>
+
+								<Control name="$(parent)TopLeftCorner2" hidden="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)TopLeftCorner" offsetY="42" />
+								</Control>
+
+								<Label name="$(parent)MatchesCount" inherits="IMP_STATS_StatName" text="Stats over last - matches">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)TopLeftCorner2" />
+								</Label>
+								<!-- <Label name="$(parent)MatchesCountValue" inherits="IMP_STATS_StatValue">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)MatchesCount" relativePoint="TOPRIGHT" offsetX="5" />
+								</Label> -->
+
+								<Label name="$(parent)Winrate" inherits="IMP_STATS_StatName" text="Winrate:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)MatchesCount" relativePoint="BOTTOMLEFT" offsetY="6" />
+								</Label>
+								<Label name="$(parent)WinrateValue" inherits="IMP_STATS_StatValue">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Winrate" relativePoint="TOPRIGHT" offsetX="5" />
+								</Label>
+
+								<Label name="$(parent)KD" inherits="IMP_STATS_StatName" text="Kills/Deaths:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Winrate" relativePoint="BOTTOMLEFT" offsetY="6"/>
+								</Label>
+								<Label name="$(parent)KDValue" inherits="IMP_STATS_StatValue">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)KD" relativePoint="TOPRIGHT" offsetX="5" />
+								</Label>
+
+								<Control name="$(parent)KDAStats">
+									<Dimensions x="100" y="100" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)TopLeftCorner2" offsetX="285" />
+									<Controls>
+										<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="0000FF" centerColor="00FF00" /> -->
+										<Label name="$(parent)InvisibleLabel" inherits="IMP_STATS_StatName" text="-" hidden="true">
+											<Anchor point="TOPLEFT" />
+										</Label>
+										<Label name="$(parent)SumLabel" inherits="IMP_STATS_StatName" text="Sum">
+											<Anchor point="TOPRIGHT" relativeTo="$(parent)InvisibleLabel" relativePoint="BOTTOMRIGHT" offsetY="6"/>
+										</Label>
+										<Label name="$(parent)AvgLabel" inherits="IMP_STATS_StatName" text="Avg">
+											<Anchor point="TOPRIGHT" relativeTo="$(parent)SumLabel" relativePoint="BOTTOMRIGHT" offsetY="6"/>
+										</Label>
+
+										<Label name="$(parent)K" inherits="IMP_STATS_StatName" text="Kills">
+											<Anchor point="LEFT" relativeTo="$(parent)InvisibleLabel" relativePoint="RIGHT" offsetX="18" />
+										</Label>
+										<Label name="$(parent)KSum" inherits="IMP_STATS_StatValue">
+											<Anchor point="CENTER" relativeTo="$(parent)K" relativePoint="CENTER" offsetY="32" />
+										</Label>
+										<Label name="$(parent)KAvg" inherits="IMP_STATS_StatValue">
+											<Anchor point="CENTER" relativeTo="$(parent)KSum" relativePoint="CENTER" offsetY="32" />
+										</Label>
+
+										<Label name="$(parent)D" inherits="IMP_STATS_StatName" text="Deaths">
+											<Anchor point="LEFT" relativeTo="$(parent)InvisibleLabel" relativePoint="RIGHT" offsetX="68" />
+										</Label>
+										<Label name="$(parent)DSum" inherits="IMP_STATS_StatValue">
+											<Anchor point="CENTER" relativeTo="$(parent)D" relativePoint="CENTER" offsetY="32" />
+										</Label>
+										<Label name="$(parent)DAvg" inherits="IMP_STATS_StatValue">
+											<Anchor point="CENTER" relativeTo="$(parent)DSum" relativePoint="CENTER" offsetY="32" />
+										</Label>
+
+										<Label name="$(parent)A" inherits="IMP_STATS_StatName" text="Assists">
+											<Anchor point="LEFT" relativeTo="$(parent)InvisibleLabel" relativePoint="RIGHT" offsetX="128" />
+										</Label>
+										<Label name="$(parent)ASum" inherits="IMP_STATS_StatValue">
+											<Anchor point="CENTER" relativeTo="$(parent)A" relativePoint="CENTER" offsetY="32" />
+										</Label>
+										<Label name="$(parent)AAvg" inherits="IMP_STATS_StatValue">
+											<Anchor point="CENTER" relativeTo="$(parent)ASum" relativePoint="CENTER" offsetY="32" />
+										</Label>
+									</Controls>
+								</Control>
+							</Controls>
+						</Control>
+						
+						<Control name="$(parent)Filters">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)GaugeKDAMeter" relativePoint="TOPRIGHT" />
+							<Controls>
+								<Control name="$(parent)FilterTeamType" inherits="ZO_MultiselectComboBox">
+									<Dimensions x="270" y="32" />
+									<Anchor point="TOPRIGHT" offsetX="-16" offsetY="8" />
+								</Control>
+
+								<Control name="$(parent)FilterGameMode" inherits="ZO_MultiselectComboBox">
+									<Dimensions x="270" y="32" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)FilterTeamType" relativePoint="BOTTOMLEFT" offsetY="4" />
+								</Control>
+
+								<Control name="$(parent)CharactersFilter" inherits="IMP_STATS_CharactersFilter">
+									<Dimensions x="270" y="32" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)FilterGameMode" relativePoint="BOTTOMRIGHT" offsetY="4" />
+
+									<!-- <Controls>
+										<Button name="$(parent)SelectButton" inherits="ZO_DefaultButton" text="Select All">
+											<Dimensions x="200" />
+											<Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" />
+										</Button>
+									</Controls> -->
+								</Control>
+							</Controls>
+						</Control>
+
+						<!-- <Label name="$(parent)TotalKDA" inherits="IMP_STATS_StatName" text="K/D/A (total):">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Winrate" relativePoint="BOTTOMLEFT" offsetY="6"/>
+						</Label>
+						<Label name="$(parent)TotalKDAValue" inherits="IMP_STATS_StatValue">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)TotalKDA" relativePoint="TOPRIGHT" offsetX="5" />
+						</Label> -->
+						
+						<!-- <Label name="$(parent)KDA" inherits="IMP_STATS_StatName" text="K/D/A:">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)TotalKDA" relativePoint="BOTTOMLEFT" offsetY="6"/>
+						</Label>
+						<Label name="$(parent)KDAValue" inherits="IMP_STATS_StatValue">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)KDA" relativePoint="TOPRIGHT" offsetX="5" />
+						</Label> -->
+
+						<!-- <Label name="$(parent)Totals" inherits="IMP_STATS_StatName" text="Total damage/healing/damage taken:">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)KDA" relativePoint="BOTTOMLEFT" offsetY="6"/>
+						</Label>
+						<Label name="$(parent)TotalsValue" inherits="IMP_STATS_StatValue">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Totals" relativePoint="TOPRIGHT" offsetX="5" />
+						</Label> -->
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)Divider">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TopBlock" relativePoint="BOTTOMLEFT" offsetY="10" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)TopBlock" relativePoint="BOTTOMRIGHT" offsetY="24" />
+					<Controls>
+						<Texture name="$(parent)Left" textureFile="EsoUI/Art/Guild/sectionDivider_left.dds">
+							<Anchor point="TOPLEFT"/>
+							<Dimensions x="880" y="4"/>
+						</Texture>
+						<Texture name="$(parent)Right" textureFile="EsoUI/Art/Guild/sectionDivider_right.dds">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Left" relativePoint="TOPRIGHT"/>
+							<Dimensions x="100" y="4"/>
+						</Texture>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Listing">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" offsetX="-8" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-16" />
+				</Control>
+
+				<Label name="$(parent)PerformanceMeter" font="ZoFontGame" color="777777AA" text="Update: - ms" mouseEnabled="true" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Listing" relativePoint="BOTTOMLEFT" />
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, BOTTOM, 'How fast list updates. Let me know if it is too high (>500ms, initial loading can be long, it is intentional). Will hide later.')
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                </Label>
+
+				<Button name="$(parent)OpenPlayers" mouseOverBlendMode="ADD" excludeFromResizeToFitExtents="true">
+					<Dimensions x="42" y="42"/>
+					<Anchor point="LEFT" relativeTo="ZO_SharedTitleLabel" relativePoint="RIGHT" offsetX="5" />
+					<Textures
+						normal="EsoUI/Art/Guild/tabIcon_roster_up.dds"
+						mouseOver="EsoUI/Art/Guild/tabIcon_roster_over.dds"
+						pressed="EsoUI/Art/Guild/tabIcon_roster_down.dds"
+						disabled="EsoUI/Art/Guild/tabIcon_roster_disabled.dds"
+					/>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, TOP, 'Players\' Stats')
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+					<OnClicked>
+						IMP_STATS_PlayersSummary:SetHidden(not IMP_STATS_PlayersSummary:IsHidden())
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)Stats" mouseOverBlendMode="ADD" excludeFromResizeToFitExtents="true">
+					<Dimensions x="42" y="42"/>
+					<Anchor point="LEFT" relativeTo="$(parent)OpenPlayers" relativePoint="RIGHT" />
+					<Textures
+						normal="EsoUI/Art/Journal/journal_tabIcon_leaderboard_up.dds"
+						mouseOver="EsoUI/Art/Journal/journal_tabIcon_leaderboard_over.dds"
+						pressed="EsoUI/Art/Journal/journal_tabIcon_leaderboard_down.dds"
+						disabled="EsoUI/Art/Journal/journal_tabIcon_leaderboard_disabled.dds"
+					/>
+					<OnMouseEnter>
+						local s = IMP_STATS_MATCHES_UI.stats
+						local ilog2 = 1 / math.log(2)
+						local tooltip = {
+							'Your Overall Performance',
+							''
+						}
+
+						if IsControlKeyDown() then
+							tooltip[#tooltip+1] = 'It shows how your stat compares to other players\' average stat:'
+							tooltip[#tooltip+1] = '- |cFFFFFF1|r means you have the average stat.'
+							tooltip[#tooltip+1] = '- Numbers above |cFFFFFF1|r mean you are |cFFFFFFX|r times better than average (e.g., |cFFFFFF2|r = twice as much damage as the average player).'
+							tooltip[#tooltip+1] = '- Numbers below |cFFFFFF1|r mean you are |cFFFFFFX|r times worse than average (e.g., |cFFFFFF0.5|r = half as much damage as the average player).'
+						else
+							tooltip[#tooltip+1] = ('Damage: |cFFFFFF%.1f|r, healing: |cFFFFFF%.1f|r, tankiness: |cFFFFFF%.1f|r, lethality: |cFFFFFF%.1f|r' ):format(s.EDD, s.EHD, s.EDT, s.EK)
+							tooltip[#tooltip+1] = ''
+							tooltip[#tooltip+1] = 'Hold |cFFFFFFCtrl|r and hover again for description.'
+						end
+
+						ZO_Tooltips_ShowTextTooltip(self, TOP, table.concat(tooltip, '\n'))
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+					<!-- <OnClicked>
+						IMP_STATS_PlayersSummary:SetHidden(not IMP_STATS_PlayersSummary:IsHidden())
+					</OnClicked> -->
+				</Button>
+			</Controls>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

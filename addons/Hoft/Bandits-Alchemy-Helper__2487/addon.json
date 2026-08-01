@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Hoft/Bandits-Alchemy-Helper__2487",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hoft",
+  "canonical_id": "esoui:2487",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2487",
+  "deleted": false,
+  "directories": [
+    "BanditsAlchemyHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2487/",
+  "fingerprint": "f36ad4f419e85e66febce4424fe79d83d1a3f4cb0b37ceeea07788e8226d6415",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8518.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2487",
+  "source_url": "https://www.esoui.com/downloads/info2487-BanditsAlchemyHelper.html",
+  "stats": {
+    "downloads": 60143,
+    "favorites": 92,
+    "monthly_downloads": 251
+  },
+  "title": "Bandits Alchemy Helper",
+  "updated_at": 1668642470000,
+  "version": "1.6"
+}

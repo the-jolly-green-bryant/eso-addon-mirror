@@ -1,0 +1,96 @@
+{
+  "archive_path": "addons/Half-Dead/Skyrim-Style-UI__1511",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Half-Dead",
+  "canonical_id": "esoui:1511",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    },
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1511",
+  "deleted": false,
+  "directories": [
+    "Optional",
+    "SkyrimStyleUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1511/",
+  "fingerprint": "8c1f804d01ce1d9f03835585303d8f1c25ab73758ba07ce85afe5a7f22b27d37",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5172.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7938.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7937.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1511",
+  "source_url": "https://www.esoui.com/downloads/info1511-SkyrimStyleUI.html",
+  "stats": {
+    "downloads": 42460,
+    "favorites": 64,
+    "monthly_downloads": 113
+  },
+  "title": "Skyrim Style UI",
+  "updated_at": 1555427143000,
+  "version": "1.34"
+}

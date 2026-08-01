@@ -1,0 +1,28 @@
+## Title: Bar Swap Feedback
+## Author: KnightOfOsiris
+## Version: 101036.1
+## Description: Animated feedback, and an optional sound effect, when switching between action bars.
+## APIVersion: 101036 101037
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: BarSwapFeedback_SavedVars
+
+; Load language strings
+/lang/en.lua
+/lang/$(language).lua
+
+; Load core
+BarSwapFeedback.lua
+
+;
+; DISCLOSURE:
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates.
+;
+; The Elder Scrolls® and related logos are registered trademarks or
+; trademarks of ZeniMax Media Inc. in the United States and/or other
+; countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms
+;

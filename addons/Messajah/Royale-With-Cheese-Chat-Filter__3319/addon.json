@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Messajah/Royale-With-Cheese-Chat-Filter__3319",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Messajah",
+  "canonical_id": "esoui:3319",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3319",
+  "deleted": false,
+  "directories": [
+    "RoyaleWithCheese"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3319/",
+  "fingerprint": "76c0c8f5c34bd3a402728c65abe0cbfa55a79c15586b6e9152cd6c2cbb5b851c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11271.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3319",
+  "source_url": "https://www.esoui.com/downloads/info3319-RoyaleWithCheeseChatFilter.html",
+  "stats": {
+    "downloads": 2747,
+    "favorites": 2,
+    "monthly_downloads": 13
+  },
+  "title": "Royale With Cheese (Chat Filter)",
+  "updated_at": 1646483688000,
+  "version": "1.1.0"
+}

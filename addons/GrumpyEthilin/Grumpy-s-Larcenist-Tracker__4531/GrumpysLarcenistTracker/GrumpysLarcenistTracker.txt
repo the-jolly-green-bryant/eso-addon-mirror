@@ -1,0 +1,8 @@
+## Title: Grumpy's Larcenist Tracker
+## APIVersion: 101049
+## Version: 1.0.1
+## Author: GrumpyEthilin
+## Description: A lightweight tracker for fencing achievements across all zones.
+## SavedVariables: GrumpysLarcenistTracker_DB
+
+GrumpysLarcenistTracker.lua

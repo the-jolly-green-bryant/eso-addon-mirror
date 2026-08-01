@@ -1,0 +1,27 @@
+## Title: ITTs Roster Bot
+## APIVersion: 101049 101050
+## Description: Keeps on top of rosters, beep! Part of the ITTs Bot family, handy helpers for Trade Guilds.
+## Version: 1.1.0
+## AddOnVersion: 110
+## Author: |c00a313Ghostbane|r & |c268074JN Slevin
+## SavedVariables: ITTsRosterBotSettings ITTsRosterBotData
+## DependsOn: LibAddonMenu-2.0>=43 LibChatMessage>=120 ITTsDonationBot>=211 LibDebugLogger>=307 LibTextFilter>=13 LibHistoire>=1103
+## OptionalDependsOn: PerfectPixel ArkadiusTradeTools MasterMerchant
+
+ITTsRosterBot.lua
+ITTsRosterBot-Settings.lua
+ITTsRosterBotUtils.lua
+
+
+SalesAdapter/SalesAdapter.lua
+SalesAdapter/adapters/ATT.lua
+SalesAdapter/adapters/MM3.lua
+
+UI/mail.lua
+UI/index.lua
+
+Controls.xml
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

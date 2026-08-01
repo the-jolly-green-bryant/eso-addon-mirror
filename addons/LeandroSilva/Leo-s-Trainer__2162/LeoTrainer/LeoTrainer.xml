@@ -1,0 +1,915 @@
+<GuiXml>
+    <Font name="LeoTrainerLargeFont" font="$(MEDIUM_FONT)|18|soft-shadow-thin"/>
+    <Font name="LeoTrainerNormalFont" font="$(MEDIUM_FONT)|16|soft-shadow-thin"/>
+    <Font name="LeoTrainerSmallFont" font="$(MEDIUM_FONT)|14|soft-shadow-thin"/>
+    <Controls>
+
+        <TopLevelControl name="LeoTrainerWindow" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true">
+            <Dimensions x="850" y="840" />
+            <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOPCENTER" offsetY="100" />
+            <OnMoveStop> LeoTrainer.ui:OnWindowMoveStop() </OnMoveStop>
+            <OnHide> LeoTrainer.ui:OnHide(self, hidden) </OnHide>
+            <OnShow> LeoTrainer.ui:OnShow(self, hidden) </OnShow>
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="000000" edgeColor="222222">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                    <Dimensions x="850" y="50"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+
+                <Label name="$(parent)Title" color="39B027" font="ZoFontWinH3" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="10"/>
+                </Label>
+
+                <Button name="$(parent)Close" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)BG" offsetX="-5" offsetY="4"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnClicked>LeoTrainer.ui:CloseUI()</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/buttons/decline_up.dds">
+                            <Dimensions y="25" x="25"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)FeedbackButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)Close" offsetX="-5" />
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Research')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)SettingsButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)FeedbackButton" offsetX="-5"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Settings')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>
+                        SCENE_MANAGER:HideTopLevel(LeoTrainerWindow)
+                        DoCommand("/lto")
+                    </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/chatwindow/chat_options_up.dds">
+                            <Dimensions y="35" x="35"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)WoodworkingButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)SettingsButton" offsetX="-5" />
+                    <Dimensions x="56" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Woodworking and Jewel Crafting')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>
+                        LeoTrainerWindowCraft1Panel:SetHidden(true)
+                        LeoTrainerWindowCraft2Panel:SetHidden(true)
+                        LeoTrainerWindowCraft6Panel:SetHidden(false)
+                    </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)TextureWood" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_woodworking_up.dds">
+                            <Dimensions y="38" x="38"/>
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)BG" offsetX="0"/>
+                        </Texture>
+                        <Texture name="$(parent)TextureJewel" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_jewelrycrafting_up.dds">
+                            <Dimensions y="30" x="30"/>
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)TextureWood" offsetX="26" offsetY="4"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)ClothingButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)WoodworkingButton" offsetX="-5" />
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Clothing')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>
+                        LeoTrainerWindowCraft1Panel:SetHidden(true)
+                        LeoTrainerWindowCraft2Panel:SetHidden(false)
+                        LeoTrainerWindowCraft6Panel:SetHidden(true)
+                    </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_clothing_up.dds">
+                            <Dimensions y="38" x="38"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)BlacksmithingButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)ClothingButton" offsetX="-5" />
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Blacksmithing')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>
+                        LeoTrainerWindowCraft1Panel:SetHidden(false)
+                        LeoTrainerWindowCraft2Panel:SetHidden(true)
+                        LeoTrainerWindowCraft6Panel:SetHidden(true)
+                    </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_blacksmithing_up.dds">
+                            <Dimensions y="38" x="38"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Backdrop name="$(parent)HeaderBG" centerColor="111111" edgeColor="222222">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="8" offsetY="5"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)BlacksmithingButton" offsetX="-5" offsetY="5"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+
+                <!-- Blacksmithing = 1 -->
+                <Backdrop name="$(parent)Craft1Panel" tier="1" centerColor="000000" edgeColor="202020">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="52"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="400"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Label name="$(parent)Trait11" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="50"/>
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait12" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait11" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait13" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait12" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait14" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait13" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait15" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait14" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait16" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait15" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait17" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait16" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait18" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait17" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait19" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait18" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+
+                        <Label name="$(parent)Trait1" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait11" relativePoint="TOPLEFT" offsetX="400" offsetY="0"/>
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait2" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait1" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait3" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait2" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait4" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait3" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait5" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait4" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait6" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait5" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait7" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait6" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait8" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait7" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait9" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait8" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+
+                        <Label name="$(parent)Line1" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="8"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line2" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line1" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line3" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line2" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line4" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line3" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line5" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line4" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line6" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line5" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line7" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line6" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+
+                        <Label name="$(parent)Line8" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line7" relativePoint="TOPRIGHT" offsetX="150" />
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line9" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line8" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line10" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line9" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line11" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line10" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line12" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line11" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line13" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line12" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line14" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line13" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                    </Controls>
+                </Backdrop>
+
+                <!-- Clothing = 1 -->
+                <Backdrop name="$(parent)Craft2Panel" hidden="true" tier="1" centerColor="000000" edgeColor="202020">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="52"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="400"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Label name="$(parent)Trait1" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait19" relativePoint="TOPLEFT" offsetX="0" offsetY="50"/>
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait2" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait1" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait3" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait2" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait4" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait3" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait5" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait4" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait6" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait5" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait7" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait6" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait8" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait7" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait9" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait8" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+
+                        <Label name="$(parent)Line1" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="8"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line2" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line1" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line3" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line2" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line4" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line3" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line5" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line4" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line6" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line5" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line7" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line6" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+
+                        <Label name="$(parent)Line8" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line7" relativePoint="TOPRIGHT" offsetX="20" />
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line9" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line8" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line10" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line9" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line11" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line10" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line12" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line11" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line13" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line12" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line14" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line13" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                    </Controls>
+                </Backdrop>
+
+                <!-- Woodworking = 6 and Jewel crafting = 7 -->
+                <Backdrop name="$(parent)Craft6Panel" hidden="true" tier="1" centerColor="000000" edgeColor="202020">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="52"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="400"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Label name="$(parent)Line1" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="8"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line2" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line1" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line3" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line2" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line4" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line3" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Line5" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line4" relativePoint="TOPRIGHT" offsetX="4"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+
+                        <Label name="$(parent)Line6" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Line5" relativePoint="TOPRIGHT" offsetX="150" offsetY="0"/>
+                            <Dimensions x="32" y="32"/>
+                            <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                            <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                        </Label>
+
+                        <Label name="$(parent)Trait11" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="50"/>
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait12" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait11" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait13" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait12" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait14" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait13" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait15" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait14" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait16" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait15" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait17" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait16" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait18" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait17" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait19" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait18" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+
+                        <Label name="$(parent)Trait1" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait11" relativePoint="TOPLEFT" offsetX="320" offsetY="0"/>
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait2" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait1" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait3" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait2" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait4" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait3" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait5" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait4" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait6" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait5" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait7" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait6" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait8" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait7" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+                        <Label name="$(parent)Trait9" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait8" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="150" y="28"/>
+                            <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                            <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                        </Label>
+
+                        <!-- Jewel crafting = 7 -->
+                        <Backdrop name="$(parent)Craft7Panel" tier="1" centerColor="000000" edgeColor="000000">
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="500" offsetY="0"/>
+                            <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="0"/>
+                            <Edge edgeSize="1"/>
+                            <Controls>
+                                <Label name="$(parent)Line1" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="8"/>
+                                    <Dimensions x="32" y="32"/>
+                                    <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                                    <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                </Label>
+                                <Label name="$(parent)Line2" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Line1" relativePoint="TOPRIGHT" offsetX="4"/>
+                                    <Dimensions x="32" y="32"/>
+                                    <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip) </OnMouseEnter>
+                                    <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+                                </Label>
+                                <Label name="$(parent)Trait1" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="50"/>
+                                    <Dimensions x="150" y="28"/>
+                                    <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                                    <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                                </Label>
+                                <Label name="$(parent)Trait2" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Trait1" relativePoint="BOTTOMLEFT" />
+                                    <Dimensions x="150" y="28"/>
+                                    <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                                    <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                                </Label>
+                                <Label name="$(parent)Trait3" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Trait2" relativePoint="BOTTOMLEFT" />
+                                    <Dimensions x="150" y="28"/>
+                                    <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                                    <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                                </Label>
+                                <Label name="$(parent)Trait4" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Trait3" relativePoint="BOTTOMLEFT" />
+                                    <Dimensions x="150" y="28"/>
+                                    <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                                    <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                                </Label>
+                                <Label name="$(parent)Trait5" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Trait4" relativePoint="BOTTOMLEFT" />
+                                    <Dimensions x="150" y="28"/>
+                                    <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                                    <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                                </Label>
+                                <Label name="$(parent)Trait6" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Trait5" relativePoint="BOTTOMLEFT" />
+                                    <Dimensions x="150" y="28"/>
+                                    <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                                    <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                                </Label>
+                                <Label name="$(parent)Trait7" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Trait6" relativePoint="BOTTOMLEFT" />
+                                    <Dimensions x="150" y="28"/>
+                                    <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                                    <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                                </Label>
+                                <Label name="$(parent)Trait8" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Trait7" relativePoint="BOTTOMLEFT" />
+                                    <Dimensions x="150" y="28"/>
+                                    <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                                    <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                                </Label>
+                                <Label name="$(parent)Trait9" mouseEnabled="true" font="LeoTrainerNormalFont" color="E8DFAF" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Trait8" relativePoint="BOTTOMLEFT" />
+                                    <Dimensions x="150" y="28"/>
+                                    <OnMouseEnter> LeoTrainer.ui:OnMouseEnterTrait(self) </OnMouseEnter>
+                                    <OnMouseExit>ClearTooltip(ItemTooltip)</OnMouseExit>
+                                </Label>
+                            </Controls>
+                        </Backdrop>
+                    </Controls>
+                </Backdrop>
+
+                <Backdrop name="$(parent)IconDesc" tier="1" centerColor="000000" edgeColor="202020">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Craft1Panel" offsetX="0" offsetY="2"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Craft1Panel" offsetX="" offsetY="40"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Texture name="$(parent)Icon1" color="00FF00" textureFile="esoui/art/buttons/accept_up.dds">
+                            <Dimensions y="25" x="25"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="6"/>
+                        </Texture>
+                        <Label name="$(parent)Icon1Label" text="Known by all" font="LeoTrainerNormalFont" color="00FF00" inheritAlpha="true" verticalAlignment="TOP" horizontalAlignment="LEFT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Icon1" relativePoint="TOPRIGHT" offsetX="6"/>
+                            <Dimensions x="90" y="28"/>
+                        </Label>
+
+                        <Texture name="$(parent)Icon2" color="FFFF00" textureFile="esoui/art/buttons/accept_up.dds">
+                            <Dimensions y="25" x="25"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Icon1Label" relativePoint="TOPRIGHT" offsetX="6"/>
+                        </Texture>
+                        <Label name="$(parent)Icon2Label" text="Known by you and some" font="LeoTrainerNormalFont" color="FFFF00" inheritAlpha="true" verticalAlignment="TOP" horizontalAlignment="LEFT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Icon2" relativePoint="TOPRIGHT" offsetX="6"/>
+                            <Dimensions x="180" y="28"/>
+                        </Label>
+
+                        <Texture name="$(parent)Icon3" color="FFFFFFF" textureFile="esoui/art/buttons/pointsplus_up.dds">
+                            <Dimensions y="25" x="25"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Icon2Label" relativePoint="TOPRIGHT" offsetX="6"/>
+                        </Texture>
+                        <Label name="$(parent)Icon3Label" text="Has item" font="LeoTrainerNormalFont" color="FFFFFF" inheritAlpha="true" verticalAlignment="TOP" horizontalAlignment="LEFT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Icon3" relativePoint="TOPRIGHT" offsetX="6"/>
+                            <Dimensions x="60" y="28"/>
+                        </Label>
+
+                        <Texture name="$(parent)Icon4" color="FFAA00" textureFile="esoui/art/buttons/decline_up.dds">
+                            <Dimensions y="25" x="25"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Icon3Label" relativePoint="TOPRIGHT" offsetX="6"/>
+                        </Texture>
+                        <Label name="$(parent)Icon4Label" text="Known by some and not you" font="LeoTrainerNormalFont" color="FFAA00" inheritAlpha="true" verticalAlignment="TOP" horizontalAlignment="LEFT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Icon4" relativePoint="TOPRIGHT" offsetX="6"/>
+                            <Dimensions x="190" y="28"/>
+                        </Label>
+
+                        <Texture name="$(parent)Icon5" color="FF0000" textureFile="esoui/art/buttons/decline_up.dds">
+                            <Dimensions y="25" x="25"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Icon4Label" relativePoint="TOPRIGHT" offsetX="6"/>
+                        </Texture>
+                        <Label name="$(parent)Icon5Label" text="Unknown by all" font="LeoTrainerNormalFont" color="FF0000" inheritAlpha="true" verticalAlignment="TOP" horizontalAlignment="LEFT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Icon5" relativePoint="TOPRIGHT" offsetX="6"/>
+                            <Dimensions x="100" y="28"/>
+                        </Label>
+                    </Controls>
+                </Backdrop>
+
+                <Backdrop name="$(parent)QueuePanel" tier="1" centerColor="000000" edgeColor="202020" clampedToScreen="true" movable="false" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)IconDesc" offsetX="0" offsetY="2"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)IconDesc" offsetX="" offsetY="400"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <Control name="$(parent)QueueScroll" inheritAlpha="true">
+                            <AnchorFill/>
+                            <Controls>
+                                <Control name="$(parent)Headers">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="20" />
+                                    <Controls>
+                                        <Control name="$(parent)Trainer" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                                            <Dimensions x="150" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, "Trainer", "trainer", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Control name="$(parent)Trainee" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trainer" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="150" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, "Trainee", "trainee", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Control name="$(parent)Trait" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trainee" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="200" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, "Trait", "researchName", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Control name="$(parent)Item" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Trait" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="200" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, "Item", "item", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                    </Controls>
+                                </Control>
+                                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                                    <Dimensions x="800" y="300" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="20" />
+                                </Control>
+                                <Button name="$(parent)FillSlots" inherits="ZO_DefaultButton" font="ZoFontWinH4" text="Fill all slots">
+                                    <Dimensions x="160" y="30" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)List" relativePoint="BOTTOMLEFT" offsetX="-8" offsetY="10"/>
+                                    <OnClicked>
+                                        LeoTrainer.FillSlots()
+                                    </OnClicked>
+                                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Fill all empty research slots for each character known by any other with the line/trait that will require less time')</OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Button>
+                                <Button name="$(parent)FillMySlots" inherits="ZO_DefaultButton" font="ZoFontWinH4" text="Fill my slots">
+                                    <Dimensions x="160" y="30" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)FillSlots" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                                    <OnClicked>
+                                        LeoTrainer.FillMySlots()
+                                    </OnClicked>
+                                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Fill all empty research slots for CURRENT character known by the any character with the line/trait that will require less time')</OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Button>
+                                <Button name="$(parent)FillKnownSlots" inherits="ZO_DefaultButton" font="ZoFontWinH4" text="Fill slots I know">
+                                    <Dimensions x="160" y="30" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)FillMySlots" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                                    <OnClicked>
+                                        LeoTrainer.FillKnownSlots()
+                                    </OnClicked>
+                                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Fill all empty research slots for each character known ONLY by the current character with the line/trait that will require less time')</OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Button>
+                                <Button name="$(parent)Clear" inherits="ZO_DefaultButton" font="ZoFontWinH4" text="Clear Queue">
+                                    <Dimensions x="160" y="30" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)FillKnownSlots" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                                    <OnClicked>
+                                        LeoTrainer.ClearQueue()
+                                    </OnClicked>
+                                </Button>
+                                <Button name="$(parent)CraftAll" inherits="ZO_DefaultButton" font="ZoFontWinH4" text="Start Craft">
+                                    <Dimensions x="160" y="30" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Clear" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                                    <ButtonState state="DISABLED"/>
+                                    <OnClicked>
+                                        LeoTrainer.continueCrating = true
+                                        LeoTrainer.craft.StartCraft()
+                                    </OnClicked>
+                                </Button>
+
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+
+        <Control name="LeoTrainerQueueListTemplate" virtual="true" mouseEnabled="true">
+            <Dimensions x="450" y="30" />
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+
+                <Label name="$(parent)Trainer" font="LeoTrainerNormalFont" color="ffffff" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="150" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="TOPLEFT"/>
+                    <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+                </Label>
+                <Label name="$(parent)Trainee" font="LeoTrainerNormalFont" verticalAlignment="CENTER">
+                    <Dimensions x="150" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Trainer" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Label name="$(parent)Trait" font="LeoTrainerNormalFont" verticalAlignment="CENTER">
+                    <Dimensions x="200" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Trainee" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Label name="$(parent)Item" font="LeoTrainerNormalFont" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="200" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Trait" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter>
+                        InitializeTooltip(ItemTooltip, self)
+                        ItemTooltip:SetLink(self:GetText())
+                        ItemTooltip:AddLine(zo_iconTextFormat("esoui/art/icons/icon_rmb.dds", 26, 26, "Remove from Queue"), "ZoFontGame", 1, 1, 1, LEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_CENTER, true)
+                    </OnMouseEnter>
+                    <OnMouseExit> ClearTooltip(ItemTooltip) </OnMouseExit>
+                </Label>
+
+            </Controls>
+        </Control>
+
+        <Control name="LeoTrainerCharDropdown" inherits="ZO_ComboBox" virtual="true">
+            <OnInitialized>
+                ZO_ComboBox:New(self)
+            </OnInitialized>
+        </Control>
+
+    </Controls>
+</GuiXml>

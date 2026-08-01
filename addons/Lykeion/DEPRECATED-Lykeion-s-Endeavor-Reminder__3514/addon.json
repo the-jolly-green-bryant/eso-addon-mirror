@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Lykeion/DEPRECATED-Lykeion-s-Endeavor-Reminder__3514",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lykeion",
+  "canonical_id": "esoui:3514",
+  "category_id": "98",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3514",
+  "deleted": false,
+  "directories": [
+    "LykeionsEndeavorReminder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3514/",
+  "fingerprint": "4c4f172beccc03384744f59dac53a997bb3659cd5b60954c95bf3c93baee11b9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11958.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3514",
+  "source_url": "https://www.esoui.com/downloads/info3514-DEPRECATEDLykeionsEndeavorReminder.html",
+  "stats": {
+    "downloads": 3669,
+    "favorites": 3,
+    "monthly_downloads": 6
+  },
+  "title": "DEPRECATED: Lykeion's Endeavor Reminder",
+  "updated_at": 1745326428000,
+  "version": "1.0.7"
+}

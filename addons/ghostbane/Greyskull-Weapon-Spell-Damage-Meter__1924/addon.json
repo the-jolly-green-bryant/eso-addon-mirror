@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/ghostbane/Greyskull-Weapon-Spell-Damage-Meter__1924",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ghostbane",
+  "canonical_id": "esoui:1924",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:1924",
+  "deleted": false,
+  "directories": [
+    "Greyskull"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1924/",
+  "fingerprint": "362d2d3ea9b82d6ee682bd6345b53bb208e93e818988d5d11550c9a5ff767747",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6509.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6510.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6511.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1924",
+  "source_url": "https://www.esoui.com/downloads/info1924-GreyskullWeaponSpellDamageMeter.html",
+  "stats": {
+    "downloads": 323721,
+    "favorites": 167,
+    "monthly_downloads": 731
+  },
+  "title": "Greyskull : Weapon / Spell Damage Meter",
+  "updated_at": 1694502308000,
+  "version": "1.1.1"
+}

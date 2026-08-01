@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Irniben/Uhryel-s-Ring-of-the-Pale-Order-Reminder__3255",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Irniben",
+  "canonical_id": "esoui:3255",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3255",
+  "deleted": false,
+  "directories": [
+    "UhryelsPaleRingReminder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3255/",
+  "fingerprint": "091a48deb7425cc8810ea0d40b05881c120eaaf9ab0ac20680dc4f5ce55cd9cb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11094.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11093.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3255",
+  "source_url": "https://www.esoui.com/downloads/info3255-UhryelsRingofthePaleOrderReminder.html",
+  "stats": {
+    "downloads": 2800,
+    "favorites": 2,
+    "monthly_downloads": 11
+  },
+  "title": "Uhryel's Ring of the Pale Order Reminder",
+  "updated_at": 1639163746000,
+  "version": "1.1.0"
+}

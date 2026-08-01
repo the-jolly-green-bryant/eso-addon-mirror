@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/M0R/One-More-Rockgrove-Helper__3985",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "M0R",
+  "canonical_id": "esoui:3985",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3985",
+  "deleted": false,
+  "directories": [
+    "OneMorRockgrove"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3985/",
+  "fingerprint": "63ee45ecf1694ab88cdfbb46d9d5a190e6242e945daeba873383e8971b51492e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13539.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13508.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13509.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13510.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3985",
+  "source_url": "https://www.esoui.com/downloads/info3985-OneMoreRockgroveHelper.html",
+  "stats": {
+    "downloads": 2213,
+    "favorites": 3,
+    "monthly_downloads": 39
+  },
+  "title": "One More Rockgrove Helper",
+  "updated_at": 1760790856000,
+  "version": "1.3.0"
+}

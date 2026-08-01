@@ -1,0 +1,25 @@
+<GuiXml>
+    <Controls>
+		<TopLevelControl name="TMP42UI" hidden="true" mouseEnabled="true">
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+			<Controls>
+
+				<Control name="$(parent)Row" inherits="ZO_StatsDropdownRow" movable="true" mouseEnabled="true" hidden="false" clampedToScreen ="true">
+					<Anchor point="TOPLEFT" relativeTo="TMP42UI" offsetX="40" offsetY="80" />
+					<Dimensions x="360" y="30" />
+					<OnInitialized>
+						self.name = self:GetNamedChild("Name")
+						self.dropdown = ZO_ComboBox_ObjectFromContainer(self:GetNamedChild("Dropdown"))
+						self.name:SetText("Testing")
+					</OnInitialized>
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
+					</Controls>
+				</Control>
+
+			</Controls>
+		</TopLevelControl>
+
+
+    </Controls>
+</GuiXml>

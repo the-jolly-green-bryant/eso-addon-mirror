@@ -1,0 +1,19 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="merlinsHealHelperIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="600" y="50" />
+
+      <OnMoveStop>
+        merlinsHealHelper.OnIndicatorMoveStop()
+      </OnMoveStop>
+
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+        <Label 
+			name="$(parent)T" font="ZoFontAnnounceLarge" color="FFFFFF" inheritAlpha="true" 
+			wrapMode="TRUNCATE" verticalAlignment="CENTER" text="Heal Helper" 
+		/>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,560 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="SkillBarPresetsWindow" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions x="420" y="780" />
+            <Anchor point="TOPRIGHT" relativeTo="ZO_Skills" relativePoint="TOPLEFT" offsetX="-30" offsetY="-40" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.8">
+                    <AnchorFill />
+                </Backdrop>
+                <Label name="$(parent)Title" text="SKILL PRESETS" font="ZoFontHeader4" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="8" />
+                </Label>
+                <Texture name="$(parent)Div" textureFile="EsoUI/Art/Campaign/campaignbrowser_divider_short.dds">
+                    <Dimensions x="420" y="4"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetY="4" />
+                </Texture>
+                <Button name="$(parent)EditList" >
+                    <Dimensions x="48" y="48" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Div" relativePoint="TOPRIGHT" offsetX="-20" offsetY="0" />
+                    <Textures
+                            normal="EsoUI/Art/Buttons/edit_up.dds"
+                            pressed="EsoUI/Art/Buttons/edit_down.dds"
+                            mouseOver="EsoUI/Art/Buttons/edit_over.dds"
+                    />
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, TOP, "Edit list")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                    <OnClicked>
+                        PRESETLIST.ListEdit_Click(self)
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)AddPreset" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="48" y="48" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Div" relativePoint="TOPRIGHT" offsetX="-250" offsetY="2"  />
+                    <Textures
+                            normal="EsoUI/Art/Buttons/plus_up.dds"
+                            pressed="EsoUI/Art/Buttons/plus_down.dds"
+                            mouseOver="EsoUI/Art/Buttons/plus_over.dds"
+                    />
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, TOP, "Add preset")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                    <OnClicked>
+                        PRESETLIST.PresetAdd_Click(self)
+                    </OnClicked>
+                </Button>
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Dimensions x="420" y="720" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="50" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+        <TopLevelControl name="SkillBarAddPresetWindow" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions x="450" y="300" />
+            <Anchor point="TOPRIGHT" relativeTo="SkillBarPresetsWindow" relativePoint="TOPLEFT" />
+            <Controls>
+                <Backdrop name="$(parent)Background" inherits="ZO_DefaultBackdrop" alpha="0.8">
+                    <AnchorFill />
+                </Backdrop>
+                <Label name="$(parent)Title" text="CUSTOMIZE PRESET" font="ZoFontAlert" horizontalAlignment="1">
+                    <Dimensions x="400" y="50" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="-120" />
+                </Label>
+                <Button name="$(parent)Close">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="7" />
+                    <Textures
+                            normal="/esoui/art/buttons/closebutton_up.dds"
+                            pressed="/esoui/art/buttons/closebutton_down.dds"
+                            mouseOver="/esoui/art/buttons/closebutton_mouseover.dds"
+                    />
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, TOP, "Cancel and Close")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                    <OnClicked>
+                        PRESETLIST.PresetCancelAdd_Click(self)
+                    </OnClicked>
+                </Button>
+                <Backdrop name="$(parent)Edit" inherits="ZO_EditBackdrop">
+                    <Dimensions x="300" y="30" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="100" offsetY="80" />
+                    <Controls>
+                        <EditBox name="$(parent)EditBox" font="ZoFontGameBold" inherits="ZO_DefaultEditForBackdrop" maxInputCharacters="20" scale="1" />
+                    </Controls>
+                </Backdrop>
+                <Label name="$(parent)EditLabel" text="Name:" font="ZoFontAlert" horizontalAlignment="2" scale="1">
+                    <Dimensions x="70" y="40" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Edit" relativePoint="TOPLEFT" offsetX="-10" />
+                </Label>
+                <Label name="$(parent)EditIconLabel" text="Icon:" font="ZoFontAlert" horizontalAlignment="2">
+                    <Dimensions x="65" y="50" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)EditLabel" relativePoint="BOTTOMRIGHT" offsetY="25" />
+                </Label>
+                <Texture name="$(parent)Icon" scale="1">
+                    <Dimensions x="72" y="72" />
+                    <Anchor point="CENTER" relativeTo="$(parent)EditIconLabel" relativePoint="CENTER" offsetX="100" offsetY="-10" />
+                </Texture>
+                <Button name="$(parent)IconNextButton">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="CENTER" relativeTo="$(parent)Icon" relativePoint="CENTER" offsetX="55" />
+                    <Textures
+                            normal="/esoui/art/buttons/large_rightarrow_up.dds"
+                            pressed="/esoui/art/buttons/large_rightarrow_down.dds"
+                            mouseOver="/esoui/art/buttons/large_rightarrow_over.dds"
+                    />
+                    <OnClicked>
+                        PRESETLIST.PresetIconNext_Click(self)
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)IconPrevButton">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="CENTER" relativeTo="$(parent)Icon" relativePoint="CENTER" offsetX="-55" />
+                    <Textures
+                            normal="/esoui/art/buttons/large_leftarrow_up.dds"
+                            pressed="/esoui/art/buttons/large_leftarrow_down.dds"
+                            mouseOver="/esoui/art/buttons/large_leftarrow_over.dds"
+                    />
+                    <OnClicked>
+                        PRESETLIST.PresetIconPrev_Click(self)
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)IconSlot1">
+                    <Dimensions x="34" y="34" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)IconPrevButton" relativePoint="BOTTOMLEFT" offsetX="34" offsetY="30" />
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" >
+                            <AnchorFill />
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="">
+                            <Dimensions x="30" y="30" />
+                            <Anchor point="CENTER" relativeTo="$(parent)IconSlot1" relativePoint="CENTER" />
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)IconSlot2">
+                    <Dimensions x="34" y="34" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)IconPrevButton" relativePoint="BOTTOMLEFT" offsetX="68" offsetY="30" />
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" >
+                            <AnchorFill />
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="">
+                            <Dimensions x="30" y="30" />
+                            <Anchor point="CENTER" relativeTo="$(parent)IconSlot2" relativePoint="CENTER" />
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)IconSlot3">
+                    <Dimensions x="34" y="34" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)IconPrevButton" relativePoint="BOTTOMLEFT" offsetX="102" offsetY="30" />
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" >
+                            <AnchorFill />
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="">
+                            <Dimensions x="30" y="30" />
+                            <Anchor point="CENTER" relativeTo="$(parent)IconSlot3" relativePoint="CENTER" />
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)IconSlot4">
+                    <Dimensions x="34" y="34" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)IconPrevButton" relativePoint="BOTTOMLEFT" offsetX="136" offsetY="30" />
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" >
+                            <AnchorFill />
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="">
+                            <Dimensions x="30" y="30" />
+                            <Anchor point="CENTER" relativeTo="$(parent)IconSlot4" relativePoint="CENTER" />
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)IconSlot5">
+                    <Dimensions x="34" y="34" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)IconPrevButton" relativePoint="BOTTOMLEFT" offsetX="170" offsetY="30" />
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" >
+                            <AnchorFill />
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="">
+                            <Dimensions x="30" y="30" />
+                            <Anchor point="CENTER" relativeTo="$(parent)IconSlot5" relativePoint="CENTER" />
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)IconSlot6">
+                    <Dimensions x="34" y="34" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)IconPrevButton" relativePoint="BOTTOMLEFT" offsetX="234" offsetY="30" />
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" >
+                            <AnchorFill />
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="">
+                            <Dimensions x="30" y="30" />
+                            <Anchor point="CENTER" relativeTo="$(parent)IconSlot6" relativePoint="CENTER" />
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)Button">
+                    <Dimensions x="300" y="40" />
+                    <Anchor point="CENTER" relativeTo="$(parent)Title" relativePoint="CENTER" offsetY="240" />
+                    <Controls>
+                        <Button name="$(parent)ImportExport" text="Import/Export" font="ZoFontGame" inherits="ZO_DefaultButton" >
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                            <FontColors normalColor="E8DFAF" mouseOverColor="FFAA33"/>
+                            <OnClicked>
+                                PRESETLIST.PresetImportExport_Click(self)
+                            </OnClicked>
+                        </Button>
+                        <Button name="$(parent)Save" text="SAVE" font="ZoFontGame" inherits="ZO_DefaultButton">
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+                            <FontColors normalColor="E8DFAF" mouseOverColor="FFAA33"/>
+                            <OnClicked>
+                                PRESETLIST.PresetSave_Click(self)
+                            </OnClicked>
+                        </Button>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)ReloadButton">
+                    <Dimensions x="72" y="72" />
+                    <Anchor point="CENTER" relativeTo="$(parent)IconSlot1" relativePoint="CENTER" offsetX="-40" />
+                    <Textures
+                            normal="/esoui/art/hud/radialicon_trade_up.dds"
+                            mouseOver="/esoui/art/hud/radialicon_trade_over.dds"
+                    />
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, TOP, "Update")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                    <OnClicked>
+                        PRESETLIST.SkillsBarReload_Click(self)
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+        <TopLevelControl name="SkillBarImportExportWindow" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions x="450" y="300" />
+            <Anchor point="TOPLEFT" relativeTo="SkillBarAddPresetWindow" relativePoint="BOTTOMLEFT" />
+            <Controls>
+                <Backdrop name="$(parent)Background" inherits="ZO_DefaultBackdrop" alpha="0.8">
+                    <AnchorFill />
+                </Backdrop>
+                <Button name="$(parent)Close">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="7" />
+                    <Textures
+                            normal="/esoui/art/buttons/closebutton_up.dds"
+                            pressed="/esoui/art/buttons/closebutton_down.dds"
+                            mouseOver="/esoui/art/buttons/closebutton_mouseover.dds"
+                    />
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, TOP, "Cancel and Close")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                    <OnClicked>
+                        PRESETLIST.PresetImportExportCancel_Click(self)
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)ButtonExport" font="ZoFontGame" text="Generate Export" inherits="ZO_DefaultButton" hidden="false">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10"/>
+                    <FontColors normalColor="E8DFAF" mouseOverColor="FFAA33"/>
+                    <OnClicked>
+                        PRESETLIST.PresetExportData_Click(self)
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)ButtonImport" font="ZoFontGame" text="Import" inherits="ZO_DefaultButton" hidden="false">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)ButtonExport" relativePoint="TOPRIGHT" offsetX="10" />
+                    <FontColors normalColor="E8DFAF" mouseOverColor="FFAA33"/>
+                    <OnClicked>
+                        PRESETLIST.PresetImportData_Click(self)
+                    </OnClicked>
+                </Button>
+                <Backdrop name="$(parent)Text" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)ButtonExport" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-10" />
+                    <Controls>
+                        <EditBox name="$(parent)Edit" inherits="ZO_DefaultEditMultiLineForBackdrop" maxInputChars="2000">
+                            <OnEnter>
+                                self:LoseFocus()
+                            </OnEnter>
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+        <Button name="SkillBarPresetTemplate" virtual="true" >
+            <Dimensions x="420" y="80" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+            <Controls>
+                <Button name="$(parent)PresetName" text="" font="ZoFontAlert" horizontalAlignment="0" wrapMode="TRUNCATE">
+                    <Dimensions x="270" y="40" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="90" offsetY="7" />
+                    <OnClicked>
+                        PRESETLIST.PresetApply_Click(self)
+                    </OnClicked>
+                    <OnMouseEnter>
+                        PRESETLIST.PresetRow_MouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        PRESETLIST.PresetRow_MouseExit(self)
+                    </OnMouseExit>
+                </Button>
+                <Button name="$(parent)Backplate" horizontalAlignment="0" >
+                    <Dimensions x="270" y="40" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="90" offsetY="48" />
+                    <OnClicked>
+                        PRESETLIST.PresetApply_Click(self)
+                    </OnClicked>
+                    <OnMouseEnter>
+                        PRESETLIST.PresetRow_MouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        PRESETLIST.PresetRow_MouseExit(self)
+                    </OnMouseExit>
+                </Button>
+                <Button name="$(parent)PresetIcon" >
+                    <Dimensions x="72" y="72"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="8" />
+                    <OnClicked>
+                        PRESETLIST.PresetApply_Click(self)
+                    </OnClicked>
+                    <OnMouseEnter>
+                        PRESETLIST.PresetRow_MouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        PRESETLIST.PresetRow_MouseExit(self)
+                    </OnMouseExit>
+                </Button>
+                <Texture name="$(parent)BackgroundOn" textureFile="/esoui/art/miscellaneous/listitem_highlight.dds" alpha="0" >
+                    <Dimensions x="400" y="140"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                </Texture>
+                <Button name="$(parent)ModifyButton" alpha="0.2" >
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-23" offsetY="2" />
+                    <Textures
+                            normal="/esoui/art/menubar/menubar_mainmenu_over.dds"
+                            pressed="/esoui/art/menubar/menubar_mainmenu_over.dds"
+                            mouseOver="/esoui/art/menubar/menubar_mainmenu_down.dds"
+                    />
+                    <OnClicked>
+                        PRESETLIST.PresetModify_Click(self)
+                    </OnClicked>
+                    <OnMouseEnter>
+                        self:SetAlpha(1)
+                        ZO_Tooltips_ShowTextTooltip(self, TOP, "Modify preset")
+                        PRESETLIST.PresetRow_MouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        self:SetAlpha(0.2)
+                        ZO_Tooltips_HideTextTooltip()
+                        PRESETLIST.PresetRow_MouseExit(self)
+                    </OnMouseExit>
+                </Button>
+                <Button name="$(parent)DeleteButton" alpha="0.2" >
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="7" />
+                    <Textures
+                            normal="/esoui/art/buttons/closebutton_up.dds"
+                            pressed="/esoui/art/buttons/closebutton_down.dds"
+                            mouseOver="/esoui/art/buttons/closebutton_mouseover.dds"
+                    />
+                    <OnClicked>
+                        PRESETLIST.PresetDelete_Click(self)
+                    </OnClicked>
+                    <OnMouseEnter>
+                        self:SetAlpha(1)
+                        ZO_Tooltips_ShowTextTooltip(self, TOP, "Delete preset")
+                        PRESETLIST.PresetRow_MouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        self:SetAlpha(0.2)
+                        ZO_Tooltips_HideTextTooltip()
+                        PRESETLIST.PresetRow_MouseExit(self)
+                    </OnMouseExit>
+                </Button>
+                <Button name="$(parent)IconSlot1" alpha="0">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="106" offsetY="40" />
+                    <OnMouseEnter>
+                        PRESETLIST.SkillSlot_MouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        PRESETLIST.SkillSlot_MouseExit(self)
+                    </OnMouseExit>
+                    <OnClicked>
+                        PRESETLIST.SkillSlot_Click(self)
+                    </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" >
+                            <AnchorFill />
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="">
+                            <Dimensions x="30" y="30" />
+                            <Anchor point="CENTER" relativeTo="$(parent)IconSlot1" relativePoint="CENTER" />
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)IconSlot2" alpha="0">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="140" offsetY="40" />
+                    <OnMouseEnter>
+                        PRESETLIST.SkillSlot_MouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        PRESETLIST.SkillSlot_MouseExit(self)
+                    </OnMouseExit>
+                    <OnClicked>
+                        PRESETLIST.SkillSlot_Click(self)
+                    </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" >
+                            <AnchorFill />
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="">
+                            <Dimensions x="30" y="30" />
+                            <Anchor point="CENTER" relativeTo="$(parent)IconSlot2" relativePoint="CENTER" />
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)IconSlot3" alpha="0">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="174" offsetY="40" />
+                    <OnMouseEnter>
+                        PRESETLIST.SkillSlot_MouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        PRESETLIST.SkillSlot_MouseExit(self)
+                    </OnMouseExit>
+                    <OnClicked>
+                        PRESETLIST.SkillSlot_Click(self)
+                    </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" >
+                            <AnchorFill />
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="">
+                            <Dimensions x="30" y="30" />
+                            <Anchor point="CENTER" relativeTo="$(parent)IconSlot3" relativePoint="CENTER" />
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)IconSlot4" alpha="0">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="208" offsetY="40" />
+                    <OnMouseEnter>
+                        PRESETLIST.SkillSlot_MouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        PRESETLIST.SkillSlot_MouseExit(self)
+                    </OnMouseExit>
+                    <OnClicked>
+                        PRESETLIST.SkillSlot_Click(self)
+                    </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" >
+                            <AnchorFill />
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="">
+                            <Dimensions x="30" y="30" />
+                            <Anchor point="CENTER" relativeTo="$(parent)IconSlot4" relativePoint="CENTER" />
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)IconSlot5" alpha="0">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="242" offsetY="40" />
+                    <OnMouseEnter>
+                        PRESETLIST.SkillSlot_MouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        PRESETLIST.SkillSlot_MouseExit(self)
+                    </OnMouseExit>
+                    <OnClicked>
+                        PRESETLIST.SkillSlot_Click(self)
+                    </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" >
+                            <AnchorFill />
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="">
+                            <Dimensions x="30" y="30" />
+                            <Anchor point="CENTER" relativeTo="$(parent)IconSlot5" relativePoint="CENTER" />
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)IconSlot6" alpha="0">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="302" offsetY="40" />
+                    <OnMouseEnter>
+                        PRESETLIST.SkillSlot_MouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        PRESETLIST.SkillSlot_MouseExit(self)
+                    </OnMouseExit>
+                    <OnClicked>
+                        PRESETLIST.SkillSlot_Click(self)
+                    </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" >
+                            <AnchorFill />
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="">
+                            <Dimensions x="30" y="30" />
+                            <Anchor point="CENTER" relativeTo="$(parent)IconSlot6" relativePoint="CENTER" />
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)Move" hidden="true">
+                    <Dimensions x="24" y="52" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="30" />
+                    <Controls>
+                        <Button name="$(parent)MoveUp" alpha="1" hidden="false">
+                            <Dimensions x="24" y="24" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Move" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+                            <Textures
+                                    normal="/esoui/art/buttons/scrollbox_uparrow_up.dds"
+                                    mouseOver="/esoui/art/buttons/scrollbox_uparrow_over.dds"
+                                    pressed="/esoui/art/buttons/scrollbox_uparrow_down.dds" />
+                            <OnClicked>
+                                PRESETLIST.PresetMoveUp_Click(self)
+                            </OnClicked>
+                            <OnMouseEnter></OnMouseEnter>
+                            <OnMouseExit></OnMouseExit>
+                        </Button>
+                        <Button name="$(parent)MoveDown" alpha="1" hidden="false">
+                            <Dimensions x="24" y="20" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Move" relativePoint="TOPRIGHT" offsetX="0" offsetY="30" />
+                            <Textures
+                                    normal="/esoui/art/buttons/scrollbox_downarrow_up.dds"
+                                    mouseOver="/esoui/art/buttons/scrollbox_downarrow_over.dds"
+                                    pressed="/esoui/art/buttons/scrollbox_downarrow_down.dds" />
+                            <OnClicked>
+                                PRESETLIST.PresetMoveDown_Click(self)
+                            </OnClicked>
+                            <OnMouseEnter></OnMouseEnter>
+                            <OnMouseExit></OnMouseExit>
+                        </Button>
+                    </Controls>
+                    <OnMouseEnter></OnMouseEnter>
+                    <OnMouseExit></OnMouseExit>
+                </Button>
+            </Controls>
+        </Button>
+    </Controls>
+</GuiXml>

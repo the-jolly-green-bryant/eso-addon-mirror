@@ -1,0 +1,7 @@
+## Title: Midnight
+## APIVersion: 100028
+## Version: 1.228
+## DependsOn: Clock
+## Author: kerb9729 (@gardhull gard@bitwizardry.com)
+
+Midnight.lua

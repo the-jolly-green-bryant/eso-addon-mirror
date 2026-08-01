@@ -1,0 +1,39 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: CrutchAlerts Extensions
+## Description: StuffTM that doesn't quite fit in CrutchAlerts' scope
+## Author: Kyzeragon
+## Version: 0.2.2
+## AddOnVersion: 22
+## APIVersion: 101050
+
+## DependsOn: CrutchAlerts>=22190 LibAddonMenu-2.0>=43
+
+## SavedVariables: CrutchAlertsExtensionsSavedProfiles
+## SavedVariables: CrutchAlertsExtensionsSavedVariables
+
+CrutchAlertsExtensions.lua
+Bindings.xml
+
+main/Profiles.lua
+main/Commands.lua
+main/ConditionalChecker.lua
+main/Utils.lua
+
+PC/Settings.lua
+PC/UtilsSettings.lua
+
+drawing/Shapes.lua
+drawing/Line.lua
+drawing/Lines.lua
+drawing/UnitIcons.lua
+drawing/PresetShapes.lua
+drawing/Model.lua
+drawing/Models.xml
+
+synergy/Synergy.lua
+synergy/Synergy.xml

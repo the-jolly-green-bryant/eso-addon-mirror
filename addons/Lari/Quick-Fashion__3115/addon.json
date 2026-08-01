@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Lari/Quick-Fashion__3115",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lari",
+  "canonical_id": "esoui:3115",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:3115",
+  "deleted": false,
+  "directories": [
+    "QuickFashion"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3115/",
+  "fingerprint": "800592a6f4afea5560f499bb1e288a95a8b7bbfce4320cb5a7718f8d527a77ea",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11186.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11187.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11188.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11189.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11190.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11191.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11192.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3115",
+  "source_url": "https://www.esoui.com/downloads/info3115-QuickFashion.html",
+  "stats": {
+    "downloads": 21099,
+    "favorites": 46,
+    "monthly_downloads": 170
+  },
+  "title": "Quick Fashion",
+  "updated_at": 1741716611000,
+  "version": "2.3"
+}

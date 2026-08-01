@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Jord56/CoordsAndHeading-OverHaul__2877",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jord56",
+  "canonical_id": "esoui:2877",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2877",
+  "deleted": false,
+  "directories": [
+    "CoordsAndHeading"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2877/",
+  "fingerprint": "f3e701b0d82b5773658f1424804000e4b8fa8d82d2d545fd12c8209cf2794bde",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9732.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2877",
+  "source_url": "https://www.esoui.com/downloads/info2877-CoordsAndHeadingOverHaul.html",
+  "stats": {
+    "downloads": 2936,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "CoordsAndHeading OverHaul!",
+  "updated_at": 1609095977000,
+  "version": "1.2"
+}

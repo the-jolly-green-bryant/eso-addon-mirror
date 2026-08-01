@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/lnfinity/Advanced-Language-Selector__2120",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "lnfinity",
+  "canonical_id": "esoui:2120",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:2120",
+  "deleted": false,
+  "directories": [
+    "AdvancedLanguageSelector"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2120/",
+  "fingerprint": "a20ade79ceb3b236f53106e1174ffef1be51ae2182033050350df767be0ebeb2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2120",
+  "source_url": "https://www.esoui.com/downloads/info2120-AdvancedLanguageSelector.html",
+  "stats": {
+    "downloads": 3812,
+    "favorites": 3,
+    "monthly_downloads": 9
+  },
+  "title": "Advanced Language Selector",
+  "updated_at": 1535718728000,
+  "version": "1.0"
+}

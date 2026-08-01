@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/haze068/Pug-Blacklist__4322",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "haze068",
+  "canonical_id": "esoui:4322",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4322",
+  "deleted": false,
+  "directories": [
+    "PugBlacklist"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4322/",
+  "fingerprint": "5169735316b72fc817cfa36553d9e328b4961124631fa975b5a1d5e634f795ca",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14890.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14891.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14892.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4322",
+  "source_url": "https://www.esoui.com/downloads/info4322-PugBlacklist.html",
+  "stats": {
+    "downloads": 343,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "Pug Blacklist",
+  "updated_at": 1766158369000,
+  "version": "5"
+}

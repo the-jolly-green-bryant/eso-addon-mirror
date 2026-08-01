@@ -1,0 +1,8 @@
+## Title: |cFF6A00Khrill|r Helm Control - example FOV package
+## Author: |cFF6A00Khrill|r
+## Description: Package of FOV helmet's textures
+## Version: 1.0.1
+## APIVersion: 100011
+## OptionalDependsOn: KhrillHelmControlFOVaddin
+
+../KhrillHelmControlFOVaddin/Fov/example.lua

@@ -1,0 +1,12 @@
+## Title: GeldisBarsRestyle
+## Author: Geldis1306
+## Description: Based ui
+## Version: 1.0
+## AddOnVersion: 1.0
+## APIVersion: 101042 101043
+
+UI/Fonts.xml
+UI/HUD.xml
+
+
+GeldisBarsRestyle.lua

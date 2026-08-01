@@ -1,0 +1,11 @@
+## Title: |cEFEBBEMini Clock|r
+## APIVersion: 101034
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: MiniClock_SavedVariables
+## AddOnVersion: 7
+## Version: 7.101035
+## Author: |cEFEBBEhatsune681|r, |cEFEBBECaptainBlagbird|r, |cEFEBBEWfD_Temp_Account|r
+## Description: Shows a simple digital moveable clock on the screen. Based on an old version of outdated |cEFEBBESimpleClock|r from |cEFEBBEalfpog|r
+
+MiniClock.xml
+MiniClock.lua

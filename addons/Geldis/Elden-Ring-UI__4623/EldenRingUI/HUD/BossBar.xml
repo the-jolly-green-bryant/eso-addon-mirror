@@ -1,0 +1,47 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ERUI_Container" mouseEnabled="false" movable="true" hidden="false">
+            <Dimensions x="998" y="50"/>
+            <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOM" offsetX="4" offsetY="-200"/>
+            <Controls></Controls>
+        </TopLevelControl>
+
+        <StatusBar name="ERUI_BarTemplate" orientation="HORIZONTAL" color="FFa31a0e" hidden="false" virtual="true">
+            <Dimensions x="998" y="13"/>
+            <Limits min="0" max="1"/>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" centerColor="88000000" edgeColor="66000000">
+                    <Anchor point="TOPLEFT" offsetX="-1" offsetY="-1"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="1" offsetY="1"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+				
+                <Texture name="$(parent)CurrentHPIcon" tier="HIGH" level="2" textureFile="EldenRingUI/Textures/CurrentHPIcon.dds">
+                    <Dimensions x="32" y="16"/>    
+                </Texture>
+				
+                <Texture name="$(parent)Icon" tier="MEDIUM" level="1" textureFile="EldenRingUI/Textures/Angle.dds">
+                    <Dimensions x="24" y="24"/> 
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="6" offsetY="-1"/>
+                </Texture>
+				
+                <Texture name="$(parent)Icon2" tier="MEDIUM" level="1" textureFile="EldenRingUI/Textures/Angle2.dds">
+                    <Dimensions x="24" y="24"/> 
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="10" offsetY="3"/>
+                </Texture>				
+                
+                <Label name="$(parent)BossName" color="FFFFFF" font="EsoUI/Common/Fonts/FTN87.otf|20|soft-shadow-thick" verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="3" offsetY="0"/>
+                </Label>
+                
+                <Label name="$(parent)Percent" color="FFFFFF" font="EsoUI/Common/Fonts/FTN87.otf|18|soft-shadow-thick" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT">
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-2" offsetY="0"/>
+                </Label>
+				
+                <Label name="$(parent)HealthValue" color="FFFFFF" font="EsoUI/Common/Fonts/FTN87.otf|18|soft-shadow-thick" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT">
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-45" offsetY="0"/>
+                </Label>
+            </Controls>
+        </StatusBar>
+    </Controls>
+</GuiXml>

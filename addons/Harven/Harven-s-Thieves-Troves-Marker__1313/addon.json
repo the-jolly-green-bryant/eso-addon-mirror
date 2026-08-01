@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Thieves-Troves-Marker__1313",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:1313",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1313",
+  "deleted": false,
+  "directories": [
+    "HarvensThievesTrovesMarker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1313/",
+  "fingerprint": "6c21502e1277d242b25833452914c23295a84c482655853e8214b32cef35021d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4269.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1313",
+  "source_url": "https://www.esoui.com/downloads/info1313-HarvensThievesTrovesMarker.html",
+  "stats": {
+    "downloads": 135763,
+    "favorites": 166,
+    "monthly_downloads": 1006
+  },
+  "title": "Harven's Thieves Troves Marker",
+  "updated_at": 1686230860000,
+  "version": "1.1.0"
+}

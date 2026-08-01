@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/hyperiong/Hyperion-Combat-Master__2416",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "hyperiong",
+  "canonical_id": "esoui:2416",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2416",
+  "deleted": false,
+  "directories": [
+    "HyperionCombatMaster"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2416/",
+  "fingerprint": "f06522516fdfc00130be63283cced2f18101a3397c6403846719681f1b20ee52",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8269.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8223.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8224.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2416",
+  "source_url": "https://www.esoui.com/downloads/info2416-HyperionCombatMaster.html",
+  "stats": {
+    "downloads": 14319,
+    "favorites": 21,
+    "monthly_downloads": 21
+  },
+  "title": "Hyperion Combat Master",
+  "updated_at": 1565650486000,
+  "version": "0.6"
+}

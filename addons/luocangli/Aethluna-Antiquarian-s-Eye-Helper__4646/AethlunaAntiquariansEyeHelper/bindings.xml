@@ -1,0 +1,18 @@
+<Bindings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esobindings.xsd">
+
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+
+        <Category name="|c66ccffAethluna Antiquarian's Eye Helper|r">
+
+            <Action name="AAEH_USE_EYE">
+
+                <Down>AethlunaAntiquariansEyeHelper:KeybindUseEye()</Down>
+
+            </Action>
+
+        </Category>
+
+    </Layer>
+
+</Bindings>

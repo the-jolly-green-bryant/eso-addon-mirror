@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Caro's Collection Mail Group">
+			<Action name="CCMG">
+				<Down>CCMG.sendItems()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

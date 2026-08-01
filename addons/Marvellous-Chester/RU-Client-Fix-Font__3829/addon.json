@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Marvellous-Chester/RU-Client-Fix-Font__3829",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marvellous Chester",
+  "canonical_id": "esoui:3829",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3829",
+  "deleted": false,
+  "directories": [
+    "RUClientFixFont"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3829/",
+  "fingerprint": "352e68ffaa0f41f7cf11c6eb4a7c9e2c0a1c56c356668acb23efef54c669707b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3829",
+  "source_url": "https://www.esoui.com/downloads/info3829-RUClientFixFont.html",
+  "stats": {
+    "downloads": 7493,
+    "favorites": 6,
+    "monthly_downloads": 20
+  },
+  "title": "RU Client Fix Font",
+  "updated_at": 1711543456000,
+  "version": "1.2.0"
+}

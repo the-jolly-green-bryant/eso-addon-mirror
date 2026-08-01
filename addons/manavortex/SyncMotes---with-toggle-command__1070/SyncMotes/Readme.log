@@ -1,0 +1,110 @@
+.----------------.  .----------------.  .-----------------. .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
+| .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
+| |    _______   | || |  ____  ____  | || | ____  _____  | || |     ______   | || | ____    ____ | || |     ____     | || |  _________   | || |  _________   | || |    _______   | |
+| |   /  ___  |  | || | |_  _||_  _| | || ||_   \|_   _| | || |   .' ___  |  | || ||_   \  /   _|| || |   .'    `.   | || | |  _   _  |  | || | |_   ___  |  | || |   /  ___  |  | |
+| |  |  (__ \_|  | || |   \ \  / /   | || |  |   \ | |   | || |  / .'   \_|  | || |  |   \/   |  | || |  /  .--.  \  | || | |_/ | | \_|  | || |   | |_  \_|  | || |  |  (__ \_|  | |
+| |   '.___`-.   | || |    \ \/ /    | || |  | |\ \| |   | || |  | |         | || |  | |\  /| |  | || |  | |    | |  | || |     | |      | || |   |  _|  _   | || |   '.___`-.   | |
+| |  |`\____) |  | || |    _|  |_    | || | _| |_\   |_  | || |  \ `.___.'\  | || | _| |_\/_| |_ | || |  \  `--'  /  | || |    _| |_     | || |  _| |___/ |  | || |  |`\____) |  | |
+| |  |_______.'  | || |   |______|   | || ||_____|\____| | || |   `._____.'  | || ||_____||_____|| || |   `.____.'   | || |   |_____|    | || | |_________|  | || |  |_______.'  | |
+| |              | || |              | || |              | || |              | || |              | || |              | || |              | || |              | || |              | |
+| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
+'----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
+All Credit and Copyrights go to (ESO EU) Dero - @Deryl
+Thx to @Puse for some helpful thoughts
+Thx to the Guild (ESO EU) Blutlied for testing
+I did my best to comment the code for others to learn from it ;)
+
+You can set a Hotkey to open the Menu/Settings in the Elder Scrolls Online Keybindings Menu under the Catergory SyncMotes
+Commands:
+
+/sm menu - Open the SyncMotes Menu
+/sm list - Shows the SyncMotes EmoteList
+/sm on - Start listening to selected Chats
+/sm off - Stop listening to selected Chats
+/sm [EMOTE-ID] - Enters the SyncMotes command line into Chat !!(you need to hit Enter afterwards)!!
+/sm [EMOTENAME] - Enters the SyncMotes command line into Chat !!(you need to hit Enter afterwards)!!
+/sm add [Phrase] [YourDelay(ms)] [YourEmote-ID] [OthersDelay(ms)] [OthersEmote-ID] - Adds a SyncPhrase
+/sm phrase - Shows a list of SyncPhrases and their ID in a Window
+
+
+Version 1.0.1 - Released 04.06.14
+Base Version with basic features - tested as far as i could
+
+Version 1.0.2 - Released 06.06.14
+Fixed a Bug where Skill sometimes became unavaidable if you open/close the menu
+
+Version 1.0.3 - Released 08.06.14
+Fixed a few typos
+Fixed a Nil error
+
+Version 1.0.4 - Devbuild
+Added a feature to test SyncPhrases
+
+Version 1.0.5 - Devbuild
+Added the SyncPhrases EmotesMenu
+
+Version 1.0.6 - Devbuild
+Added the SyncPhrases ChatsMenu
+Added the ChatCheck for SyncPhrases
+
+Version 1.0.7 - Devbuild
+Added the on/off Settings for SyncPhrases
+Added the /sm add command
+
+Version 1.0.8 - Devbuild for Betatests
+Added some Info text
+Fixed some Typos
+Some code changes for faster checks
+Finished the /sm add command with check of correct syntax
+
+Version 1.0.9 - Devbuild for Betatests
+Added the PhraseMenu and the Option to bind a Hotkey for it.
+renamed /sm phraselist to /sm phrase
+Added the function to Create new Phrases in the Phrasemenu.
+Some approvements on the Check of correct syntax for /sm add
+Added the function to Scroll through Phrases to view / edit them
+
+Version 1.1.0 - Devbuild for Betatests
+Added the Case-Sensitivity Check and an option to activate/deactivate it (standard off)
+Realligned Settings Menu
+Added a description for Settings
+Added On / Off state for SM SP and CS in the SyncMotesMenu Header
+Little Tweaks of the Code
+A Few new Icons for Settings
+
+Version 1.1.1 - Devbuild for Betatests
+Added the function of the Editbutton
+Tweaks of Code
+Added the option to enter Emotenames instead of Emotenumbers to SyncPhrases in /sm add command and SyncPhrase config
+Added the Delete-function to the Button
+Removed the /sm del command because there is no real use for it
+
+Version 1.1.2 - Released 17.06.2014
+Added a Emotelist (You can fire Emotes from here)
+Some Tweaks of the UIMode changes, because it often bugged
+Added a Hotkey for the Emotelist
+Fixed an error that occured if you want to save a syncphrase with empty inputboxes while you have no SyncPhrases
+Added the Emotelist to SyncPhrases with additional Buttons to take over emotes to Inputboxes
+Recoloring of some texts
+Added EmoteCheck (Only play selected Emotes) on SyncPhrases
+Renamed Setting "listen to this Emotes" to "play this Emotes"
+
+Version 1.1.3 - Released 27.06.2014
+Updated to the latest ESO API.
+Edited the Infotext when creating a new SyncPhrase to make the no Emote option clearer.
+
+
+==================================================================
+== TODO == TODO == TODO == TODO == TODO == TODO == TODO == TODO ==
+==================================================================
+- Import function to Import a List of SyncPhrases
+- A Black and/or Whitelist for senders
+- Cycle through Editboxes with TAB
+- EmoteList Settings to always show and save position
+- Realigning of SyncPhrases Menu to make Emotenames fit in inputboxes
+- a little Recoloring
+
+==================================================================
+== MAYBETODO == MAYBETODO == MAYBETODO == MAYBETODO == MAYBETODO =
+==================================================================
+- ignore punctuation in Phrases? . , ? ! -

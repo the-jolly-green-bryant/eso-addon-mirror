@@ -1,0 +1,11 @@
+## Title: KeyInv
+## Author: Valandil
+## Description: Assign a key to a inventory slot
+## APIVersion: 101034
+## AddonVersion: 10005
+## SavedVariables: KeyInvSaved
+## DependsOn: LibChatMessage LibCustomMenu
+## OptionalDependsOn: pChat tom
+
+KeyInv.lua
+Bindings.xml

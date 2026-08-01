@@ -1,0 +1,12 @@
+ZO_CreateStringId("SI_BINDING_NAME_AVT_SWITCH", "手册开关")
+local put = AssistVampireTrade.putText
+put("Account wide configuration", "账户全局配置")
+put("Revert when skill is used", "技能使用后归位")
+put("Ability slot to Use", "使用的技能栏")
+put("There is a hot key to switch manually.", "有一个手动切换热键.")
+put("Info", "提示")
+put("You will need to add a keybind for this to work.", "您需要为其添加一个按键绑定以使其生效.")
+put("keybindings", "按键绑定")
+put("The keybind options can be found in: Controls > Keybinds > Assist Vampire Trade.", "您可以在：控制 > 按键绑定 > Assist Vampire Trade 中找到按键绑定选项.")
+put("Where can I do this?", "我在哪里可以做到这一点?")
+put("You no longer need to worry about having your weapon out before using Mesmerize. I've implemented a fix that ensures a smoother and more intuitive experience.", "在使用催眠术之前，您不再需要担心拿出武器。我已经实施了一项修复，确保更流畅、更直观的体验.")

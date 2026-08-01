@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Momo's Sticky Notes">
+			<Action name="TOGGLE_MomosSNControlList">
+				<Down>MomosSN.style.ToggleControlList()</Down>
+			</Action>
+			<Action name="TOGGLE_MomosSNControlListWithMouse">
+				<Down>MomosSN.style.ToggleControlListWithMouse()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

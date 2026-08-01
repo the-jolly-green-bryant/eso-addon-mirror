@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Hoft/Bandits-Gear-Manager__2218",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hoft",
+  "canonical_id": "esoui:2218",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2218",
+  "deleted": false,
+  "directories": [
+    "BanditsGearManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2218/",
+  "fingerprint": "2f4658bff1acc08816a7838766b56ddbc47e8009b2b74b0e2a211a8d46703070",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7603.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2218",
+  "source_url": "https://www.esoui.com/downloads/info2218-BanditsGearManager.html",
+  "stats": {
+    "downloads": 307731,
+    "favorites": 250,
+    "monthly_downloads": 589
+  },
+  "title": "Bandits Gear Manager",
+  "updated_at": 1763164033000,
+  "version": "2.35"
+}

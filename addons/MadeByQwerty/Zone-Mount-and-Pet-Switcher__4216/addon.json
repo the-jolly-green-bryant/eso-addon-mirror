@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/MadeByQwerty/Zone-Mount-and-Pet-Switcher__4216",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MadeByQwerty",
+  "canonical_id": "esoui:4216",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4216",
+  "deleted": false,
+  "directories": [
+    "ZoneMountSwitcher"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4216/",
+  "fingerprint": "5556fcc03213cf5693db5ce2fadbc2148b3d21f3fda0f184306d7bf6fe36175e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15576.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4216",
+  "source_url": "https://www.esoui.com/downloads/info4216-ZoneMountandPetSwitcher.html",
+  "stats": {
+    "downloads": 451,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "Zone Mount and Pet Switcher",
+  "updated_at": 1777143824000,
+  "version": "1.2.1"
+}

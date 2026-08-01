@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/MrPikPik/ESOLiveSplit---Universal-Speedrun-Timer-BETA__3782",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:3782",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3782",
+  "deleted": false,
+  "directories": [
+    "ESOLiveSplit"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3782/",
+  "fingerprint": "4a7c66b3762fc497f92276fcfd5d215e4423685f8c54b2582ea6bba3448e1644",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12838.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3782",
+  "source_url": "https://www.esoui.com/downloads/info3782-ESOLiveSplit-UniversalSpeedrunTimerBETA.html",
+  "stats": {
+    "downloads": 4420,
+    "favorites": 10,
+    "monthly_downloads": 26
+  },
+  "title": "ESOLiveSplit - Universal Speedrun Timer [BETA]",
+  "updated_at": 1761054559000,
+  "version": "0.3.2"
+}

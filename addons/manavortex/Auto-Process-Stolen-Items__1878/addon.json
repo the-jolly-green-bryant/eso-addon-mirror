@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/manavortex/Auto-Process-Stolen-Items__1878",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1878",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:1878",
+  "deleted": false,
+  "directories": [
+    "AutoProcessStolenItems"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1878/",
+  "fingerprint": "f8512a138f098c0607790bd6fecef1b1cb0202335494816e79af85cfef208f56",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6369.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6370.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1878",
+  "source_url": "https://www.esoui.com/downloads/info1878-AutoProcessStolenItems.html",
+  "stats": {
+    "downloads": 5237,
+    "favorites": 6,
+    "monthly_downloads": 14
+  },
+  "title": "Auto Process Stolen Items",
+  "updated_at": 1517006910000,
+  "version": "1.3b"
+}

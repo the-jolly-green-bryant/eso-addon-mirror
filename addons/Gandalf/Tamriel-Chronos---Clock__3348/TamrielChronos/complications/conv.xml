@@ -1,0 +1,14 @@
+<GuiXml>
+	<Controls>
+		<Button name="TaChronosCalendarButton" inherits="ZO_ButtonBehaviorClickSound" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+        	<Dimensions x="28" y="28" />
+          	<Textures 
+          		normal="esoui/art/buttons/info_up.dds" 
+          		mouseOver="esoui/art/buttons/info_over.dds"
+          	/>
+          	<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOPRIGHT, "Show the Tamriel Calendar")</OnMouseEnter>
+	        <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>  
+	        <OnMouseUp>TaChronos.cal:ToggleCalendar()</OnMouseUp>
+		</Button>
+	</Controls>
+</GuiXml>

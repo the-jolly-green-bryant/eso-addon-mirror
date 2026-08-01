@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Lionas/JP-Patch-for-CyrHUD-v1.3.1__1414",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lionas",
+  "canonical_id": "esoui:1414",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:1414",
+  "deleted": false,
+  "directories": [
+    "CyrHUD"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1414/",
+  "fingerprint": "1c442c034a241d867fb7baac2ab529fc4deab0e167111152dcf3f51ebcfbf308",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4593.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4592.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1414",
+  "source_url": "https://www.esoui.com/downloads/info1414-JPPatchforCyrHUDv1.3.1.html",
+  "stats": {
+    "downloads": 13888,
+    "favorites": 0,
+    "monthly_downloads": 35
+  },
+  "title": "JP Patch for CyrHUD v1.3.1",
+  "updated_at": 1467876694000,
+  "version": "1.3.1"
+}

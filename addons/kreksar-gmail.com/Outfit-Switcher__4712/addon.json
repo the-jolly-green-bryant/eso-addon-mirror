@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/kreksar-gmail.com/Outfit-Switcher__4712",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kreksar@gmail.com",
+  "canonical_id": "esoui:4712",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4712",
+  "deleted": false,
+  "directories": [
+    "OutfitSwitcher"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4712/",
+  "fingerprint": "4dce7d665b3e0bac7903957acc9c3b3728308c754138d3a4a997996198e71333",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4712",
+  "source_url": "https://www.esoui.com/downloads/info4712-OutfitSwitcher.html",
+  "stats": {
+    "downloads": 30,
+    "favorites": 0,
+    "monthly_downloads": 30
+  },
+  "title": "Outfit Switcher",
+  "updated_at": 1785194809000,
+  "version": "1.2.6"
+}

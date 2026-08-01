@@ -1,0 +1,499 @@
+[color=#ff9900][b]Version: 2026.04.29 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] Stackable sets (for example 'Death Dealer's Fete') are now supported in BuffTracker
+  - [color=#80ff80]NEW:[/color] Table showing the 'distance to the lead' of each group member (PvP only) 
+  - [color=#ff8080]MOD:[/color] (Guild internal) Update Raidinformation
+  - [color=#ff8080]MOD:[/color] DsRBuffData DB update 
+
+[color=#ff9900][b]Version: 2026.04.11 ---------------[/b][/color]
+  - [color=#ff8080]MOD:[/color] Automatic storage/retrieval of unopened treasure maps  
+  - [color=#ff8080]FIX:[/color] Banking and BankingAvA are now working properly again!!
+
+[color=#ff9900][b]Version: 2026.04.10 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] DeathTable LUA Error
+
+[color=#ff9900][b]Version: 2026.04.08 ---------------[/b][/color]
+  - [color=#ff8080]MOD:[/color] The death list now displays the image and name from LibCustomIcons and LibCustomNames
+  - [color=#ff8080]MOD:[/color] DsRBuffData DB update  
+
+[color=#ff9900][b]Version: 2026.03.25 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] Groupattack Countdown 1 sec delay fixed
+  - [color=#ff8080]FIX:[/color] guild welcome message only if new guildmember ON
+  - [color=#ff8080]MOD:[/color] DsRBuffData DB update
+
+[color=#ff9900][b]Version: 2026.03.15 ---------------[/b][/color]
+  - [color=#ff8080]MOD:[/color] DsRBuffData DB update
+  - [color=#80ff80]NEW:[/color] '5.2 Group & Raids - general' Groupattack Countdown
+
+[color=#ff9900][b]Version: 2026.03.09 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] DsRGuildLoot Loot LUA Error fixed
+
+[color=#ff9900][b]Version: 2026.03.08 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] 'DsR junklist' completely revised  
+  - [color=#ffff80]MOD:[/color] Amount of transmutation stones adjusted for new patch
+  - [color=#ffff80]MOD:[/color] New currencies added (Ravenbar and Lootmanager)
+  - [color=#80ff80]NEW:[/color] 'Player Counter' Show statistics of players already detected
+  - [color=#80ff80]NEW:[/color] '5.2 Group & Raids - buffs' Display the buffs in the group via a UI
+  - [color=#ff8080]FIX:[/color] TelVar port to Cyro adjusted to U49
+
+[color=#ff9900][b]Version: 2026.01.25 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] 'Welcome' chat message disbaled in Combat  
+  - [color=#ffff80]MOD:[/color] 'Kill Assist' chat message modified  
+
+[color=#ff9900][b]Version: 2026.01.18 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] CountPlayer is no longer hidden when using a siege weapon.  
+
+[color=#ff9900][b]Version: 2026.01.12 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] Lua error fixed DsR_PVP Kill Assist 
+
+[color=#ff9900][b]Version: 2026.01.11 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] Menue 4.1 Alliance War General -> PlayerCounter incl. PlayerDB
+  - [color=#80ff80]NEW:[/color] Menue 4.1 Alliance War General -> GroupLead
+  - [color=#ffff80]MOD:[/color] (Guild internal) Raid and DsR-Events '26 updated
+
+[color=#ff9900][b]Version: 2025.11.24 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] (Guild internal) Rabenwacht button update
+
+[color=#ff9900][b]Version: 2025.11.17 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] Lua error fixed by implementing a new function in LibCustomIcons. 
+
+[color=#ff9900][b]Version: 2025.11.12 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] Crown Group Cyroport fixed, if you set the Telvar porting to 0
+
+[color=#ff9900][b]Version: 2025.10.29 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] API Update 101048 (Seasons of the Worm Cult Part 2)
+
+[color=#ff9900][b]Version: 2025.10.12 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] Menue 1. General -> Standardchat [Standard: TRUE]
+
+[color=#ff9900][b]Version: 2025.10.09 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] Fix Light of Togetherness on own char
+
+[color=#ff9900][b]Version: 2025.10.08 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] Trove-/Cunning scamp -> Show scamp spawn locations [Menuepoint: 4.3]
+  - [color=#ffff80]MOD:[/color] Light of Togetherness - updated code with new options
+  - [color=#ff8080]FIX:[/color] Now shows the correct population of the Cyro-/IC-campaign, wherever you are
+  - [color=#ff8080]FIX:[/color] "...../DsRGuildPvPKeepInfo.lua:252: attempt to index a nil value" fixed
+
+[color=#ff9900][b]Version: 2025.09.08a ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] Fix District Name LUA-Error
+
+[color=#ff9900][b]Version: 2025.09.08 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] New Libary 'LibImplex' needed
+  - [color=#80ff80]NEW:[/color] Show district names to the leaders in the Imperial City
+  - [color=#80ff80]NEW:[/color] [DsR-AI] can now also listen for several words to group invite
+  - [color=#ffff80]MOD:[/color] [DsR-Banking] Automatic storage/removal of 'Unidentified Survey Reports'
+
+[color=#ff9900][b]Version: 2025.09.01 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] (Gildeninternal) Added FKK-Dungeonevent
+
+[color=#ff9900][b]Version: 2025.08.23 ---------------[/b][/color]
+  - [color=#80ff80]MOD:[/color] Deactivation of LibCustomIcons due to LUA errors (will be reactivated with the next update)
+
+[color=#ff9900][b]Version: 2025.08.06 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] LibCustomIcons now supported
+
+[color=#ff9900][b]Version: 2025.07.05 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] Menue >>2. LootManager<< AutoLoot - More options for bags and boxes
+  - [color=#ffff80]MOD:[/color] Optimizations to the menu and icons
+  - [color=#80ff80]NEW:[/color] Menue >>1. General<<  Developer-Modus
+  - [color=#80ff80]NEW:[/color] Menue >>12. Banking<< Deposit Meriten, Brands and Evidence to Bank
+  - [color=#ff8080]FIX:[/color] Unknown Tracker now works properly when setting character to ''Do not learn''
+
+[color=#ff9900][b]Version: 2025.06.18 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] [DsR LootManager] AutoLoot - Bag, Backpack [Defaultsettings: TRUE]
+
+[color=#ff9900][b]Version: 2025.06.08 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] [DsR Banking] Deposit / Withdraw Unknown Writ Envelopes 
+
+[color=#ff9900][b]Version: 2025.06.07 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] Minor code adjustments
+
+[color=#ff9900][b]Version: 2025.05.26 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] (Gildeninternal) Adjustment of the guild leadership
+
+[color=#ff9900][b]Version: 2025.05.25 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] Optionmenue '18. RavenBar' introduced\n(Info: own sorting will follow!!!)
+  - [color=#ff8080]FIX:[/color] Fixed a short freeze after login/reload
+
+[color=#ff9900][b]Version: 2025.05.10 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] Various missing texts adjusted, due to the new menu
+
+[color=#ff9900][b]Version: 2025.05.08 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] UI-Error 'DsRGuildLoot-lua:577' eliminated 
+
+[color=#ff9900][b]Version: 2025.05.07 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] [DsR] Need only 1 -> New tool to take only 1 from the banks instead of the whole stack
+  - [color=#ff8080]FIX:[/color] Various missing texts adjusted, due to the new menu
+
+[color=#ff9900][b]Version: 2025.05.03 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] Complete NEW Settings-Menu (Code based on the menu of 'Bandits User Interface')
+  - [color=#80ff80]NEW:[/color] The new settings menu automatically scales with your resolution
+  - [color=#80ff80]NEW:[/color] /dsr Commands takes you directly to the settings menu
+  - [color=#ffff80]MOD:[/color] [DsR-Price] more options to post the price to chat
+  - [color=#ffff80]MOD:[/color] API Update 101046 (Seasons of the Worm Cult Part 1)
+
+[color=#ff9900][b]Version: 2025.04.20 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] [DsR Personal] Siege Master purchase: You can only buy items that are also available with gold automatically
+
+[color=#ff9900][b]Version: 2025.04.12 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] [DsR Personal] 'Always store everything' in bank for recipes, motifs, etc.
+
+[color=#ff9900][b]Version: 2025.04.02 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] ImperialCity district marker
+  - [color=#ff8080]FIX:[/color] BG join bad argument error
+
+[color=#ff9900][b]Version: 2025.03.16 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] Imperial city map pins
+  - [color=#ff8080]FIX:[/color] BossTimer MapPosition if you use 'PerfectPixel'
+
+[color=#ff9900][b]Version: 2025.03.15 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] TelVar 4,29 Mio bug fixed
+  - [color=#80ff80]NEW:[/color] (Gildeninternal) 'ESO-Sucht besteht seid....'-Button under 'G'
+
+[color=#ff9900][b]Version: 2025.03.10a ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] API update to U45
+  - [color=#ff8080]FIX:[/color] "....DsRGuildBind.lua:23: table index is nil" fixed
+  - [color=#ff8080]FIX:[/color] DsRGuildAlchemy fixed
+  - [color=#ff8080]FIX:[/color] DsRGuildPrice fixed
+
+[color=#ff9900][b]Version: 2025.03.09 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] "...../DsRGuildPvPKeepInfo.lua:139: attempt to index a nil value" fixed
+  - [color=#ff8080]FIX:[/color] Archivement Desc ON-/OFF fixed
+
+[color=#ff9900][b]Version: 2025.03.02 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] PvP kill feed customize messages
+  - [color=#ffff80]MOD:[/color] Notification friends online/offline in color
+
+[color=#ff9900][b]Version: 2025.02.19 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] Keep info Background change
+
+[color=#ff9900][b]Version: 2025.02.18 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] LibAnimation-1.0 is now needed
+  - [color=#80ff80]NEW:[/color] Cyrodiil Keep Info - What is the name of the keep and what is the status where you are
+
+[color=#ff9900][b]Version: 2025.02.14 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] Log in/out messages from friends in chat can be deactivated (DsR GuildRoster -> Friends)
+  - [color=#80ff80]NEW:[/color] Individual log in/out notifications in chat from ACC names from the friends list (DsR GuildRoster -> Friends)
+
+[color=#ff9900][b]Version: 2025.02.09 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] (Guild internal) Chat message when a Rabenwacht comes online
+  - [color=#ff8080]FIX:[/color] Some errors when creating a new character or renaming a character
+
+[color=#ff9900][b]Version: 2025.02.01 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] (Guild internal) Possibility to set the visibility of the information under 'G'
+  - [color=#80ff80]NEW:[/color] (Guild internal) Preparing for the new 'Guild-Update News' popup window
+  - [color=#80ff80]NEW:[/color] (Guild internal) Settingsbutton in Guildinformation
+  - [color=#80ff80]NEW:[/color] /dsraddonupdate -> Open the Addon-Update PopUp-Window
+  - [color=#ff8080]FIX:[/color] Minor bugs fixed
+
+[color=#ff9900][b]Version: 2025.01.26 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] (Guild internal) Update Raidplan
+
+[color=#ff9900][b]Version: 2025.01.25 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] (Guild internal) Announcement of the first DsR-Events '25
+  - [color=#ffff80]MOD:[/color] (Guild internal) New DsR Guildleader added
+  - [color=#ffff80]MOD:[/color] (Guild internal) Guild info now in all guild tabs
+
+[color=#ff9900][b]Version: 2025.01.18 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] Port to Cyro / Imperial City optimize
+  - [color=#80ff80]NEW:[/color] Option to port from Cyrodiil to ImperialCity (solo or with group)
+  
+[color=#ff9900][b]Version: 2025.01.11a ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] Loothistory color
+
+[color=#ff9900][b]Version: 2025.01.11 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] Chatloot History color adjusted 
+  - [color=#ffff80]MOD:[/color] DsR Guildleader internal modifications 
+
+[color=#ff9900][b]Version: 2025.01.05 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] Automatic welcome message for new guild members (Menu: DsR GuildRoster -> Welcome)
+  - [color=#80ff80]NEW:[/color] Option to display traits for armor/weapons in chatloot
+
+[color=#ff9900][b]Version: 2024.12.31 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] Treasure Chest Group Chat Notification (Adjustable in the menu: DsR GuildRoster -> Treasure)
+  - [color=#ffff80]MOD:[/color] Adjusted various colors of chat notifications
+
+[color=#ff9900][b]Version: 2024.12.24 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] TelVar Stones chat message can now be customized
+  - [color=#ffff80]MOD:[/color] Guild-internal Eventupdate for 2025
+
+[color=#ff9900][b]Version: 2024.12.11 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] Loot History -> Extended information in the loot history, such as total counter and selling price
+
+[color=#ff9900][b]Version: 2024.12.01 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] Guild-internal events adjusted
+  - [color=#ffff80]MOD:[/color] Guild-internal Raids adjusted
+  - [color=#ff8080]FIX:[/color] [DsR-Unknown] Fixed chat message icon, if settings 'FALSE'
+  - [color=#ff8080]FIX:[/color] [DsR-Unknown] Fixed Tooltip list order
+
+[color=#ff9900][b]Version: 2024.11.22 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] DsR-GuildRoster - Unknown -> Do I know the recipe etc. from the loot and/or in the inventory? Now you know it
+  - [color=#ff8080]FIX:[/color] [DsR-Price] now loads if the addon 'Character Knowledge' is not loaded
+
+[color=#ff9900][b]Version: 2024.11.18 ---------------[/b][/color]
+  - [color=#ffff80]MOD:[/color] Guild-internal events adjusted
+  - [color=#ffff80]MOD:[/color] Guild-internal Raids adjusted
+  - [color=#ff8080]FIX:[/color] [DsR-Consumer] Fixed incorrect message about 'hunger satisfied'
+  - [color=#ff8080]FIX:[/color] Game crash after open bank or shop and autoStack is ON
+
+[color=#ff9900][b]Version: 2024.11.17 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] Correcting the disable settings of 'Feeling of hunger'
+
+[color=#ff9900][b]Version: 2024.11.16 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] Bufffood is now correctly consumed automatically after the set time
+
+[color=#ff9900][b]Version: 2024.11.14 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] Junktable -> Manage your manually placed items (New Button in Inventory MainBar)
+  - [color=#80ff80]NEW:[/color] Encounterlog status and question whether it should be started when you enter a raid. (Only if you are the group leader, adjustable under Group(P) -> DsR-AutoInvite)
+  - [color=#ffff80]MOD:[/color] Guild-internal events adjusted
+  - [color=#ffff80]MOD:[/color] Re-write Keybinds for Companion and Assistant (You may need to reassign the keys)
+  - [color=#ff8080]FIX:[/color] Fixed incorrect repair message when addressing an assistant
+  - [color=#ff8080]FIX:[/color] Chat function of unbound items now works correctly
+  - [color=#ff8080]FIX:[/color] DsR-Tracking now updates when you remove an achievement
+
+[color=#ff9900][b]Version: 2024.11.06 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] SaveVariables fix
+
+[color=#ff9900][b]Version: 2024.11.04 ---------------[/b][/color]
+  - [color=#ff8080]FIX:[/color] SaveVariables fix
+  - [color=#ff8080]FIX:[/color] AutoRepair fix
+
+[color=#ff9900][b]Version: 2024.11.03 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] Mouse menu [DsR-Junk] for manually marking permanent junk
+  - [color=#80ff80]NEW:[/color] Mouse menu [DsR-Consumer] to set/remove buff food, AP/XP srolls
+  - [color=#80ff80]NEW:[/color] Currency 'Imperial Fragments' added to loot
+  - [color=#80ff80]NEW:[/color] [DsR Personal] new option: Feeling of hunger
+  - [color=#80ff80]NEW:[/color] [DsR Personal] new option: Armor workshop
+  - [color=#ffff80]MOD:[/color] Minimized message spam about deactivation of recycling due to crafting tasks
+  - [color=#ffff80]MOD:[/color] Bufffood / AP-/XP-Buff Messages removed when something is opened
+  - [color=#ffff80]MOD:[/color] [DsR-Banking] You now have the option to set default values ​​for all characters at the same time
+  - [color=#ffff80]MOD:[/color] Achievement tracker, small adjustments to reliability
+  - [color=#ff8080]FIX:[/color] Settings and display of the best price when looting is shown again
+
+[color=#ff9900][b]Version: 2024.10.28 ---------------[/b][/color]
+  - [color=#80ff80]NEW:[/color] Imperial City Status & Bosstimer re-designed incl. attack status
+  - [color=#80ff80]NEW:[/color] Change window after addon update when logging in for the first time
+  - [color=#80ff80]NEW:[/color] Keybindings for Assistants and Companions 
+  - [color=#80ff80]NEW:[/color] NEW MODUL: DsR GuildRoster - Price -> Show selling prices in inventory etc.
+  - [color=#80ff80]NEW:[/color] NEW MODUL: DsR GuildRoster - Personal -> Manage you personal assistant
+  - [color=#ffff80]MOD:[/color] Priority of the Inventory Manager window set to LOW
+  - [color=#ffff80]MOD:[/color] Rearrangement of the settings menu
+  - [color=#ffff80]MOD:[/color] Added Companions 'Tanlorin' and 'Zerith var'
+  - [color=#ff8080]FIX:[/color] Bufffood-reminder disabled when playing cards
+  - [color=#ff8080]FIX:[/color] Achievement tracking now reliably detects the zone
+
+[color=#ff9900][b]Version: 2024.09.22 ---------------[/b][/color]
+  - NEW: KillCounter re-designed
+  - MOD: Guild interna Raidinformation update
+
+[color=#ff9900][b]Version: 2024.08.29 ---------------[/b][/color]
+  - MOD: Alliance Icon Change
+  - MOD: Guild interna Raidinformation update
+  - MOD: DsR-Crafter - add provision sound
+
+[color=#ff9900][b]Version: 2024.08.18 ---------------[/b][/color]
+  - FIX: Achievement Tracker - Auto Track Zone UI Error
+  - MOD: Achievement Tracker - Enable show only tracked Zone
+
+[color=#ff9900][b]Version: 2024.08.17 ---------------[/b][/color]
+  - MOD: Achievement Tracker Update
+  - API Update to 101043
+
+[color=#ff9900][b]Version: 2024.08.09 ---------------[/b][/color]
+  - FIX: KillCounter visible On / Off
+  - MOD: Archievement Tracker, remove background options
+  - FIX: Table of death visible On / Off and reset
+
+[color=#ff9900][b]Version: 2024.08.05 ---------------[/b][/color]
+  - FIX: LUA Error in GuildLoot, if InventoryManager are deactivated
+  - MOD: KillCounter -> Now you see more Information about KillingBlow
+  - ADD: TelVar Counter
+
+[color=#ff9900][b]Version: 2024.07.31 ---------------[/b][/color]
+  - FIX: Inventroy Manager -> defaults width / height min settings
+  - NEW: Inventroy Manager -> Option ON/OFF for Price
+  - MOD: Inventroy Manager -> Remove Option "Show only duplicate" (coming later back)
+  - NEW: Inventroy Manager -> Tooltip on Updatebutton
+  - NEW: Inventroy Manager -> disable option Inventory Manager
+  - FIX: Stickerbook -> default settings now correct (default = true)
+
+[color=#ff9900][b]Version: 2024.07.30 ---------------[/b][/color]
+  - MOD: TelVar Saver -> question if you really port to cyro!
+  - FIX: Daily Provision, cooking more else question need
+  - FIX: Inventory Manager -> Open / Close
+  - FIX: Inventroy Manager -> Rescan only at first opening Inventar Scene
+
+[color=#ff9900][b]Version: 2024.07.29a ---------------[/b][/color]
+  - MOD: Inventory Manager -> open at Inventory Scene and hide on other Scene
+  - FIX: Errormessage about InventoryManager (Code line Error 594)
+
+[color=#ff9900][b]Version: 2024.07.29 ---------------[/b][/color]
+  - NEW: Daily Craft -> Alchemy and Provision 
+  - NEW: Table of Death
+  - NEW: Keep Door On/Off-Option 
+  - NEW: Filteroption in Inventory Manager
+  - MOD: Inventory Manager now with Place-Icons
+  - MOD: ScreenMessages AP, XP and Buff
+
+[color=#ff9900][b]Version: 2024.07.07 ---------------[/b][/color]
+  - NEW: Chatloot -> New option to show only loot items that are not in the stickerbook 
+  - MOD: Guildinterna Eventupdate
+  - MOD: Code optimize
+
+[color=#ff9900][b]Version: 2024.06.22 ---------------[/b][/color]
+  - NEW: Panel 'CyroStatus' -> New option for transparent background
+  - NEW: Precracfting Options 
+  - MOD: Replace red background, if 'CyroStatus' panel not locked
+  - FIX: Molag Bal BossTimer
+
+[color=#ff9900][b]Version: 2024.06.15 ---------------[/b][/color]
+  - NEW: "Luminous Ink" Loot message
+  - MOD: Loot Chatmessage color 
+
+[color=#ff9900][b]Version: 2024.06.14 ---------------[/b][/color]
+  - NEW: DsR Imperial City Boss-Timer
+  - MOD: district name labels position and size
+
+[color=#ff9900][b]Version: 2024.06.13 ---------------[/b][/color]
+  - MOD: Reduce width tooltip frame
+  - MOD: SlashCommand's
+  - ADD: "Hakeijo" Lootmessage
+
+[color=#ff9900][b]Version: 2024.06.09 ---------------[/b][/color]
+  - MOD: Achievemnt Tracker Background
+ 
+[color=#ff9900][b]Version: 2024.06.08 ---------------[/b][/color]
+  - FIX: PvP KillCounter enable / disable
+  - NEW: DsR Achievement Tracker
+
+[color=#ff9900][b]Version: 2024.05.30 ---------------[/b][/color]
+  - MOD: Guild interna Raidinformations
+  - MOD: Guild interna AutoInvite text for Sunday-Raid
+  - MOD: Light of Togetherness more light settings
+  - NEW: Screen notification "seals of endeavor"
+  - FIX: district name labels
+
+[color=#ff9900][b]Version: 2024.05.25 ---------------[/b][/color]
+  - BUG: FIX Achievement chat message
+
+[color=#ff9900][b]Version: 2024.05.19 ---------------[/b][/color]
+  - NEW: MenueOption -> Overview Chatcommand's
+  - MOD: Guildinterna Informations
+
+[color=#ff9900][b]Version: 2024.05.14 ---------------[/b][/color]
+  - FIX: TelVar-Saver port to cyro
+  - NEW: Keybind /dsrport -> port autom. into a free cyrokampange
+  - FIX: AP-Reminder in Imperial City
+
+[color=#ff9900][b]Version: 2024.05.11 ---------------[/b][/color]
+  - NEW: TelVar-Saver -> automatic Port to Cyro as Group or Solo at xxx TelVar Sum
+  - NEW: Kill Counter
+  - NEW: Keep door
+
+[color=#ff9900][b]Version: 2024.05.05 ---------------[/b][/color]
+  - NEW: DsR Inventory Manager
+  - NEW: Kill Animation (PvP & Battleground) incl. Chat and Screen notification
+  - MOD: Change Icon of Bindingtool
+  - MOD: Options Light of Togetherness
+
+[color=#ff9900][b]Version: 2024.04.26 ---------------[/b][/color]
+  - DsRReminder: Player in Cyro check
+  - DsRReminder: fixed bug about No AP / XP Buff
+  - DsRBeam: Optimize Code
+
+[color=#ff9900][b]Version: 2024.04.21a ---------------[/b][/color]
+  - Added 2, 3, 4 min at Reminder
+
+[color=#ff9900][b]Version: 2024.04.21 ---------------[/b][/color]
+  - Fix notification Reminder Time
+
+[color=#ff9900][b]Version: 2024.04.20 ---------------[/b][/color]
+  - Modify LootManager and added new filter
+  - Modify PvP-Settings
+  - Added Light of Togetherness
+  - Added Reminder for Food, AP and XP
+  - fixed port to guild and own house
+
+[color=#ff9900][b]Version: 2024.04.02 ---------------[/b][/color]
+  - Modify LootManager
+  - Added  PvP-Settings
+  - fixed Esterdate
+
+[color=#ff9900][b]Version: 2024.04.01 ---------------[/b][/color]
+  - Modify LootManager
+  - Modify Settings-Menue ( Slashcommand /dsr )
+
+[color=#ff9900][b]Version: 2024.03.29 ---------------[/b][/color]
+  - Update Raid's
+  - Added LootManager ( in Progress )
+  - Added Settings-Menue 
+
+[color=#ff9900][b]Version: 2024.03.20 ---------------[/b][/color]
+  - Update Raid's
+  - Added guildlead panel 
+
+[color=#ff9900][b]Version: 2024.03.16 ---------------[/b][/color]
+  - API Update 101041
+
+[color=#ff9900][b]Version: 2024.03.09 ---------------[/b][/color]
+  - [DsR-AI] Design update 
+  - added more information in groupwindow (ACC-Name, PvP Rank etc)
+
+[color=#ff9900][b]Version: 2024.02.24 ---------------[/b][/color]
+  - [DsR-AI] Design update 
+  - [DsR-AI] Remove own leave group message
+
+[color=#ff9900][b]Version: 2024.02.10 ---------------[/b][/color]
+  - optimize Code
+  - Guild internal update
+
+[color=#ff9900][b]Version: 2024.01.27 ---------------[/b][/color]
+  - optimize AutoInvite
+  - Guild internal update
+
+[color=#ff9900][b]Version: 2024.01.17 ---------------[/b][/color]
+  - added AutoInvite ( Code based on Addon "AutoInvite - Updated" )
+
+[color=#ff9900][b]Version: 2024.01.06 ---------------[/b][/color]
+  - deactivated GuildMember Tooltip (joint Guild, last Online)
+        Problems with FPS!!!!
+
+[color=#ff9900][b]Version: 2024.01.05 ---------------[/b][/color]
+  - fixed Rank tooltip
+  - fixed GuildMemberList width
+  - fixed Leader color and icon
+
+  - added GuildMember Tooltip (joint Guild, last Online)
+  - added DependsON: LibHistoire
+  
+  - finished GuildMail Tool
+  
+[color=#ff9900][b]Version: 2024.01.02 ---------------[/b][/color]
+  - added Raidinformations
+  - modify Guildleadericon
+
+[color=#ff9900][b]Version: 2023.12.30 ---------------[/b][/color]
+  - added "Guildmail" Button for all user - function in progress
+  - added Guildinformations - current only for guild "Die sieben Raben"
+  - Button and Hodor-Icon for "primary residence" for all user
+  - modify Guildmember-List
+  - Rename Addon from "DsR Guildhouse Port" to "DsR GuildRoster"
+  
+  [BUG]
+  - Leader color and icon
+
+[color=#ff9900][b]Version: 2023.12.26 ---------------[/b][/color]
+  - fixed Icon-Support
+
+[color=#ff9900][b]Version: 2023.12.25 ---------------[/b][/color]
+  - bug fix
+  - added Icon-Support from HodorReflexes Addon
+
+[color=#ff9900][b]Version: 2023.12.24.1 ---------------[/b][/color]
+  - bug fix
+
+[color=#ff9900][b]Version: 2023.12.24 ---------------[/b][/color]
+  - added event / holiday screen message
+
+[color=#ff9900][b]Version: 2023.12.23 ---------------[/b][/color]
+  - Initial Release.

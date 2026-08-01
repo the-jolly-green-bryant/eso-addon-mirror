@@ -1,0 +1,48 @@
+<GuiXml>
+    <Controls>
+        <Control name="Descent_TemplateNavigationEntry_Keyboard" virtual="true" inherits="ZO_ActivityFinderTemplateNavigationEntry_Keyboard">
+            <Controls>
+                <Texture name="$(parent)IconQuest" textureFile="EsoUI/Art/Compass/quest_icon.dds" hidden="true">
+                    <Dimensions x="24" y="24"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Text" relativePoint="RIGHT" offsetX="5"/>
+                </Texture>
+				<Control name="$(parent)Achievements">
+                    <Anchor point="LEFT" relativeTo="$(parent)Check" relativePoint="RIGHT" />
+					<Anchor point="RIGHT" relativeTo="$(parent)Check" relativePoint="RIGHT" offsetX="500" />
+					<Controls>
+						<Texture name="$(parent)Slot1" hidden="true" mouseEnabled="true" >
+							<Dimensions x="24" y="24"/>
+							<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" />
+							<OnMouseEnter>
+								Descent_TemplateNavigationEntry_Keyboard_Achievement_OnMouseEnter(self)
+							</OnMouseEnter>
+							<OnMouseExit>
+								Descent_TemplateNavigationEntry_Keyboard_Achievement_OnMouseExit(self)
+							</OnMouseExit>
+						</Texture>
+						<Texture name="$(parent)Slot2" hidden="true" mouseEnabled="true" >
+							<Dimensions x="24" y="24"/>
+							<Anchor point="RIGHT" relativeTo="$(parent)Slot1" relativePoint="LEFT" offsetX="-5"/>
+							<OnMouseEnter>
+								Descent_TemplateNavigationEntry_Keyboard_Achievement_OnMouseEnter(self)
+							</OnMouseEnter>
+							<OnMouseExit>
+								Descent_TemplateNavigationEntry_Keyboard_Achievement_OnMouseExit(self)
+							</OnMouseExit>
+						</Texture>
+						<Texture name="$(parent)Slot3" hidden="true" mouseEnabled="true" >
+							<Dimensions x="24" y="24"/>
+							<Anchor point="RIGHT" relativeTo="$(parent)Slot2" relativePoint="LEFT" offsetX="-5" />
+							<OnMouseEnter>
+								Descent_TemplateNavigationEntry_Keyboard_Achievement_OnMouseEnter(self)
+							</OnMouseEnter>
+							<OnMouseExit>
+								Descent_TemplateNavigationEntry_Keyboard_Achievement_OnMouseExit(self)
+							</OnMouseExit>
+						</Texture>
+					</Controls>
+				</Control>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

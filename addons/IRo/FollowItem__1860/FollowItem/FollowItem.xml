@@ -1,0 +1,21 @@
+<GuiXml>
+    <Controls>
+      <TopLevelControl name="FollowItemTemplate" mouseEnabled="true" movable="true" resizeHandleSize="2" virtual="true" hidden="true">
+        <Dimensions x="100" y="60"/>
+        <Anchor point="TOPRIGHT" offsetX="-10" offsetY="10"/>
+        <Controls>
+          <Backdrop name="$(parent)Background" inherits="ZO_DarkThinFrame">
+            <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
+            <Anchor point="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+          </Backdrop>
+          <Label name="$(parent)Id" font="ZoFontWinT2" text="Id" hidden="true"/>
+          <Label name="$(parent)Icon" font="ZoFontWinT2" text="ItemName">
+            <Anchor point="LEFT" offsetX="10"/>
+          </Label>
+          <Label name="$(parent)Count" font="ZoFontWinT2" text="ItemCount">
+            <Anchor point="RIGHT" offsetX="-15"/>
+          </Label>
+        </Controls>
+      </TopLevelControl>
+    </Controls>
+</GuiXml>

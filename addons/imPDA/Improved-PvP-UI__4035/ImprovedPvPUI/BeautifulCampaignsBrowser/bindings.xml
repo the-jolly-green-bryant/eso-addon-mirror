@@ -1,0 +1,13 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SI_KEYBINDINGS_CATEGORY_USER_INTERFACE">
+            <Action name="TOGGLE_BEAUTIFUL_CAMPAIGNS_BROWSER">
+                <Down>
+                    if BEAUTIFUL_CAMPAIGNS_BROWSER_SCENE then
+                        SYSTEMS:GetObject("mainMenu"):ToggleScene("beautifulCampaignsBrowser")
+                    end
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

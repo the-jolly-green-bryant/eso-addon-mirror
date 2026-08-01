@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kadeer/Where-Are-You__2664",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kadeer",
+  "canonical_id": "esoui:2664",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2664",
+  "deleted": false,
+  "directories": [
+    "WhereAreYou"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2664/",
+  "fingerprint": "2bebd74eb32c27065cce532312df90712f5189f1924e70c540a244135dc2aa9e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9032.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2664",
+  "source_url": "https://www.esoui.com/downloads/info2664-WhereAreYou.html",
+  "stats": {
+    "downloads": 4222,
+    "favorites": 5,
+    "monthly_downloads": 13
+  },
+  "title": "Where Are You",
+  "updated_at": 1605426282000,
+  "version": "v0.3 alpha"
+}

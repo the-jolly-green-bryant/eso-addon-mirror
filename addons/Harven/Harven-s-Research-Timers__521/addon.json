@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Research-Timers__521",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:521",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:521",
+  "deleted": false,
+  "directories": [
+    "HarvensResearchTimers"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl521/",
+  "fingerprint": "a2536bc48f788e3ee032593804795f213a0812055b89fbecbf75d56066a63078",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1859.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1860.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "521",
+  "source_url": "https://www.esoui.com/downloads/info521-HarvensResearchTimers.html",
+  "stats": {
+    "downloads": 93349,
+    "favorites": 197,
+    "monthly_downloads": 128
+  },
+  "title": "Harven's Research Timers",
+  "updated_at": 1639310261000,
+  "version": "2.0.0"
+}

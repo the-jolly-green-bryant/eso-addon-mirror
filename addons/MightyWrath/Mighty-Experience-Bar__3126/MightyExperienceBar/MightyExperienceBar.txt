@@ -1,0 +1,11 @@
+## Title: Mighty Experience Bar
+## Author: MightyWrath
+## Version: 1.1.0
+## APIVersion: 101041
+## Description: Allows you to always display the Level and Experience Bar on screen during gameplay.
+## License: MIT
+## SavedVariables: MightyExperienceBarVars
+## DependsOn: LibAddonMenu-2.0
+
+MightyExperienceBar.lua
+MightyExperienceBar.xml

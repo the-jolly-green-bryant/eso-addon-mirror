@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/hamgatan/PlayTime__4643",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "hamgatan",
+  "canonical_id": "esoui:4643",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4643",
+  "deleted": false,
+  "directories": [
+    "PlayTime"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4643/",
+  "fingerprint": "cc8eec1581ef7fb8c777cf40a4285afaf9633af5162f30039abfb4153ba2823b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16339.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4643",
+  "source_url": "https://www.esoui.com/downloads/info4643-PlayTime.html",
+  "stats": {
+    "downloads": 140,
+    "favorites": 0,
+    "monthly_downloads": 46
+  },
+  "title": "PlayTime",
+  "updated_at": 1781514488000,
+  "version": "1.0.1"
+}

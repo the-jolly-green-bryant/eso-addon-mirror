@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Kyoma/By-The-Ancestors---Tomb-Hunter__1702",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyoma",
+  "canonical_id": "esoui:1702",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1702",
+  "deleted": false,
+  "directories": [
+    "ByTheAncestors"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1702/",
+  "fingerprint": "ed1b6e0bfa3cfd016c6b8f6b442f16d0432c497fd70dd0274e5df40d804b750b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5620.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5621.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1702",
+  "source_url": "https://www.esoui.com/downloads/info1702-ByTheAncestors-TombHunter.html",
+  "stats": {
+    "downloads": 106624,
+    "favorites": 139,
+    "monthly_downloads": 349
+  },
+  "title": "By The Ancestors - Tomb Hunter",
+  "updated_at": 1592240833000,
+  "version": "1.4"
+}

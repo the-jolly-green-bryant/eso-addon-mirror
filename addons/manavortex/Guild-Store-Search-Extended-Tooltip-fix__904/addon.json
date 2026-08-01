@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/manavortex/Guild-Store-Search-Extended-Tooltip-fix__904",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:904",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:904",
+  "deleted": false,
+  "directories": [
+    "GuildStoreSearchEx"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl904/",
+  "fingerprint": "78ca3a117f5e1304a3f45bc7c794aae90ac017d2d1749616899982492c069b3b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2721.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "904",
+  "source_url": "https://www.esoui.com/downloads/info904-GuildStoreSearchExtendedTooltipfix.html",
+  "stats": {
+    "downloads": 16903,
+    "favorites": 5,
+    "monthly_downloads": 33
+  },
+  "title": "Guild Store Search Extended Tooltip fix",
+  "updated_at": 1421409892000,
+  "version": "0.13.2c-beta"
+}

@@ -1,0 +1,9 @@
+## Title: Gold Accountant
+## Version: 2.1
+## Author: Iakoni
+## APIVersion: 100022
+## SavedVariables: GoldAccountantSavedVariables
+
+GoldAccountant.lua
+GoldAccountant.xml
+Bindings.xml

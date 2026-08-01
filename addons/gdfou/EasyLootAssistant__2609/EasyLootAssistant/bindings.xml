@@ -1,0 +1,30 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|c00CC00Easy Loot Assistant|r">
+            <Action name="RUN_EASYLOOTASSISTANT_ACTION">
+                <Down>EASYLOOTASSISTANT:Binding_BankAction()</Down>
+            </Action>
+            <Action name="RUN_EASYLOOTASSISTANT_CONFIG">
+                <Down>SLASH_COMMANDS['/easylootassistant_config']()</Down>
+            </Action>
+            <Action name="RUN_EASYLOOTASSISTANT_SEARCH">
+                <Down>EASYLOOTASSISTANT:Binding_SearchUnknown()</Down>
+            </Action>
+            <Action name="RUN_EASYLOOTASSISTANT_INNOCENTS">
+                <Down>EASYLOOTASSISTANT:Binding_PreventAttackingInnocents()</Down>
+            </Action>
+            <Action name="RUN_EASYLOOTASSISTANT_LOOTSTOLEN">
+                <Down>EASYLOOTASSISTANT:Binding_AutoLootStolen()</Down>
+            </Action>
+        </Category>
+    </Layer>
+    <Layer name="GamepadUIMode" allowFallthrough="false">
+        <Category>
+            <AllowAction name="RUN_EASYLOOTASSISTANT_ACTION"/>
+            <AllowAction name="RUN_EASYLOOTASSISTANT_CONFIG"/>
+            <AllowAction name="RUN_EASYLOOTASSISTANT_SEARCH"/>
+            <AllowAction name="RUN_EASYLOOTASSISTANT_INNOCENTS"/>
+            <AllowAction name="RUN_EASYLOOTASSISTANT_LOOTSTOLEN"/>
+        </Category>
+    </Layer>
+</Bindings>

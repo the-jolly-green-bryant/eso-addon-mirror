@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/True-Bounty__3008",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3008",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3008",
+  "deleted": false,
+  "directories": [
+    "TrueBounty"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3008/",
+  "fingerprint": "64fcdb29e8db1b9fc466fd3f0e47d55a9bdc5801df5d0499f9440f441fad8c21",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10127.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3008",
+  "source_url": "https://www.esoui.com/downloads/info3008-TrueBounty.html",
+  "stats": {
+    "downloads": 3313,
+    "favorites": 7,
+    "monthly_downloads": 18
+  },
+  "title": "True Bounty",
+  "updated_at": 1617318831000,
+  "version": "1.0"
+}

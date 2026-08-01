@@ -1,0 +1,7 @@
+<GuiXml>
+
+<Font name="AltFontSmall"      font="EsoUI/Common/Fonts/Univers67.otf|15|soft-shadow-thin"/>
+<Font name="AltFontMedium"     font="EsoUI/Common/Fonts/Univers67.otf|17|soft-shadow-thin"/>
+<Font name="AltFontLarge"      font="EsoUI/Common/Fonts/Univers67.otf|20|soft-shadow-thin"/>
+
+</GuiXml>

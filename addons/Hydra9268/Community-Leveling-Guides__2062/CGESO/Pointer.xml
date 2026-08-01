@@ -1,0 +1,10 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="CGESO_Pointer_Overlay">
+			<OnUpdate></OnUpdate>
+		</TopLevelControl>
+		<TopLevelControl name="CGESO_Pointer_ArrowCtrl">
+			<OnUpdate></OnUpdate>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

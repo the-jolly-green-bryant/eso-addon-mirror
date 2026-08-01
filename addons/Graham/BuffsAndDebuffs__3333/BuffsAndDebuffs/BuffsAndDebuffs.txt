@@ -1,0 +1,11 @@
+## Title: BuffsAndDebuffs
+## APIVersion: 101033
+## Version: 1.3Pre
+## Author: Graham
+## SavedVariables: BuffsAndDebuffsVars
+## DependsOn: LibAddonMenu-2.0
+
+BuffsAndDebuffs.lua
+BuffsAndDebuffsMenu.lua
+BuffsAndDebuffsDefaults.lua
+BuffsAndDebuffsIDs.lua

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Lionas/JP-Patch-for-WPamA-v1.0.1__1420",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lionas",
+  "canonical_id": "esoui:1420",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:1420",
+  "deleted": false,
+  "directories": [
+    "WPamA"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1420/",
+  "fingerprint": "e0d054296d4d47944a102ea1bd66d6730e37f3aa478577f8a74176a867c22063",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4601.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4600.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1420",
+  "source_url": "https://www.esoui.com/downloads/info1420-JPPatchforWPamAv1.0.1.html",
+  "stats": {
+    "downloads": 11026,
+    "favorites": 0,
+    "monthly_downloads": 13
+  },
+  "title": "JP Patch for WPamA v1.0.1",
+  "updated_at": 1468414296000,
+  "version": "1.0.1"
+}

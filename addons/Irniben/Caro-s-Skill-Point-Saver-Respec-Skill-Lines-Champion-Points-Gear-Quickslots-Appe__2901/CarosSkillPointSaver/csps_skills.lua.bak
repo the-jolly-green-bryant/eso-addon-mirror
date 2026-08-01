@@ -1,0 +1,1694 @@
+local skillTable = CSPS.skillTable
+local GS = GetString
+local sdm = SKILLS_DATA_MANAGER
+local ec = CSPS.ec
+local skillForHB = false
+local tryingToApplySkills = false
+local canChangeClassLines = false
+local hf = CSPS.helperFunctions
+local cspsD = CSPS.cspsD
+local currentClassSkillLines = {1,2,3}
+local otherClassSkills = {}
+local hasAnySubclasses, tooManySubclasses, twoSubclassesFromOneClass = false, false, false
+local classMasteryIndex = false
+local firstClassMasteryIndex = false
+local numClassMasteries = 0
+local craftedAbilites = false
+
+local respecCooldown = false
+
+local respecCooldownStartingTime = 12420
+
+local skillTypes = {SKILL_TYPE_CLASS, SKILL_TYPE_WEAPON, SKILL_TYPE_ARMOR, SKILL_TYPE_WORLD, SKILL_TYPE_GUILD, SKILL_TYPE_AVA, SKILL_TYPE_RACIAL, SKILL_TYPE_TRADESKILL}
+
+local cpColors = CSPS.cpColors
+
+local mechanicFlagColors = {
+	[COMBAT_MECHANIC_FLAGS_HEALTH] = cpColors[3],
+	[COMBAT_MECHANIC_FLAGS_MAGICKA] =  cpColors[2],
+	[COMBAT_MECHANIC_FLAGS_STAMINA] =  cpColors[1],
+	[COMBAT_MECHANIC_FLAGS_ULTIMATE] =  cpColors[4],
+	[COMBAT_MECHANIC_FLAGS_WEREWOLF] =  cpColors[5],
+}
+
+local function checkClassMasteries(doNotSumUp)
+	if not classMasteryIndex then return end
+	local lineData = skillTable[1][classMasteryIndex]
+	local oldNumClassMasteries = numClassMasteries
+	numClassMasteries = 0
+	local refreshLine = false
+	for skillIndex, skillData in ipairs(lineData) do
+		if skillData.purchased then 
+			if numClassMasteries == 2 then
+				skillData.purchased = false
+				refreshLine = true
+			else
+				numClassMasteries = numClassMasteries + 1
+			end
+		end
+	end
+	if numClassMasteries == oldNumClassMasteries and not refreshLine then return end
+	for skillLineIndex, skillData in ipairs(lineData) do
+		skillData:setPoints()
+	end
+	if doNotSumUp then return end
+	lineData:sumUpSkills()
+	skillTable[1]:sumUpSkills()
+end
+
+CSPS.checkClassMasteries = checkClassMasteries
+
+local function checkCustomStyles()
+	local numChanges = 0
+	local numLocked = 0
+	for skillType, typeData in ipairs(skillTable) do
+		for skillLineIndex, lineData in ipairs(typeData) do
+			if lineData.zo_data:IsActive() then
+				for skillIndex, skillData in ipairs(lineData) do
+					if skillData.numSkillStyles and skillData.numSkillStyles > 0 then
+						local activeCollectible = GetActiveProgressionSkillAbilityFxOverrideCollectibleId(skillData.progId)
+						if activeCollectible ~= (skillData.styleCollectible or 0) then
+							if not skillData.styleCollectible or skillData.styleCollectible == 0 or IsCollectibleUnlocked(skillData.styleCollectible) then
+								numChanges = numChanges + 1
+							else
+								numLocked = numLocked + 1
+							end
+						end
+					end
+				end
+			end	
+		end
+	end	
+	return numChanges, numLocked
+end	
+
+local function canCraftAbility(craftedAbilityId, scripts)
+	if not IsCraftedAbilityUnlocked(craftedAbilityId) then return false end
+	for _, scriptId in pairs(scripts) do
+		if not scriptId or tonumber(scriptId) == 0 or not IsCraftedAbilityScriptUnlocked(scriptId) then return false end
+	end
+	return true
+end
+
+local function everythingScripted(scripts)
+	for i=1,3 do
+		if not scripts[i] or scripts[i] == 0 then return false end
+	end
+	return true
+end
+
+local function getCraftedAbilityIndices(craftedAbilityId)
+	if not craftedAbilites or not craftedAbilites[craftedAbilityId] then return GetSkillAbilityIndicesFromCraftedAbilityId(craftedAbilityId) end
+	return unpack(craftedAbilites[craftedAbilityId])
+end
+
+CSPS.getCraftedAbilityIndices = getCraftedAbilityIndices
+
+local function checkCraftedAbilites()
+	local neededInk = 0
+	local canCraftAll = true
+	local notCraftable = 0
+	local combinationsToScribe = {}
+	for i=1, GetNumCraftedAbilities() do
+		local craftedId = GetCraftedAbilityIdAtIndex(i)
+		local skillType, skillLineIndex, skillIndex = getCraftedAbilityIndices(craftedId)
+		local skEntry = skillTable[skillType][skillLineIndex][skillIndex]
+		if #skEntry.scripts == 3 and everythingScripted(skEntry.scripts) then
+			if IsScribableScriptCombinationForCraftedAbility(craftedId, unpack(skEntry.scripts)) then
+				if canCraftAbility(craftedId, skEntry.scripts) then
+					local costToScribe = GetCostToScribeScripts(craftedId, unpack(skEntry.scripts))
+					neededInk = neededInk + costToScribe
+					if costToScribe > 0 then table.insert(combinationsToScribe, {craftedId = craftedId, scripts=skEntry.scripts}) end
+				else
+					canCraftAll = false
+					notCraftable = notCraftable + 1					
+				end
+			else
+				canCraftAll = false
+				notCraftable = notCraftable + 1
+			end
+		end
+	end
+	return combinationsToScribe, neededInk, canCraftAll, notCraftable
+end
+
+function CSPS.showApplySkillsTT(self)
+	if twoSubclassesFromOneClass or tooManySubclasses then
+		InitializeTooltip(InformationTooltip, self, LEFT)
+		hf.ttAddLine(tooManySubclasses and GS(SI_SKILLS_SUBCLASSING_ERROR_MIN_PLAYER_CLASS_SKILL_LINE) or twoSubclassesFromOneClass and GS(SI_SKILLS_SUBCLASSING_ERROR_MAX_SKILL_LINES_PER_CLASS), nil, CSPS.colors.orange:UnpackRGB())
+		return
+	end
+	local combinationsToScribe, neededInk, canCraftAll, notCraftable =  checkCraftedAbilites()
+	local myTooltip = GS(CSPS_Tooltiptext_Sk)
+
+	if combinationsToScribe and #combinationsToScribe > 0 then
+		if  GetCraftingInteractionType() == CRAFTING_TYPE_SCRIBING then
+			myTooltip = string.format(GS(CSPS_ScribingGo), myTooltip, neededInk, GetItemLinkInventoryCount(GetScribingInkItemLink(), INVENTORY_COUNT_BAG_OPTION_BACKPACK_AND_BANK_AND_CRAFT_BAG))
+		else
+			myTooltip = string.format(GS(CSPS_ScribingGoToStation), myTooltip, neededInk)
+		end
+	end
+	if notCraftable and notCraftable > 0 then myTooltip = string.format("%s\n%s", myTooltip, zo_strformat(GS(CSPS_CannotBeScribed), notCraftable)) end
+	ZO_Tooltips_ShowTextTooltip(self, RIGHT, myTooltip)
+end
+
+function CSPS.getAbilityStats(skillData, fillTable)
+	if skillData.passive then return false end
+	fillTable = fillTable or {}
+	local statList = {}
+	
+	local abilityId = skillData.craftedId and GetCraftedAbilityRepresentativeAbilityId(skillData.craftedId, "player") or GetSpecificSkillAbilityInfo(skillData.type, skillData.line, skillData.index, skillData.morph, skillData.rank)
+	
+
+
+    local function GetNextAbilityMechanicFlagIter(abilityId)
+        return function(_, lastFlag)
+            return GetNextAbilityMechanicFlag(abilityId, lastFlag)
+        end
+    end
+   
+	-- channel/cast time
+	local channeled, castTime, channelTime = GetAbilityCastInfo(abilityId)
+	
+	if channeled then
+		channelTime = ZO_SELECTED_TEXT:Colorize(ZO_FormatTimeMilliseconds(channelTime, TIME_FORMAT_STYLE_CHANNEL_TIME, TIME_FORMAT_PRECISION_TENTHS_RELEVANT, TIME_FORMAT_DIRECTION_NONE))
+		table.insert(statList, string.format("%s: %s", GS(SI_ABILITY_TOOLTIP_CHANNEL_TIME_LABEL), channelTime))
+		fillTable.channelTime = channelTime
+	else
+		castTime = ZO_SELECTED_TEXT:Colorize(ZO_FormatTimeMilliseconds(castTime, TIME_FORMAT_STYLE_CAST_TIME, TIME_FORMAT_PRECISION_TENTHS_RELEVANT, TIME_FORMAT_DIRECTION_NONE))
+		table.insert(statList, string.format("%s: %s", GS(SI_ABILITY_TOOLTIP_CAST_TIME_LABEL), castTime))
+		fillTable.castTime = castTime
+	end
+	
+	-- target
+	local targetDescription = GetAbilityTargetDescription(abilityId)
+	if targetDescription then
+		targetDescription = ZO_SELECTED_TEXT:Colorize(targetDescription)
+		table.insert(statList, string.format("%s: %s", GS(SI_ABILITY_TOOLTIP_TARGET_TYPE_LABEL), targetDescription))
+		fillTable.targetDescription = targetDescription
+	end
+
+	--Range
+	local minRangeCM, maxRangeCM = GetAbilityRange(abilityId)
+	if maxRangeCM and maxRangeCM > 0 then
+		local rangeValue = minRangeCM == 0 and zo_strformat(SI_ABILITY_TOOLTIP_RANGE, FormatFloatRelevantFraction(maxRangeCM / 100)) or zo_strformat(SI_ABILITY_TOOLTIP_MIN_TO_MAX_RANGE, FormatFloatRelevantFraction(minRangeCM / 100), FormatFloatRelevantFraction(maxRangeCM / 100))
+		rangeValue = ZO_SELECTED_TEXT:Colorize(rangeValue)
+		table.insert(statList, string.format("%s: %s", GS(SI_ABILITY_TOOLTIP_RANGE_LABEL), rangeValue))
+		fillTable.range = rangeValue
+	end
+
+	--Radius/Distance
+	local radiusCM = GetAbilityRadius(abilityId)
+	local angleDistanceCM = GetAbilityAngleDistance(abilityId)
+	if radiusCM and radiusCM > 0 then
+		if angleDistanceCM and angleDistanceCM > 0 then
+			fillTable.radius = ZO_SELECTED_TEXT:Colorize(zo_strformat(SI_ABILITY_TOOLTIP_AOE_DIMENSIONS, FormatFloatRelevantFraction(radiusCM / 100), FormatFloatRelevantFraction(angleDistanceCM * 2 / 100)))
+			table.insert(statList, string.format("%s: %s", GS(SI_ABILITY_TOOLTIP_AREA_LABEL), fillTable.radius))
+		else
+			fillTable.radius = ZO_SELECTED_TEXT:Colorize(zo_strformat(SI_ABILITY_TOOLTIP_RADIUS, FormatFloatRelevantFraction(radiusCM / 100)))
+			table.insert(statList, string.format("%s: %s", GS(SI_ABILITY_TOOLTIP_RADIUS_LABEL), fillTable.radius))
+		end
+	end
+
+	--Duration
+	if IsAbilityDurationToggled(abilityId) then
+		table.insert(statList, string.format("%s: %s", GS(SI_ABILITY_TOOLTIP_DURATION_LABEL), ZO_SELECTED_TEXT:Colorize(GS(SI_ABILITY_TOOLTIP_TOGGLE_DURATION))))
+		fillTable.duration = ZO_SELECTED_TEXT:Colorize(GS(SI_ABILITY_TOOLTIP_TOGGLE_DURATION))
+	else
+		local durationMS = GetAbilityDuration(abilityId, overrideActiveRank, overrideCasterUnitTag)
+		if durationMS and durationMS > 0 then
+			fillTable.duration = ZO_SELECTED_TEXT:Colorize(ZO_FormatTimeMilliseconds(durationMS, TIME_FORMAT_STYLE_DURATION, TIME_FORMAT_PRECISION_TENTHS_RELEVANT, TIME_FORMAT_DIRECTION_NONE))
+			table.insert(statList, string.format("%s: %s", GS(SI_ABILITY_TOOLTIP_DURATION_LABEL), fillTable.duration))
+		end
+	end
+
+	--Cooldown
+	local cooldownMS = GetAbilityCooldown(abilityId)
+	if cooldownMS and cooldownMS > 0 then
+		fillTable.cooldown = ZO_SELECTED_TEXT:Colorize(ZO_FormatTimeMilliseconds(cooldownMS, TIME_FORMAT_STYLE_DURATION, TIME_FORMAT_PRECISION_TENTHS_RELEVANT, TIME_FORMAT_DIRECTION_NONE))
+		table.insert(statList, string.format("%s: %s", GS(SI_ABILITY_TOOLTIP_COOLDOWN), fillTable.cooldown))
+	end
+
+	--Cost
+	if not skillData.craftedId then
+		for mFlag in GetNextAbilityMechanicFlagIter(abilityId) do
+			local cost = GetAbilityCost(abilityId, mFlag)
+			if cost and cost > 0 then
+				local mechanicName = GS("SI_COMBATMECHANICFLAGS", mFlag)
+				local costString = zo_strformat(SI_ABILITY_TOOLTIP_RESOURCE_COST, cost, mechanicName)
+				if mechanicFlagColors[mFlag] then costString = mechanicFlagColors[mFlag]:Colorize(costString) end
+				table.insert(statList, string.format("%s: %s", GS(SI_ABILITY_TOOLTIP_RESOURCE_COST_LABEL), costString))
+				fillTable.cost = fillTable.cost or {}
+				fillTable.cost[mFlag] = costString
+			end
+		end
+
+		for mFlag in GetNextAbilityMechanicFlagIter(abilityId) do
+			local cost, chargeFrequencyMS = GetAbilityCostOverTime(abilityId, mFlag)
+			if cost and cost > 0 then
+				local mechanicName = GS("SI_COMBATMECHANICFLAGS", mFlag)
+
+				if mechanicFlagColors[mFlag] then 
+					cost = mechanicFlagColors[mFlag]:Colorize(cost) 
+					mechanicName = mechanicFlagColors[mFlag]:Colorize(mechanicName) 
+				end
+
+				local formattedChargeFrequency = ZO_SELECTED_TEXT:Colorize(ZO_FormatTimeMilliseconds(chargeFrequencyMS, TIME_FORMAT_STYLE_SHOW_LARGEST_UNIT, TIME_FORMAT_PRECISION_TENTHS_RELEVANT, TIME_FORMAT_DIRECTION_NONE))
+				local costOverTimeString = zo_strformat(SI_ABILITY_TOOLTIP_RESOURCE_COST_OVER_TIME, cost, mechanicName, formattedChargeFrequency)
+				
+				table.insert(statList, string.format("%s: %s", GS(SI_ABILITY_TOOLTIP_RESOURCE_COST_LABEL), costOverTimeString))
+				fillTable.costOverTime = fillTable.costOverTime or {}
+				fillTable.costOverTime[mFlag] = costOverTimeString
+			end
+		end    
+	
+	else
+		local cost, mFlag, isCostPerTick = GetAbilityBaseCostInfo(abilityId, nil, "player")
+		if not mFlag then return statList end -- sometimes returns nil, then a few seconds later it doesn't...
+		if isCostPerTick then
+		
+			local costPerTick = GetAbilityCostPerTick(abilityId, mFlag)
+			local frequencyMS = GetAbilityFrequencyMS(abilityId, "player")
+			local mechanicName = GS("SI_COMBATMECHANICFLAGS", mFlag)
+
+			if mechanicFlagColors[mFlag] then 
+				costPerTick = mechanicFlagColors[mFlag]:Colorize(costPerTick) 
+				mechanicName = mechanicFlagColors[mFlag]:Colorize(mechanicName) 
+			end
+
+			local formattedChargeFrequency = ZO_SELECTED_TEXT:Colorize(ZO_FormatTimeMilliseconds(frequencyMS, TIME_FORMAT_STYLE_SHOW_LARGEST_UNIT, TIME_FORMAT_PRECISION_TENTHS_RELEVANT, TIME_FORMAT_DIRECTION_NONE))
+			local costOverTimeString = zo_strformat(SI_ABILITY_TOOLTIP_RESOURCE_COST_OVER_TIME, costPerTick, mechanicName, formattedChargeFrequency)
+			
+			table.insert(statList, string.format("%s: %s", GS(SI_ABILITY_TOOLTIP_RESOURCE_COST_LABEL), costOverTimeString))
+			fillTable.costOverTime = fillTable.costOverTime or {}
+			fillTable.costOverTime[mFlag] = costOverTimeString
+
+		else
+			local mechanicName = GS("SI_COMBATMECHANICFLAGS", mFlag)
+			local costString = zo_strformat(SI_ABILITY_TOOLTIP_RESOURCE_COST, cost, mechanicName)
+			if mechanicFlagColors[mFlag] then costString = mechanicFlagColors[mFlag]:Colorize(costString) end
+			table.insert(statList, string.format("%s: %s", GS(SI_ABILITY_TOOLTIP_RESOURCE_COST_LABEL), costString))
+			fillTable.cost = fillTable.cost or {}
+			fillTable.cost[mFlag] = costString
+		end
+	end
+	
+	return statList
+end
+
+-- Drag and drop functions for hotbars ---
+function CSPS.onSkillDrag(i, j, k)
+	skillForHB = {i,j,k,IsSkillAbilityUltimate(i,j,k)}
+end
+
+function CSPS.onHbIconDrag(myBar, icon)
+
+	if CSPS.werewolfMode then myBar = 3 end
+	
+	local thisSkill = CSPS.hbTables[myBar][icon]
+	if thisSkill ~= nil then
+		local i = thisSkill[1]
+		local j = thisSkill[2]
+		local k = thisSkill[3]
+		skillForHB = {i,j,k,IsSkillAbilityUltimate(i,j,k)}
+	end
+end
+
+
+function CSPS.onHbIconReceive(myBar, slotIndex)
+	if not skillForHB then return end 
+	if (slotIndex == 6 and skillForHB[4] == false) or slotIndex < 6 and skillForHB[4] == true then return end
+
+	local i,j,k = unpack(skillForHB)
+	
+	if i==1 and not hf.entryInTable(currentClassSkillLines, j) then skillForHB = false return end
+	
+	if IsWerewolfSkillLineById(GetSkillLineId(i, j)) then
+		-- if not CSPS.werewolfMode then return end -- can slot werewolf skills on any bar
+	else
+		if CSPS.werewolfMode then return end
+	end
+	
+	if CSPS.werewolfMode then myBar = 3 end
+	
+	CSPS.hbSkillRemove(myBar, slotIndex)
+	local indOld = skillTable[i][j][k].hb[myBar]
+	if 	indOld ~= nil then
+			CSPS.hbTables[myBar][indOld] = nil
+	end
+	
+	CSPS.hbTables[myBar][slotIndex] = {i, j, k}
+	skillTable[i][j][k].hb[myBar] = slotIndex
+	skillForHB = false
+	CSPS.hbPopulate()
+	CSPS.unsavedChanges = true
+	CSPS.showElement("save", true)
+end
+
+function CSPS.hbSkillRemove(myBar, slotIndex)
+	if CSPS.werewolfMode then myBar = 3 end
+	if CSPS.hbTables[myBar][slotIndex] ~= nil then
+		local i = CSPS.hbTables[myBar][slotIndex][1] 
+		local j = CSPS.hbTables[myBar][slotIndex][2] 
+		local k = CSPS.hbTables[myBar][slotIndex][3]
+		skillTable[i][j][k].hb[myBar] = nil
+		CSPS.hbTables[myBar][slotIndex] = nil
+	end
+	CSPS.hbPopulate()
+	CSPS.unsavedChanges = true
+	CSPS.showElement("save", true)
+end
+
+function CSPS.hbSkillTT(control, myBar, slotIndex)
+	if CSPS.werewolfMode then myBar = 3 end
+	
+	local r,g,b =  ZO_NORMAL_TEXT:UnpackRGB()
+	if CSPS.hbTables[myBar][slotIndex] ~= nil then
+		local i, j, k = unpack(CSPS.hbTables[myBar][slotIndex])
+		local skillData = skillTable[i][j][k]
+		CSPS.showSkTT(control, i,j,k, skillData.morph, skillData.rank, skillData.errorCode, skillData, BOTTOM, true)		
+		InformationTooltip:AddLine(string.format("|t26:26:esoui/art/miscellaneous/icon_lmb.dds|t: %s", GS(SI_GAMEPAD_SKILLS_ASSIGN)), "ZoFontGame", r, g, b, CENTER, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_CENTER, true)
+		InformationTooltip:AddLine(string.format("|t26:26:esoui/art/miscellaneous/icon_rmb.dds|t: %s", GS(SI_ABILITY_ACTION_CLEAR_SLOT)), "ZoFontGame", r, g, b, CENTER, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_CENTER, true)
+	else 
+		ZO_Tooltips_ShowTextTooltip(control, TOP, string.format("|t26:26:esoui/art/miscellaneous/icon_lmb.dds|t: %s", GS(SI_GAMEPAD_SKILLS_ASSIGN)))
+	end
+end
+
+function CSPS.hbSkillMenu(myBar, slotIndex)
+	ClearMenu()
+	for skillType, typeData in ipairs(CSPS.skillTable) do
+		local typeContent = {}
+		for skillLineIndex, lineData in ipairs(typeData) do
+			if not lineData.emperor and not lineData.vengeance and (skillType ~= 1 or hf.entryInTable(currentClassSkillLines, skillLineIndex)) then
+				local anySkillsInLine = false
+				for skillIndex, skillData in ipairs(lineData) do
+					if skillData.purchased and not skillData.passive and skillData.hb[myBar] ~= slotIndex then
+						local isUlti = IsSkillAbilityUltimate(skillType, skillLineIndex, skillIndex)
+						if isUlti and slotIndex == 6 or not isUlti and slotIndex < 6 then
+						
+							local skIcon = skillData.morph and skillData.morph > 0 and skillData.morphTextures[skillData.morph] or skillData.texture
+							local skName = skillData.morph and skillData.morph > 0 and skillData.morphNames[skillData.morph] or skillData.name
+							skName = string.format("|t20:20:%s|t %s", skIcon, skName)
+							table.insert(typeContent, {label = skName, callback =
+								function()
+									skillForHB = {skillType, skillLineIndex, skillIndex, isUlti}
+									CSPS.onHbIconReceive(myBar, slotIndex)
+								end, tooltip = 
+								function(control, inside) 
+									if not inside then return end 
+									--CSPS.showSkTT(control, skillType, skillLineIndex, skillIndex, skillData.morph, skillData.rank, skillData.errorCode, skillData, LEFT, true)	
+								end})
+							anySkillsInLine = true
+							-- local menuItemControl = ZO_Menu.items[#ZO_Menu.items].item 
+							-- menuItemControl.onEnter = function() CSPS.showCpTT(menuItemControl, skillData, funcValue and funcValue(skillData) or nil, false, false, 15) end
+							-- menuItemControl.onExit = function() ZO_Tooltips_HideTextTooltip() end
+						end
+					end
+				end
+				if anySkillsInLine then table.insert(typeContent, {label = "-", callback = function() end}) end
+			end
+		end
+		if #typeContent > 0 then 
+			if typeContent[#typeContent].label == "-" then typeContent[#typeContent] = nil end
+			AddCustomSubMenuItem(GS("SI_SKILLTYPE", skillType), typeContent) 
+		end
+	end
+	ShowMenu() 
+end
+
+local function refreshSkillPointSum()
+	skillTable:sumUpSkills()
+	CSPSWindowIncludeSkLabel:SetText(string.format("%s (%s/%s)", GetString(SI_CHARACTER_MENU_SKILLS), skillTable.pointsToSpend, GetAvailableSkillPoints()))
+end
+
+-- plus and minus functions for skills from the list
+
+function CSPS.changeSkillLine(skillType, orderedIndex)
+
+	ClearMenu()
+	
+	--GetSkillLineId(*[SkillType|#SkillType]* _skillType_, *luaindex* _skillLineIndex_)
+	local activeLines = {}
+	local activeClasses = {}
+	local myClass = GetUnitClassId("player")
+	local numMyClass = 0
+	local clickedClassId = 0
+	
+	for i, v in pairs(currentClassSkillLines) do 
+		activeLines[v] = true 
+		local lineClass = GetSkillLineClassId(1, v)
+		if i == orderedIndex then clickedClassId = lineClass end
+		if lineClass == myClass then
+			numMyClass = numMyClass + 1
+		elseif i ~= orderedIndex then 
+			activeClasses[lineClass] = true 
+		end
+	end
+	-- if numMyClass == 1 and clickedClassId = myClass then return end
+	
+	
+	local orderedClasses = {GetUnitClassId("player")}
+	
+	for classIndex = 1, GetNumClasses() do
+		local classId = GetClassIdByIndex(classIndex)
+		if classId ~= orderedClasses[1] then table.insert(orderedClasses, classId) end
+	end
+	
+	for _, classId in pairs(orderedClasses) do
+		local classContent = {}
+		
+		local _, _, classIcon = GetClassInfo(GetClassIndexById(classId))
+		
+		local className = zo_strformat("|t26:26:<<1>>|t <<C:2>>", classIcon, GetClassName(GetUnitGender("player"), classId))
+		if not activeClasses[classId] and not ((tooManySubclasses or numMyClass == 1 and clickedClassId == myClass) and classId ~= myClass) then
+		
+			for i=1, GetNumSkillLinesForClass(classId) do
+				local skillLineId = GetSkillLineIdForClass(classId, i)
+				local _, skillLineIndex = GetSkillLineIndicesFromSkillLineId(skillLineId)
+				
+				if not activeLines[skillLineIndex] then
+					local _, lineTexture = GetSkillAbilityInfo(1, skillLineIndex, 1)
+					table.insert(classContent, {
+						label = zo_strformat("|t24:24:<<1>>|t <<C:2>>", lineTexture, GetSkillLineNameById(skillLineId)), 
+						callback =
+							function()
+								if not CSPS.savedVariables.settings.showAllClassSkills then
+									CSPS.removeSkillLine(1, currentClassSkillLines[orderedIndex], true)
+								end
+								CSPS.setSubClass(orderedIndex, skillLineIndex)
+								CSPS.refreshTree()
+							end, 
+						tooltip = 
+							function(control, inside) 
+								if not inside then return end 
+							end
+						})
+				end
+			end
+			
+			if #classContent > 0 then 
+				AddCustomSubMenuItem(className, classContent) 
+			end
+		end
+	end 
+	AddCustomMenuItem("-", function() end) 
+	AddCustomMenuItem(GS(SI_STATS_CLEAR_ALL_ATTRIBUTES_BUTTON), function() 
+		CSPS.setSubClasses({1,2,3}, not CSPS.savedVariables.settings.showAllClassSkills)
+		CSPS.refreshTree()
+	end) 
+	if not HasQuest(GetSubclassingQuestId()) and not HasCompletedQuest(GetSubclassingQuestId()) then
+		AddCustomMenuItem("-", function() end) 
+		AddCustomMenuItem(GS(SI_SKILLS_SUBCLASSING_QUEST_GRANT_TEXT), function() 
+			ZO_Dialogs_ShowDialog(CSPS.name.."_OkCancelDiag", 
+				{returnFunc = function() BestowSubclassingQuest()  end},  
+				{mainTextParams = {zo_strformat(GS(SI_ZONE_STORY_DEFAULT_QUEST_SHORT_DESCRIPTION), GetQuestName(GetSubclassingQuestId()))}, titleParams = {GS(CSPS_MyWindowTitle)}})
+		end)
+	end
+	
+	ShowMenu() 
+end
+
+function CSPS.minusClickSkill(theSkill, ctrl, alt, shift)
+	local myShiftKey = CSPS.savedVariables.settings.jumpShiftKey or 7
+	myShiftKey = myShiftKey == 7 and shift or myShiftKey == 4 and ctrl or myShiftKey == 5 and alt or false
+	if not theSkill.passive then		-- progression skill?
+		theSkill.morph = theSkill.morph or 0
+		if myShiftKey or theSkill.morph == 0 then -- delete if not morphed
+			theSkill.purchased = false
+			for myBar = 1, 3 do
+				if theSkill.hb[myBar] ~= nil then CSPS.hbSkillRemove(myBar, theSkill.hb[myBar]) end
+			end
+		else
+			theSkill.morph = theSkill.morph - 1 -- if morphed change/remove morph
+		end
+	else		-- Passive
+		if not myShiftKey and theSkill.rank > 1 then -- if rank > 1 substract 1
+			theSkill.rank = theSkill.rank - 1
+		else
+			theSkill.purchased = false -- otherwise delete
+		end
+	end
+
+	theSkill:setPoints()
+	
+	if theSkill.lineData.classMastery then checkClassMasteries(true) end
+	theSkill.lineData:sumUpSkills()
+	theSkill.typeData:sumUpSkills()
+	
+	
+	refreshSkillPointSum()
+	CSPS.hbPopulate()
+	 CSPS.refreshTree()
+	CSPS.showElement("save", true)
+	CSPS.unsavedChanges = true
+end
+
+function CSPS.minusClickSkillLine(skTyp, skLin, shift)
+	local name = GS("SI_SKILLTYPE", skTyp)
+	if skLin ~= nil then name = skillTable[skTyp][skLin].name end
+	ZO_Dialogs_ShowDialog(CSPS.name.."_OkCancelDiag", 
+		{returnFunc = function() CSPS.removeSkillLine(skTyp, skLin) end},  
+		{mainTextParams = {zo_strformat(GS(CSPS_MSG_DeleteSkillType), name)}, titleParams = {GS(CSPS_MyWindowTitle)}})
+end
+
+function CSPS.removeSkillLine(skTyp, skLin, noRefresh)
+	local typeData = skillTable[skTyp]
+	for lineIndex, skillLine in ipairs(typeData) do
+		if not skLin or skLin == lineIndex then
+			for _, skillData in ipairs(skillLine) do
+				if skillData.purchased then
+					skillData.purchased = false
+					skillData:setPoints()
+					if skillData.hb and not skillData.purchased then
+						for myBar = 1, 3 do
+							if skillData.hb[myBar] ~= nil then CSPS.hbSkillRemove(myBar, skillData.hb[myBar]) end
+						end	
+					end
+				end
+			end
+			skillLine:sumUpSkills()
+		end
+	end
+	if skTyp == 1 then checkClassMasteries(true) end
+	typeData:sumUpSkills()
+	refreshSkillPointSum()
+	if noRefresh then return end
+	CSPS.refreshTree()
+end
+
+function CSPS.plusClickSkillLine(skillType, skillLineIndex, shift)
+	local typeData = skillTable[skillType]
+	local _, isClassSkillLineActive = CSPS.getActiveClassSkillLines()
+	for lineIndex, skillLine in ipairs(typeData) do
+		if not skillLineIndex and (skillType ~= 1 or isClassSkillLineActive[lineIndex]) or skillLineIndex == lineIndex then
+			for _, skillData in ipairs(skillLine) do
+				if skillData.passive then
+					skillData.purchased = true
+					skillData.rank = 42 -- will be reduced to max rank in the next function call
+					skillData:setPoints()
+				end
+			end
+			skillLine:sumUpSkills()
+		end
+	end
+	typeData:sumUpSkills()
+	refreshSkillPointSum()
+	CSPS.refreshTree()
+end
+
+
+
+function CSPS.plusClickSkill(theSkill, ctrl, alt, shift)
+	local myShiftKey = CSPS.savedVariables.settings.jumpShiftKey or 7
+	myShiftKey = myShiftKey == 7 and shift or myShiftKey == 4 and ctrl or myShiftKey == 5 and alt or false
+	
+	if theSkill.purchased == false then	-- Skill is not purchased?
+			theSkill.purchased = true
+			theSkill.rank = theSkill.passive and (myShiftKey and 42 or 1) or nil	-- 42 will later be reduced to the maxRank
+			theSkill.morph = not theSkill.passive and 0 or nil
+	else
+		
+		if not theSkill.passive then
+			theSkill.morph = theSkill.morph + 1
+		else
+			theSkill.rank = myShiftKey and 42 or theSkill.rank + 1
+		end
+	end
+	theSkill:setPoints()
+	if theSkill.lineData.classMastery then checkClassMasteries(true) end
+	theSkill.lineData:sumUpSkills()
+	theSkill.typeData:sumUpSkills()
+
+	refreshSkillPointSum()
+	CSPS.refreshTree()
+	CSPS.showElement("save", true)
+	CSPS.unsavedChanges = true
+end
+
+
+local function setPointsActive(self)
+	-- ec = {correct = 1, wrongMorph = 2, rankHigher = 3, skillLocked = 4, rankLocked = 5, morphLocked = 6, lineNotActive = 7}
+	local currentlyPurchased = self.zo_data:GetPointAllocator():IsPurchased()
+	local currentMorph = self.zo_data:GetPointAllocator():GetMorphSlot() --self.zo_data:GetCurrentSkillProgressionKey() 
+	local lineUnlocked = self.lineData.zo_data:IsActive() and self.zo_data:MeetsLinePurchaseRequirement()
+	local points = self.autoGrant and 0 or 1
+	local pointMulti = self.type == 1 and self.line > 3 and 2 or 1
+	
+	self.morph = self.morph or 0
+	self.morph = self.morph > 2 and 2 or self.morph
+	self.maxRaMo = self.morph == 2
+	points = self.morph > 0 and points + 1 or points
+	if not lineUnlocked then
+		if self.type == 1 and self.line > 3 then
+			if self.zo_data:MeetsLineRankPurchaseRequirement() then
+				self.pointsToSpend = points * pointMulti
+				self.error = not canChangeClassLines and not self.lineData.zo_data:IsActive() and ec.lineNotActive or nil
+			else
+				self.pointsToSpend = 0
+				self.error = ec.skillLocked
+			end
+		else
+			self.pointsToSpend = 0
+			self.error = not (self.autoGrant and self.morph == 0) and ec.skillLocked
+		end
+	elseif currentlyPurchased then
+		if currentMorph > 0 and currentMorph ~= self.morph then
+			self.pointsToSpend = 0
+			self.error = ec.wrongMorph
+			self.freePoints = self.morph == 0 and 1 * pointMulti
+		elseif currentMorph == self.morph then
+			self.pointsToSpend = 0
+			self.error = ec.correct
+		else
+			self.pointsToSpend = 1 * pointMulti
+		end
+	else
+		self.pointsToSpend = points * pointMulti
+	end
+	if lineUnlocked and self.morph > 0 and not self.zo_data:GetProgressionData(self.morph):IsUnlocked() then 
+		self.error = ec.morphLocked 
+		self.pointsToSpend = lineUnlocked and (points - 1) * pointMulti or 0
+	end
+	return points * pointMulti
+end
+
+local function setPointsPassive(self)
+	local maxRank = self.zo_data:GetNumRanks()
+	local currentlyPurchased = self.zo_data:GetPointAllocator():IsPurchased()
+	local currentRank = self.zo_data:GetPointAllocator():GetRank() -- self.zo_data:GetCurrentSkillProgressionKey()
+	local lineUnlocked = self.lineData.zo_data:IsActive() and self.zo_data:MeetsLinePurchaseRequirement()
+	local points = self.autoGrant and 0 or 1
+	local pointMulti = self.type == 1 and self.line > 3 and 2 or 1
+	
+	self.maxRaMo = self.rank >= maxRank
+	
+	self.rank = self.rank <= maxRank and self.rank or maxRank
+	self.rank = self.rank > 0 and self.rank or 1
+	points = points + self.rank - 1
+	if not lineUnlocked then
+		if self.type == 1 and (self.line > 3 or not self.lineData.zo_data:IsActive()) then
+			if self.zo_data:MeetsLineRankPurchaseRequirement() then
+				self.pointsToSpend = points * pointMulti
+				self.error = not canChangeClassLines and not self.lineData.zo_data:IsActive() and ec.lineNotActive or nil
+			else
+				self.pointsToSpend = 0
+				self.error = ec.skillLocked
+			end
+		else
+			self.pointsToSpend = 0
+			self.error = not (self.autoGrant and self.rank == 1) and ec.skillLocked
+		end
+	elseif currentlyPurchased then
+		if currentRank > self.rank then
+			self.pointsToSpend = 0
+			self.freePoints = currentRank - self.rank
+			self.error = not (self.autoGrant and self.rank == 1) and ec.rankHigher
+		elseif currentRank == self.rank then
+			self.pointsToSpend = 0
+			self.error = ec.correct
+		else
+			self.pointsToSpend = (self.rank - currentRank) * pointMulti
+		end
+	else
+		self.pointsToSpend = points * pointMulti
+	end
+	if lineUnlocked and not self.zo_data:GetProgressionData(self.rank):IsUnlocked() and not (self.autoGrant and self.rank == 1) then 
+		local possibleRank = 0 -- will only be used for skill points to invest
+		for i=1, self.rank do
+			if self.zo_data:GetProgressionData(i):IsUnlocked() then
+				possibleRank = i
+			else
+				break
+			end
+		end
+		self.pointsToSpend = possibleRank > currentRank and (possibleRank - currentRank) * pointMulti or 0
+		self.error = ec.rankLocked 
+	end
+	return points * pointMulti
+end
+
+local function setPointsClassMastery(self)
+	local lineUnlocked = not hasAnySubclasses and HasMaxRankInAllClassSkillLines()
+	self.maxRaMo = numClassMasteries >= 2 or self.rank == 1
+	self.pointsToSpend = 0
+	self.rank = self.purchased and 1 or 0
+	self.points = self.rank
+	
+	if not lineUnlocked then self.error = ec.lineNotActive return end
+	if self.purchased and self.zo_data:GetPointAllocator():IsPurchased() then self.error = ec.correct return end
+end
+
+local function setPoints(self)
+	self.error = nil
+	self.freePoints = 0
+	
+	if self.lineData.classMastery then setPointsClassMastery(self) return end
+	
+	if not self.purchased then 
+		self.points = 0 
+		self.pointsToSpend = 0
+		self.maxRaMo = false
+		self.rank = 1
+		self.morph = not self.passive and 0 or nil
+		if self.autoGrant then 
+			self.purchased = true 
+		elseif self.zo_data:GetPointAllocator():IsPurchased() then
+			self.freePoints = self.zo_data:GetPointAllocator():GetNumPointsAllocated()
+			return
+		else
+			return 
+		end  
+	end
+	self.points = not self.craftedId and (self.passive and setPointsPassive(self) or setPointsActive(self)) or 0
+end
+
+local function sumUpSkills(self)
+	if self.vengeance or self.emperor then return end
+	local points = 0
+	local pointsToSpend = 0
+	local errorSums = {0,0,0,0,0,0,0,0}
+	local freePoints = 0
+	for i, v in ipairs(self) do
+		points = not v.classMastery and v.points and points + v.points or points
+		pointsToSpend = v.pointsToSpend and pointsToSpend + v.pointsToSpend or pointsToSpend
+		if v.error then 
+			errorSums[v.error] = errorSums[v.error] or 0
+			errorSums[v.error] = errorSums[v.error] + 1
+		elseif v.errorSums then 
+			for j, w in pairs(v.errorSums) do
+				errorSums[j] = errorSums[j] or 0
+				errorSums[j] = errorSums[j] + v.errorSums[j]
+			end
+		end
+		freePoints = v.freePoints and freePoints + v.freePoints or freePoints
+	end
+	self.freePoints = freePoints
+	self.points = points
+	self.pointsToSpend = pointsToSpend
+	self.errorSums = errorSums
+	if not self.classMastery then return end
+	self.active = not hasAnySubclasses
+	self.locked = not HasMaxRankInAllClassSkillLines()
+end
+
+function CSPS.createSkillTable()
+	cspsD("Creating skill table")
+	craftedAbilites = {} --helper function because GetSkillAbilityIndicesFromCraftedAbilityId is not working properly after language changes...
+	skillTable.sumUpSkills = sumUpSkills
+	for skillType=1, #skillTypes do
+		skillTable[skillType] = {sumUpSkills = sumUpSkills}
+		local skillTypeData = skillTable[skillType]
+		for skillLineIndex = 1, GetNumSkillLines(skillType) do
+			-- stop after your own race skilllines and exclude class vengeance skill lines
+			-- other vengeance skill lines and emperor will be excluded in the tree itself but will be stored anyway
+			
+			-- exclude other racial skills
+			if skillType==7 and skillLineIndex==2 then break end --skillType==1 and skillLineIndex==GetNumClasses()*3+1  
+						
+			local zoSkillLineData = sdm:GetSkillLineDataByIndices(skillType, skillLineIndex)
+			
+			skillTypeData[skillLineIndex] = {name = zoSkillLineData:GetFormattedName(), type = skillType, sumUpSkills = sumUpSkills, zo_data = zoSkillLineData, points = 0, line = skillLineIndex, id = zoSkillLineData:GetId()}
+			
+			local skillLineData = skillTypeData[skillLineIndex]
+			
+			if zoSkillLineData.IsClassMastery and zoSkillLineData:IsClassMastery() then --TODO first can be deleted after up50 goes live
+				skillLineData.classMastery = true
+				firstClassMasteryIndex = firstClassMasteryIndex or skillLineIndex
+				if zoSkillLineData:GetClassId() == GetUnitClassId("player") then
+					skillLineData.activeClassMastery = true
+					classMasteryIndex = skillLineIndex
+				end
+			elseif skillLineData.id == 71 then --emperor skill line
+				skillLineData.emperor = true
+			elseif zoSkillLineData.lastRankXP == 0 and zoSkillLineData.nextRankXP == 0 then
+				skillLineData.vengeance = true
+			end
+			
+			if IsWerewolfSkillLineById(GetSkillLineId(skillType, skillLineIndex)) then 
+				skillLineData["isWerewolf"] = true 
+				skillTypeData["isWerewolfParent"] = true
+			end
+			
+			if skillType == 1 and skillLineIndex > 3 then
+				skillLineData.class = GetSkillLineClassId(skillType, skillLineIndex)
+			end
+						
+			for skillIndex = 1, GetNumSkillAbilities(skillType, skillLineIndex) do
+				local zoSkillData = zoSkillLineData:GetSkillDataByIndex(skillIndex)
+				
+				skillLineData[skillIndex] = {
+					type = skillType,
+					line = skillLineIndex,
+					index = skillIndex,
+					typeData = skillTypeData,
+					lineData = skillLineData,
+					autoGrant = zoSkillData:IsAutoGrant(),
+					setPoints = setPoints,
+					zo_data = zoSkillData,
+					passive = zoSkillData:IsPassive(),
+					craftedId = zoSkillData.craftedAbilityId,
+					progId = zoSkillData.progressionId,
+					numSkillStyles = zoSkillData.skillProgressions and zoSkillData.skillProgressions[0] and zoSkillData.skillProgressions[0].numSkillStyles,
+				}
+						
+				local skEntry = skillLineData[skillIndex]				
+				
+				if skEntry.numSkillStyles == 1 and GetProgressionSkillAbilityFxOverrideCollectibleIdByIndex(skEntry.progId, 1) == 0 then 
+					skEntry.numSkillStyles = 0 -- sometimes the skilldatamanager asumes a skill style where there is none. don't show a button etc if there is none.
+				end
+				
+				local baseData = not zoSkillData.craftedAbilityId and (skEntry.passive and zoSkillData:GetRankData(1) or zoSkillData:GetMorphData(MORPH_SLOT_BASE))
+				
+				if zoSkillData.craftedAbilityId then 
+					skEntry.name = zo_strformat("<<C:1>>", GetCraftedAbilityDisplayName(zoSkillData.craftedAbilityId))
+					skEntry.texture = GetCraftedAbilityIcon(zoSkillData.craftedAbilityId)
+					skEntry.scripts = {}
+					craftedAbilites[zoSkillData.craftedAbilityId] = {skillType, skillLineIndex, skillIndex}
+				else
+					skEntry.name = baseData:GetFormattedName()
+					skEntry.texture = baseData:GetIcon()		
+					
+					if not skEntry.passive then
+						skEntry.morphNames = {zoSkillData:GetMorphData(MORPH_SLOT_MORPH_1):GetFormattedName(), zoSkillData:GetMorphData(MORPH_SLOT_MORPH_2):GetFormattedName()}
+						skEntry.morphTextures = {zoSkillData:GetMorphData(MORPH_SLOT_MORPH_1):GetIcon(), zoSkillData:GetMorphData(MORPH_SLOT_MORPH_2):GetIcon()}
+					end
+				end
+				
+				skEntry.morph = not skEntry.passive and 0 or nil
+				skEntry.points = 0
+				skEntry.auxListIndex = 0
+				skEntry.maxRaMo = false
+				skEntry.rank = 1
+				skEntry.hb = not skEntry.passive and {} or nil
+				skEntry.purchased = false
+			end
+			skillLineData:sumUpSkills()
+		end
+		skillTypeData:sumUpSkills()
+	end
+	refreshSkillPointSum()
+end
+
+function CSPS.resetSkills()
+	for skillType, skillTypeData in ipairs(skillTable) do
+		for skillLineIndex, skillLineData in ipairs(skillTypeData) do
+			for skillIndex, skEntry in ipairs(skillLineData) do
+				skEntry.purchased = skEntry.autoGrant
+				if skEntry.craftedId then 
+					skEntry.scripts = {}
+					skEntry.purchased = true
+					skEntry.name = zo_strformat("<<C:1>>", GetAbilityName(GetCraftedAbilityRepresentativeAbilityId(skEntry.craftedId), ""))
+				end
+				skEntry.rank = 1
+				skEntry.morph = (skEntry.craftedId or not skEntry.passive) and 0 or nil
+				skEntry.styleCollectible = nil
+				skEntry:setPoints()
+			end	
+			skillLineData:sumUpSkills()
+		end
+		skillTypeData:sumUpSkills()
+	end			
+	checkClassMasteries()
+	refreshSkillPointSum()
+end
+
+function CSPS.getActiveClassSkillLines()
+	local activeClassSkillLines = {}
+	local isClassSkillLineActive = {}
+		
+	for skillType, skillTypeData in ipairs(skillTable) do
+		for skillLineIndex, skillLineData in ipairs(skillTypeData) do
+			if skillType == 1 and skillLineData.zo_data:IsActive() then 
+				table.insert(activeClassSkillLines, skillLineIndex) 
+				isClassSkillLineActive[skillLineIndex] = true
+			end
+		end
+	end
+	return activeClassSkillLines, isClassSkillLineActive
+end
+
+function CSPS.readCurrentSkills()
+	cspsD("Reading current skills")
+	if IsCurrentCampaignVengeanceRuleset() then return end
+	local subclasses = {}
+	if #skillTable == 0 then CSPS.createSkillTable() end	
+	for skillType, skillTypeData in ipairs(skillTable) do
+		for skillLineIndex, skillLineData in ipairs(skillTypeData) do
+			if skillType == 1 and skillLineData.zo_data:IsActive() then table.insert(subclasses, skillLineIndex) end
+			for skillIndex, skEntry in ipairs(skillLineData) do
+				skEntry.purchased = skEntry.zo_data:GetPointAllocator():IsPurchased()
+				if skEntry.craftedId then 
+					skEntry.purchased = true 
+					skEntry.scripts = {GetCraftedAbilityActiveScriptIds(skEntry.craftedId)}	
+					skEntry.name = zo_strformat("<<C:1>>", GetAbilityName(GetCraftedAbilityRepresentativeAbilityId(skEntry.craftedId), "player"))
+					
+				end
+				if skEntry.numSkillStyles then
+					skEntry.styleCollectible = GetActiveProgressionSkillAbilityFxOverrideCollectibleId(skEntry.progId)
+				end
+				skEntry.morph = skEntry.craftedId and 0 or skEntry.purchased and not skEntry.passive and skEntry.zo_data:GetCurrentSkillProgressionKey() or nil
+				skEntry.rank = skEntry.craftedId and 1 or skEntry.purchased and skEntry.passive and skEntry.zo_data:GetCurrentSkillProgressionKey() or 1
+					
+				skEntry:setPoints()	
+			end	
+			skillLineData:sumUpSkills()
+		end
+		skillTypeData:sumUpSkills()
+	end			
+	CSPS.setSubClasses(subclasses)
+	checkClassMasteries()
+	refreshSkillPointSum(true)
+end
+
+function CSPS.hbLinkToSkills(hbTables)
+	for hbIndex, singleHotbarTable in pairs(hbTables) do
+		for slotIndex, skillParams in pairs(singleHotbarTable) do
+			local skillType, skillLine, skillIndex = unpack(skillParams)
+			if #skillParams > 0 and (skillType ~= 1 or hf.entryInTable(currentClassSkillLines, skillLine)) then
+				local skillEntry = skillTable[skillType][skillLine][skillIndex]
+				skillEntry.hb = skillEntry.hb or {}
+				skillEntry.hb[hbIndex] = slotIndex
+			end
+		end
+	end
+end
+
+function CSPS.refreshSkillSumsAndErrors()
+	for skillType, typeData in ipairs(skillTable) do
+		for skillLineIndex, lineData in ipairs(typeData) do
+			for skillIndex, skillData in ipairs(lineData) do
+				skillData:setPoints()
+			end
+			lineData:sumUpSkills()
+		end
+		typeData:sumUpSkills()
+	end
+	refreshSkillPointSum()
+end
+
+local function getSubclassingChanges()
+	local activeClassSkillLines, isClassSkillLineActive = CSPS.getActiveClassSkillLines()
+	local skillLinesInBuild, skillLinesToActivate, skillLinesToDeactivate = {}, {}, {}
+			
+	for _, skillLine in pairs(currentClassSkillLines) do
+		skillLinesInBuild[skillLine] = true
+		if not isClassSkillLineActive[skillLine] then table.insert(skillLinesToActivate, skillLine) end
+	end
+	
+	for _, skillLine in pairs(activeClassSkillLines) do
+		if not skillLinesInBuild[skillLine] then 
+			table.insert(skillLinesToDeactivate, skillLine)
+		end
+	end
+	
+	return  skillLinesInBuild, skillLinesToActivate, skillLinesToDeactivate
+end
+
+local function applySkillLines()
+	if twoSubclassesFromOneClass or tooManySubclasses then return end
+	if CSPS.moduleExclude.skills then return end
+	
+	local SLAM = SKILL_LINE_ASSIGNMENT_MANAGER -- haha, SLAM! if only it worked as well as it sounds :-)
+	SLAM:Reset()
+	
+	local skillLinesInBuild, skillLinesToActivate, skillLinesToDeactivate = getSubclassingChanges()
+	
+	if #skillLinesToActivate == 0 then return true, {} end
+
+	if not canChangeClassLines then 
+		CSPS.post(GS(SI_RESPECRESULT66))
+		return false, {} 
+	end
+	
+	if HasQuest(GetSubclassingQuestId()) and not HasCompletedQuest(GetSubclassingQuestId()) then
+		--HasAccessToSubclassing
+		--GetSubclassingAccessLevel
+		--BestowSubclassingQuest
+		--GetSkillLineMasteryCollectibleId(*integer* _skillLineId_)
+		--** _Returns:_ *integer* _collectibleId_
+		local withoutMastery = {}
+		local linesToMaster = {}
+		for skillLineIndex, skillLineData in ipairs(skillTable[1]) do
+			if not skillLineData.zo_data:HasMastery() and skillLineIndex > 3 then 
+				withoutMastery[skillLineIndex] = true  
+				table.insert(linesToMaster, skillLineData.name)
+			end
+		end
+		if #linesToMaster > 0 then
+			local hasNewSkillLine = false
+			for _, skillLineIndex in pairs(skillLinesToActivate) do
+				if withoutMastery[skillLineIndex] then hasNewSkillLine = true end
+			end
+			if not hasNewSkillLine then
+				if #linesToMaster > 3 then linesToMaster = {linesToMaster[1], linesToMaster[2], "..."} end
+				linesToMaster = ZO_GenerateCommaSeparatedList (linesToMaster)
+				CSPS.post(zo_strformat(GS(CSPS_MSG_SubclassingQuestGoal), GetQuestName(GetSubclassingQuestId()), linesToMaster))
+			end
+		end
+	end
+	
+		
+	local futureLines = {}
+	
+	SLAM.pendingTrainingLines = {} -- might be messy? but seems to work. 
+	
+	for _, lineIndex in pairs(skillLinesToActivate) do
+		local lineData = skillTable[1][lineIndex].zo_data
+		if not lineData:IsInTraining() and not lineData:HasMastery() and lineIndex > 3 then
+			if SKILLS_DATA_MANAGER:GetNumSkillLinesInTraining() >= MAX_SKILL_LINES_IN_TRAINING then
+				CSPS.post(GS(SI_SKILLS_SUBCLASSING_TRAINING_TOOLTIP_FORMATTER_INFO))
+				return false, {}
+			end
+			SLAM:TrainSkillLine(lineData)
+		end
+	end
+	
+	
+	for _, lineIndex in pairs(skillLinesToDeactivate) do
+		local lineData = skillTable[1][lineIndex].zo_data
+		SLAM:DeactivateSkillLine(lineData)
+	end	
+	for _, lineIndex in pairs(skillLinesToActivate) do
+		local lineData = skillTable[1][lineIndex].zo_data
+		futureLines[lineIndex] = true
+		SLAM:ActivateSkillLine(lineData)
+	end
+		
+	--SLAM.pendingTrainingLines = slT
+	--SLAM.pendingDeactivationLines = slD
+	--SLAM.pendingActivationLines = slA
+
+	return true, futureLines
+end
+
+local function applySkillsGo(callOnSuccess, callOnFail, shouldRespec, ignoreStyles, ignoreLines)
+	callOnSuccess = callOnSuccess or function() end
+	callOnFail = callOnFail or callOnSuccess
+	if CSPS.moduleExclude.skills then if callOnFail then callOnFail() end return end
+	local function tryAgainOnCooldown()
+		CSPS.post(string.format(GS(CSPS_RespecCooldown), math.floor(respecCooldown/100 + 0.5) / 10))
+		ZO_Dialogs_ShowDialog("CSPS_RESPEC_COOLDOWN_DIAG")
+		CSPS.cancelRespecOnCooldown = function()
+			EVENT_MANAGER:UnregisterForUpdate(CSPS.name.."_SkillRespecTryAgain")
+			if callOnFail then callOnFail() end
+			CSPS.cancelRespecOnCooldown = function() end
+		end
+		EVENT_MANAGER:RegisterForUpdate(CSPS.name.."_SkillRespecTryAgain", respecCooldown + 60, function()
+			EVENT_MANAGER:UnregisterForUpdate(CSPS.name.."_SkillRespecTryAgain")
+			CSPS.cancelRespecOnCooldown = function() end
+			ZO_Dialogs_ReleaseDialog("CSPS_RESPEC_COOLDOWN_DIAG")
+			applySkillsGo(callOnSuccess, callOnFail, shouldRespec, ignoreStyles, ignoreLines)
+		end)
+	end
+	EVENT_MANAGER:UnregisterForUpdate(CSPS.name.."_SkillRespecTryAgain")
+	if shouldRespec and SKILLS_AND_ACTION_BAR_MANAGER:GetSkillPointAllocationMode() ~= SKILL_POINT_ALLOCATION_MODE_FULL then
+		if GetInteractionType() == INTERACTION_SKILL_RESPEC then
+			SKILLS_AND_ACTION_BAR_MANAGER:SetSkillPointAllocationMode(SKILL_POINT_ALLOCATION_MODE_FULL)
+		else
+			EVENT_MANAGER:RegisterForUpdate(CSPS.name.."_SkillRespecStartFail", 1420, function()
+				EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_SkillRespecStart", EVENT_START_SKILL_RESPEC)
+				EVENT_MANAGER:UnregisterForUpdate(CSPS.name.."_SkillRespecStartFail")
+				CSPS.cspsD("Respec failed")
+			end)
+			EVENT_MANAGER:RegisterForEvent(CSPS.name.."_SkillRespecStart", EVENT_START_SKILL_RESPEC, function(_, allocationMode)
+				EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_SkillRespecStart", EVENT_START_SKILL_RESPEC)
+				EVENT_MANAGER:UnregisterForUpdate(CSPS.name.."_SkillRespecStartFail")
+				if allocationMode ~= SKILL_POINT_ALLOCATION_MODE_FULL then if callOnFail then callOnFail() end return end
+				CSPS.cspsD("Respec started")
+				applySkillsGo(callOnSuccess, callOnFail, true, ignoreStyles, ignoreLines)
+			end)
+			SCENE_MANAGER:Show("skills") -- needs to show scene for all events to fire in the ui and not break anything
+			zo_callLater(function() StartSkillRespecFromUI() end, 420)
+			CSPS.cspsD("Start respec")
+			return
+		end
+	end
+	local didReset = false
+	local lineChangeSuccess, futureLines = true, {}
+	if not ignoreLines then 
+		lineChangeSuccess, futureLines = applySkillLines() 
+		CSPS.cspsD(lineChangeSuccess and "Lines changed successfully" or "Faild to change lines")
+		--if not lineChangeSuccess then return end
+	end
+	local doClassMasteriesLater = not hasAnySubclasses and hf.anyEntryNotFalse(futureLines) and {} or false
+	cspsD(doClassMasteriesLater and "Do class masteries later" or "no need to do class masteries later")
+	--SKILLS_WINDOW:RefreshSkillPointInfo()
+	-- /script SCENE_MANAGER:Show("skills") StartSkillRespecFromUI() d(SKILLS_AND_ACTION_BAR_MANAGER:GetSkillPointAllocationMode()) d(SKILL_POINT_ALLOCATION_MODE_FULL) SKILL_POINT_ALLOCATION_MANAGER:ClearPointsOnAllSkillLines()
+	if SKILLS_AND_ACTION_BAR_MANAGER:GetSkillPointAllocationMode() == SKILL_POINT_ALLOCATION_MODE_FULL then
+		SKILL_POINT_ALLOCATION_MANAGER:ClearPointsOnAllSkillLines()
+		CSPS.cspsD("Did reset")
+		didReset = true
+	end
+	
+	local collectiblesToUse = {}
+	local function applyStyles()
+		for _, collectibleId in pairs(collectiblesToUse) do
+			UseCollectible(collectibleId, GAMEPLAY_ACTOR_CATEGORY_PLAYER)
+		end
+	end	
+	tryingToApplySkills = true
+	
+	EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_SKILL_RESPEC", EVENT_SKILL_RESPEC_RESULT)
+	EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_SKILL_CHANGES", EVENT_SKILLS_FULL_UPDATE)
+	if shouldRespec then
+		EVENT_MANAGER:RegisterForEvent(CSPS.name.."_SKILL_RESPEC", EVENT_SKILL_RESPEC_RESULT, function(_, respecResult)
+			if respecResult == RESPEC_RESULT_ON_COOLDOWN_SKILLS then 
+				respecCooldown = respecCooldown and respecCooldown > 2000 and respecCooldown or 2000
+				tryAgainOnCooldown()
+				return
+			end
+			tryingToApplySkills = false 
+			CSPS.refreshSkillSumsAndErrors()  
+			CSPS.refreshTree() 
+			if respecResult == RESPEC_RESULT_SUCCESS then
+				local delay = 0
+				applyStyles()
+				if doClassMasteriesLater then
+					delay = 210
+					zo_callLater(function()
+						cspsD("Trying to apply class masteries with delay")
+						for _, skillData in pairs(doClassMasteriesLater) do
+							cspsD("Allocating points in classMastery...")
+							skillData.zo_data:GetPointAllocator():Purchase()
+						end
+					end, delay)
+				end
+				zo_callLater(function() 
+					CSPS.refreshSkillSumsAndErrors()  
+					CSPS.refreshTree() 
+					callOnSuccess() 
+				end, 420 + delay)
+			else
+				cspsD("Respec result was not a success: "..respecResult)
+				callOnFail()
+			end
+			EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_SKILL_RESPEC", EVENT_SKILL_RESPEC_RESULT)
+		end)	
+	else
+		EVENT_MANAGER:RegisterForEvent(CSPS.name.."_SKILL_CHANGES", EVENT_SKILLS_FULL_UPDATE, function()
+			tryingToApplySkills = false 
+			CSPS.refreshSkillSumsAndErrors()  
+			CSPS.refreshTree() 
+			applyStyles()
+			zo_callLater(function() callOnSuccess() end, 420)
+			
+			EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_SKILL_CHANGES", EVENT_SKILLS_FULL_UPDATE)
+		end)	
+	end
+	local changedAnything = didReset or false
+	if not hasAnySubclasses then futureLines[classMasteryIndex] = true end
+	for skillType, typeData in ipairs(skillTable) do
+		for skillLineIndex, lineData in ipairs(typeData) do
+			if skillType == 1 and skillLineIndex == classMasteryIndex then 
+				cspsD("Checking class mastery line") 
+			end
+			if lineData.zo_data:IsActive() or skillType == 1 and futureLines[skillLineIndex] and lineChangeSuccess then
+				if skillType == 1 and skillLineIndex == classMasteryIndex then cspsD("Checking class mastery line skills") end
+				for skillIndex, skillData in ipairs(lineData) do
+					local allocator = skillData.zo_data:GetPointAllocator()
+					if skillData.purchased then
+						if not allocator:IsPurchased() then 
+							changedAnything = true 
+							allocator:Purchase() 
+							if skillType == 1 and skillLineIndex == classMasteryIndex and doClassMasteriesLater then
+								cspsD("Inserting class mastery into table for later")
+								table.insert(doClassMasteriesLater, skillData)
+							end
+						end
+						if skillData.passive then
+							skillData.rank = skillData.rank or 0
+							local j = not didReset and skillData.zo_data:GetCurrentSkillProgressionKey() or 1
+							while j < skillData.rank do
+								if allocator:CanIncreaseRank() then
+									changedAnything = true
+									allocator:IncreaseRank()
+								end
+								j = j + 1
+							end
+						elseif allocator:CanMorph() and allocator:GetMorphSlot() ~= skillData.morph then
+							changedAnything = true
+							allocator:Morph(skillData.morph)
+						end
+					end
+					if skillData.numSkillStyles and skillData.numSkillStyles > 0 and not ignoreStyles then
+						local activeCollectible = GetActiveProgressionSkillAbilityFxOverrideCollectibleId(skillData.progId)
+						if activeCollectible ~= (skillData.styleCollectible or 0) then
+							if skillData.styleCollectible and skillData.styleCollectible ~= 0 then
+								table.insert(collectiblesToUse, skillData.styleCollectible)
+							elseif activeCollectible and activeCollectible ~= 0 then
+								table.insert(collectiblesToUse, activeCollectible)
+							end
+						end
+					end
+				end
+			end	
+		end
+	end	
+	
+	if shouldRespec then 
+		SKILLS_AND_ACTION_BAR_MANAGER:ApplyChanges()
+	elseif not changedAnything then
+		callOnSuccess()
+	end
+end
+
+function CSPS.getRespecCooldown()
+	return respecCooldown and respecCooldown > 0 and respecCooldown or false
+end
+
+function CSPS.setRespecCooldown(value)
+	respecCooldown = value and value > 0 and value or false
+end
+
+
+function CSPS.cancelRespecOnCooldown()
+	--filled in other functions
+end
+			
+local function startRespecCooldown(eventId, result)
+	if result == RESPEC_RESULT_SUCCESS then
+		EVENT_MANAGER:UnregisterForUpdate(CSPS.name.."_RespecCooldownTimer")
+		respecCooldown = 12420 --random number a little higher than 10 seconds
+		EVENT_MANAGER:RegisterForUpdate(CSPS.name.."_RespecCooldownTimer", 50, function()
+			respecCooldown = respecCooldown - 50
+			if respecCooldown <= 0 then
+				respecCooldown = 0
+				ZO_Dialogs_ReleaseDialog("CSPS_RESPEC_COOLDOWN_DIAG")
+				EVENT_MANAGER:UnregisterForUpdate(CSPS.name.."_RespecCooldownTimer")
+			end
+		end)
+	end
+end
+
+EVENT_MANAGER:RegisterForEvent(CSPS.name.."_AttrRespecCooldown", EVENT_ATTRIBUTE_RESPEC_RESULT, startRespecCooldown)
+
+EVENT_MANAGER:RegisterForEvent(CSPS.name.."_SkillRespecCooldown", EVENT_SKILL_RESPEC_RESULT, startRespecCooldown)
+
+local function applyCraftedAbilities(callAfterScribing)
+	if CSPS.moduleExclude.skills then return end
+	local combinationsToScribe, neededInk = checkCraftedAbilites()
+	callAfterScribing = callAfterScribing or function() end
+	if #combinationsToScribe == 0 then CSPS.post(GS(CSPS_NothingToScribe)) callAfterScribing() return false end
+	if not IsScribingEnabled()  then CSPS.post(GS(SI_COLLECTIBLEUNLOCKSTATE0)) callAfterScribing() return false end
+	if neededInk > GetItemLinkInventoryCount(GetScribingInkItemLink(), INVENTORY_COUNT_BAG_OPTION_BACKPACK_AND_BANK_AND_CRAFT_BAG) then
+		CSPS.post(GS(SI_TRADESKILLRESULT14))
+		callAfterScribing()
+		return false
+	end
+	
+	local lastScribed = false
+	local function scribeNext()
+		local nextCombi = combinationsToScribe[1]
+		lastScribed = nextCombi.craftedId
+		CSPS.post(zo_strformat(GS(CSPS_ScribeGo), GetAbilityName(GetCraftedAbilityRepresentativeAbilityId(lastScribed), "")))
+		RequestScribe(nextCombi.craftedId, unpack(nextCombi.scripts))
+		table.remove(combinationsToScribe, 1)
+	end
+	EVENT_MANAGER:RegisterForEvent(CSPS.name.."_AbilityCraftingSuccess", EVENT_CRAFT_COMPLETED,
+		function(_, craft) 
+			if craft ~= CRAFTING_TYPE_SCRIBING then return end 
+			if #combinationsToScribe == 0 then
+				EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_AbilityCraftingSuccess", EVENT_CRAFT_COMPLETED)
+				EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_AbilityCraftingFailed", EVENT_CRAFT_FAILED)
+				callAfterScribing()
+				return
+			end
+			scribeNext() 
+		end)
+	EVENT_MANAGER:RegisterForEvent(CSPS.name.."_AbilityCraftingFailed", EVENT_CRAFT_FAILED, function(_, tradeSkillResult) 
+		CSPS.post(GS("SI_TRADESKILLRESULT", tradeSkillResult))
+		EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_AbilityCraftingSuccess", EVENT_CRAFT_COMPLETED)
+		EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_AbilityCraftingFailed", EVENT_CRAFT_FAILED)
+	end)
+	scribeNext()
+end
+-- GetNumPointsAllocatedInSkillLine
+-- GetPointAllocator():GetMorphSlot() / GetRank() / IsPurchased()
+
+function CSPS.clickApplySkills(button)
+	if button == 1 and not twoSubclassesFromOneClass and not tooManySubclasses then 
+		CSPS.applySkills(false, function() if not CSPS.savedVariables.settings.dontAutoApplyHotbar then CSPS.hbApply() end end) 
+		return 
+	end
+	if button ~= 2 then return end
+	ClearMenu()
+	
+	AddCustomMenuItem(GS(SI_APPLY), function() CSPS.applySkills(false, function() if not CSPS.savedVariables.settings.dontAutoApplyHotbar then CSPS.hbApply() end end) end)
+	AddCustomMenuItem(GS(CSPS_ApplySkillsWithoutRespec), function() CSPS.applySkills(false, false, false, false, true) end)
+	
+	local combinationsToScribe, neededInk, _, notCraftable = checkCraftedAbilites()
+	if combinationsToScribe and #combinationsToScribe > 0 and GetCraftingInteractionType() == CRAFTING_TYPE_SCRIBING then
+		AddCustomMenuItem(GS(SI_SCRIBING_PERFORM_SCRIBE_KEYBIND), function() applyCraftedAbilities() end)
+	end
+	AddCustomMenuItem("-", function() end)
+	local index = AddCustomMenuItem(GS(SI_INTERFACE_OPTIONS_ACTION_BAR), function() 
+		CSPS.savedVariables.settings.dontAutoApplyHotbar = not CSPS.savedVariables.settings.dontAutoApplyHotbar
+	end, MENU_ADD_OPTION_CHECKBOX)
+	if not CSPS.savedVariables.settings.dontAutoApplyHotbar then
+		ZO_CheckButton_SetChecked(ZO_Menu.items[index].checkbox)
+	end
+	
+	ShowMenu()
+end
+
+function CSPS.applySkills(skipDiag, callOnSuccess, callOnFail, ignoreStyles, noRespec)
+	callOnSuccess = callOnSuccess or function() end
+	callOnFail = callOnFail or callOnSuccess -- have to give an empty function if nothing should be called on fail
+	if #skillTable == 0 then CSPS.createSkillTable() end
+	if CSPS.moduleExclude.skills then if callOnFail then callOnFail() end return end
+	refreshSkillPointSum()
+	local sumConflicts = 0
+	for i, v in pairs(skillTable.errorSums) do
+		if i ~= ec.correct then sumConflicts = sumConflicts + v end
+	end
+	local availableSkillPoints = GetAvailableSkillPoints()
+	local allocationMode = SKILLS_AND_ACTION_BAR_MANAGER:GetSkillPointAllocationMode()
+	local pointsToSpend = skillTable.pointsToSpend
+	
+	local skillLinesInBuild, skillLinesToActivate, skillLinesToDeactivate = getSubclassingChanges()
+	
+	local shouldRespec = not noRespec and CSPS.canRespecFromUI() and 
+		(skillTable.freePoints > 0 and pointsToSpend > availableSkillPoints 
+		or skillTable.errorSums[ec.wrongMorph] > 0
+		or #skillLinesToActivate > 0 and HasAccessToSubclassing())
+	
+	if canChangeClassLines and #skillLinesToDeactivate > 0 then -- allocationmode full or lineswap
+		for skillType, skillTypeData in ipairs(skillTable) do
+			for skillLineIndex, skillLineData in ipairs(skillTypeData) do
+				for _, skillData in ipairs(skillLineData) do
+					if skillType == 1 and not skillLinesInBuild[skillLineIndex] or allocationMode == SKILL_POINT_ALLOCATION_MODE_FULL then
+						availableSkillPoints = availableSkillPoints + skillData.zo_data:GetNumPointsAllocated()
+				--	elseif skillType == 1 and allocationMode == SKILL_POINT_ALLOCATION_MODE_SUBCLASS_ONLY then
+						--pointsToSpend = pointsToSpend + skillData.points - skillData.pointsToSpend
+						-- if everything works without this I should place the condition outside the loop. but if needed this has to be inside...
+					end
+				end
+			end
+		end
+	end
+	if allocationMode == SKILL_POINT_ALLOCATION_MODE_FULL then
+		pointsToSpend = skillTable.points
+	end
+	
+	if skillTable.freePoints > 0 then availableSkillPoints = string.format("%s (+%s)", availableSkillPoints, skillTable.freePoints) end
+	
+	local myParameters =	{
+		availableSkillPoints, 
+		pointsToSpend, 
+		sumConflicts, 
+		skillTable.errorSums[ec.skillLocked], 
+		skillTable.errorSums[ec.wrongMorph],
+		skillTable.errorSums[ec.rankHigher],
+		skillTable.errorSums[ec.rankLocked] + skillTable.errorSums[ec.morphLocked],
+	}
+	local doScribe = false
+	local diagText = string.format(GS(CSPS_MSG_ConfirmApply), unpack(myParameters))
+	
+	local numChanges, numLocked = checkCustomStyles()
+	if numChanges > 0 or numLocked > 0 then
+		diagText = string.format(GS(CSPS_CustomStyles), numChanges, numLocked, diagText)
+	end
+	
+	if GetCraftingInteractionType() == CRAFTING_TYPE_SCRIBING then 
+		local combinationsToScribe, neededInk, _, notCraftable = checkCraftedAbilites()
+		if combinationsToScribe and #combinationsToScribe > 0 then
+			doScribe = true
+			if neededInk > GetItemLinkInventoryCount(GetScribingInkItemLink(), INVENTORY_COUNT_BAG_OPTION_BACKPACK_AND_BANK_AND_CRAFT_BAG) then
+				diagText = string.format("%s\n\n%s", GS(CSPS_ScribeNotEnough), diagText)
+			else
+				diagText = string.format("%s\n\n%s", string.format(GS(CSPS_ScribingDiag), #combinationsToScribe, neededInk), diagText)
+			end
+		end
+		if notCraftable and notCraftable > 0 then 
+			diagText = string.format("%s\n\n%s", CSPS.colors.red:Colorize(zo_strformat(GS(CSPS_CannotBeScribed), notCraftable)), diagText)
+		end
+		
+	end
+		
+	if not skipDiag then --sumConflicts > 0 
+		ZO_Dialogs_ShowDialog(CSPS.name.."_OkCancelDiag", 
+				{
+					returnFunc = function() 
+						if doScribe then
+							applyCraftedAbilities(function() applySkillsGo(callOnSuccess, callOnFail, shouldRespec, ignoreStyles) end)
+						else
+							applySkillsGo(callOnSuccess, callOnFail, shouldRespec, ignoreStyles) 
+						end
+						end,
+				},
+				{
+					mainTextParams = {diagText}, 
+					titleParams = {GS(CSPS_MyWindowTitle)}
+				}
+			)
+	else
+		if doScribe then
+			applyCraftedAbilities(function() applySkillsGo(callOnSuccess, callOnFail, shouldRespec, ignoreStyles) end)
+		else
+			applySkillsGo(callOnSuccess, callOnFail, shouldRespec, ignoreStyles) 
+		end
+	end
+end
+
+function CSPS.initRespecCooldownDiag(control)
+    control.bar = control:GetNamedChild("ContentContainerProgress")
+
+    local function setupRespecCooldown(dialog)
+        ZO_StatusBar_SetGradientColor(dialog.bar, ZO_XP_BAR_GRADIENT_COLORS)
+		respecCooldownStartingTime = respecCooldown
+        dialog.bar:SetMinMax(0, respecCooldownStartingTime)
+        dialog.bar:SetValue(0)
+		dialog.bar:GetNamedChild("Label"):SetText(string.format(GS(CSPS_RespecCooldown), math.floor(respecCooldown/100 + 0.5) / 10))
+    end
+
+    ZO_Dialogs_RegisterCustomDialog("CSPS_RESPEC_COOLDOWN_DIAG",
+    {
+        customControl = control,
+        setup = setupRespecCooldown,
+        title =
+        {
+            text = "Cooldown",
+        },
+        buttons =
+        {
+            {
+                keybind = "DIALOG_NEGATIVE",
+                control = control:GetNamedChild("Cancel"),
+                text = SI_DIALOG_CANCEL,
+                sound = SOUNDS.DIALOG_DECLINE,
+                callback = function()
+                    CSPS.cancelRespecOnCooldown()
+                end,
+            },
+        },
+        updateFn = function(dialog)
+            local progress = respecCooldownStartingTime-respecCooldown
+            dialog.bar:SetValue(progress)
+        end,
+        noChoiceCallback = function(dialog)
+            --CSPS.cancelRespecOnCooldown()
+        end,
+    })
+end
+
+function CSPS.hbEmpty(barIndex)
+	CSPS.hbTables[barIndex] = CSPS.hbTables[barIndex] or {}
+	for j=1, 6 do
+		if CSPS.hbTables[barIndex][j] ~= nil then
+			
+			local skTyp, skLin, skId = unpack(CSPS.hbTables[barIndex][j])
+			if not skTyp == 0 and skLin == 0 and skId == 0 then
+				skillTable[skTyp][skLin][skId].hb[barIndex] = nil
+			end
+		end
+	end
+    CSPS.hbTables[barIndex] = {}
+end
+
+
+function CSPS.hbRead()
+	if CSPS.moduleExclude.skills then return end
+	local hotBarCats = {HOTBAR_CATEGORY_PRIMARY, HOTBAR_CATEGORY_BACKUP, HOTBAR_CATEGORY_WEREWOLF}
+	
+    for barIndex, barCategory in pairs(hotBarCats) do
+		CSPS.hbEmpty(barIndex)
+		
+		local hbManager = ACTION_BAR_ASSIGNMENT_MANAGER:GetHotbar(barCategory)
+        for i = 1, 6 do
+			local slotData = hbManager:GetSlotData(ACTION_BAR_FIRST_NORMAL_SLOT_INDEX + i)
+            local skillData = slotData and slotData:GetPlayerSkillData()
+			if skillData then 
+				local skTyp, skLin, skId = skillData:GetIndices()
+				CSPS.hbTables[barIndex][i] = {skTyp, skLin, skId} 
+				skillTable[skTyp][skLin][skId].hb[barIndex] =  i
+			end
+		end
+			
+    end
+end
+
+function CSPS.hbApply()
+	if CSPS.moduleExclude.skills then return end
+	for i,v in pairs(CSPS.hbTables) do
+		local hbCat = i < 3 and i-1 or HOTBAR_CATEGORY_WEREWOLF
+		local hbManager = ACTION_BAR_ASSIGNMENT_MANAGER:GetHotbar(hbCat)
+		for j, w in pairs(v) do
+			local theSkillData = sdm:GetSkillDataByIndices(w[1], w[2],w[3])
+			if theSkillData:IsPurchased() and (not theSkillData.craftedAbilityId or IsCraftedAbilityScribed(theSkillData.craftedAbilityId)) then hbManager:AssignSkillToSlot(j+2, theSkillData) end
+		end
+	end
+end
+
+function CSPS.hbPopulate()
+	local function populateSingleBar(indBar, indCtr)
+		local ctrBar = CSPSWindowFooter:GetNamedChild(string.format("Bar%s", indCtr))
+		for ind2=1,6 do
+			local ctrSkill = ctrBar:GetNamedChild(string.format("Icon%s", ind2))
+			local ijk = CSPS.hbTables[indBar][ind2]
+			if ijk ~= nil then
+				local i, j, k = unpack(ijk)
+				local skillEntry = skillTable[i][j][k]
+				ctrSkill:SetTexture(skillEntry.morph == 0 and skillEntry.texture or skillEntry.morphTextures[skillEntry.morph])
+				ctrSkill:SetColor(1,1,1)
+			else 
+				ctrSkill:SetTexture(nil)
+				ctrSkill:SetColor(0.141,0.141,0.141)
+			end
+		end
+	end
+	if CSPS.werewolfMode then
+		CSPSWindowFooterBar2:SetHidden(true)
+		populateSingleBar(3, 1)
+	else
+		CSPSWindowFooterBar2:SetHidden(false)
+		for ind1= 1, 2 do
+			populateSingleBar(ind1, ind1)
+		end
+	end
+
+end
+
+SKILLS_AND_ACTION_BAR_MANAGER:RegisterCallback("SkillPointAllocationModeChanged", 
+	function() 
+		canChangeClassLines = SKILLS_AND_ACTION_BAR_MANAGER:DoesSkillPointAllocationModeAllowSkillLineRespec()
+		if #skillTable > 0 then 
+			CSPS.refreshSkillSumsAndErrors()
+			CSPS.refreshTree() 
+		end
+	end)
+
+EVENT_MANAGER:RegisterForEvent(CSPS.name.."SkillsUpdate", EVENT_SKILL_POINTS_CHANGED, 
+	function(_, _, _, _, _, reason) 	
+		if CSPS.moduleExclude.skills then return end
+		if #skillTable > 0 and not tryingToApplySkills then 
+			local reasons = {[SKILL_POINT_CHANGE_REASON_PURCHASE] = true, [SKILL_POINT_CHANGE_REASON_SKILL_RESET] = true, [SKILL_POINT_CHANGE_REASON_SKILL_RESPEC] = true}
+			--d("Reason: "..reason)
+			if reasons[reason] then
+				CSPS.refreshSkillSumsAndErrors() 
+				CSPS.setMundus() -- refresh mundus box in case of armory reset
+				if not CSPSWindow:IsHidden() then 
+					CSPS.refreshTree() 
+				end
+			else
+				refreshSkillPointSum()
+			end
+		end 
+	end)
+
+function CSPS.setSubClass(index, subclass)
+	local subclasses = {}
+	for i=1,3 do
+		subclasses[i] = i == index and subclass or currentClassSkillLines[i]
+	end
+	CSPS.setSubClasses(subclasses)
+end	
+
+local function refreshClassMasteryLine()
+	if not classMasteryIndex then return end
+	local lineData = skillTable[1][classMasteryIndex]
+	for _, skEntry in ipairs(lineData) do
+		skEntry:setPoints()
+	end
+	lineData:sumUpSkills()
+	skillTable[1]:sumUpSkills()
+end
+
+function CSPS.setSubClasses(subclasses, removeOthers)
+	table.sort(subclasses)
+	local hadAnySubclasses = hasAnySubclasses
+	hasAnySubclasses = false
+	local lineInBuild = {}
+	tooManySubclasses = true
+	local classesInBuild = {}
+	for i,v in pairs(subclasses) do
+		if i > 3 then 
+			subclasses[i] = nil 
+		else
+			lineInBuild[v] = true
+			if v > 3 then 
+				hasAnySubclasses = true 
+				local class = GetSkillLineClassId(1, v)
+				if classesInBuild[class] then twoSubclassesFromOneClass = true end
+				classesInBuild[class] = true
+			else
+				tooManySubclasses = false
+			end
+		end
+	end
+	
+	if hadAnySubclasses ~= hasAnySubclasses then refreshClassMasteryLine() end
+	
+	if removeOthers then
+		for i,v in pairs(currentClassSkillLines) do
+			if not lineInBuild[v] then
+				CSPS.removeSkillLine(1, v)
+			end
+		end
+	end
+	
+	currentClassSkillLines = subclasses
+	
+	otherClassSkills = {0,0,0}
+	
+	for i=1, GetNumClasses()*3 do
+		if not lineInBuild[i] then table.insert(otherClassSkills, i) end
+	end
+	
+	local removedHbItem = false
+	for hbIndex, hbData in pairs(CSPS.hbTables) do
+		for barPos, skillIndices in pairs(hbData) do
+			local i,j,k = unpack(skillIndices)
+			if i == 1 and not lineInBuild[j] then
+				hbData[barPos] = nil
+				skillTable[i][j][k].hb[hbIndex] = nil
+				removedHbItem = true
+			end
+		end
+	end
+	if removedHbItem then CSPS.hbPopulate() end
+end
+
+function CSPS.getClassMasterySkillLineIndex()
+	return classMasteryIndex, firstClassMasteryIndex
+end
+
+function CSPS.getSubClasses(index)
+	return index and (index <= 3 and currentClassSkillLines[index] or otherClassSkills[index]) or index or currentClassSkillLines
+end
+
+function CSPS.hasAnySubclasses()
+	return hasAnySubclasses
+end
+
+function CSPS.hasIncompatibleSubclasses()
+	return tooManySubclasses or twoSubclassesFromOneClass, tooManySubclasses, twoSubclassesFromOneClass
+end
+
+function CSPS.getSubClassIds(subclasses)
+	subclasses = subclasses or currentClassSkillLines
+	local subclassIds = {}
+	for i, v in pairs(subclasses) do
+		table.insert(subclassIds, GetSkillLineId(1, v))
+	end
+	return subclassIds
+end

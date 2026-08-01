@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/manavortex/Stow-Keybind__1900",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1900",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:1900",
+  "deleted": false,
+  "directories": [
+    "StowKeybind"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1900/",
+  "fingerprint": "c23c1a9127295f7a8c5376a601757043c326bb796cc59243340abbd5cc9f16b6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6450.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1900",
+  "source_url": "https://www.esoui.com/downloads/info1900-StowKeybind.html",
+  "stats": {
+    "downloads": 3298,
+    "favorites": 0,
+    "monthly_downloads": 9
+  },
+  "title": "Stow Keybind",
+  "updated_at": 1516878801000,
+  "version": "1.0"
+}

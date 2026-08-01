@@ -1,0 +1,14 @@
+## APIVersion: 100034
+## Title: CPHotkey
+## Version: 0.5
+## Author: Hyperioxes
+## Description: CP Hotkeys
+## SavedVariables: CPHotkeySV
+## DependsOn: LibAddonMenu-2.0>=31
+
+bindings.xml
+
+CPHotkey.lua
+Settings.lua
+
+bindings.lua

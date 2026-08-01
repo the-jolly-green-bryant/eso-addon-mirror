@@ -1,0 +1,9 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="RAETIA_InfoHub">
+			<OnInitialized>
+				RAEIH.RegisterFirstEvent()
+			</OnInitialized>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

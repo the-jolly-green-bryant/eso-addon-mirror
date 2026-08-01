@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/HeruRaRa/Achievement-Bar__4227",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "HeruRaRa",
+  "canonical_id": "esoui:4227",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4227",
+  "deleted": false,
+  "directories": [
+    "AchievementBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4227/",
+  "fingerprint": "597ebe31c3a54be092ed7467c77c54f8dfc85b39c4238f8cccccecadd2375fb3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14439.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14440.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14441.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14442.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14443.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14444.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14445.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4227",
+  "source_url": "https://www.esoui.com/downloads/info4227-AchievementBar.html",
+  "stats": {
+    "downloads": 852,
+    "favorites": 5,
+    "monthly_downloads": 187
+  },
+  "title": "Achievement Bar",
+  "updated_at": 1782857482000,
+  "version": "1.0.4"
+}

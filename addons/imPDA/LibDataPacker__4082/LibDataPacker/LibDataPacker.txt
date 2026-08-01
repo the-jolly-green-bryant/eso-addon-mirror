@@ -1,0 +1,28 @@
+## Title: LibDataPacker
+## Author: |c7c42f2@impda|r [EU]
+## IsLibrary: true
+## APIVersion: 101050
+## AddOnVersion: 1005000
+## OptionalDependsOn: LibDebugLogger LibBinaryEncode WizardsWardrobe Zgoo LibFoodDrinkBuff
+
+logger.lua
+meter.lua
+
+; binarybuffer.lua
+chunkbuffer.lua
+main.lua
+bases.lua
+
+extra/build/main.lua
+extra/build/ui.lua
+extra/build/ui.xml
+
+; examples/superstar.lua
+; examples/coordinates.lua
+; examples/string.lua
+; examples/common.lua
+; examples/enum.lua
+; examples/ww.lua
+; examples/primitivebases.lua
+; examples/itemlinks.lua
+; examples/mappins.lua

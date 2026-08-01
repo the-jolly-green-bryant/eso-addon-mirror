@@ -1,0 +1,26 @@
+## Title: NOR Guild Tools
+## APIVersion: 101049
+## Author: Garadian
+## Version: 3.01
+## Description: Type /nor in game for list of commands.
+
+## SavedVariables: NORGuildTools_Saved
+## SavedVariablesVersion: 1
+## SavedVariablesServer: 1
+
+NORGuildTools.lua
+NORCommands.lua
+NORLibrary.lua
+NORCalendar.lua
+NORMetronome.lua
+NORAI.lua
+NORTimer.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.
+
+
+
+
+ 

@@ -1,0 +1,10 @@
+
+## Title: Chuhaister
+## Description: Бібліотека для Tamriel Trade Centre. Bundled internally with GoA_TamrielTradeCentreUAPatch (libs/Chuhaister); not a standalone add-on.
+## Author: GoA
+## APIVersion: 101050 101051
+## Version: 1.0ua
+## SavedVariables: BabelSavedVariables
+## DependsOn: LibAddonMenu-2.0>=43
+
+Chuhaister.lua

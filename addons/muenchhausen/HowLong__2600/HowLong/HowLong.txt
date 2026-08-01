@@ -1,0 +1,11 @@
+## Title: |cB39C7AHowLong|r
+## Description: Collects how long each of your characters has been played and displays total hours.
+## Author: Muenchhausen
+## APIVersion: 101036
+## SavedVariables: HowLongVars
+## DependsOn: LibAddonMenu-2.0>=31
+
+lang/en.lua
+lang/$(language).lua
+
+HowLong.lua

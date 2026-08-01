@@ -1,0 +1,9 @@
+<GuiXml>
+	<Controls>
+        <TopLevelControl name="IJA_DisableActionsWhileMoving">
+            <OnInitialized>
+                IJA_DIWM_Initialize(self)
+            </OnInitialized>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

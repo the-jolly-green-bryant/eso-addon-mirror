@@ -1,0 +1,6 @@
+## Title: Campaign Queue Status
+## Author: Kawamonkey
+## APIVersion: 100035
+
+CampaignQueueStatus.lua
+CampaignQueueStatus.xml

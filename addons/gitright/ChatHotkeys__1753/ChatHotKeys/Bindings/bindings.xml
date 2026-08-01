@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Chat HotKeys">
+      <!-- F5 -->
+	  <Action name="CHATHK_1">
+        <Down>ChatHotKeys.DoChatItem(1)</Down>
+      </Action>	  
+      <!-- F6 -->
+	  <Action name="CHATHK_2">
+        <Down>ChatHotKeys.DoChatItem(2)</Down>
+      </Action>	  
+      <!-- F7 -->
+	  <Action name="CHATHK_3">
+        <Down>ChatHotKeys.DoChatItem(3)</Down>
+      </Action>	  
+      <!-- F8 -->
+	  <Action name="CHATHK_4">
+        <Down>ChatHotKeys.DoChatItem(4)</Down>
+      </Action>	  
+      <!-- F9 -->
+	  <Action name="CHATHK_5">
+        <Down>ChatHotKeys.DoChatItem(5)</Down>
+      </Action>	  
+      <!-- F10 -->
+	  <Action name="CHATHK_6">
+        <Down>ChatHotKeys.DoChatItem(6)</Down>
+      </Action>	  
+      <!-- F11 -->
+	  <Action name="CHATHK_7">
+        <Down>ChatHotKeys.DoChatItem(7)</Down>
+      </Action>	  
+      <!-- F12 -->
+	  <Action name="CHATHK_8">
+        <Down>ChatHotKeys.DoChatItem(8)</Down>
+      </Action>	   
+	  <Action name="CHATHK_9">
+        <Down>ChatHotKeys.DoChatItem(9)</Down>
+      </Action>	   
+	  <Action name="CHATHK_10">
+        <Down>ChatHotKeys.DoChatItem(10)</Down>
+      </Action>	   
+  </Category>
+  </Layer>
+</Bindings>

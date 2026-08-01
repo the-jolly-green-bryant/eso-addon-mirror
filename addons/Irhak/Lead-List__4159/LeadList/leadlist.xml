@@ -1,0 +1,208 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ILLMainWindow" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="false">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+            <Dimensions x="1260" y="800" />
+
+			<Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" centerColor="FFFFFFFF" edgeColor="FFFFFFFF"/>
+				<Control name="$(parent)Title">
+					<Anchor point="TOPLEFT" />
+                    <Anchor point="TOPRIGHT" />
+					<Dimensions y="30" />
+					<Controls>
+						<Label name="$(parent)Alerts" font="ZoFontGameLarge" color="FA5252" wrapMode="ELLIPSIS"  mouseEnabled="true" text="Alerts">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="17" offsetY="7"/>
+							<Dimensions x="280" y="28" />
+							<OnMouseEnter>
+								ILeadList.AlertsMouseEnter(self)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ILeadList.AlertsMouseExit(self)
+							</OnMouseExit>
+						</Label>
+						<Control name="ILL_DropdownMajor" inherits="ZO_ScrollableComboBox" mouseEnabled="true" >
+							<Anchor point="TOPLEFT"   relativeTo="$(parent)Alerts" relativePoint="TOPRIGHT" offsetX="25" offsetY="-2"/>
+							<Dimensions x="275" y="28" />
+							<OnShow>    ILeadList.SetupDropdown(self)</OnShow>
+							<OnMouseEnter>  ILeadList.DropdownShowTooltip(self, "major", true)</OnMouseEnter>
+							<OnMouseExit>  ILeadList.DropdownHideTooltip(self)</OnMouseExit>
+						</Control>
+						<Control name="ILL_DropdownZone" inherits="ZO_ScrollableComboBox" mouseEnabled="true" >
+							<Anchor point="TOPLEFT"   relativeTo="ILL_DropdownMajor" relativePoint="TOPRIGHT" offsetX="30"/>
+							<Dimensions x="274" y="28" />
+							<OnShow>    ILeadList.SetupDropdown(self)</OnShow>
+							<OnMouseEnter>  ILeadList.DropdownShowTooltip(self, "zone", true)</OnMouseEnter>
+							<OnMouseExit>  ILeadList.DropdownHideTooltip(self)</OnMouseExit>
+						</Control>
+						<Control name="ILL_DropdownSetType" inherits="ZO_ScrollableComboBox" mouseEnabled="true">
+							<Anchor point="TOPLEFT"   relativeTo="ILL_DropdownZone" relativePoint="TOPRIGHT" offsetX="30"/>
+							<Dimensions x="275" y="28" />
+							<OnShow>    ILeadList.SetupDropdown(self)</OnShow>
+							<OnMouseEnter>  ILeadList.DropdownShowTooltip(self, "settype", true)</OnMouseEnter>
+							<OnMouseExit>  ILeadList.DropdownHideTooltip(self)</OnMouseExit>
+						</Control>
+						<Button name="$(parent)Close">
+                            <Anchor point="TOPRIGHT"  offsetX="-5" offsetY="5"/>
+                            <OnClicked>ILeadList.toggleILL()</OnClicked>
+                            <Dimensions x="25" y="25" />
+                            <Textures normal="/esoui/art/buttons/decline_up.dds" pressed="/esoui/art/buttons/decline_down.dds" mouseOver="/esoui/art/buttons/decline_over.dds" />
+                        </Button>
+					</Controls>
+                </Control>	
+				<Control name="$(parent)Freerunner">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="4"/>
+                    <Dimensions y="32" />
+                    <Controls>
+						<Label name="$(parent)Freerunner_alert" font="ZoFontGameLarge" color="FA5252" wrapMode="ELLIPSIS"  mouseEnabled="true" text="FREERUNNER_INFO" horizontalAlignment="CENTER">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="17" offsetY="7"/>
+							<Dimensions x="1200" y="28" />
+						</Label>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Headers">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Freerunner" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="4"/>
+                    <Dimensions y="32" />
+                    <Controls>
+						
+                        <Control name="$(parent)Lead" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, ILeadList.SORTHEADER_NAMES[1], "Lead", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                           </OnInitialized>
+							<OnMouseEnter>
+								ILeadList.HeaderMouseEnter(self, 1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ILeadList.HeaderMouseExit(self, 1)
+							</OnMouseExit>
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="300" y="32" />
+                        </Control>
+                        <Control name="$(parent)Zone" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, ILeadList.SORTHEADER_NAMES[2], "Zone", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                           </OnInitialized>
+							<OnMouseEnter>
+								ILeadList.HeaderMouseEnter(self, 2)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ILeadList.HeaderMouseExit(self, 2)
+							</OnMouseExit>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Lead" relativePoint="TOPRIGHT"/>
+                            <Dimensions x="170" y="32" />
+                        </Control>
+                       <Control name="$(parent)Location" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, ILeadList.SORTHEADER_NAMES[3], "Location", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                           </OnInitialized>
+							<OnMouseEnter>
+								ILeadList.HeaderMouseEnter(self, 3)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ILeadList.HeaderMouseExit(self, 3)
+							</OnMouseExit>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Zone" relativePoint="TOPRIGHT"/>
+                            <Dimensions x="220" y="32" />
+                        </Control>
+						<Control name="$(parent)Lore" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, ILeadList.SORTHEADER_NAMES[4], "Lore", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                           </OnInitialized>
+							<OnMouseEnter>
+								ILeadList.HeaderMouseEnter(self, 4)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ILeadList.HeaderMouseExit(self, 4)
+							</OnMouseExit>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Location" relativePoint="TOPRIGHT" />
+                            <Dimensions x="72" y="32" />
+                        </Control>
+						<Control name="$(parent)Dug" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, ILeadList.SORTHEADER_NAMES[5], "Dug", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                           </OnInitialized>
+							<OnMouseEnter>
+								ILeadList.HeaderMouseEnter(self, 5)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ILeadList.HeaderMouseExit(self, 5)
+							</OnMouseExit>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Lore" relativePoint="TOPRIGHT" />
+                            <Dimensions x="72" y="32" />
+                        </Control>
+						<Control name="$(parent)Set" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, ILeadList.SORTHEADER_NAMES[6], "Set", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+							<OnMouseEnter>
+								ILeadList.HeaderMouseEnter(self, 6)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ILeadList.HeaderMouseExit(self, 6)
+							</OnMouseExit>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Dug" relativePoint="TOPRIGHT" />
+                            <Dimensions x="220" y="32" />
+                        </Control>
+                        <Control name="$(parent)Expiration" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, ILeadList.SORTHEADER_NAMES[7], "Expiration", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+							<OnMouseEnter>
+								ILeadList.HeaderMouseEnter(self, 7)
+							</OnMouseEnter>
+							<OnMouseExit>
+								ILeadList.HeaderMouseExit(self, 7)
+							</OnMouseExit>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Set" relativePoint="TOPRIGHT" />
+                            <Dimensions x="110" y="32" />
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-12" offsetY="-12" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+        <Button name="ILLUnitRow" virtual="true">
+            <Dimensions y="30" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" />
+            <OnMouseEnter>
+                ILeadList.RowMouseEnter(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                ILeadList.RowMouseExit(self)
+            </OnMouseExit>
+            <Controls>
+                <Label name="$(parent)Lead" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                    <Dimensions x="300" y="32" />
+                </Label>
+                <Label name="$(parent)Zone" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Lead" relativePoint="TOPRIGHT" />
+                    <Dimensions x="170" y="32" />
+                </Label>
+                <Label name="$(parent)Location" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Zone" relativePoint="TOPRIGHT" />
+                    <Dimensions x="220" y="32" />
+                </Label>				
+                <Label name="$(parent)Lore" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Location" relativePoint="TOPRIGHT" />
+                    <Dimensions x="72" y="32" />
+                </Label>
+				<Label name="$(parent)Dug" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Lore" relativePoint="TOPRIGHT" />
+                    <Dimensions x="72" y="32" />
+                </Label>
+                <Label name="$(parent)Set" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Dug"  relativePoint="TOPRIGHT" />
+                    <Dimensions x="220" y="32" />
+                </Label>
+				<Label name="$(parent)Expiration" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Set" relativePoint="TOPRIGHT" />
+                    <Dimensions x="110" y="32" />
+                </Label>
+            </Controls>
+        </Button>
+    </Controls>
+</GuiXml>

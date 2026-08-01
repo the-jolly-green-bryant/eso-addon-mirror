@@ -1,0 +1,174 @@
+<GuiXml>
+     <Controls>
+          <TopLevelControl name="AsylumTrackerOlmsHP" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true">
+               <Dimensions x="100" y="50"/>
+               <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="250" offsetY="330"/>
+               <OnMoveStop>
+                    AsylumTracker.SavePosition(AsylumTrackerOlmsHP, "AsylumTrackerOlmsHP")
+               </OnMoveStop>
+               <Controls>
+                    <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="AAFFFFFF" hidden="true">
+                         <AnchorFill/>
+                         <Edge edgeSize="2"/>
+                    </Backdrop>
+                    <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" color="ff0000" text="OLMSHP" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+                         <Dimensions x="950" y="50"/>
+                         <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                    </Label>
+               </Controls>
+          </TopLevelControl>
+          <TopLevelControl name="AsylumTrackerStorm" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true">
+               <Dimensions x="100" y="50"/>
+               <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="250" offsetY="380"/>
+               <OnMoveStop>
+                    AsylumTracker.SavePosition(AsylumTrackerStorm, "AsylumTrackerStorm")
+               </OnMoveStop>
+               <Controls>
+                    <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="AAFFFFFF" hidden="true">
+                         <AnchorFill/>
+                         <Edge edgeSize="2"/>
+                    </Backdrop>
+                    <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" color="FFFFFF" text="KITENOW" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+                         <Dimensions x="950" y="50"/>
+                         <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                    </Label>
+               </Controls>
+          </TopLevelControl>
+          <TopLevelControl name="AsylumTrackerBlast" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true">
+               <Dimensions x="100" y="50"/>
+               <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="250" offsetY="430"/>
+               <OnMoveStop>
+                    AsylumTracker.SavePosition(AsylumTrackerBlast, "AsylumTrackerBlast")
+               </OnMoveStop>
+               <Controls>
+                    <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="AAFFFFFF" hidden="true">
+                         <AnchorFill/>
+                         <Edge edgeSize="2"/>
+                    </Backdrop>
+                    <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" color="00FF00" text="BLAST" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+                         <Dimensions x="950" y="50"/>
+                         <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                    </Label>
+               </Controls>
+          </TopLevelControl>
+          <TopLevelControl name="AsylumTrackerSphere" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true">
+               <Dimensions x="100" y="50"/>
+               <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="250" offsetY="480"/>
+               <OnMoveStop>
+                    AsylumTracker.SavePosition(AsylumTrackerSphere, "AsylumTrackerSphere")
+               </OnMoveStop>
+               <Controls>
+                    <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="AAFFFFFF" hidden="true">
+                         <AnchorFill/>
+                         <Edge edgeSize="2"/>
+                    </Backdrop>
+                    <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" color="0000FF" text="SPHERE" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+                         <Dimensions x="950" y="50"/>
+                         <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                    </Label>
+               </Controls>
+          </TopLevelControl>
+          <TopLevelControl name="AsylumTrackerTeleportStrike" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true">
+               <Dimensions x="100" y="50"/>
+               <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="250" offsetY="530"/>
+               <OnMoveStop>
+                    AsylumTracker.SavePosition(AsylumTrackerTeleportStrike, "AsylumTrackerTeleportStrike")
+               </OnMoveStop>
+               <Controls>
+                    <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="AAFFFFFF" hidden="true">
+                         <AnchorFill/>
+                         <Edge edgeSize="2"/>
+                    </Backdrop>
+                    <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" color="FF00FF" text="FELMS JUMP" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+                         <Dimensions x="950" y="50"/>
+                         <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                    </Label>
+               </Controls>
+          </TopLevelControl>
+          <TopLevelControl name="AsylumTrackerOppressiveBolts" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true">
+               <Dimensions x="100" y="50"/>
+               <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="250" offsetY="580"/>
+               <OnMoveStop>
+                    AsylumTracker.SavePosition(AsylumTrackerOppressiveBolts, "AsylumTrackerOppressiveBolts")
+               </OnMoveStop>
+               <Controls>
+                    <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="AAFFFFFF" hidden="true">
+                         <AnchorFill/>
+                         <Edge edgeSize="2"/>
+                    </Backdrop>
+                    <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" color="099FFF" text="BOLTS" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+                         <Dimensions x="950" y="50"/>
+                         <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                    </Label>
+               </Controls>
+          </TopLevelControl>
+          <TopLevelControl name="AsylumTrackerFire" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true">
+               <Dimensions x="100" y="50"/>
+               <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="250" offsetY="630"/>
+               <OnMoveStop>
+                    AsylumTracker.SavePosition(AsylumTrackerFire, "AsylumTrackerFire")
+               </OnMoveStop>
+               <Controls>
+                    <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="AAFFFFFF" hidden="true">
+                         <AnchorFill/>
+                         <Edge edgeSize="2"/>
+                    </Backdrop>
+                    <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" color="FF6600" text="FIRE" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+                         <Dimensions x="950" y="50"/>
+                         <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                    </Label>
+               </Controls>
+          </TopLevelControl>
+          <TopLevelControl name="AsylumTrackerSteam" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true">
+               <Dimensions x="100" y="50"/>
+               <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="250" offsetY="680"/>
+               <OnMoveStop>
+                    AsylumTracker.SavePosition(AsylumTrackerSteam, "AsylumTrackerSteam")
+               </OnMoveStop>
+               <Controls>
+                    <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="AAFFFFFF" hidden="true">
+                         <AnchorFill/>
+                         <Edge edgeSize="2"/>
+                    </Backdrop>
+                    <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" color="7d12ff" text="STEAM" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+                         <Dimensions x="950" y="50"/>
+                         <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                    </Label>
+               </Controls>
+          </TopLevelControl>
+          <TopLevelControl name="AsylumTrackerMaim" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true">
+               <Dimensions x="100" y="50"/>
+               <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="250" offsetY="730"/>
+               <OnMoveStop>
+                    AsylumTracker.SavePosition(AsylumTrackerMaim, "AsylumTrackerMaim")
+               </OnMoveStop>
+               <Controls>
+                    <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="AAFFFFFF" hidden="true">
+                         <AnchorFill/>
+                         <Edge edgeSize="2"/>
+                    </Backdrop>
+                    <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" color="34efca" text="MAIM" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+                         <Dimensions x="950" y="50"/>
+                         <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                    </Label>
+               </Controls>
+          </TopLevelControl>
+          <TopLevelControl name="AsylumTrackerCharges" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true">
+               <Dimensions x="100" y="50"/>
+               <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="250" offsetY="780"/>
+               <OnMoveStop>
+                    AsylumTracker.SavePosition(AsylumTrackerCharges, "AsylumTrackerCharges")
+               </OnMoveStop>
+               <Controls>
+                    <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="AAFFFFFF" hidden="true">
+                         <AnchorFill/>
+                         <Edge edgeSize="2"/>
+                    </Backdrop>
+                    <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" color="366f87" text="CHARGES" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+                         <Dimensions x="950" y="50"/>
+                         <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+                    </Label>
+               </Controls>
+          </TopLevelControl>
+     </Controls>
+</GuiXml>

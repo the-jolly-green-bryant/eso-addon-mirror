@@ -1,0 +1,9 @@
+## Title: SlimFreeSlots
+## APIVersion: 100022 100023
+## Author: generic
+## SavedVariables: SlimFreeSlotsSettings
+
+language\en.lua
+language\de.lua
+SlimFreeSlots.lua
+SlimFreeSlots.xml

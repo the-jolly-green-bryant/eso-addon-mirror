@@ -1,0 +1,4 @@
+SafeAddString(SI_MER_ACHIEVEMENT_FILTER_SHOW_STARTED, "Succès commencés", 1)
+SafeAddString(SI_MER_ACHIEVEMENT_FILTER_WITH_DYE, "Avec Teinture", 1)
+SafeAddString(SI_MER_ACHIEVEMENT_FILTER_WITH_ITEM, "Avec Objet", 1)
+SafeAddString(SI_MER_ACHIEVEMENT_FILTER_WITH_TITLE, "Avec Titre", 1)

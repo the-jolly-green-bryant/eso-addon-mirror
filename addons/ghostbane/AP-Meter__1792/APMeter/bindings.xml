@@ -1,0 +1,11 @@
+<Bindings>
+   <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+      <Category name="AP Meter">
+         <Action name="APM_TOGGLE_PANEL">
+            <Down>
+                APMeter.Panel.Toggle()
+            </Down>
+         </Action>
+      </Category>
+   </Layer>
+</Bindings>

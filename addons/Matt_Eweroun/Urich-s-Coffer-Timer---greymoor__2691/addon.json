@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Matt_Eweroun/Urich-s-Coffer-Timer---greymoor__2691",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Matt_Eweroun",
+  "canonical_id": "esoui:2691",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2691",
+  "deleted": false,
+  "directories": [
+    "UCT"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2691/",
+  "fingerprint": "4f1f1e2716b89f380ad3a0e48b3ae5079039823a17377c494224e75533e92893",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9118.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2691",
+  "source_url": "https://www.esoui.com/downloads/info2691-UrichsCofferTimer-greymoor.html",
+  "stats": {
+    "downloads": 4153,
+    "favorites": 0,
+    "monthly_downloads": 27
+  },
+  "title": "Urich's Coffer Timer - greymoor",
+  "updated_at": 1593630639000,
+  "version": "3.1.1"
+}

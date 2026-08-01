@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/Kyoma/Alliance-Base-Cartographer__1299",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyoma",
+  "canonical_id": "esoui:1299",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1299",
+  "deleted": false,
+  "directories": [
+    "AllianceBaseCartographer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1299/",
+  "fingerprint": "588e94eb59a9dcfef89c0786f6113f19d0f42e49524c2de8417a0589138423f4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4212.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1299",
+  "source_url": "https://www.esoui.com/downloads/info1299-AllianceBaseCartographer.html",
+  "stats": {
+    "downloads": 9934,
+    "favorites": 20,
+    "monthly_downloads": 21
+  },
+  "title": "Alliance Base Cartographer",
+  "updated_at": 1502800527000,
+  "version": "1.3"
+}

@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Kickimanjaro/StickyHoTs__4440",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kickimanjaro",
+  "canonical_id": "esoui:4440",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4440",
+  "deleted": false,
+  "directories": [
+    "StickyHoTs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4440/",
+  "fingerprint": "73a6700e336da83603292ed9f2746719c7b29d1bd84d4e74494ae9a5e640e53f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15465.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15464.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15466.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4440",
+  "source_url": "https://www.esoui.com/downloads/info4440-StickyHoTs.html",
+  "stats": {
+    "downloads": 247,
+    "favorites": 0,
+    "monthly_downloads": 27
+  },
+  "title": "StickyHoTs",
+  "updated_at": 1776255631000,
+  "version": "2.0.1"
+}

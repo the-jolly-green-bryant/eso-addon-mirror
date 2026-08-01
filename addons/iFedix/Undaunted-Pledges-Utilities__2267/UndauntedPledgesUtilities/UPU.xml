@@ -1,0 +1,14 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="UPU_Button" hidden="true">
+			<Controls>
+				<Button name="$(parent)_Button" inheritAlpha="true" clickSound="Click">
+					<Anchor point="BOTTOMRIGHT" relativeTo="ZO_MainMenuSceneGroupBarLabel" relativePoint="BOTTOMLEFT" offsetX="-15" offsetY="7" />
+					<Dimensions x="60" y="60" />
+					<Textures normal="esoui/art/help/help_tabicon_tutorial_up.dds" pressed="esoui/art/help/help_tabicon_tutorial_down.dds" mouseOver="esoui/art/help/help_tabicon_tutorial_over.dds" />
+				</Button> 
+			</Controls>			
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

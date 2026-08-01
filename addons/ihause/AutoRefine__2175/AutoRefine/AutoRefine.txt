@@ -1,0 +1,12 @@
+## Title: AutoRefine
+## Author: ihause
+## Version: 0.9.1
+## APIVersion: 100033 100034
+## SavedVariables: AutoRefine_Data
+## DependsOn: LibAddonMenu-2.0>=30 LibSlashCommander LibPrice
+
+Bindings.xml
+AutoRefineUtils.lua
+AutoRefineItemLinks.lua
+AutoRefineOptions.lua
+AutoRefine.lua

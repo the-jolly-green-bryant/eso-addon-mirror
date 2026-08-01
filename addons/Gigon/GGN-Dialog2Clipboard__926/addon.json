@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Gigon/GGN-Dialog2Clipboard__926",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Gigon",
+  "canonical_id": "esoui:926",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:926",
+  "deleted": false,
+  "directories": [
+    "GGNDialog2Clipboard"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl926/",
+  "fingerprint": "03969ec22763a82f6ed503b7ace50c074081dedd57362410b9d30b90bb24d6a1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3789.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3788.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "926",
+  "source_url": "https://www.esoui.com/downloads/info926-GGNDialog2Clipboard.html",
+  "stats": {
+    "downloads": 37132,
+    "favorites": 15,
+    "monthly_downloads": 29
+  },
+  "title": "GGN Dialog2Clipboard",
+  "updated_at": 1496166491000,
+  "version": "1.31"
+}

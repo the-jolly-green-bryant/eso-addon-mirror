@@ -1,0 +1,7 @@
+# This project is staying on windows, don't mess with the CRLF
+.gitattributes  -text
+*.txt  -text
+*.lua  -text
+*.xml  -text
+*.jpg  binary
+

@@ -1,0 +1,43 @@
+<Bindings>
+	<!-- General -->
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="DsRGuildcmd_General">
+			<Action name="DSRGUILD_BINDALL_UNKNOWN">
+				<Down> DsRGuildBind.Binding.BindAllUnknown() </Down>
+			</Action>
+			<Action name="DSRGUILD_POSTALL_UNBOUNTED">
+				<Down> DsRGuildBind.Post.PostAllUnbounted() </Down>
+			</Action>
+			<Action name="DSRGUILD_TOGGLE_INVENTORY_ASSISTANT">
+        		<Down> IA_INVENTORY_ASSISTANT:ToggleWindow ( true ) </Down>
+      		</Action>
+      		<Action name="DSRGUILD_TOGGLE_INVENTORY_ASSISTANT_NOFOCUS">
+        		<Down> IA_INVENTORY_ASSISTANT:ToggleWindow ( false ) </Down>
+      		</Action>
+      		<Action name="DSRGUILD_PORT_TO_CYRO">
+        		<Down> DsRGuildPvP.StartChatTelVarPort() </Down>
+      		</Action>
+			<Action name="DSRGUILD_DEATHTABLE_TOGGLE">
+				<Down> DsRGuildDeathTable.ToggleWindow() </Down>
+			</Action>
+			<Action name="DSRGUILD_DEATHTABLE_RESET">
+				<Down> DsRGuildDeathTable.resetTable() </Down>
+			</Action>
+			<Action name="DSRGUILD_DEATHTABLE_TOCHAT">
+				<Down> DsRGuildDeathTable.postDeath() </Down>
+			</Action>	
+			<Action name="DSRGUILD_MAINBUTTON_WINDOW">
+				<Down> DsRGuildPersonalJunkTable:ToggleWindow( true ) </Down>
+			</Action>	
+			<Action name="DSRGUILD_CYROINVITE_CHAT">
+				<Down> DsRGuildPvP.GroupInviteZone() </Down>
+			</Action>	
+			<Action name="DSRGUILD_BUFF_MANAGEMENT">
+				<Down> DsRGuildBuffSetting:Show() </Down>
+			</Action>	
+			<Action name="DSRGUILD_GROUP_ATTACK">
+				<Down> DsRGroupAttackProtocol:SendGroupAttackCountdown() </Down>
+			</Action>	
+		</Category>
+	</Layer>
+</Bindings>

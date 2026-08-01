@@ -1,0 +1,24 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<Category name="ToxicPlayers">
+			<Action name="TOXICPLAYERS_KEY_TOGGLE_IGNORED">
+				<Down>ToxicPlayers.ToggleTargetIgnore(false)</Down>
+			</Action>
+			<Action name="TOXICPLAYERS_KEY_TOGGLE_IGNORED_WITH_NOTE">
+				<Down>ToxicPlayers.ToggleTargetIgnore(true)</Down>
+			</Action>
+			<Action name="TOXICPLAYERS_KEY_GET_NOTE">
+				<Down>ToxicPlayers.DisplayPlayerInfo()</Down>
+			</Action>
+			<Action name="TOXICPLAYERS_SHARE_TARGET">
+				<Down>ToxicPlayers.ShareTarget()</Down>
+			</Action>
+			<Action name="TOXICPLAYERS_KEY_REPORT">
+				<Down>ToxicPlayers.ReportTarget()</Down>
+			</Action>
+			<Action name="TOXICPLAYERS_WHISPER_TARGET">
+				<Down>ToxicPlayers.Whisper()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

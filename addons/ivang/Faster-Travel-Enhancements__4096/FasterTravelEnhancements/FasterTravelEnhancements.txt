@@ -1,0 +1,9 @@
+## Title: |c40FF40Faster|r Travel |cFFC300Enhancements|r
+## Author: xIvanGx
+## APIVersion: 101045
+## Version: 1.0.0
+## DependsOn: FasterTravel>=3.1.6 LibAddonMenu-2.0>=38
+## SavedVariables: FasterTravelEnhancements_Data
+
+FasterTravelEnhancements.lua
+Settings.lua

@@ -1,0 +1,8 @@
+## Title: |c215895Concealed |cCC922FWeapon|r
+## Version: 1.3
+## APIVersion: 101041
+## Author: |c215895L|c3E6284y|c5A6B73k|c777562e|c937F51i|cB08840o|cCC922Fn|r
+## SavedVariables: ConcealedWeaponSV
+
+main.lua
+ui.xml

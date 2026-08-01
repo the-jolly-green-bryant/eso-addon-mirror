@@ -1,0 +1,8 @@
+## Title: Taunt Indicator
+## Description: Shows red boxes for every taunted enemy.
+## Author: Marnu
+## Version: 1.0
+## APIVersion: 101048
+## SavedVariables: TauntIndicator_SavedVariables
+
+TauntIndicator.lua

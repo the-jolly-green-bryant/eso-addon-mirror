@@ -1,0 +1,6 @@
+## Title: Dice Roller
+## Author: Manaphoenix
+## APIVersion: 100024
+## SavedVariables: RollSavedVariables
+
+DiceRoller.lua

@@ -1,0 +1,11 @@
+<Bindings>
+<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+<Category name="Hyborem Assistant">
+<Action name="HYBOREM_ROTATION"><Down>HyboremAssistant_Rotation()</Down></Action>
+<Action name="HYBOREM_SUM_MERCH"><Down>HyboremAssistant_Summon('merchant')</Down></Action>
+<Action name="HYBOREM_SUM_BANK"><Down>HyboremAssistant_Summon('banker')</Down></Action>
+<Action name="HYBOREM_SUM_DECON"><Down>HyboremAssistant_Summon('decon')</Down></Action>
+<Action name="HYBOREM_SUM_FENCE"><Down>HyboremAssistant_Summon('fence')</Down></Action>
+</Category>
+</Layer>
+</Bindings>

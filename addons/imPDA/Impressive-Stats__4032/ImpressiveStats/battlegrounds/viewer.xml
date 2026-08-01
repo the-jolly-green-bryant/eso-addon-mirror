@@ -1,0 +1,88 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+		<Texture name="IMP_STATS_VIEWER_TLC_TeamScoreTemplate" alpha="0.6" virtual="true">
+			<Dimensions x="128" y="128" />
+			<Controls>
+				<Label name="$(parent)Score" font="ZoFontGamepadBold48" inheritAlpha="false" text="-">
+					<Anchor point="CENTER" />
+				</Label>
+			</Controls>
+		</Texture>
+
+		<Label name="IMP_STATS_VIEWER_RoundNumberTemplate" virtual="true" font="ZoFontHeader4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="CENTER" mouseEnabled="true">
+			<Dimensions x="30" y="30" />
+
+			<OnMouseEnter>
+				if self.selected then return end
+				self:SetColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_HIGHLIGHT))
+			</OnMouseEnter>
+
+			<OnMouseExit>
+				if self.selected then
+					self:SetColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_SELECTED))
+				else
+					self:SetColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_NORMAL))
+				end
+			</OnMouseExit>
+		</Label>
+
+		<TopLevelControl name="IMP_STATS_VIEWER_TLC" resizeToFitDescendents="true" mouseEnabled="true" movable="true" hidden="true">
+			<!-- <Dimensions x="1200" /> -->
+			<Anchor point="CENTER" offsetX="-450" />
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" excludeFromResizeToFitExtents="true"></Backdrop>
+				<Control name="$(parent)Header">
+					<DimensionConstraints minY="32" maxY="32" maxX="200" />
+					<Anchor point="TOP" />
+					<Controls>
+						<Label name="$(parent)Label" font="ZoFontGameLargeBold" text="Impressive Stats Viewer" verticalAlignment="CENTER">
+							<Anchor point="TOP" />
+						</Label>
+						<Button name="$(parent)CloseButton" excludeFromResizeToFitExtents="true">
+							<Anchor point="TOPRIGHT" relativeTo="$(grandparent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="-12" />
+							<Dimensions x="42" y="42"/>
+							<Textures 
+								normal="/esoui/art/hud/radialicon_cancel_up.dds"
+								mouseOver="/esoui/art/hud/radialicon_cancel_over.dds"
+							/>
+							<OnClicked>
+								self:GetParent():GetParent():SetHidden(true)
+								ZO_ScrollList_SelectData(IMP_STATS_MATCHESListingScrollList)
+							</OnClicked>
+						</Button>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Body" resizeToFitDescendents="true">
+					<Anchor point="TOP" relativeTo="$(parent)Header" relativePoint="BOTTOM" />
+					<Controls>
+						<Control name="$(parent)Scores" resizeToFitDescendents="true">
+							<Anchor point="TOP" />
+							<Controls>
+								<Texture name="$(parent)Team1" inherits="IMP_STATS_VIEWER_TLC_TeamScoreTemplate" textureFile="EsoUI/Art/Battlegrounds/Gamepad/gp_battlegrounds_teamIcon_orange.dds">
+									<Anchor point="LEFT" />
+								</Texture>
+								<Texture name="$(parent)Team2" inherits="IMP_STATS_VIEWER_TLC_TeamScoreTemplate" textureFile="EsoUI/Art/Battlegrounds/Gamepad/gp_battlegrounds_teamIcon_green.dds">
+									<Anchor point="LEFT" relativeTo="$(parent)Team1" relativePoint="RIGHT" offsetX="64" />
+								</Texture>
+								<Texture name="$(parent)Team3" inherits="IMP_STATS_VIEWER_TLC_TeamScoreTemplate" textureFile="EsoUI/Art/Battlegrounds/Gamepad/gp_battlegrounds_teamIcon_purple.dds">
+									<Anchor point="LEFT" relativeTo="$(parent)Team2" relativePoint="RIGHT" offsetX="64" />
+								</Texture>
+							</Controls>
+						</Control>
+						<Control name="$(parent)Table">
+							<Anchor point="TOP" relativeTo="$(parent)Scores" relativePoint="BOTTOM" />
+						</Control>
+						<Control name="$(parent)Rounds" resizeToFitDescendents="true" hidden="true">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Table" relativePoint="BOTTOMLEFT" />
+							<Controls>
+								<Label name="$(parent)Label" font="ZoFontHeader4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Round:">
+									<Anchor point="LEFT" offsetX="8" offsetY="8" />
+								</Label>
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

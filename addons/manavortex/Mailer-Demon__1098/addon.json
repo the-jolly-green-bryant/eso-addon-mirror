@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/manavortex/Mailer-Demon__1098",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1098",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    }
+  ],
+  "content_id": "esoui:1098",
+  "deleted": false,
+  "directories": [
+    "MailerDemon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1098/",
+  "fingerprint": "e6153e9ef89efe8bb65b7bf49d4bf5f0acf042770991960759174848f10f4d20",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4433.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3439.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1098",
+  "source_url": "https://www.esoui.com/downloads/info1098-MailerDemon.html",
+  "stats": {
+    "downloads": 6722,
+    "favorites": 5,
+    "monthly_downloads": 8
+  },
+  "title": "Mailer Demon",
+  "updated_at": 1487261312000,
+  "version": "3.1"
+}

@@ -1,0 +1,29 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="WritDisplayer" mouseEnabled="true" movable="true" clampedToScreen="true" hidden = "true">
+      <Dimensions x="350" y="100" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-300" offsetX="200" />	
+	  <OnMoveStop>
+        OnWritMoveStop()
+      </OnMoveStop>
+	  
+      <Controls>
+	<Texture name="$(parent)Background" textureFile="esoui/art/windows/gamepad/gp_grunge_scalable.dds">
+               <Dimensions x="400" y="180" />
+               <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="-50"/>
+           </Texture>
+
+        <Label name="$(parent)Title" width="200" height="25" font="ZoFontGame" inheritAlpha="true" color="DCD822" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="-5"/>
+        </Label>
+	<Label name="$(parent)Icon" width="40" height="40" font="ZoFontWinH1" inheritAlpha="true" color="DCD822" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="-45"/>
+        </Label>
+	<Label name = "$(parent)Objective" width="200" height="25" font="ZoFontGameSmall" inheritAlpha="true" color="FFFFFF" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+	<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="25"/>
+	</Label>
+		
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

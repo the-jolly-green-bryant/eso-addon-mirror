@@ -1,0 +1,993 @@
+<GuiXml>
+    <Controls>
+        <Backdrop name="MailBuddy_MailSendRecipientLabel" layer="1" level="2" mouseEnabled="true" inherits="ZO_DefaultBackdrop" hidden="false">
+            <Dimensions x ="175" y="40"/>
+            <Anchor point= "RIGHT" relativeTo="ZO_MailSendToField" relativePoint="LEFT" offsetX="-40" offsetY="0" />
+            <OnInitialized>
+                self:SetParent(ZO_MailSend)
+                MailBuddy.recipientsLabel=self
+            </OnInitialized>
+            <OnMouseUp>
+                MailBuddy.ShowBox("recipients", true, false, false, true)
+            </OnMouseUp>
+            <Controls>
+            <Label name="$(parent)ActiveText" layer="1" level="3" font="$(STONE_TABLET_FONT)|18|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="@Name">
+               <Anchor point="LEFT" relativeTo="MailBuddy_MailSendRecipientLabel" relativePoint="Left" offsetX= "6" offsetY ="0"/>
+            </Label>
+            </Controls>
+        </Backdrop>
+
+        <Backdrop name="MailBuddy_MailSendSubjectLabel" mouseEnabled="true" inherits="ZO_DefaultBackdrop" hidden="false">
+            <Dimensions x ="175" y="40"/>
+            <Anchor point= "RIGHT" relativeTo="ZO_MailSendSubjectField" relativePoint="LEFT" offsetX="-40" offsetY="0" />
+            <OnInitialized>
+                self:SetParent(ZO_MailSend)
+                MailBuddy.subjectsLabel=self
+            </OnInitialized>
+            <OnMouseUp>
+                MailBuddy.ShowBox("subjects", true, false, false, true)
+            </OnMouseUp>
+            <Controls>
+            <Label name="$(parent)ActiveText" layer="1" level="3" font="$(STONE_TABLET_FONT)|18|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="RTS">
+               <Anchor point="LEFT" relativeTo="MailBuddy_MailSendSubjectLabel" relativePoint="Left" offsetX= "6" offsetY ="0"/>
+            </Label>
+            </Controls>
+        </Backdrop>
+
+        <Backdrop name="MailBuddy_MailSendSubjectsBox" mouseEnabled="true" inherits="ZO_DefaultBackdrop" hidden="true">
+            <Dimensions x ="175" y="330"/>
+            <Anchor point= "TOP" relativeTo="MailBuddy_MailSendSubjectLabel" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+            <OnInitialized>
+                self:SetParent(ZO_MailSend)
+                MailBuddy.subjectsBox=self
+            </OnInitialized>
+            <Controls>
+
+                <Button name="SubjectsPage1" layer="1" level="2" mouseEnabled="true">
+                  <Dimensions x="62" y="62" />
+                  <Anchor point= "TOP" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="30" offsetY="-10" />
+                  <Textures normal="EsoUI/Art/guild/guild_indexicon_officer_up.dds" pressed="EsoUI/Art/guild/guild_indexicon_officer_down.dds" mouseOver="EsoUI/Art/guild/guild_indexicon_officer_over.dds" />
+                     <OnClicked>
+                        MailBuddy.settingsVars.settings.lastSubjectPage=MailBuddy.settingsVars.settings.curSubjectPage
+                        MailBuddy.settingsVars.settings.curSubjectPage="1"
+                        MailBuddy.GetPage("subjects", MailBuddy.settingsVars.settings.lastSubjectsPage, true)
+                     </OnClicked>
+                </Button>
+
+                <Texture name="$(parent)ButtonGlow1" layer="1" level="1" textureFile="esoui/art/miscellaneous/icon_highlight_pulse.dds" hidden="false" verticalAlignment="CENTER">
+                    <Dimensions x ="65" y="65"/>
+                    <Anchor point="CENTER" relativeTo="SubjectsPage1" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+                </Texture>
+
+                <Button name="SubjectsPage2" layer="1" level="2" mouseEnabled="true">
+                  <Dimensions x="62" y="62" />
+                  <Anchor point= "TOP" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="70" offsetY="-10" />
+                  <Textures normal="EsoUI/Art/guild/guild_indexicon_recruit_up.dds" pressed="EsoUI/Art/guild/guild_indexicon_recruit_down.dds" mouseOver="EsoUI/Art/guild/guild_indexicon_recruit_over.dds" />
+                     <OnClicked>
+                        MailBuddy.settingsVars.settings.lastSubjectPage=MailBuddy.settingsVars.settings.curSubjectPage
+                        MailBuddy.settingsVars.settings.curSubjectPage="2"
+                        MailBuddy.GetPage("subjects", MailBuddy.settingsVars.settings.lastSubjectsPage, true)
+                     </OnClicked>
+                </Button>
+
+                <Texture name="$(parent)ButtonGlow2" layer="1" level="1" textureFile="esoui/art/miscellaneous/icon_highlight_pulse.dds" hidden="false" verticalAlignment="CENTER">
+                    <Dimensions x ="65" y="65"/>
+                    <Anchor point="CENTER" relativeTo="SubjectsPage2" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+                </Texture>
+
+                <Button name="SubjectsPage3" layer="1" level="2" mouseEnabled="true">
+                  <Dimensions x="62" y="62" />
+                  <Anchor point= "TOP" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="110" offsetY="-10" />
+                  <Textures normal="EsoUI/Art/guild/guild_indexicon_leader_up.dds" pressed="EsoUI/Art/guild/guild_indexicon_leader_down.dds" mouseOver="EsoUI/Art/guild/guild_indexicon_leader_over.dds" />
+                     <OnClicked>
+                        MailBuddy.settingsVars.settings.lastSubjectPage=MailBuddy.settingsVars.settings.curSubjectPage
+                        MailBuddy.settingsVars.settings.curSubjectPage="3"
+                        MailBuddy.GetPage("subjects", MailBuddy.settingsVars.settings.lastSubjectsPage, true)
+                     </OnClicked>
+                </Button>
+
+                <Texture name="$(parent)ButtonGlow3" layer="1" level="1" textureFile="esoui/art/miscellaneous/icon_highlight_pulse.dds" hidden="false" verticalAlignment="CENTER">
+                    <Dimensions x ="65" y="65"/>
+                    <Anchor point="CENTER" relativeTo="SubjectsPage3" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+                </Texture>
+
+                <Button name="$(parent)CloseButton" mouseEnabled="true">
+                  <Dimensions x="32" y="32" />
+                  <Anchor point= "TOPRIGHT" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPRIGHT" offsetX="-5" offsetY="5" />
+                  <Textures normal="EsoUI/Art/buttons/cancel_up.dds" pressed="EsoUI/Art/buttons/cancel_down.dds" mouseOver="EsoUI/Art/buttons/cancel_over.dds" />
+                     <OnClicked>
+                        MailBuddy.AutoCloseBox("subjects", true)
+                     </OnClicked>
+                </Button>
+
+                <Texture name="$(parent)SubjectLineB" layer="1" level="1"  textureFile="esoui/art/miscellaneous/horizontaldivider.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="254" y="5"/>
+                    <Anchor point="TOP" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOP" offsetX="0" offsetY="40"/>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="RTS">
+                <Anchor point="TOPLEFT" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX= "10" offsetY ="40"/>
+                  <OnMouseDown>
+                      SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                  </OnMouseDown>
+                  <OnMouseUp>
+                      MailBuddy.UpdateSubjectText(nil, false, "RTS")
+                  </OnMouseUp>
+                </Label>
+
+                <Label name="$(parent)RETURNLabel" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="RETURN">
+                <Anchor point="TOPLEFT" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX= "10" offsetY ="70"/>
+                  <OnMouseDown>
+                    SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                  </OnMouseDown>
+                  <OnMouseUp>
+                      MailBuddy.UpdateSubjectText(nil, false, "RETURN")
+                  </OnMouseUp>
+                </Label>
+
+                <Label name="$(parent)BOUNCELabel" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="BOUNCE">
+                <Anchor point="TOPLEFT" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX= "10" offsetY ="100"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                      MailBuddy.UpdateSubjectText(nil, false, "BOUNCE")
+                  </OnMouseUp>
+                </Label>
+
+
+              <Backdrop name="MailBuddy_SubjectsPage1" inherits="ZO_DefaultBackdrop" edgeColor="00000000" centerColor="00000000" hidden="false" mouseEnabled="true">
+                  <Anchor point= "TOP" relativeTo="MailBuddy_MailSendSubjectsBoxBOUNCELabel" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+                  <Controls>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet1" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="150"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(1, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel1" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage1CustomSubjectDeleteBullet1" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(1, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet2" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="180"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(2, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel2" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage1CustomSubjectDeleteBullet2" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(2, false)
+                  </OnMouseUp>
+
+
+                </Label>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet3" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="210"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(3, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel3" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage1CustomSubjectDeleteBullet3" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(3, false)
+                  </OnMouseUp>
+
+
+                </Label>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet4" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="240"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(4, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel4" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage1CustomSubjectDeleteBullet4" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(4, false)
+                  </OnMouseUp>
+
+
+                </Label>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet5" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="270"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(5, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel5" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage1CustomSubjectDeleteBullet5" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(5, false)
+                  </OnMouseUp>
+
+                </Label>
+
+              	</Controls>
+              </Backdrop>
+
+              <Backdrop name="MailBuddy_SubjectsPage2" inherits="ZO_DefaultBackdrop" edgeColor="00000000" centerColor="00000000" hidden="false" mouseEnabled="true">
+                  <Anchor point= "TOP" relativeTo="MailBuddy_MailSendSubjectsBoxBOUNCELabel" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+                  <Controls>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet6" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="150"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(6, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel6" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage2CustomSubjectDeleteBullet6" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(6, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet7" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="180"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(7, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel7" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage2CustomSubjectDeleteBullet7" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(7, false)
+                  </OnMouseUp>
+
+
+                </Label>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet8" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="210"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(8, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel8" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage2CustomSubjectDeleteBullet8" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(8, false)
+                  </OnMouseUp>
+
+
+                </Label>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet9" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="240"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(9, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel9" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage2CustomSubjectDeleteBullet9" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(9, false)
+                  </OnMouseUp>
+
+
+                </Label>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet10" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="270"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(10, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel10" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage2CustomSubjectDeleteBullet10" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(10, false)
+                  </OnMouseUp>
+
+                </Label>
+
+              	</Controls>
+              </Backdrop>
+
+              <Backdrop name="MailBuddy_SubjectsPage3" inherits="ZO_DefaultBackdrop" edgeColor="00000000" centerColor="00000000" hidden="false" mouseEnabled="true">
+                  <Anchor point= "TOP" relativeTo="MailBuddy_MailSendSubjectsBoxBOUNCELabel" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+                  <Controls>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet11" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="150"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(11, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel11" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage3CustomSubjectDeleteBullet11" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(11, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet12" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="180"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(12, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel12" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage3CustomSubjectDeleteBullet12" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(12, false)
+                  </OnMouseUp>
+
+
+                </Label>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet13" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="210"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(13, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel13" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage3CustomSubjectDeleteBullet13" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(13, false)
+                  </OnMouseUp>
+
+
+                </Label>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet14" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="240"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(14, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel14" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage3CustomSubjectDeleteBullet14" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(14, false)
+                  </OnMouseUp>
+
+
+                </Label>
+
+                <Texture name="$(parent)CustomSubjectDeleteBullet15" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendSubjectsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="270"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(15, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomSubjectLabel15" layer="1" level="3" mouseEnabled="true" font="$(STONE_TABLET_FONT)|20|shadow" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_SubjectsPage3CustomSubjectDeleteBullet15" relativePoint="RIGHT" offsetX= "5" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                       MailBuddy.UpdateSubjectText(15, false)
+                  </OnMouseUp>
+
+                </Label>
+
+              	</Controls>
+              </Backdrop>
+
+                <Texture name="$(parent)LineC" layer="1" level="2" hidden="false" textureFile="esoui/art/miscellaneous/horizontaldivider.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="254" y="5"/>
+                    <Anchor point="BOTTOM" relativeTo="MailBuddy_MailSendSubjectsBoxEditNewSubject" relativePoint="BOTTOM" offsetX="0" offsetY="-35"/>
+                </Texture>
+
+                <EditBox name="$(parent)EditNewSubject" font="$(STONE_TABLET_FONT)|20|shadow" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+                    <Anchor point ="BOTTOMLEFT" offsetY="10" offsetX= "5" />
+                    <Dimensions x ="175" y="40" />
+                    <OnInitialized>
+                        MailBuddy.editSubject=self
+                    </OnInitialized>
+                    <OnEnter>
+                        MailBuddy.StoreSubject()
+                        MailBuddy.editSubject:Clear()
+                    </OnEnter>
+                </EditBox>
+
+            </Controls>
+         </Backdrop>
+
+        <Backdrop name="MailBuddy_MailSendRecipientsBox" inherits="ZO_DefaultBackdrop" hidden="true" mouseEnabled="true">
+            <Dimensions x ="175" y="300"/>
+            <Anchor point= "TOPRIGHT" relativeTo="MailBuddy_MailSendRecipientLabel" relativePoint="TOPLEFT" offsetX="-15" offsetY="0" />
+            <OnInitialized>
+                self:SetParent(ZO_MailSend)
+                MailBuddy.recipientsBox=self
+            </OnInitialized>
+
+            <Controls>
+
+                <EditBox name="$(parent)EditNewRecipient" font="$(STONE_TABLET_FONT)|18|shadow" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+                    <Anchor point ="TOPLEFT" offsetY="10" offsetX= "5" />
+                    <Dimensions x ="175" y="40" />
+
+                    <OnInitialized>
+                        MailBuddy.editRecipient=self
+                    </OnInitialized>
+                    <OnEnter>
+                        MailBuddy.StoreRecipient()
+                        MailBuddy.editRecipient:Clear()
+                    </OnEnter>
+                </EditBox>
+
+                <Texture name="$(parent)LineA" layer="1" level="1" textureFile="esoui/art/miscellaneous/horizontaldivider.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="254" y="5"/>
+                    <Anchor point="TOP" relativeTo="MailBuddy_MailSendRecipientsBoxEditNewRecipient" relativePoint="BOTTOM" offsetX="-6" offsetY="-12"/>
+                </Texture>
+
+              <Backdrop name="MailBuddy_RecipientsPage1" inherits="ZO_DefaultBackdrop" edgeColor="00000000" centerColor="00000000" hidden="false" mouseEnabled="true">
+                  <Anchor point= "TOP" relativeTo="MailBuddy_MailSendRecipientsBoxLineA" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+                  <Controls>
+
+
+                <Texture name="$(parent)DeleteBullet1" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="65"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(1, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel1" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage1DeleteBullet1" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(1, false)
+                  </OnMouseUp>
+
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet2" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="95"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(2, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel2" layer="1" level="3" font="ZoFontGame" mouseEnabled="true" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage1DeleteBullet2" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                    <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(2, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet3" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="125"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(3, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel3" layer="1" level="3" font="ZoFontGame" mouseEnabled="true" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage1DeleteBullet3" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(3, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet4" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="155"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(4, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel4" layer="1" level="3" font="ZoFontGame" mouseEnabled="true" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage1DeleteBullet4" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(4, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet5" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="185"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(5, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel5" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage1DeleteBullet5" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(5, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet6" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="215"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(6, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel6" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage1DeleteBullet6" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(6, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet7" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="245"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(7, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel7" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage1DeleteBullet7" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(7, false)
+                  </OnMouseUp>
+                </Label>
+
+                </Controls>
+             </Backdrop>
+
+             <Backdrop name="MailBuddy_RecipientsPage2" inherits="ZO_DefaultBackdrop" edgeColor="00000000" centerColor="00000000" hidden="true" mouseEnabled="true">
+                  <Anchor point= "TOP" relativeTo="MailBuddy_MailSendRecipientsBoxLineA" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+                  <Controls>
+
+                <Texture name="$(parent)DeleteBullet8" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="65"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(8, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel8" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage2DeleteBullet8" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(8, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet9" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="95"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(9, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel9" layer="1" level="3" font="ZoFontGame" mouseEnabled="true" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage2DeleteBullet9" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                    <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(9, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet10" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="125"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(10, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel10" layer="1" level="3" font="ZoFontGame" mouseEnabled="true" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage2DeleteBullet10" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(10, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet11" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="155"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(11, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel11" layer="1" level="3" font="ZoFontGame" mouseEnabled="true" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage2DeleteBullet11" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(11, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet12" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="185"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(12, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel12" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage2DeleteBullet12" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(12, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet13" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="215"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(13, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel13" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage2DeleteBullet13" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(13, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet14" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="245"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(14, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel14" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage2DeleteBullet14" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(14, false)
+                  </OnMouseUp>
+                </Label>
+
+                </Controls>
+             </Backdrop>
+
+             <Backdrop name="MailBuddy_RecipientsPage3" inherits="ZO_DefaultBackdrop" edgeColor="00000000" centerColor="00000000" hidden="true" mouseEnabled="true">
+                  <Anchor point= "TOP" relativeTo="MailBuddy_MailSendRecipientsBoxLineA" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+                  <Controls>
+
+                <Texture name="$(parent)DeleteBullet15" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="65"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(15, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel15" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage3DeleteBullet15" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(15, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet16" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="95"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(16, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel16" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage3DeleteBullet16" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(16, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet17" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="125"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(17, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel17" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage3DeleteBullet17" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(17, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet18" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="155"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(18, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel18" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage3DeleteBullet18" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(18, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet19" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="185"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(19, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel19" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage3DeleteBullet19" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(19, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet20" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="215"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(20, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel20" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage3DeleteBullet20" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(20, false)
+                  </OnMouseUp>
+                </Label>
+
+                <Texture name="$(parent)DeleteBullet21" layer="1" level="1" mouseEnabled="true" textureFile="EsoUI/Art/Miscellaneous/bullet.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="16" y="16"/>
+                    <Anchor point="CENTER" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="TOPLEFT" offsetX="14" offsetY="245"/>
+                    <OnMouseUp>
+                       MailBuddy.UpdateRecipientText(21, true)
+                    </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)CustomRecipientLabel21" layer="1" level="3" mouseEnabled="true" font="ZoFontGame" fontSize="1" color="CFDCBD" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS" text="">
+                  <Anchor point="LEFT" relativeTo="MailBuddy_RecipientsPage3DeleteBullet21" relativePoint="RIGHT" offsetX= "10" offsetY ="0"/>
+                    <OnMouseDown>
+                        SOUNDS["EDIT_CLICK"]=SOUNDS["NONE"]
+                    </OnMouseDown>
+                  <OnMouseUp>
+                    MailBuddy.UpdateRecipientText(20, false)
+                  </OnMouseUp>
+                </Label>
+
+                </Controls>
+             </Backdrop>
+
+                <Texture name="$(parent)LineB" layer="1" level="1"  textureFile="esoui/art/miscellaneous/horizontaldivider.dds" color= "CFDCBD" verticalAlignment="CENTER">
+                    <Dimensions x ="254" y="5"/>
+                    <Anchor point="TOP" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="BOTTOM" offsetX="0" offsetY="-40"/>
+                </Texture>
+
+                <Button name="MailPage1" layer="1" level="2" mouseEnabled="true" >
+                  <Dimensions x="62" y="62" />
+                  <Anchor point= "BOTTOM" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="BOTTOMLEFT" offsetX="30" offsetY="10" />
+                  <Textures normal="EsoUI/Art/guild/guild_indexicon_officer_up.dds" pressed="EsoUI/Art/guild/guild_indexicon_officer_down.dds" mouseOver="EsoUI/Art/guild/guild_indexicon_officer_over.dds" />
+                     <OnClicked>
+                        MailBuddy.settingsVars.settings.lastRecipientPage=MailBuddy.settingsVars.settings.curRecipientPage
+                        MailBuddy.settingsVars.settings.curRecipientPage="1"
+                        MailBuddy.GetPage("recipients", MailBuddy.settingsVars.settings.lastRecipientPage, true)
+                     </OnClicked>
+                </Button>
+
+                <Texture name="$(parent)ButtonGlow1" layer="1" level="1" textureFile="esoui/art/miscellaneous/icon_highlight_pulse.dds" hidden="false" verticalAlignment="CENTER">
+                    <Dimensions x ="65" y="65"/>
+                    <Anchor point="CENTER" relativeTo="MailPage1" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+                </Texture>
+
+                <Button name="MailPage2" layer="1" level="2" mouseEnabled="true" >
+                  <Dimensions x="62" y="62" />
+                  <Anchor point= "BOTTOM" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="BOTTOMLEFT" offsetX="70" offsetY="10" />
+                  <Textures normal="EsoUI/Art/guild/guild_indexicon_recruit_up.dds" pressed="EsoUI/Art/guild/guild_indexicon_recruit_down.dds" mouseOver="EsoUI/Art/guild/guild_indexicon_recruit_over.dds" />
+                     <OnClicked>
+                         MailBuddy.settingsVars.settings.lastRecipientPage=MailBuddy.settingsVars.settings.curRecipientPage
+                         MailBuddy.settingsVars.settings.curRecipientPage="2"
+                         MailBuddy.GetPage("recipients", MailBuddy.settingsVars.settings.lastRecipientPage, true)
+                     </OnClicked>
+                </Button>
+
+                <Texture name="$(parent)ButtonGlow2" layer="1" level="1" textureFile="esoui/art/miscellaneous/icon_highlight_pulse.dds" hidden="false" verticalAlignment="CENTER">
+                    <Dimensions x ="65" y="65"/>
+                    <Anchor point="CENTER" relativeTo="MailPage2" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+                </Texture>
+
+                <Button name="MailPage3" layer="1" level="2" mouseEnabled="true">
+                  <Dimensions x="62" y="62" />
+                  <Anchor point= "BOTTOM" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="BOTTOMLEFT" offsetX="110" offsetY="10" />
+                  <Textures normal="EsoUI/Art/guild/guild_indexicon_leader_up.dds" pressed="EsoUI/Art/guild/guild_indexicon_leader_down.dds" mouseOver="EsoUI/Art/guild/guild_indexicon_leader_over.dds" />
+                     <OnClicked>
+                         MailBuddy.settingsVars.settings.lastRecipientPage=MailBuddy.settingsVars.settings.curRecipientPage
+                         MailBuddy.settingsVars.settings.curRecipientPage="3"
+                         MailBuddy.GetPage("recipients", MailBuddy.settingsVars.settings.lastRecipientPage, true)
+                     </OnClicked>
+                </Button>
+
+                <Texture name="$(parent)ButtonGlow3" layer="1" level="1" textureFile="esoui/art/miscellaneous/icon_highlight_pulse.dds" hidden="false" verticalAlignment="CENTER">
+                    <Dimensions x ="65" y="65"/>
+                    <Anchor point="CENTER" relativeTo="MailPage3" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+                </Texture>
+
+                <Button name="$(parent)CloseButton" mouseEnabled="true">
+                  <Dimensions x="32" y="32" />
+                     <Anchor point= "BOTTOMRIGHT" relativeTo="MailBuddy_MailSendRecipientsBox" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+                     <Textures normal="EsoUI/Art/buttons/cancel_up.dds" pressed="EsoUI/Art/buttons/cancel_down.dds" mouseOver="EsoUI/Art/buttons/cancel_over.dds" />
+                     <OnClicked>
+                         MailBuddy.AutoCloseBox("recipients", true)
+                     </OnClicked>
+                </Button>
+
+
+            </Controls>
+         </Backdrop>
+
+        <Button name="MailBuddy_UseRecipientButton" mouseEnabled="true">
+            <Dimensions x="32" y="32" />
+            <Anchor point= "RIGHT" relativeTo="ZO_MailSendSubjectField" relativePoint="LEFT" offsetX="-5" />
+            <Textures normal="EsoUI/Art/Inventory/inventory_tabIcon_quickslot_up.dds" pressed="EsoUI/Art/Inventory/inventory_tabIcon_quickslot_down.dds" mouseOver="EsoUI/Art/Inventory/inventory_tabIcon_quickslot_over.dds" />
+            <OnInitialized>
+                self:SetParent(ZO_MailSend)
+            </OnInitialized>
+            <OnClicked>
+                ZO_MailSendSubjectField:SetText(string.format(MailBuddy.settingsVars.settings.curSubject))
+                MailBuddy.FocusNextField()
+            </OnClicked>
+        </Button>
+
+        <Button name="MailBuddy_UseSubjectButton" mouseEnabled="true">
+            <Dimensions x="32" y="32" />
+            <Anchor point= "RIGHT" relativeTo="ZO_MailSendToField" relativePoint="LEFT" offsetX="-5" />
+            <Textures normal="EsoUI/Art/Inventory/inventory_tabIcon_quickslot_up.dds" pressed="EsoUI/Art/Inventory/inventory_tabIcon_quickslot_down.dds" mouseOver="EsoUI/Art/Inventory/inventory_tabIcon_quickslot_over.dds" />
+            <OnInitialized>
+                self:SetParent(ZO_MailSend)
+            </OnInitialized>
+            <OnClicked>
+                ZO_MailSendToField:SetText(string.format(MailBuddy.settingsVars.settings.curRecipient))
+                MailBuddy.FocusNextField()
+            </OnClicked>
+        </Button>
+
+    </Controls>
+</GuiXml>

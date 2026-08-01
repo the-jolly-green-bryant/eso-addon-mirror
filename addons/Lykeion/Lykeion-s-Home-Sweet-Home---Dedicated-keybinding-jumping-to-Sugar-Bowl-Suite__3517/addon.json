@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Lykeion/Lykeion-s-Home-Sweet-Home---Dedicated-keybinding-jumping-to-Sugar-Bowl-Suite__3517",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lykeion",
+  "canonical_id": "esoui:3517",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3517",
+  "deleted": false,
+  "directories": [
+    "LykeionsHomeSweetHome"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3517/",
+  "fingerprint": "8909e57a6dfedaf32297e8dded4628a82e7a6099d7652d548809b623f04c0ea9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11961.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3517",
+  "source_url": "https://www.esoui.com/downloads/info3517-LykeionsHomeSweetHome-DedicatedkeybindingjumpingtoSugarBowlSuite.html",
+  "stats": {
+    "downloads": 2324,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "Lykeion's Home Sweet Home - Dedicated keybinding jumping to Sugar Bowl Suite",
+  "updated_at": 1765975332000,
+  "version": "1.0.2"
+}

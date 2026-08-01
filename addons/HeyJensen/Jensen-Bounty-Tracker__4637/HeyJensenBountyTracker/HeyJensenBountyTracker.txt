@@ -1,0 +1,8 @@
+## Title: Hey Jensen Bounty Tracker
+## APIVersion: 101047
+## Version: 1.0.2
+## Author: Hey Jensen
+## AddOnVersion: 102
+## SavedVariables: HeyJensenBountyTrackerSavedVariables
+
+HeyJensenBountyTracker.lua

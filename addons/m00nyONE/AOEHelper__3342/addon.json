@@ -1,0 +1,66 @@
+{
+  "archive_path": "addons/m00nyONE/AOEHelper__3342",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "m00nyONE",
+  "canonical_id": "esoui:3342",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3342",
+  "deleted": false,
+  "directories": [
+    "AOEHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3342/",
+  "fingerprint": "d6dd3c3d3b5047686936406da4274e6d4f883b7ff6488a61a4e89a2e59416532",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11356.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11357.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3342",
+  "source_url": "https://www.esoui.com/downloads/info3342-AOEHelper.html",
+  "stats": {
+    "downloads": 7892,
+    "favorites": 9,
+    "monthly_downloads": 45
+  },
+  "title": "AOEHelper",
+  "updated_at": 1671472389000,
+  "version": "1.2.2"
+}

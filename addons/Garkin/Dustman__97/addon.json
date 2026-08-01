@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Garkin/Dustman__97",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Garkin",
+  "canonical_id": "esoui:97",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:97",
+  "deleted": false,
+  "directories": [
+    "Dustman"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl97/",
+  "fingerprint": "7186f4d1fbd9a4c5a9a85dab9adc7cf93c6dad549128476da0c01aab592b69c5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8811.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8812.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8815.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8365.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8363.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8816.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8367.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8368.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8369.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "97",
+  "source_url": "https://www.esoui.com/downloads/info97-Dustman.html",
+  "stats": {
+    "downloads": 1181190,
+    "favorites": 1212,
+    "monthly_downloads": 1503
+  },
+  "title": "Dustman",
+  "updated_at": 1692655586000,
+  "version": "10.9.1"
+}

@@ -1,0 +1,16 @@
+<GuiXml>
+	<Controls>
+	
+		<TopLevelControl name="CD">
+			<Dimensions x="152" y="152"/>
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="10"/>
+			<Controls>
+				<Label name="$(parent)Label1" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|54|soft-shadow-thick" inheritAlpha="true" color="ff2b59"
+					wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="" alpha="1">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

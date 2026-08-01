@@ -1,0 +1,39 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <Label name="IMP_CART_DiscoveredPOIs_ListCell" font="ZoFontWinH4" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="-" virtual="true" />
+
+        <Label name="IMP_CART_DiscoveredPOIs_Column1" horizontalAlignment="RIGHT" virtual="true"><Dimensions x="80" y="32" /></Label>
+        <Label name="IMP_CART_DiscoveredPOIs_Column2" horizontalAlignment="LEFT" virtual="true"><Dimensions y="32" /></Label>
+        <Label name="IMP_CART_DiscoveredPOIs_Column3" horizontalAlignment="CENTER" virtual="true"><Dimensions x="100" y="32" /></Label>
+        <!-- <Label name="IMP_CART_DiscoveredPOIs_Column4" horizontalAlignment="RIGHT" virtual="true"><Dimensions x="40" y="32" /></Label> -->
+
+		<!-- <Label name="IMP_STATS_Tribute_Leaderboard_Column2" virtual="true"><Dimensions x="220" y="32" /></Label>
+	    <Label name="IMP_STATS_Tribute_Leaderboard_Column3" horizontalAlignment="CENTER" virtual="true"><Dimensions x="70" y="32" /></Label>
+	    <Label name="IMP_STATS_Tribute_Leaderboard_Column4" horizontalAlignment="RIGHT" virtual="true"><Dimensions x="40" y="32" /></Label> -->
+
+        <Label name="IMP_CART_DiscoveredPOIRowTemplate" inherits="ZO_SelectableLabel" virtual="true">
+			<Dimensions y="32" />
+			<Controls>
+				<!-- <Texture name="$(parent)Highlight" textureFile="EsoUI/Art/Miscellaneous/listItem_selectedHighlight.dds" hidden="true" color="00FF00">
+					<Dimensions x="425" y="52" />
+					<Anchor point="TOPLEFT" />
+				</Texture> -->
+				<Label name="$(parent)Index" inherits="IMP_CART_DiscoveredPOIs_ListCell IMP_CART_DiscoveredPOIs_Column1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+				</Label>
+				
+                <Label name="$(parent)Discovered" inherits="IMP_CART_DiscoveredPOIs_ListCell IMP_CART_DiscoveredPOIs_Column3" text="-/-">
+					<Anchor point="RIGHT" relativeTo="$(parent)" />
+					<!-- <Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FF0000" centerColor="00FF00" />
+					</Controls> -->
+				</Label>
+
+				<Label name="$(parent)Name" inherits="IMP_CART_DiscoveredPOIs_ListCell IMP_CART_DiscoveredPOIs_Column2">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Index" relativePoint="TOPRIGHT" offsetX="12" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Discovered" relativePoint="BOTTOMLEFT"/>
+				</Label>
+			</Controls>
+		</Label>
+    </Controls>
+</GuiXml>

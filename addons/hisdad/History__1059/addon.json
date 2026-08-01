@@ -1,0 +1,95 @@
+{
+  "archive_path": "addons/hisdad/History__1059",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "hisdad",
+  "canonical_id": "esoui:1059",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1059",
+  "deleted": false,
+  "directories": [
+    "History"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1059/",
+  "fingerprint": "5c4b36ffbe1331352c6189aad2a7f5127dc29709bd7b1d3e8469bbca3a5aaa74",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14500.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14501.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14498.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14502.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14499.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14503.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14504.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1059",
+  "source_url": "https://www.esoui.com/downloads/info1059-History.html",
+  "stats": {
+    "downloads": 32150,
+    "favorites": 33,
+    "monthly_downloads": 22
+  },
+  "title": "History",
+  "updated_at": 1777850041000,
+  "version": "97"
+}

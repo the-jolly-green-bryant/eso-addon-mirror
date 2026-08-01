@@ -1,0 +1,16 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: |cFF5FF5Kyoma's|r Titleizer
+## Description: This addon sorts the titles in your stat screen by name and also moves all pvp rank titles to a seperate submenu. Should work with all languages.
+## Version: 2.0
+## Author: |cFF5FF5Kyoma|r
+## APIVersion: 100026
+## DependsOn: LibStub LibCustomMenu
+
+libs/LibStub/LibStub.lua
+libs/LibScrollableMenu/LibScrollableMenu.lua
+
+code.lua

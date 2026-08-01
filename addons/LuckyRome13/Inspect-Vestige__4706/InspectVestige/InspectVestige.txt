@@ -1,0 +1,40 @@
+## Title: Inspect Vestige |cAAAAAAby LuckyRome13|r
+## Author: LuckyRome13
+## Version: 1.4.0
+## AddOnVersion: 140
+; -- APIVersion is set to the live value. Re-check it after each ESO update:
+; --   /script d(GetAPIVersion())
+; -- LibGroupBroadcast requires the Update 45 API (101045) or newer.
+## APIVersion: 101049
+; -- Two stores: settings are account-wide (carry across servers); the received-build CACHE is
+; -- per-server (an @account you meet on NA is not the one on EU) -- see IV.InitCache in Main.lua.
+## SavedVariables: InspectVestige_SavedVariables InspectVestige_Cache
+; -- Required: LibGroupBroadcast IS the peer-inspect feature (without it only self-inspect and
+; -- public cards work), and LibAddonMenu-2.0 is the only way to reach the privacy toggles --
+; -- without it you'd share your loadout with no way to opt out. LibCustomMenu only adds the
+; -- right-click list entries; the keybind and /iv @Account cover the same ground.
+; -- Versions are AddOnVersion, not the display version:
+; --   LibGroupBroadcast >= 95 (v2.0.0) -- we code against the 2.x API (RegisterHandler ->
+; --     DeclareProtocol -> typed fields (VariantField/TableField/...) -> Finalize/Send). On a 1.x
+; --     the binding just fails into our pcall and peer sync silently disables itself, so pin it
+; --     and fail loudly instead.
+; --   LibAddonMenu-2.0 >= 38 -- our usage is basic and long-stable; 38 is the floor LGB itself
+; --     already requires, so this adds no burden (verified against r43).
+; -- LibCustomMenu needs no floor: the list-menu API we use is stable (verified against 7.3.0).
+## DependsOn: LibGroupBroadcast>=95 LibAddonMenu-2.0>=38
+## OptionalDependsOn: LibCustomMenu
+## Description: Inspect another player's loadout (gear, skills, attributes, mundus, food). Full data is shared consensually between group members who also run the addon; everyone else shows a basic public card. Self-inspect always works.
+
+lang/en.lua
+
+src/Loadout.lua
+src/PublicInfo.lua
+src/Serialize.lua
+src/Comms.lua
+
+ui/Window.xml
+src/Window.lua
+
+src/Menus.lua
+src/Settings.lua
+src/Main.lua

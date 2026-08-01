@@ -1,0 +1,11 @@
+<GuiXml>
+  <Controls>
+    <Control name="ZO_PlayerAttributeHealth" clampedToScreen="true" mouseEnabled="true" movable="true" override="true">"
+      <Anchor offsetX="0" offsetY="-89" relativePoint="ACTION_BAR" relativeTo="GuiRoot" point="BOTTOM"/>
+
+      <OnMoveStop>
+	       PyramidAttributes.SaveLoc()
+      </OnMoveStop>
+    </Control>
+  </Controls>
+</GuiXml>

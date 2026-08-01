@@ -1,0 +1,18 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls� and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: |c990000LuiginoMP|r's Daily Quest Tool
+## Version: 1.2
+## Author: |c990000LuiginoMP|r
+## APIVersion: 101034
+## SavedVariables: LMP_DQT_SavedVariables
+## DependsOn: LuiginoMPsDialogueSkipper
+
+## Description: Dependency on LuiginoMPsDialogueSkipper. All-in-one tool for handling daily quests: Skips dialogue for known Daily Quest Givers and automatically accepts quests. Tracks known quests to show whether they've been completed for the day - resets daily. Auto-learns quest givers and quests as the addon sees them for the first time (Future-proof; No need to wait for library updates when a new expansion comes out - just play to add them). Upcoming functionality: Announcing dailies in chat, auto-group invite, and auto-sharing. Type /lmpdailyquests in chat to find all commands.
+
+00_LuiginoMPsDailyQuestTool.lua
+01_DailyQuestGiverManager.lua
+01_DailyQuestManager.lua
+02_DailyResetCalculator.lua

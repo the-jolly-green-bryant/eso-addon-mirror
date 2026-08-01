@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/haze068/FancyTitles__4355",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "haze068",
+  "canonical_id": "esoui:4355",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4355",
+  "deleted": false,
+  "directories": [
+    "FancyTitles"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4355/",
+  "fingerprint": "59c6d87c24d84bf834b1a92b4cee95758a0d54b56b8d37eb50c0a569130004f1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15374.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15086.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15087.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15088.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15375.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4355",
+  "source_url": "https://www.esoui.com/downloads/info4355-FancyTitles.html",
+  "stats": {
+    "downloads": 2068,
+    "favorites": 4,
+    "monthly_downloads": 59
+  },
+  "title": "FancyTitles",
+  "updated_at": 1781449243000,
+  "version": "5.5"
+}

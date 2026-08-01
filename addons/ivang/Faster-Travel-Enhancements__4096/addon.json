@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/ivang/Faster-Travel-Enhancements__4096",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ivang",
+  "canonical_id": "esoui:4096",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4096",
+  "deleted": false,
+  "directories": [
+    "FasterTravelEnhancements"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4096/",
+  "fingerprint": "4fb990cbf3e008dd3fcf970e253544f101a6ac76c199c66f94f7a915745240ae",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13967.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13968.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4096",
+  "source_url": "https://www.esoui.com/downloads/info4096-FasterTravelEnhancements.html",
+  "stats": {
+    "downloads": 1143,
+    "favorites": 4,
+    "monthly_downloads": 34
+  },
+  "title": "Faster Travel Enhancements",
+  "updated_at": 1745531676000,
+  "version": "1.0.0"
+}

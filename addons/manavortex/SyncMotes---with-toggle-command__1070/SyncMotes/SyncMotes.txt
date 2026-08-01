@@ -1,0 +1,12 @@
+## Title: SyncMotes
+## APIVersion: 100011
+## SavedVariables: ESO_SM_EmoteCheckData
+## Version: 1.1.4
+
+SyncMotes.lua
+SyncMotesMenu.lua
+SyncMotesPhraseMenu.lua
+SyncMotesEmoteMenu.lua
+SyncMotes.xml
+Bindings.xml
+SyncMotesEmoteMenu.xml

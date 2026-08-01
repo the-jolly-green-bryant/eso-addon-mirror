@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+
+    <Category name="|c3CB371Offered Items|r">
+      <Action name="OI_TOGGLE">
+        <Down>OfferedItems:ShowListings()</Down>
+      </Action>
+    </Category>
+
+  </Layer>
+</Bindings>
+

@@ -1,0 +1,16 @@
+## Title: Guild Bank Ledger
+## Description: Guild Bank Ledger version 3.55
+## Author: Myristican, Original by ziggr
+## APIVersion: 100034
+## SavedVariables: GuildBankLedgerVars
+## DependsOn: LibAddonMenu-2.0>=31 LibHistoire>=392 GBLData
+## OptionalDependsOn: LibPrice MasterMerchant
+
+GuildBankLedger.lua
+
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

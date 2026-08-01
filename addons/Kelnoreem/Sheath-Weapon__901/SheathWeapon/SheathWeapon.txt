@@ -1,0 +1,13 @@
+## Title: Sheath Weapon
+## Description: When out of combat, toggles the weapon to be sheathed. 
+## APIVersion: 101049 101050
+## Author: GlassHalfFull
+## Version: 3.23
+## AddOnVersion: 10023
+## DependsOn: LibAddonMenu-2.0>=41
+## SavedVariables: SheathWeaponSavedVars
+
+; lua files declared in this order so functions are declared prior to use
+SheathWeaponMenu.lua
+bindings.xml
+SheathWeapon.lua

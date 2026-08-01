@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Irniben/Caro-s-Collection-Mail-Group__3234",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Irniben",
+  "canonical_id": "esoui:3234",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3234",
+  "deleted": false,
+  "directories": [
+    "CarosCollectionMailGroup"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3234/",
+  "fingerprint": "ddb35f922e71085e8357c82df9087b28cfc12eca906aa348823fbb55b8759e3e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11017.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3234",
+  "source_url": "https://www.esoui.com/downloads/info3234-CarosCollectionMailGroup.html",
+  "stats": {
+    "downloads": 4790,
+    "favorites": 2,
+    "monthly_downloads": 16
+  },
+  "title": "Caro's Collection Mail Group",
+  "updated_at": 1675096878000,
+  "version": "1.0.0"
+}

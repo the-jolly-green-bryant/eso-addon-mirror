@@ -1,0 +1,17 @@
+## Title: Kaleido Container Insight
+## APIVersion: 101048 101049
+## Description: Display items from opened containers in tooltip.
+## Author: grin3671
+## Version: 1.0.4
+## AddOnVersion: 5
+## SavedVariables: KaleidoContainerInsightSavedVariables
+
+KaleidoContainerInsight.lua
+
+# This Add-On is not created by, affiliated with or sponsored by ZeniMax
+# Media Inc. or its affiliates. The Elder Scrolls and related logos are
+# registered trademarks or trademarks of ZeniMax Media Inc. in the United
+# States and/or other countries. All rights reserved.
+#
+# You can read the full terms at:
+# https://account.elderscrollsonline.com/add-on-terms

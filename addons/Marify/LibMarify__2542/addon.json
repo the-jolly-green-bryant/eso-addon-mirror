@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Marify/LibMarify__2542",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marify",
+  "canonical_id": "esoui:2542",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:2542",
+  "deleted": false,
+  "directories": [
+    "LibMarify"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2542/",
+  "fingerprint": "fcb586ce74f49248a68dea7f5572e164cdadd9247977b1e356b02f51c85a2176",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2542",
+  "source_url": "https://www.esoui.com/downloads/info2542-LibMarify.html",
+  "stats": {
+    "downloads": 1383015,
+    "favorites": 322,
+    "monthly_downloads": 3322
+  },
+  "title": "LibMarify",
+  "updated_at": 1671928932000,
+  "version": "1.2.17"
+}

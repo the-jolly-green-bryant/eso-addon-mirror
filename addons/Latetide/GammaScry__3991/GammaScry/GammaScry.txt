@@ -1,0 +1,15 @@
+## Title: |cAA33FFGammaScry|r v1.0.2
+## APIVersion: 101044
+## Version: 1.0.2
+## SavedVariables: GammaScry_Account GammaScry_Character
+## Author: Latetide
+## Description: Different approach for grouping and sorting leads
+## IsLibrary: false
+
+## UI
+dialogs/GSYHangingWindow.xml
+dialogs/GSYHangingWindow.lua
+
+## Main
+GammaScry.lua
+

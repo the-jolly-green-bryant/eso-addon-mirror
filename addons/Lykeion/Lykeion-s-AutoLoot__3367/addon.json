@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Lykeion/Lykeion-s-AutoLoot__3367",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lykeion",
+  "canonical_id": "esoui:3367",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3367",
+  "deleted": false,
+  "directories": [
+    "MuchSmarterAutoLoot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3367/",
+  "fingerprint": "16210ae3c4a681ec95c043fce500dc64f195225d82b307f77cb36b8230d423ba",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16269.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16266.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13856.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16267.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16268.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16098.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16368.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3367",
+  "source_url": "https://www.esoui.com/downloads/info3367-LykeionsAutoLoot.html",
+  "stats": {
+    "downloads": 183751,
+    "favorites": 97,
+    "monthly_downloads": 1851
+  },
+  "title": "Lykeion's AutoLoot+",
+  "updated_at": 1784537628000,
+  "version": "8.1.4"
+}

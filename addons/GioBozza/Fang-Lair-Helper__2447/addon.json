@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/GioBozza/Fang-Lair-Helper__2447",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "GioBozza",
+  "canonical_id": "esoui:2447",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    }
+  ],
+  "content_id": "esoui:2447",
+  "deleted": false,
+  "directories": [
+    "FangLairHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2447/",
+  "fingerprint": "72d63d1b6b240804e6426d9ce176843d42736335322fb836c29c040e1e7e2eca",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2447",
+  "source_url": "https://www.esoui.com/downloads/info2447-FangLairHelper.html",
+  "stats": {
+    "downloads": 9754,
+    "favorites": 1,
+    "monthly_downloads": 81
+  },
+  "title": "Fang Lair Helper",
+  "updated_at": 1566480576000,
+  "version": "1.0.1"
+}

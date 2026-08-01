@@ -1,0 +1,25 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SI_BINDING_NAME_FLAMECHASERS_CATEGORY">
+            <Action name="FLAMECHASERS_TRAVEL_TOGGLE">
+                <Down>FlamechasersTravelSlots.Toggle()</Down>
+            </Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_1"><Down>FlamechasersTravelSlots.TravelFromKeybind(1)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_2"><Down>FlamechasersTravelSlots.TravelFromKeybind(2)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_3"><Down>FlamechasersTravelSlots.TravelFromKeybind(3)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_4"><Down>FlamechasersTravelSlots.TravelFromKeybind(4)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_5"><Down>FlamechasersTravelSlots.TravelFromKeybind(5)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_6"><Down>FlamechasersTravelSlots.TravelFromKeybind(6)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_7"><Down>FlamechasersTravelSlots.TravelFromKeybind(7)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_8"><Down>FlamechasersTravelSlots.TravelFromKeybind(8)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_9"><Down>FlamechasersTravelSlots.TravelFromKeybind(9)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_10"><Down>FlamechasersTravelSlots.TravelFromKeybind(10)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_11"><Down>FlamechasersTravelSlots.TravelFromKeybind(11)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_12"><Down>FlamechasersTravelSlots.TravelFromKeybind(12)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_13"><Down>FlamechasersTravelSlots.TravelFromKeybind(13)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_14"><Down>FlamechasersTravelSlots.TravelFromKeybind(14)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_15"><Down>FlamechasersTravelSlots.TravelFromKeybind(15)</Down></Action>
+            <Action name="FLAMECHASERS_TRAVEL_SLOT_16"><Down>FlamechasersTravelSlots.TravelFromKeybind(16)</Down></Action>
+        </Category>
+    </Layer>
+</Bindings>

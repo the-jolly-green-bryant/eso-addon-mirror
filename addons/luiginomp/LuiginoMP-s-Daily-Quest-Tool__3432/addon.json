@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/luiginomp/LuiginoMP-s-Daily-Quest-Tool__3432",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "luiginomp",
+  "canonical_id": "esoui:3432",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3432",
+  "deleted": false,
+  "directories": [
+    "LuiginoMPsDailyQuestTool"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3432/",
+  "fingerprint": "fd1ef47749bea1d446ea4937b51246024543bff033c4c44cbd9dbac6346b6889",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3432",
+  "source_url": "https://www.esoui.com/downloads/info3432-LuiginoMPsDailyQuestTool.html",
+  "stats": {
+    "downloads": 3932,
+    "favorites": 0,
+    "monthly_downloads": 20
+  },
+  "title": "LuiginoMP's Daily Quest Tool",
+  "updated_at": 1659719001000,
+  "version": "1.2"
+}

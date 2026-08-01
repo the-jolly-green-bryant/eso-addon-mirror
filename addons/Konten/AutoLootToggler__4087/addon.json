@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Konten/AutoLootToggler__4087",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Konten",
+  "canonical_id": "esoui:4087",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4087",
+  "deleted": false,
+  "directories": [
+    "AutoLootToggler"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4087/",
+  "fingerprint": "71a56695cd1e63a439dd970326909ea9ee7071c35b140242c0910f5314790853",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13940.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13941.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4087",
+  "source_url": "https://www.esoui.com/downloads/info4087-AutoLootToggler.html",
+  "stats": {
+    "downloads": 595,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "AutoLootToggler",
+  "updated_at": 1744650836000,
+  "version": "1.0"
+}

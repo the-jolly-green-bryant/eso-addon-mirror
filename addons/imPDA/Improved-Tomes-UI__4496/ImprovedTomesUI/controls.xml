@@ -1,0 +1,298 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">   
+    <Animations>
+        <AnimationTimeline name="IMP_HighlightTimeline">
+            <Animations>
+                <TranslateAnimation duration="185">
+                    <EasingFunction>
+                        return ZO_EaseInOutCubic(progress)
+                    </EasingFunction>
+                </TranslateAnimation>
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+    
+    <Controls>
+        <Control name="IMP_DynamicHorizontalDivider" virtual="true">
+            <Dimensions y="6" />
+            <Controls>
+                <Texture name="$(parent)Left" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider_dynamic.dds" layer="CONTROLS" pixelRoundingEnabled="false">
+                    <Anchor point="LEFT" />
+                    <Dimensions x="56" y="6" />
+                    <TextureCoords left="0.015625" right="0.4375" top="0" bottom="1" />
+                </Texture>
+                <Texture name="$(parent)Right" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider_dynamic.dds" layer="CONTROLS" pixelRoundingEnabled="false">
+                    <Anchor point="RIGHT" />
+                    <Dimensions x="56" y="6" />
+                    <TextureCoords left="0.5625" right="0.9921875" top="0" bottom="1" />
+                </Texture>
+                <Texture name="$(parent)Center" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider_dynamic.dds" layer="CONTROLS" pixelRoundingEnabled="false">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Left" relativePoint="TOPRIGHT" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Right" relativePoint="BOTTOMLEFT" />
+                    <TextureCoords left="0.4375" right="0.5625" top="0" bottom="1" />
+                </Texture>
+            </Controls>
+        </Control>
+
+        <Control name="IMP_IMP_ImprovedTomesUI_RewardTemplate" virtual="true" mouseEnabled="true" inheritAlpha="false" resizeToFitDescendents="true">
+            <!-- <Dimensions x="64" y="64" /> -->
+            <Controls>
+                <Texture name="$(parent)Icon" layer="CONTROLS">
+                    <Anchor point="TOP" />
+                    <Dimensions x="64" y="64" />
+                </Texture>
+                <Label name="$(parent)Quantity" font="ZoFontGameLargeBold" layer="CONTROLS" level="1">
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Icon" offsetX="-8" />
+                </Label>
+                <Label name="$(parent)Cost" font="ZoFontGameLargeBold">
+                    <Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" />
+                </Label>
+                <!-- <Texture name="$(parent)Lock" layer="CONTROLS" level="2" textureFile="EsoUI/Art/TamrielTomes/premium_tome_slot_lock.dds" hidden="true">
+                    <Anchor point="CENTER" />
+                    <Dimensions x="48" y="48" />
+                </Texture> -->
+                <!-- <Texture name="$(parent)Lock" layer="CONTROLS" level="1" textureFile="EsoUI/Art/TamrielTomes/premium_tome_slot_lock.dds" hidden="true">
+                    <Anchor point="TOPLEFT" offsetX="-4" offsetY="-4" />
+                    <Dimensions x="48" y="48" />
+                </Texture> -->
+                <Control name="$(parent)Selection" hidden="false" excludeFromResizeToFitExtents="true">
+                    <Anchor point="CENTER" offsetY="-2" />
+                    <Dimensions x="80" y="100" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" edgeColor="00EE00">
+                            <AnchorFill/>
+                            <Edge file="esoui/art/miscellaneous/interactkeyframe_edge.dds" edgeFileWidth="64" edgeFileHeight="8" />
+                            <Center file="esoui/art/miscellaneous/interactkeyframe_center.dds" />
+                            <Insets left="8" top="8" right="-8" bottom="-8" />
+                        </Backdrop>
+                    </Controls>
+                </Control>
+            </Controls>
+            <OnMouseEnter>
+                IMP_ImprovedTomesUI_Reward_OnMouseEnter(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                IMP_ImprovedTomesUI_Reward_OnMouseExit(self)
+            </OnMouseExit>
+            <OnMouseDoubleClick>
+                IMP_ImprovedTomesUI_Reward_OnMouseDoubleClick(self)
+            </OnMouseDoubleClick>
+            <OnMouseDown>
+                <!-- local self, button, ctrl, alt, shift, command = ... -->
+                if button == MOUSE_BUTTON_INDEX_LEFT then
+                    IMP_ImprovedTomesUI_Reward_OnMouseClick(self)
+                end
+            </OnMouseDown>
+        </Control>
+        
+        <Control name="IMP_IMP_ImprovedTomesUI_RewardsTemplate" virtual="true" resizeToFitDescendents="true">
+            <!-- <Dimensions x="80" y="700" /> -->
+            <Controls>
+                <Control name="$(parent)Container">
+                    <AnchorFill />
+                    <Controls>
+                        <Texture name="$(parent)Background" color="EEEEEE" alpha="0.5" excludeFromResizeToFitExtents="true">
+                            <Anchor point="TOPLEFT" offsetX="-8" offsetY="-8" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="8" offsetY="8" />
+                        </Texture>
+                        <Control name="$(parent)Component1" resizeToFitDescendents="true">
+                            <Anchor point="TOP" />
+                            <Controls>
+                                <Control name="$(parent)Reward1" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="TOP" offsetY="8" /></Control>
+                                <Control name="$(parent)Reward2" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="TOP" relativeTo="$(parent)Reward1" relativePoint="BOTTOM" offsetY="12" /></Control>
+                                <Control name="$(parent)Reward3" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="TOP" relativeTo="$(parent)Reward2" relativePoint="BOTTOM" offsetY="12" /></Control>
+                                <Control name="$(parent)Reward4" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="TOP" relativeTo="$(parent)Reward3" relativePoint="BOTTOM" offsetY="12" /></Control>
+                                <Control name="$(parent)Reward5" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="TOP" relativeTo="$(parent)Reward4" relativePoint="BOTTOM" offsetY="12" /></Control>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)Component0" resizeToFitDescendents="true">
+                            <Anchor point="TOP" relativeTo="$(parent)Component1" relativePoint="BOTTOM" offsetY="36" />
+                            <Controls>
+                                <Control name="$(parent)Reward1" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="TOP" offsetY="8" /></Control>
+                                <Control name="$(parent)Reward2" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="TOP" relativeTo="$(parent)Reward1" relativePoint="BOTTOM" offsetY="12" /></Control>
+                                <Control name="$(parent)Reward3" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="TOP" relativeTo="$(parent)Reward2" relativePoint="BOTTOM" offsetY="12" /></Control>
+                                <Control name="$(parent)Reward4" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="TOP" relativeTo="$(parent)Reward3" relativePoint="BOTTOM" offsetY="12" /></Control>
+                                <Control name="$(parent)Reward5" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="TOP" relativeTo="$(parent)Reward4" relativePoint="BOTTOM" offsetY="12" /></Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+
+        <Control name="IMP_IMP_ImprovedTomesUI_RewardsTemplateHorizontal" virtual="true" resizeToFitDescendents="true" inheritAlpha="false">
+            <Controls>
+                <Control name="$(parent)Container">
+                    <AnchorFill />
+                    <Controls>
+                        <!-- <Texture name="$(parent)Background" color="0000EE" alpha="1" excludeFromResizeToFitExtents="true">
+                            <AnchorFill />
+                        </Texture> -->
+                        <Control name="$(parent)Divider1" inherits="IMP_DynamicHorizontalDivider" excludeFromResizeToFitExtents="true">
+                            <Dimensions x="480" />
+                            <Anchor point="TOPLEFT" offsetX="-16" offsetY="-20" />
+                        </Control>
+                        <Control name="$(parent)Divider2" inherits="IMP_DynamicHorizontalDivider" excludeFromResizeToFitExtents="true">
+                            <Dimensions x="400" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Divider1" relativePoint="RIGHT" offsetX="28" />
+                        </Control>
+                        <Label name="$(parent)TierName" horizontalAlignment="CENTER" font="ZoFontGamepadBold42">
+                            <Anchor point="LEFT" offsetX="3" />
+                            <Dimensions x="48" />
+                        </Label>
+                        <Label name="$(parent)Cost" horizontalAlignment="CENTER" font="ZoFontGameLargeBold">
+                            <Anchor point="TOP" relativeTo="$(parent)TierName" relativePoint="BOTTOM" offsetX="3" />
+                        </Label>
+                        <Control name="$(parent)Component0" resizeToFitDescendents="true">
+                            <Anchor point="LEFT" relativeTo="$(parent)TierName" relativePoint="RIGHT" offsetX="32" offsetY="8" />
+                            <Controls>
+                                <Control name="$(parent)Reward1" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="LEFT" /></Control>
+                                <Control name="$(parent)Reward2" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="LEFT" relativeTo="$(parent)Reward1" relativePoint="RIGHT" offsetX="16" /></Control>
+                                <Control name="$(parent)Reward3" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="LEFT" relativeTo="$(parent)Reward2" relativePoint="RIGHT" offsetX="16" /></Control>
+                                <Control name="$(parent)Reward4" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="LEFT" relativeTo="$(parent)Reward3" relativePoint="RIGHT" offsetX="16" /></Control>
+                                <Control name="$(parent)Reward5" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="LEFT" relativeTo="$(parent)Reward4" relativePoint="RIGHT" offsetX="16" /></Control>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)Component1" resizeToFitDescendents="true">
+                            <Anchor point="LEFT" relativeTo="$(parent)Component0" relativePoint="RIGHT" offsetX="32" />
+                            <Controls>
+                                <Control name="$(parent)Reward1" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="LEFT" /></Control>
+                                <Control name="$(parent)Reward2" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="LEFT" relativeTo="$(parent)Reward1" relativePoint="RIGHT" offsetX="16" /></Control>
+                                <Control name="$(parent)Reward3" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="LEFT" relativeTo="$(parent)Reward2" relativePoint="RIGHT" offsetX="16" /></Control>
+                                <Control name="$(parent)Reward4" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="LEFT" relativeTo="$(parent)Reward3" relativePoint="RIGHT" offsetX="16" /></Control>
+                                <Control name="$(parent)Reward5" inherits="IMP_IMP_ImprovedTomesUI_RewardTemplate"><Anchor point="LEFT" relativeTo="$(parent)Reward4" relativePoint="RIGHT" offsetX="16" /></Control>
+                                <!-- <Texture name="$(parent)PremiumBackground" color="D4A017" alpha="0.4" layer="BACKGROUND" blendMode="ADD" excludeFromResizeToFitExtents="true">
+                                    <Anchor point="TOPLEFT" offsetX="-8" offsetY="-8" />
+                                    <Anchor point="BOTTOMRIGHT" offsetX="8" offsetY="6" />
+                                </Texture> -->
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="IMP_ImprovedTomesUI_TLC" inherits="ZO_RightPanelFootPrint" hidden="true">
+            <Anchor point="RIGHT" offsetX="-8" />
+            <!-- <Dimensions x="1600" y="800" /> -->
+            <Controls>
+                <!-- <Backdrop name="$(parent)Background" inherits="ZO_DefaultBackdrop" excludeFromResizeToFitExtents="true" alpha="1" /> -->
+                <!-- <Texture name="$(parent)Background" textureFile="/esoui/art/store/seasonzero_tamrieltomes_page0_overview_315x210.dds" alpha="0.15"> -->
+                <Texture name="$(parent)Background" textureFile="/esoui/art/store/season1_tamrieltomes_page0_overview_315x210.dds" alpha="0.15">
+                    <Anchor point="TOPLEFT" offsetX="-25" offsetY="32" />
+                    <Dimensions x="1103" y="735" />
+                    <FadeGradient x1="0" y1="1" size1="0" x2="0" y2="-1" size2="50" />
+                    <!-- <TextureCoords left="0" right="1" top="0" bottom="0.9" /> -->
+                </Texture>
+                <Control name="$(parent)Container">
+                    <Anchor point="TOPLEFT" offsetY="36" />
+                    <Anchor point="BOTTOMRIGHT" />
+
+                    <Controls>
+                        <Label name="$(parent)Currency" font="ZoFontGamepadBold34" excludeFromResizeToFitExtents="true"> <!-- ZoFontGameLargeBold -->
+                            <Anchor point="TOPLEFT" offsetX="12" offsetY="12" />
+                            <Controls>
+                                <Texture name="$(parent)Icon" textureFile="/esoui/art/currency/u49_tt_tomepoints_64.dds">
+                                    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" offsetX="2" offsetY="-5" />
+                                    <Dimensions x="26" y="26" />
+                                </Texture>
+                            </Controls>
+                        </Label>
+                        
+                        <Control name="$(parent)ScrollableList" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" offsetY="72" />
+                            <Anchor point="BOTTOMRIGHT" />
+                            <Controls>
+                                <!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="0000FF" centerColor="00FF00" /> -->
+                                <!-- <Label name="$(parent)StandardLabel" font="ZoFontGamepadBold42" text="Standard" color="87C1FF">
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Tier1ContainerComponent0" relativePoint="TOP" offsetY="-16" />
+                                </Label> -->
+                                <!-- <Texture name="$(parent)StandardBackground" color="87C1FF" alpha="0.1" layer="BACKGROUND" blendMode="ADD">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Tier1ContainerComponent0" offsetX="-16" offsetY="-16" />
+                                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Tier10ContainerComponent0" offsetX="16" offsetY="16" />
+                                </Texture> -->
+
+                                <!-- <Label name="$(parent)PremiumLabel" font="ZoFontGamepadBold42" text="Premium" color="D4A017">
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Tier1ContainerComponent1" relativePoint="TOP" offsetY="-16" />
+                                </Label> -->
+                                <!-- <Texture name="$(parent)PremiumBackground" color="D4A017" alpha="0.2" layer="BACKGROUND" blendMode="ADD">
+                                    <Anchor point="TOPLEFT" offsetX="485" offsetY="12" />
+                                    <Anchor point="BOTTOMRIGHT" offsetX="-24" offsetY="12" />
+                                </Texture> -->
+                                <!-- <Texture name="$(parent)Lock" layer="CONTROLS" level="5" textureFile="EsoUI/Art/TamrielTomes/premium_tome_slot_lock.dds" alpha="0.7" pixelRoundingEnabled="false" hidden="true">
+                                    <Anchor point="CENTER" offsetX="230" />
+                                    <Dimensions x="480" y="512" />
+                                </Texture> -->
+                                <Control name="$(parent)PremiumHighlight">
+                                    <Anchor point="CENTER" offsetX="224" offsetY="-8" />
+                                    <Dimensions x="424" y="624" />
+                                    <Controls>
+                                        <Backdrop name="$(parent)Background" edgeColor="666666">
+                                            <AnchorFill/>
+                                            <Edge file="esoui/art/miscellaneous/interactkeyframe_edge.dds" edgeFileWidth="64" edgeFileHeight="8" />
+                                            <Center file="esoui/art/miscellaneous/interactkeyframe_center.dds" />
+                                            <Insets left="8" top="8" right="-8" bottom="-8" />
+                                        </Backdrop>
+                                        <Control name="$(parent)PremiumContainer" resizeToFitDescendents="true">
+                                            <Anchor point="CENTER" relativePoint="TOP" />
+                                            <Controls>
+                                                <Label name="$(parent)Label" font="ZoFontGamepadBold34" text="SI_TAMRIEL_TOMES_PREMIUM_REWARDS" color="D4A017">
+                                                    <Anchor point="LEFT" />
+                                                </Label>
+                                                <Texture name="$(parent)Lock" layer="CONTROLS" textureFile="EsoUI/Art/TamrielTomes/premium_tome_slot_lock.dds" hidden="true">
+                                                    <Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" />
+                                                    <Dimensions x="48" y="48" />
+                                                </Texture>
+                                            </Controls>
+                                        </Control>
+                                    </Controls>
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Highlight" hidden="true">
+                    <Anchor point="CENTER" relativeTo="$(parent)Tier1ContainerComponent1Reward1" />
+                    <Dimensions x="80" y="100" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" edgeColor="666666">
+                            <AnchorFill/>
+                            <Edge file="esoui/art/miscellaneous/interactkeyframe_edge.dds" edgeFileWidth="64" edgeFileHeight="8" />
+                            <Center file="esoui/art/miscellaneous/interactkeyframe_center.dds" />
+                            <Insets left="8" top="8" right="-8" bottom="-8" />
+                        </Backdrop>
+                    </Controls>
+                </Control>
+
+                <Button name="$(parent)ChallengesButton" inherits="ZO_DefaultTextButton" font="ZoFontWinH2" text="SI_TAMRIEL_TOMES_VIEW_CHALLENGES_LABEL">
+                    <Dimensions x="210" y="38" />
+                    <Anchor point="LEFT" relativeTo="ZO_SharedTitleLabel" relativePoint="RIGHT" offsetX="32" />
+                    <OnClicked>
+                        TIMED_ACTIVITIES_MANAGER:ShowTimedActivitiesScene()
+                    </OnClicked>
+                    <OnEffectivelyShown>
+                        local challengesButtonLabelText = GetString(SI_TAMRIEL_TOMES_VIEW_CHALLENGES_LABEL)
+                        if TIMED_ACTIVITIES_MANAGER:HasClaimableTimedActivities() or TIMED_ACTIVITIES_MANAGER:HasNewTimedActivities() then
+                            challengesButtonLabelText = string.format("%s %s", zo_iconFormat("/esoui/art/miscellaneous/new_icon.dds", 32, 32), challengesButtonLabelText)
+                        end
+                        self:SetText(challengesButtonLabelText)
+                    </OnEffectivelyShown>
+                </Button>
+
+                <Button name="$(parent)UpgradeButton" inherits="ZO_DefaultTextButton" font="ZoFontWinH2" text="SI_TAMRIEL_TOMES_UPGRADE_TOME_LABEL">
+                    <Dimensions x="150" y="38" />
+                    <Anchor point="LEFT" relativeTo="$(parent)ChallengesButton" relativePoint="RIGHT" offsetX="12" />
+                    <OnClicked>
+                        SCENE_MANAGER:Show("TamrielTomesPurchaseSceneKeyboard")
+                    </OnClicked>
+                    <!-- <OnEffectivelyShown>
+                        local challengesButtonLabelText = GetString(SI_TAMRIEL_TOMES_VIEW_CHALLENGES_LABEL)
+                        if TIMED_ACTIVITIES_MANAGER:HasClaimableTimedActivities() or TIMED_ACTIVITIES_MANAGER:HasNewTimedActivities() then
+                            challengesButtonLabelText = string.format("%s %s", zo_iconFormat("/esoui/art/miscellaneous/new_icon.dds", 32, 32), challengesButtonLabelText)
+                        end
+                        self:SetText(challengesButtonLabelText)
+                    </OnEffectivelyShown> -->
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

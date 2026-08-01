@@ -1,0 +1,10 @@
+## Title: Flamechasers Travel Slots
+## Description: Configurable fast-travel speed dial with dynamic quest routing.
+## Author: Flamechasers
+## Version: 0.7.5
+## AddOnVersion: 705
+## APIVersion: 101050
+## SavedVariables: FlamechasersTravelSlotsSavedVariables
+
+FlamechasersTravelSlots.lua
+Bindings.xml

@@ -1,0 +1,13 @@
+## APIVersion: 101031
+## Title: Tel Var Counter
+## Version: 1.1.0
+## Author: Mladen90 (@Mladen90 EU)
+## Description: Logs your tel var gain to chat and can show statistics
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: TVCounter_Settings
+
+TVCounter.lua
+TVCounter_Default.lua
+TVCounter_Globals.lua
+TVCounter_Forms.lua
+TVCounter_Menu.lua

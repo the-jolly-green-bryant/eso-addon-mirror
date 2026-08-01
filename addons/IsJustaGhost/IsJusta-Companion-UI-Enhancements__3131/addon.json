@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/IsJustaGhost/IsJusta-Companion-UI-Enhancements__3131",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IsJustaGhost",
+  "canonical_id": "esoui:3131",
+  "category_id": "21",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3131",
+  "deleted": false,
+  "directories": [
+    "IsJustaCompanionUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3131/",
+  "fingerprint": "dd194e97fbff82c2ef7ea81e4888c84ea69b6fee8271fc651650b38103efb627",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11212.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10782.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11207.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11208.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11209.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11210.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11211.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3131",
+  "source_url": "https://www.esoui.com/downloads/info3131-IsJustaCompanionUIEnhancements.html",
+  "stats": {
+    "downloads": 17641,
+    "favorites": 36,
+    "monthly_downloads": 49
+  },
+  "title": "IsJusta Companion UI Enhancements",
+  "updated_at": 1655765249000,
+  "version": "2.4.6"
+}

@@ -1,0 +1,19 @@
+## Title: Raffle |cb38600Gold|r
+## Version 18.23.1
+## Author: depeshmood
+## APIVersion: 100026, 100027
+## SavedVariables: RaffleGold_SavedVars
+## OptionalDependsOn: LibAddonMenu-2.0 LibStub
+
+Lib\LibStub\LibStub.lua
+
+Lib\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+
+Lib\LibAddonMenu-2.0\controls\panel.lua
+Lib\LibAddonMenu-2.0\controls\button.lua
+Lib\LibAddonMenu-2.0\controls\description.lua
+Lib\LibAddonMenu-2.0\controls\dropdown.lua
+Lib\LibAddonMenu-2.0\controls\editbox.lua
+Lib\LibAddonMenu-2.0\controls\header.lua
+
+RaffleGold.lua

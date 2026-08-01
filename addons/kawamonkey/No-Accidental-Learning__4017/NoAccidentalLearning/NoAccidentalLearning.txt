@@ -1,0 +1,6 @@
+## Title: No Accidental Learning
+## Author: Kawamonkey
+## Version: 1.0
+## APIVersion: 101044
+
+NoAccidentalLearning.lua

@@ -1,0 +1,473 @@
+<GuiXml>
+   <Controls>
+      <Label name="AreWeThereYetLabelTemplate" virtual="true" verticalAlignment="TOP" horizontalAlignment="LEFT">
+	     <!--
+         <Controls>
+            <Backdrop name="$(parent)Backdrop" inherits="ZO_LargeKeyBackdrop" alpha="0.5">
+               <AnchorFill />
+            </Backdrop>
+         </Controls>
+		 -->
+      </Label>
+      <Label name="AreWeThereYetResultTemplate" virtual="true" font="$(BOLD_FONT)|$(KB_24)" color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+         <Controls>
+            <Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="FFFFFF" alpha="0.25">
+               <AnchorFill />
+               <Edge edgeSize="1" />
+            </Backdrop>
+         </Controls>
+      </Label>
+      <Button name="AreWeThereYetButtonTemplate" virtual="true" font="$(BOLD_FONT)|$(KB_18)" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+         <Controls>
+            <Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="FFFFFF" alpha="0.5">
+               <AnchorFill />
+               <Edge edgeSize="1" />
+            </Backdrop>
+         </Controls>
+         <FontColors
+            normalColor="FFFFFF"
+         />
+      </Button>
+      <Button name="AreWeThereYetButtonTemplateHidden" virtual="true" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+         <Controls>
+            <Backdrop name="$(parent)Backdrop" alpha="0.0">
+               <AnchorFill />
+            </Backdrop>
+         </Controls>
+      </Button>
+      <Button name="AreWeThereYetButtonTemplateBlue" virtual="true" font="$(BOLD_FONT)|$(KB_18)" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+         <Controls>
+            <Backdrop name="$(parent)Backdrop" centerColor="87CEFA" edgeColor="87CEFA" alpha="0.5">
+               <AnchorFill />
+               <Edge edgeSize="1" />
+            </Backdrop>
+         </Controls>
+         <FontColors
+            normalColor="FFFFFF"
+         />
+      </Button>
+
+      <TopLevelControl name="AreWeThereYetWindow" hidden="true">
+         <Dimensions x="500" y="500" />
+         <Anchor point="CENTER" offsetY="-100" />
+         <Controls>
+            <Backdrop name="$(parent)Backdrop" inherits="ZO_ThinBackdrop">
+               <AnchorFill />
+            </Backdrop>
+            <Button name="$(parent)ChampionButton">
+               <Dimensions x="32" y="32"/>
+               <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="20"/>
+                <Textures
+			      normal="esoui\art\champion\champion_icon.dds"
+                  pressed="esoui\art\mainmenu\menubar_champion_down.dds"
+                  mouseOver="esoui\art\mainmenu\menubar_champion_over.dds"
+			   />
+               <OnClicked>
+                  AreWeThereYet.ToggleHistory()
+               </OnClicked>
+               <OnMouseEnter>
+                  ZO_Tooltips_ShowTextTooltip(self, LEFT, "History")
+               </OnMouseEnter>
+               <OnMouseExit>
+                  ZO_Tooltips_HideTextTooltip()
+               </OnMouseExit>
+            </Button>
+            <Label name="$(parent)Title" inherits="AreWeThereYetLabelTemplate" font="ZoFontWinH2" color="FFFFFF">
+               <Dimensions x="210" y="50"/>
+               <Anchor point="TOPLEFT" relativeTo="$(parent)ChampionButton" relativePoint="TOPRIGHT" offsetX="10"/>
+            </Label>
+            <Button name="$(parent)CraftButton">
+               <Dimensions x="32" y="32"/>
+               <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="TOPRIGHT"/>
+                <Textures
+			      normal="esoui\art\champion\champion_points_stamina_icon.dds"
+			   />
+               <OnMouseEnter>
+                  ZO_Tooltips_ShowTextTooltip(self, TOP, AreWeThereYet.ShowUnspentText(ATTRIBUTE_STAMINA, "Craft"))
+               </OnMouseEnter>
+               <OnMouseExit>
+                  ZO_Tooltips_HideTextTooltip()
+               </OnMouseExit>
+            </Button>
+            <Button name="$(parent)WarfareButton">
+               <Dimensions x="32" y="32"/>
+               <Anchor point="TOPLEFT" relativeTo="$(parent)CraftButton" relativePoint="TOPRIGHT" offsetX="4"/>
+                <Textures
+			      normal="esoui\art\champion\champion_points_magicka_icon.dds"
+			   />
+               <OnMouseEnter>
+                  ZO_Tooltips_ShowTextTooltip(self, TOP, AreWeThereYet.ShowUnspentText(ATTRIBUTE_HEALTH, "Warfare"))
+               </OnMouseEnter>
+               <OnMouseExit>
+                  ZO_Tooltips_HideTextTooltip()
+               </OnMouseExit>
+            </Button>
+            <Button name="$(parent)FitnessButton">
+               <Dimensions x="32" y="32"/>
+               <Anchor point="TOPLEFT" relativeTo="$(parent)WarfareButton" relativePoint="TOPRIGHT" offsetX="4"/>
+                <Textures
+			      normal="esoui\art\champion\champion_points_health_icon.dds"
+			   />
+               <OnMouseEnter>
+                  ZO_Tooltips_ShowTextTooltip(self, TOP, AreWeThereYet.ShowUnspentText(ATTRIBUTE_MAGICKA, "Fitness"))
+               </OnMouseEnter>
+               <OnMouseExit>
+                  ZO_Tooltips_HideTextTooltip()
+               </OnMouseExit>
+            </Button>
+
+			<Control name="$(parent)EnlightPool">
+               <Dimensions x="32" y="32"/>
+               <Anchor point="TOPLEFT" relativeTo="$(parent)FitnessButton" relativePoint="TOPRIGHT" offsetX="40"/>
+			   <Controls>
+                  <Texture name="$(parent)Texture" textureFile="esoui\art\mainmenu\menubar_champion_down.dds">
+				     <Dimensions x="32" y="32"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                  </Texture>
+                  <Button name="$(parent)Button" inherits="AreWeThereYetButtonTemplateHidden">
+				     <Dimensions x="32" y="32"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                     <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, TOP, AreWeThereYet.ShowEnlightText())
+                     </OnMouseEnter>
+                     <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                     </OnMouseExit>
+                  </Button>
+			   </Controls>
+			</Control>
+
+            <Button name="$(parent)ChampionButtonSmall">
+               <Dimensions x="32" y="32"/>
+               <Anchor point="TOPLEFT" relativeTo="$(parent)EnlightPool" relativePoint="TOPRIGHT" offsetX="5"/>
+                <Textures
+			      normal="esoui\art\mainmenu\menubar_champion_up.dds"
+                  pressed="esoui\art\mainmenu\menubar_champion_down.dds"
+                  mouseOver="esoui\art\mainmenu\menubar_champion_over.dds"
+			   />
+               <OnClicked>
+                  AreWeThereYet.ToggleCalculator()
+               </OnClicked>
+               <OnMouseEnter>
+                  ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Calculator")
+               </OnMouseEnter>
+               <OnMouseExit>
+                  ZO_Tooltips_HideTextTooltip()
+               </OnMouseExit>
+            </Button>
+            <Label name="$(parent)Labels1" inherits="AreWeThereYetLabelTemplate" font="ZoFontGame" color="EDEEB5">
+               <Dimensions x="300" y="360" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)ChampionButton" relativePoint="BOTTOMLEFT" offsetY="20"/>
+            </Label>
+            <Label name="$(parent)Values1" inherits="AreWeThereYetLabelTemplate" font="ZoFontGameBold" color="FFFFFF" horizontalAlignment="RIGHT">
+               <Dimensions x="160" y="360" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)Labels1" relativePoint="TOPRIGHT"/>
+            </Label>
+            <Label name="$(parent)Labels2" inherits="AreWeThereYetLabelTemplate" font="ZoFontGame" color="EDEEB5">
+               <Dimensions x="160" y="65" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)Labels1" relativePoint="BOTTOMLEFT"/>
+            </Label>
+            <Label name="$(parent)Values2" inherits="AreWeThereYetLabelTemplate" font="ZoFontGameBold" color="FFFFFF">
+               <Dimensions x="300" y="65" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)Labels2" relativePoint="TOPRIGHT"/>
+            </Label>
+         </Controls>
+      </TopLevelControl>
+
+      <TopLevelControl name="AreWeThereYetHistory" hidden="true">
+         <Dimensions x="400" y="835" />
+         <Anchor point="CENTER" />
+         <Controls>
+            <Backdrop name="$(parent)Backdrop" inherits="ZO_ThinBackdrop">
+               <AnchorFill />
+            </Backdrop>
+            <Button name="$(parent)ChampionButton">
+               <Dimensions x="32" y="32"/>
+               <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="20"/>
+                <Textures
+			      normal="esoui\art\champion\champion_icon.dds"
+                  pressed="esoui\art\mainmenu\menubar_champion_down.dds"
+                  mouseOver="esoui\art\mainmenu\menubar_champion_over.dds"
+			   />
+               <OnClicked>
+                  AreWeThereYet.ToggleWindow()
+               </OnClicked>
+               <OnMouseEnter>
+                  ZO_Tooltips_ShowTextTooltip(self, LEFT, "Main Window")
+               </OnMouseEnter>
+               <OnMouseExit>
+                  ZO_Tooltips_HideTextTooltip()
+               </OnMouseExit>
+            </Button>
+            <Label name="$(parent)Title" inherits="AreWeThereYetLabelTemplate" font="ZoFontWinH2" color="FFFFFF">
+               <Dimensions x="318" y="50"/>
+               <Anchor point="TOPLEFT" relativeTo="$(parent)ChampionButton" relativePoint="TOPRIGHT" offsetX="10"/>
+            </Label>
+            <Label name="$(parent)Weekday" inherits="AreWeThereYetLabelTemplate" font="ZoFontGame" color="EDEEB5">
+               <Dimensions x="120" y="760" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)ChampionButton" relativePoint="BOTTOMLEFT" offsetY="20"/>
+            </Label>
+            <Label name="$(parent)Month" inherits="AreWeThereYetLabelTemplate" font="ZoFontGame" color="EDEEB5">
+               <Dimensions x="100" y="760" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)Weekday" relativePoint="TOPRIGHT"/>
+            </Label>
+            <Label name="$(parent)Day" inherits="AreWeThereYetLabelTemplate" font="ZoFontGame" color="EDEEB5" horizontalAlignment="RIGHT">
+               <Dimensions x="30" y="760" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)Month" relativePoint="TOPRIGHT"/>
+            </Label>
+            <Label name="$(parent)CP" inherits="AreWeThereYetLabelTemplate" font="ZoFontGameBold" color="FFFFFF" horizontalAlignment="RIGHT">
+               <Dimensions x="110" y="760" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)Day" relativePoint="TOPRIGHT"/>
+            </Label>
+         </Controls>
+      </TopLevelControl>
+
+      <TopLevelControl name="AreWeThereYetCalculator" hidden="true">
+         <Dimensions x="500" y="500" />
+         <Anchor point="CENTER" offsetY="-100" />
+         <Controls>
+            <Backdrop name="$(parent)Backdrop" inherits="ZO_ThinBackdrop">
+               <AnchorFill />
+            </Backdrop>
+            <Button name="$(parent)ChampionButton">
+               <Dimensions x="32" y="32"/>
+               <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="20"/>
+                <Textures
+			      normal="esoui\art\champion\champion_icon.dds"
+                  pressed="esoui\art\mainmenu\menubar_champion_down.dds"
+                  mouseOver="esoui\art\mainmenu\menubar_champion_over.dds"
+			   />
+               <OnClicked>
+                  AreWeThereYet.ToggleWindow()
+               </OnClicked>
+               <OnMouseEnter>
+                  ZO_Tooltips_ShowTextTooltip(self, LEFT, "Main Window")
+               </OnMouseEnter>
+               <OnMouseExit>
+                  ZO_Tooltips_HideTextTooltip()
+               </OnMouseExit>
+            </Button>
+            <Label name="$(parent)Title" inherits="AreWeThereYetLabelTemplate" font="ZoFontWinH2" color="FFFFFF">
+               <Dimensions x="418" y="50"/>
+               <Anchor point="TOPLEFT" relativeTo="$(parent)ChampionButton" relativePoint="TOPRIGHT" offsetX="10"/>
+            </Label>
+
+            <Control name="$(parent)KeypadCP">
+               <Dimensions x="190" y="220" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="83"/>
+			   <Controls>
+                  <Label name="$(parent)Name" inherits="AreWeThereYetResultTemplate" text="Goal">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                  </Label>
+                  <Label name="$(parent)Result" inherits="AreWeThereYetResultTemplate">
+                     <Dimensions x="125" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="5"/>
+                  </Label>
+                  <Button name="$(parent)Button7" inherits="AreWeThereYetButtonTemplate" text="7">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonCP("7")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button8" inherits="AreWeThereYetButtonTemplate" text="8">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button7" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonCP("8")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button9" inherits="AreWeThereYetButtonTemplate" text="9">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button8" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonCP("9")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button4" inherits="AreWeThereYetButtonTemplate" text="4">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button7" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonCP("4")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button5" inherits="AreWeThereYetButtonTemplate" text="5">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button4" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonCP("5")
+                     </OnClicked>
+                   </Button>
+                  <Button name="$(parent)Button6" inherits="AreWeThereYetButtonTemplate" text="6">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button5" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonCP("6")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button1" inherits="AreWeThereYetButtonTemplate" text="1">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button4" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonCP("1")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button2" inherits="AreWeThereYetButtonTemplate" text="2">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button1" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonCP("2")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button3" inherits="AreWeThereYetButtonTemplate" text="3">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button2" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonCP("3")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)ButtonClear" inherits="AreWeThereYetButtonTemplate" text="C">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button1" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonCP("C")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button0" inherits="AreWeThereYetButtonTemplate" text="0">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)ButtonClear" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonCP("0")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)ButtonEQ" inherits="AreWeThereYetButtonTemplateBlue" text="=">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button0" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonCP("=")
+                     </OnClicked>
+                  </Button>
+			   </Controls>
+            </Control>
+
+            <Control name="$(parent)KeypadAvg">
+               <Dimensions x="190" y="220" />
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-40" offsetY="83"/>
+			   <Controls>
+			      <Label name="$(parent)Name" inherits="AreWeThereYetResultTemplate" text="Avg">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                  </Label>
+                  <Label name="$(parent)Result" inherits="AreWeThereYetResultTemplate">
+                     <Dimensions x="125" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="5"/>
+                  </Label>
+                  <Button name="$(parent)Button7" inherits="AreWeThereYetButtonTemplate" text="7">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonAvg("7")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button8" inherits="AreWeThereYetButtonTemplate" text="8">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button7" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonAvg("8")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button9" inherits="AreWeThereYetButtonTemplate" text="9">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button8" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonAvg("9")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button4" inherits="AreWeThereYetButtonTemplate" text="4">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button7" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonAvg("4")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button5" inherits="AreWeThereYetButtonTemplate" text="5">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button4" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonAvg("5")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button6" inherits="AreWeThereYetButtonTemplate" text="6">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button5" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonAvg("6")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button1" inherits="AreWeThereYetButtonTemplate" text="1">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button4" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonAvg("1")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button2" inherits="AreWeThereYetButtonTemplate" text="2">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button1" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonAvg("2")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button3" inherits="AreWeThereYetButtonTemplate" text="3">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button2" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonAvg("3")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)ButtonClear" inherits="AreWeThereYetButtonTemplate" text="C">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button1" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonAvg("C")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)Button0" inherits="AreWeThereYetButtonTemplate" text="0">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)ButtonClear" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonAvg("0")
+                     </OnClicked>
+                  </Button>
+                  <Button name="$(parent)ButtonEQ" inherits="AreWeThereYetButtonTemplateBlue" text="=">
+                     <Dimensions x="60" y="40"/>
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Button0" relativePoint="TOPRIGHT" offsetX="5"/>
+                     <OnClicked>
+                        AreWeThereYet.OnClickedButtonAvg("=")
+                     </OnClicked>
+                  </Button>
+			   </Controls>
+            </Control>
+
+            <Label name="$(parent)Labels1" inherits="AreWeThereYetLabelTemplate" font="ZoFontGame" color="EDEEB5">
+               <Dimensions x="300" y="96" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="336"/>
+            </Label>
+            <Label name="$(parent)Values1" inherits="AreWeThereYetLabelTemplate" font="ZoFontGameBold" color="FFFFFF" horizontalAlignment="RIGHT">
+               <Dimensions x="160" y="96" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)Labels1" relativePoint="TOPRIGHT"/>
+            </Label>
+            <Label name="$(parent)Labels2" inherits="AreWeThereYetLabelTemplate" font="ZoFontGame" color="EDEEB5">
+               <Dimensions x="160" y="65" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)Labels1" relativePoint="BOTTOMLEFT"/>
+            </Label>
+            <Label name="$(parent)Values2" inherits="AreWeThereYetLabelTemplate" font="ZoFontGameBold" color="FFFFFF">
+               <Dimensions x="300" y="65" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)Labels2" relativePoint="TOPRIGHT"/>
+            </Label>
+         </Controls>
+      </TopLevelControl>
+
+   </Controls>
+</GuiXml>

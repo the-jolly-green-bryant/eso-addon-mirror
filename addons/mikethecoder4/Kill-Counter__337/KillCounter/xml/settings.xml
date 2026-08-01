@@ -1,0 +1,53 @@
+<GuiXml>
+    <Controls >
+        <TopLevelControl  name="KillCounter_Settings" mouseEnabled="true" virtual="true" movable="true" >
+            <Dimensions x="600" y="600" />
+            <Anchor point="CENTER" />
+            <Controls>
+                <Texture name="$(parent)_BG" textureFile="/esoui/art/screens/loadscreen_topmunge_tile.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.6" textureBlendMode="TEX_BLEND_MODE_ALPHA">
+                    <AnchorFill/>
+                </Texture>
+                <Texture name="$(parent)_BG2" textureFile="/esoui/art/unitattributevisualizer/attributebar_dynamic_invulnerable_munge.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.4">
+                    <AnchorFill/>
+                </Texture>
+                    
+                    <Texture name="$(parent)_BG3_Texture" textureFile="/esoui/art/screens/loadscreen_bottommunge_tile.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.6" textureBlendMode="TEX_BLEND_MODE_ADD">
+                        <AnchorFill/>
+                    </Texture>
+                    <Button name="$(parent)_Stats_Close_Button" font="ZoFontChat" color="EEEEEE">
+                    <Anchor point="TOPRIGHT" offsetY="0" offsetX="0" />
+                    <Dimensions y="40" x="40"/>
+                    <OnClicked>KC_G.closeSettings()</OnClicked>
+                        <Controls>
+                            <Texture name="$(parent)_BG3_Texture" textureFile="/esoui/art/buttons/cancel_up.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="1.0">
+                                <AnchorFill/>
+                            </Texture>
+                        </Controls>
+                </Button>
+
+                <Control name="$(parent)_Banner">
+                    <Dimensions x="300" y="600" />
+                    <Anchor point="TOPLEFT" />
+                    <Controls>
+                        <Texture name="$(parent)_Texture" textureFile="/esoui/art/campaign/leaderboard_top20banner.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.18">
+                            
+                                <AnchorFill/>
+                            </Texture>
+                    </Controls>
+                </Control>
+
+                <Label name="$(parent)_Settings_Header" font="ZoFontAnnounceLarge" color="6D8F3D" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Kill Counter Settings: ">
+                 <AnchorFill />
+                 <Anchor point="TOPLEFT" offsetX="25" offsetY="20" />
+                </Label> 
+
+                <Scroll name="$(parent)_Table">
+                
+
+                    <AnchorFill />
+                </Scroll> 
+
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

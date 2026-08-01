@@ -1,0 +1,15 @@
+## Title: |c96FF00Research Timer|r - |c96FF00 v1.98|r
+## APIVersion: 100022
+## SavedVariables: ResearchTimer
+## Version: 1.98
+## Author: Hisdad
+
+
+
+ResearchTimer.lua
+grid.lua
+
+xml\Bindings.xml
+
+Language/en.lua
+Language/$(language).lua

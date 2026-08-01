@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Marify/J2E-Update__2104",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marify",
+  "canonical_id": "esoui:2104",
+  "category_id": "98",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:2104",
+  "deleted": false,
+  "directories": [
+    "J2EUpdate"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2104/",
+  "fingerprint": "c18171c1d010cb5d812680613e0fdba2e649012541e63d3b042e5f4048a2a04c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7107.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7108.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2104",
+  "source_url": "https://www.esoui.com/downloads/info2104-J2EUpdate.html",
+  "stats": {
+    "downloads": 66477,
+    "favorites": 9,
+    "monthly_downloads": 108
+  },
+  "title": "J2E Update",
+  "updated_at": 1718461727000,
+  "version": "1.7.0"
+}

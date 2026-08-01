@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/Jarva/NoInnerLight__2791",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jarva",
+  "canonical_id": "esoui:2791",
+  "category_id": "19",
+  "compatibility": [],
+  "content_id": "esoui:2791",
+  "deleted": false,
+  "directories": [
+    "NoInnerLight"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2791/",
+  "fingerprint": "70ee5ed9eb089648628b33b32232ef753d78297bf29fc91ff95dff99f1b085eb",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2791",
+  "source_url": "https://www.esoui.com/downloads/info2791-NoInnerLight.html",
+  "stats": {
+    "downloads": 6048,
+    "favorites": 9,
+    "monthly_downloads": 11
+  },
+  "title": "NoInnerLight",
+  "updated_at": 1608112453000,
+  "version": "1.0.2"
+}

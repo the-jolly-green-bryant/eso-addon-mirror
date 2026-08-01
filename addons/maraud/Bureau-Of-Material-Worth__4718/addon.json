@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/maraud/Bureau-Of-Material-Worth__4718",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "maraud",
+  "canonical_id": "esoui:4718",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4718",
+  "deleted": false,
+  "directories": [
+    "BureauOfMaterialWorth"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4718/",
+  "fingerprint": "f5b9f6f7a353cac46205bf66a053fd96a27974d49780daa0a57854f189a1f7c0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16814.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16815.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16816.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16817.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16818.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16819.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16820.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16821.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16822.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16823.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4718",
+  "source_url": "https://www.esoui.com/downloads/info4718-BureauOfMaterialWorth.html",
+  "stats": {
+    "downloads": 138,
+    "favorites": 0,
+    "monthly_downloads": 136
+  },
+  "title": "Bureau Of Material Worth",
+  "updated_at": 1784951265000,
+  "version": "4.0.045741"
+}

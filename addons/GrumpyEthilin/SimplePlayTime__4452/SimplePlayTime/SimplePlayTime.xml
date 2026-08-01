@@ -1,0 +1,37 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="SimplePlayTimeWindow" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions x="500" y="650" />
+            <Anchor point="CENTER" />
+            <OnMoveStop>SimplePlayTime.OnMoveStop()</OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+                
+                <Label name="$(parent)Title" font="ZoFontWinH1" text="Simple PlayTime" color="FFAA00">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="10" />
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-5" offsetY="5" />
+                    <OnClicked>SimplePlayTime.ToggleWindow()</OnClicked>
+                </Button>
+
+                <Button name="SimplePlayTimeWindowServerToggle" inherits="ZO_DefaultButton">
+                    <Dimensions x="120" y="30" />
+                    <Anchor point="TOPRIGHT" offsetX="-50" offsetY="10" />
+                    <OnClicked>SimplePlayTime.ToggleServerView()</OnClicked>
+                </Button>
+
+                <Control name="$(parent)ListHolder">
+                    <Dimensions x="460" y="650" />
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="60" />
+                    <Controls>
+                        <Control name="$(parent)Scroll" inherits="ZO_ScrollContainer">
+                            <AnchorFill />
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

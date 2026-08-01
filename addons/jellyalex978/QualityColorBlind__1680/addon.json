@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/jellyalex978/QualityColorBlind__1680",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "jellyalex978",
+  "canonical_id": "esoui:1680",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:1680",
+  "deleted": false,
+  "directories": [
+    "QualityColorBlind"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1680/",
+  "fingerprint": "a2bd26f5c672d02c26f8a6cecba6060f29d262113c2caccddc4fe12c3d3306b6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5541.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5542.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5543.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5568.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5571.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1680",
+  "source_url": "https://www.esoui.com/downloads/info1680-QualityColorBlind.html",
+  "stats": {
+    "downloads": 4104,
+    "favorites": 1,
+    "monthly_downloads": 16
+  },
+  "title": "QualityColorBlind",
+  "updated_at": 1495540446000,
+  "version": "1.3.0"
+}

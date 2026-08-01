@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/kawamonkey/Plunder-Skull-Tracker__3216",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3216",
+  "category_id": "159",
+  "compatibility": [],
+  "content_id": "esoui:3216",
+  "deleted": false,
+  "directories": [
+    "PlunderSkullTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3216/",
+  "fingerprint": "aac411c1e09730acb621c5db8828b5005c8ec7a3fb586174e15ce6fb1a74fb85",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10938.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3216",
+  "source_url": "https://www.esoui.com/downloads/info3216-PlunderSkullTracker.html",
+  "stats": {
+    "downloads": 6438,
+    "favorites": 12,
+    "monthly_downloads": 9
+  },
+  "title": "Plunder Skull Tracker",
+  "updated_at": 1729797652000,
+  "version": "1.2"
+}

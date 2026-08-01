@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Hyborem/LibPriceCache__4494",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hyborem",
+  "canonical_id": "esoui:4494",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4494",
+  "deleted": false,
+  "directories": [
+    "LibPriceCache"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4494/",
+  "fingerprint": "e0fa957dfcb9bfb24875aebb5473d49305814e44f23d488d550280edf2143e80",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4494",
+  "source_url": "https://www.esoui.com/downloads/info4494-LibPriceCache.html",
+  "stats": {
+    "downloads": 2009,
+    "favorites": 3,
+    "monthly_downloads": 281
+  },
+  "title": "LibPriceCache",
+  "updated_at": 1776644334000,
+  "version": "v.1.1.7"
+}

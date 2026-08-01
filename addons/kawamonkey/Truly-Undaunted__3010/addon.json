@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/kawamonkey/Truly-Undaunted__3010",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3010",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3010",
+  "deleted": false,
+  "directories": [
+    "TrulyUndaunted"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3010/",
+  "fingerprint": "5fe06abe5f3ad0e05b409bd4aeb49b0a36f46da90c57ec076e79ace7de0e5aff",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3010",
+  "source_url": "https://www.esoui.com/downloads/info3010-TrulyUndaunted.html",
+  "stats": {
+    "downloads": 2746,
+    "favorites": 1,
+    "monthly_downloads": 24
+  },
+  "title": "Truly Undaunted",
+  "updated_at": 1617327722000,
+  "version": "1.0"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Kelinmiriel/Quiet-Death-No-Screams__2973",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kelinmiriel",
+  "canonical_id": "esoui:2973",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2973",
+  "deleted": false,
+  "directories": [
+    "QuietDeathNoScreams"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2973/",
+  "fingerprint": "4ea408c70d796c33632cf05f58920617c7c1d49be0f79878c13f49c8554e5154",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2973",
+  "source_url": "https://www.esoui.com/downloads/info2973-QuietDeathNoScreams.html",
+  "stats": {
+    "downloads": 2360,
+    "favorites": 0,
+    "monthly_downloads": 6
+  },
+  "title": "Quiet Death, No Screams",
+  "updated_at": 1616166532000,
+  "version": "0.01"
+}

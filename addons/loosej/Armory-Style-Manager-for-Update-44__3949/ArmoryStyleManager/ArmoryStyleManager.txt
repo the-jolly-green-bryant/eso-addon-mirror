@@ -1,0 +1,20 @@
+## APIVersion: 101044
+## Title: |c9CD04CArmory Style Manager|r
+## Version: 0.15.1
+## AddonVersion: 15
+## Author: |c5959D5@CyberOnEso|r, |c5959D5@Dekakaruk|r, |c5959D5@loosej|r,
+## Description: |c9CD04CSaves and loads your collectibles with your armory builds.  Now supports random mount, customized actions and skill styles.
+## SavedVariables: ArmoryStyleManagerData
+## OptionalDependsOn: LibAddonMenu-2.0>=37
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+## Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+## trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+## other countries. All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+xml/ArmoryStyleManager.xml
+ArmoryStyleManager.lua
+ArmoryStyleManager_Menu.lua
+bindings.xml

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Irniben/Oger-s-Mail-Intricates__3235",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Irniben",
+  "canonical_id": "esoui:3235",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3235",
+  "deleted": false,
+  "directories": [
+    "OgersMailIntricates"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3235/",
+  "fingerprint": "0489399150afc3b3d1ce17b983cd44c6f85b8e4bf38d45d4bc33c4b56f7db0fa",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3235",
+  "source_url": "https://www.esoui.com/downloads/info3235-OgersMailIntricates.html",
+  "stats": {
+    "downloads": 3355,
+    "favorites": 3,
+    "monthly_downloads": 5
+  },
+  "title": "Oger's Mail Intricates",
+  "updated_at": 1641366868000,
+  "version": "0.2.0"
+}

@@ -1,0 +1,11 @@
+## Title: Oblivion Style UI
+## Description: Overhauls UI with a Oblivion aesthetic.
+## Author: Half-Dead
+## APIVersion: 101045 101046
+## Version: 1.82
+## SavedVariables: OblivionStyleHUD_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=39
+
+OblivionStyleHUD.lua
+OblivionStyleHUDSettings.lua
+Prettyadditions.lua

@@ -1,0 +1,6 @@
+## Title: LanguageChanger
+## APIVersion: 100010
+## Description: This addon allows to change to UI language to english, french and german.
+
+LanguageChanger.lua
+Bindings.xml

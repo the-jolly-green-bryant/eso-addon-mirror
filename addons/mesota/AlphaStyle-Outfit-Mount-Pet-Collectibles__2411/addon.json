@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/mesota/AlphaStyle-Outfit-Mount-Pet-Collectibles__2411",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mesota",
+  "canonical_id": "esoui:2411",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2411",
+  "deleted": false,
+  "directories": [
+    "AlphaStyle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2411/",
+  "fingerprint": "e48a5233e2e7ae2c3d0c2deac4d2c11df020ddf750eab1a76b1b525964c19980",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8615.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8616.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8617.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2411",
+  "source_url": "https://www.esoui.com/downloads/info2411-AlphaStyleOutfitMountPetCollectibles.html",
+  "stats": {
+    "downloads": 32318,
+    "favorites": 84,
+    "monthly_downloads": 405
+  },
+  "title": "AlphaStyle (Outfit, Mount, Pet, Collectibles)",
+  "updated_at": 1641163388000,
+  "version": "1.0.0"
+}

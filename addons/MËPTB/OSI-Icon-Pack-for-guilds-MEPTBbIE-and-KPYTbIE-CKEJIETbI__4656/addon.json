@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/M\u00cbPTB/OSI-Icon-Pack-for-guilds-MEPTBbIE-and-KPYTbIE-CKEJIETbI__4656",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "M\u00cbPTB",
+  "canonical_id": "esoui:4656",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4656",
+  "deleted": false,
+  "directories": [
+    "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4656/",
+  "fingerprint": "30aba5ec381db2bdc96c94ce02165bafa8243075166aa3e2a772fc69155c1efe",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16431.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4656",
+  "source_url": "https://www.esoui.com/downloads/info4656-OSIIconPackforguildsMEPTBbIEandKPYTbIECKEJIETbI.html",
+  "stats": {
+    "downloads": 61,
+    "favorites": 1,
+    "monthly_downloads": 22
+  },
+  "title": "OSI Icon Pack for guilds MEPTBbIE and KPYTbIE CKEJIETbI",
+  "updated_at": 1782570195000,
+  "version": "1.12"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/kendaron/WritGrabber__1179",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kendaron",
+  "canonical_id": "esoui:1179",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:1179",
+  "deleted": false,
+  "directories": [
+    "WritGrabber"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1179/",
+  "fingerprint": "756066b57477fa17bdbbceb1d753a86b66c1db943e6008d2102a1f5d4a8c4d0e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1179",
+  "source_url": "https://www.esoui.com/downloads/info1179-WritGrabber.html",
+  "stats": {
+    "downloads": 14193,
+    "favorites": 20,
+    "monthly_downloads": 14
+  },
+  "title": "WritGrabber",
+  "updated_at": 1498122548000,
+  "version": "1.0.14"
+}

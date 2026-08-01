@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/JN-Slevin/ITTs-Roster-Bot-ITT-RB__3211",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "JN Slevin",
+  "canonical_id": "esoui:3211",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3211",
+  "deleted": false,
+  "directories": [
+    "ITTsRosterBot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3211/",
+  "fingerprint": "7b5ad3f1174328bc9beea97accc545b864d0e89077750d8bcaa7dd287af4d2a8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10929.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10926.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10930.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10927.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10928.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10925.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10931.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3211",
+  "source_url": "https://www.esoui.com/downloads/info3211-ITTsRosterBotITTRB.html",
+  "stats": {
+    "downloads": 12731,
+    "favorites": 12,
+    "monthly_downloads": 392
+  },
+  "title": "ITTs Roster Bot ( ITT RB )",
+  "updated_at": 1785460497000,
+  "version": "1.1.0"
+}

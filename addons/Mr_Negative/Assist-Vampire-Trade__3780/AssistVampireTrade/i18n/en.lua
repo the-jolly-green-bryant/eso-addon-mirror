@@ -1,0 +1,12 @@
+ZO_CreateStringId("SI_BINDING_NAME_AVT_SWITCH", "Mesmerize")
+local put = AssistVampireTrade.putText
+put("Account wide configuration","Account wide configuration")
+put("Revert when skill is used","Revert when skill is used")
+put("Ability slot to Use","Ability slot to use")
+put("There is a hot key to switch manually.","There is a hot key to switch manually.")
+put("Info","Info")
+put("You will need to add a keybind for this to work.","You will need to add a keybind for this to work.")
+put("keybindings","keybindings")
+put("The keybind options can be found in: Controls > Keybinds > Assist Vampire Trade.","The keybind options can be found in: Controls > Keybinds > Assist Vampire Trade.")
+put("Where can I do this?","Where can I do this?")
+put("You no longer need to worry about having your weapon out before using Mesmerize. I've implemented a fix that ensures a smoother and more intuitive experience.","You no longer need to worry about having your weapon out before using Mesmerize. I've implemented a fix that ensures a smoother and more intuitive experience.")

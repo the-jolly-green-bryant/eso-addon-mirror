@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Konten/KWerewolfTracker__4727",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Konten",
+  "canonical_id": "esoui:4727",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4727",
+  "deleted": false,
+  "directories": [
+    "KWerewolfTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4727/",
+  "fingerprint": "8ccd1c79b6f13fcb62c3c5a30d2530864d29bf00a04bf958831986fbe6fd4703",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16833.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16834.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4727",
+  "source_url": "https://www.esoui.com/downloads/info4727-KWerewolfTracker.html",
+  "stats": {
+    "downloads": 54,
+    "favorites": 0,
+    "monthly_downloads": 48
+  },
+  "title": "KWerewolfTracker",
+  "updated_at": 1785162983000,
+  "version": "1.1.0"
+}

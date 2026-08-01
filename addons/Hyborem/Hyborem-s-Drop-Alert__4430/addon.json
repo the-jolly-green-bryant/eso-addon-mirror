@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Hyborem/Hyborem-s-Drop-Alert__4430",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hyborem",
+  "canonical_id": "esoui:4430",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4430",
+  "deleted": false,
+  "directories": [
+    "DropAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4430/",
+  "fingerprint": "4a86adbfb9e3f376e8327383e93600a91f941ed72584a0484420df0771681344",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4430",
+  "source_url": "https://www.esoui.com/downloads/info4430-HyboremsDropAlert.html",
+  "stats": {
+    "downloads": 179,
+    "favorites": 1,
+    "monthly_downloads": 11
+  },
+  "title": "Hyborem's Drop Alert",
+  "updated_at": 1780934375000,
+  "version": "v.1.0.32"
+}

@@ -1,0 +1,19 @@
+## Title: ITTs Donation Bot
+## APIVersion: 101049 101050
+## Description: Keeps on top of Donations, beep! Part of the ITTs Bot family, handy helpers for Trade Guilds.
+## Version: 2.1.3
+## AddOnVersion: 213
+## Author: |c00a313Ghostbane|r & |c268074JN Slevin|r
+## SavedVariables: ITTsDonationBotSettings ITTsDonationBotData
+## DependsOn: LibAddonMenu-2.0>=43 LibChatMessage>=120 LibGuildRoster>=104 LibDebugLogger>=307 LibHistoire>=1103 LibDebugLogger>=307
+## OptionalDependsOn: PerfectPixel ArkadiusTradeTools MasterMerchant
+
+ITTsDonationBot.lua
+i18n/en.lua
+i18n/$(language).lua
+ITTsDonationBot.xml
+ITTsDonationBotRoster.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

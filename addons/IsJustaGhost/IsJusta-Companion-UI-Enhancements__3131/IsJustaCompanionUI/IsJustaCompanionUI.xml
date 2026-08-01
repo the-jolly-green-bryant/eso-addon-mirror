@@ -1,0 +1,323 @@
+<GuiXml>
+	<Controls>
+		<Control name="IJA_CompanionOverview_Panel_KeyboardTemplate" virtual="true">
+			<Controls>
+				<Control name="$(parent)LevelProgress" inherits="ZO_CompanionProgressBarTemplate">
+					<Anchor point="TOPLEFT" offsetY="32"/>
+					<Anchor point="RIGHT" offsetX="-60" constrains="X"/>
+					<Controls>
+						<StatusBar name="$(parent)Bar" mouseEnabled="false">
+							<OnMouseEnter> </OnMouseEnter>
+							<OnMouseExit> </OnMouseExit>
+						</StatusBar>
+						<Label name="$(parent)Label" font="ZoFontHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="RIGHT" text="SI_COMPANION_OVERVIEW_PERK">
+								<Anchor point="TOPRIGHT" relativeTo="$(parent)LevelProgress" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)PassivePerk" mouseEnabled="false">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)SkillsLabel" relativePoint="BOTTOMLEFT" offsetY="85"/>
+					<Anchor point="RIGHT" offsetX="-60" constrains="X"/>
+					<OnMouseEnter>  </OnMouseEnter>
+					<OnMouseExit> </OnMouseExit>
+					<Controls>
+						<Label name="$(parent)Title" font="ZoFontHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_COMPANION_OVERVIEW_PERK">
+							<Anchor point="LEFT"/>
+						</Label>
+						<Label name="$(parent)Value" font="ZoFontHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor point="LEFT" relativeTo="$(parent)Title" relativePoint="RIGHT" offsetX="10" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)Description" font="ZoFontHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" text="SI_COMPANION_OVERVIEW_PERK">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="0"/>
+							<Anchor point="RIGHT" constrains="X"/>
+						</Label>
+					</Controls>
+				</Control>
+				<Control name="$(parent)RapportContainer">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)PassivePerkDescription" relativePoint="BOTTOMLEFT" offsetX="-10" offsetY="10"/>
+					<Anchor point="RIGHT" constrains="X"/>
+					<Controls>
+						<Control name="$(parent)Divider" inherits="ZO_WideHorizontalDivider">
+							<Anchor point="TOPLEFT"/>
+						</Control>
+						<Label name="$(parent)Header" font="ZoFontHeader4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" modifyTextType="UPPERCASE" text="SI_COMPANION_OVERVIEW_RAPPORT">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT"/>
+						</Label>
+						<Label name="$(parent)Rapport" font="ZoFontHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_COMPANION_RAPPORT_STATUS">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)Value" font="ZoFontHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor point="LEFT" relativeTo="$(parent)Rapport" relativePoint="RIGHT" offsetX="10" offsetY="0"/>
+						</Label>
+						<Control name="$(parent)Progress">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Rapport" relativePoint="BOTTOMLEFT" offsetY="0"/>
+							<Anchor point="RIGHT" offsetX="-60" constrains="X"/>
+						</Control>
+						<Control name="$(parent)Status">
+							<Controls>
+								<Label name="$(parent)Value" font="ZoFontHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+									<Anchor point="LEFT" relativeTo="$(parent)Title" relativePoint="RIGHT" offsetX="10" offsetY="0"/>
+								</Label>
+							</Controls>
+						</Control>
+						<Label name="$(parent)Description" font="ZoFontHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLOR:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Status" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="10"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Status" relativePoint="BOTTOMRIGHT" offsetY="10"/>
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+		
+        <StatusBar name="IJA_DefaultShieldOverlay" inherits="ZO_DefaultStatusBarBase" virtual="true" barAlignment="REVERSE" tier="DT_HIGH">
+            <LeadingEdge textureFile="EsoUI/Art/Miscellaneous/progressbar_genericFill_leadingEdge_blunt.dds" width="0" height="0" />
+			
+            <OnInitialized>
+                self.gloss = self:GetNamedChild("Gloss")
+            </OnInitialized>
+
+            <OnMinMaxValueChanged>
+                self.gloss:SetMinMax(min, max)
+            </OnMinMaxValueChanged>
+
+            <OnValueChanged>
+                self.gloss:SetValue(value)
+            </OnValueChanged>
+            <Controls>
+                <StatusBar name="$(parent)Gloss" textureFile="EsoUI/Art/Miscellaneous/timerBar_genericFill_gloss.dds" barAlignment="REVERSE" ltier="DT_HIGH">
+                    <AnchorFill />
+                    <LeadingEdge textureFile="" width="0" height="0" />
+                </StatusBar>
+            </Controls>
+        </StatusBar>
+		
+        <StatusBar name="IJA_DefaultStatusBar" inherits="ZO_DefaultStatusBarBase" virtual="true">
+            <Dimensions x="512" y="16" />
+            <LeadingEdge textureFile="" width="0" height="0" />
+            <OnInitialized>
+                self.gloss = self:GetNamedChild("Gloss")
+            </OnInitialized>
+
+            <OnMinMaxValueChanged>
+                self.gloss:SetMinMax(min, max)
+            </OnMinMaxValueChanged>
+
+            <OnValueChanged>
+                self.gloss:SetValue(value)
+            </OnValueChanged>
+            <Controls>
+                <StatusBar name="$(parent)Gloss" textureFile="EsoUI/Art/Miscellaneous/timerBar_genericFill_gloss.dds">
+                    <AnchorFill />
+                    <LeadingEdge textureFile="" width="0" height="0" />
+                    <TextureCoords left="0" right="1" top="0" bottom="0.8125" />
+                </StatusBar>
+            </Controls>
+        </StatusBar>
+		
+        <StatusBar name="IJA_ArrowStatusBar" textureFile="EsoUI/Art/Miscellaneous/progressbar_genericFill_leadingEdge.dds" barAlignment="REVERSE" virtual="true">
+            <LeadingEdge textureFile="EsoUI/Art/Miscellaneous/progressbar_genericFill.dds" width="8" height="20" />
+			<TextureCoords left="1" right="0" top="0" bottom="0.625" />
+			<LeadingEdgeTextureCoords left="0" right="1" top="0" bottom="0.625" />
+			
+            <OnInitialized>
+                self.gloss = self:GetNamedChild("Gloss")
+            </OnInitialized>
+
+            <OnMinMaxValueChanged>
+                self.gloss:SetMinMax(min, max)
+            </OnMinMaxValueChanged>
+            
+            <OnValueChanged>
+                self.gloss:SetValue(value)
+            </OnValueChanged>
+            <Controls>
+                <StatusBar name="$(parent)Gloss" textureFile="EsoUI/Art/Miscellaneous/progressbar_genericFill_leadingEdge_gloss.dds" barAlignment="REVERSE" >
+                    <AnchorFill />
+                    <LeadingEdge textureFile="EsoUI/Art/Miscellaneous/progressbar_genericFill_gloss.dds" width="8" height="20" />
+                    <TextureCoords left="1" right="0" top="0" bottom="0.625" />
+                    <LeadingEdgeTextureCoords left="0" right="1" top="0" bottom="0.625" />
+                </StatusBar>
+            </Controls>
+        </StatusBar>
+		
+        <StatusBar name="IJA_CompanionUnitFramesStatus_Keyboard_Template" inherits="ZO_ArrowStatusBarWithBG" virtual="true">
+			<Dimensions y="20"/>
+            <Controls>
+				<StatusBar name="$(parent)ShieldOverlay" inherits="IJA_ArrowStatusBar" tier="DT_HIGH">
+					<Dimensions x="10" y="20"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-4" offsetY="0"/>
+				</StatusBar>
+            </Controls>
+        </StatusBar>
+
+        <StatusBar name="IJA_CompanionUnitFramesStatus_Gamepad_Template" inherits="ZO_ArrowStatusBarWithBG" virtual="true">
+			<Dimensions y="25"/>
+            <Controls>
+				<StatusBar name="$(parent)ShieldOverlay" inherits="IJA_ArrowStatusBar" tier="DT_HIGH">
+					<Dimensions x="10" y="25"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-4" offsetY="0"/>
+				</StatusBar>
+            </Controls>
+        </StatusBar>
+		
+        <StatusBar name="IJA_CompanionUnitFramesStatus" inherits="ZO_ArrowStatusBarWithBG" virtual="true">
+            <Controls>
+                <Control name="$(parent)BG" hidden="true" />
+                <Control name="$(parent)Overlay" hidden="true" />
+            </Controls>
+        </StatusBar>
+		
+		<Control name="IJA_CompanionUnitFrameZOS_Keyboard_Template" virtual="true">
+			<Dimensions x="280" y="110"/>
+			<Controls>
+				<Texture name="$(parent)Background" hidden="false"/>
+				<Label name="$(parent)Name" font="ZoFontGameBold" wrapMode="TRUNCATE">
+					<Dimensions x="230" y="25"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="30" offsetY="20"/>
+				</Label>
+				<Label name="$(parent)Status" inherits="ZO_UnitFrameBarText_Keyboard_Template" font="ZoFontGameBold">
+					<Dimensions x="230" y="25"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetX="50" offsetY="-2"/>
+				</Label>
+				<StatusBar name="$(parent)Hp" inherits="IJA_CompanionUnitFramesStatus_Keyboard_Template">
+					<Dimensions x="196" y="25"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetY="0"/>
+					<Controls>
+						<Control name="$(parent)Underlay" hidden="false"/>
+						<Backdrop name="$(parent)Underlay2" hidden="true"/>
+					</Controls>
+				</StatusBar>
+				<Label name="$(parent)Value" inherits="ZO_PlayerAttributeResourceNumbers_Keyboard_Template" font="ZoFontGameBold">
+					<Dimensions x="230" y="25"/>
+					<Anchor point="TOP" relativeTo="$(parent)Hp" relativePoint="BOTTOM" offsetY="0"/>
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="IJA_CompanionUnitFrameZOS_Gamepad_Template" virtual="true">
+			<Dimensions x="380" y="180"/>
+			<Controls>
+				<Texture name="$(parent)Background" hidden="false"/>
+				<Label name="$(parent)Name" font="ZoFontGamepad34" wrapMode="ELLIPSIS">
+					<Dimensions x="330" y="30"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="20"/>
+				</Label>
+				<Label name="$(parent)Status" inherits="ZO_UnitFrameBarText_Gamepad_Template" font="ZoFontGamepad27">
+					<Dimensions x="330" y="30"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetX="50" offsetY="0"/>
+				</Label>
+				<StatusBar name="$(parent)Hp" inherits="IJA_CompanionUnitFramesStatus_Gamepad_Template">
+					<Dimensions x="266" y="25"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetY="10"/>
+					<Controls>
+						<Control name="$(parent)Underlay" hidden="false"/>
+						<Backdrop name="$(parent)Underlay2" hidden="true"/>
+					</Controls>
+				</StatusBar>
+				<Label name="$(parent)Value" inherits="ZO_PlayerAttributeResourceNumbers_Gamepad_Template" font="ZoFontGamepad34">
+					<Dimensions x="230" y="30"/>
+					<Anchor point="TOP" relativeTo="$(parent)Hp" relativePoint="BOTTOM" offsetY="-2"/>
+				</Label>
+			</Controls>
+		</Control>
+
+        <StatusBar name="IJA_CompanionUnitFramesStatus_Default_Template" inherits="IJA_DefaultStatusBar" virtual="true">
+            <Controls>
+				<Backdrop name="$(parent)Underlay2" centerColor="000000" alpha="0.7">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="-2" offsetY="-2"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+				</Backdrop>
+				<Control name="$(parent)Overlay" hidden="true" />
+				<StatusBar name="$(parent)ShieldOverlay" inherits="IJA_DefaultShieldOverlay" tier="DT_HIGH">
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+					<Controls>
+						<Control name="$(parent)BG" hidden="true" />
+						<Control name="$(parent)Overlay" hidden="true" />
+					</Controls>
+				</StatusBar>
+            </Controls>
+        </StatusBar>
+		
+		<Control name="IJA_CompanionUnitFrameBUI" virtual="true">
+			<Dimensions x="380" y="180"/>
+			<Controls>
+				<Texture name="$(parent)Background" hidden="true"/>
+				<StatusBar name="$(parent)Hp" inherits="IJA_CompanionUnitFramesStatus_Default_Template">
+					<Dimensions x="266" y="50"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetY="0"/>
+					<Controls>
+						<Control name="$(parent)Underlay" hidden="true"/>
+						<Backdrop name="$(parent)Underlay2" hidden="false"/>
+					</Controls>
+				</StatusBar>
+				
+				<Label name="$(parent)Name" font="ZoFontGamepad34" wrapMode="ELLIPSIS">
+					<Dimensions x="330" y="50"/>
+					<Anchor point="LEFT" relativeTo="$(parent)Hp" relativePoint="LEFT" offsetX="5" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)Status" inherits="ZO_UnitFrameBarText_Gamepad_Template" font="ZoFontGamepad27">
+					<Dimensions x="330" y="50"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetX="50" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)Value" inherits="ZO_PlayerAttributeResourceNumbers_Gamepad_Template" font="ZoFontGamepad34">
+					<Dimensions x="50" y="50"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)Hp" relativePoint="RIGHT" offsetY="0"/>
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="IJA_CompanionUnitFrame_Template" mouseEnabled="true" movable="true" resizehandlesize="8" virtual="true">
+			<Dimensions x="330" y="180"/>
+			<Anchor point="TOPLEFT"/>
+			
+            <OnInitialized>
+				self.lock = self:GetNamedChild("Lock")
+				self.healthBar = self:GetNamedChild("Hp")
+            </OnInitialized>
+			<Controls>
+				<Texture name="$(parent)Background" hidden="false" textureFile="/esoui/art/loot/loot_windowbg.dds" drawlayer="0">
+                    <AnchorFill />
+				</Texture>
+				<Texture name="$(parent)Lock" hidden="true" excludeFromResizeToFitExtents="true" textureFile="/esoui/art/miscellaneous/gamepad/gp_icon_unlocked32.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-2" offsetY="2"/>
+				</Texture>
+				
+				<Label name="$(parent)Name" font="ZoFontGameBold" wrapMode="TRUNCATE">
+				</Label>
+				<Label name="$(parent)Status" inherits="ZO_UnitFrameBarText_Keyboard_Template" font="ZoFontGameBold">
+				</Label>
+				<StatusBar name="$(parent)Hp" inherits="IJA_CompanionUnitFramesStatus_Default_Template">
+					<OnRectHeightChanged>
+						self:GetNamedChild('ShieldOverlay'):SetHeight(newHeight)
+					</OnRectHeightChanged>
+					<Controls>
+						<Control name="$(parent)Underlay" alpha="0.5">
+							<AnchorFill />
+							<Controls>
+								<Texture name="$(parent)Left" textureFile="EsoUI/Art/Miscellaneous/progressbar_genericFill.dds" color="000000">
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="15"/>
+								</Texture>
+								<Texture name="$(parent)Right" textureFile="EsoUI/Art/Miscellaneous/progressbar_genericFill_leadingEdge.dds" color="000000">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Left" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="15"/>
+								</Texture>
+							</Controls>
+						</Control>
+					</Controls>
+				</StatusBar>
+				<Label name="$(parent)Value" inherits="ZO_PlayerAttributeResourceNumbers_Keyboard_Template"/>
+			</Controls>
+		</Control>
+
+        <TopLevelControl name="IJA_CompanionUnit" hidden="false">
+            <OnInitialized>
+                IJA_CompanionUI_Initialize(self)
+            </OnInitialized>
+			<Controls>
+				<Control name="$(parent)Frame" inherits="IJA_CompanionUnitFrame_Template" hidden="true"/>
+			</Controls>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

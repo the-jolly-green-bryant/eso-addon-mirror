@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Masteroshi430/NumbersOnDummyOnly__3573",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:3573",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3573",
+  "deleted": false,
+  "directories": [
+    "NumbersOnDummyOnly"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3573/",
+  "fingerprint": "2ef3d25a74dc1f4c7bdff7ecef399315036bae25324127d7757d33090216ecd8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12134.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3573",
+  "source_url": "https://www.esoui.com/downloads/info3573-NumbersOnDummyOnly.html",
+  "stats": {
+    "downloads": 2718,
+    "favorites": 3,
+    "monthly_downloads": 19
+  },
+  "title": "NumbersOnDummyOnly",
+  "updated_at": 1783597233000,
+  "version": "2026.07.09"
+}

@@ -1,0 +1,136 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="Scene_KC_Menu" inherits="ZO_RightPanelFootPrint" hidden="true">
+      <OnInitialized>
+        KC_G.statsWindowGUISetup()
+      </OnInitialized>
+      <Controls>
+        <!--
+            <Label name="$(parent)_Stats_Kills_Count" font="ZoFontGameLargeBoldShadow" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Total Kills: Current Kills:" hidden="false">
+            <AnchorFill />
+            <Anchor point="TOPLEFT" offsetX="80" offsetY="135" />
+            </Label> 
+
+<Label name="$(parent)_Stats_Deaths_Count" font="ZoFontGameLargeBoldShadow" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Total Deaths: Current Deaths:" hidden="false">
+<AnchorFill />
+<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)_Stats_Kills_Count"/>
+</Label> 
+
+<Label name="$(parent)_Stats_Streak_Count" font="ZoFontChat" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Longest Kill Streak: Current Kill Streak:" hidden="false">
+<AnchorFill />
+<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)_Stats_Deaths_Count"  />
+</Label>
+
+<Label name="$(parent)_Stats_Death_Streak_Count" font="ZoFontChat" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Longest Death Streak: Current Death Streak:" hidden="false">
+<AnchorFill />
+<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)_Stats_Streak_Count"  />
+</Label>
+
+<Label name="$(parent)_Stats_Killed_Header" font="ZoFontChat" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="You've Killed  Players. They are:" hidden="false">
+<AnchorFill />
+<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)_Stats_Death_Streak_Count" />
+</Label> 
+        -->
+        <Scroll name="$(parent)_Stats_Table" hidden="false">
+
+
+          <AnchorFill />
+
+        </Scroll> 
+        <Scroll name="$(parent)_Seige_Table" hidden="false">
+          
+
+          <AnchorFill />
+        </Scroll> 
+
+      </Controls>
+    </TopLevelControl>
+    <TopLevelControl name="Scene_KC_Menu_Session" inherits="ZO_RightPanelFootPrint" hidden="true">
+      
+      <Controls>
+        <Scroll name="$(parent)_Session_Table">
+          
+
+          <AnchorFill />
+        </Scroll> 
+
+        <Scroll name="$(parent)_Session_Kills_Table">
+          
+
+          <AnchorFill />
+        </Scroll> 
+        
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="Scene_KC_Menu_Kills" inherits="ZO_RightPanelFootPrint" hidden="true">
+      
+      <Controls>
+        <Scroll name="$(parent)_Kills_Table">
+          
+
+          <AnchorFill />
+        </Scroll> 
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="Scene_KC_Menu_Deaths" inherits="ZO_RightPanelFootPrint" hidden="true">
+      
+      <Controls>
+        <Scroll name="$(parent)_Deaths_Table">
+          
+
+          <AnchorFill />
+        </Scroll> 
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="Scene_KC_Menu_Breakdown" inherits="ZO_RightPanelFootPrint" hidden="true">
+      
+      <Controls>
+        <Scroll name="$(parent)_Breakdown_Table">
+          
+
+          <AnchorFill />
+        </Scroll> 
+
+        <Scroll name="$(parent)_Breakdown_Graph">
+          
+
+          <AnchorFill />
+        </Scroll> 
+        <Scroll name="$(parent)_Breakdown_Death_Graph">
+          
+
+          <AnchorFill />
+        </Scroll> 
+      </Controls>
+    </TopLevelControl>
+
+
+    <TopLevelControl name="Scene_KC_Menu_Spells" inherits="ZO_RightPanelFootPrint" hidden="true">
+      
+      <Controls>
+        <Scroll name="$(parent)_Killing_Blows_Table">
+          
+
+          <AnchorFill />
+        </Scroll> 
+      </Controls>
+    </TopLevelControl>
+    
+    <TopLevelControl name="Scene_KC_Menu_Settings" inherits="ZO_RightPanelFootPrint" hidden="true">
+      
+      <Controls>
+        <Scroll name="$(parent)_Table">
+          
+
+          <AnchorFill />
+        </Scroll> 
+
+      </Controls>
+    </TopLevelControl>
+    
+  </Controls>
+</GuiXml>
+

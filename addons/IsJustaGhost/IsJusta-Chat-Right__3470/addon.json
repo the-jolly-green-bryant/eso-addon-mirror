@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/IsJustaGhost/IsJusta-Chat-Right__3470",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IsJustaGhost",
+  "canonical_id": "esoui:3470",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3470",
+  "deleted": false,
+  "directories": [
+    "IsJustaChatRight"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3470/",
+  "fingerprint": "bea21c252ccd0453099c32b2b8e9e2094bad4e2d5ec6a1ee4245a3a7da6de8c4",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3470",
+  "source_url": "https://www.esoui.com/downloads/info3470-IsJustaChatRight.html",
+  "stats": {
+    "downloads": 3164,
+    "favorites": 3,
+    "monthly_downloads": 14
+  },
+  "title": "IsJusta Chat Right",
+  "updated_at": 1663712927000,
+  "version": "1"
+}

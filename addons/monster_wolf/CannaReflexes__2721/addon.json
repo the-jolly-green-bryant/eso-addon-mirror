@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/monster_wolf/CannaReflexes__2721",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "monster_wolf",
+  "canonical_id": "esoui:2721",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2721",
+  "deleted": false,
+  "directories": [
+    "CannaReflexes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2721/",
+  "fingerprint": "4c0632b9991f75a04d7431c0d4d4ea22c4414352380d6c898b97886d4a0ea392",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9208.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2721",
+  "source_url": "https://www.esoui.com/downloads/info2721-CannaReflexes.html",
+  "stats": {
+    "downloads": 3194,
+    "favorites": 4,
+    "monthly_downloads": 11
+  },
+  "title": "CannaReflexes",
+  "updated_at": 1595881215000,
+  "version": "0.0.4"
+}

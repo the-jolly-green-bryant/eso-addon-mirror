@@ -1,0 +1,12 @@
+## Title: Advanced Audio Toggles
+## Author: muh
+## Descriptions: Exposes additional toggles for each audio option individually. E.g. mute just Dialogue when the Augur of the Obscure is too obscure again.
+## Version: 1.0
+## SavedVariables: AdvATogglesDB
+## APIVersion: 100031 100032
+## DependsOn: LibAddonMenu-2.0>=28
+
+AdvAToggles.lua
+AdvATogglesMenu.lua
+
+bindings.xml

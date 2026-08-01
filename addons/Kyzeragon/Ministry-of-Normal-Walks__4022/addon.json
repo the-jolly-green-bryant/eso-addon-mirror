@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Kyzeragon/Ministry-of-Normal-Walks__4022",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyzeragon",
+  "canonical_id": "esoui:4022",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4022",
+  "deleted": false,
+  "directories": [
+    "MinistryOfNormalWalks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4022/",
+  "fingerprint": "7101beac8305f966aa838fc7652650722c860578e8c1ade8b1ff32d34348748b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13680.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4022",
+  "source_url": "https://www.esoui.com/downloads/info4022-MinistryofNormalWalks.html",
+  "stats": {
+    "downloads": 885,
+    "favorites": 3,
+    "monthly_downloads": 7
+  },
+  "title": "Ministry of Normal Walks",
+  "updated_at": 1737007067000,
+  "version": "1.0.0"
+}

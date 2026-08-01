@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Marify/Tamriel-Trade-Centre-jpPatch__2193",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marify",
+  "canonical_id": "esoui:2193",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:2193",
+  "deleted": false,
+  "directories": [
+    "TamrielTradeCentre_jpPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2193/",
+  "fingerprint": "84db7d37869dd49a03b08a922a321f13b11425272a6b70f492432944471c30c6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7479.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2193",
+  "source_url": "https://www.esoui.com/downloads/info2193-TamrielTradeCentrejpPatch.html",
+  "stats": {
+    "downloads": 65554,
+    "favorites": 10,
+    "monthly_downloads": 181
+  },
+  "title": "Tamriel Trade Centre jpPatch",
+  "updated_at": 1691207204000,
+  "version": "0.11.0"
+}

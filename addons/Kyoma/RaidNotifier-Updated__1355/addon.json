@@ -1,0 +1,74 @@
+{
+  "archive_path": "addons/Kyoma/RaidNotifier-Updated__1355",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyoma",
+  "canonical_id": "esoui:1355",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1355",
+  "deleted": false,
+  "directories": [
+    "RaidNotifier"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1355/",
+  "fingerprint": "335434d77679aa030f88ac69377d37d5341522749a77a11a3dcff988a323e1de",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4390.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5805.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1355",
+  "source_url": "https://www.esoui.com/downloads/info1355-RaidNotifierUpdated.html",
+  "stats": {
+    "downloads": 2795876,
+    "favorites": 796,
+    "monthly_downloads": 3638
+  },
+  "title": "RaidNotifier Updated",
+  "updated_at": 1753617650000,
+  "version": "2.30"
+}

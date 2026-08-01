@@ -1,0 +1,8 @@
+## APIVersion: 100016
+## Author: Mersoit
+## Title: Mersoit's Dialogue Disabler For GamePad
+## Notes: Disables Dialogue and background for GamePad.
+## Version: 1.3
+
+
+NoDialogueGamePad.lua

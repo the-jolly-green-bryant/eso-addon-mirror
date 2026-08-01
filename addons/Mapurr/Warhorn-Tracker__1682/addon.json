@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/Mapurr/Warhorn-Tracker__1682",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mapurr",
+  "canonical_id": "esoui:1682",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    },
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:1682",
+  "deleted": false,
+  "directories": [
+    "Warhorn-Tracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1682/",
+  "fingerprint": "b3de4d8d8727718d088b307413a4ec1b5608b39c8c86bf5efe26623194391732",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5551.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5552.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1682",
+  "source_url": "https://www.esoui.com/downloads/info1682-WarhornTracker.html",
+  "stats": {
+    "downloads": 20290,
+    "favorites": 12,
+    "monthly_downloads": 20
+  },
+  "title": "Warhorn Tracker",
+  "updated_at": 1540571868000,
+  "version": "2.0.3"
+}

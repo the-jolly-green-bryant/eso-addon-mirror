@@ -1,0 +1,10 @@
+## Title: MarcelovskiMarkers
+## Author: @|c7777FFMarcelovski|r (PC/EU)
+## Description: Automatic target markers for pvp group leads.
+## APIVersion: 101041 101042
+## Version: 1.4.4
+## IsLibrary: False
+## SavedVariables: MarcelovskiMarkersVariables
+## DependsOn: LibAddonMenu-2.0
+
+MarcelovskiMarkers.lua

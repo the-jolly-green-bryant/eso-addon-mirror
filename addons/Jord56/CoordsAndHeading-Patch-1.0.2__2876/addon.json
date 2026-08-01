@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Jord56/CoordsAndHeading-Patch-1.0.2__2876",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jord56",
+  "canonical_id": "esoui:2876",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2876",
+  "deleted": false,
+  "directories": [
+    "CoordsAndHeading"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2876/",
+  "fingerprint": "2a8f4a7e2097402925aaf4140253e879a4b2e400908cc5c86e57d057b08509d5",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2876",
+  "source_url": "https://www.esoui.com/downloads/info2876-CoordsAndHeadingPatch1.0.2.html",
+  "stats": {
+    "downloads": 2695,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "CoordsAndHeading Patch 1.0.2",
+  "updated_at": 1609006747000,
+  "version": "1.0.2"
+}

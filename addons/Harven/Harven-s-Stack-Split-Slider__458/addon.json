@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Stack-Split-Slider__458",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:458",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:458",
+  "deleted": false,
+  "directories": [
+    "HarvensStackSplitSlider"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl458/",
+  "fingerprint": "93f018017924a9b1bf4bb007c50d67264516845f0e942f583ca1f22645767770",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2382.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "458",
+  "source_url": "https://www.esoui.com/downloads/info458-HarvensStackSplitSlider.html",
+  "stats": {
+    "downloads": 91664,
+    "favorites": 301,
+    "monthly_downloads": 46
+  },
+  "title": "Harven's Stack Split Slider",
+  "updated_at": 1676128485000,
+  "version": "2.0.0"
+}

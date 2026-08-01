@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/imPDA/Improved-PvP-UI__4035",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "imPDA",
+  "canonical_id": "esoui:4035",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4035",
+  "deleted": false,
+  "directories": [
+    "ImprovedPvPUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4035/",
+  "fingerprint": "e6b0e3c50afca30198f4b3a3be519f11d6a5421d511345eae4774c652ba7a9ac",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16093.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13791.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13745.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13746.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13783.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13748.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13751.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13754.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14171.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14203.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4035",
+  "source_url": "https://www.esoui.com/downloads/info4035-ImprovedPvPUI.html",
+  "stats": {
+    "downloads": 7984,
+    "favorites": 20,
+    "monthly_downloads": 132
+  },
+  "title": "Improved PvP UI",
+  "updated_at": 1781190296000,
+  "version": "1.7.5"
+}

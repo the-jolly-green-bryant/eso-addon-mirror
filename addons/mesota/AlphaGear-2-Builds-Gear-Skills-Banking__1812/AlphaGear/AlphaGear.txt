@@ -1,0 +1,36 @@
+## Title: |cFFAA33AlphaGear 2|r v6.17.0
+## APIVersion: 101033 101034
+## Version: 6.17.0
+## SavedVariables: AGX2_Account
+## SavedVariables: AGX2_Character
+## Author: mesota
+## Description: Anything you need to manage your builds. Configurable profiles, builds, skill and gear sets, auto repair and auto weapon charge, deposit and withdraw function. Originally by AlphaLemming.
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: LibZone FCOItemSaver ChampionPointsSlots CSPS
+## IsLibrary: false
+
+lang/en.lua
+lang/$(language).lua
+
+AGSkills17.lua
+
+AlphaGear.lua
+
+plugins/FCOIS/ag_fcois.lua
+
+plugins/AlphaStyle/ag_as.lua
+
+plugins/CPSlots/ag_cpslots.lua
+
+plugins/CSPS/ag_csps.lua
+
+AlphaGearSettings.lua
+
+dialogs/AG_EditProfileDialog.xml
+dialogs/AG_IntegrationsDialog.xml
+dialogs/AG_IntegrationsDialog.lua
+
+
+AlphaGear.xml
+
+Bindings.xml

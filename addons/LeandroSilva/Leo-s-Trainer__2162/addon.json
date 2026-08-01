@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/LeandroSilva/Leo-s-Trainer__2162",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "LeandroSilva",
+  "canonical_id": "esoui:2162",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2162",
+  "deleted": false,
+  "directories": [
+    "LeoTrainer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2162/",
+  "fingerprint": "356a3b563b50435f3c167c25eaee7adfa0d0367b0869f3c17c8eebc479287be3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7472.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7360.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7361.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7362.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2162",
+  "source_url": "https://www.esoui.com/downloads/info2162-LeosTrainer.html",
+  "stats": {
+    "downloads": 47899,
+    "favorites": 74,
+    "monthly_downloads": 243
+  },
+  "title": "Leo's Trainer",
+  "updated_at": 1625566640000,
+  "version": "2.2.3"
+}

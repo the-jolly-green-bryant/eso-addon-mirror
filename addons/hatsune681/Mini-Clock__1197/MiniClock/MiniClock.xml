@@ -1,0 +1,19 @@
+<GuiXml>
+    <Controls>
+	<TopLevelControl name="MiniClockW" mouseEnabled="true" movable="true" clampedToScreen="true">
+	    <Dimensions x="128" y="64" />
+	    <ClampedToScreenInsets left="16" top="17" right="-16" bottom="-17" />
+	    <OnMoveStop>MiniClock:saveWidgetPosition()</OnMoveStop>
+	    <Controls>
+		<Texture name="MiniClockBG" textureFile="/esoui/art/performance/statusmetermunge.dds">
+		    <TextureCoords left="0.125" right="0.875" top="0.375" bottom="0.625" />
+		    <AnchorFill />
+		</Texture>
+		<!--Label name="MiniClockL" font="ZoFontWinH3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" -->
+		<Label name="MiniClockL" font="ZoFontWinT2" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+		    <AnchorFill />
+		</Label>
+	    </Controls>
+    </TopLevelControl>
+</Controls>
+</GuiXml>

@@ -1,0 +1,531 @@
+<GuiXml>
+    <!--
+    File: Modules/CIM/Templates/GenericHeader.xml
+    Purpose: Defines the structure of the custom Gamepad Header.
+    Last Modified: 2026-02-03
+    
+    Visual Hierarchy:
+    1. Tab Bar (Carousel): Top section, scrolling icons.
+    2. Title & Slots: Middle section, dynamic text and equipment icons.
+    3. Column Headers: Bottom section, aligned with grid columns.
+    -->
+    <!--
+        Features:
+        - Tab Bar (Carousel of icons)
+        - Title & Subtitle
+        - Equipment Slot Indicators (Main/Backup)
+        - Grid view column headers
+        - Dividers
+    -->
+    <Controls>
+        <!-- Font Templates -->
+        <Label name="BETTERUI_GamepadScreenHeaderTitleTextTemplate" font="ZoFontGamepad36"
+            horizontalAlignment="LEFT" wrapMode="ELLIPSIS" virtual="true" modifyTextType="UPPERCASE" />
+        <Label name="BETTERUI_GamepadScreenHeaderEquipSlotTemplate" font="ZoFontGamepad34"
+            horizontalAlignment="RIGHT" wrapMode="ELLIPSIS" virtual="true"
+            modifyTextType="UPPERCASE" />
+        <Label name="BETTERUI_GamepadScreenColumnBarTextTemplate" font="ZoFontGamepad27"
+            horizontalAlignment="LEFT" wrapMode="ELLIPSIS" virtual="true" modifyTextType="UPPERCASE" />
+
+        <!-- 
+            Template: Horizontal Divider
+            A 3-part textured divider (Left cap, Center stretch, Right cap).
+        -->
+        <Control name="BETTERUI_GamepadHeaderHorizontalDivider" resizeToFitDescendents="true"
+            virtual="true">
+            <Controls>
+                <Texture name="$(parent)Left"
+                    textureFile="EsoUI/Art/Windows/Gamepad/gp_nav1_horDivider.dds">
+                    <Anchor point="LEFT" />
+                    <Dimensions x="0" y="BETTERUI_DIVIDER_HEIGHT" />
+                    <TextureCoords left="0" right="0.29296875" top="0" bottom="1" />
+                </Texture>
+
+                <Texture name="$(parent)Right"
+                    textureFile="EsoUI/Art/Windows/Gamepad/gp_nav1_horDivider.dds">
+                    <Anchor point="RIGHT" />
+                    <Dimensions x="0" y="BETTERUI_DIVIDER_HEIGHT" />
+                    <TextureCoords left="0.70703125" right="1" top="0" bottom="1" />
+                </Texture>
+
+                <Texture name="$(parent)Center"
+                    textureFile="EsoUI/Art/Windows/Gamepad/gp_nav1_horDivider.dds">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Left" relativePoint="TOPRIGHT" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Right"
+                        relativePoint="BOTTOMLEFT" />
+                    <TextureCoords left="0.29296875" right="0.70703125" top="0" bottom="1" />
+                </Texture>
+            </Controls>
+        </Control>
+
+
+        <!-- Header Anchoring Helper -->
+        <Control name="BETTERUI_GamepadHeaderTitleAnchors" virtual="true">
+            <Anchor point="TOPLEFT" />
+            <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
+        </Control>
+
+        <!-- 
+            Template: Tab Bar Button
+            A single icon in the tab bar (e.g., Helmet icon).
+        -->
+        <Control name="BETTERUI_GamepadTabBarTemplate" mouseEnabled="true" virtual="true">
+            <!-- Uses BETTERUI_TABBAR_ICON_WIDTH constant defined in BetterUI.CONST.lua -->
+            <Dimensions x="BETTERUI_TABBAR_ICON_WIDTH" y="BETTERUI_TABBAR_ICON_WIDTH" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="BETTERUI_TABBAR_ICON_WIDTH" />
+            <OnInitialized>
+                ZO_GamepadTabBarTemplate_OnInitialized(self)
+            </OnInitialized>
+            <OnMouseUp>
+                BETTERUI_TabBar_OnCategoryIconClicked(self)
+            </OnMouseUp>
+            <Controls>
+                <Texture name="$(parent)Icon">
+                    <Dimensions x="40" y="40" />
+                    <Anchor point="CENTER" relativeTo="$(parent)"
+                        offsetY="BETTERUI_HEADER_BUMPER_ICON_Y_OFFSET" />
+                </Texture>
+                <!-- Hidden label required for ZO_GamepadMenuHeaderTemplate compatibility -->
+                <Label name="$(parent)Label" font="ZoFontGamepad18" hidden="true">
+                    <Dimensions x="1" y="1" />
+                </Label>
+                <!-- Category item count badge - positioned ABOVE the icon, shown only when selected -->
+                <Label name="$(parent)CountBadge" font="ZoFontGamepad27"
+                    horizontalAlignment="CENTER"
+                    wrapMode="TRUNCATE" hidden="true">
+                    <Dimensions x="100" y="36" />
+                    <Anchor point="BOTTOM" relativeTo="$(parent)Icon" relativePoint="TOP"
+                        offsetY="-4" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <!-- 
+            Template: Tab Bar Scroll ListContainer
+            Holds the scrolling list of tab icons.
+        -->
+        <Control name="BETTERUI_GamepadTabBarScrollListTemplate" virtual="true">
+            <Anchor point="TOPLEFT" offsetY="BETTERUI_HEADER_TABBAR_Y_OFFSET" />
+            <Dimensions x="BETTERUI_GAMEPAD_DEFAULT_PANEL_CONTAINER_WIDTH"
+                y="BETTERUI_HEADER_TABBAR_HEIGHT" />
+            <Controls>
+                <Scroll name="$(parent)Scroll">
+                    <Dimensions x="BETTERUI_GAMEPAD_DEFAULT_PANEL_CONTAINER_WIDTH"
+                        y="BETTERUI_HEADER_TABBAR_HEIGHT" />
+                </Scroll>
+            </Controls>
+        </Control>
+
+        <!-- 
+            Template: Generic Screen Header
+            Main header implementation. Includes TabBar, Title, and Dividers.
+        -->
+        <Control name="BETTERUI_GamepadGenericScreenHeader" resizeToFitDescendents="true"
+            virtual="true">
+            <Anchor point="TOPLEFT" />
+            <Anchor point="TOPRIGHT" offsetY="BETTERUI_HEADER_Y_OFFSET" />
+
+            <Controls>
+                <Control name="$(parent)TabBar" inherits="BETTERUI_GamepadTabBarScrollListTemplate"
+                    hidden="false">
+                    <Anchor point="TOPLEFT" offsetY="BETTERUI_HEADER_TABBAR_LIST_Y_OFFSET" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
+                    <Controls>
+
+                        <Button name="$(parent)SelectedBg">
+                            <Dimensions x="50" y="25" />
+                            <Anchor point="CENTER" relativeTo="$(parent)" offsetY="32" />
+                            <Textures normal="BetterUI/Modules/CIM/Images/select_tabbar.dds" />
+                        </Button>
+
+                        <Button name="$(parent)LeftIcon">
+                            <Dimensions x="BETTERUI_HEADER_BUMPER_ICON_SIZE"
+                                y="BETTERUI_HEADER_BUMPER_ICON_SIZE" />
+                            <Anchor point="LEFT" relativeTo="$(parent)"
+                                offsetX="-5" offsetY="BETTERUI_HEADER_BUMPER_ICON_Y_OFFSET" />
+                            <Textures normal="EsoUI/Art/Buttons/Gamepad/Xbox/Nav_XBone_LB.dds" />
+                            <OnClicked>
+                                BETTERUI_TabBar_OnLeftIconClicked(self)
+                            </OnClicked>
+                        </Button>
+                        <Button name="$(parent)RightIcon">
+                            <Dimensions x="BETTERUI_HEADER_BUMPER_ICON_SIZE"
+                                y="BETTERUI_HEADER_BUMPER_ICON_SIZE" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)" offsetX="0"
+                                offsetY="BETTERUI_HEADER_BUMPER_ICON_Y_OFFSET" />
+                            <Textures normal="EsoUI/Art/Buttons/Gamepad/Xbox/Nav_XBone_RB.dds" />
+                            <OnClicked>
+                                BETTERUI_TabBar_OnRightIconClicked(self)
+                            </OnClicked>
+                        </Button>
+
+
+                        <Control name="$(parent)DividerBottomF"
+                            inherits="BETTERUI_GamepadHeaderHorizontalDivider">
+                            <Anchor point="LEFT" relativeTo="$(parent)parent"
+                                relativePoint="BOTTOMLEFT" offsetX="0" />
+                            <!-- Value matches BETTERUI.CONST.HEADER_LAYOUT.DIVIDER.OFFSET_Y -->
+                            <Anchor point="RIGHT" relativeTo="$(parent)parent"
+                                relativePoint="BOTTOMRIGHT" offsetX="0"
+                                offsetY="BETTERUI_HEADER_DIVIDER_OFFSET_Y" />
+                        </Control>
+                        <Control name="$(parent)DividerBottomS"
+                            inherits="BETTERUI_GamepadHeaderHorizontalDivider">
+                            <Anchor point="LEFT" relativeTo="$(parent)parent"
+                                relativePoint="BOTTOMLEFT" offsetX="0" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)parent"
+                                relativePoint="BOTTOMRIGHT" offsetX="0"
+                                offsetY="BETTERUI_HEADER_DIVIDER_OFFSET_Y_SPACED" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)TitleContainer"
+                    inherits="BETTERUI_GamepadHeaderTitleAnchors">
+                    <Controls>
+                        <Label name="$(parent)Title"
+                            inherits="BETTERUI_GamepadScreenHeaderTitleTextTemplate"
+                            text="SI_BETTERUI_FULL_INVENTORY_ALL" color="FFFFFF" hidden="false">
+                            <Anchor point="LEFT" />
+                        </Label>
+
+                        <!-- Backup Equip Text/Icons -->
+                        <Label name="$(parent)BackupEquipText"
+                            inherits="BETTERUI_GamepadScreenHeaderEquipSlotTemplate"
+                            text="SI_BETTERUI_EQUIP"
+                            hidden="false">
+                            <Anchor point="RIGHT" offsetX="-210"
+                                offsetY="BETTERUI_HEADER_EQUIP_ROW_Y_OFFSET" />
+                        </Label>
+
+                        <Texture name="$(parent)BackupMainHandIcon"
+                            textureFile="/esoui/art/inventory/inventory_slot.dds">
+                            <Dimensions x="40" y="40" />
+                            <Anchor point="RIGHT" offsetX="-155"
+                                offsetY="BETTERUI_HEADER_EQUIP_ROW_Y_OFFSET" />
+                        </Texture>
+
+                        <Texture name="$(parent)BackupOffHandIcon"
+                            textureFile="/esoui/art/inventory/inventory_slot.dds">
+                            <Dimensions x="40" y="40" />
+                            <Anchor point="RIGHT" offsetX="-110"
+                                offsetY="BETTERUI_HEADER_EQUIP_ROW_Y_OFFSET" />
+                        </Texture>
+
+                        <Texture name="$(parent)BackupPoisonIcon"
+                            textureFile="/esoui/art/inventory/inventory_slot.dds">
+                            <Dimensions x="40" y="40" />
+                            <Anchor point="RIGHT" offsetX="-65"
+                                offsetY="BETTERUI_HEADER_EQUIP_ROW_Y_OFFSET" />
+                        </Texture>
+
+                        <!-- Main Equip Text/Icons -->
+                        <Label name="$(parent)EquipText"
+                            inherits="BETTERUI_GamepadScreenHeaderEquipSlotTemplate"
+                            text="SI_BETTERUI_EQUIP"
+                            hidden="false">
+                            <Anchor point="RIGHT" relativeTo="$(parent)BackupEquipText"
+                                relativePoint="LEFT" offsetX="-210" />
+                        </Label>
+
+                        <Texture name="$(parent)MainHandIcon"
+                            textureFile="/esoui/art/inventory/inventory_slot.dds">
+                            <Dimensions x="40" y="40" />
+                            <!-- Offsets match BETTERUI.CONST.HEADER_LAYOUT.EQUIP_SLOT and OFFSETS -->
+                            <Anchor point="RIGHT" relativeTo="$(parent)BackupEquipText"
+                                relativePoint="LEFT" offsetX="-155" />
+                        </Texture>
+
+                        <Texture name="$(parent)OffHandIcon"
+                            textureFile="/esoui/art/inventory/inventory_slot.dds">
+                            <Dimensions x="40" y="40" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)BackupEquipText"
+                                relativePoint="LEFT" offsetX="-110" />
+                        </Texture>
+
+                        <Texture name="$(parent)PoisonIcon"
+                            textureFile="/esoui/art/inventory/inventory_slot.dds">
+                            <Dimensions x="40" y="40" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)BackupEquipText"
+                                relativePoint="LEFT" offsetX="-65" />
+                        </Texture>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)DividerBottom"
+                    inherits="BETTERUI_GamepadHeaderHorizontalDivider">
+                    <Anchor point="LEFT" relativeTo="$(parent)TabBar" relativePoint="BOTTOMLEFT"
+                        offsetX="0" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)TabBar" relativePoint="BOTTOMRIGHT"
+                        offsetX="0" offsetY="BETTERUI_HEADER_BOTTOM_DIVIDER_Y_OFFSET" />
+                </Control>
+
+                <!-- 
+                    Column Headers
+                    These labels anchor to fixed X offsets to match the grid columns.
+                    Offsets match BETTERUI.CONST.HEADER_LAYOUT.COLUMNS.
+                -->
+                <Control name="$(parent)ColumnBar" inherits="BETTERUI_GamepadHeaderTitleAnchors">
+                    <Controls>
+                        <Label name="$(parent)Column1Label"
+                            inherits="BETTERUI_GamepadScreenColumnBarTextTemplate"
+                            text="SI_BETTERUI_BANKING_COLUMN_NAME">
+                            <Anchor point="LEFT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMLEFT" offsetX="80" />
+                            <!-- Matches BETTERUI.CONST.HEADER_LAYOUT.COLUMNS.NAME -->
+                            <Anchor point="RIGHT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="95" />
+                        </Label>
+                        <Label name="$(parent)Column2Label"
+                            inherits="BETTERUI_GamepadScreenColumnBarTextTemplate"
+                            text="SI_BETTERUI_BANKING_COLUMN_TYPE">
+                            <Anchor point="LEFT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMLEFT" offsetX="592" />
+                            <!-- Matches BETTERUI.CONST.HEADER_LAYOUT.COLUMNS.TYPE -->
+                            <Anchor point="RIGHT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMRIGHT" offsetX="0"
+                                offsetY="BETTERUI_HEADER_COLUMN_HEADER_Y_OFFSET" />
+                        </Label>
+                        <Label name="$(parent)Column4Label"
+                            inherits="BETTERUI_GamepadScreenColumnBarTextTemplate"
+                            text="SI_BETTERUI_BANKING_COLUMN_TRAIT">
+                            <Anchor point="LEFT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMLEFT" offsetX="852" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMRIGHT" offsetX="0"
+                                offsetY="BETTERUI_HEADER_COLUMN_HEADER_Y_OFFSET" />
+                        </Label>
+                        <Label name="$(parent)Column6Label"
+                            inherits="BETTERUI_GamepadScreenColumnBarTextTemplate"
+                            text="SI_BETTERUI_BANKING_COLUMN_STAT">
+                            <Anchor point="LEFT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMLEFT" offsetX="1042" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMRIGHT" offsetX="0"
+                                offsetY="BETTERUI_HEADER_COLUMN_HEADER_Y_OFFSET" />
+                        </Label>
+                        <Label name="$(parent)Column5Label"
+                            inherits="BETTERUI_GamepadScreenColumnBarTextTemplate"
+                            text="SI_BETTERUI_BANKING_COLUMN_VALUE">
+                            <Anchor point="LEFT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMLEFT" offsetX="1192" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMRIGHT" offsetX="0"
+                                offsetY="BETTERUI_HEADER_COLUMN_HEADER_Y_OFFSET" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+            </Controls>
+        </Control>
+
+        <!-- Template Wrapper for Header -->
+        <Control name="BETTERUI_GamepadScreenHeaderContainer" virtual="true">
+            <Dimensions y="115" />
+            <Controls>
+                <Control name="$(parent)Header" inherits="BETTERUI_GamepadGenericScreenHeader">
+                    <OnInitialized>
+                        self:GetParent().header = self
+                    </OnInitialized>
+                </Control>
+            </Controls>
+        </Control>
+
+        <!-- 
+            Template: Browse Results Header
+            Specialized header for Guils Store Browse results.
+        -->
+        <Control name="BETTERUI_Header_BrowseResults" resizeToFitDescendents="true" virtual="true">
+            <Anchor point="TOPLEFT" />
+            <Anchor point="TOPRIGHT" offsetY="BETTERUI_HEADER_Y_OFFSET" />
+
+            <Controls>
+                <Control name="$(parent)TabBar" inherits="BETTERUI_GamepadTabBarScrollListTemplate"
+                    hidden="false">
+                    <Anchor point="TOPLEFT" offsetY="BETTERUI_HEADER_TABBAR_LIST_Y_OFFSET" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
+                    <Controls>
+
+                        <Control name="$(parent)DividerBottomF"
+                            inherits="BETTERUI_GamepadHeaderHorizontalDivider">
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT"
+                                offsetX="0" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"
+                                offsetX="-BETTERUI_GAMEPAD_DEFAULT_HORIZ_PADDING"
+                                offsetY="BETTERUI_HEADER_DIVIDER_OFFSET_Y" />
+                        </Control>
+                        <Control name="$(parent)DividerBottomS"
+                            inherits="BETTERUI_GamepadHeaderHorizontalDivider">
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT"
+                                offsetX="0" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"
+                                offsetX="-BETTERUI_GAMEPAD_DEFAULT_HORIZ_PADDING"
+                                offsetY="BETTERUI_HEADER_DIVIDER_OFFSET_Y_SPACED" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)TitleContainer"
+                    inherits="BETTERUI_GamepadHeaderTitleAnchors">
+                    <Controls>
+                        <Label name="$(parent)Title"
+                            inherits="BETTERUI_GamepadScreenHeaderTitleTextTemplate"
+                            text="SI_BETTERUI_BROWSE_LISTINGS" color="FFFFFF" hidden="false">
+                            <Anchor point="LEFT" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+
+                <Control name="$(parent)DividerBottom"
+                    inherits="BETTERUI_GamepadHeaderHorizontalDivider">
+                    <Anchor point="LEFT" relativeTo="$(parent)TabBar" relativePoint="BOTTOMLEFT"
+                        offsetX="0" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)TabBar" relativePoint="BOTTOMRIGHT"
+                        offsetX="-BETTERUI_GAMEPAD_DEFAULT_HORIZ_PADDING" offsetY="110" />
+                </Control>
+
+                <!-- Browse Columns -->
+                <Control name="$(parent)ColumnBar" inherits="BETTERUI_GamepadHeaderTitleAnchors">
+                    <Controls>
+                        <Label name="$(parent)Column1Label"
+                            inherits="BETTERUI_GamepadScreenColumnBarTextTemplate"
+                            text="SI_BETTERUI_BROWSE_NAME">
+                            <Anchor point="LEFT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMLEFT" offsetX="25" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="95" />
+                        </Label>
+                        <Label name="$(parent)Column2Label"
+                            inherits="BETTERUI_GamepadScreenColumnBarTextTemplate"
+                            text="SI_BETTERUI_BROWSE_SELLER">
+                            <Anchor point="LEFT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMLEFT" offsetX="385" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="95" />
+                        </Label>
+                        <Label name="$(parent)Column3Label"
+                            inherits="BETTERUI_GamepadScreenColumnBarTextTemplate"
+                            text="SI_BETTERUI_BROWSE_TIME_LEFT">
+                            <Anchor point="LEFT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMLEFT" offsetX="535" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="95" />
+                        </Label>
+                        <Label name="$(parent)Column4Label"
+                            inherits="BETTERUI_GamepadScreenColumnBarTextTemplate"
+                            text="SI_BETTERUI_BROWSE_PROFIT">
+                            <Anchor point="LEFT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMLEFT" offsetX="630" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="95" />
+                        </Label>
+                        <Label name="$(parent)Column5Label"
+                            inherits="BETTERUI_GamepadScreenColumnBarTextTemplate"
+                            text="SI_BETTERUI_BROWSE_PRICE">
+                            <Anchor point="LEFT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMLEFT" offsetX="775" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)TabBar"
+                                relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="95" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+            </Controls>
+        </Control>
+
+        <Control name="BETTERUI_Header_BrowseResults_Container" virtual="true">
+            <Dimensions y="115" x="BETTERUI_GAMEPAD_DEFAULT_LIST_ENTRY_WIDTH" />
+            <Controls>
+                <Control name="$(parent)Header" inherits="BETTERUI_Header_BrowseResults">
+                    <Dimensions y="115" x="BETTERUI_GAMEPAD_DEFAULT_LIST_ENTRY_WIDTH" />
+                    <OnInitialized>
+                        self:GetParent().header = self
+                    </OnInitialized>
+                </Control>
+            </Controls>
+        </Control>
+
+        <!-- Legacy/Fallback Header -->
+        <Control name="BETTERUI_GenericHeader" resizeToFitDescendents="true" virtual="true">
+            <Anchor point="TOPLEFT" />
+            <Anchor point="TOPRIGHT" />
+
+            <Controls>
+                <Control name="$(parent)TabBar" inherits="BETTERUI_GamepadTabBarScrollListTemplate"
+                    hidden="false">
+                    <Anchor point="TOPLEFT" offsetY="BETTERUI_HEADER_TABBAR_LIST_Y_OFFSET" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
+                    <Controls>
+                        <Button name="$(parent)LeftIcon">
+                            <Dimensions x="60" y="60" />
+                            <Anchor point="LEFT" relativeTo="$(parent)" offsetY="5" />
+                            <Textures normal="EsoUI/Art/Buttons/Gamepad/Xbox/Nav_XBone_LB.dds" />
+                            <OnClicked>
+                                TRADING_HOUSE_GAMEPAD.m_header.tabBar:MovePrevious(true)
+                            </OnClicked>
+                        </Button>
+                        <Button name="$(parent)RightIcon">
+                            <Dimensions x="60" y="60" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)" offsetX="-50" offsetY="5" />
+                            <Textures normal="EsoUI/Art/Buttons/Gamepad/Xbox/Nav_XBone_RB.dds" />
+                            <OnClicked>
+                                TRADING_HOUSE_GAMEPAD.m_header.tabBar:MoveNext(true)
+                            </OnClicked>
+                        </Button>
+
+
+                        <Control name="$(parent)DividerBottomF"
+                            inherits="BETTERUI_GamepadHeaderHorizontalDivider">
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT"
+                                offsetX="0" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"
+                                offsetX="-BETTERUI_GAMEPAD_DEFAULT_HORIZ_PADDING_OTHER"
+                                offsetY="BETTERUI_HEADER_DIVIDER_OFFSET_Y" />
+                        </Control>
+                        <Control name="$(parent)DividerBottomS"
+                            inherits="BETTERUI_GamepadHeaderHorizontalDivider">
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT"
+                                offsetX="0" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"
+                                offsetX="-BETTERUI_GAMEPAD_DEFAULT_HORIZ_PADDING_OTHER"
+                                offsetY="BETTERUI_HEADER_DIVIDER_OFFSET_Y_SPACED" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)TitleContainer"
+                    inherits="BETTERUI_GamepadHeaderTitleAnchors">
+                    <Controls>
+                        <Label name="$(parent)Title"
+                            inherits="BETTERUI_GamepadScreenHeaderTitleTextTemplate"
+                            text="" hidden="false">
+                            <Anchor point="LEFT" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)DividerBottom"
+                    inherits="BETTERUI_GamepadHeaderHorizontalDivider">
+                    <Anchor point="LEFT" relativeTo="$(parent)TabBar" relativePoint="BOTTOMLEFT"
+                        offsetX="0" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)TabBar" relativePoint="BOTTOMRIGHT"
+                        offsetX="-BETTERUI_GAMEPAD_DEFAULT_HORIZ_PADDING_OTHER" offsetY="110" />
+                </Control>
+            </Controls>
+        </Control>
+
+        <Control name="BETTERUI_GenericHeader_Container" virtual="true">
+            <Dimensions y="115" x="BETTERUI_GAMEPAD_DEFAULT_LIST_ENTRY_WIDTH" />
+            <Controls>
+                <Control name="$(parent)Header" inherits="BETTERUI_GenericHeader">
+                    <Dimensions y="115" x="BETTERUI_GAMEPAD_DEFAULT_LIST_ENTRY_WIDTH" />
+                    <OnInitialized>
+                        self:GetParent().header = self
+                    </OnInitialized>
+                </Control>
+            </Controls>
+        </Control>
+
+    </Controls>
+</GuiXml>

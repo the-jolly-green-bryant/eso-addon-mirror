@@ -1,0 +1,3 @@
+1.4.2
+
+- Bug fix for Pledge Detection -> Thanks Andy22 for reporting !

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/g4rr3t/Grim-Focus-Counter__1918",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "g4rr3t",
+  "canonical_id": "esoui:1918",
+  "category_id": "152",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:1918",
+  "deleted": false,
+  "directories": [
+    "GrimFocusCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1918/",
+  "fingerprint": "8e2a98f86e133afe894166c939762b0e1792e68f432edcc0f8653cfcb49ca121",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6494.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1918",
+  "source_url": "https://www.esoui.com/downloads/info1918-GrimFocusCounter.html",
+  "stats": {
+    "downloads": 217609,
+    "favorites": 143,
+    "monthly_downloads": 290
+  },
+  "title": "Grim Focus Counter",
+  "updated_at": 1692772466000,
+  "version": "1.6.0"
+}

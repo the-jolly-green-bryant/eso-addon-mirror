@@ -1,0 +1,5 @@
+## APIVersion: 100034
+## Title: Baandari Trading Post
+## Author: Kawamonkey
+
+BaandariTradingPost.lua

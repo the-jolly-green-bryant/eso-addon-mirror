@@ -1,0 +1,67 @@
+{
+  "archive_path": "addons/marlonbrando/CyroDeal-Module-CyroLeader---tools-for-group-leaders__3309",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "marlonbrando",
+  "canonical_id": "esoui:3309",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3309",
+  "deleted": false,
+  "directories": [
+    "CyroLeader"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3309/",
+  "fingerprint": "b57f8c38256c0eb2d0a40e8538dd0ab8dc8df9c0368ec9192520ce418e6e54ef",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3309",
+  "source_url": "https://www.esoui.com/downloads/info3309-CyroDealModuleCyroLeader-toolsforgroupleaders.html",
+  "stats": {
+    "downloads": 2843,
+    "favorites": 1,
+    "monthly_downloads": 11
+  },
+  "title": "CyroDeal Module: CyroLeader - tools for group leaders",
+  "updated_at": 1654469223000,
+  "version": "1.03"
+}

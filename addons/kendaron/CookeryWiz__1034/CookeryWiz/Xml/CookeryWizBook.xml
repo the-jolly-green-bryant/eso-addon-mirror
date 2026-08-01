@@ -1,0 +1,31 @@
+<GuiXml>
+  <Controls>
+  
+    <Control name="CookeryWizBookTemplate" mouseEnabled="true" tier="MEDIUM" layer="CONTROLS" virtual="true">
+			<Controls>    
+        <Label name="$(parent)Title" text="(Title)" font="ZoFontGameShadow">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5"/>
+        </Label>
+      </Controls>
+    </Control>
+    
+    <Control name="CookeryWizChapterTemplate" mouseEnabled="true" tier="MEDIUM" layer="CONTROLS" virtual="true">
+			<Controls>    
+        <Label name="$(parent)Title" text="(Title)" font="ZoFontGameShadow">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5"/>
+        </Label>
+      </Controls>
+    </Control>
+    
+    <Control name="CookeryWizPageTemplate" mouseEnabled="true" tier="MEDIUM" layer="CONTROLS" virtual="true">
+			<Controls>
+        <EditBox name="$(parent)Text" inherits="ZO_DefaultEditForBackdrop" alpha="0.9" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" font="ZoFontGameShadow">      
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5"/>
+        </EditBox>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>      

@@ -1,0 +1,10 @@
+## Title: KWerewolfTracker
+## APIVersion: 101050 101051
+## Version: 1.1.0
+## Author: |cFF9B15@Zaan's|r
+## SavedVariables: KWerewolfTrackerSaved
+## Description: Tracks active timers, and stack counts.
+## DependsOn: LibAddonMenu-2.0>=43
+## AI-Generated: Ðeveloped with the assistance of Google Gemini.
+
+KWerewolfTracker.lua

@@ -1,0 +1,31 @@
+Version 3.0.1
+----------
+*Dependacy version bump
+
+Version 3.0
+----------
+Added the ability to have combined boss bars for certain encounters (like Shapers of Flesh)
+Removed old system for boss thresholds - now it will only draw on Crutch Alerts thresholds and local mechanic thresholds
+*Bug Fix: Some Edge case bug fixes causing UI to dissapear before it was supposed to
+*API Bump
+
+
+Version 2.3
+----------
+Added a setting to choose what is shown on the health bar for the number format (instead of using the base game setting).
+*Bug fix: Refreshes thresholds at max health change, to fix edge case hardmode scenarios like Lep Seclusa first boss
+*API Bump
+
+Version 2.2
+----------
+*Bug fix: Updated support for latest crutch version removing aliases
+
+Version 2.1
+----------
+*Bug fix: Left a temporary global table in the code, fixed now to be the proper name.
+*Bug fix: Fixed Font Alignment for U41
+*API Bump
+
+Version 2.0
+----------
+Forked from ABB, initial commit

@@ -1,0 +1,135 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CerconePjDuel" clampedToScreen="true" movable="true" mouseEnabled="true" hidden="true" resizeHandleSize="10">
+            <Dimensions x="250" y="250"/>
+            <Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" offsetX="-1000" offsetY="20" />
+            <Controls>
+                <Label name="PjNameDuel" text="Seleccione Pj" font="ZoFontWinH2" verticalAlignment="TOP" horizontalAlignment="CENTER" fontSize="15">
+                    <Anchor point="TOP" relativeTo="CerconePjDuel" relativePoint="TOP" offsetY="150" />
+                    <Dimensions x="250" y="15"/>
+                </Label>
+                <Label name="PjHPDuel" text="--" font="ZoFontGameLarge" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+                    <Anchor point="TOP" relativeTo="CerconePjDuel" relativePoint="TOP" offsetX="0" offsetY="62" />
+                </Label>
+                <Label name="PjDefDuel" text="--" font="ZoFontGameLarge" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+                    <Anchor point="TOP" relativeTo="PjHPDuel" relativePoint="BOTTOM" offsetX="0" offsetY="7" />
+                </Label>
+                <Label name="PjMagickaDuel" text="--" font="ZoFontGameLarge" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+                    <Anchor point="TOP" relativeTo="PjDefDuel" relativePoint="BOTTOM" offsetX="0" offsetY="7" />
+                </Label>
+                <Texture name="CombatUI" textureFile="CerconeAddon/Assets/Combat/Combat_Interface.dds">
+                    <Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" offsetX="0" offsetY="0" />
+                    <Dimensions x="250" y="250"/>
+                </Texture>
+
+                <Texture name="MasHpTexture" textureFile="CerconeAddon/Assets/Combat/boton_mas.dds">
+                    <Anchor point="TOP" relativeTo="PjHPDuel" relativePoint="CENTER" offsetX="50"  offsetY="-11" />
+                    <Dimensions x="25" y="25" />
+                    <OnMouseEnter>
+                        self:SetTexture("CerconeAddon/Assets/Scroll/X.Mark.dds")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        self:SetTexture("CerconeAddon/Assets/Scroll/X.dds")
+                    </OnMouseExit>
+                </Texture>
+                <Button name="MasHpButton" mouseover="CerconeAddon/Assets/Combat/boton_mas.dds" mouseDown="CerconeAddon/Assets/Combat/boton_mas.dds">
+                    <Anchor point="TOP" relativeTo="PjHPDuel" relativePoint="CENTER" offsetX="50"  offsetY="-11" />
+                    <Dimensions x="25" y="25" />
+                    <OnClicked>
+                        CerconeAddon.AddHp()
+                    </OnClicked>
+                </Button>
+
+                <Texture name="MenosHpTexture" textureFile="CerconeAddon/Assets/Combat/boton_menos.dds">
+                    <Anchor point="TOP" relativeTo="PjHPDuel" relativePoint="CENTER" offsetX="-50"  offsetY="-11" />
+                    <Dimensions x="25" y="25" />
+                    <OnMouseEnter>
+                        self:SetTexture("CerconeAddon/Assets/Scroll/X.Mark.dds")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        self:SetTexture("CerconeAddon/Assets/Scroll/X.dds")
+                    </OnMouseExit>
+                </Texture>
+                <Button name="MenosHpButton" mouseover="CerconeAddon/Assets/Combat/boton_menos.dds" mouseDown="CerconeAddon/Assets/Combat/boton_menos.dds">
+                    <Anchor point="TOP" relativeTo="PjHPDuel" relativePoint="CENTER" offsetX="-50"  offsetY="-11" />
+                    <Dimensions x="25" y="25" />
+                    <OnClicked>
+                        CerconeAddon.DiscHp()
+                    </OnClicked>
+                </Button>
+
+                <Texture name="MasDefTexture" textureFile="CerconeAddon/Assets/Combat/boton_mas.dds">
+                    <Anchor point="TOP" relativeTo="PjDefDuel" relativePoint="CENTER" offsetX="50"  offsetY="-11" />
+                    <Dimensions x="25" y="25" />
+                    <OnMouseEnter>
+                        self:SetTexture("CerconeAddon/Assets/Scroll/X.Mark.dds")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        self:SetTexture("CerconeAddon/Assets/Scroll/X.dds")
+                    </OnMouseExit>
+                </Texture>
+                <Button name="MasDefButton" mouseover="CerconeAddon/Assets/Combat/boton_mas.dds" mouseDown="CerconeAddon/Assets/Combat/boton_mas.dds">
+                    <Anchor point="TOP" relativeTo="PjDefDuel" relativePoint="CENTER" offsetX="50"  offsetY="-11" />
+                    <Dimensions x="25" y="25" />
+                    <OnClicked>
+                        CerconeAddon.AddDef()
+                    </OnClicked>
+                </Button>
+
+                <Texture name="MenosDefTexture" textureFile="CerconeAddon/Assets/Combat/boton_menos.dds">
+                    <Anchor point="TOP" relativeTo="PjDefDuel" relativePoint="CENTER" offsetX="-50"  offsetY="-11" />
+                    <Dimensions x="25" y="25" />
+                    <OnMouseEnter>
+                        self:SetTexture("CerconeAddon/Assets/Scroll/X.Mark.dds")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        self:SetTexture("CerconeAddon/Assets/Scroll/X.dds")
+                    </OnMouseExit>
+                </Texture>
+                <Button name="MenosDefButton" mouseover="CerconeAddon/Assets/Combat/boton_menos.dds" mouseDown="CerconeAddon/Assets/Combat/boton_menos.dds">
+                    <Anchor point="TOP" relativeTo="PjDefDuel" relativePoint="CENTER" offsetX="-50"  offsetY="-11" />
+                    <Dimensions x="25" y="25" />
+                    <OnClicked>
+                        CerconeAddon.DiscDefp()
+                    </OnClicked>
+                </Button>
+
+                <Texture name="MasMagTexture" textureFile="CerconeAddon/Assets/Combat/boton_mas.dds">
+                    <Anchor point="TOP" relativeTo="PjMagickaDuel" relativePoint="CENTER" offsetX="50"  offsetY="-11" />
+                    <Dimensions x="25" y="25" />
+                    <OnMouseEnter>
+                        self:SetTexture("CerconeAddon/Assets/Scroll/X.Mark.dds")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        self:SetTexture("CerconeAddon/Assets/Scroll/X.dds")
+                    </OnMouseExit>
+                </Texture>
+                <Button name="MasMagButton" mouseover="CerconeAddon/Assets/Combat/boton_mas.dds" mouseDown="CerconeAddon/Assets/Combat/boton_mas.dds">
+                    <Anchor point="TOP" relativeTo="PjMagickaDuel" relativePoint="CENTER" offsetX="50"  offsetY="-11" />
+                    <Dimensions x="25" y="25" />
+                    <OnClicked>
+                        CerconeAddon.AddMag()
+                    </OnClicked>
+                </Button>
+
+                <Texture name="MenosmagTexture" textureFile="CerconeAddon/Assets/Combat/boton_menos.dds">
+                    <Anchor point="TOP" relativeTo="PjMagickaDuel" relativePoint="CENTER" offsetX="-50"  offsetY="-11" />
+                    <Dimensions x="25" y="25" />
+                    <OnMouseEnter>
+                        self:SetTexture("CerconeAddon/Assets/Scroll/X.Mark.dds")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        self:SetTexture("CerconeAddon/Assets/Scroll/X.dds")
+                    </OnMouseExit>
+                </Texture>
+                <Button name="MenosMagButton" mouseover="CerconeAddon/Assets/Combat/boton_menos.dds" mouseDown="CerconeAddon/Assets/Combat/boton_menos.dds">
+                    <Anchor point="TOP" relativeTo="PjMagickaDuel" relativePoint="CENTER" offsetX="-50"  offsetY="-11" />
+                    <Dimensions x="25" y="25" />
+                    <OnClicked>
+                        CerconeAddon.DiscMag()
+                    </OnClicked>
+                </Button>
+            </Controls>            
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

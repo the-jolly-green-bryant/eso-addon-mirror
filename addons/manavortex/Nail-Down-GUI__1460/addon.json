@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/manavortex/Nail-Down-GUI__1460",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1460",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    }
+  ],
+  "content_id": "esoui:1460",
+  "deleted": false,
+  "directories": [
+    "NailDownGui"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1460/",
+  "fingerprint": "da23191c8994e44941126da9d96f1a3d6721333a72001f74b78171480a26ebeb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4747.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1460",
+  "source_url": "https://www.esoui.com/downloads/info1460-NailDownGUI.html",
+  "stats": {
+    "downloads": 3773,
+    "favorites": 2,
+    "monthly_downloads": 13
+  },
+  "title": "Nail Down GUI",
+  "updated_at": 1473002787000,
+  "version": "0.1b"
+}

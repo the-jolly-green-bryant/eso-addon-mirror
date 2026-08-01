@@ -1,0 +1,11 @@
+## Title: |cEFEBBENo Compass|r
+## Notes: Removes the compass
+## APIVersion: 101034
+## AddOnVersion: 11
+## Version: 11.101034
+## Author: |cEFEBBEhatsune681|r
+## SavedVariables: NoCompassVars
+## Description: This addon hides the compass and allow to show and hide it with |c00ff00/compno|r and |c00ff00/compyes|r commands
+
+NoCompass.lua
+bindings.xml

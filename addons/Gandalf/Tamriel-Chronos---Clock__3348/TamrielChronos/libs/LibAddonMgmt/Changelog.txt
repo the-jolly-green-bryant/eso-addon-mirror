@@ -1,0 +1,36 @@
+-----------------------------------------------------------------------------
+-- 					      									               --
+-- 	Title:		 AddOn Management (LibAddonMgmt)                           --
+--	Author: 	 Gandalf (@Gandalf2675)								  	   --
+-- 					      									               --
+-----------------------------------------------------------------------------
+
+Changelog:
+
+29.07.22 v1.1.5
+- New: ESO Update 35 (Lost Depths) API Version 101035
+
+19.04.22 v1.1.4
+ - New: ESO Update 34 (High Isle) API Version 101034
+
+12.02.22 v1.1.3
+ - New: ESO Update 33 (Ascending Tide) API Version 101033
+
+17.10.21 - v1.1.2
+ - New: ESO Update 32 (Deadlands) API Version 101032
+
+23.08.21 - v1.1.1
+ - New: ESO Update 31 (Waking Flame) API Version 101031 
+
+15.05.21 - v1.1
+ - New methods
+   - lib:IsInstalledCorrectly(addOnName), addOnName mandatory
+   - lib:ListAddons(addOnName),           addOnName optional or partial
+   - lib:ListNonRootAddons(addOnName),    addOnName optional or partial
+   - lib:ListAddonsState(addOnName),      addOnName optional or partial
+   - lib:ListNonEnabledAddons(addOnName), addOnName optional or partial
+   
+26.04.21 - v1.0 
+ - Inital Release, get addon infos from manifest.txt
+   to avoid hard coding in addon.lua
+   

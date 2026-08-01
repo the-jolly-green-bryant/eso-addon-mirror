@@ -1,0 +1,10 @@
+## APIVersion: 101037 101038
+## Title: Slightly Improved™ Experience Bar
+## Version: 3.0.1
+## AddOnVersion: 301
+## License: MIT
+## SavedVariables: SlightlyImprovedExperienceBar_SavedVars
+## DependsOn: LibAddonMenu-2.0>=34
+
+Settings.lua
+SlightlyImprovedExperienceBar.lua

@@ -1,0 +1,96 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="ESO Farm-Buddy">
+            <Action name="CLEAR_ITEMS">
+                <Down>
+                    ESOFarmBuddyCommands.ClearCommand()
+                </Down>
+            </Action>
+            <Action name="OPEN_SETTINGS">
+                <Down>
+                    ESOFarmBuddyCommands.SettingsCommand()
+                </Down>
+            </Action>
+            <Action name="NOTIFICATION_TEST">
+                <Down>
+                    ESOFarmBuddyCommands.NotificationTestCommand()
+                </Down>
+            </Action>
+            <Action name="TOGGLE_WINDOW_LOCK">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("lock")
+                </Down>
+            </Action>
+            <Action name="TOGGLE_SHOW_TITLE">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("title")
+                </Down>
+            </Action>
+            <Action name="TOGGLE_SHOW_PROGRESSBAR">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("progressbar")
+                </Down>
+            </Action>
+            <Action name="TOGGLE_SHOW_BONUS">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("bonus")
+                </Down>
+            </Action>
+            <Action name="TOGGLE_SHOW_NOTIFICATIONS">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("notifications")
+                </Down>
+            </Action>
+            <Action name="TOGGLE_INCLUDE_BANK">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("includebank")
+                </Down>
+            </Action>
+            <Action name="TOGGLE_INCLUDE_CRAFTBAG">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("includecraftbag")
+                </Down>
+            </Action>
+            <Action name="TOGGLE_HIDE_WINDOW">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("hide")
+                </Down>
+            </Action>
+            <Action name="TOGGLE_CLAMP_TO_SCREEN">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("clamptoscreen")
+                </Down>
+            </Action>
+            <Action name="TOGGLE_HIDE_IN_COMBAT">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("hidecombat")
+                </Down>
+            </Action>
+            <Action name="TOGGLE_HIDE_IN_DUNGEON">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("hidedungeon")
+                </Down>
+            </Action>
+            <Action name="TOGGLE_HIDE_IN_PVP">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("hidepvp")
+                </Down>
+            </Action>
+            <Action name="TOGGLE_HIDE_IN_HOMES">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("hidehomes")
+                </Down>
+            </Action>
+            <Action name="TOGGLE_SHOW_ITEMNAME">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("itemname")
+                </Down>
+            </Action>
+            <Action name="TOGGLE_NOTIFICATION_SOUND">
+                <Down>
+                    ESOFarmBuddyCommands.ToggleCommand("notificationsound")
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

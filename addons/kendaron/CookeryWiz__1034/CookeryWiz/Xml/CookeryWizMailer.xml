@@ -1,0 +1,152 @@
+ <GuiXml>
+  <Controls>
+   <TopLevelControl name="CookeryWizMailerUI" tier="MEDIUM" layer="CONTROLS" hidden="true" inherits="EasyFrameDialogUI" >
+    <Controls>
+      <Control name="$(parent)Content" override="true">
+        <Dimensions x="350" y="300" />
+        <Controls>         
+          <Label name="$(parent)TitleLabel" override="true" color="FF00FF">      
+          </Label>        
+            <Label name="$(parent)DescriptionLabel" font="ZoFontGameShadow" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="[Description]">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Content" relativePoint="TOPLEFT" offsetX="5" offsetY="30"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Content" relativePoint="TOPRIGHT" offsetY="110"/>
+
+              <OnInitialized>
+                CookeryWizMailer:OnDescriptionLabelInitialized(self)
+              </OnInitialized>              
+            </Label>
+            
+            <Label name="$(parent)CharacterLabel" font="ZoFontGameShadow" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="[Description]">
+              <Dimensions x="140" y="30" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DescriptionLabel" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="5"/>             
+              <OnInitialized>
+                CookeryWizMailer:OnCharacterLabelInitialized(self)
+              </OnInitialized>              
+            </Label>            
+           
+            <Control name="$(parent)CharacterCombo" inherits="ZO_ComboBox">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)CharacterLabel" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"/>
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)DescriptionLabel" relativePoint="BOTTOMRIGHT" offsetX="-15"/>               
+              <OnInitialized>
+                CookeryWizMailer:OnCharacterComboInitialized(self)
+              </OnInitialized> 
+            </Control> 
+            
+            <Label name="$(parent)ContactsLabel" font="ZoFontGameShadow" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="[Contacts]"  >
+              <Dimensions x="140" y="30" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)CharacterLabel" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10"/>                         
+              <OnInitialized>
+                CookeryWizMailer:OnContactsLabelInitialized(self)
+              </OnInitialized>              
+            </Label>
+            
+            <Control name="$(parent)ContactsCombo" inherits="ZO_ComboBox">
+              <Dimensions y="30" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)CharacterCombo" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="15"/>
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)CharacterCombo" relativePoint="BOTTOMRIGHT" offsetX="-25" offsetY="15" />               
+              <OnInitialized>
+                CookeryWizMailer:OnContactsComboInitialized(self)
+              </OnInitialized> 
+            </Control>            
+            
+        <Button name="$(parent)RemoveContactButton">
+          <Dimensions x="30" y="30" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)ContactsCombo" relativePoint="TOPRIGHT" offsetX="5" />
+          <OnInitialized>
+            CookeryWizMailer:OnRemoveContactButtonInitialized(self) 
+          </OnInitialized>
+          <OnClicked>
+            CookeryWizMailer:OnRemoveContactButtonClicked(self) 
+          </OnClicked>          
+          <Textures scale="1" normal="/esoui/art/buttons/minus_up.dds" pressed="/esoui/art/buttons/minus_down.dds"
+            mouseOver="/esoui/art/buttons/minus_over.dds" hidden="true"/>            
+        </Button> 
+        
+            <Label name="$(parent)AddressLabel" font="ZoFontGameShadow" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="[Description]"  >
+              <Dimensions x="140" y="30" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)ContactsLabel" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="15"/>                         
+              <OnInitialized>
+                CookeryWizMailer:OnAddressLabelInitialized(self)
+              </OnInitialized>              
+            </Label>
+            
+            <EditBox name="$(parent)EditAddress" inherits="ZO_DefaultEditForBackdrop"alpha="0.9" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" maxInputCharacters="128" >
+              <Anchor point="TOPLEFT" relativeTo="$(parent)ContactsCombo" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="15"/>
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)ContactsCombo" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="15"/>
+              <OnInitialized>
+                CookeryWizMailer:OnEditAddressInitialized(self)
+              </OnInitialized>
+              <OnMouseEnter>
+                --CookeryWizMailer:ShowItemToolTip(self, "Some Text")
+              </OnMouseEnter>
+              <OnMouseExit>
+                --CookeryWiz:ShowItemToolTip(self:GetParent(), false)
+              </OnMouseExit>           
+              <OnFocusGained>
+                CookeryWizMailer:OnEditAddressFocusGained(self)
+              </OnFocusGained> 
+              <OnFocusLost>
+                CookeryWizMailer:OnEditAddressFocusLost(self)
+              </OnFocusLost>             
+              <OnTextChanged>
+                CookeryWizMailer:OnEditAddressChanged(self)
+              </OnTextChanged>
+              <Controls>
+                <Texture name="$(parent)EditTexture" color="6A6A6A">
+                  <AnchorFill />
+                </Texture>          
+              </Controls>
+            </EditBox>
+
+        <Button name="$(parent)AddContactButton" >
+          <Dimensions x="30" y="30" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)EditAddress" relativePoint="TOPRIGHT" offsetY="-3" offsetX="5" />
+          <OnInitialized>
+            CookeryWizMailer:OnAddContactButtonInitialized(self) 
+          </OnInitialized>
+          <OnClicked>
+            CookeryWizMailer:OnAddContactButtonClicked(self) 
+          </OnClicked>          
+          <Textures scale="1" normal="/esoui/art/buttons/plus_up.dds" pressed="/esoui/art/buttons/plus_down.dds"
+            mouseOver="/esoui/art/buttons/plus_over.dds" />
+        </Button> 
+        
+       
+            <Label name="$(parent)StatusLabel" font="ZoFontGameShadow" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Sent">
+              <!--<Dimensions x="120" y="25" />-->
+              <Anchor point="CENTER" relativeTo="$(parent)EditAddress" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="20"/>
+              <OnInitialized>
+                CookeryWizMailer:OnStatusLabelInitialized(self)
+              </OnInitialized>              
+            </Label>
+        
+            <Button name="$(parent)SendButton" inheritAlpha="false" text="[Send]" inherits="ZO_DefaultButton" mouseEnabled="true" tooltipText="[Send]" >
+              <Dimensions x="130" y="25" />
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-10"/> 
+           
+              <OnInitialized>
+                CookeryWizMailer:OnSendButtonInitialized(self)                
+              </OnInitialized>
+              <OnClicked>
+                CookeryWizMailer:OnSendButtonClicked(self) 
+              </OnClicked>                     
+            </Button>
+            
+            <Button name="$(parent)SendToContactsButton" inheritAlpha="false" text="[Send]" inherits="ZO_DefaultButton" mouseEnabled="true" tooltipText="[Send]" >
+              <Dimensions x="160" y="25" />
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)SendButton" relativePoint="BOTTOMLEFT" offsetX="-10" offsetY="0"/> 
+           
+              <OnInitialized>
+                CookeryWizMailer:OnSendToContactsButtonInitialized(self)                
+              </OnInitialized>
+              <OnClicked>
+                CookeryWizMailer:OnSendToContactsButtonClicked(self) 
+              </OnClicked>                     
+            </Button>            
+        </Controls>
+      </Control>  
+    </Controls>
+   </TopLevelControl>  
+   
+  </Controls>
+</GuiXml>    

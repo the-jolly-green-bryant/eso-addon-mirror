@@ -1,0 +1,17 @@
+<GuiXml>
+    <Controls>
+			<TopLevelControl name="VisualSwap" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="false">
+					<OnInitialized>
+							VisualSwapInitialized()
+					</OnInitialized>
+            <OnUpdate>
+                VisualSwapUpdate()
+            </OnUpdate>
+            <Controls>
+                <Label name="$(parent)Text" text="">
+									<AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

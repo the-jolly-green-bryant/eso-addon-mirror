@@ -1,0 +1,36 @@
+## Title: RPFlagger
+## APIVersion: 100018
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: RPFSavedVars
+## Version: 1.1.0
+## Author: iwontsay
+## Description: iwontsay's RolePlay Flagger
+
+libs/LibStub/LibStub.lua
+
+libs/LibLoadedAddons/LibLoadedAddons.lua
+
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+libs/LibAddonMenu-2.0/controls/panel.lua
+libs/LibAddonMenu-2.0/controls/submenu.lua
+libs/LibAddonMenu-2.0/controls/button.lua
+libs/LibAddonMenu-2.0/controls/checkbox.lua
+libs/LibAddonMenu-2.0/controls/colorpicker.lua
+libs/LibAddonMenu-2.0/controls/custom.lua
+libs/LibAddonMenu-2.0/controls/description.lua
+libs/LibAddonMenu-2.0/controls/dropdown.lua
+libs/LibAddonMenu-2.0/controls/editbox.lua
+libs/LibAddonMenu-2.0/controls/header.lua
+libs/LibAddonMenu-2.0/controls/slider.lua
+libs/LibAddonMenu-2.0/controls/texture.lua
+
+RPFlagger.lua
+
+UI/Settings.lua
+Modules/Titles.lua
+Modules/LongTxt.lua
+
+lang/en.lua
+lang/$(language).lua
+
+Bindings.xml

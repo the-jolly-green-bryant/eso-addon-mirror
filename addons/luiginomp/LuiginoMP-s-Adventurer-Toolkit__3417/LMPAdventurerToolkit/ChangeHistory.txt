@@ -1,0 +1,14 @@
+1.5
+Added feature in 01_DIALOGUE/00_DialogueSkipper.lua to allow saving names and locations to the skip list. You can now specify an NPC in a particular location to skip. If you see the NPC anywhere else, they won't be skipped.
+Daily Quest givers will be automatically added to this list whenever the player accepts a daily quest from them for the first time.
+
+1.4
+Added check 02_QUESTING/DailyQuestHandler.lua CompleteDailyQuest() to ensure only zones that exist in  MAIN.accountVariables.dailyQuests were being looked at.
+Added "/alttrade" command into alt system. Can now type into chat instead of searching for alt.
+Added automatic trade accept when alt invites you to trade.
+
+1.3
+Added in-game command for Quest ID search based on quest name in 02_QUESTING/QuestHandler.lua
+
+1.2
+Updated 02_QUESTING/DailyQuestHandler.lua to only display uncompleted daily quests when a daily quest has just been completed instead of whenever any quest is completed

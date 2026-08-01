@@ -1,0 +1,12 @@
+## Title: GoA - Tamriel Trade Centre UA Patch
+## Description: Ukrainian compatibility and localization patch for Tamriel Trade Centre. Requires the ESO_UA_GoA Ukrainian client-language addon to be installed and enabled; this patch will not load on its own. Includes a bundled copy of the Chuhaister library (libs/Chuhaister subfolder) used internally by this patch. Developed with AI assistance.
+## Author: GoA / Guards of Amber
+## Version: 1.4.1
+## AddOnVersion: 141
+## APIVersion: 101050 101051
+## DependsOn: ESO_UA_GoA>=107 TamrielTradeCentre
+
+PreLoad.lua
+ItemLookUpTable_ua.lua
+libs/Chuhaister/Chuhaister.lua
+lang/$(language).lua

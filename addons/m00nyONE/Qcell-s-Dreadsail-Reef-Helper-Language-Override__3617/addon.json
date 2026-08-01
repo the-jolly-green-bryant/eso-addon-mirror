@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/m00nyONE/Qcell-s-Dreadsail-Reef-Helper-Language-Override__3617",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "m00nyONE",
+  "canonical_id": "esoui:3617",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3617",
+  "deleted": false,
+  "directories": [
+    "QcellDreadsailReefHelperLanguageOverride"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3617/",
+  "fingerprint": "48f0730d65471821b41d5b2055e71963623e4bd632341cdf981d8d83aaa2b85a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3617",
+  "source_url": "https://www.esoui.com/downloads/info3617-QcellsDreadsailReefHelperLanguageOverride.html",
+  "stats": {
+    "downloads": 5706,
+    "favorites": 3,
+    "monthly_downloads": 48
+  },
+  "title": "Qcell's Dreadsail Reef Helper Language Override",
+  "updated_at": 1685559350000,
+  "version": "1.1.0"
+}

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/MelanAster/QuickSlash---Add-Slash-Commands-to-Quickslots-Wheels__3955",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MelanAster",
+  "canonical_id": "esoui:3955",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:3955",
+  "deleted": false,
+  "directories": [
+    "QuickSlash"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3955/",
+  "fingerprint": "c4e15e35e7eb509dbd206df07fe1be7fa8be3988fcdedb42d340bae0f3508202",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13388.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13389.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13390.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3955",
+  "source_url": "https://www.esoui.com/downloads/info3955-QuickSlash-AddSlashCommandstoQuickslotsWheels.html",
+  "stats": {
+    "downloads": 1017,
+    "favorites": 5,
+    "monthly_downloads": 16
+  },
+  "title": "QuickSlash - Add Slash Commands to Quickslots Wheels",
+  "updated_at": 1726419418000,
+  "version": "0.10"
+}

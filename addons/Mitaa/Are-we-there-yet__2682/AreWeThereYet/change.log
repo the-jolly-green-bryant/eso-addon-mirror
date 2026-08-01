@@ -1,0 +1,114 @@
+0.6.4
+
+April 29, 2021.
+100035 "Blackwood".
+
+0.6.3
+
+March 30, 2021.
+Bugfix: only history records after March 28 were shown. From now on, DST (Daylight Saving Time) will be ignored. No data was lost, however the last two or three days will remain invisible.
+
+0.6.2
+
+March 19, 2021.
+User feedback: multiple CP, earned at the same time, were counted as one (thanks to Daimonologos for reporting this).
+
+0.6.1
+
+March 17, 2021.
+The stats displayed below the calculator keypads didn't make much sense after the last update so I changed them to something more useful.
+
+0.6.0
+
+March 15, 2021.
+Major bugfix: sometimes data from the previous month was overwritten too soon. The only solution was to wipe the entire history and start over with a new data structure, so in the worst case you will lose one month of data. Sorry for the snafu, please don't kill me and please remember this is a beta addon.
+User feedback: calculate subgoals (thanks to Falja for suggesting this).
+
+0.5.0
+
+March 8, 2021.
+Support for the new Champion System.
+Known issue: "Average future decrease in CP gain" is based on a mid-range average (min/max values).
+
+0.4.6
+
+February 27, 2021.
+100034 "Flames of Ambition".
+Some interim fixes so at least the calculation is done properly, just in case something goes south on March 8th.
+
+0.4.5
+
+November 2, 2020.
+100033 "Markarth".
+
+0.4.4
+
+October 1, 2020.
+Major bugfix: decrease in CP gain is no longer taken into account when calculating the end date. This has been wrong since day one. The only correct way is to use the (moving) average, nothing else. As a result, the projected end date will be more optimistic in the beginning. As CP gain slows down, it will be pushed further into the future, unless you manage to maintain your average.
+
+0.4.3
+
+September 25, 2020.
+Added an indicator for each of the three constellations (when lit, you have unspent Champion Points).
+Moved version number from main window to addon list.
+
+0.4.2
+
+September 21, 2020.
+There are now two keypads on the calculator window, "CP" for Champion Points and "Avg" for daily average.
+
+0.4.1
+
+September 18, 2020.
+Added enlightenment indicator to main window (five different colors, hover mouse to see pool size).
+Minor bug fixes.
+
+0.4.0
+
+September 12, 2020.
+XP/date calculator for any Champion Point between 10 and 810.
+Thousands separator.
+
+0.3.0
+
+September 1, 2020.
+History window with up to one month of data.
+Bugfix: calculation errors when used below level 50/CP10.
+
+0.2.4
+
+August 21, 2020.
+100032 "Stonethorn".
+
+0.2.3
+
+August 15, 2020.
+Cosmetic bugfix: CP average formatting (two decimal places, no trailing zeroes).
+
+0.2.2
+
+July 27, 2020.
+Bugfix: trailing zeroes not always removed from CP average.
+Forgot to increase internal version number (for display purposes) so now it will jump from 0.2.0 to 0.2.2.
+
+0.2.1
+
+July 7, 2020.
+Accidentally zipped my repo (hidden folder) along with the addon.
+
+0.2.0
+
+July 7, 2020.
+Window with keybinding (default none) and slash command (/arewethereyet).
+Additional information, e.g. XP needed and decrease in CP gain.
+Chat messages have been discontinued.
+
+0.1.1
+
+June 23, 2020.
+Bugfix: cleanup of missing days (not played or no CP earned) would set the previous day to zero.
+
+0.1.0
+
+June 21, 2020.
+Initial version.

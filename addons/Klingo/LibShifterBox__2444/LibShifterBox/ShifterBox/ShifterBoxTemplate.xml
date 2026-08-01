@@ -1,0 +1,182 @@
+<GuiXml>
+    <Controls>
+        <!-- The ZO_SortFilterList virtual template of the 2 list boxes (Shifter box) -->
+        <Control name="ShifterBoxTemplate" resizeToFitDescendents="true" virtual="true">
+            <Controls>
+                <!-- Left list -->
+                <Control name="$(parent)Left">
+                    <Anchor point="TOPLEFT" />
+                    <Controls>
+                        <Control name="$(parent)Headers" hidden="true">
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="180" y="0" />
+                            <Controls>
+                                <Control name="$(parent)Value" inherits="ZO_SortHeader">
+                                    <Anchor point="TOPLEFT" />
+                                    <Dimensions x="180" y="32" />
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, "Left", "value", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontHeader")
+                                    </OnInitialized>
+                                </Control>
+                                <Button name="$(parent)SearchButton" inherits="ZO_ButtonBehaviorClickSound">
+                                    <Dimensions x="28" y="28" />
+                                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" />
+                                    <!-- /esoui/art/miscellaneous/search_icon.dds -->
+                                    <Textures normal="/esoui/art/inventory/inventory_trait_not_researched_icon.dds"
+                                              pressed="/esoui/art/inventory/inventory_trait_not_researched_icon.dds"
+                                              mouseOver="/esoui/art/inventory/inventory_trait_not_researched_icon.dds"
+                                              disabled="/esoui/art/inventory/inventory_trait_not_researched_icon.dds"/>
+                                </Button>
+                                <Backdrop name="$(parent)SearchUI" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard" hidden="true">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)SearchButton" relativePoint="LEFT" offsetX="0" offsetY="-2" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="5" offsetY="-2" />
+                                    <Controls>
+                                        <EditBox name="$(parent)Box" excludeFromResizeToFitExtents="true" inherits="ZO_DefaultEditForBackdrop" defaultText="SI_SEARCH_FILTER_BY">
+                                            <!--
+                                            <OnTextChanged>
+                                                ClearMenu()
+                                            </OnTextChanged>
+
+                                            <OnMouseEnter>
+                                                ZO_Tooltips_ShowTextTooltip()
+                                            </OnMouseEnter>
+
+                                            <OnMouseExit>
+                                                ZO_Tooltips_HideTextTooltip()
+                                            </OnMouseExit>
+
+                                            <OnMouseUp>
+                                            </OnMouseUp>
+                                            -->
+                                        </EditBox>
+                                    </Controls>
+                                </Backdrop>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="180" y="220" />
+                            <Controls>
+                                <Backdrop name="$(parent)Frame" edgeColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                                    <AnchorFill />
+                                </Backdrop>
+                            </Controls>
+                        </Control>
+                        <Button name="$(parent)AllButton" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="40" y="40" />
+                            <Anchor point="BOTTOM" relativeTo="$(parent)Button" relativePoint="TOP" offsetY="10" />
+                            <Textures normal="/LibShifterBox/bin/textures/double_large_rightarrow_up.dds"
+                                      pressed="/LibShifterBox/bin/textures/double_large_rightarrow_down.dds"
+                                      mouseOver="/LibShifterBox/bin/textures/double_large_rightarrow_over.dds"
+                                      disabled="/LibShifterBox/bin/textures/double_large_rightarrow_disabled.dds"/>
+                        </Button>
+                        <Button name="$(parent)Button" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="40" y="40" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)List" relativePoint="TOPRIGHT" offsetY="50" />
+                            <Textures normal="/esoui/art/buttons/large_rightarrow_up.dds"
+                                      pressed="/esoui/art/buttons/large_rightarrow_down.dds"
+                                      mouseOver="/esoui/art/buttons/large_rightarrow_over.dds"
+                                      disabled="/esoui/art/buttons/large_rightarrow_disabled.dds"/>
+                        </Button>
+                    </Controls>
+                </Control>
+                <!-- Right list -->
+                <Control name="$(parent)Right">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)LeftHeaders" relativePoint="TOPRIGHT" offsetX="40" />
+                    <Controls>
+                        <Control name="$(parent)Headers" hidden="true">
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="180" y="0" />
+                            <Controls>
+                                <Control name="$(parent)Value" inherits="ZO_SortHeader">
+                                    <Anchor point="TOPLEFT" />
+                                    <Dimensions x="180" y="32" />
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, "Right", "value", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontHeader")
+                                    </OnInitialized>
+                                </Control>
+                                <Button name="$(parent)SearchButton" inherits="ZO_ButtonBehaviorClickSound">
+                                    <Dimensions x="28" y="28" />
+                                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" />
+                                    <Textures normal="/esoui/art/inventory/inventory_trait_not_researched_icon.dds"
+                                              pressed="/esoui/art/inventory/inventory_trait_not_researched_icon.dds"
+                                              mouseOver="/esoui/art/inventory/inventory_trait_not_researched_icon.dds"
+                                              disabled="/esoui/art/inventory/inventory_trait_not_researched_icon.dds"/>
+                                </Button>
+                                <Backdrop name="$(parent)SearchUI" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard" hidden="true">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)SearchButton" relativePoint="LEFT" offsetX="0" offsetY="-2" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="5" offsetY="-2" />
+                                    <Controls>
+                                        <EditBox name="$(parent)Box" excludeFromResizeToFitExtents="true" inherits="ZO_DefaultEditForBackdrop" defaultText="SI_SEARCH_FILTER_BY">
+                                            <!--
+                                            <OnTextChanged>
+                                                ClearMenu()
+                                            </OnTextChanged>
+
+                                            <OnMouseEnter>
+                                                ZO_Tooltips_ShowTextTooltip()
+                                            </OnMouseEnter>
+
+                                            <OnMouseExit>
+                                                ZO_Tooltips_HideTextTooltip()
+                                            </OnMouseExit>
+
+                                            <OnMouseUp>
+                                            </OnMouseUp>
+                                            -->
+                                        </EditBox>
+                                    </Controls>
+                                </Backdrop>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" />
+                            <Dimensions x="180" y="220" />
+                            <Controls>
+                                <Backdrop name="$(parent)Frame" edgeColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                                    <AnchorFill />
+                                </Backdrop>
+                            </Controls>
+                        </Control>
+                        <Button name="$(parent)Button" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="40" y="40" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)List" relativePoint="BOTTOMLEFT" offsetX="-2" offsetY="-50" />
+                            <Textures normal="/esoui/art/buttons/large_leftarrow_up.dds"
+                                      pressed="/esoui/art/buttons/large_leftarrow_down.dds"
+                                      mouseOver="/esoui/art/buttons/large_leftarrow_over.dds"
+                                      disabled="/esoui/art/buttons/large_leftarrow_disabled.dds"/>
+                        </Button>
+                        <Button name="$(parent)AllButton" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="40" y="40" />
+                            <Anchor point="TOP" relativeTo="$(parent)Button" relativePoint="BOTTOM" offsetY="10" />
+                            <Textures normal="/LibShifterBox/bin/textures/double_large_leftarrow_up.dds"
+                                      pressed="/LibShifterBox/bin/textures/double_large_leftarrow_down.dds"
+                                      mouseOver="/LibShifterBox/bin/textures/double_large_leftarrow_over.dds"
+                                      disabled="/LibShifterBox/bin/textures/double_large_leftarrow_disabled.dds"/>
+                        </Button>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+        <!-- The row virtual template of the shifter box lists -->
+        <Control  name="ShifterBoxEntryTemplate" verticalAlignment="CENTER" horizontalAlignment="LEFT" mouseEnabled="true" virtual="true">
+            <Dimensions x="180" y="32" />
+            <Controls>
+                <Label name="$(parent)Label" font="ZoFontGame" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="LEFT" offsetX="10"/>
+                    <Dimensions x="180" y="32" />
+                </Label>
+            </Controls>
+        </Control>
+        <!-- The Top Level Control positioned at the cursor, to show dragged list entries -->
+        <TopLevelControl name="LibShifterBox_Cursor_TLC" mouseEnabled="false" hidden="true">
+			<Dimensions x="0" y="0" />
+			<Controls>
+                <Label name="$(parent)Label" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT" verticalAlignment="TOP" text="">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+                </Label>
+			</Controls>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,25 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="KDDHUDContainer" mouseEnabled="false" movable="false">
+            <Controls>
+<!-- ======================================================================================================================= -->
+                <Control name="KDDInfoPanel" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+                    <Dimensions x="50" y="20"/>
+                    <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                    <OnMoveStop>
+                        KyzderpsDerps.SavePosition()
+                    </OnMoveStop>
+                    <Controls>
+                        <Backdrop name="$(parent)Backdrop" centerColor="22000000" edgeColor="00000000" hidden="false">
+                            <AnchorFill/>
+                        </Backdrop>
+                        <Label name="$(parent)ChestsLabel" font="$(BOLD_FONT)|13|soft-shadow-thick" color="FFFFFF" text="0 chests looted" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+                            <AnchorFill/>
+                        </Label>
+                    </Controls>
+                </Control>
+<!-- ======================================================================================================================= -->
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

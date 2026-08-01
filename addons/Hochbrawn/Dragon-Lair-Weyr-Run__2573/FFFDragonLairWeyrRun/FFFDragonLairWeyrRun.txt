@@ -1,0 +1,31 @@
+## Title: FFF Dragon Lair Weyr Run
+## Description:  A looting control panel for group material run fun.
+## Author: Hochbrawn (@Hochbrawn)
+## Version: 0.1.9.3
+## APIVersion: 100031
+## SavedVariables: FFFDragonLairWeyrRunSavedVars
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder ScrollsR and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+##
+## OptionalDependsOn: LibAddonMenu-2.0
+
+modules\RawLootPlayerList.lua
+FFFDragonLairWeyrRun.lua
+modules\LootMainWindow.xml
+modules\LootMainWindow.lua
+modules\GuildBankDepositWindow.xml
+modules\GuildBankDepositWindow.lua
+modules\LeaderBoardWindow.xml
+modules\LeaderBoardWindow.lua
+modules\ItemList.lua
+modules\Item.lua
+modules\RawLootPlayer.lua
+modules\RawLootList.lua
+modules\RawLootItem.lua
+modules\PlayerControl.lua
+modules\DetailEntry.lua
+

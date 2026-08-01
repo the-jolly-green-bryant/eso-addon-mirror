@@ -1,0 +1,23 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+; This addon is made based upon displayleads due to that one not being updated anymore
+
+## Title: LeadList
+## Description: Displays Antiquity Leads with Location Data
+## Version: 50.1.1
+## Author: Irhak
+## APIVersion: 101050
+## SavedVariables: ILeadListVars
+
+bootstrap.lua
+locale/ui_en.lua
+locale/ui_$(language).lua
+locale/locationsdata_en.lua
+locale/locationsdata_$(language).lua
+constants.lua
+leadlist.lua
+leadlist.xml
+Bindings.xml

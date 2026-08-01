@@ -1,0 +1,70 @@
+{
+  "archive_path": "addons/kadeer/RipFilter__1844",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kadeer",
+  "canonical_id": "esoui:1844",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:1844",
+  "deleted": false,
+  "directories": [
+    "RipFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1844/",
+  "fingerprint": "20420cee6101ae4d8b45c17fe672ca85b4041b9ff50dcbfa49168463e2ab7d94",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6252.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8005.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8006.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8004.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6253.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6255.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6350.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6349.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6351.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6352.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1844",
+  "source_url": "https://www.esoui.com/downloads/info1844-RipFilter.html",
+  "stats": {
+    "downloads": 15657,
+    "favorites": 13,
+    "monthly_downloads": 18
+  },
+  "title": "RipFilter",
+  "updated_at": 1701496853000,
+  "version": "0.75"
+}

@@ -1,0 +1,20 @@
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+##
+
+## Title: |cff0096Death Log|r
+## Description: Provides detailed death reports for people in your group
+## APIVersion: 100024
+## Author: |cff0096init3|r
+## Version: 1.2
+## SavedVariables: DeathLogVars
+
+libs/LibStub/LibStub.lua
+libs/LibUnits/LibUnits.lua
+
+DeathLog.lua
+Deathlog.xml

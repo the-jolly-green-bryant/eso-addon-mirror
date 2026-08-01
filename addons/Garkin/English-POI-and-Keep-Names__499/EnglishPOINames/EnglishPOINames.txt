@@ -1,0 +1,22 @@
+## Title: |cEFEBBEEnglish POI & Keep Names|r
+## Version: 8.0.1b
+## Author: |cEFEBBEGarkin|r & Ayantir & Hatsune681
+## Contributors: Shiromi-fry & Friday_The13_rus
+## APIVersion: 100033 101032
+## SavedVariables: POINAMES_SavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+Language\strings.lua
+Language\$(language).lua
+Keep_Names.lua
+POI_Names.lua
+Shrine_Names.lua
+EnglishPOINames.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

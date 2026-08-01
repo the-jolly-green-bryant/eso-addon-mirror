@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/kawamonkey/Baandari-Trading-Post__3007",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3007",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3007",
+  "deleted": false,
+  "directories": [
+    "BaandariTradingPost"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3007/",
+  "fingerprint": "ff36cbcd6b8ff7f19f557e66b9d43f8dff07f86c24fa4094cb3c739c59b94c68",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3007",
+  "source_url": "https://www.esoui.com/downloads/info3007-BaandariTradingPost.html",
+  "stats": {
+    "downloads": 2231,
+    "favorites": 0,
+    "monthly_downloads": 20
+  },
+  "title": "Baandari Trading Post",
+  "updated_at": 1617300200000,
+  "version": "1.0"
+}

@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Hoft/Miner-mini-game__2457",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hoft",
+  "canonical_id": "esoui:2457",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    }
+  ],
+  "content_id": "esoui:2457",
+  "deleted": false,
+  "directories": [
+    "MinerMiniGame"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2457/",
+  "fingerprint": "7ed5cc67afa2e59a5bfd2eb4483c21198991a82a51354354ade9f8abc2d5e34a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8385.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8386.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2457",
+  "source_url": "https://www.esoui.com/downloads/info2457-Minerminigame.html",
+  "stats": {
+    "downloads": 9040,
+    "favorites": 9,
+    "monthly_downloads": 32
+  },
+  "title": "Miner mini game",
+  "updated_at": 1583062864000,
+  "version": "1.5"
+}

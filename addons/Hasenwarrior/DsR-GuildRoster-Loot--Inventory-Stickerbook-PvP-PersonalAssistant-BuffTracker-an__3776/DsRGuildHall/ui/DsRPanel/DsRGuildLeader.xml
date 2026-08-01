@@ -1,0 +1,158 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+  <Controls>
+    <TopLevelControl name="DsRGuildLeaderFrame" hidden="true">
+      <Dimensions x="700" y="100" />
+      <Anchor point="TOPRIGHT" relativeTo="ZO_GuildHome" relativePoint="TOPLEFT" offsetX="-20" offsetY="-30" />
+      <OnInitialized>
+            DsRGuildLeader.Check()
+      </OnInitialized>
+      <Controls>
+        <Control name="DsRGuildLeaders"> 
+            <Controls>
+                <Texture name="DsRGuildLeaderDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider_mythic.dds"
+                    verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+                    <Dimensions x="900" y="10" />
+                    <Anchor point="TOPLEFT" relativeTo="DsRGuildLeaderFrame" relativePoint="TOPLEFT" offsetX="-90" offsetY="10"/>
+                </Texture>
+                <Label name="DsRGuildLeaderTXT" width="700" height="25" font="ZoFontWinH2" inheritAlpha="true"  color="9fb6cd"
+                        wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"  text="DsR_Leaders" >
+                        <Anchor point="TOP" relativeTo="DsRGuildLeaderDivider" relativePoint="TOP" offsetX="30" offsetY="-25"/>
+                </Label>
+                <Control name="DsRGuildLeaderOverview"> 
+                    <Controls>
+                        <Texture name="DsRGuildLead1PIC" textureFile="/DsRGuildHall/misc/pettipuuh.dds"
+                            verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+                            <Dimensions x="30" y="30"/>
+                            <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildLeaderTXT" relativePoint="LEFT" offsetX="-170" offsetY="50"/>
+                        </Texture>
+                        <Label name="DsRGuildLead1" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"
+                                wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"
+                                text="|c505050P|r|c646464e|r|c787878t|r|c8c8c8ct|r|ca0a0a0i|r|c8c8c8cP|r|c787878u|r|c646464u|r|c505050h|r" >
+                                <Anchor point="TOP" relativeTo="DsRGuildLead1PIC" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildLead1at" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true" color="808080"
+                                wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"
+                                text="(@PettiPuuh)" >
+                                <Anchor point="TOP" relativeTo="DsRGuildLead1" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Texture name="DsRGuildLead2PIC" textureFile="/DsRGuildHall/misc/flo1980.dds"
+                            verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+                            <Dimensions x="30" y="30"/>
+                            <Anchor point="TOPLEFT" relativeTo="DsRGuildLead1PIC" relativePoint="CENTERRIGHT" offsetX="75" offsetY="0"/>
+                        </Texture>
+                        <Label name="DsRGuildLead2" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"
+                                wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"
+                                text="|cff0000F|r|cffffffL|r|cff0000O|r" >
+                                <Anchor point="TOP" relativeTo="DsRGuildLead2PIC" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildLead2at" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true" color="808080"
+                                wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"
+                                text="(@Flo1980)" >
+                                <Anchor point="TOP" relativeTo="DsRGuildLead2" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <!-- <Texture name="DsRGuildLead3PIC" textureFile="/DsRGuildHall/misc/siraa.dds" -->
+                            <!-- verticalAlignment="CENTER" horizontalAlignment="CENTER" > -->
+                            <!-- <Dimensions x="30" y="30"/> -->
+                            <!-- <Anchor point="TOPLEFT" relativeTo="DsRGuildLead2PIC" relativePoint="CENTERRIGHT" offsetX="75" offsetY="0"/> -->
+                        <!-- </Texture> -->
+                        <!-- <Label name="DsRGuildLead3" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" -->
+                                <!-- text="|c007f78S|r|c007051i|r|c00602ar|r|c005003a|r" > -->
+                                <!-- <Anchor point="TOP" relativeTo="DsRGuildLead3PIC" relativePoint="BOTTOM" offsetX="0" offsetY="0"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildLead3at" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true" color="808080" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" -->
+                                <!-- text="(@siraa)" > -->
+                                <!-- <Anchor point="TOP" relativeTo="DsRGuildLead3" relativePoint="BOTTOM" offsetX="0" offsetY="0"/> -->
+                        <!-- </Label> -->
+
+                        <!-- <Texture name="DsRGuildLead4PIC" textureFile="/DsRGuildHall/misc/sisiktil.dds" -->
+                            <!-- verticalAlignment="CENTER" horizontalAlignment="CENTER" > -->
+                            <!-- <Dimensions x="30" y="30"/> -->
+                            <!-- <Anchor point="TOPLEFT" relativeTo="DsRGuildLead3PIC" relativePoint="CENTERRIGHT" offsetX="75" offsetY="0"/> -->
+                        <!-- </Texture> -->
+                        <!-- <Label name="DsRGuildLead4" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" -->
+                                <!-- text="|cffff8fD|r|ce1d816r|r|cbfb81du|r|c9c9723z|r|c605c00i|r|c3c3a05l|r" > -->
+                                <!-- <Anchor point="TOP" relativeTo="DsRGuildLead4PIC" relativePoint="BOTTOM" offsetX="0" offsetY="0"/> -->
+                        <!-- </Label> -->
+                        <!-- <Label name="DsRGuildLead4at" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true" color="808080" -->
+                                <!-- wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" -->
+                                <!-- text="(@Sisiktil)" > -->
+                                <!-- <Anchor point="TOP" relativeTo="DsRGuildLead4" relativePoint="BOTTOM" offsetX="0" offsetY="0"/> -->
+                        <!-- </Label> -->
+
+                        <Texture name="DsRGuildLead5PIC" textureFile="/DsRGuildHall/misc/prof_flausch.dds"
+                            verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+                            <Dimensions x="30" y="30"/>
+                            <Anchor point="TOPLEFT" relativeTo="DsRGuildLead2PIC" relativePoint="CENTERRIGHT" offsetX="75" offsetY="0"/>
+                        </Texture>
+                        <Label name="DsRGuildLead5" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"
+                                wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"
+                                text="|ccca6e0Prof Flausch|r" >
+                                <Anchor point="TOP" relativeTo="DsRGuildLead5PIC" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildLead5at" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"
+                                wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" color="808080"
+                                text="(@Prof_Flausch)" >
+                                <Anchor point="TOP" relativeTo="DsRGuildLead5" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Texture name="DsRGuildLead6PIC" textureFile="/DsRGuildHall/misc/ravnic93.dds"
+                            verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+                            <Dimensions x="30" y="30"/>
+                            <Anchor point="TOPLEFT" relativeTo="DsRGuildLead5PIC" relativePoint="CENTERRIGHT" offsetX="80" offsetY="0"/>
+                        </Texture>
+                        <Label name="DsRGuildLead6" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"
+                                wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"
+                                text="|c89693eRavnic|r" >
+                                <Anchor point="TOP" relativeTo="DsRGuildLead6PIC" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildLead6at" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"
+                                wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" color="808080"
+                                text="(@Ravnic93)" >
+                                <Anchor point="TOP" relativeTo="DsRGuildLead6" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Texture name="DsRGuildLead7PIC" textureFile="/DsRGuildHall/misc/Magnolyon.dds"
+                            verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+                            <Dimensions x="30" y="30"/>
+                            <Anchor point="TOPLEFT" relativeTo="DsRGuildLead6PIC" relativePoint="CENTERRIGHT" offsetX="75" offsetY="0"/>
+                        </Texture>
+                        <Label name="DsRGuildLead7" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"
+                                wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"
+                                text="|cffbe00B|r|cffac00o|r|cff9900o|r|cff8700p|r|cff7500s|r" >
+                                <Anchor point="TOP" relativeTo="DsRGuildLead7PIC" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildLead7at" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"
+                                wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" color="808080"
+                                text="(@Magnolyon)" >
+                                <Anchor point="TOP" relativeTo="DsRGuildLead7" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Texture name="DsRGuildLead8PIC" textureFile="/DsRGuildHall/misc/Hasenwarrior.dds"
+                            verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+                            <Dimensions x="30" y="30"/>
+                            <Anchor point="TOPLEFT" relativeTo="DsRGuildLead7PIC" relativePoint="CENTERRIGHT" offsetX="90" offsetY="0"/>
+                        </Texture>
+                        <Label name="DsRGuildLead8" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"
+                               wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"
+                               text="|cD8F781S|r|cF3F781i|r|cF5DA81r|r |cF7BE81H|r|cF5DA81o|r|cF3F781p|r|cD8F781p|r|cBEF781e|r|c9FF781l|r" >
+                                <Anchor point="TOP" relativeTo="DsRGuildLead8PIC" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildLead8at" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"
+                               wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" color="808080"
+                               text="(@Hasenwarrior)" >
+                                <Anchor point="TOP" relativeTo="DsRGuildLead8" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>
+

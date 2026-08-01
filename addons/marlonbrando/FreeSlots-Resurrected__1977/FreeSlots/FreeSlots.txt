@@ -1,0 +1,8 @@
+## Title: FreeSlots
+## APIVersion: 101034
+## AddonVersion: 20024
+## Author: |c66ffff|Valandil|r
+## SavedVariables: FreeSlotsSettings
+## DependsOn: LibAddonMenu-2.0>=30
+
+FreeSlots.lua

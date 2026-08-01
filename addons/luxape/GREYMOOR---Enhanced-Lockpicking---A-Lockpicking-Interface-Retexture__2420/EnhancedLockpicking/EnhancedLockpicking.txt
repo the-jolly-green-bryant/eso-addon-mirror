@@ -1,0 +1,7 @@
+## Title: |c85d027Enhanced Lockpicking|r - A Interface Retexture
+## Description: I wanted to change the way your crack open the sweet loot in ESO.
+## Author: |c85d027Twtitch.tv/Luxape|r
+## APIVersion: 100030 100031
+## Version: 1.00 for Greymoor
+
+EnhancedLockpicking.lua

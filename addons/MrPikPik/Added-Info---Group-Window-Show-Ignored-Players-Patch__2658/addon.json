@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/MrPikPik/Added-Info---Group-Window-Show-Ignored-Players-Patch__2658",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:2658",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2658",
+  "deleted": false,
+  "directories": [
+    "AddedInfoGroupWindowShowIgnored"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2658/",
+  "fingerprint": "64fe2a67866fac3d9810cf501a6bdb3b48ccfded48887139c7db8af7769fa793",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2658",
+  "source_url": "https://www.esoui.com/downloads/info2658-AddedInfo-GroupWindowShowIgnoredPlayersPatch.html",
+  "stats": {
+    "downloads": 3793,
+    "favorites": 3,
+    "monthly_downloads": 17
+  },
+  "title": "Added Info - Group Window: Show Ignored Players Patch",
+  "updated_at": 1599744874000,
+  "version": "1.1"
+}

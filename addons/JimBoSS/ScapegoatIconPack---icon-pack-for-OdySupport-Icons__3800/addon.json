@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/JimBoSS/ScapegoatIconPack---icon-pack-for-OdySupport-Icons__3800",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "JimBoSS",
+  "canonical_id": "esoui:3800",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3800",
+  "deleted": false,
+  "directories": [
+    "ScapegoatIconPack"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3800/",
+  "fingerprint": "a08772d4d3debc3de7298d2021c1477ab33bde324d927127989c5d54b95e14b3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12991.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3800",
+  "source_url": "https://www.esoui.com/downloads/info3800-ScapegoatIconPack-iconpackforOdySupportIcons.html",
+  "stats": {
+    "downloads": 2043,
+    "favorites": 2,
+    "monthly_downloads": 35
+  },
+  "title": "ScapegoatIconPack - icon pack for OdySupport Icons",
+  "updated_at": 1710216002000,
+  "version": "0.25"
+}

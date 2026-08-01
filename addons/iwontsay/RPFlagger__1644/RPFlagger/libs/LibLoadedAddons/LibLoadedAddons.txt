@@ -1,0 +1,9 @@
+## APIVersion: 100013
+## Title: LibLoadedAddons
+## Version: 1.0
+## Author: Circonian
+## Description: A library used by addons to register that they are loaded. This is to make it easier for other addons to determine if your addon is running or not.
+
+
+LibStub\LibStub.lua
+LibLoadedAddons.lua

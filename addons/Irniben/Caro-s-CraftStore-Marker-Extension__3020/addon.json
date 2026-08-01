@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Irniben/Caro-s-CraftStore-Marker-Extension__3020",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Irniben",
+  "canonical_id": "esoui:3020",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3020",
+  "deleted": false,
+  "directories": [
+    "CarosCraftStoreMarkerExtension"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3020/",
+  "fingerprint": "149aa924cab293ec85345783e055ae32ee1f4120b82833ed709a20e18bdb14b9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10151.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3020",
+  "source_url": "https://www.esoui.com/downloads/info3020-CarosCraftStoreMarkerExtension.html",
+  "stats": {
+    "downloads": 14715,
+    "favorites": 15,
+    "monthly_downloads": 25
+  },
+  "title": "Caro's CraftStore Marker Extension",
+  "updated_at": 1678810597000,
+  "version": "1.1.0"
+}

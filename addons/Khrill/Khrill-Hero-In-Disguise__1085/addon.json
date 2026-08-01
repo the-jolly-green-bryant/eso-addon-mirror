@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Khrill/Khrill-Hero-In-Disguise__1085",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Khrill",
+  "canonical_id": "esoui:1085",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:1085",
+  "deleted": false,
+  "directories": [
+    "KhrillHeroInDisguise"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1085/",
+  "fingerprint": "fe1db00e1591ef5ec451b1884578a43929f22cb0ec8f638096065d79e63f39ec",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3401.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3500.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3502.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3431.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3501.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1085",
+  "source_url": "https://www.esoui.com/downloads/info1085-KhrillHeroInDisguise.html",
+  "stats": {
+    "downloads": 9758,
+    "favorites": 31,
+    "monthly_downloads": 13
+  },
+  "title": "Khrill Hero In Disguise",
+  "updated_at": 1465595478000,
+  "version": "1.4.0"
+}

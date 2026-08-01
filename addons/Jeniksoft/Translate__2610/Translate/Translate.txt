@@ -1,0 +1,13 @@
+## Title: Translate
+## Author: Jeniksoft
+## Description: Translate interaction text by Google web pages
+## Version: 1.1.5
+## APIVersion: 101032
+## SavedVariables: TranslateAddonSavedVariables
+
+; Language overwrite
+Lang/$(language).lua
+
+Minimalized.xml
+Translate.xml
+Translate.lua

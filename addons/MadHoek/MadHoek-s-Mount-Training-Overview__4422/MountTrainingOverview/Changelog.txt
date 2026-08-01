@@ -1,0 +1,216 @@
+=========================
+Changelog – Version 3.0.4
+=========================
+
+* changed manifest extension from "addon" to "txt"
+* Updated LibAddonMenu dependency version requirement (>=43)
+* added the ability to lock the window along with a setting in the LAM menu and a keybind
+* added slash commands to show/hide and lock/unlock the window
+* updated ESO API version to 101050
+
+=========================
+Changelog – Version 3.0.3
+=========================
+
+## Compliance & Technical Improvements
+
+* Updated LibAddonMenu dependency version requirement (>=41)
+* Implemented proper dependency version gating according to ESOUI best practices
+* Removed unintended global variable (mhmtow)
+* Improved variable scoping for better addon isolation
+* Converted SavedVariables to server-dependent storage using GetWorldName()
+* Minor internal cleanup for improved standards compliance
+
+=========================
+Changelog – Version 3.0.2
+=========================
+
+## Core System Stabilization
+
+* Finalized global cooldown authority model
+* Ensured globalReadytime remains valid under all conditions
+* Added automatic global timer reconstruction when necessary
+* Refined cooldown transition detection (didStartCooldown)
+* Improved synchronization between runtime data and saved variables
+* Hardened state handling across login, reloadui, and character switching
+
+## Mount Training Lifecycle Refinement
+
+* Finalized deterministic lifecycle states:
+
+  * Never Trained
+  * Ready
+  * On Cooldown
+  * Maxed
+  * Trained Before Records Began
+* Improved detection for fresh characters
+* Refined behavior when using Riding Lesson Books
+* Ensured books update stats without incorrectly starting cooldown
+* "Never Trained" now only clears when an actual stable training occurs
+* Improved tooltip consistency across all state transitions
+
+## Character Handling Improvements
+
+* Added automatic character name synchronization (rename token safe)
+* Added automatic alliance synchronization
+* Improved character list rebuilding after savedvars cleanup
+* Added automatic repair for missing character index numbers
+* Improved case-insensitive name sorting
+* Improved resilience after character deletion
+
+## Date & Time System (Finalized)
+
+* Fully ESO-native date storage using GetDate() (YYYYMMDD)
+* Stable time-of-day storage via seconds-since-midnight
+* Locale-safe tooltip rendering across all client languages
+* Improved invalid date prevention safeguards
+* Refined "Before records began" handling
+
+## Full Localization Support
+
+* Completed support for all 7 official ESO client languages:
+
+  * English
+  * German
+  * Spanish
+  * French
+  * Russian
+  * Japanese
+  * Simplified Chinese
+* Improved wording consistency across languages
+* Refined tooltip phrasing for clarity and immersion
+* Ensured gender-neutral phrasing where required
+
+## UI & Presentation Improvements
+
+* Improved row state coloring consistency
+* Refined status text clarity
+* Improved layout stability across font sizes
+* Minor visual polish and consistency fixes
+
+## Stability & Edge Case Hardening
+
+* Prevented invalid state propagation in rare transitions
+* Improved behavior on first installation
+* Improved behavior after savedvars rebuild
+* Reduced unnecessary state recalculations
+* General structural cleanup for long-term maintainability
+
+=========================
+Changelog – Version 2.7.1
+=========================
+
+## Core Logic Improvements
+
+* Reworked global cooldown authority handling
+* Ensured globalReadytime is never invalid (guard against 0)
+* Improved first-install initialization behavior
+* Added automatic global timer reconstruction when needed
+* Removed legacy repair logic and simplified date storage model
+* Improved cooldown state transition detection (didStartCooldown logic)
+* Improved runtime vs saved-variable synchronization
+
+## Date & Time System Overhaul
+
+* Replaced locale-dependent date parsing with ESO-native GetDate() integer (YYYYMMDD)
+* Fully locale-safe date handling across all ESO client languages
+* Removed string parsing assumptions (no more MM/DD/YYYY dependency)
+* Simplified and hardened date formatting helper
+* Ensured tooltip formatting never outputs invalid dates
+* Improved clock time stability using stored seconds-of-day
+
+## Character Data Improvements
+
+* Added automatic name synchronization on login (handles rename tokens)
+* Added automatic alliance synchronization
+* Improved case-insensitive name sorting
+* Hardened character comparison logic
+* Added migration path for legacy Y/M/D date fields
+
+## Training State Enhancements
+
+* Added explicit detection for "Never Trained" characters
+* Added dedicated tooltip for characters who never trained their mount
+* Added tooltip state for characters trained before addon installation ("Before records")
+* Improved maxed-character tooltip handling
+* Improved first-record logic for fresh installations
+* Refined lifecycle distinction between:
+
+  * Never trained
+  * On cooldown
+  * Ready
+  * Maxed
+  * Pre-addon training
+
+## UI & Tooltip Improvements
+
+* Improved tooltip builder logic with clean state separation
+* Added character name to contextual tooltips
+* Improved tooltip clarity and phrasing
+* Refined status coloring consistency
+* Minor layout stability improvements
+
+## Stability & Edge Case Handling
+
+* Prevented potential nil-runtime access scenarios
+* Improved safe initialization of new characters
+* Ensured correct behavior after savedvars rebuild
+* Improved behavior across reloadui
+* Hardened event handling flow
+
+## Internal Cleanup & Refactoring
+
+* Removed obsolete repair mechanisms
+* Simplified state validation logic
+* Reduced conditional overlap
+* Improved separation of concerns
+* Cleaned up redundant date fields
+* General structural refactor for maintainability
+
+=========================
+Changelog – Version 2.5.3
+=========================
+
+## Major Improvements
+
+* Reworked riding cooldown synchronization logic
+* Improved global timer behavior across characters
+* Added accurate tracking of training start time
+
+## Tooltip Enhancements
+
+* Tooltip now shows:
+
+  * Exact training start date
+  * Exact training start time
+* Added selectable time format:
+
+  * 24-hour format
+  * 12-hour (AM/PM)
+* Added selectable date format:
+
+  * Client default
+  * DD/MM/YYYY
+  * MM/DD/YYYY
+  * ISO (YYYY-MM-DD)
+
+## UI & Settings Improvements
+
+* Improved window visibility toggle behavior
+* Improved title and icon layout handling
+* Added better color handling for status states
+* Minor layout refinements
+
+## Fixes
+
+* Fixed sync inconsistencies in certain character scenarios
+* Fixed tooltip errors in environments where some date/time API functions were unavailable
+* Fixed rare edge cases in timer state transitions
+
+## Internal Cleanup
+
+* Code structure improvements
+* Reduced unnecessary updates
+* Improved saved variable handling and stability
+
+============================================================

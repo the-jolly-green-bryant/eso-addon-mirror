@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/maximoz/Separate-Guild-Trader-Name-Display__2944",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "maximoz",
+  "canonical_id": "esoui:2944",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2944",
+  "deleted": false,
+  "directories": [
+    "SeparateGuildTraderNameDisplay"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2944/",
+  "fingerprint": "3183acfcec6b52c6b701ba60daa1e85e2728904450e5d6ae68783f990855dac1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9938.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9939.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2944",
+  "source_url": "https://www.esoui.com/downloads/info2944-SeparateGuildTraderNameDisplay.html",
+  "stats": {
+    "downloads": 2690,
+    "favorites": 3,
+    "monthly_downloads": 13
+  },
+  "title": "Separate Guild Trader Name Display",
+  "updated_at": 1629785996000,
+  "version": "1.3"
+}

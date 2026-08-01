@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Garkin/LibMapPins__563",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Garkin",
+  "canonical_id": "esoui:563",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:563",
+  "deleted": false,
+  "directories": [
+    "LibMapPins-1.0"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl563/",
+  "fingerprint": "4ed2fb46cb15f58aa0f7f7dee55ff0dde42ced057ea22c84fe2355b22458b514",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "563",
+  "source_url": "https://www.esoui.com/downloads/info563-LibMapPins.html",
+  "stats": {
+    "downloads": 5869134,
+    "favorites": 2086,
+    "monthly_downloads": 16739
+  },
+  "title": "LibMapPins",
+  "updated_at": 1751987629000,
+  "version": "1.0 r47"
+}

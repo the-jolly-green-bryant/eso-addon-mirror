@@ -1,0 +1,58 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+	<Category name="KeyInv">
+	    <Action name="KEYINV_HOTKEY1">
+		<Down>
+		    KeyInv.Key(1)
+		</Down>
+	    </Action>
+	    <Action name="KEYINV_HOTKEY2">
+		<Down>
+		    KeyInv.Key(2)
+		</Down>
+	    </Action>
+	    <Action name="KEYINV_HOTKEY3">
+		<Down>
+		    KeyInv.Key(3)
+		</Down>
+	    </Action>
+	    <Action name="KEYINV_HOTKEY4">
+		<Down>
+		    KeyInv.Key(4)
+		</Down>
+	    </Action>
+	    <Action name="KEYINV_HOTKEY5">
+		<Down>
+		    KeyInv.Key(5)
+		</Down>
+	    </Action>
+	    <Action name="KEYINV_HOTKEY6">
+		<Down>
+		    KeyInv.Key(6)
+		</Down>
+	    </Action>
+	    <Action name="KEYINV_HOTKEY7">
+		<Down>
+		    KeyInv.Key(7)
+		</Down>
+	    </Action>
+	    <Action name="KEYINV_HOTKEY8">
+		<Down>
+		    KeyInv.Key(8)
+		</Down>
+	    </Action>
+	    <Action name="KEYINV_HOTKEY9">
+		<Down>
+		    KeyInv.Key(9)
+		</Down>
+	    </Action>
+	    <Action name="KEYINV_HOTKEY19">
+		<Down>
+		    KeyInv.Key(19)
+		</Down>
+	    </Action>
+	</Category>
+    </Layer>
+</Bindings>
+
+

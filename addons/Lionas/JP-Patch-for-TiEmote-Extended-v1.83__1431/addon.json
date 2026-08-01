@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Lionas/JP-Patch-for-TiEmote-Extended-v1.83__1431",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lionas",
+  "canonical_id": "esoui:1431",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:1431",
+  "deleted": false,
+  "directories": [
+    "TiEmote"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1431/",
+  "fingerprint": "5aef6af22080fe1f4a8de514d65bc6351dd577d20c05b00b4afe558b697e3749",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4648.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4679.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1431",
+  "source_url": "https://www.esoui.com/downloads/info1431-JPPatchforTiEmoteExtendedv1.83.html",
+  "stats": {
+    "downloads": 7518,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "JP Patch for TiEmote Extended v1.83",
+  "updated_at": 1469933808000,
+  "version": "1.83r1"
+}

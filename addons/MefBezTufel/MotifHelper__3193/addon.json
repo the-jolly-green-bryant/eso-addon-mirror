@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/MefBezTufel/MotifHelper__3193",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MefBezTufel",
+  "canonical_id": "esoui:3193",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:3193",
+  "deleted": false,
+  "directories": [
+    "MotifHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3193/",
+  "fingerprint": "3410b2fafb316ffe980012e36018da24fbbf4893024e0c6dccff6ecfbb86d77c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11214.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3193",
+  "source_url": "https://www.esoui.com/downloads/info3193-MotifHelper.html",
+  "stats": {
+    "downloads": 6396,
+    "favorites": 7,
+    "monthly_downloads": 30
+  },
+  "title": "MotifHelper",
+  "updated_at": 1644012685000,
+  "version": "0.0.2"
+}

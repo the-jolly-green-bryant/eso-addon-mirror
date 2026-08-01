@@ -1,0 +1,33 @@
+{
+  "archive_path": "addons/Letho/Auramastery__1367",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Letho",
+  "canonical_id": "esoui:1367",
+  "category_id": "22",
+  "compatibility": [],
+  "content_id": "esoui:1367",
+  "deleted": false,
+  "directories": [
+    "AuraMastery"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1367/",
+  "fingerprint": "b999bdceaed40699c467810d2a6b524d80a919bedee5fa4c8fbf36a2b3651ad5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6325.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6324.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1367",
+  "source_url": "https://www.esoui.com/downloads/info1367-Auramastery.html",
+  "stats": {
+    "downloads": 48353,
+    "favorites": 74,
+    "monthly_downloads": 50
+  },
+  "title": "Auramastery",
+  "updated_at": 1584427049000,
+  "version": "1.20"
+}

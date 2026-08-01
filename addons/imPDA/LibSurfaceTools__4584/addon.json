@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/imPDA/LibSurfaceTools__4584",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "imPDA",
+  "canonical_id": "esoui:4584",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4584",
+  "deleted": false,
+  "directories": [
+    "LibSurfaceTools"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4584/",
+  "fingerprint": "f52dab8151ab882d53edc17280487d3d6f1a6c26d2e436c30d7bdf2b19e76c3c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4584",
+  "source_url": "https://www.esoui.com/downloads/info4584-LibSurfaceTools.html",
+  "stats": {
+    "downloads": 1771,
+    "favorites": 1,
+    "monthly_downloads": 433
+  },
+  "title": "LibSurfaceTools",
+  "updated_at": 1781188850000,
+  "version": "8"
+}

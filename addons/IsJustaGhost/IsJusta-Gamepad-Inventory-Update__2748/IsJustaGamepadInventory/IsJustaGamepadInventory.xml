@@ -1,0 +1,9 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="IJA_GamepadInventory">
+			<OnInitialized>
+				IJA_GPInventory_Initialize(self)
+			</OnInitialized>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

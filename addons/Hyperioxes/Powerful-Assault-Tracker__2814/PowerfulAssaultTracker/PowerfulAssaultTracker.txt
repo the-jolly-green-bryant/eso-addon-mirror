@@ -1,0 +1,16 @@
+## APIVersion: 100033
+## Title: PowerfulAssaultTracker
+## Version: 1.5a
+## Author: Hyperioxes
+## Description: Tracks Powerful Assault
+## SavedVariables: PowerfulAssaultTrackerSavedVars
+## DependsOn: LibAddonMenu-2.0>=31
+
+
+
+
+PowerfulAssaultTracker.lua
+Settings.lua
+
+
+

@@ -1,0 +1,96 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="MyFakeRadial" hidden="true" mouseEnabled="true" clampedToScreen="true" movable="false" drawLayer="OVERLAY">
+      <Dimensions x="512" y="512" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+      <Controls>
+       <!-- Wheel Background -->
+        <Texture name="$(parent)WheelBG" textureFile="RolePlayNeeds/ui/wheel/wheelbl2.dds">
+        <Dimensions x="512" y="512" />
+        <Anchor point="CENTER" relativePoint="CENTER" offsetX="-5" offsetY="-10"/>
+       </Texture>
+
+        <!-- Eat -->
+        <Button name="$(parent)Button1">
+          <Dimensions x="50" y="50" />
+          <Anchor point="CENTER" relativePoint="CENTER" offsetX="0" offsetY="-160" />
+          <Textures
+            normal="RolePlayNeeds/ui/wheel/eatW.dds"
+            pressed="RolePlayNeeds/ui/wheel/eatW.dds"
+            mouseOver="RolePlayNeeds/ui/wheel/eatW.dds" />
+        </Button>
+
+        <!-- Drink -->
+        <Button name="$(parent)Button2">
+          <Dimensions x="50" y="50" />
+          <Anchor point="CENTER" relativePoint="CENTER" offsetX="111" offsetY="-111" />
+          <Textures
+            normal="RolePlayNeeds/ui/wheel/drinkW.dds"
+            pressed="RolePlayNeeds/ui/wheel/drinkW.dds"
+            mouseOver="RolePlayNeeds/ui/wheel/drinkW.dds" />
+        </Button>
+
+        <!-- Rest -->
+        <Button name="$(parent)Button3">
+          <Dimensions x="50" y="50" />
+          <Anchor point="CENTER" relativePoint="CENTER" offsetX="160" offsetY="0" />
+          <Textures
+            normal="RolePlayNeeds/ui/wheel/restW.dds"
+            pressed="RolePlayNeeds/ui/wheel/restW.dds"
+            mouseOver="RolePlayNeeds/ui/wheel/restW.dds" />
+        </Button>
+
+        <!-- Sleep -->
+        <Button name="$(parent)Button4">
+          <Dimensions x="50" y="50" />
+          <Anchor point="CENTER" relativePoint="CENTER" offsetX="111" offsetY="111" />
+          <Textures
+            normal="RolePlayNeeds/ui/wheel/sleepW.dds"
+            pressed="RolePlayNeeds/ui/wheel/sleepW.dds"
+            mouseOver="RolePlayNeeds/ui/wheel/sleepW.dds" />
+        </Button>
+
+        <!-- Needs -->
+        <Button name="$(parent)Button5">
+          <Dimensions x="50" y="50" />
+          <Anchor point="CENTER" relativePoint="CENTER" offsetX="0" offsetY="160" />
+          <Textures
+            normal="RolePlayNeeds/ui/wheel/survivalW.dds"
+            pressed="RolePlayNeeds/ui/wheel/survivalW.dds"
+            mouseOver="RolePlayNeeds/ui/wheel/survivalW.dds" />
+        </Button>
+
+        <!-- Ask -->
+        <Button name="$(parent)Button6">
+          <Dimensions x="50" y="50" />
+          <Anchor point="CENTER" relativePoint="CENTER" offsetX="-119" offsetY="119" />
+          <Textures
+            normal="RolePlayNeeds/ui/wheel/askW.dds"
+            pressed="RolePlayNeeds/ui/wheel/askW.dds"
+            mouseOver="RolePlayNeeds/ui/wheel/askW.dds" />
+        </Button>
+
+        <!-- Books -->
+        <Button name="$(parent)Button7">
+          <Dimensions x="50" y="50" />
+          <Anchor point="CENTER" relativePoint="CENTER" offsetX="-160" offsetY="0" />
+          <Textures
+            normal="RolePlayNeeds/ui/wheel/bookW.dds"
+            pressed="RolePlayNeeds/ui/wheel/bookW.dds"
+            mouseOver="RolePlayNeeds/ui/wheel/bookW.dds" />
+        </Button>
+
+        <!-- Pets -->
+        <Button name="$(parent)Button8">
+          <Dimensions x="50" y="50" />
+          <Anchor point="CENTER" relativePoint="CENTER" offsetX="-111" offsetY="-111" />
+          <Textures
+            normal="RolePlayNeeds/ui/wheel/petW.dds"
+            pressed="RolePlayNeeds/ui/wheel/petW.dds"
+            mouseOver="RolePlayNeeds/ui/wheel/petW.dds" />
+        </Button>
+
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

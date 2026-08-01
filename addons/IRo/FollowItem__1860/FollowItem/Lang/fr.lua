@@ -1,0 +1,3 @@
+SafeAddString(SI_BINDING_NAME_VISIBILITY_TOGGLE, "Afficher/Masquer")
+SafeAddString(SI_FOLLOWITEM_ITEM_FOLLOW_OPTION, "Suivre")
+SafeAddString(SI_FOLLOWITEM_ITEM_UNFOLLOW_OPTION, "Ne plus suivre")

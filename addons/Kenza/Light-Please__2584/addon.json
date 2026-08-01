@@ -1,0 +1,54 @@
+{
+  "archive_path": "addons/Kenza/Light-Please__2584",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kenza",
+  "canonical_id": "esoui:2584",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2584",
+  "deleted": false,
+  "directories": [
+    "LightPlease"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2584/",
+  "fingerprint": "2ac3a26cb2f6be8244f19108b63538c634c71b3ca59a8279b37ee789ff7acf80",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8823.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8824.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8825.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8826.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8827.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8828.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2584",
+  "source_url": "https://www.esoui.com/downloads/info2584-LightPlease.html",
+  "stats": {
+    "downloads": 3297,
+    "favorites": 6,
+    "monthly_downloads": 15
+  },
+  "title": "Light, Please!",
+  "updated_at": 1586541768000,
+  "version": "1.0"
+}

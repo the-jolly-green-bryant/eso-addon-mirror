@@ -1,0 +1,54 @@
+{
+  "archive_path": "addons/MelanAster/WareGuild---Guild-Banks-Manager__3877",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MelanAster",
+  "canonical_id": "esoui:3877",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3877",
+  "deleted": false,
+  "directories": [
+    "WareGuild"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3877/",
+  "fingerprint": "85c5bc97df7a632e057cbe3dd93a9195d6ed372e484a5bc7f00fd80e6c5c9890",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13151.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13152.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13218.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13219.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13220.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13221.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13222.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13223.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13224.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13279.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3877",
+  "source_url": "https://www.esoui.com/downloads/info3877-WareGuild-GuildBanksManager.html",
+  "stats": {
+    "downloads": 3956,
+    "favorites": 3,
+    "monthly_downloads": 13
+  },
+  "title": "WareGuild - Guild Banks Manager",
+  "updated_at": 1730820002000,
+  "version": "0.23"
+}

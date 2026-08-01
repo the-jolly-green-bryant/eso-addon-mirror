@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Jacobs/JacobsBuffTracker__4463",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jacobs",
+  "canonical_id": "esoui:4463",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4463",
+  "deleted": false,
+  "directories": [
+    "JacobsBuffTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4463/",
+  "fingerprint": "5171185a3f0d22aa94d8fd32013935f60c1c34ee298aa2cd9acdb109cf5e24a9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15527.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4463",
+  "source_url": "https://www.esoui.com/downloads/info4463-JacobsBuffTracker.html",
+  "stats": {
+    "downloads": 358,
+    "favorites": 1,
+    "monthly_downloads": 68
+  },
+  "title": "JacobsBuffTracker",
+  "updated_at": 1773815234000,
+  "version": "0.6.1"
+}

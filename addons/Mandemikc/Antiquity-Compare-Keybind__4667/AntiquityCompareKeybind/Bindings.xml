@@ -1,0 +1,10 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SI_BINDING_NAME_ANTIQUITY_COMPARE_KEYBIND_CATEGORY">
+            <Action name="ANTIQUITY_COMPARE_KEYBIND_SHOW">
+                <Down>AntiquityCompareKeybind.OnKeyDown()</Down>
+                <Up>AntiquityCompareKeybind.OnKeyUp()</Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

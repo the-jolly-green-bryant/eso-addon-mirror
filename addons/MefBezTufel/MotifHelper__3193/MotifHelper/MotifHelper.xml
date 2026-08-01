@@ -1,0 +1,26 @@
+﻿<GuiXml>
+  <Controls>
+    <TopLevelControl name="MotifHelperWindow" hidden="true">
+      <Dimensions x="600" y="600" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+ 
+      <Controls>
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop"><AnchorFill/></Backdrop>
+        <Label name="$(parent)Header" text="SI_MOTIF_HELPER_WINDOW_CAPTION" color="FFFFFF" width="500" height="10" font="ZoFontWinH3" inheritAlpha="true">
+        	<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
+        </Label>
+        <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="5"/>
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						MotifHelper.HideWindow()
+					</OnClicked>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

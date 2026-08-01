@@ -1,0 +1,7 @@
+## Title: Advanced Filters - Style Page Filters
+## Author: mccalli
+## Version: 1.0.3
+## APIVersion: 101042
+## DependsOn: AdvancedFilters
+
+AF_StylePageFilters.lua

@@ -1,0 +1,25 @@
+<GuiXml>
+  <Font name="AdvancedSynergiesUIFont" font="EsoUi/Common/Fonts/Univers67.otf|50|soft-shadow-thick" />
+  <Controls>
+    <TopLevelControl name="AdvancedSynergiesUI" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="400" y="100" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-100" />
+       <OnMoveStop>
+        GenericAdvancedSynergies:OnMoveStop()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)Tooltip" width="200" height="15" font="ZoFontWindowSubtitle" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="fneeeeet" hidden="true">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+        <Label name="$(parent)Notification" width="200" height="25" font="AdvancedSynergiesUIFont" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="fneeeeet" hidden="true">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="15" />
+        </Label>
+      </Controls>
+    <OnInitialized>
+            GenericAdvancedSynergiesInitialized(self)
+    </OnInitialized>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

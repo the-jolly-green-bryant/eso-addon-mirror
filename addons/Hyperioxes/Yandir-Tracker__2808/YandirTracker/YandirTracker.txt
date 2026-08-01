@@ -1,0 +1,16 @@
+## APIVersion: 100030
+## Title: YandirTracker
+## Version: 1.2a
+## Author: Hyperioxes
+## Description: Tracks Yandir stacks and display current weapon damage bonus
+## SavedVariables: YandirTrackerSV
+## DependsOn: LibAddonMenu-2.0>=31
+
+
+
+
+YandirTracker.lua
+Settings.lua
+
+
+

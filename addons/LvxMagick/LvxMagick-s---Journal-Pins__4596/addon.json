@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/LvxMagick/LvxMagick-s---Journal-Pins__4596",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "LvxMagick",
+  "canonical_id": "esoui:4596",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4596",
+  "deleted": false,
+  "directories": [
+    "LvxJournal",
+    "LvxJournal_PersonalNotesBackup"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4596/",
+  "fingerprint": "354362c3464b5760f72264bef00e1806918e680eac0a116096ec10144e553683",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16152.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16148.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16144.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16131.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16120.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4596",
+  "source_url": "https://www.esoui.com/downloads/info4596-LvxMagicks-JournalPins.html",
+  "stats": {
+    "downloads": 185,
+    "favorites": 2,
+    "monthly_downloads": 38
+  },
+  "title": "LvxMagick's - Journal & Pins",
+  "updated_at": 1780108133000,
+  "version": "5.1"
+}

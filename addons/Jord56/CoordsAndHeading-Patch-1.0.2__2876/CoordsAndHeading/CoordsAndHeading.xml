@@ -1,0 +1,17 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="CoordsAndHeadingUI">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+			<Controls>
+				<Backdrop name="$(parent)_Backdrop" edgeColor="FFFFFF" centerColor="FFFFFF" alpha="0" >
+					<AnchorFill/>
+					<Edge edgeSize="1"/>
+				</Backdrop>
+				<Label name="$(parent)_Label" font="ZoFontCreditsText" color="000000" wrapMode="TRUNCATE" 
+				verticalAlignment="TOPLEFT" horizontalAlignment="LEFT" text="CoordsAndHeading" scale="">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

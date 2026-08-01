@@ -1,0 +1,70 @@
+{
+  "archive_path": "addons/Hyperioxes/Powerful-Assault-Tracker__2814",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hyperioxes",
+  "canonical_id": "esoui:2814",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2814",
+  "deleted": false,
+  "directories": [
+    "PowerfulAssaultTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2814/",
+  "fingerprint": "4f62be621b7a16a61207ee9a9f5a50412203ddd3cb0fc05b3f37679c2d3b3a8c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9502.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9501.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2814",
+  "source_url": "https://www.esoui.com/downloads/info2814-PowerfulAssaultTracker.html",
+  "stats": {
+    "downloads": 19485,
+    "favorites": 10,
+    "monthly_downloads": 158
+  },
+  "title": "Powerful Assault Tracker",
+  "updated_at": 1661875218000,
+  "version": "1.5a"
+}

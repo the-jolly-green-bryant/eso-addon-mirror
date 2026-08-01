@@ -1,0 +1,181 @@
+<GuiXml>
+    <Controls>
+		<Button name="CPC_BTNPRES" virtual="true">
+			<Dimensions x="58" y="58" />
+			<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)flash" textureFile="esoui/art/crafting/burst_gold.dds" hidden="false">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"  />
+					<Dimensions x="84" y="84" />
+					<OnInitialized>
+						self:SetTextureRotation(math.pi/4, 0.5,0.5)
+						self:GetParent().flash = self
+						self:SetColor(0,0.8,0)
+					</OnInitialized>
+				</Texture>
+			</Controls>
+		</Button>
+		<TopLevelControl name="CPC_BTNWIN1" mouseEnabled="true" hidden="true" movable="true">
+			<Dimensions x="110" y="512" />
+			<OnMoveStop>
+				CarosPreCrafter.saveButton1Pos(self:GetLeft() , self:GetTop())
+			</OnMoveStop>
+			<Controls>
+				<Control name="$(parent)bg">
+					<AnchorFill />
+					<Controls>
+						<Texture name="$(parent)1" textureFile="esoui/art/crafting/crafting_alchemy_slottingBG.dds">
+							<Dimensions x="30" y="512" />
+							<TextureCoords left="0" right="0.2" top="0" bottom="1" />
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+						</Texture>
+						<Texture name="$(parent)2" textureFile="esoui/art/crafting/crafting_alchemy_slottingBG.dds">
+							<Dimensions x="50" y="512" />
+							<TextureCoords left="0.2" right="0.3" top="0" bottom="1" />
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+						</Texture>
+						<Texture name="$(parent)3" textureFile="esoui/art/crafting/crafting_alchemy_slottingBG.dds">
+							<Dimensions x="30" y="512" />
+							<TextureCoords left="0.2" right="0" top="0" bottom="1" />
+							<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" />
+						</Texture>
+					</Controls>
+				</Control>
+				<Backdrop name="$(parent)bgAlt" hidden="true" centerColor="000000" edgeColor="202020">
+					<Edge edgeSize="1" />
+					<Dimensions x="84" y="168" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="54" />
+					<Controls>
+						<Backdrop name="$(parent)InnerBorder" centerColor="101010" edgeColor="202020">
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="10"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="-10"/>
+							<Edge edgeSize="1"/>
+						</Backdrop>
+					</Controls>
+				</Backdrop>
+				<Label name="$(parent)title" inherits="ZO_CraftingContainerHeader" text="CPC">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="64" />
+				</Label>
+				<Button name="$(parent)btn1" inherits="CPC_BTNPRES">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="105" />
+					<OnInitialized>
+						self:GetParent().btn1 = self
+					</OnInitialized>
+				</Button>
+				<Button name="$(parent)btn2" inherits="CPC_BTNPRES">
+					<Anchor point="TOP" relativeTo="$(parent)btn1" relativePoint="BOTTOM" offsetY="5" />
+					<OnInitialized>
+						self:GetParent().btn2 = self
+					</OnInitialized>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+		<TopLevelControl name="CPC_BTNWIN2" mouseEnabled="true" hidden="true" movable="true" >
+			<Dimensions x="150" y="50" />
+			<OnMoveStop>
+				CarosPreCrafter.sV.window2Left = self:GetLeft() 
+				CarosPreCrafter.sV.window2Top = self:GetTop()
+			</OnMoveStop>
+			<Controls>
+				<Backdrop inherits="ZO_DefaultBackdrop" name="$(parent)bg">
+					<AnchorFill />
+				</Backdrop>
+				
+				<Label name="$(parent)title" inherits="ZO_CraftingContainerHeader" text="CPC">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="10" />
+					<Dimensions y="32" />
+					<OnInitialized>
+						self:GetParent().title = self
+					</OnInitialized>
+				</Label>
+				<Button name="$(parent)btn1" inherits="CPC_BTNPRES">
+					<Anchor point="LEFT" relativeTo="$(parent)title" relativePoint="RIGHT" offsetX="15" />
+					<Dimensions x="32" y="32" />
+					<OnInitialized>
+						self:GetParent().btn1 = self
+						self:SetTextureCoords(0.16,0.84,0.16,0.84)
+						self:GetNamedChild("flash"):SetHidden(true)
+					</OnInitialized>
+					<OnClicked>CarosPreCrafter.OnBankBtn1Click()</OnClicked>
+					<OnMouseEnter>CarosPreCrafter.ShowBankBtn1TT(self)</OnMouseEnter>
+				</Button>
+				<Button name="$(parent)btn2" inherits="CPC_BTNPRES">
+					<Anchor point="LEFT" relativeTo="$(parent)btn1" relativePoint="RIGHT" offsetX="5" />
+					<Dimensions x="32" y="32" />
+					<OnInitialized>
+						self:GetParent().btn2 = self
+						self:SetTextureCoords(0.16,0.84,0.16,0.84)
+						self:GetNamedChild("flash"):SetHidden(true)
+					</OnInitialized>
+					<OnClicked>CarosPreCrafter.OnBankBtn2Click()</OnClicked>
+					<OnMouseEnter>CarosPreCrafter.ShowBankBtn2TT(self)</OnMouseEnter>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+		<TopLevelControl name="CPC_BTNWIN3" mouseEnabled="true" hidden="true" movable="true">
+			<Dimensions x="150" y="50" />
+			<OnMoveStop>
+				CarosPreCrafter.sV.window3Left = self:GetLeft() 
+				CarosPreCrafter.sV.window3Top = self:GetTop()
+			</OnMoveStop>
+			<Controls>
+				<Backdrop inherits="ZO_DefaultBackdrop" name="$(parent)bg">
+					<AnchorFill />
+				</Backdrop>
+				
+				<Label name="$(parent)title" inherits="ZO_CraftingContainerHeader" text="CPC">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="10" />
+					<Dimensions y="32" />
+					<OnInitialized>
+						self:GetParent().title = self
+					</OnInitialized>
+				</Label>
+				<Button name="$(parent)btn1" inherits="CPC_BTNPRES">
+					<Anchor point="LEFT" relativeTo="$(parent)title" relativePoint="RIGHT" offsetX="15" />
+					<Dimensions x="32" y="32" />
+					<Textures normal="esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds" pressed="esoui/art/tradinghouse/tradinghouse_browse_tabicon_down.dds" mouseOver="esoui/art/tradinghouse/tradinghouse_browse_tabicon_over.dds" />
+					<OnInitialized>
+						self:GetParent().btn1 = self
+						self:SetTextureCoords(0.16,0.84,0.16,0.84)
+						self:GetNamedChild("flash"):SetHidden(true)
+					</OnInitialized>
+					<OnClicked>CarosPreCrafter.restockBtnClick(true)</OnClicked>
+					<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(CPCLamRestockSearchForNextItem))</OnMouseEnter>
+				</Button>
+				<Button name="$(parent)btn2" inherits="CPC_BTNPRES" >
+					<Anchor point="LEFT" relativeTo="$(parent)btn1" relativePoint="RIGHT" offsetX="5" />
+					<Dimensions x="32" y="32" />
+					<Textures normal="esoui/art/tradinghouse/tradinghouse_listings_tabicon_up.dds" pressed="esoui/art/tradinghouse/tradinghouse_listings_tabicon_down.dds" mouseOver="esoui/art/tradinghouse/tradinghouse_listings_tabicon_over.dds" />
+					<OnInitialized>
+						self:GetParent().btn2 = self
+						self:SetTextureCoords(0.16,0.84,0.16,0.84)
+						self:GetNamedChild("flash"):SetHidden(true)
+					</OnInitialized>
+					<OnClicked>CarosPreCrafter.restockBtnClick(false)</OnClicked>
+					<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(CPCLamRestockSearchAll))</OnMouseEnter>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+		 <TopLevelControl name="CPC_DiagAddRestock" inherits="ZO_CustomDialogBase">
+            <OnInitialized>
+                CarosPreCrafter.initDiagAddRestock(self)
+            </OnInitialized>
+
+            <Controls>
+                <Label name="$(parent)Prompt" inherits="ZO_DialogContentAnchors" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGame"/>
+
+                <!--<Button name="$(parent)Source" inherits="ZO_ItemSlot">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Prompt" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="25" />
+                    <Dimensions x="48" y="48" />
+                </Button>-->
+
+                <Control name="$(parent)Spinner" inherits="ZO_EditSpinner">
+                    <Anchor point="TOP" relativeTo="$(parent)Prompt" relativePoint="BOTTOM" offsetY="7" />
+                </Control>
+
+                <Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton"/>
+                <Control name="$(parent)Add" inherits="ZO_CustomDialogButton"/>
+            </Controls>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

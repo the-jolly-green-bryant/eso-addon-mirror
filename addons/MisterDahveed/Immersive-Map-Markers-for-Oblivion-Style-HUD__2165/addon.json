@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/MisterDahveed/Immersive-Map-Markers-for-Oblivion-Style-HUD__2165",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MisterDahveed",
+  "canonical_id": "esoui:2165",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:2165",
+  "deleted": false,
+  "directories": [
+    "pinpoints"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2165/",
+  "fingerprint": "c44006cfee312f8f90ba2db9d8b7eb4da0f116df0195cdd1d40dca3db68aa7ef",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7367.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2165",
+  "source_url": "https://www.esoui.com/downloads/info2165-ImmersiveMapMarkersforOblivionStyleHUD.html",
+  "stats": {
+    "downloads": 7106,
+    "favorites": 5,
+    "monthly_downloads": 38
+  },
+  "title": "Immersive Map Markers for Oblivion Style HUD",
+  "updated_at": 1538959811000,
+  "version": "1.1"
+}

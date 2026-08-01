@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Lionas/JP-Patch-for-Master-Thief-v1.56__1507",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lionas",
+  "canonical_id": "esoui:1507",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1507",
+  "deleted": false,
+  "directories": [
+    "MasterThief"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1507/",
+  "fingerprint": "72817f894bfa6a85b87907e88c2ecf4a80e27651bcee99a0cade5d65107056b4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4910.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4911.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1507",
+  "source_url": "https://www.esoui.com/downloads/info1507-JPPatchforMasterThiefv1.56.html",
+  "stats": {
+    "downloads": 5575,
+    "favorites": 1,
+    "monthly_downloads": 16
+  },
+  "title": "JP Patch for Master Thief v1.56",
+  "updated_at": 1476880093000,
+  "version": "1.56"
+}

@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SI_BINDING_NAME_FLAMECHASERS_CATEGORY">
+            <Action name="OCP_TOGGLE_WINDOW">
+                <Down>OutfitCollectionProfiles.ToggleWindow()</Down>
+            </Action>
+            <Action name="OCP_SAVE_CURRENT_PROFILE">
+                <Down>OutfitCollectionProfiles.SaveCurrentOutfitProfile()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

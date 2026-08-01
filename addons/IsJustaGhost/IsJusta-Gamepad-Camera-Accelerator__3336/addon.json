@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/IsJustaGhost/IsJusta-Gamepad-Camera-Accelerator__3336",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IsJustaGhost",
+  "canonical_id": "esoui:3336",
+  "category_id": "162",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3336",
+  "deleted": false,
+  "directories": [
+    "IsJustaGamepadCameraAccelerator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3336/",
+  "fingerprint": "4747cff93c03b782750fb4725f9a57ed0dbcb088bacf6c4f49753e3c0ebcdca2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3336",
+  "source_url": "https://www.esoui.com/downloads/info3336-IsJustaGamepadCameraAccelerator.html",
+  "stats": {
+    "downloads": 9185,
+    "favorites": 4,
+    "monthly_downloads": 82
+  },
+  "title": "IsJusta Gamepad Camera Accelerator",
+  "updated_at": 1711400398000,
+  "version": "2.1"
+}

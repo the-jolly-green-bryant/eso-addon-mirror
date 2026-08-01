@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Konten/CPViewer__4294",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Konten",
+  "canonical_id": "esoui:4294",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4294",
+  "deleted": false,
+  "directories": [
+    "CPViewer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4294/",
+  "fingerprint": "a74ec3f252b9da06b2720afc9109547dd40beda0d41932770ed066d8785f2f17",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14745.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14746.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14747.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14748.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14749.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14750.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14751.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4294",
+  "source_url": "https://www.esoui.com/downloads/info4294-CPViewer.html",
+  "stats": {
+    "downloads": 392,
+    "favorites": 1,
+    "monthly_downloads": 20
+  },
+  "title": "CPViewer",
+  "updated_at": 1762096186000,
+  "version": "1.0.1"
+}

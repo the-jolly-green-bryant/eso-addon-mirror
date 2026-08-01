@@ -1,0 +1,54 @@
+{
+  "archive_path": "addons/LeandroSilva/Leo-s-Guild-Manager__2151",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "LeandroSilva",
+  "canonical_id": "esoui:2151",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2151",
+  "deleted": false,
+  "directories": [
+    "LeoGuildManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2151/",
+  "fingerprint": "0c0b65334e5fbe74ea7631a48dc9f4b566dff29c163da499f921bdf660cd05ed",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7490.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7491.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7492.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7493.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7494.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7495.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2151",
+  "source_url": "https://www.esoui.com/downloads/info2151-LeosGuildManager.html",
+  "stats": {
+    "downloads": 12511,
+    "favorites": 15,
+    "monthly_downloads": 25
+  },
+  "title": "Leo's Guild Manager",
+  "updated_at": 1587643608000,
+  "version": "1.3.0"
+}

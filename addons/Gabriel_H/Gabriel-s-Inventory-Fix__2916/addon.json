@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Gabriel_H/Gabriel-s-Inventory-Fix__2916",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Gabriel_H",
+  "canonical_id": "esoui:2916",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2916",
+  "deleted": false,
+  "directories": [
+    "GabrielsIF"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2916/",
+  "fingerprint": "3c0b9e248e1285a5d7142f6806e5ea9ad9307497388fe7b3917052d30584ff61",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2916",
+  "source_url": "https://www.esoui.com/downloads/info2916-GabrielsInventoryFix.html",
+  "stats": {
+    "downloads": 3038,
+    "favorites": 2,
+    "monthly_downloads": 9
+  },
+  "title": "Gabriel's Inventory Fix",
+  "updated_at": 1612957025000,
+  "version": "2.0.1"
+}

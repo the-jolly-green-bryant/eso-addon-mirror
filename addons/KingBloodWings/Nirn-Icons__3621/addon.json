@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/KingBloodWings/Nirn-Icons__3621",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KingBloodWings",
+  "canonical_id": "esoui:3621",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3621",
+  "deleted": false,
+  "directories": [
+    "NirnIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3621/",
+  "fingerprint": "b20bf874a187c5a495a785aa3b95528e2e74d5b45ec9dc92546bcd9b7f71f8c2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12336.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12335.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3621",
+  "source_url": "https://www.esoui.com/downloads/info3621-NirnIcons.html",
+  "stats": {
+    "downloads": 1514,
+    "favorites": 1,
+    "monthly_downloads": 5
+  },
+  "title": "Nirn Icons",
+  "updated_at": 1684747147000,
+  "version": "1.0.5"
+}

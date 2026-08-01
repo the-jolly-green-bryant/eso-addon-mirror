@@ -1,0 +1,21 @@
+## DisableSavedVariablesAutoSaving: 1
+## Title: |c2080D0ESO-Database.com|r Game Data Export |c00C000v1.0.24|r
+## Description: The ESO-Database.com game data export AddOn to collect game related data like chest positions.
+## Author: |cEFEBBEKeldor|r
+## Version: 1.0.24
+## IntVersion: 1024
+## APIVersion: 101048
+## SavedVariables: ESODBGameDataExportSV
+## IsLibrary: false
+
+Core/ESODatabaseGameDataExportConst.lua
+Core/ESODatabaseGameDataExportUtils.lua
+ESODatabaseGameDataExport.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

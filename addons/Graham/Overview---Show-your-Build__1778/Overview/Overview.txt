@@ -1,0 +1,14 @@
+## Title: Overview
+## Description: The Overview Add-On allows the user to show all stats, champion bar, buffs, skills and equipment. This character overview can be shared as a screenshot with other players. To open the overview simply type |cffff00/overview|r in your chat box.
+## Version: 1.5
+## APIVersion: 100035
+## Author: @Graham82 (PC / EU) Thanks to @s0rdrak
+## SavedVariables: OverviewVars
+
+Overview.lua
+character.lua
+abilities.lua
+equipment.lua
+potionAndPoison.lua
+champion.lua
+bindings.xml

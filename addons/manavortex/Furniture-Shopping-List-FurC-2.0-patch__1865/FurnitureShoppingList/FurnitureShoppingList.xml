@@ -1,0 +1,162 @@
+<GuiXml>
+	<Controls>
+		<Label name="FurnitureShoppingListLabelField" font="ZoFontGame" wrapMode="ELLIPSIS" mouseEnabled="true" virtual="true">
+			<Dimensions y="21"/>
+			<OnMouseEnter>
+				FurnitureShoppingListLabelField_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				FurnitureShoppingListLabelField_OnMouseExit(self)
+			</OnMouseExit>
+			<OnLinkMouseUp>
+				FurnitureShoppingListLabelField_OnLinkMouseUp(self, button, linkText)
+			</OnLinkMouseUp>
+		</Label>
+		
+		<Control name="FurnitureShoppingListRecipientsRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="29"/>
+			<OnMouseEnter>
+				FurnitureShoppingListRecipientsRow_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				FurnitureShoppingListRecipientsRow_OnMouseExit(self)
+			</OnMouseExit>
+            <Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip"/>
+				
+                <Label name="$(parent)Name" inherits="FurnitureShoppingListLabelField" linkEnabled="true">
+                    <Anchor point="LEFT" />
+					<Dimensions x="350"/>
+				</Label>
+				
+				<Label name="$(parent)Need" inherits="FurnitureShoppingListLabelField">
+					<Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT"/>
+					<Dimensions x="80"/>
+				</Label>
+
+                <Label name="$(parent)Price" inherits="FurnitureShoppingListLabelField">
+                    <Anchor point="LEFT" relativeTo="$(parent)Need" relativePoint="RIGHT" />
+                    <Dimensions x="80" />
+                </Label>
+
+			</Controls>
+		</Control>
+		
+	
+		<TopLevelControl name="FurnitureShoppingListWindow" movable="true" mouseEnabled="true" hidden="true">
+			<Anchor point="CENTER" relativeTo="GuiRoot" offsetX="0" offsetY="0"/>
+			<Dimensions x="522" y="475"/>
+			
+			<OnInitialized>
+				FurnitureShoppingListWindow_OnInitialized(self)
+			</OnInitialized>
+				
+				<Controls>
+				
+					<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+						<AnchorFill/>
+					</Backdrop>
+					
+					<Texture name="$(parent)TopDivider" textureFile="EsoUI/Art/Miscellaneous/centerscreen_topDivider.dds">
+						<Dimensions y="4"/>
+						<Anchor point="TOPLEFT" offsetX="-40" offsetY="47"/>
+						<Anchor point="TOPRIGHT" offsetX="40" offsetY="47"/>
+					</Texture>
+					
+					<Label name="$(parent)Title" font="ZoFontWindowTitle" text="Shopping List">
+						<Anchor point="TOPLEFT" offsetX="9" offsetY="7"/>
+					</Label>
+				
+					<Button name="$(parent)CloseButton" inherits="ZO_CloseButton">
+						<Anchor point="TOPRIGHT" offsetX="-7" offsetY="5"/>
+						<Dimensions x="18" y="20"/>
+						<OnClicked>
+							FurnitureShoppingListWindowCloseButton_OnClicked(self)
+						</OnClicked>
+					</Button>
+					
+					<Control name="$(parent)Body">
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT"/>
+					</Control>
+
+                    <Control name="FurnitureShoppingListRecipients">
+                        <AnchorFill/>
+                        <OnInitialized>
+                            FurnitureShoppingListRecipients_OnInitialized(self)
+                        </OnInitialized>
+                        <Controls>
+                            <Control name="$(parent)Headers">
+                                <Anchor point="TOPLEFT" offsetX="-2" offsetY="51"/>
+                                <Dimensions x="510" y="28"/>
+                                <Controls>
+                                
+                                    <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                        <OnInitialized>
+                                            ZO_SortHeader_Initialize(self, "NAME", "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                        </OnInitialized>
+                                        <Anchor point="TOPLEFT" offsetX="15"/>
+                                        <Dimensions x="350" y="28"/>
+                                    </Control>
+                                    
+                                    <Control name="$(parent)Need" inherits="ZO_SortHeader">
+                                        <OnInitialized>
+                                            ZO_SortHeader_Initialize(self, "NEED", "need", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                        </OnInitialized>
+                                        <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT"/>
+                                        <Dimensions x="80" y="28"/>
+                                    </Control>
+
+                                    <Control name="$(parent)Price" inherits="ZO_SortHeader">
+                                        <OnInitialized>
+                                            ZO_SortHeader_Initialize(self, "PRICE", "price", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                        </OnInitialized>
+                                        <Anchor point="TOPLEFT" relativeTo="$(parent)Need" relativePoint = "TOPRIGHT" />
+                                        <Dimensions x="80" y="28" />
+                                    </Control>
+                        
+                                </Controls>
+                            </Control>
+                            
+                            <Control name="$(parent)List" inherits="ZO_ScrollList">
+                                <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetX="8"/>
+                                <Anchor point="TOPRIGHT" relativeTo="$(parent)Headers" relativePoint="BOTTOMRIGHT"/>
+                                <Dimensions y="331"/>
+                            </Control>	
+
+                            <Button name="$(parent)ClearButton" inherits="ZO_DefaultButton" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_SHOPPINGLIST_CLEAR">
+                                <Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="-90" offsetY="-12"/>
+                                <Dimensions x="100" y="27"/>
+                                <OnClicked>
+                                    FurnitureShoppingList_ClearButton_OnClicked(self)
+                                </OnClicked>
+                            </Button>
+
+                            <Button name="$(parent)OwnButton" inherits="ZO_DefaultButton" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_SHOPPINGLIST_OWN">
+                                <Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="45" offsetY="-12"/>
+                                <Dimensions x="150" y="27"/>
+                                <OnClicked>
+                                    FurnitureShoppingList_RemoveOwn_OnClicked(self)
+                                </OnClicked>
+                            </Button>
+
+                            <Button name="$(parent)PrintButton" inherits="ZO_DefaultButton" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_SHOPPINGLIST_PRINT">
+                                <Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="180" offsetY="-12"/>
+                                <Dimensions x="100" y="27"/>
+                                <OnClicked>
+                                    FurnitureShoppingList_Print_OnClicked(self)
+                                </OnClicked>
+                            </Button>
+
+                            <Label name="$(parent)MM" font="ZoFontGame">
+                                <Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="-190" offsetY="-12" />
+                                <Dimensions x="100" y="27" />
+                            </Label>
+
+                        </Controls>
+                    </Control>
+				</Controls>
+		</TopLevelControl>
+
+    </Controls>
+</GuiXml>

@@ -1,0 +1,12 @@
+<GuiXml>
+    <Controls>
+<!-- ======================================================================================================================= -->
+        <TopLevelControl name="DynamicCPPresetsContainer" mouseEnabled="false" movable="false" hidden="true" tier="MEDIUM">
+            <OnInitialized>
+                CHAMPION_PERKS_SCENE:AddFragment(ZO_HUDFadeSceneFragment:New(self))
+                GAMEPAD_CHAMPION_PERKS_SCENE:AddFragment(ZO_HUDFadeSceneFragment:New(self))
+            </OnInitialized>
+        </TopLevelControl>
+<!-- ======================================================================================================================= -->
+    </Controls>
+</GuiXml>

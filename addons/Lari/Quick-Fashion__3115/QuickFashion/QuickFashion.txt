@@ -1,0 +1,37 @@
+## Title: |c7B68EEQuick|r |c9F00FFFashion|r
+## Author: |cBFFF00Lari|r
+## Version: 2.3
+## Description: Allows you to manage cosmetic collectibles and save them as profiles and much more!
+## APIVersion: 101045
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: QFSavedVariables
+
+# This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+# in the United States and/or other countries. All rights reserved.
+
+# You can read the full terms at: https://account.elderscrollsonline.com/add-on-terms
+
+# A huge thanks to Static_Recharge for helping me conceptualize, develop, and test this addon!
+
+QuickFashion.xml
+
+Startup.lua
+
+FashionPanel.lua
+Randomize.lua
+Profiles.lua
+AutoOutfitter.lua
+
+FavouritesPanel.lua
+OwnedCollectibles.lua
+Favourites.lua
+RecentlyEquipped.lua
+
+ArmoryProfiles.lua
+CustomizedActions.lua
+
+SettingsMenu.lua
+
+QuickFashion.lua
+Bindings.xml

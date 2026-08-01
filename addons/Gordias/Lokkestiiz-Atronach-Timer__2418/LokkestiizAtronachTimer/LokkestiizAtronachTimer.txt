@@ -1,0 +1,8 @@
+## Title: LokkestiizAtronachTimer
+## Description: Lokkestiiz Atronach Timer Addon
+## APIVersion: 100028
+## SavedVariables: LokkestiizAtronachTimerVars
+## DependsOn: LibAddonMenu-2.0  LibStub
+
+LokkestiizAtronachTimer.lua
+LokkestiizAtronachTimer.xml

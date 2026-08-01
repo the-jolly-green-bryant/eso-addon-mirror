@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/init3/Cloudrest-Bane-Tracker__2177",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "init3",
+  "canonical_id": "esoui:2177",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2177",
+  "deleted": false,
+  "directories": [
+    "BaneTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2177/",
+  "fingerprint": "372be089e51d77e54358cb23e02268e8cc7db6b006fb128ffd4467cb8ab505e8",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2177",
+  "source_url": "https://www.esoui.com/downloads/info2177-CloudrestBaneTracker.html",
+  "stats": {
+    "downloads": 9405,
+    "favorites": 2,
+    "monthly_downloads": 15
+  },
+  "title": "Cloudrest Bane Tracker",
+  "updated_at": 1557421264000,
+  "version": "1.1.1"
+}

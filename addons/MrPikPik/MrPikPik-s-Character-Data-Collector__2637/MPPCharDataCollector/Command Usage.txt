@@ -1,0 +1,71 @@
+Syntax:
+
+/mpp <type|avg|command> [options]
+
+ClassIDs:
+ 1 - Dragonknight
+ 2 - Sorcerer
+ 3 - Nightblade
+ 4 - Warden
+ 5 - Necromancer
+ 6 - Templar
+
+RaceIDs:
+ 1 - Breton
+ 2 - Redguard
+ 3 - Orc
+ 4 - Dark Elf
+ 5 - Nord
+ 6 - Argonian
+ 7 - High Elf
+ 8 - Wood Elf
+ 9 - Khajiit
+ 10- Imperial
+
+Roles: (case sensitive)
+ tank
+ heal
+ dd
+
+Types:
+ - race, r		- Most played races
+ - class, c		- Most played classes
+ - gender, g		- Most played gender
+ - alliance, a		- Most played alliance
+ - role, ro		- Most played roles
+ - everything, e	- All of the above combined
+ - combination, co	- Race/Class combinations
+ - mpr <classId>	- Most played races by class
+ - mpc <raceId>		- Most played classes by race
+ - mprc <classId>	- Most played roles by class
+ - mprr <raceId>	- Most played roles by race
+ - mprco <rId> <cId>	- Most played roles by race/class combination
+ - roc <role>		- Classes by role
+ - ror <role>		- Races by role
+ - roco <role>		- Race/Class combinations by role
+
+Averages:
+ - avgcp		- Average CP of all characters
+ - avgeffcp		- Average CP of all characters (810CP max)
+ - avglvl		- Average Level of all characters
+ - avgava		- Average Alliance Rank of al characters
+
+Other:
+ - group, grp		- Short report over the group
+ - player, plr		- Short report over the player
+ - uniqueplayers, up	- Number of unique ESO accounts encountered
+ - find <UserID>	- Find information about a specific UserID (case sensitive)
+ - export		- Exports generated reports for everything.
+
+Commands:
+ - count		- Shows the amount of collected characters
+ - purge		- Deletes faulty character entries
+ - deletedatabase	- Deletes the entire database (confirmation required)
+ - import 		- Imports data from a import.lua file
+ - toggle update	- Toggles the display of update messages
+ - toggle safeguard	- Toggles the safeguard
+ - toggle new		- Toggles the display of new character messages
+
+Options
+ - full, f		- Show all entries instead of only the top 3
+ - precentage, p	- Shows percentages of entries

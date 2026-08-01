@@ -1,0 +1,10 @@
+## Title: UltTracker
+## Author: KöniglichePM
+## Description: Tracks your Ultimate and displays when its ready.
+## APIVersion: 100026
+## SavedVariables: UltTrackerSavedVariables
+
+## OptionalDependsOn: LibAddonMenu-2.0
+
+UltTracker.xml
+UltTracker.lua

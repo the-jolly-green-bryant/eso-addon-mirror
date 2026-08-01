@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/MelanAster/BetterDungeonFinder---Abandon-the-Original-Finder__3824",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MelanAster",
+  "canonical_id": "esoui:3824",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3824",
+  "deleted": false,
+  "directories": [
+    "BetterDungeonFinder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3824/",
+  "fingerprint": "449b5cd2ce3121e93dd3b00c5e5d6655cb59dae3f2e57d81a4c7111a592ef256",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13826.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3824",
+  "source_url": "https://www.esoui.com/downloads/info3824-BetterDungeonFinder-AbandontheOriginalFinder.html",
+  "stats": {
+    "downloads": 24285,
+    "favorites": 33,
+    "monthly_downloads": 180
+  },
+  "title": "BetterDungeonFinder - Abandon the Original Finder",
+  "updated_at": 1769875325000,
+  "version": "1.91"
+}

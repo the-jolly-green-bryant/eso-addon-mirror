@@ -1,0 +1,19 @@
+## Title: |c215895Lykeion|c5A6B73's Pil|c937F51lar O|cCC922Ff Nirn|r
+## Author: |c215895L|c3E6284y|c5A6B73k|c777562e|c937F51i|cB08840o|cCC922Fn|r
+## Description: Tracks when you can proc Pillar Of Nirn
+## Version: 1.1.0
+## APIVersion: 101035
+## SavedVariables: PillarOfNirnSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+i18n/en.lua
+i18n/$(language).lua
+PillarOfNirn.lua
+PillarOfNirnMenu.lua
+PillarOfNirn.xml

@@ -1,0 +1,79 @@
+----- 2.2.1 -----
+(minor) Forgot to remove a debug script, removed it now. Whoops
+
+----- 2.2.0 -----
+Added 2 new preset marker sets: a vRG Oax Posion Safe zone, and HatchetHaro's Jynorah + Skorkhif Markers for vOC. Thank you HatchetHaro for creating them!
+Added a Merge Profiles button to the settings menu
+Added a Duplicate Profile button to the settings menu
+
+----- 2.1.1 -----
+Added a new preset marker set for night market: NineteenGiraffes' Night Market Quests (Thank you NineteenGiraffes for creating them!).
+(minor) Added text in the settings which points users to the map filters to show the markers on the main map
+(Game pass) Fixed bug that was causing errors on game pass
+
+----- 2.1.0 -----
+Added an optional dependancy for LibMapPins to allow users to show markers on their world map after enabling a map filter.
+Added 2 new preset marker sets: vSE General v2, and Kyzer's Night Market Quests (Thank you Kyzeragon for creating them!).
+Added a remove duplicates button to the editor.
+(minor) Fixed a bug where using the editor would not properly compress the path
+(minor) Fixed a bug where Kynes would show the wrong map name (thanks dack for the heads up lol)
+
+----- 2.0.4 -----
+(Console) Changed temp markers to use Milliseconds instead of Microseconds for timing the removal
+
+----- 2.0.3 -----
+(minor) Fixed how stuff loads when transfering database names
+
+----- 2.0.2 -----
+(minor) Added a quick sanity check to the saved vars loading
+
+----- 2.0.1 -----
+(minor) Fixed a small incompatibility with the editor and votan's minimap
+
+----- 2.0.0 -----
+Added the editor. This can be accessed via the button in the settings, /mmshoweditor, or by using the new libradialmenu entry
+Added support for importing Akamatsu's "Marker" profiles
+Added presets for vMoL, vRG bahsei portal, and Opulent Ordeal
+Added the ability to send Temporary Markers to your group where your reticle is looking, which last for 5 seconds before dissapearing.
+(minor) Added more LibRadialMenu actions
+(minor) A ton of backend changes, including allowing textures with mipmaps to display properly
+(minor) Fixed some spelling mistakes
+(minor) Fixed Non-English Keybinding
+
+
+----- 1.2.2 -----
+Added 2 new preset marker sets: vDSR taleria clock, and vOC General v2 (Arcana).
+Fixed a bug where the font selector would not show all the fonts, or show duplicated fonts.
+(Contribution from @kip.anderson) Added /mmyaw to set the settings yaw without needing to open the settings page (and thus avoids issues like shifting cameras in small spaces).
+
+----- 1.2.1 -----
+(Console) Fixed a small bug where place at cursor would not respect the offsetY setting
+
+----- 1.2.0 -----
+Added a font selection, and a text size scaling slider. This is located at the bottom of the settings!
+(PC) Fixed a visual bug with the quick menu not remembering options
+(Console) Added LibRadialMenu as a dependancy. Also added actions to LibRadialMenu, to place/remove/place at cursor/open settings.
+
+----- 1.1.0 -----
+Added Selections to saved vars, to persist through reloads
+Added a Global Culling distance slider, to hide markers past X meters
+Added a Global Scale slider, to change all markers scales by a percentage.
+(PC) Moved vars into an installation wide saved variable table
+(Console) Fixed a UI error when refreshing LHAS page
+(Console) Fixed visual bug with the import strings vanishing the instant that you enter them in
+(Console) Fixed a visual bug with additional loaded profiles not updating
+(minor) Cleaned up some code, including leaked variables and old comments
+
+----- 1.0.3 -----
+Changed the dropdown for profiles into a divider
+
+----- 1.0.2 -----
+(Console) Potentially fixed a texture unloading bug
+(minor) Properly Localized some variables.
+
+----- 1.0.1 -----
+(minor) Turned off Debug Mode
+Updated links for console to be directed to the correct esoui page.
+
+----- 1.0.0 -----
+Initial Release

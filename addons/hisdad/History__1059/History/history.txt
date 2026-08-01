@@ -1,0 +1,10 @@
+## Title: Dad's History, Rage Quit Edition. Still Raging.
+## APIVersion: 101049 101050
+## Version: 97
+## Author: HisDad
+## Description: Record progress of all characters for offline viewing. No in-game interface.
+## SavedVariables: History_SV
+
+timetable.lua
+history.lua
+data/ids.lua

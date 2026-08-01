@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/haze068/NothingWasted-Tracker__4642",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "haze068",
+  "canonical_id": "esoui:4642",
+  "category_id": "165",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4642",
+  "deleted": false,
+  "directories": [
+    "NothingWastedTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4642/",
+  "fingerprint": "34a3a2f14bf423dc215d40ff454a96409f8b80ac2842be3068203ebd8b0c49b9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16329.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16331.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16332.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4642",
+  "source_url": "https://www.esoui.com/downloads/info4642-NothingWastedTracker.html",
+  "stats": {
+    "downloads": 167,
+    "favorites": 0,
+    "monthly_downloads": 104
+  },
+  "title": "NothingWasted Tracker",
+  "updated_at": 1781454581000,
+  "version": "1.0"
+}

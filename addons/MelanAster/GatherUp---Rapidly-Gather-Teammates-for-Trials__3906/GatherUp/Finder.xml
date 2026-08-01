@@ -1,0 +1,171 @@
+<GuiXml>
+  <Font name="MAGU_Font_WinH4" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thick"/>
+  <Font name="MAGU_Font_Title" font="$(ANTIQUE_FONT)|30|soft-shadow-thick"/>
+  <Controls>
+    <Button name = "MAGU_GroupButton" clickSound= "Click" tier= "HIGH" hidden= "false">
+      <Anchor point= "TOPRIGHT" relativeTo= "ZO_GroupList" relativePoint= "TOPRIGHT" offsetX= "0" offsetY= "-70"/>
+      <Dimensions x= "64" y= "64" />
+      <Textures 
+        normal= "esoui/art/hud/radialicon_invitegroup_up.dds" 
+        pressed= "esoui/art/hud/radialicon_invitegroup_down.dds" 
+        mouseOver= "esoui/art/hud/radialicon_invitegroup_over.dds"
+      />
+      <OnInitialized> self:SetParent(ZO_GroupList) </OnInitialized>
+      <OnMouseUp> MAGatherUp.ShowWindow() </OnMouseUp>
+      <OnMouseEnter>
+        InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 0, TOP)
+        SetTooltipText(InformationTooltip, "GatherUp")
+      </OnMouseEnter> 
+      <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+    </Button>
+  
+    <TopLevelControl name= "MAGU_TopLevel" mouseEnabled= "true" movable= "true" clampedToScreen= "true" tier= "HIGH" hidden= "true">
+      <Dimensions x= "800" y= "380" />
+      <Anchor point= "CENTER" relativeTo= "GuiRoot" relativePoint= "CENTER" offsetX= "0" offsetY= "0" />
+      <OnMouseUp> MAGatherUp.WindowMoved() </OnMouseUp>
+      <Controls>
+      
+        <Backdrop name= "$(parent)_BG" inherits= "ZO_DefaultBackdrop" mouseEnabled= "false" tier= "LOW"/>
+        
+        <Label name="$(parent)_Title" font="MAGU_Font_Title" inheritAlpha="true" color="FFD700" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="10"/>
+          <OnInitialized> self:SetText(MAGatherUp.Lang.TITLE) </OnInitialized>
+        </Label>
+        
+        <Button name ="$(parent)_Close" inherits="ZO_CloseButton">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10"/>
+          <Dimensions x="24" y="24" />
+          <OnClicked> MAGatherUp.ShowWindow() </OnClicked>
+        </Button>
+        
+        <EditBox name="$(parent)_Paste" inherits="ZO_DefaultEditForBackdrop">
+          <Anchor point= "BOTTOMLEFT" relativeTo= "$(parent)" relativePoint= "BOTTOMLEFT" offsetX= "25" offsetY= "-80" />
+          <Dimensions x= "610"/>
+          <OnInitialized> 
+            self:SetDefaultText(MAGatherUp.Lang.EDITBOX_PASTE)
+            self:SetMaxInputChars(1000)
+          </OnInitialized>
+          <Controls>
+            <Backdrop name="$(parent)_BG" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX= "-5" offsetY= "-5"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+            </Backdrop>
+          </Controls>
+        </EditBox>
+        
+        <Button name ="$(parent)_Analyze" inherits ="ZO_DefaultButton" fon="MAGU_Font_WinH4">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-30" offsetY="-80"/>
+          <OnInitialized> self:SetText(MAGatherUp.Lang.BUTTON_ANALYZE) </OnInitialized>
+          <OnClicked> MAGatherUp.Analyze() </OnClicked>
+        </Button>
+        
+        <Button name ="$(parent)_Slot_1" inherits ="ZO_DefaultButton" fon="MAGU_Font_WinH4">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="-30"/>
+          <OnClicked> MAGatherUp.SaveLoad(1) </OnClicked>
+          <OnMouseEnter>
+            if MAGatherUp.SV.Slot[1]["Title"] then
+              local String = table.concat(MAGatherUp.SV.Slot[1], "\r\n", 1, 11)
+              InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 0, TOP)
+              SetTooltipText(InformationTooltip, String)
+            end
+          </OnMouseEnter> 
+          <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+        </Button>
+        
+        <Button name ="$(parent)_Slot_2" inherits ="ZO_DefaultButton" fon="MAGU_Font_WinH4">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="130" offsetY="-30"/>
+          <OnClicked> MAGatherUp.SaveLoad(2) </OnClicked>
+          <OnMouseEnter>
+            if MAGatherUp.SV.Slot[2]["Title"] then
+              local String = table.concat(MAGatherUp.SV.Slot[2], "\r\n", 1, 11)
+              InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 0, TOP)
+              SetTooltipText(InformationTooltip, String)
+            end
+          </OnMouseEnter> 
+          <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+        </Button>
+        
+        <Button name ="$(parent)_Slot_3" inherits ="ZO_DefaultButton" fon="MAGU_Font_WinH4">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="250" offsetY="-30"/>
+          <OnClicked> MAGatherUp.SaveLoad(3) </OnClicked>
+          <OnMouseEnter>
+            if MAGatherUp.SV.Slot[3]["Title"] then
+              local String = table.concat(MAGatherUp.SV.Slot[3], "\r\n", 1, 11)
+              InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 0, TOP)
+              SetTooltipText(InformationTooltip, String)
+            end
+          </OnMouseEnter> 
+          <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+        </Button>
+      
+        <Button name ="$(parent)_DeleteMode" inherits ="ZO_CheckButton_Text" fon="MAGU_Font_WinH4">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX= "360" offsetY="-30"/>
+          <OnInitialized> self:SetText(MAGatherUp.Lang.BUTTON_SAVELOAD) </OnInitialized>
+        </Button>
+        
+        <Button name ="$(parent)_Empty" inherits ="ZO_DefaultButton" fon="MAGU_Font_WinH4">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-150" offsetY="-30"/>
+          <OnInitialized> self:SetText(MAGatherUp.Lang.BUTTON_EMPTY) </OnInitialized>
+          <OnClicked> MAGatherUp.Empty() </OnClicked>
+        </Button>
+        
+        <Button name ="$(parent)_Queue" inherits ="ZO_DefaultButton" fon="MAGU_Font_WinH4">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-30" offsetY="-30"/>
+          <OnInitialized> self:SetText(MAGatherUp.Lang.BUTTON_QUEUE_RUN) </OnInitialized>
+          <MouseButton button="2" enabled="true"/>
+          <OnClicked> MAGatherUp.Start(...) </OnClicked>
+          <OnMouseEnter> 
+            InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 0, TOP)
+            SetTooltipText(InformationTooltip, MAGatherUp.Lang.BUTTON_QUEUE_RUN_TOOLISH)
+          </OnMouseEnter>
+          <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+        </Button>
+        
+      </Controls>
+    </TopLevelControl>
+    
+    <Control name= "GU_Single" virtual= "true" >
+      <Dimensions x= "265" y= "32" />
+      <Anchor point= "CENTER" relativeTo= "$(parent)" relativePoint= "CENTER" offsetY= "0" />
+      <Controls>
+    
+        <Button name = "$(parent)_Role" clickSound= "Click" tier= "HIGH">
+          <Anchor point= "LEFT" relativeTo= "$(parent)" relativePoint= "LEFT" offsetX= "0" offsetY= "-2"/>
+          <Dimensions x= "38" y= "38" />
+          <Textures 
+            normal= "esoui/art/lfg/lfg_indexicon_group_up.dds" 
+            pressed= "esoui/art/lfg/lfg_indexicon_group_down.dds" 
+            mouseOver= "esoui/art/lfg/lfg_indexicon_group_over.dds"
+          />
+          <OnMouseUp> MAGatherUp.Whisper(self) </OnMouseUp>
+          <OnMouseEnter> 
+            InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 0, TOP)
+            SetTooltipText(InformationTooltip, GetString(SI_PLAYER_TO_PLAYER_WHISPER))
+          </OnMouseEnter>
+          <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+        </Button>
+        
+        <EditBox name="$(parent)_Name" inherits="ZO_DefaultEditForBackdrop" defaultText="@...?">
+          <Anchor point= "LEFT" relativeTo= "$(parent)" relativePoint= "LEFT" offsetX= "40" />
+          <Dimensions x= "145"/>
+          <OnInitialized>
+            ZO_AutoComplete:New(self, {AUTO_COMPLETE_FLAG_FRIEND, AUTO_COMPLETE_FLAG_GUILD, AUTO_COMPLETE_FLAG_RECENT_CHAT}, nil, AUTO_COMPLETION_ONLINE_OR_OFFLINE, MAX_AUTO_COMPLETION_RESULTS)
+          </OnInitialized>
+          <OnFocusLost> MAGatherUp.UpdateWindow() </OnFocusLost>
+          <Controls>
+            <Backdrop name="$(parent)_BG" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX= "-5" offsetY= "-5"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+            </Backdrop>
+          </Controls>
+        </EditBox>
+        
+        <Label name= "$(parent)_Info"  font="MAGU_Font_WinH4" inheritAlpha= "true" color= "FFFFFF" tier= "HIGH">
+          <Anchor point= "LEFT" relativeTo= "$(parent)" relativePoint= "LEFT" offsetX= "190" offsetY= "-3"/>
+        </Label>
+        
+      </Controls>
+    </Control>
+
+  </Controls>
+</GuiXml>

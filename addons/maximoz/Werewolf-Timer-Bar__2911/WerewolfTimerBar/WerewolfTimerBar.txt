@@ -1,0 +1,18 @@
+## Title: Werewolf Timer Bar
+## Author: maximoz
+## Description: Timer bar for tracking werewolf transformation.
+## Version: 2.6
+## APIVersion: 100035 101031
+## DependsOn: LibSavedVars LibAddonMenu-2.0
+## SavedVariables: WerewolfTimerBarVars_Account WerewolfTimerBarVars_Characters
+
+Bindings.xml
+WerewolfTimerBar.xml
+WerewolfTimerBar.lua
+
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

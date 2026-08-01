@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Lykeion/LibSkillsFactory---Seasonal-Update__3649",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lykeion",
+  "canonical_id": "esoui:3649",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3649",
+  "deleted": false,
+  "directories": [
+    "LibSkillsFactory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3649/",
+  "fingerprint": "2124c6df6e7f6de0c23862dcac645763de3b9fc2d421ceade32572150e513fe1",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3649",
+  "source_url": "https://www.esoui.com/downloads/info3649-LibSkillsFactory-SeasonalUpdate.html",
+  "stats": {
+    "downloads": 69594,
+    "favorites": 7,
+    "monthly_downloads": 1010
+  },
+  "title": "LibSkillsFactory - Seasonal Update",
+  "updated_at": 1780923164000,
+  "version": "26"
+}

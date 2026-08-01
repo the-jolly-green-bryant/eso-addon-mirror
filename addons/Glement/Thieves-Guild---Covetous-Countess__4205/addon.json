@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Glement/Thieves-Guild---Covetous-Countess__4205",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Glement",
+  "canonical_id": "esoui:4205",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4205",
+  "deleted": false,
+  "directories": [
+    "ThievesGuildCovetousCountess"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4205/",
+  "fingerprint": "0283e6714f7eff686f5652c535dc67d6ac866810e630f6090e819065c45ed7f6",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4205",
+  "source_url": "https://www.esoui.com/downloads/info4205-ThievesGuild-CovetousCountess.html",
+  "stats": {
+    "downloads": 605,
+    "favorites": 5,
+    "monthly_downloads": 88
+  },
+  "title": "Thieves Guild - Covetous Countess",
+  "updated_at": 1754598423000,
+  "version": "1.0.1"
+}

@@ -1,0 +1,47 @@
+
+<GuiXml>
+    <Controls>
+        <Backdrop name="AutoEquip" mouseEnabled="true" clampedToScreen="true" movable="true" edgeColor="aa000000" centerColor="aa000000" alpha="1">
+            <Dimensions x="100" y="100"/>
+            <Edge edgeSize="2"/>
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+            <Controls>
+                <Button name="$(parent)Head" inherits="Auto_Object">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="2.5"/>
+                </Button>
+
+                <Button name="$(parent)Leg" inherits="Auto_Object" >
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT"/>
+                </Button>
+
+                <Button name="$(parent)Arm" inherits="Auto_Object" >
+                    <Anchor point="BOTTOM" relativeTo="$(parent)Leg" relativePoint="TOP"/>
+                </Button>
+
+                <Button name="$(parent)Shoulder" inherits="Auto_Object" >
+                    <Anchor point="BOTTOM" relativeTo="$(parent)Arm" relativePoint="TOP"/>
+                </Button>
+
+
+                <Button name="$(parent)Shoe" inherits="Auto_Object" >
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+                </Button>
+
+                <Button name="$(parent)Belt" inherits="Auto_Object" >
+                    <Anchor point="BOTTOM" relativeTo="$(parent)Shoe" relativePoint="TOP"/>
+                </Button>
+
+                <Button name="$(parent)Chest" inherits="Auto_Object" >
+                    <Anchor point="BOTTOM" relativeTo="$(parent)Belt" relativePoint="TOP"/>
+                </Button>
+
+                <!--
+                <Texture name="$(parent)Background" textureFile="/esoui/art/characterwindow/silhouette_khajiit_male.dds" alpha=".25">
+                    <Dimensions x="75" y="150"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+                </Texture>
+                -->
+            </Controls>
+        </Backdrop>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,23 @@
+<!----------------------------------------------------------
+	* Test
+	* Version 0.1
+----------------------------------------------------------->
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+   <Category name="Raffle Helper">
+      <Action name="DRAW_RAFFLE">
+        <Down>RaffleH.Draw()</Down>
+      </Action>
+      <Action name="CHECK_RAFFLE">
+        <Down>RaffleH.Check()</Down>
+      </Action>
+      <Action name="START_RAFFLE">
+        <Down>RaffleH.Start()</Down>
+      </Action>
+      <Action name="STOPDRAW_RAFFLE">
+        <Down>RaffleH.StopNow(true)</Down>
+      </Action>
+   </Category>
+  </Layer>
+</Bindings>
+

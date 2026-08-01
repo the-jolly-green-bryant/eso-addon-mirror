@@ -1,0 +1,9 @@
+## Title: PyramidHUD
+## Description: Repositions attribute bars in a pyramid shape, configurable
+## APIVersion: 101040
+## Version: 1.6
+## Author: Katulu
+## DependsOn: LibAddonMenu-2.0>=41
+## SavedVariables: PyramidHUDVars
+
+PyramidHUD.lua

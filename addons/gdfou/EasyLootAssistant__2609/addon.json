@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/gdfou/EasyLootAssistant__2609",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "gdfou",
+  "canonical_id": "esoui:2609",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2609",
+  "deleted": false,
+  "directories": [
+    "EasyLootAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2609/",
+  "fingerprint": "70cf13ea3e7b761e370ba5b35361afb04e7b8b32bf7a843bd6f5ac3acb146f9c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8881.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8882.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2609",
+  "source_url": "https://www.esoui.com/downloads/info2609-EasyLootAssistant.html",
+  "stats": {
+    "downloads": 4407,
+    "favorites": 4,
+    "monthly_downloads": 26
+  },
+  "title": "EasyLootAssistant",
+  "updated_at": 1596980919000,
+  "version": "1.5"
+}

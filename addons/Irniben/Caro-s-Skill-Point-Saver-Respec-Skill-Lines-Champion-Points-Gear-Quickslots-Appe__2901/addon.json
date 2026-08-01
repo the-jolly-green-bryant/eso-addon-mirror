@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/Irniben/Caro-s-Skill-Point-Saver-Respec-Skill-Lines-Champion-Points-Gear-Quickslots-Appe__2901",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Irniben",
+  "canonical_id": "esoui:2901",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2901",
+  "deleted": false,
+  "directories": [
+    "CarosSkillPointSaver"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2901/",
+  "fingerprint": "5247de5d3da913ca3a676a08646eb8d72a51d7cfd842eb6e6c7c8a6d8681e77f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15834.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15835.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15833.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15832.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15831.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15829.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15830.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15836.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9921.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2901",
+  "source_url": "https://www.esoui.com/downloads/info2901-CarosSkillPointSaverRespecSkillLinesChampionPointsGearQuickslotsAppearances.html",
+  "stats": {
+    "downloads": 367439,
+    "favorites": 182,
+    "monthly_downloads": 1321
+  },
+  "title": "Caro's Skill Point Saver (Respec Skill Lines, Champion Points, Gear, Quickslots, Appearances)",
+  "updated_at": 1781089730000,
+  "version": "6.1.6"
+}

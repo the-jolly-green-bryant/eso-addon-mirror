@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/manavortex/VisiblePickpocketPing__1895",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1895",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:1895",
+  "deleted": false,
+  "directories": [
+    "VisiblePickpocketPing"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1895/",
+  "fingerprint": "c9d9abfbf2f11c780ea82e2a0bdd66241f8e66b18b9d7e53cbd0451b7ee97248",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6427.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6428.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1895",
+  "source_url": "https://www.esoui.com/downloads/info1895-VisiblePickpocketPing.html",
+  "stats": {
+    "downloads": 4168,
+    "favorites": 5,
+    "monthly_downloads": 10
+  },
+  "title": "VisiblePickpocketPing",
+  "updated_at": 1534403398000,
+  "version": "1.4"
+}

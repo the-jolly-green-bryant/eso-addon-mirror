@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/m00nyONE/LibCustomNames__4155",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "m00nyONE",
+  "canonical_id": "esoui:4155",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4155",
+  "deleted": false,
+  "directories": [
+    "LibCustomNames"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4155/",
+  "fingerprint": "13e1d868b1d619d3845e0966743b2012906a809b4c95fc6681d90ccd37e3709b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4155",
+  "source_url": "https://www.esoui.com/downloads/info4155-LibCustomNames.html",
+  "stats": {
+    "downloads": 397468,
+    "favorites": 41,
+    "monthly_downloads": 29351
+  },
+  "title": "LibCustomNames",
+  "updated_at": 1785107442000,
+  "version": "2026-07-26"
+}

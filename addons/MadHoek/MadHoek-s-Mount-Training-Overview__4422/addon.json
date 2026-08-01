@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/MadHoek/MadHoek-s-Mount-Training-Overview__4422",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MadHoek",
+  "canonical_id": "esoui:4422",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4422",
+  "deleted": false,
+  "directories": [
+    "MountTrainingOverview"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4422/",
+  "fingerprint": "e3ec5805716fd9d87876895f24fb6e158ecf505934692aadfe331422feca7871",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15329.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15330.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15331.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4422",
+  "source_url": "https://www.esoui.com/downloads/info4422-MadHoeksMountTrainingOverview.html",
+  "stats": {
+    "downloads": 233,
+    "favorites": 0,
+    "monthly_downloads": 38
+  },
+  "title": "MadHoek's Mount Training Overview",
+  "updated_at": 1781626237000,
+  "version": "3.0.4"
+}

@@ -1,0 +1,2 @@
+- more language support
+- adding a list of all currently loaded warcrys in the settings menu

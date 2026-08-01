@@ -1,0 +1,8 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="SmartPricerLayer" mouseEnabled="false" hidden="false" clampedToScreen="false">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+      <Dimensions x="1920" y="1080"/>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

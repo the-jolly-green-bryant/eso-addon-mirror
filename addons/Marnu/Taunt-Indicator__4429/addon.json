@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Marnu/Taunt-Indicator__4429",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marnu",
+  "canonical_id": "esoui:4429",
+  "category_id": "151",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4429",
+  "deleted": false,
+  "directories": [
+    "TauntIndicator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4429/",
+  "fingerprint": "d6b02cfba09d47619cde1c7d159c61c9a35a3b46f7ef425031b8707e50f20806",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15358.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15357.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4429",
+  "source_url": "https://www.esoui.com/downloads/info4429-TauntIndicator.html",
+  "stats": {
+    "downloads": 280,
+    "favorites": 0,
+    "monthly_downloads": 21
+  },
+  "title": "Taunt Indicator",
+  "updated_at": 1772565945000,
+  "version": "0.9"
+}

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/imPDA/Impressive-Stats__4032",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "imPDA",
+  "canonical_id": "esoui:4032",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4032",
+  "deleted": false,
+  "directories": [
+    "ImpressiveStats"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4032/",
+  "fingerprint": "b4287e03e88aec866b93f0bb8ccdfebf59a5aa7057a2e6b9a8ffda70d4b53c04",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13929.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13778.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13741.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4032",
+  "source_url": "https://www.esoui.com/downloads/info4032-ImpressiveStats.html",
+  "stats": {
+    "downloads": 4633,
+    "favorites": 11,
+    "monthly_downloads": 127
+  },
+  "title": "Impressive Stats",
+  "updated_at": 1781596183000,
+  "version": "1.5.5"
+}

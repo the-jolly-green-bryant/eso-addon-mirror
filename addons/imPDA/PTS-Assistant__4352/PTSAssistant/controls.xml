@@ -1,0 +1,98 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <Label name="IMP_PTSAssistant_Row_Cell" font="ZoFontWinH4" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="-" virtual="true" />
+
+        <Label name="IMP_PTSAssistant_Row_Column1" horizontalAlignment="RIGHT" virtual="true"><Dimensions x="40" y="32" /></Label>
+		<Label name="IMP_PTSAssistant_Row_Column2" virtual="true"><Dimensions x="300" y="32" /></Label>
+	    <Label name="IMP_PTSAssistant_Row_Column3" horizontalAlignment="LEFT" virtual="true"><Dimensions x="400" y="32" /></Label>
+	    <!-- <Label name="IMP_PTSAssistant_Row_Column4" horizontalAlignment="RIGHT" virtual="true"><Dimensions x="40" y="32" /></Label> -->
+
+        <Label name="IMP_PTSAssistant_Label1" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="LEFT" text="TEXT" virtual="true"></Label>
+
+       <Label name="IMP_PTSAssistant_Row_Template" inherits="ZO_SelectableLabel" virtual="true">
+			<Dimensions y="32" />
+			<Controls>
+                <Texture name="$(parent)Highlight" textureFile="/esoui/art/miscellaneous/listitem_selectedhighlight.dds" hidden="false" color="A3A3A3">
+					<Dimensions x="747" y="52" />
+					<Anchor point="TOPLEFT" />
+				</Texture>
+				<!-- <Label name="$(parent)Index" inherits="IMP_PTSAssistant_Row_Cell IMP_PTSAssistant_Row_Column1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+				</Label> -->
+                <Texture name="$(parent)Icon" hidden="false">
+                    <Dimensions x="32" y="32" />
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="4" />
+                </Texture>
+				<Label name="$(parent)Name" inherits="IMP_PTSAssistant_Row_Cell IMP_PTSAssistant_Row_Column2">
+					<Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="16" />
+				</Label>
+                <Label name="$(parent)Info" inherits="IMP_PTSAssistant_Row_Cell IMP_PTSAssistant_Row_Column3">
+					<Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="16" />
+				</Label>
+                <!-- <Label name="$(parent)Path" inherits="IMP_PTSAssistant_Row_Cell IMP_PTSAssistant_Row_Column3">
+					<Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="16" />
+				</Label> -->
+			</Controls>
+		</Label>
+
+        <TopLevelControl name="IMP_PTSAssistant_TLC" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions x="750" />
+            <Anchor point="TOPRIGHT" relativeTo="ZO_PlayerInventory" relativePoint="TOPLEFT" offsetX="-48" />
+            <Anchor point="BOTTOMRIGHT" relativeTo="ZO_PlayerInventory" relativePoint="BOTTOMLEFT" offsetX="-48" />
+            <!-- <Anchor offsetX="100" offsetY="100" /> -->
+            <!-- <DimensionConstraints minX="100" minY="24" /> -->
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" excludeFromResizeToFitExtents="true" />
+                <Control name="$(parent)Header">
+                    <Dimensions x="750" y="32" />
+                    <Anchor point="TOPLEFT" />
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontWinH2" text="PTS Assistant">
+                            <Anchor point="CENTER" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Filters" resizeToFitDescendents="true">
+                    <Dimensions x="750" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetY="8" />
+                    <Controls>
+                        <Control name="$(parent)SearchContainer" resizeToFitDescendents="true">
+                            <Anchor point="TOPLEFT" offsetX="4" />
+                            <Controls>
+                                <Label name="$(parent)Label" inherits="IMP_PTSAssistant_Label1" text="Search:">
+                                    <Anchor point="LEFT" />
+                                </Label>
+                                <Backdrop name="$(parent)Search" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+                                    <Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" offsetX="4" />
+                                    <Dimensions y="36" x="300" />
+                                    <Controls>
+                                        <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" defaultText="Try 'balo med infu' or '219360'" />
+                                    </Controls>
+                                </Backdrop>
+                            </Controls>
+                        </Control>
+                        <Button name="$(parent)ShowContainersCheckBox" inherits="ZO_CheckButton">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)SearchContainer" relativePoint="BOTTOMLEFT" offsetY="8" />
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Listing">
+                    <!-- <Dimensions x="750" y="720" /> -->
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Filters" relativePoint="BOTTOMLEFT" offsetY="4" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                    <Controls>
+                        <Control name="$(parent)ScrollableList" inherits="ZO_ScrollList">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+							<Controls>
+								<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="0000FF" centerColor="00FF00" /> -->
+							</Controls>
+						</Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

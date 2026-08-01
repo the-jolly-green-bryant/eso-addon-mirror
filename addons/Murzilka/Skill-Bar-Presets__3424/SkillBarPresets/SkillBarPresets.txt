@@ -1,0 +1,21 @@
+## Title: Skill Bar PRESETS v1.4
+## APIVersion: 101034
+## Author: @Combat|c6aff00Healer|r
+## Description: Save and load presets for skill bar. For player and companion. |c0091ffSpecial thanks for authors of |r |cff8800"Swap Skills Continued"|r: HulkSmashWarrior/Garkin/NathanaelTheOne/Ayantir/Calia1120 |c0091ffand|r Irniben|c0091ff for import/export idea|r
+## AddOnVersion: 1
+## Version: 1.4
+## SavedVariables: SkillBarPresetsStorage
+
+# The creation and use of Add-ons are subject to the Add-on Terms of Use,
+# available at https://account.elderscrollsonline.com/add-on-terms. 
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+# in the United States and/or other countries. All rights reserved.
+
+# Special thanks for all authors of add-on "Swap Skills Continued": HulkSmashWarrior/Garkin/NathanaelTheOne/Ayantir/Calia1120
+# Special thanks for Irniben import/export idea
+
+GlobalConstants.lua
+SkillBarPreset.xml
+SkillBarPresets.lua

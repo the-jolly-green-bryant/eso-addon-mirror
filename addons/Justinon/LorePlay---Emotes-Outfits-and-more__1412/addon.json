@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Justinon/LorePlay---Emotes-Outfits-and-more__1412",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Justinon",
+  "canonical_id": "esoui:1412",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:1412",
+  "deleted": false,
+  "directories": [
+    "LorePlay"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1412/",
+  "fingerprint": "4673ac4350b1cb39d981e0136f8d2aa5b011136634dc001db3550c11c23025eb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4643.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4598.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4644.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1412",
+  "source_url": "https://www.esoui.com/downloads/info1412-LorePlay-EmotesOutfitsandmore.html",
+  "stats": {
+    "downloads": 60868,
+    "favorites": 112,
+    "monthly_downloads": 73
+  },
+  "title": "LorePlay - Emotes, Outfits, and more!",
+  "updated_at": 1497209310000,
+  "version": "1.5.1"
+}

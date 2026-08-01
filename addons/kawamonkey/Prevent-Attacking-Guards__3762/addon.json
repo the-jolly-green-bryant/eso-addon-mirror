@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/Prevent-Attacking-Guards__3762",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3762",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3762",
+  "deleted": false,
+  "directories": [
+    "PreventAttackingGuards"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3762/",
+  "fingerprint": "b3b705d85d5af1670a496208ddf336ce2e831d4f8672f58063fd888019e5108b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12757.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3762",
+  "source_url": "https://www.esoui.com/downloads/info3762-PreventAttackingGuards.html",
+  "stats": {
+    "downloads": 2223,
+    "favorites": 2,
+    "monthly_downloads": 14
+  },
+  "title": "Prevent Attacking Guards",
+  "updated_at": 1716376356000,
+  "version": "1.0.1"
+}

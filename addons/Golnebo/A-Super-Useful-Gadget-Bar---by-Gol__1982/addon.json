@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Golnebo/A-Super-Useful-Gadget-Bar---by-Gol__1982",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Golnebo",
+  "canonical_id": "esoui:1982",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:1982",
+  "deleted": false,
+  "directories": [
+    "AoAa"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1982/",
+  "fingerprint": "9bb2734429adb6790a46b8e41bcd9e81891bb0b0c15b37f64d57b6aa017a3293",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6812.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6817.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1982",
+  "source_url": "https://www.esoui.com/downloads/info1982-ASuperUsefulGadgetBar-byGol.html",
+  "stats": {
+    "downloads": 5851,
+    "favorites": 10,
+    "monthly_downloads": 12
+  },
+  "title": "A Super Useful Gadget Bar - by Gol",
+  "updated_at": 1540561101000,
+  "version": "1.42"
+}

@@ -1,0 +1,14 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="JunkHotkey">
+			<Action name="JUNKHOTKEY_JUNK">
+				<Down>JunkHotkey_JunkHoveredItem()</Down>
+			</Action>
+		</Category>
+	</Layer>
+	<Layer name="GamepadUIMode" allowFallthrough="false">
+		<Category>
+			<AllowAction name="JUNKHOTKEY_JUNK"/>
+		</Category>
+	</Layer>
+</Bindings>

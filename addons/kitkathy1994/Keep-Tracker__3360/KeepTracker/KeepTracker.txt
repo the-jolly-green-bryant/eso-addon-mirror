@@ -1,0 +1,10 @@
+## Title: Keep Tracker
+## APIVersion: 101033
+## Version: 1.0.2
+## AddOnVersion: 1
+## Description: Keep tracking keeps with this keep-tracking add-on! A *huge* thanks to @M0R_Gaming for his help, without which this add-on would not be possible!
+## Author: |c800020@BosmeriPride|r
+## SavedVariables: KTVars
+## DependsOn: LibMapPins-1.0>=10027
+
+KeepTracker.lua

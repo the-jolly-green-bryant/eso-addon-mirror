@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/ignisferrum/Ignis-s-Power-Tracker-Widget__2525",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ignisferrum",
+  "canonical_id": "esoui:2525",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2525",
+  "deleted": false,
+  "directories": [
+    "IgnisPowerTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2525/",
+  "fingerprint": "ba0c8c3af104bffab96147e8d795443e416d34f4fac21daaf82cc5245dd9fb4a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8632.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2525",
+  "source_url": "https://www.esoui.com/downloads/info2525-IgnissPowerTrackerWidget.html",
+  "stats": {
+    "downloads": 3905,
+    "favorites": 5,
+    "monthly_downloads": 12
+  },
+  "title": "Ignis's Power Tracker Widget",
+  "updated_at": 1579626853000,
+  "version": "1.4.6"
+}

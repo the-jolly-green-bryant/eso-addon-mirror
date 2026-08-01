@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/MadHoek/MadHoek-s-Satchel-Coin__4408",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MadHoek",
+  "canonical_id": "esoui:4408",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4408",
+  "deleted": false,
+  "directories": [
+    "MadHoeksSatchelCoin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4408/",
+  "fingerprint": "02bb88253f701597e52bab10510b6b80a01458beba4ece23dd704247e1610efe",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15282.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15283.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4408",
+  "source_url": "https://www.esoui.com/downloads/info4408-MadHoeksSatchelCoin.html",
+  "stats": {
+    "downloads": 207,
+    "favorites": 0,
+    "monthly_downloads": 17
+  },
+  "title": "MadHoek's Satchel & Coin",
+  "updated_at": 1781625989000,
+  "version": "3.0.8"
+}

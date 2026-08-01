@@ -1,0 +1,15 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Haze Charswap">
+            <Action name="HAZECS_TOGGLE_UI">
+                <Down>HazeCharswap.UI_Toggle()</Down>
+            </Action>
+            <Action name="HAZECS_NEXT_PROFILE">
+                <Down>HazeCharswap.CycleProfile(1)</Down>
+            </Action>
+            <Action name="HAZECS_PREV_PROFILE">
+                <Down>HazeCharswap.CycleProfile(-1)</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

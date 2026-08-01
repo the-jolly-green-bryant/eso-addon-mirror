@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/m00nyONE/PearlsTracker__3523",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "m00nyONE",
+  "canonical_id": "esoui:3523",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3523",
+  "deleted": false,
+  "directories": [
+    "PearlsTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3523/",
+  "fingerprint": "a164af92ca3846f3a811194b906c5746586b610c057ed10adb10dfedbcf8cd96",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11986.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11985.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3523",
+  "source_url": "https://www.esoui.com/downloads/info3523-PearlsTracker.html",
+  "stats": {
+    "downloads": 3470,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "PearlsTracker",
+  "updated_at": 1678619962000,
+  "version": "1.1.0"
+}

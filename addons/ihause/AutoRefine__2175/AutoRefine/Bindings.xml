@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|c6699CCAuto Refine|r">
+      <Action name="AR_CRAFT">
+        <Down>return ZO_KeybindStrip_HandleKeybindDown(keybind)</Down>
+      </Action>
+	  <Action name="AR_PRINT">
+        <Down>AutoRefine.PrintAllPrices()</Down>
+      </Action>
+   </Category>
+  </Layer>
+</Bindings>

@@ -1,0 +1,89 @@
+==========================
+Changelog – Version 3.11.0
+==========================
+
+## Major Feature Expansion
+
+* Added loadout import and export functionality
+* Added companion build sharing support
+* Added selective gear-only import/export
+* Added selective skill-only import/export
+* Added import overwrite support
+* Added favorite loadout import option
+
+## Inspect Window Expansion
+
+* Added complete Inspect Window system
+* Added visual loadout inspection mode
+* Added text-based loadout inspection mode
+* Added companion-specific silhouettes
+* Added armor, jewelry, weapon, and skill inspection views
+* Added loadout color categorization support
+
+## Validation & Warning System
+
+* Added missing gear detection
+* Added locked skill slot detection
+* Added locked skill line detection
+* Added invalid saved skill detection
+* Added companion progression conflict detection
+* Added visual warning indicators
+* Added text warning indicators
+* Added detailed warning tooltips
+
+## Gear Management Improvements
+
+* Added bank-assisted gear retrieval
+* Added bank-assisted gear storage
+* Added automatic gear fetch queue system
+* Added automatic gear storage queue system
+* Improved missing gear handling
+* Improved two-handed weapon support
+
+## Loadout Management Improvements
+
+* Added loadout favorites
+* Added loadout locking
+* Added loadout duplication
+* Added loadout color categories
+* Added improved sorting options
+* Added filtering options
+* Added pagination support
+* Improved active loadout tracking
+
+## Tooltip & Accessibility Improvements
+
+* Added configurable tooltip modes:
+
+  * Disabled
+  * Simple
+  * Tutorial
+
+* Added detailed tutorial tooltips throughout the addon
+
+* Improved new-user guidance and discoverability
+
+## Localization
+
+* Added support for all 7 official ESO client languages:
+
+  * English
+  * German
+  * French
+  * Spanish
+  * Russian
+  * Japanese
+  * Simplified Chinese
+
+* Improved wording consistency across all languages
+
+## Internal Improvements
+
+* Added secure non-executable import parsing
+* Performed extensive UI cleanup and refactoring
+* Improved helper consistency across systems
+* Improved loadout validation reliability
+* Improved first-install experience
+* Improved settings and dialog handling
+* Updated ESO API version to 101050
+* Updated LibAddonMenu dependency version requirement (>=43)

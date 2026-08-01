@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Mtechnik/Guild-Chat-Thingy__1565",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mtechnik",
+  "canonical_id": "esoui:1565",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1565",
+  "deleted": false,
+  "directories": [
+    "GuildChatThingy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1565/",
+  "fingerprint": "dfd05962e5903e1cfaebf9707d1f87b2e3487fd679c186877d840f8dbf5addbd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5103.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1565",
+  "source_url": "https://www.esoui.com/downloads/info1565-GuildChatThingy.html",
+  "stats": {
+    "downloads": 3360,
+    "favorites": 4,
+    "monthly_downloads": 8
+  },
+  "title": "Guild Chat Thingy",
+  "updated_at": 1483560038000,
+  "version": "1.21"
+}

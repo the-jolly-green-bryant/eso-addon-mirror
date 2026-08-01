@@ -1,0 +1,39 @@
+## Title: |c6FCB9FBureau|r of Acceptable Views
+## Version: 3.2.072916
+## AddOnVersion: 32
+## Author: |c6FCB9Fmeshlg|r @ArtieFox
+## APIVersion: 101050
+## Description: Free camera zoom between max zoom and first person in restricted states, with optional dynamic FOV, context presets, and over-the-shoulder swap.
+## SavedVariables: BureauOfAcceptableViews_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=43
+
+
+
+; Localization files are loaded in the following order, with later files overriding earlier ones. This allows for a default English localization to be provided, while still allowing users to create their own localizations without needing to copy the entire file.
+Localization/en.lua
+Localization/$(language).lua
+; ---------------------------------------------------------------------------
+
+; The main addon files are loaded in the following order, with later files overriding earlier ones. This allows for a clear separation of concerns and modularity in the codebase.
+BureauOfAcceptableViews.lua
+CameraSettings.lua
+Ease.lua
+OptionsWatch.lua
+SprintWatch.lua
+ZoomReconciler.lua
+DynamicFov.lua
+FovArbiter.lua
+ContextPresets.lua
+ShoulderControl.lua
+Settings.lua
+; ---------------------------------------------------------------------------
+
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

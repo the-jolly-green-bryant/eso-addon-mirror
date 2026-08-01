@@ -1,0 +1,27 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c9e0911Caro's|r Loot List">
+			<Action name="CLL_PostLoot">
+				<Down>CarosLootList.lootPost()</Down>
+			</Action>
+			<Action name="CLL_PostLootAll">
+				<Down>CarosLootList.lootPost("all")</Down>
+			</Action>
+			<Action name="CLL_PostLootWhisper">
+				<Down>CarosLootList.lootPost("whisperMode")</Down>
+			</Action>
+			<Action name="CLL_PostLootBatman">
+				<Down>CarosLootList.lootPost("batman")</Down>
+			</Action>
+			<Action name="CLL_PostLootWife">
+				<Down>CarosLootList.lootPost("wife")</Down>
+			</Action>
+			<Action name="CLL_BindPost">
+				<Down>CarosLootList.lootBindPost()</Down>
+			</Action>
+			<Action name="CLL_DepositItems">
+				<Down>CarosLootList.depositItems()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/myristican/GuildBankLedger---3.x---Updated__2858",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "myristican",
+  "canonical_id": "esoui:2858",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2858",
+  "deleted": false,
+  "directories": [
+    "GuildBankLedger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2858/",
+  "fingerprint": "ac3ce4ff141a08298d80801dd017906b221bf4f2ef777df022ad30f3109745a3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9751.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9752.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9753.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2858",
+  "source_url": "https://www.esoui.com/downloads/info2858-GuildBankLedger-3.x-Updated.html",
+  "stats": {
+    "downloads": 6958,
+    "favorites": 3,
+    "monthly_downloads": 6
+  },
+  "title": "GuildBankLedger - 3.x - Updated",
+  "updated_at": 1618265071000,
+  "version": "3.55"
+}

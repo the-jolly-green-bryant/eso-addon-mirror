@@ -1,0 +1,49 @@
+<GuiXml>
+    <Animations>
+        <AnimationTimeline name="SFC_BuffDurationIn">
+            <Animations>
+                <AlphaAnimation duration="150" startAlpha="0.0" endAlpha="1.0"/>
+            </Animations>
+        </AnimationTimeline>
+        <AnimationTimeline name="SFC_BuffDurationOut">
+            <Animations>
+                <AlphaAnimation duration="150" startAlpha="1.0" endAlpha="0.0"/>
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+
+    <Controls>
+        <TopLevelControl name="SFC_BuffDurationAnimation">
+            <Controls>
+                <Cooldown name="$(parent)Progress"
+                        textureFile="EsoUI/Art/HUD/reviveMeter_progbar.dds"
+                        alpha="0"
+                        movable="true"
+                        mouseEnabled="true"
+                        clampedToScreen="true">
+                    <OnMoveStop>
+                        SFC.UI.OnMoveStop()
+                    </OnMoveStop>
+                    <Dimensions x="127" y="127" />
+                    <Anchor point="CENTER" relativeTo="GuiRoot"/>
+                    <Controls>
+                        <Texture name="$(parent)Frame"
+                                textureFile="EsoUI/Art/HUD/reviveMeter_frame.dds"
+                                hidden="true">
+                            <Dimensions x="128" y="128" />
+                            <Anchor point="CENTER" offsetX="1" offsetY="-1" />
+                        </Texture>
+                        <Label name="$(parent)Count"
+                                font="$(BOLD_FONT)|$(KB_36)|soft-shadow-thin"
+                                horizontalAlignment="CENTER"
+                                verticalAlignment="CENTER"
+                                text="0">
+                            <Dimensions x="128" y="128" />
+                            <Anchor point="CENTER" relativeTo="$(parent)" offsetX="0" offsetY="0"/>
+                        </Label>
+                    </Controls>
+                </Cooldown>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

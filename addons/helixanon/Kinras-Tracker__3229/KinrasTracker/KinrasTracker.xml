@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GuiXml >
+    <Controls>
+        <TopLevelControl name="KinrasTrackerControl" layer="4">
+            <OnUpdate>KinrasTracker.OnUpdate()</OnUpdate>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="50"/>
+            <Controls>				
+				<Label name="$(parent)Text" font="ZoFontWinH1">
+				  <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+				</Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

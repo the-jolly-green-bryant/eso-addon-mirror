@@ -1,0 +1,38 @@
+[font=Palatino Linotype][center][size=6][b][color=#6FCB9F]Bureau of Acceptable Views[/color][/b][/size]
+[color=#8C8A82]Your camera, your rules.[/color][/center]
+
+
+
+[color=#6FCB9F]Version: 3.2.072916[/color]
+
+- Fixed module debug and error logging never reaching the chat window (the LogDebug/LogError exports were missing).
+- Fixed Context Presets committing a state whose bundle did not resolve, which left a phantom state and a bogus restore.
+- The debug level now persists across sessions and ships silent by default.
+- `/bav status` now reports accumulated camera-write failures instead of counting them silently.
+- Fixed switching the over-the-shoulder mode while a preset is active leaving the shoulder offset baked in: an ownership change now hands the property back and re-bases the preset snapshot.
+- Raised the zoom-write retry give-up message from debug to warning.
+- Removed dead code: the duplicated sprint probe, the redundant FOV glide duration local, and unused localization strings.
+
+
+[color=#6FCB9F]Version: 3.1.215837[/color]
+
+- Removed the LibSprint dependency and moved its action-slot sprint heuristic into BAV's lazy event-driven SprintWatch.
+- Removed Velocity FOV, its speed sampling, settings, debug overlay, and FOV boost integration.
+- Removed obsolete SavedVariables migrations, `/bav dump`, diagnostic APIs, and related settings and localization.
+
+
+[color=#6FCB9F]Version: 3.0.094246[/color]
+
+- Fixed Dynamic FOV smoothing conflicting with context-preset FOV.
+- Fixed preserving the original camera when a smooth preset exit is interrupted.
+- Preset and OTS changes in LAM now apply immediately.
+- Context Presets no longer overwrite shoulder while OTS owns it.
+- Current player states are initialized when enabling presets and Auto OTS.
+- Resetting Dynamic FOV immediately restores near/far FOV to engine defaults.
+- Fixed preset recovery after `/reloadui`, login, and unexpected session termination.
+- Velocity FOV now starts correctly with default settings.
+- Features enabled from an already-open LAM panel now suspend camera writes correctly.
+- OTS establishes shoulder ownership before Context Presets during startup.
+- Removed the self-check module, its button, command, and related documentation.
+- Removed conflict advisories and their settings toggle; the silent FPV safety backoff remains.
+[/font]

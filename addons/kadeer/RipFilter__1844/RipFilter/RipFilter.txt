@@ -1,0 +1,17 @@
+## Title: RipFilter
+## Author: kadeer
+## Description: Displays death recap, killing blows, death count and who *you* have resurrected. /rip, /ripd and /ripr.
+## Version: 0.75
+## APIVersion: 101040
+## AddOnVersion: 75
+## DependsOn: LibAddonMenu-2.0>=28
+## SavedVariables: RipFilterSettings RipFilterHistory
+
+RipFilter_Globals.lua
+RipFilter_Utility.lua
+RipFilter_Menu.lua
+RipFilter_AbilityInfo.xml
+RipFilter_Recap.xml
+RipFilter_RecapScrollList.lua
+RipFilter.lua
+bindings.xml

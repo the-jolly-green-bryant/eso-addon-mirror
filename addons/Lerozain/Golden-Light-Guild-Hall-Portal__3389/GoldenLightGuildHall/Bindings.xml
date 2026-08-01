@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|cede664Golden Light Guild Hall">
+      <Action name="GoldenHall">
+		    <Up>GoldenHall()</Up>
+      </Action>  
+    </Category>
+  </Layer>
+</Bindings>

@@ -1,0 +1,37 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="DsRGuildPvPCrownTableIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="260" y="200" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+
+      <OnMoveStop>
+        DsRGuildPvPCrownTable.SaveLoc()
+      </OnMoveStop>
+
+      <Controls>
+
+        <!-- Unsichtbarer, aber „solider“ Hintergrund für Dragging -->
+        <Texture name="$(parent)Bg" mouseEnabled="true">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+        </Texture>
+
+        <Label name="$(parent)Label" width="260" height="30" font="ZoFontWinH2"
+               horizontalAlignment="CENTER">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="5"/>
+        </Label>
+
+        <Texture name="$(parent)Divider" textureFile="/esoui/art/miscellaneous/horizontaldivider_mythic.dds"
+            verticalAlignment="CENTER" horizontalAlignment="CENTER">
+            <Dimensions x="270" y="4" />
+            <Anchor point="TOP" relativeTo="$(parent)Label" relativePoint="BOTTOM" offsetY="5"/>
+        </Texture>
+
+        <Label name="$(parent)List" width="250" height="150" font="ZoFontWinH4"
+               horizontalAlignment="LEFT" verticalAlignment="TOP" color="FFFFFF">
+          <Anchor point="TOP" relativeTo="$(parent)Divider" relativePoint="BOTTOM" offsetY="10"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

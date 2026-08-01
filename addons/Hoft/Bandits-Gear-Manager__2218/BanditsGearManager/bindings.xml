@@ -1,0 +1,23 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c4B8BFEBandits|r Gear Manager">
+			<Action name="BUI_SHOW_GEAR"><Down>BUI_GearShow()</Down></Action>
+			<Action name="BUI_SHOW_GEAR_RADIAL_MENU">
+				<Down>BUI_GearRadialMenu(true)</Down>
+				<Up>BUI_GearRadialMenu(false)</Up>
+			</Action>
+			<Action name="BUI_GEAR_A"><Down>BUI_GearAdditionalPanel()</Down></Action>
+			<Action name="BUI_GEAR_0"><Down>BUI_GearSingleUse()</Down></Action>
+			<Action name="BUI_GEAR_1"><Down>BUI_GearEquip(1)</Down></Action>
+			<Action name="BUI_GEAR_2"><Down>BUI_GearEquip(2)</Down></Action>
+			<Action name="BUI_GEAR_3"><Down>BUI_GearEquip(3)</Down></Action>
+			<Action name="BUI_GEAR_4"><Down>BUI_GearEquip(4)</Down></Action>
+			<Action name="BUI_GEAR_5"><Down>BUI_GearEquip(5)</Down></Action>
+			<Action name="BUI_GEAR_6"><Down>BUI_GearEquip(6)</Down></Action>
+			<Action name="BUI_GEAR_7"><Down>BUI_GearEquip(7)</Down></Action>
+			<Action name="BUI_GEAR_8"><Down>BUI_GearEquip(8)</Down></Action>
+			<Action name="BUI_GEAR_9"><Down>BUI_GearEquip(9)</Down></Action>
+			<Action name="BUI_GEAR_10"><Down>BUI_GearEquip(10)</Down></Action>
+		</Category>
+	</Layer>
+</Bindings>

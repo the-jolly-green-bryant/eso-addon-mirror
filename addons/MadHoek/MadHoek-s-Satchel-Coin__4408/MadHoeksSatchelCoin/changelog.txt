@@ -1,0 +1,24 @@
+3.0.8
+- changed manifest extension from "addon" to "txt"
+- updated LibAddonMenu-2.0 dependency version requirement to the most recent one (>=43)
+- updated ESO API version to 101050
+
+3.0.7
+- Added Bank Gold display (optional, integrated into currency row)
+- Replaced Event Tickets display with Trade Bars
+- Added migration cleanup to remove obsolete saved variable (showEventTickets)
+- Updated and extended localization for all supported languages
+- Minor internal adjustments and consistency improvements
+
+3.0.5
+- Updated LibAddonMenu dependency version requirement (>=41)
+- Implemented proper dependency version gating according to ESOUI best practices
+- Removed unintended global variable (mhsbcw)
+- Improved variable scoping for better addon isolation
+- Minor internal cleanup for improved standards compliance
+
+3.0.4
+- Fixed spacing/anchors after font size changes
+- Improved primary/currency row reanchoring
+- Added one-per-session "void" message when all displays are disabled
+- Refresh/UI stability improvements

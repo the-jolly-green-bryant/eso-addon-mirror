@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kadeer/Lib3DArrow__2663",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kadeer",
+  "canonical_id": "esoui:2663",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2663",
+  "deleted": false,
+  "directories": [
+    "Lib3DArrow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2663/",
+  "fingerprint": "86eb05d09e01aed7f1c348fe954578cd71ef38bbe21274b2da64838d16dcf180",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9031.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2663",
+  "source_url": "https://www.esoui.com/downloads/info2663-Lib3DArrow.html",
+  "stats": {
+    "downloads": 43953,
+    "favorites": 16,
+    "monthly_downloads": 444
+  },
+  "title": "Lib3DArrow",
+  "updated_at": 1591579838000,
+  "version": "v0.1 alpha"
+}

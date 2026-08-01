@@ -1,0 +1,7 @@
+ZO_CreateStringId("SADESD_SKIPLOGOS"     , "Disable logos when starting the game")
+ZO_CreateStringId("SADESD_SKIPLOGOS_TT"  , "Disables logos and the start screen saver when starting the game.\n\n By default: disabled")
+ZO_CreateStringId("SADESD_ENERGY_SUSTAINABILITY_MEASURES_ENABLED"     , "Turn off screen dimming when idle")
+ZO_CreateStringId("SADESD_ENERGY_SUSTAINABILITY_MEASURES_ENABLED_TT"  , "Turns on/off the screen dimming after 5 minutes of inactivity of the character.\n\n By default: disabled")
+ZO_CreateStringId("GUILD_HISTIRY_CACHE_MAX_NUMBER_OF_DAYS"  , "The history of the Guild Merchant(days)")
+ZO_CreateStringId("GUILD_HISTIRY_CACHE_MAX_NUMBER_OF_DAYS_TT"  , "Changes the duration of storing trade history in all your guilds.\n\n Default: 30 days")
+ZO_CreateStringId("GUILD_HISTIRY_CACHE_MAX_NUMBER_OF_DAYS_WARN"  , "A restart of the game is required.")

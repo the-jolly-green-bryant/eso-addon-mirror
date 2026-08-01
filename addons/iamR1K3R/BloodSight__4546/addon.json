@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/iamR1K3R/BloodSight__4546",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "iamR1K3R",
+  "canonical_id": "esoui:4546",
+  "category_id": "150",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4546",
+  "deleted": false,
+  "directories": [
+    "Bloodsight"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4546/",
+  "fingerprint": "97725c72167178cf36fbebe3db6a0c11cc2bcab9d35478d91acde50a2fd5808b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15888.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15889.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15890.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4546",
+  "source_url": "https://www.esoui.com/downloads/info4546-BloodSight.html",
+  "stats": {
+    "downloads": 175,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "BloodSight",
+  "updated_at": 1777837195000,
+  "version": "1.2.3"
+}

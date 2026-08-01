@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Jeniksoft/Translate__2610",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jeniksoft",
+  "canonical_id": "esoui:2610",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2610",
+  "deleted": false,
+  "directories": [
+    "Translate"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2610/",
+  "fingerprint": "80e299aef656fde53f5ad00700bf5bb4401f244798b58595ce352bcc9e8b4db9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8912.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8906.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8907.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2610",
+  "source_url": "https://www.esoui.com/downloads/info2610-Translate.html",
+  "stats": {
+    "downloads": 10579,
+    "favorites": 5,
+    "monthly_downloads": 45
+  },
+  "title": "Translate",
+  "updated_at": 1638738425000,
+  "version": "1.1.6"
+}

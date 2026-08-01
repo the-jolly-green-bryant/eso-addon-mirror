@@ -1,0 +1,32 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ZO_HousingBook_Keyboard" mouseEnabled="true" hidden="true" override="true">
+            <Controls>
+                <Control name="$(parent)Contents" override="true">
+                    <Controls>
+                        <Control name="$(parent)CustomHousingInteractButtons" resizeToFitDescendents="true" override="true">
+                          <Anchor point="TOP" relativeTo="ZO_HousingBook_KeyboardContentsHousingInteractButtonsChangeNickname" />
+                            <Controls>
+                              <Button name="$(parent)TravelInside" inherits="ZO_DefaultButton" text="Travel Inside">
+                                <Anchor point="BOTTOMLEFT" relativeTo="ZO_HousingBook_KeyboardContentsHousingInteractButtonsTravelToHouse"  relativePoint="BOTTOMLEFT" offsetY="-30"/>
+                                  <Dimensions x="200" />
+                                  <OnClicked>
+                                    HouseClick.inside(self)
+                                  </OnClicked>
+                              </Button>
+
+                              <Button name="$(parent)TravelOutside" inherits="ZO_DefaultButton" text="Travel Outside">
+                                  <Dimensions x="200" />
+                                  <Anchor point="BOTTOMLEFT" relativeTo="$(parent)TravelInside"  relativePoint="BOTTOMRIGHT"/>
+                                  <OnClicked>
+                                    HouseClick.outside(self)
+                                  </OnClicked>
+                              </Button>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

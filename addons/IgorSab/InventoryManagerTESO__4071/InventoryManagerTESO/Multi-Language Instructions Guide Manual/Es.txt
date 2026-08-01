@@ -1,0 +1,90 @@
+¡Saludos! Gracias por usar mi addon. Creador @IgorSab. Si te gusta mi addon y quieres apoyar mi trabajo, aquí tienes algunas opciones de donación voluntaria:
+
+    PayPal: Lamentablemente, PayPal.Me podría no estar disponible en mi región. Puedes enviar una donación a jetixmax13@gmail.com. Es menos conveniente, pero estaré muy agradecido por tu apoyo.
+    Ko-fi: Invítame a un café en ko-fi.com/igorsab. Es una forma simple y rápida de ayudarme a seguir desarrollando.
+    Criptomonedas:
+        BTC: 1Cehu58Do9izGefUBDLou8WJqgJdqs4CcJ (solo Bitcoin)
+        ETH: 0xbea843c6c0359126b619fca220fc841bcff6c931 (solo Ethereum)
+        USDT: 0xbea843c6c0359126b619fca220fc841bcff6c931 (solo red ERC-20)
+        Todas las donaciones son voluntarias y apoyan mi trabajo en el addon. ¡Gracias por tu generosidad y ayuda!
+        También agradecería apoyo con oro en el juego, objetos valiosos o regalos de la Tienda de Coronas a @IgorSab en el servidor EU/PC.
+
+InventaryManagerTESO:
+
+InventaryManagerTESO es un addon de gestión de inventario para The Elder Scrolls Online, que añade una ventana práctica con funciones avanzadas de clasificación, filtrado, categorización y gestión de objetos. Lista completa de funciones:
+
+    Ventana de inventario mejorada
+    Muestra hasta 200 objetos en una cuadrícula 10×20 (44×44 píxeles por celda).
+    Muestra íconos de objetos, cantidad en pila e indicadores visuales (por ejemplo, marcas para selección, oscurecimiento para objetos bloqueados).
+    Muestra espacios ocupados y disponibles (ejemplo: "125/200").
+    Muestra el oro del personaje con formato (ejemplo: "1 860 657").
+    Clasificación de objetos
+    Por defecto: Clasifica por categorías (armas, armaduras, consumibles, materiales de artesanía, etc.) con prioridad (ejemplo: equipo bloqueado sobre comida).
+    Cambia la dirección de orden (ascendente/descendente) al volver a hacer clic en el botón de orden.
+    Botón "All" para restablecer filtros y mostrar todos los objetos.
+    Filtrado por categorías
+    Categorías disponibles: "Weapon" (armas), "Armor" (armaduras), "Furnishings" (muebles), "Consumables" (consumibles), "Crafting" (materiales de artesanía).
+    Cada categoría tiene un botón con ícono y descripción emergente.
+    Al seleccionar una categoría, solo se muestran objetos de esa categoría.
+    Vuelve a hacer clic en una categoría activa para restablecer el filtro.
+    Búsqueda de objetos
+    Campo de entrada para buscar objetos por nombre.
+    La búsqueda funciona en tiempo real, filtrando objetos al escribir.
+    Admite búsqueda en cualquier idioma (según la localización del juego).
+    Gestión de objetos
+
+    Selección: Haz clic izquierdo en una celda para seleccionar/deseleccionar un objeto (marca verde). Los objetos bloqueados no se pueden seleccionar al comerciar.
+    Menú contextual: Haz clic derecho en un objeto para acciones (ejemplo: "Equipar", "Usar"). "Destruir" está bloqueado para evitar borrados accidentales.
+    Equipar/Usar: Compatible con equipar armas, armaduras y joyas según la barra de armas activa (primaria o secundaria). Usa consumibles (ejemplo: pociones) desde el menú contextual.
+    Descripciones emergentes: Pasa el cursor sobre un objeto para ver información detallada (como en la interfaz predeterminada).
+
+    Gestión de bloqueo de objetos
+    Botón Lock: Bloquea objetos seleccionados (solo armas, armaduras, joyas y objetos de compañeros).
+    Botón Unlock: Desbloquea objetos seleccionados.
+    Los objetos bloqueados se oscurecen (alfa 0.5) y no se pueden vender al comerciar.
+    Selección masiva
+    Botón Select All: Selecciona todos los objetos en la vista actual (excepto los bloqueados al comerciar).
+    Vuelve a hacer clic para deseleccionar todo.
+    Venta de objetos
+    Botón Sell: Vende todos los objetos seleccionados a un comerciante (hasta 50 a la vez).
+    Funciona solo con la ventana de comercio abierta (ejemplo: comerciante NPC).
+    Los objetos bloqueados no se venden.
+    Visualización de enfriamiento
+    Para objetos con enfriamiento (ejemplo: pociones), muestra un overlay y temporizador en segundos.
+    Se actualiza cada segundo si la ventana del addon está abierta.
+    Interactividad y ajustes
+    La ventana del addon se puede mover por la pantalla.
+    Actualiza el contenido periódicamente (cada segundo si está abierta).
+    Restablece la selección al cerrar la ventana.
+    Tecla para abrir/cerrar la ventana ("InventaryManagerTESO").
+    Funciones adicionales
+    Admite objetos bloqueados al comerciar (evita su venta).
+    Actualiza automáticamente el inventario tras cambios (ejemplo: tras vender o usar objetos).
+    Compatible con varios tipos de objetos, incluidos los de compañeros, objetos de Coronas y mapas del tesoro.
+
+Instrucciones:
+
+    Cuadrícula de objetos (izquierda): Muestra hasta 200 objetos como íconos (10×20).
+    Panel de control (derecha):
+        Botón All: Muestra todos los objetos.
+        Campo de búsqueda: Filtra objetos por nombre.
+        Botones de categorías: "Weapon", "Armor", "Furnishings", "Consumables", "Crafting".
+        Botones de control: Lock, Unlock, Select All, Sell.
+        Info: Muestra "Ocupado/Total de espacios" (ejemplo: "125/200") y "Gold: <cantidad>" (ejemplo: "1 860 657").
+    Clasificación y filtrado:
+        Haz clic en All para mostrar todos los objetos.
+        Haz clic en una categoría (ejemplo: "Weapon") para mostrar solo esos objetos.
+        Vuelve a hacer clic en una categoría activa para restablecer el filtro.
+        Escribe en el campo de búsqueda para filtrar objetos por nombre (en tiempo real).
+    Gestión de objetos:
+        Selección: Haz clic izquierdo en un objeto para seleccionarlo (aparece una marca verde). Vuelve a hacer clic para deseleccionar.
+        Selección masiva: Haz clic en Select All para seleccionar todo (excepto bloqueados al comerciar). Vuelve a hacer clic para deseleccionar.
+        Bloqueo/Desbloqueo: Selecciona objetos y haz clic en Lock para bloquearlos (se oscurecen). Haz clic en Unlock para desbloquearlos.
+        Venta: Abre la ventana de comercio con un NPC (ejemplo: comerciante). Selecciona objetos y haz clic en Sell (hasta 50 a la vez). Los bloqueados no se venden.
+        Equipar/Usar: Haz clic derecho en un objeto para abrir el menú contextual. Elige "Equip" para armas/armaduras o "Use" para consumibles.
+        Ver información: Pasa el cursor sobre un objeto para ver una descripción emergente. Objetos con enfriamiento (ejemplo: pociones) muestran un overlay y temporizador.
+    Cerrar ventana: Haz clic en "X" en la esquina superior derecha o usa la tecla asignada. La selección se restablece al cerrar.
+    Consejos útiles:
+        Usa el campo de búsqueda para encontrar rápido.
+        Los objetos bloqueados no se pueden seleccionar ni vender al comerciar.
+        La ventana se actualiza cada segundo si está abierta.

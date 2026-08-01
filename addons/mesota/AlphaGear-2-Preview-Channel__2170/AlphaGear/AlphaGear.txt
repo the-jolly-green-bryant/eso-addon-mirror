@@ -1,0 +1,42 @@
+## Title: |cFFAA33AlphaGear 2|r v6.4.1 beta3
+## APIVersion: 100024 100025
+## Version: 6.4.1 beta3
+## SavedVariables: AGX2_Account
+## SavedVariables: AGX2_Character
+## Author: AlphaLemming & mesota
+## Description: Anything you need to manage your builds. Configurable profiles, builds, skill and gear sets, auto repair and auto weapon charge, deposit and withdraw function. Originally by AlphaLemming now maintained by mesota.
+## OptionalDependsOn: LibZone LibAddonMenu-2.0 FCOItemSaver
+
+lang/en.lua
+lang/$(language).lua
+
+libs/LibStub/LibStub.lua
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+libs/LibAddonMenu-2.0/controls/panel.lua
+libs/LibAddonMenu-2.0/controls/submenu.lua
+libs/LibAddonMenu-2.0/controls/button.lua
+libs/LibAddonMenu-2.0/controls/checkbox.lua
+libs/LibAddonMenu-2.0/controls/colorpicker.lua
+libs/LibAddonMenu-2.0/controls/custom.lua
+libs/LibAddonMenu-2.0/controls/description.lua
+libs/LibAddonMenu-2.0/controls/dropdown.lua
+libs/LibAddonMenu-2.0/controls/editbox.lua
+libs/LibAddonMenu-2.0/controls/header.lua
+libs/LibAddonMenu-2.0/controls/slider.lua
+libs/LibAddonMenu-2.0/controls/texture.lua
+libs/LibAddonMenu-2.0/controls/iconpicker.lua
+libs/LibAddonMenu-2.0/controls/divider.lua
+
+AGSkills17.lua
+
+AlphaGear.lua
+plugins/FCOIS/ag_fcois.lua
+AlphaGearSettings.lua
+
+
+dialogs/AG_EditProfileDialog.xml
+
+
+AlphaGear.xml
+
+Bindings.xml

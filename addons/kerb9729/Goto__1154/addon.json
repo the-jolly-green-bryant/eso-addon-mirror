@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/kerb9729/Goto__1154",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kerb9729",
+  "canonical_id": "esoui:1154",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1154",
+  "deleted": false,
+  "directories": [
+    "Goto"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1154/",
+  "fingerprint": "3994c59a9bed0eb2bb15bb93b1482124c939df71728bc8abf639741770919dde",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3707.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1154",
+  "source_url": "https://www.esoui.com/downloads/info1154-Goto.html",
+  "stats": {
+    "downloads": 46943,
+    "favorites": 68,
+    "monthly_downloads": 29
+  },
+  "title": "Goto",
+  "updated_at": 1713989600000,
+  "version": "1.1041"
+}

@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/MahlukatGuluGulu/ElderTurks__2468",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MahlukatGuluGulu",
+  "canonical_id": "esoui:2468",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2468",
+  "deleted": false,
+  "directories": [
+    "ElderTurks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2468/",
+  "fingerprint": "60e37f6c157e08bed5b26691bbe31dca8c4278628e6d87b077d605b127789eda",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8556.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8555.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8411.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8412.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8413.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2468",
+  "source_url": "https://www.esoui.com/downloads/info2468-ElderTurks.html",
+  "stats": {
+    "downloads": 6367,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "ElderTurks",
+  "updated_at": 1638877824000,
+  "version": "1.4.3"
+}

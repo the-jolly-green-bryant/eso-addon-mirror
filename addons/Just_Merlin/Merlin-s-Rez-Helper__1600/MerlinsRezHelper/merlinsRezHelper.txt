@@ -1,0 +1,27 @@
+## Title: |c42cbf4Merlin's Rez Helper|r
+## APIVersion: 101036
+## Version: 2.1.0
+## Author: @Just_Merlin
+## Description: Shows location of dead group members to rez them faster.
+## DependsOn: LibMapPins-1.0 LibMapPing LibGPS LibAddonMenu-2.0 Lib3D
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: merlinsRezHelperSettings
+
+lang/en.lua
+lang/$(language).lua
+
+merlinsRezHelper.lib.lua
+ui\ui.lib.lua
+modes\modes.lib.lua
+colors\colors.lib.lua
+
+modes\elastic-reticle-arrows.lua
+modes\satnav.lua
+modes\reticle-satnav.lua
+colors\white.lua
+colors\white-orange-red.lua
+colors\green-orange-red.lua
+
+merlinsRezHelper.lua
+merlinsRezHelper.xml
+--Bindings.xml -- for Settings - Keybindings

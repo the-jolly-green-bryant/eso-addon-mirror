@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Extended-Stats__372",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:372",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:372",
+  "deleted": false,
+  "directories": [
+    "HarvensExtendedStats"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl372/",
+  "fingerprint": "717ec0314adce8e0e5ff22f830b48b72f3723fd27556ce028f224828730eb917",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1019.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "372",
+  "source_url": "https://www.esoui.com/downloads/info372-HarvensExtendedStats.html",
+  "stats": {
+    "downloads": 295080,
+    "favorites": 416,
+    "monthly_downloads": 116
+  },
+  "title": "Harven's Extended Stats",
+  "updated_at": 1585512168000,
+  "version": "1.2"
+}

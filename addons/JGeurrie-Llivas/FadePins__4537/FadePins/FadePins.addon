@@ -1,0 +1,9 @@
+## Title: FadePins
+## Author: JGeurrie(@Llivas)
+## Description: An addon that fades out other pin groups on mouseover when the game's map is open.
+
+## APIVersion: 101049
+## AddOnVersion: 10
+## Version: 1.0
+
+FadePins.lua

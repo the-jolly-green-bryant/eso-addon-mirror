@@ -1,0 +1,8 @@
+## APIVersion: 100013
+## Title: Compact Paper Doll
+## Description: Rearranged slots in paper doll.
+## Version: 1.0.0
+## Author: haggen
+## License: CC-NC-SA-4.0
+
+CompactPaperDoll.lua

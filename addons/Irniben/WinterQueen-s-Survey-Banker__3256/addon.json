@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Irniben/WinterQueen-s-Survey-Banker__3256",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Irniben",
+  "canonical_id": "esoui:3256",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3256",
+  "deleted": false,
+  "directories": [
+    "WinterQueensSurveyBanker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3256/",
+  "fingerprint": "ba7ca38bdd62fde0da3ce762a7ad9167b09cd56b8eb6d872ff302a432fc8a9fa",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3256",
+  "source_url": "https://www.esoui.com/downloads/info3256-WinterQueensSurveyBanker.html",
+  "stats": {
+    "downloads": 3090,
+    "favorites": 1,
+    "monthly_downloads": 19
+  },
+  "title": "WinterQueen's Survey Banker",
+  "updated_at": 1639083211000,
+  "version": "0.2.0"
+}

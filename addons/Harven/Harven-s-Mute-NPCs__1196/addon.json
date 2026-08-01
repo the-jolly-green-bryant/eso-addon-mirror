@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Mute-NPCs__1196",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:1196",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:1196",
+  "deleted": false,
+  "directories": [
+    "HarvensMuteNPC"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1196/",
+  "fingerprint": "57f6e28dfa1a5a15829af4ab3c211a1d1e5aa9dd8e1de81c5b9cbac5cd226b4d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3826.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1196",
+  "source_url": "https://www.esoui.com/downloads/info1196-HarvensMuteNPCs.html",
+  "stats": {
+    "downloads": 10506,
+    "favorites": 25,
+    "monthly_downloads": 29
+  },
+  "title": "Harven's Mute NPCs",
+  "updated_at": 1585515766000,
+  "version": "0.7"
+}

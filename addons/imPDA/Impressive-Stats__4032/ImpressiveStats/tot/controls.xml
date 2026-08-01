@@ -1,0 +1,228 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <Label name="IMP_STATS_Tribute_Listing_Column1" horizontalAlignment="RIGHT" virtual="true"><Dimensions x="40" y="32" /></Label>
+		<Label name="IMP_STATS_Tribute_Listing_Column2" virtual="true"><Dimensions x="50" y="32" /></Label>
+		<!-- <Label name="IMP_STATS_Tribute_Listing_Column3" virtual="true"><Dimensions x="220" y="32" /></Label> -->
+		<Label name="IMP_STATS_Tribute_Listing_Column4" virtual="true"><Dimensions x="234" y="32" /></Label>
+		<Label name="IMP_STATS_Tribute_Listing_Column5" horizontalAlignment="CENTER" virtual="true"><Dimensions x="50" y="32" /></Label>
+		<Label name="IMP_STATS_Tribute_Listing_Column6" horizontalAlignment="CENTER" virtual="true"><Dimensions x="70" y="32" /></Label>
+		<Label name="IMP_STATS_Tribute_Listing_Column7" horizontalAlignment="CENTER" virtual="true"><Dimensions x="90" y="32" /></Label>
+		<Label name="IMP_STATS_Tribute_Listing_Column8" horizontalAlignment="CENTER" virtual="true"><Dimensions x="90" y="32" /></Label>
+		<Label name="IMP_STATS_Tribute_Listing_Column9" horizontalAlignment="CENTER" virtual="true"><Dimensions x="70" y="32" /></Label>
+		<Label name="IMP_STATS_Tribute_Listing_Column10" horizontalAlignment="CENTER" virtual="true"><Dimensions x="32" y="32" /></Label>
+		<Control name="IMP_STATS_Tribute_Listing_Column11" virtual="true"><Dimensions x="146" y="32" /></Control>
+
+		<Texture name="IMP_STATS_Tribute_Patron" tier="HIGH"  mouseEnabled="true" pixelRoundingEnabled="false" virtual="true">
+			<Dimensions x="32" y="32" />
+		</Texture>
+
+		<Control name="IMP_STATS_Tribute_Patrons" hidden="true" virtual="true">
+			<Controls>
+				<Texture name="$(parent)_0" inherits="IMP_STATS_Tribute_Patron">
+					<Anchor point="LEFT" />
+				</Texture>
+				<Texture name="$(parent)_2" inherits="IMP_STATS_Tribute_Patron">
+					<Anchor point="LEFT" relativeTo="$(parent)_0" relativePoint="RIGHT" offsetX="6" />
+				</Texture>
+				<Texture name="$(parent)_3" inherits="IMP_STATS_Tribute_Patron">
+					<Anchor point="LEFT" relativeTo="$(parent)_2" relativePoint="RIGHT" offsetX="6" />
+				</Texture>
+				<Texture name="$(parent)_1" inherits="IMP_STATS_Tribute_Patron">
+					<Anchor point="LEFT" relativeTo="$(parent)_3" relativePoint="RIGHT" offsetX="6" />
+				</Texture>
+			</Controls>
+		</Control>
+		
+		<Label name="IMP_STATS_TributeGameSummaryRow" inherits="ZO_SelectableLabel" virtual="true">
+			<Dimensions y="32" />
+			<Controls>
+				<!-- TODO: texture order -->
+				<Texture name="$(parent)BG" textureFile="EsoUI/Art/Miscellaneous/listItem_selectedHighlight.dds" hidden="true" color="232323"> <!-- 4b4b4b -->
+					<Dimensions x="900" y="52" />
+					<Anchor point="TOPLEFT" />
+					<!-- TODO: ideally, get rid of Dimensions -->
+					<!-- TODO: find out why this texture less than row with height 32 -->
+				</Texture>
+				<Label name="$(parent)Index" inherits="IMP_STATS_Listing_Cell IMP_STATS_Tribute_Listing_Column1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+				</Label>
+				<Label name="$(parent)Duration" inherits="IMP_STATS_Listing_Cell IMP_STATS_Tribute_Listing_Column2">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Index" relativePoint="TOPRIGHT" offsetX="20" />
+				</Label>
+				<!-- <Label name="$(parent)PlayerName" inherits="IMP_STATS_Listing_Cell IMP_STATS_Tribute_Listing_Column3">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Duration" relativePoint="TOPRIGHT" />
+				</Label> -->
+				<Label name="$(parent)OpponentName" inherits="IMP_STATS_Listing_Cell IMP_STATS_Tribute_Listing_Column4">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Duration" relativePoint="TOPRIGHT" />
+				</Label>
+				<Label name="$(parent)Pick" inherits="IMP_STATS_Listing_Cell IMP_STATS_Tribute_Listing_Column5">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)OpponentName" relativePoint="TOPRIGHT" />
+				</Label>
+				<Control name="$(parent)Patrons" inherits="IMP_STATS_Tribute_Patrons IMP_STATS_Tribute_Listing_Column11">
+					<Anchor point="LEFT" relativeTo="$(parent)Pick" relativePoint="RIGHT" />
+				</Control>
+				<Label name="$(parent)Score" inherits="IMP_STATS_Listing_Cell IMP_STATS_Tribute_Listing_Column6">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Patrons" relativePoint="TOPRIGHT" />
+				</Label>
+				<Label name="$(parent)Result" inherits="IMP_STATS_Listing_Cell IMP_STATS_Tribute_Listing_Column10">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Score" relativePoint="TOPRIGHT" />
+				</Label>
+				<Label name="$(parent)PlayerMMR" inherits="IMP_STATS_Listing_Cell IMP_STATS_Tribute_Listing_Column7">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Result" relativePoint="TOPRIGHT" />
+				</Label>
+				<Label name="$(parent)Rank" inherits="IMP_STATS_Listing_Cell IMP_STATS_Tribute_Listing_Column8">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)PlayerMMR" relativePoint="TOPRIGHT" />
+				</Label>
+				<Label name="$(parent)TopPercent" inherits="IMP_STATS_Listing_Cell IMP_STATS_Tribute_Listing_Column9">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Rank" relativePoint="TOPRIGHT" />
+				</Label>
+			</Controls>
+		</Label>
+
+		<TopLevelControl name="IMP_STATS_TRIBUTE" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<!-- <AnchorFill /> -->
+			<Controls>
+				<Tooltip name="IMP_STATS_Tribute_Tooltip" inherits="ZO_BaseTooltip" tier="HIGH" />
+
+				<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FFFF00" centerColor="000000" /> -->
+
+				<Texture name="$(parent)Warning" textureFile="EsoUI/Art/Miscellaneous/eso_icon_warning.dds" color="FFFF00" level="1" hidden="true">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="150" />
+					<Dimensions x="48" y="48" />
+				</Texture>
+
+				<Backdrop name="$(parent)OpponentSearch" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+					<Anchor point="TOPRIGHT" offsetX="-16" offsetY="8" />
+                    <Dimensions x="270" />
+                    <Controls>
+                        <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" defaultText="SI_REQUEST_NAME_INSTRUCTIONS" />
+						<Label name="$(parent)Label" inherits="IMP_STATS_StatName" text="Opponent:">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-4" />
+						</Label>
+                    </Controls>
+                </Backdrop>
+
+				<!-- <Control name="$(parent)CharactersFilter" inherits="ZO_MultiselectComboBox">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)OpponentSearch" relativePoint="BOTTOMRIGHT" offsetX="2" offsetY="8" />
+					<Dimensions x="270" y="32" />
+				</Control> -->
+
+				<Control name="$(parent)StatsBlock">
+					<Anchor point="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="150" />
+					<Controls>
+						<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FF0000" centerColor="00FF00" /> -->
+						<Control name="$(parent)GaugeKDAMeter" inherits="IMP_STATS_GaugeKDAMeter">
+							<Anchor point="TOPLEFT" />
+						</Control>
+
+						<Label name="$(parent)TotalGames" inherits="IMP_STATS_StatName" text="Games recorded:">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="110" offsetY="6" />
+						</Label>
+						<Label name="$(parent)TotalGamesValue" inherits="IMP_STATS_StatValue">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)TotalGames" relativePoint="TOPRIGHT" offsetX="5" />
+						</Label>
+
+						<Label name="$(parent)HighestRank" inherits="IMP_STATS_StatName" text="Highest Rank:">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)TotalGames" relativePoint="BOTTOMLEFT" offsetY="6" />
+						</Label>
+						<Label name="$(parent)HighestRankValue" inherits="IMP_STATS_StatValue">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)HighestRank" relativePoint="TOPRIGHT" offsetX="5" />
+						</Label>
+						
+						<Label name="$(parent)Winrate" inherits="IMP_STATS_StatName" text="Winrate:">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)HighestRank" relativePoint="BOTTOMLEFT" offsetY="6"/>
+						</Label>
+						<Label name="$(parent)WinrateValue" inherits="IMP_STATS_StatValue">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Winrate" relativePoint="TOPRIGHT" offsetX="5" />
+						</Label>
+
+						<Label name="$(parent)FirstPickWinrate" inherits="IMP_STATS_StatName" text="1P Winrate:">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Winrate" relativePoint="BOTTOMLEFT" offsetY="6"/>
+						</Label>
+						<Label name="$(parent)FirstPickWinrateValue" inherits="IMP_STATS_StatValue">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)FirstPickWinrate" relativePoint="TOPRIGHT" offsetX="5" />
+						</Label>
+
+						<Label name="$(parent)SecondPickWinrate" inherits="IMP_STATS_StatName" text="2P Winrate:">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)FirstPickWinrate" relativePoint="BOTTOMLEFT" offsetY="6"/>
+						</Label>
+						<Label name="$(parent)SecondPickWinrateValue" inherits="IMP_STATS_StatValue">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)SecondPickWinrate" relativePoint="TOPRIGHT" offsetX="5" />
+						</Label>
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)Divider">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)StatsBlock" relativePoint="BOTTOMLEFT" offsetY="10" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)StatsBlock" relativePoint="BOTTOMRIGHT" offsetY="24" />
+					<Controls>
+						<Texture name="$(parent)Left" textureFile="EsoUI/Art/Guild/sectionDivider_left.dds">
+							<Anchor point="TOPLEFT"/>
+							<Dimensions x="880" y="4"/>
+						</Texture>
+						<Texture name="$(parent)Right" textureFile="EsoUI/Art/Guild/sectionDivider_right.dds">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Left" relativePoint="TOPRIGHT"/>
+							<Dimensions x="100" y="4"/>
+						</Texture>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Listing">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+					<Controls>
+						<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FF0000" centerColor="00FF00" /> -->
+						<Control name="$(parent)Header">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="40"/>
+							<Controls>
+								<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FF0000" centerColor="00FF00" /> -->
+								<Label name="$(parent)Index" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Listing_Column1" text="###">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+								</Label>
+								<Label name="$(parent)Duration" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Listing_Column2" text="Time">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Index" relativePoint="TOPRIGHT" offsetX="20" />
+								</Label>
+								<!-- <Label name="$(parent)PlayerName" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Listing_Column3" text="Player">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Duration" relativePoint="TOPRIGHT" />
+								</Label> -->
+								<Label name="$(parent)OpponentName" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Listing_Column4" text="Opponent">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Duration" relativePoint="TOPRIGHT" />
+								</Label>
+								<Label name="$(parent)PickOrder" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Listing_Column5" text="Pick">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)OpponentName" relativePoint="TOPRIGHT" />
+								</Label>
+								<Label name="$(parent)Patrons" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Listing_Column11" horizontalAlignment="CENTER" text="Patrons">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)PickOrder" relativePoint="TOPRIGHT" />
+								</Label>
+								<Label name="$(parent)Score" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Listing_Column6" text="Score">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Patrons" relativePoint="TOPRIGHT" />
+								</Label>
+								<Label name="$(parent)Result" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Listing_Column10" text="W/L">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Score" relativePoint="TOPRIGHT" />
+								</Label>
+								<Label name="$(parent)PlayerMMR" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Listing_Column7" text="MMR">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Result" relativePoint="TOPRIGHT" />
+								</Label>
+								<Label name="$(parent)Rank" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Listing_Column8" text="Rank">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)PlayerMMR" relativePoint="TOPRIGHT" />
+								</Label>
+								<Label name="$(parent)TopPercent" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Listing_Column9" text="Top%">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Rank" relativePoint="TOPRIGHT" />
+								</Label>
+							</Controls>
+						</Control>
+						<Control name="$(parent)ScrollableList" inherits="ZO_ScrollList">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+							<Controls>
+								<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="0000FF" centerColor="00FF00" /> -->
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

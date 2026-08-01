@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/MrPikPik/Added-Info---Targeted-Unit-Frame__2631",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:2631",
+  "category_id": "21",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2631",
+  "deleted": false,
+  "directories": [
+    "AddedInfoTargetedUnitFrame"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2631/",
+  "fingerprint": "1a9d83f8d0a142591a39fdb2b7a46e37177c49d1c23fcc361452c22969adc074",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10164.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8958.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2631",
+  "source_url": "https://www.esoui.com/downloads/info2631-AddedInfo-TargetedUnitFrame.html",
+  "stats": {
+    "downloads": 11530,
+    "favorites": 17,
+    "monthly_downloads": 46
+  },
+  "title": "Added Info - Targeted Unit Frame",
+  "updated_at": 1764671750000,
+  "version": "2.5"
+}

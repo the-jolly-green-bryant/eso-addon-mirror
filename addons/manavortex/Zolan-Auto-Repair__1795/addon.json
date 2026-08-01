@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/manavortex/Zolan-Auto-Repair__1795",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1795",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    }
+  ],
+  "content_id": "esoui:1795",
+  "deleted": false,
+  "directories": [
+    "Zolan_AutoRepair"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1795/",
+  "fingerprint": "14d66aadaaaaf24f241267d223c52fdde2a8bf33957790fc4faa27d1b1e2f686",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6084.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1795",
+  "source_url": "https://www.esoui.com/downloads/info1795-ZolanAutoRepair.html",
+  "stats": {
+    "downloads": 9490,
+    "favorites": 6,
+    "monthly_downloads": 18
+  },
+  "title": "Zolan Auto Repair",
+  "updated_at": 1504854323000,
+  "version": "2.9"
+}

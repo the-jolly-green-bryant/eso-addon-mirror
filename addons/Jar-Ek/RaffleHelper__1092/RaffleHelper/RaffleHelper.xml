@@ -1,0 +1,14 @@
+<!----------------------------------------------------------
+	* Test 
+	* Version 0.1
+----------------------------------------------------------->
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="RaffleHelper" mouseEnabled="false">
+      <OnUpdate>
+        RaffleH.Update()
+      </OnUpdate>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>
+

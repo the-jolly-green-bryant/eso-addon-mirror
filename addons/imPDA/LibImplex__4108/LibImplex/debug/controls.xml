@@ -1,0 +1,90 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+	<Controls>
+        <TopLevelControl name="LibImplex_DebugWindow" resizeToFitDescendents="true" mouseEnabled="true" movable="true" hidden="true">
+            <!-- <Dimensions x="600" y="400" /> -->
+            <Anchor point="TOPLEFT" offsetX="88" offsetY="20" />
+            <Controls>
+                <Texture name="$(parent)BG" color="19B5FE" alpha="0.4" excludeFromResizeToFitExtents="true">
+                    <Anchor point="TOPLEFT" offsetX="-20" offsetY="-20" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="20" offsetY="20" />
+                </Texture>
+                <Label name="$(parent)AddonName" font="ZoFontWinH4" wrapMode="TRUNCATE" verticalAlignment="CENTER" text="LibImplex">
+                    <Anchor />
+                    <Dimensions y="24" />
+                </Label>
+                <Label name="$(parent)ZoneInfo" font="ZoFontWinH4" wrapMode="TRUNCATE" verticalAlignment="CENTER" text="-">
+                    <Anchor point="LEFT" relativeTo="$(parent)AddonName" relativePoint="RIGHT" offsetX="36" />
+                    <Dimensions y="24" />
+
+                    <!-- <Controls>
+                        <Texture name="$(parent)BG" color="19B5FE" alpha="0.4" excludeFromResizeToFitExtents="true">
+                            <Anchor point="TOPLEFT" />
+                            <Anchor point="BOTTOMRIGHT" />
+                        </Texture>
+                    </Controls> -->
+                </Label>
+                <Button name="$(parent)MinimizeButton" inherits="ZO_DefaultTextButton" font="ZoFontWinH4" text="|cFF5C00[–]|r">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+                    <Dimensions x="24" y="24" />
+
+                    <PressedOffset x="1" y="1" />
+
+                    <FontColors
+                        normalColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+                        pressedColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+                        mouseOverColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT"
+                        disabledColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED"
+                    />
+
+                    <OnClicked>
+                        IMP_LibImplex_ToggleMinimized(self)
+                    </OnClicked>
+
+                    <!-- <Controls>
+                        <Texture name="$(parent)BG" color="19B5FE" alpha="0.4" excludeFromResizeToFitExtents="true">
+                            <Anchor point="TOPLEFT" />
+                            <Anchor point="BOTTOMRIGHT" />
+                        </Texture>
+                    </Controls> -->
+                </Button>
+                <Label name="$(parent)Text" font="ZoFontWinH4" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="-">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)AddonName" relativePoint="BOTTOMLEFT" offsetY="24" />
+                </Label>
+                <Label name="$(parent)Text2" font="ZoFontWinH4" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="-">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Text" relativePoint="BOTTOMLEFT" />
+                </Label>
+                <Button name="$(parent)RenderWorldSwitch" inherits="ZO_DefaultTextButton" font="ZoFontWinH4" text="Turn Render World OFF">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Text2" relativePoint="BOTTOMLEFT" offsetY="16" />
+                    <Dimensions x="176" y="36" />
+
+                    <PressedOffset x="1" y="1" />
+
+                    <FontColors
+                        normalColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+                        pressedColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+                        mouseOverColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT"
+                        disabledColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED"
+                    />
+
+                    <OnClicked>
+                        if IMP_GLOBAL_ShouldRenderWorld == nil then IMP_GLOBAL_ShouldRenderWorld = true end
+
+                        IMP_GLOBAL_ShouldRenderWorld = not IMP_GLOBAL_ShouldRenderWorld
+                        SetShouldRenderWorld(IMP_GLOBAL_ShouldRenderWorld)
+                        
+                        local text = ("Turn Render World %s"):format(IMP_GLOBAL_ShouldRenderWorld and "OFF" or "ON")
+                        self:SetText(text)
+                    </OnClicked>
+                </Button>
+            </Controls>
+
+            <OnMouseUp>
+                IMP_LibImplex_Debug_SaveOffsets()
+            </OnMouseUp>
+
+            <OnMoveStop>
+                IMP_LibImplex_Debug_SaveOffsets()
+            </OnMoveStop>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

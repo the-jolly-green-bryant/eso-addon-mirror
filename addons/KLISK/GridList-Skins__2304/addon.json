@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/KLISK/GridList-Skins__2304",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KLISK",
+  "canonical_id": "esoui:2304",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:2304",
+  "deleted": false,
+  "directories": [
+    "GridListSkins"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2304/",
+  "fingerprint": "baf409278203054d9b97ead7dcba4b25a09da4e3c7e1928d9410e6723eea1fed",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2304",
+  "source_url": "https://www.esoui.com/downloads/info2304-GridListSkins.html",
+  "stats": {
+    "downloads": 19023,
+    "favorites": 29,
+    "monthly_downloads": 145
+  },
+  "title": "GridList Skins",
+  "updated_at": 1553278221000,
+  "version": "0.2"
+}

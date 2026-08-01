@@ -1,0 +1,11 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="RolePlayNeeds">
+            <Action name="RPN_CHECK_NEEDS">
+                <Down>RPN_CheckNeeds()</Down>
+            </Action>
+        </Category>
+    </Layer>
+
+
+</Bindings>

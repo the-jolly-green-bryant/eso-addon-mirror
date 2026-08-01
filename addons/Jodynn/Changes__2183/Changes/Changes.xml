@@ -1,0 +1,16 @@
+<GuiXml>
+    <Controls>
+        <Button name="Changes_Cost_Button" hidden="true">
+            <Dimensions x="16" y="16"/>
+            <Anchor relativePoint="RIGHT" point="LEFT" relativeTo="ZO_PerformanceMetersLatencyMeter" offsetX="-10"/>
+            <Textures normal="/esoui/art/currency/gold_mipmap.dds"
+                      mouseOver="/esoui/art/currency/gold_mipmap.dds"
+                      disabled="/esoui/art/currency/gold_mipmap.dds"/>
+            <Controls>
+                <Label name="Changes_Cost" font="ZoFontWinH5">
+                    <Anchor relativeTo="$(parent)" relativePoint="RIGHT" point="LEFT" offsetX="4"/>
+                </Label>
+            </Controls>
+        </Button>
+    </Controls>
+</GuiXml>

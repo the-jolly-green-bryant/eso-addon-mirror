@@ -1,0 +1,8 @@
+<!-- Level then Layer then Tier (lowest to highest prescendence -->
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+	<Controls>
+        <Label name="ArmoryStyleManagerIcon" virtual="true" font="ZoFontHeader">
+            <Dimensions x="45" y="45" />
+        </Label>
+    </Controls>
+</GuiXml>

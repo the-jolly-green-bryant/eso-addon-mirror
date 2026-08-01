@@ -1,0 +1,7 @@
+## Title: Helix Rotations
+## APIVersion: 101031
+## Author: @helixanon
+
+priorityLists/default.lua
+Rotations.lua
+Rotations.xml

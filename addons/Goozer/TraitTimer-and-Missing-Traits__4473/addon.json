@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/Goozer/TraitTimer-and-Missing-Traits__4473",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Goozer",
+  "canonical_id": "esoui:4473",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4473",
+  "deleted": false,
+  "directories": [
+    "TraitTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4473/",
+  "fingerprint": "3de1bd1a97fdd66d20d9a741228cc486efdafb68b460bb7cf9f62c356963dbda",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15555.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15556.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4473",
+  "source_url": "https://www.esoui.com/downloads/info4473-TraitTimerandMissingTraits.html",
+  "stats": {
+    "downloads": 214,
+    "favorites": 0,
+    "monthly_downloads": 49
+  },
+  "title": "TraitTimer and Missing Traits",
+  "updated_at": 1783838692000,
+  "version": "1.4.2"
+}

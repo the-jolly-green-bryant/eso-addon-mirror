@@ -1,0 +1,71 @@
+{
+  "archive_path": "addons/Maxim_ZG/AsylumNotifier.LangPatch__2855",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Maxim_ZG",
+  "canonical_id": "esoui:2855",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2855",
+  "deleted": false,
+  "directories": [
+    "AsylumNotifier"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2855/",
+  "fingerprint": "c9757f7508d84c003aedfe7ed5491398d4a33cd1c37759fa33686f3405cdacc4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10736.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10737.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10738.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2855",
+  "source_url": "https://www.esoui.com/downloads/info2855-AsylumNotifier.LangPatch.html",
+  "stats": {
+    "downloads": 13481,
+    "favorites": 10,
+    "monthly_downloads": 45
+  },
+  "title": "AsylumNotifier.LangPatch",
+  "updated_at": 1746374979000,
+  "version": "2.1.5"
+}

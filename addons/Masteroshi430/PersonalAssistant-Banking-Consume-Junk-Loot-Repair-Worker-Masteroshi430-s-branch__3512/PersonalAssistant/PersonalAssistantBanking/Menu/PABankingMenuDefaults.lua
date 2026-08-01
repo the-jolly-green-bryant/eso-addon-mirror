@@ -1,0 +1,347 @@
+-- Local instances of Global tables --
+local PA = PersonalAssistant
+local PAC = PA.Constants
+
+-- =====================================================================================================================
+
+local PABankingMenuDefaults = {
+    name = table.concat({GetString(SI_PA_PROFILE), " ", 1}),
+
+    -- ---------------------------------------------
+    Currencies = {
+        currenciesEnabled = true,
+
+        goldTransaction = false,
+        goldMinToKeep = 1000,
+        goldMaxToKeep = 5000,
+
+        alliancePointsTransaction = false,
+        alliancePointsMinToKeep = 1000,
+        alliancePointsMaxToKeep = 5000,
+
+        telVarTransaction = false,
+        telVarMinToKeep = 1000,
+        telVarMaxToKeep = 5000,
+
+        writVouchersTransaction = false,
+        writVouchersMinToKeep = 10,
+        writVouchersMaxToKeep = 100,
+    },
+
+    -- ---------------------------------------------
+    Crafting = {
+        craftingItemsEnabled = true,
+
+        ItemTypes = {
+            [ITEMTYPE_BLACKSMITHING_RAW_MATERIAL] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_BLACKSMITHING_MATERIAL] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_BLACKSMITHING_BOOSTER] = PAC.MOVE.IGNORE,
+
+            [ITEMTYPE_CLOTHIER_RAW_MATERIAL] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_CLOTHIER_MATERIAL] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_CLOTHIER_BOOSTER] = PAC.MOVE.IGNORE,
+
+            [ITEMTYPE_WOODWORKING_RAW_MATERIAL] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_WOODWORKING_MATERIAL] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_WOODWORKING_BOOSTER] = PAC.MOVE.IGNORE,
+
+            [ITEMTYPE_JEWELRYCRAFTING_RAW_MATERIAL] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_JEWELRYCRAFTING_MATERIAL] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_JEWELRYCRAFTING_RAW_BOOSTER] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_JEWELRYCRAFTING_BOOSTER] = PAC.MOVE.IGNORE,
+
+            [ITEMTYPE_REAGENT] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_POISON_BASE] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_POTION_BASE] = PAC.MOVE.IGNORE,
+
+            [ITEMTYPE_ENCHANTING_RUNE_ASPECT] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_ENCHANTING_RUNE_ESSENCE] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_ENCHANTING_RUNE_POTENCY] = PAC.MOVE.IGNORE,
+
+            [ITEMTYPE_INGREDIENT] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_LURE] = PAC.MOVE.IGNORE,
+
+            [ITEMTYPE_RAW_MATERIAL] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_STYLE_MATERIAL] = PAC.MOVE.IGNORE,
+
+            [ITEMTYPE_ARMOR_TRAIT] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_WEAPON_TRAIT] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_JEWELRY_RAW_TRAIT] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_JEWELRY_TRAIT] = PAC.MOVE.IGNORE,
+
+            [ITEMTYPE_FURNISHING_MATERIAL] = PAC.MOVE.IGNORE,
+        },
+    },
+
+    -- ---------------------------------------------
+    Advanced = {
+        advancedItemsEnabled = true,
+
+        LearnableItemTypes = {
+            [ITEMTYPE_RACIAL_STYLE_MOTIF] = {
+                Known = PAC.MOVE.IGNORE,
+                Unknown = PAC.MOVE.IGNORE,
+            },
+        },
+        
+        LearnableSpecializedItemTypes = {
+            [SPECIALIZED_ITEMTYPE_RECIPE_ALCHEMY_FORMULA_FURNISHING] = { 
+                Known = PAC.MOVE.IGNORE,
+                Unknown = PAC.MOVE.IGNORE,
+            },
+            [SPECIALIZED_ITEMTYPE_RECIPE_BLACKSMITHING_DIAGRAM_FURNISHING] = { 
+                Known = PAC.MOVE.IGNORE,
+                Unknown = PAC.MOVE.IGNORE,
+            },
+            [SPECIALIZED_ITEMTYPE_RECIPE_CLOTHIER_PATTERN_FURNISHING] = { 
+                Known = PAC.MOVE.IGNORE,
+                Unknown = PAC.MOVE.IGNORE,
+            },
+            [SPECIALIZED_ITEMTYPE_RECIPE_ENCHANTING_SCHEMATIC_FURNISHING] = { 
+                Known = PAC.MOVE.IGNORE,
+                Unknown = PAC.MOVE.IGNORE,
+            },
+            [SPECIALIZED_ITEMTYPE_RECIPE_JEWELRYCRAFTING_SKETCH_FURNISHING] = { 
+                Known = PAC.MOVE.IGNORE,
+                Unknown = PAC.MOVE.IGNORE,
+            },
+            [SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_DESIGN_FURNISHING] = { 
+                Known = PAC.MOVE.IGNORE,
+                Unknown = PAC.MOVE.IGNORE,
+            },
+            [SPECIALIZED_ITEMTYPE_RECIPE_WOODWORKING_BLUEPRINT_FURNISHING] = { 
+                Known = PAC.MOVE.IGNORE,
+                Unknown = PAC.MOVE.IGNORE,
+            },
+		      	[SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK] = {
+                Known = PAC.MOVE.IGNORE,
+                Unknown = PAC.MOVE.IGNORE,
+            },
+		      	[SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD] = {
+                Known = PAC.MOVE.IGNORE,
+                Unknown = PAC.MOVE.IGNORE,
+            },
+            [SPECIALIZED_ITEMTYPE_CRAFTED_ABILITY_SCRIPT_PRIMARY] = {
+                 Known = PAC.MOVE.IGNORE,
+                 Unknown = PAC.MOVE.IGNORE,
+             },
+            [SPECIALIZED_ITEMTYPE_CRAFTED_ABILITY_SCRIPT_SECONDARY] = {
+                 Known = PAC.MOVE.IGNORE,
+                 Unknown = PAC.MOVE.IGNORE,
+             },
+            [SPECIALIZED_ITEMTYPE_CRAFTED_ABILITY_SCRIPT_TERTIARY] = {
+                 Known = PAC.MOVE.IGNORE,
+                 Unknown = PAC.MOVE.IGNORE,
+             },
+            [SPECIALIZED_ITEMTYPE_CRAFTED_ABILITY] = { 
+                 Known = PAC.MOVE.IGNORE,
+                 Unknown = PAC.MOVE.IGNORE,
+             },
+        },
+        
+        
+		UnknownWrits = {
+		        [217917] = PAC.MOVE.IGNORE, -- blacksmith
+            [217918] = PAC.MOVE.IGNORE, -- clothier
+            [217919] = PAC.MOVE.IGNORE, -- woodworking
+            [217920] = PAC.MOVE.IGNORE, -- enchanting 
+            [217921] = PAC.MOVE.IGNORE, -- provisioning 
+            [217922] = PAC.MOVE.IGNORE, -- alchemy 
+            [217923] = PAC.MOVE.IGNORE, -- jewelry 
+		},
+		
+		UnidentifiedSurveys = {
+					[219849] = PAC.MOVE.IGNORE, -- Unidentified Blacksmith Survey Report 
+					[219850] = PAC.MOVE.IGNORE, -- Unidentified Clothier Survey Report 
+					[219851] = PAC.MOVE.IGNORE, -- Unidentified Woodworker Survey Report 
+					[219852] = PAC.MOVE.IGNORE, -- Unidentified Enchanter Survey Report 
+					[219853] = PAC.MOVE.IGNORE, -- Unidentified Alchemist Survey Report 
+					[219854] = PAC.MOVE.IGNORE, -- Unidentified Jewelry Crafter Survey Report 
+		},
+    
+    UnopenedTreasureMap = PAC.MOVE.IGNORE,
+    FurnitureVaultDump = false,
+    
+        MasterWritCraftingTypes = {
+            [CRAFTING_TYPE_BLACKSMITHING] = PAC.MOVE.IGNORE,
+            [CRAFTING_TYPE_CLOTHIER] = PAC.MOVE.IGNORE,
+            [CRAFTING_TYPE_ENCHANTING] = PAC.MOVE.IGNORE,
+            [CRAFTING_TYPE_ALCHEMY] = PAC.MOVE.IGNORE,
+            [CRAFTING_TYPE_PROVISIONING] = PAC.MOVE.IGNORE,
+            [CRAFTING_TYPE_WOODWORKING] = PAC.MOVE.IGNORE,
+            [CRAFTING_TYPE_JEWELRYCRAFTING] = PAC.MOVE.IGNORE,
+        },
+
+        HolidayWrits = {
+            [SPECIALIZED_ITEMTYPE_HOLIDAY_WRIT] = PAC.MOVE.IGNORE,
+        },
+		
+        StylePages = {
+            		  [SPECIALIZED_ITEMTYPE_COLLECTIBLE_STYLE_PAGE] = {
+                       Known = PAC.MOVE.IGNORE,
+                       Unknown = PAC.MOVE.IGNORE,
+            },
+        },
+
+        ItemTypes = {
+            [ITEMTYPE_GLYPH_ARMOR] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_GLYPH_JEWELRY] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_GLYPH_WEAPON] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_POTION] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_POISON] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_FOOD] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_DRINK] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_FISH] = PAC.MOVE.IGNORE,
+            [ITEMTYPE_FURNISHING] = PAC.MOVE.IGNORE,
+        },
+
+        SpecializedItemTypes = {
+            [SPECIALIZED_ITEMTYPE_TROPHY_TREASURE_MAP] = PAC.MOVE.IGNORE,
+		      	[SPECIALIZED_ITEMTYPE_TROPHY_TRIBUTE_CLUE] = PAC.MOVE.IGNORE,
+            [SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT] = {
+            [ITEMFILTERTYPE_BLACKSMITHING] = PAC.MOVE.IGNORE,
+            [ITEMFILTERTYPE_CLOTHING] = PAC.MOVE.IGNORE,
+            [ITEMFILTERTYPE_ENCHANTING] = PAC.MOVE.IGNORE,
+            [ITEMFILTERTYPE_ALCHEMY] = PAC.MOVE.IGNORE,
+            [ITEMFILTERTYPE_WOODWORKING] = PAC.MOVE.IGNORE,
+            [ITEMFILTERTYPE_JEWELRYCRAFTING] = PAC.MOVE.IGNORE,
+            },
+            [SPECIALIZED_ITEMTYPE_TROPHY_KEY_FRAGMENT] = PAC.MOVE.IGNORE,
+            [SPECIALIZED_ITEMTYPE_TROPHY_RECIPE_FRAGMENT] = PAC.MOVE.IGNORE,
+            [SPECIALIZED_ITEMTYPE_TROPHY_RUNEBOX_FRAGMENT] = PAC.MOVE.IGNORE,
+            [SPECIALIZED_ITEMTYPE_TROPHY_COLLECTIBLE_FRAGMENT] = PAC.MOVE.IGNORE,
+            [SPECIALIZED_ITEMTYPE_TROPHY_UPGRADE_FRAGMENT] = PAC.MOVE.IGNORE,
+        },
+
+        ItemTraitTypes = {
+            [ITEM_TRAIT_TYPE_WEAPON_INTRICATE] = PAC.MOVE.IGNORE,
+            [ITEM_TRAIT_TYPE_ARMOR_INTRICATE] = PAC.MOVE.IGNORE,
+            [ITEM_TRAIT_TYPE_JEWELRY_INTRICATE] = PAC.MOVE.IGNORE,
+            [ITEM_TRAIT_TYPE_WEAPON_ORNATE] = PAC.MOVE.IGNORE,
+            [ITEM_TRAIT_TYPE_ARMOR_ORNATE] = PAC.MOVE.IGNORE,
+            [ITEM_TRAIT_TYPE_JEWELRY_ORNATE] = PAC.MOVE.IGNORE,
+        }
+    },
+
+    -- ---------------------------------------------
+    AvA = {
+        avaItemsEnabled = false,
+
+        CrossAllianceItemIds = {
+            [1000] = {     -- [<Alliance> Ballista]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [1100] = {     -- [<Alliance> Fire Ballista]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [1200] = {     -- [<Alliance> Lightning Ballista]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [1300] = {     -- [<Alliance> Cold Fire Ballista]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [2000] = {     -- [<Alliance> Meatbag Catapult]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [2100] = {     -- [<Alliance> Oil Catapult]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [2200] = {     -- [<Alliance> Scattershot Catapult]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [3000] = {     -- [<Alliance> Firepot Trebuchet]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [3100] = {     -- [<Alliance> Iceball Trebuchet]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [3200] = {     -- [<Alliance> Stone Trebuchet]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [3300] = {     -- [<Alliance> Cold Fire Trebuchet]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [3400] = {     -- [<Alliance> Cold Stone Trebuchet]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [4000] = {     -- [<Alliance> Battering Ram]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [5000] = {     -- [Flaming Oil]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [6000] = {     -- [<Alliance> Forward Camp]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+        },
+
+        ItemIds = {
+            [27962] = {     -- [Keep Door Woodwork Repair Kit]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [27138] = {     -- [Keep Wall Masonry Repair Kit]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [27112] = {     -- [Siege Repair Kit]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [142133] = {    -- [Bridge and Milegate Repair Kit]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [141731] = {     -- [Keep Recall Stone]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+            [68347] = {     -- [sigil of imperial retreat]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,
+            },
+			[204483] = { -- [Cyrodiil Repair Kit]
+                operator = PAC.OPERATOR.NONE,
+                bagAmount = 0,			
+			},
+        },
+    },
+
+    -- ---------------------------------------------
+    Custom = {
+        customItemsEnabled = true,
+        PAItemIds = {
+        }
+    },
+
+    -- ---------------------------------------------
+    autoExecuteItemTransfers = true,
+    transactionDepositStacking = PAC.STACKING.FULL,
+    transactionWithdrawalStacking = PAC.STACKING.FULL,
+    excludeJunk = true,
+    autoStackBags = true,
+
+    -- ---------------------------------------------
+
+    silentMode = false,
+}
+
+-- =====================================================================================================================
+-- Export
+PA.MenuDefaults = PA.MenuDefaults or {}
+PA.MenuDefaults.PABanking = PABankingMenuDefaults

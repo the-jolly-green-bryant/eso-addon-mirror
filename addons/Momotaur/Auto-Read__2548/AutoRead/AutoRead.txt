@@ -1,0 +1,13 @@
+﻿## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Auto Read
+## APIVersion: 100030
+## Version: 1.0.3
+## Author: Momotaur
+## Description: A simple addon that auto reads: Like auto loot, but for books. Finished are the days that you need to exit after opening a book, now this addon will do it for you (you lazy pos)!
+
+AutoRead.lua

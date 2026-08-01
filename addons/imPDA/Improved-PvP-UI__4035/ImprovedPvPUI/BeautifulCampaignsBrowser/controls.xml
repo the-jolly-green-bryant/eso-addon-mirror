@@ -1,0 +1,179 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <Label name="IMP_BCB_SomeInfoRowLabelTemplate" font="ZoFontHeader" text="-" virtual="true">
+            <!-- <Dimensions y="20" /> -->
+        </Label>
+        <Control name="IMP_BCB_SomeInfoRowTemplate" virtual="true">
+            <Dimensions y="36" />
+            <OnInitialized>
+                IMP_BCB_ColorizeSomeInfoRow(self)
+            </OnInitialized>
+            <Controls>
+                <Texture name="$(parent)Keeps" textureFile="esoui/art/campaign/gamepad/gp_overview_keepicon.dds">
+                    <Dimensions x="36" y="36" />
+                    <Anchor point="LEFT" />
+                </Texture>
+                <Label name="$(parent)KeepsValue" inherits="IMP_BCB_SomeInfoRowLabelTemplate" >
+                    <Anchor point="LEFT" relativeTo="$(parent)Keeps" relativePoint="RIGHT" offsetX="-4" />
+                </Label>
+                <Texture name="$(parent)Resources" textureFile="esoui/art/campaign/gamepad/gp_overview_resourceicon.dds">
+                    <Dimensions x="36" y="36" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Keeps" relativePoint="RIGHT" offsetX="20" />
+                </Texture>
+                <Label name="$(parent)ResourcesValue" inherits="IMP_BCB_SomeInfoRowLabelTemplate" >
+                    <Anchor point="LEFT" relativeTo="$(parent)Resources" relativePoint="RIGHT" />
+                </Label>
+                <Texture name="$(parent)Outposts" textureFile="esoui/art/campaign/gamepad/gp_overview_outposticon.dds">
+                    <Dimensions x="36" y="36" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Resources" relativePoint="RIGHT" offsetX="28" />
+                </Texture>
+                <Label name="$(parent)OutpostsValue" inherits="IMP_BCB_SomeInfoRowLabelTemplate" >
+                    <Anchor point="LEFT" relativeTo="$(parent)Outposts" relativePoint="RIGHT" />
+                </Label>
+                <Texture name="$(parent)Scrolls" textureFile="esoui/art/campaign/gamepad/gp_overview_scrollicon.dds">
+                    <Dimensions x="36" y="36" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Outposts" relativePoint="RIGHT" offsetX="20" />
+                </Texture>
+                <Label name="$(parent)ScrollsValue" inherits="IMP_BCB_SomeInfoRowLabelTemplate" >
+                    <Anchor point="LEFT" relativeTo="$(parent)Scrolls" relativePoint="RIGHT" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="IMP_BCB_SomeInfoTemplate" virtual="true" hidden="true">
+            <Dimensions x="200" y="95" />
+            <Anchor point="LEFT" offsetX="300" />
+            <Controls>
+                <!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="0000FF" centerColor="000000" /> -->
+                <Control name="$(parent)1" inherits="IMP_BCB_SomeInfoRowTemplate">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+                </Control>
+                <Control name="$(parent)2" inherits="IMP_BCB_SomeInfoRowTemplate">
+                    <Anchor point="LEFT" relativePoint="LEFT"/>
+                </Control>
+                <Control name="$(parent)3" inherits="IMP_BCB_SomeInfoRowTemplate">
+                    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" />
+                </Control>
+            </Controls>
+        </Control>
+
+        <Control name="IMP_BCB_BonusesTemplate" hidden="true" virtual="true">
+            <Dimensions x="48" y="24" />
+            <Controls>
+                <Texture name="$(parent)LowPopulation" tier="MEDIUM" textureFile="esoui/art/ava/overview_icon_underdog_population.dds">
+                    <Dimensions x="24" y="24" />
+                    <Anchor point="TOPLEFT" />
+                </Texture>
+                <Texture name="$(parent)LowScore" tier="MEDIUM" textureFile="esoui/art/ava/overview_icon_underdog_score.dds">
+                    <Dimensions x="24" y="24" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)LowPopulation" relativePoint="TOPRIGHT" />
+                </Texture>
+            </Controls>
+        </Control>
+
+        <Control name="IMP_BCB_CampaignOverviewTemplate" virtual="true">
+            <Dimensions x="890" y="95" />
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" inherits="ZO_FrameBackdrop" edgeColor="555555" centerColor="000000">
+                    <Edge edgeSize="3" />
+                    <!-- <Insets left="8" top="8" right="-8" bottom="-8" /> -->
+                    <Anchor point="TOPLEFT" offsetX="-3" offsetY="-3" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="3" offsetY="3" />
+                </Backdrop>
+                <Texture name="$(parent)BG" tier="LOW" layer="BACKGROUND" textureFile="esoui/art/loadingscreens/loadscreen_cyrodiil_01.dds" mouseEnabled="true" desaturation="1">
+                    <AnchorFill />
+                    <!-- <TextureCoords left="0" right="1" top="0.4" bottom="0.6626"/> -->
+                </Texture>
+                <!-- <Control name="$(parent)BackgroundIcons">
+                    <AnchorFill />
+                </Control> -->
+                <Label name="$(parent)Name" tier="HIGH" font="ZoFontHeader3" modifyTextType="UPPERCASE" text="Campaign Name">
+                    <Anchor point="TOPLEFT" offsetX="15" offsetY="12" />
+                </Label>
+                <!-- <Label name="$(parent)Details" tier="HIGH" font="ZoFontHeader" hidden="true">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="-1" />
+                </Label> -->
+                <Label name="$(parent)Details" tier="HIGH" font="ZoFontHeader" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetY="-2" />
+                </Label>
+                
+                <Control name="$(parent)Population">
+                    <Anchor point="TOPLEFT" offsetX="676" offsetY="12" />
+                    <Controls>
+                        <Texture name="$(parent)ADPopulationIcon" tier="MEDIUM" textureFile="EsoUI/Art/Campaign/campaignBrowser_lowPop.dds" color="INTERFACE_COLOR_TYPE_ALLIANCE:ALLIANCE_ALDMERI_DOMINION">
+                            <Dimensions x="36" y="36" />
+                            <Anchor point="TOPLEFT" />
+                        </Texture>
+                        <Texture name="$(parent)ADIcon" tier="MEDIUM" textureFile="EsoUI/Art/CharacterWindow/allianceBadge_aldmeri.dds" color="INTERFACE_COLOR_TYPE_ALLIANCE:ALLIANCE_ALDMERI_DOMINION">
+                            <Dimensions x="24" y="48" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)ADPopulationIcon" relativePoint="LEFT" />
+                        </Texture>
+                        <Control name="$(parent)ADBonuses" inherits="IMP_BCB_BonusesTemplate">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)ADIcon" relativePoint="BOTTOMLEFT" offsetY="-8" />
+                        </Control>
+
+                        <Texture name="$(parent)EPPopulationIcon" tier="MEDIUM" textureFile="EsoUI/Art/Campaign/campaignBrowser_lowPop.dds" color="INTERFACE_COLOR_TYPE_ALLIANCE:ALLIANCE_EBONHEART_PACT">
+                            <Dimensions x="36" y="36" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)ADPopulationIcon" offsetX="80" />
+                        </Texture>
+                        <Texture name="$(parent)EPIcon" tier="MEDIUM" textureFile="EsoUI/Art/CharacterWindow/allianceBadge_ebonheart.dds" color="INTERFACE_COLOR_TYPE_ALLIANCE:ALLIANCE_EBONHEART_PACT">
+                            <Dimensions x="24" y="48" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)EPPopulationIcon" relativePoint="LEFT" />
+                        </Texture>
+                        <Control name="$(parent)EPBonuses" inherits="IMP_BCB_BonusesTemplate">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)EPIcon" relativePoint="BOTTOMLEFT" offsetY="-8" />
+                        </Control>
+
+                        <Texture name="$(parent)DCPopulationIcon" tier="MEDIUM" textureFile="EsoUI/Art/Campaign/campaignBrowser_lowPop.dds" color="INTERFACE_COLOR_TYPE_ALLIANCE:ALLIANCE_DAGGERFALL_COVENANT">
+                            <Dimensions x="36" y="36" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)EPPopulationIcon"  offsetX="80" />
+                        </Texture>
+                        <Texture name="$(parent)DCIcon" tier="MEDIUM" textureFile="EsoUI/Art/CharacterWindow/allianceBadge_daggerfall.dds" color="INTERFACE_COLOR_TYPE_ALLIANCE:ALLIANCE_DAGGERFALL_COVENANT">
+                            <Dimensions x="24" y="48" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)DCPopulationIcon" relativePoint="LEFT" />
+                        </Texture>
+                        <Control name="$(parent)DCBonuses" inherits="IMP_BCB_BonusesTemplate">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)DCIcon" relativePoint="BOTTOMLEFT" offsetY="-8" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)SomeInfo" inherits="IMP_BCB_SomeInfoTemplate">
+                </Control>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="IMP_beautifulCampaignsBrowser" inherits="ZO_RightPanelFootPrint" hidden="true">
+            <Controls>
+                <!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="0000FF" centerColor="000000" /> -->
+                <Control name="$(parent)Subwindow">
+                    <Anchor point="TOPLEFT" offsetY="58"/>
+                    <Anchor point="BOTTOMRIGHT" />
+                    <Controls>
+                        <!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FFFF00" centerColor="000000" /> -->
+                        <Control name="$(parent)Campaigns">
+                            <Anchor point="TOPLEFT" offsetX="15" offsetY="15" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-15" offsetY="-15" />
+                            <Controls>
+                                <!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FFFF00" centerColor="000000" /> -->
+                                <Texture name="$(parent)HomeCampaignIcon" tier="MEDIUM" layer="BACKGROUND" textureFile="EsoUI/Art/Campaign/gamepad/gp_overview_menuicon_home.dds" hidden="true">
+                                    <!-- <Dimensions x="95" y="95" /> -->
+                                    <Dimensions x="28" y="28" />
+                                    <!-- <Controls>
+                                         <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FFFF00" centerColor="000000" />
+                                    </Controls> -->
+                                </Texture>
+                                <Texture name="$(parent)AllianceLockIcon" tier="MEDIUM" layer="BACKGROUND"  textureFile="EsoUI/Art/CharacterWindow/allianceBadge_aldmeri.dds" hidden="true">
+                                    <!-- <Dimensions x="85" y="85" /> -->
+                                    <Dimensions x="28" y="28" />
+                                </Texture>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Tooltip name="$(parent)CampaignDescriptionTooltip" tier="HIGH" inherits="ZO_BaseTooltip" headerVerticalOffset="11" />
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

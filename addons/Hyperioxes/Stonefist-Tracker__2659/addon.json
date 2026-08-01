@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Hyperioxes/Stonefist-Tracker__2659",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hyperioxes",
+  "canonical_id": "esoui:2659",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2659",
+  "deleted": false,
+  "directories": [
+    "StonefistTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2659/",
+  "fingerprint": "7c68c2669092f1797ee23542a900f2aaf000c1e6948486adf789f554dd9f73cb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9012.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2659",
+  "source_url": "https://www.esoui.com/downloads/info2659-StonefistTracker.html",
+  "stats": {
+    "downloads": 5021,
+    "favorites": 0,
+    "monthly_downloads": 24
+  },
+  "title": "Stonefist Tracker",
+  "updated_at": 1591481495000,
+  "version": "1.0"
+}

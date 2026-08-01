@@ -1,0 +1,9 @@
+## Title: |cf49b42PreviousQuest|r
+## Description: Adds the possibility to cycle quests backwards 
+## Version: 2025.07.09
+## Author: |c3CB371@Masteroshi430|r
+## SavedVariables: PreviousQuestVars
+## DependsOn: LibAddonMenu-2.0>=43
+## APIVersion: 101050
+
+PreviousQuest.lua

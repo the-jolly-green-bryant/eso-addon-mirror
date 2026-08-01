@@ -1,0 +1,7 @@
+## Title: ZMajaTimer
+## APIVersion: 101042 101043
+## Author: @mgsnakes
+## DependsOn: CrutchAlerts
+
+ZMajaPortTimer.lua
+ZMajaShadeTimer.lua

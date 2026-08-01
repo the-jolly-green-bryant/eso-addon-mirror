@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/helixanon/Helix-Rotations__3181",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "helixanon",
+  "canonical_id": "esoui:3181",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:3181",
+  "deleted": false,
+  "directories": [
+    "Rotations"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3181/",
+  "fingerprint": "f798bb882012ded101b26042537a4e2938f785fe7255d928bdbc297de08952cf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10800.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10801.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10802.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3181",
+  "source_url": "https://www.esoui.com/downloads/info3181-HelixRotations.html",
+  "stats": {
+    "downloads": 8970,
+    "favorites": 8,
+    "monthly_downloads": 65
+  },
+  "title": "Helix Rotations",
+  "updated_at": 1631464131000,
+  "version": "v0.6.1"
+}

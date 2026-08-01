@@ -1,0 +1,33 @@
+{
+  "archive_path": "addons/Jarva/Difficulty-Indicator__2590",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jarva",
+  "canonical_id": "esoui:2590",
+  "category_id": "159",
+  "compatibility": [],
+  "content_id": "esoui:2590",
+  "deleted": false,
+  "directories": [
+    "DifficultyIndicator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2590/",
+  "fingerprint": "648f9e591b638668e542cf859f94c175c37758b53743c61458bcf94ac2390a56",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8833.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8834.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2590",
+  "source_url": "https://www.esoui.com/downloads/info2590-DifficultyIndicator.html",
+  "stats": {
+    "downloads": 2675,
+    "favorites": 1,
+    "monthly_downloads": 19
+  },
+  "title": "Difficulty Indicator",
+  "updated_at": 1587062054000,
+  "version": "1.0.1"
+}

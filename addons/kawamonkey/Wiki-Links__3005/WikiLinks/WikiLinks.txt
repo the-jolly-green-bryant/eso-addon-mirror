@@ -1,0 +1,5 @@
+## Title: Wiki Links
+## APIVersion: 100034
+## Author: Kawamonkey
+
+WikiLinks.lua

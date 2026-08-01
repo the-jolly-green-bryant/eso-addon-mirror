@@ -1,0 +1,96 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="TranslateDlg" tier="NORMAL" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" >
+			<Dimensions x="400" y="530" />
+			<OnMoveStop>
+				Translate.OnIndicatorMoveStopTranslate()
+			</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)_BackGround" inherits="ZO_DefaultBackdrop" />
+				<Button name="$(parent)_ButtonClose" inherits="ZO_ButtonBehaviorClickSound" >
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						Translate.Minimalize()
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)_WindowTitle" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+					<Anchor point="TOP" relativeTo="TranslateDlg" relativePoint="TOP" offsetY="15" />
+				</Label>
+				<Texture name="$(parent)_TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" >
+					<Dimensions x="300" y="4"/>
+					<Anchor point="TOP" relativeTo="$(parent)_WindowTitle" relativePoint="BOTTOM" offsetY="9" />
+				</Texture>
+				<Control name="SelectLanguage" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_TopDivider" relativePoint="BOTTOMLEFT" offsetX="15" offsetY="9" />
+					<Controls>
+						<Label name="OpenTextLanguageCode" font="ZoFontGameMedium" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Anchor relativeTo="SelectLanguage" />
+						</Label>
+						<Button name="ButtonCode" inherits="ZO_ButtonBehaviorClickSound" >
+							<Dimensions x="40" y="40" />
+							<Anchor point="LEFT" relativeTo="OpenTextLanguageCode" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+							<Textures normal="esoui/art/buttons/accept_up.dds"
+								pressed="esoui/art/buttons/accept_down.dds"
+								mouseOver="esoui/art/buttons/accept_over.dds" />
+							<OnClicked>
+								Translate.OpenLanguageCodePage()
+							</OnClicked>
+						</Button>
+						<Label name="TextLanguageCode" font="ZoFontGameMedium" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+							<Anchor point="TOP" relativeTo="OpenTextLanguageCode" relativePoint="BOTTOM" offsetY="10" />
+						</Label>
+						<Backdrop name="BackDrop" inherits="ZO_MultiLineEditBackdrop_Keyboard" >
+							<Dimensions x="60" y="30" />
+							<Anchor point="LEFT" relativeTo="TextLanguageCode" relativePoint="RIGHT" offsetX="15" />
+							<Controls>
+								<EditBox name="EditLanguage" inherits="ZO_DefaultEditMultiLineForBackdrop" multiLine="false" maxInputCharacters="5" editEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+									<OnTextChanged>
+										Translate.SaveLanguageCode()
+									</OnTextChanged>
+								</EditBox>
+							</Controls>
+						</Backdrop>
+					</Controls>
+				</Control>
+				<Label name="ActualMessage" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+					<Anchor point="TOP" relativeTo="TranslateDlg" relativePoint="TOP" offsetY="125" />
+				</Label>
+				<EditBox name="TextBuffer" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" editEnabled="false" multiLine="true" textType="TEXT_TYPE_ALL" maxInputCharacters="5000" >
+					<Dimensions x="370" y="250" />
+					<Anchor point="TOP" relativeTo="ActualMessage" relativePoint="BOTTOM" offsetY="10" />
+				</EditBox>
+				<Label name="MessagesQueue" font="ZoFontGameMedium" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+					<Anchor point="TOP" relativeTo="TextBuffer" relativePoint="BOTTOM" offsetY="10" />
+				</Label>
+				<Label name="InfoTitle" font="ZoFontGameMedium" text="Translate/Skip first message." color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+					<Anchor point="TOP" relativeTo="MessagesQueue" relativePoint="BOTTOM" offsetY="10" />
+				</Label>
+				<Button name="ButtonTranslate" inherits="ZO_ButtonBehaviorClickSound" >
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOP" relativeTo="InfoTitle" relativePoint="BOTTOM" offsetX="-25" offsetY="15" />
+					<Textures normal="esoui/art/buttons/accept_up.dds"
+						pressed="esoui/art/buttons/accept_down.dds"
+						mouseOver="esoui/art/buttons/accept_over.dds" />
+					<OnClicked>
+						Translate.Translate()
+					</OnClicked>
+				</Button>
+				<Button name="ButtonSkip" inherits="ZO_ButtonBehaviorClickSound" >
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOP" relativeTo="InfoTitle" relativePoint="BOTTOM" offsetX="25" offsetY="15" />
+					<Textures normal="esoui/art/buttons/decline_up.dds"
+						pressed="esoui/art/buttons/decline_down.dds"
+						mouseOver="esoui/art/buttons/decline_over.dds" />
+					<OnClicked>
+						Translate.Skip()
+					</OnClicked>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Light100/Shadow-Image-Range---Updated__3704",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Light100",
+  "canonical_id": "esoui:3704",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3704",
+  "deleted": false,
+  "directories": [
+    "ShadowImageRange"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3704/",
+  "fingerprint": "9db9b1945a0dac8864f6948c85dfe6325186749f07af7544cea8590630aa033a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12574.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3704",
+  "source_url": "https://www.esoui.com/downloads/info3704-ShadowImageRange-Updated.html",
+  "stats": {
+    "downloads": 1827,
+    "favorites": 3,
+    "monthly_downloads": 12
+  },
+  "title": "Shadow Image Range - Updated",
+  "updated_at": 1692457131000,
+  "version": "1.4.1"
+}

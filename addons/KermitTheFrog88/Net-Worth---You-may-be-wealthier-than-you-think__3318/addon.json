@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/KermitTheFrog88/Net-Worth---You-may-be-wealthier-than-you-think__3318",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KermitTheFrog88",
+  "canonical_id": "esoui:3318",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3318",
+  "deleted": false,
+  "directories": [
+    "NetWorth"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3318/",
+  "fingerprint": "844e738a908d4c2203c726299f9609c7ccacfa0c04fd072dbee68e0134f60cd6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11285.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11286.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11270.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3318",
+  "source_url": "https://www.esoui.com/downloads/info3318-NetWorth-Youmaybewealthierthanyouthink.html",
+  "stats": {
+    "downloads": 16206,
+    "favorites": 12,
+    "monthly_downloads": 104
+  },
+  "title": "Net Worth - You may be wealthier than you think!",
+  "updated_at": 1686872130000,
+  "version": "0.11"
+}

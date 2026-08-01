@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/kafeijao/Battleground-Coffers-Alliance-Tier-Rewards-of-the-Worthy__2073",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kafeijao",
+  "canonical_id": "esoui:2073",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:2073",
+  "deleted": false,
+  "directories": [
+    "BattlegroundCoffers"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2073/",
+  "fingerprint": "f4f737a7bc6b13e9fa59ff868bc2aac48afb2a3cc961820ae9d2661abd29624d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7378.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7363.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7364.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6986.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7366.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2073",
+  "source_url": "https://www.esoui.com/downloads/info2073-BattlegroundCoffersAllianceTierRewardsoftheWorthy.html",
+  "stats": {
+    "downloads": 21419,
+    "favorites": 27,
+    "monthly_downloads": 35
+  },
+  "title": "Battleground Coffers & Alliance Tier & Rewards of the Worthy",
+  "updated_at": 1731076363000,
+  "version": "1.8"
+}

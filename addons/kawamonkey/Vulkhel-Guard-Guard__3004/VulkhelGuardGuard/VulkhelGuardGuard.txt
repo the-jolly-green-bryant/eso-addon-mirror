@@ -1,0 +1,5 @@
+﻿## APIVersion: 100034
+## Title: Vulkhel Guard²
+## Author: Kawamonkey
+
+VulkhelGuardGuard.lua

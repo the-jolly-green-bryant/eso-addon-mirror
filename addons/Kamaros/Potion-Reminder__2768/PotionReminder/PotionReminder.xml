@@ -1,0 +1,19 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="PotionReminderNotification" resizeToFitDescendents="true" mouseEnabled="false" movable="false" clampedToScreen="true" hidden="true">
+      <Dimensions x="306" y="68" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+
+      <OnMoveStop>
+        PotionReminder.onNotificationMoveStop()
+      </OnMoveStop>
+ 
+      <Controls>
+        <Label name="$(parent)Label" font="ZoFontCallout3" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Drink Potion!">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

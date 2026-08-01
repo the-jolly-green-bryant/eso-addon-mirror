@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/mcdonnelldean/PadMerchant__1616",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mcdonnelldean",
+  "canonical_id": "esoui:1616",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:1616",
+  "deleted": false,
+  "directories": [
+    "PadMerchant",
+    "__MACOSX"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1616/",
+  "fingerprint": "2c67cba5ee9d12abfa3e860fa0cfbd63c67b94034bdffbdaef1b54d236da3675",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12882.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1616",
+  "source_url": "https://www.esoui.com/downloads/info1616-PadMerchant.html",
+  "stats": {
+    "downloads": 10941,
+    "favorites": 6,
+    "monthly_downloads": 34
+  },
+  "title": "PadMerchant",
+  "updated_at": 1707143409000,
+  "version": "2.0"
+}

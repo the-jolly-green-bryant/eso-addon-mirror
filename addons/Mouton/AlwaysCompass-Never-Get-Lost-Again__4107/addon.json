@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Mouton/AlwaysCompass-Never-Get-Lost-Again__4107",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mouton",
+  "canonical_id": "esoui:4107",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4107",
+  "deleted": false,
+  "directories": [
+    "AlwaysCompass"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4107/",
+  "fingerprint": "d81112e78489a1061c25f4c3f7c90c0330d332e4159ccf6bda0dbb6d9e879adc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14042.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4107",
+  "source_url": "https://www.esoui.com/downloads/info4107-AlwaysCompassNeverGetLostAgain.html",
+  "stats": {
+    "downloads": 1273,
+    "favorites": 1,
+    "monthly_downloads": 34
+  },
+  "title": "AlwaysCompass: Never Get Lost Again",
+  "updated_at": 1747251481000,
+  "version": "0.0.2"
+}

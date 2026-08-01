@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Kyzeragon/Dynamic-CP-Lite---Champion-Points-QoL__4334",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyzeragon",
+  "canonical_id": "esoui:4334",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4334",
+  "deleted": false,
+  "directories": [
+    "DynamicCPLite"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4334/",
+  "fingerprint": "78b67fe4fe100f2f987cefa65781ba7cd3da25922bbc1827d527e1b179a5e3c9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14954.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14955.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14956.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14953.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14957.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14951.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14952.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4334",
+  "source_url": "https://www.esoui.com/downloads/info4334-DynamicCPLite-ChampionPointsQoL.html",
+  "stats": {
+    "downloads": 1075,
+    "favorites": 5,
+    "monthly_downloads": 81
+  },
+  "title": "Dynamic CP Lite - Champion Points QoL",
+  "updated_at": 1766557974000,
+  "version": "1.0.1"
+}

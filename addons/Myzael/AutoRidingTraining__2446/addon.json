@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/Myzael/AutoRidingTraining__2446",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Myzael",
+  "canonical_id": "esoui:2446",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2446",
+  "deleted": false,
+  "directories": [
+    "AutoRidingTraining"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2446/",
+  "fingerprint": "d7512d4916f3b49dd69aaae59760eaaa0e44c00bbbb8beb51acd6933422cf8da",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2446",
+  "source_url": "https://www.esoui.com/downloads/info2446-AutoRidingTraining.html",
+  "stats": {
+    "downloads": 8498,
+    "favorites": 20,
+    "monthly_downloads": 12
+  },
+  "title": "AutoRidingTraining",
+  "updated_at": 1582721553000,
+  "version": "0.6.0"
+}

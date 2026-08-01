@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/im_rookie/WerewolfHelper__3832",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "im_rookie",
+  "canonical_id": "esoui:3832",
+  "category_id": "21",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3832",
+  "deleted": false,
+  "directories": [
+    "WerewolfHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3832/",
+  "fingerprint": "d6008d39a8eb32f23136841b16ad906669d71f8c0edc06662613c3af191d2985",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13029.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3832",
+  "source_url": "https://www.esoui.com/downloads/info3832-WerewolfHelper.html",
+  "stats": {
+    "downloads": 1404,
+    "favorites": 1,
+    "monthly_downloads": 37
+  },
+  "title": "WerewolfHelper",
+  "updated_at": 1711847564000,
+  "version": "1.1"
+}

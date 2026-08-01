@@ -1,0 +1,34 @@
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+## All copyright for the addon at the developer. I just translated into Russian, and made it compatible with Cyrillic.
+
+## Title: Asylum Tracker.|c02fcffLangPatch|r
+## Description: The Asylum Sanctorium Raid Tracker
+## APIVersion: 101049 101050
+## Author: init3, |c02fcffLost.Seeker|r
+## Version: 2.1.6
+## SavedVariables: AsylumTrackerVars
+## DependsOn: LibAddonMenu-2.0>=43
+## OptionalDependsOn: OdySupportIcons
+
+src/Core.lua
+src/EventHandling.lua
+src/CombatEvents.lua
+src/Settings.lua
+src/Units.lua
+src/UI.lua
+src/SlashCommand.lua
+src/AsylumTracker.xml
+
+locales/en.lua
+locales/fr.lua
+locales/de.lua
+locales/jp.lua
+locales/zh.lua
+locales/zhj.lua
+locales/ru.lua
+locales/es.lua

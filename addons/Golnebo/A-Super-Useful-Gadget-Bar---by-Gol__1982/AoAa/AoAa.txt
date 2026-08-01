@@ -1,0 +1,47 @@
+## Title: A Super Useful Gadget Bar
+## Description: A Super Useful Gadget Bar Version 1.3
+## Author: Golnebo
+## Version: 1.42
+## APIVersion: 100025
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: AoAaSavedVariables
+
+Libs/LibStub/LibStub.lua
+Libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+Libs/LibAddonMenu-2.0/controls/panel.lua
+Libs/LibAddonMenu-2.0/controls/submenu.lua
+Libs/LibAddonMenu-2.0/controls/button.lua
+Libs/LibAddonMenu-2.0/controls/checkbox.lua
+Libs/LibAddonMenu-2.0/controls/colorpicker.lua
+Libs/LibAddonMenu-2.0/controls/custom.lua
+Libs/LibAddonMenu-2.0/controls/description.lua
+Libs/LibAddonMenu-2.0/controls/dropdown.lua
+Libs/LibAddonMenu-2.0/controls/editbox.lua
+Libs/LibAddonMenu-2.0/controls/header.lua
+Libs/LibAddonMenu-2.0/controls/slider.lua
+Libs/LibAddonMenu-2.0/controls/texture.lua
+Libs/LibAddonMenu-2.0/controls/iconpicker.lua
+
+AoAa.lua
+AoAa.xml
+## Bindings.xml
+
+
+## Changelog: 30-04-2018: added toolbar. Added balance. Bugfixes.  
+##            30-05-2018: added bagspace, removed AoA specific information, changed name to A Super Useful Gadget Bar
+##            30-05-2018: Quick Bugfix.
+##            31-05-2018: Added mount training timer
+##                      : added /sgbhorse
+##            06-06-2018: Removed close button
+##            11-06-2018: Added XP percentage left until next level
+##                      : Bug fix in mount timer display
+##            14-06-2018: Bug fix in CP Icon tooltip
+##      1.4   22-10-2018: API bump for Murkmire
+##      1.41 23-10-2018: Added FPS and Ping latency counters
+##      1.42 26-10-2018: Slightly better icons for FPS and Latency and fixed a spacing issue.
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

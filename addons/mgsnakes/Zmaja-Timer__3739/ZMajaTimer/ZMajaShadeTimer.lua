@@ -1,0 +1,3 @@
+EVENT_MANAGER:RegisterForEvent("zmajaSpawnAlertShade", EVENT_COMBAT_EVENT, function() CrutchAlerts.DisplayDamageable(13.5) end)
+EVENT_MANAGER:AddFilterForEvent("zmajaSpawnAlertShade", EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_EFFECT_GAINED)
+EVENT_MANAGER:AddFilterForEvent("zmajaSpawnAlertShade", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, 104452)

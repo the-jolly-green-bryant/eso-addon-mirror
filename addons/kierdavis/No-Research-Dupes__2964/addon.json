@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kierdavis/No-Research-Dupes__2964",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kierdavis",
+  "canonical_id": "esoui:2964",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2964",
+  "deleted": false,
+  "directories": [
+    "NoResearchDupes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2964/",
+  "fingerprint": "8312ce5beb0009b8f81fa296eaeaf6e979341dcd6935631a9625682a07fb58b1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10002.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2964",
+  "source_url": "https://www.esoui.com/downloads/info2964-NoResearchDupes.html",
+  "stats": {
+    "downloads": 8757,
+    "favorites": 11,
+    "monthly_downloads": 58
+  },
+  "title": "No Research Dupes",
+  "updated_at": 1615772566000,
+  "version": "3"
+}

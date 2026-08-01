@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/glorinand/reMasquerade__1916",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "glorinand",
+  "canonical_id": "esoui:1916",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    }
+  ],
+  "content_id": "esoui:1916",
+  "deleted": false,
+  "directories": [
+    "Masquerade"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1916/",
+  "fingerprint": "f760d954ca8cb6a36ede250619bf9f7800641b5645db088216aa75810f4345a9",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1916",
+  "source_url": "https://www.esoui.com/downloads/info1916-reMasquerade.html",
+  "stats": {
+    "downloads": 3881,
+    "favorites": 8,
+    "monthly_downloads": 8
+  },
+  "title": "reMasquerade",
+  "updated_at": 1519147615000,
+  "version": "1.2"
+}

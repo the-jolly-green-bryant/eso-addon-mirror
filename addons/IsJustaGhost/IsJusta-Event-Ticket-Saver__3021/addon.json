@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/IsJustaGhost/IsJusta-Event-Ticket-Saver__3021",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IsJustaGhost",
+  "canonical_id": "esoui:3021",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3021",
+  "deleted": false,
+  "directories": [
+    "IsJustaEventTicketSaver"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3021/",
+  "fingerprint": "03e5cedf2b923879fee43453a3ce10ed0c36768f6b508db9e4fd56dfe658ae0b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12400.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12398.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12399.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12401.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12397.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12396.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3021",
+  "source_url": "https://www.esoui.com/downloads/info3021-IsJustaEventTicketSaver.html",
+  "stats": {
+    "downloads": 14710,
+    "favorites": 18,
+    "monthly_downloads": 19
+  },
+  "title": "IsJusta Event Ticket Saver",
+  "updated_at": 1690578190000,
+  "version": "4.0.1"
+}

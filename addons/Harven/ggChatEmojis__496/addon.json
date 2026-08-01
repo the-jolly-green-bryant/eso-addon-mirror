@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Harven/ggChatEmojis__496",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:496",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:496",
+  "deleted": false,
+  "directories": [
+    "ggChatEmojis"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl496/",
+  "fingerprint": "b95bba468461065c80957a0029caa289d5c453ffe7bb1fd54c702d42244483b1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1493.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "496",
+  "source_url": "https://www.esoui.com/downloads/info496-ggChatEmojis.html",
+  "stats": {
+    "downloads": 10312,
+    "favorites": 26,
+    "monthly_downloads": 25
+  },
+  "title": "ggChatEmojis",
+  "updated_at": 1544206041000,
+  "version": "v1.18"
+}

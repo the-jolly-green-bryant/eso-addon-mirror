@@ -1,0 +1,15 @@
+## Title: |c00FF00Not A Craftsman|r
+## Author: Martype
+## Version: 0.1
+## APIVersion: 100020 100021 100022
+## Description: This addon automatically locks all incoming recipes and motifs, so they can't accidentally be learned.
+## DependsOn: FCOItemSaver
+
+## Addon variables & constants
+NOC_Constants.lua
+
+## Addon events
+NOC_Events.lua
+
+## Addon source
+NotACraftsman.lua

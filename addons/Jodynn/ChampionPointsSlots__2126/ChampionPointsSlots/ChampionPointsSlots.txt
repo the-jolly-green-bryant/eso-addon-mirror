@@ -1,0 +1,13 @@
+## Title: |c53C8E9Champion|r|cD6EB63 Points|r|cEF8142 Slots|r
+## Description: Multiple slots for champion points to load and save for easy changing.
+                Comes with trials cp.
+## Author: Jodynn
+## Version: 3.5.0
+## APIVersion: 101045
+## SavedVariables: ChampionPointsSlots_sv ChampionPointsSlots_sv_account
+## DependsOn: LibAddonMenu-2.0
+
+ChampionPointsSlots.xml
+ChampionPointsSlots.lua
+lang/en.lua
+bindings.xml

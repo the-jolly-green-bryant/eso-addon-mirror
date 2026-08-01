@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/marcjordan/ESO-Grinder__2788",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "marcjordan",
+  "canonical_id": "esoui:2788",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2788",
+  "deleted": false,
+  "directories": [
+    "EsoGrinder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2788/",
+  "fingerprint": "361e932051f255182409a5a3e126fdf4a77685b4a1232e0e50975ae04df00870",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9435.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2788",
+  "source_url": "https://www.esoui.com/downloads/info2788-ESOGrinder.html",
+  "stats": {
+    "downloads": 4129,
+    "favorites": 5,
+    "monthly_downloads": 12
+  },
+  "title": "ESO Grinder",
+  "updated_at": 1613789001000,
+  "version": "2.1.0"
+}

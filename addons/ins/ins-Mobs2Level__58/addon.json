@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/ins/ins-Mobs2Level__58",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ins",
+  "canonical_id": "esoui:58",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:58",
+  "deleted": false,
+  "directories": [
+    "insMobs2Level"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl58/",
+  "fingerprint": "882ff8d2a20f8ae81e951c4ea7d7d48cae4f0c3a861c58c8246e08adad281d66",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw852.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw851.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw850.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw849.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "58",
+  "source_url": "https://www.esoui.com/downloads/info58-insMobs2Level.html",
+  "stats": {
+    "downloads": 43049,
+    "favorites": 67,
+    "monthly_downloads": 22
+  },
+  "title": "ins:Mobs2Level",
+  "updated_at": 1636922826000,
+  "version": "20211111"
+}

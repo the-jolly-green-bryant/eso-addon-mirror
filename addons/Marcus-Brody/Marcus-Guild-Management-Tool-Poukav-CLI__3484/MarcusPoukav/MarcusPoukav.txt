@@ -1,0 +1,31 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: |c91a3b0Marcus' |c00CCFFPoukav|r 
+## Author: |c91a3b0Marcus Brody|r
+## Version: 1.5
+## APIVersion: 101036
+## Description: Searches guild member activity and finds sus members (maybe thieves)
+## DependsOn: LibAddonMenu-2.0 MasterMerchant
+## OptionalDependsOn: TamrielTradeCentre
+## IsLibrary: false
+## SavedVariables: MarcusPoukavData
+
+namespace.lua
+constants.lua
+
+Localization/$(language).lua
+Localization/default.lua
+
+utils.lua
+tools.lua
+settingsMenu.lua
+help.lua
+ranks.lua
+listings.lua
+donations.lua
+MarcusPoukav.lua
+

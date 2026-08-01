@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Marify/Daily-Provisioning__1901",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marify",
+  "canonical_id": "esoui:1901",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:1901",
+  "deleted": false,
+  "directories": [
+    "DailyProvisioning"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1901/",
+  "fingerprint": "ad73f216afa56c7d3c7b3c0493f8cae3213c599145e8953608cca74d16f89cd4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6451.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6614.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1901",
+  "source_url": "https://www.esoui.com/downloads/info1901-DailyProvisioning.html",
+  "stats": {
+    "downloads": 1548077,
+    "favorites": 647,
+    "monthly_downloads": 2196
+  },
+  "title": "Daily Provisioning",
+  "updated_at": 1696075506000,
+  "version": "1.5.3"
+}

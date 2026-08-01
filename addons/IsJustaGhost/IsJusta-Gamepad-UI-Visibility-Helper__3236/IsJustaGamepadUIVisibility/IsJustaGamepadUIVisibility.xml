@@ -1,0 +1,18 @@
+<GuiXml>
+	<Controls>
+        <TopLevelControl name="IJA_LootHistoryControl_Keyboard" inherits="ZO_LootHistory_Shared">
+            <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" offsetY="-95"/>
+            <Controls>
+                <Control name="$(parent)Container" override="true">
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PersistentContainer" relativePoint="TOPRIGHT" offsetY="ZO_GAMEPAD_LOOT_HISTORY_ENTRY_SPACING_Y" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+		
+        <TopLevelControl name="IJA_GamepadUIVisibility">
+            <OnInitialized>
+				IJA_GamepadUIVisibility_Initialize(self)
+            </OnInitialized>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

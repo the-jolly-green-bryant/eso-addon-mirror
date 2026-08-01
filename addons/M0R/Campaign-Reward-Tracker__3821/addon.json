@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/M0R/Campaign-Reward-Tracker__3821",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "M0R",
+  "canonical_id": "esoui:3821",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3821",
+  "deleted": false,
+  "directories": [
+    "CampaignRewardTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3821/",
+  "fingerprint": "c29a9bd44450514f3b4062d2bda3dfeb577ead5a939021d2f3c632d370ddc2e4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12984.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3821",
+  "source_url": "https://www.esoui.com/downloads/info3821-CampaignRewardTracker.html",
+  "stats": {
+    "downloads": 1190,
+    "favorites": 3,
+    "monthly_downloads": 29
+  },
+  "title": "Campaign Reward Tracker",
+  "updated_at": 1709749780000,
+  "version": "1.0"
+}

@@ -1,0 +1,8 @@
+ZO_CreateStringId("LER_TIPS","提示")
+ZO_CreateStringId("LER_TIPS_TEXT","|c275a91今日|r勉励任务尚未完成, 是否确认退出?")
+ZO_CreateStringId("LER_TIPS_TEXT_WEEKLY","|ccc922f本周|r勉励任务尚未完成, 是否确认退出?")
+ZO_CreateStringId("LER_BUTTON_1","查看勉励任务")
+ZO_CreateStringId("LER_MENU_DESCRIPTION","一个简单的插件. 在你登出时提示你仍有未完成的勉励任务(若有的话)")
+ZO_CreateStringId("LER_ENABLE","启用")
+ZO_CreateStringId("LER_ONE_TIP","仅每天一次")
+ZO_CreateStringId("LER_ONE_TIP_TOOLTIP","开启后, 在触发一次提示后, 直到下一次勉励任务刷新后才会再次对您提示")

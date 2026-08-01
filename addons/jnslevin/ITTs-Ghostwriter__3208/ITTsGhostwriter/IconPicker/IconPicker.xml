@@ -1,0 +1,8 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+
+    <Controls>
+        <Control name="GW_Dialog_IconPickerControl" mouseEnabled="true" inherits="ZO_ArmoryBuild_BuildIconPickerIcon_Keyboard_Control" virtual="true">
+            <Dimensions x="ZO_ARMORY_BUILD_ICON_PICKER_PICK_KEYBOARD_SIZE" y="ZO_ARMORY_BUILD_ICON_PICKER_PICK_KEYBOARD_SIZE" />
+        </Control>
+    </Controls>
+</GuiXml>

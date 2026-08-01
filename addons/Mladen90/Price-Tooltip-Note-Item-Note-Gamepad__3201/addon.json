@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Mladen90/Price-Tooltip-Note-Item-Note-Gamepad__3201",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mladen90",
+  "canonical_id": "esoui:3201",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:3201",
+  "deleted": false,
+  "directories": [
+    "PriceTooltipNote"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3201/",
+  "fingerprint": "c9e7a07e91db68aaa182923f2d55f5e8d8aee66edb218688d48b8528ee42e9b4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10878.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3201",
+  "source_url": "https://www.esoui.com/downloads/info3201-PriceTooltipNoteItemNoteGamepad.html",
+  "stats": {
+    "downloads": 21184,
+    "favorites": 13,
+    "monthly_downloads": 64
+  },
+  "title": "Price Tooltip Note (Item Note) (+Gamepad)",
+  "updated_at": 1724791096000,
+  "version": "1.1.2"
+}

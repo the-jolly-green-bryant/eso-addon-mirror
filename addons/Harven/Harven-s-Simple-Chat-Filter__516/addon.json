@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Simple-Chat-Filter__516",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:516",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:516",
+  "deleted": false,
+  "directories": [
+    "HarvensSimpleChatFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl516/",
+  "fingerprint": "d514a72e6c460741fe279fccfb168024c97e991d08c88eed4d30449c509c6d25",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1557.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "516",
+  "source_url": "https://www.esoui.com/downloads/info516-HarvensSimpleChatFilter.html",
+  "stats": {
+    "downloads": 7854,
+    "favorites": 20,
+    "monthly_downloads": 16
+  },
+  "title": "Harven's Simple Chat Filter",
+  "updated_at": 1585512873000,
+  "version": "1.2e"
+}

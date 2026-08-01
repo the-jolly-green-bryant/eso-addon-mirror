@@ -1,0 +1,64 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="EventTicketsWindow" mouseEnabled="true" movable="true" clampedToScreen="true" resizeToFitDescendents="true">
+            <OnMoveStop>
+                EventTickets.SaveUICoordinates()
+            </OnMoveStop>
+            <Controls>
+                <Texture name="$(parent)Icon" textureFile="EsoUI/Art/Currency/currency_eventticket.dds">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" />
+                    <Dimensions x="32" y="32" />
+                </Texture>
+                <Label name="$(parent)Label" font="ZoFontWinH3" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="4" />
+                    <Dimensions y="32" />
+                </Label>
+
+                <!-- Witches Festival
+                <Button name="$(parent)Dropdown" inherits="ZO_DropdownButton" hidden="true">
+                    <Dimensions y="25" x="25"/>
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Label" offsetX="7" />
+                    <OnClicked>EventTickets.toggleDropdown()</OnClicked>
+                </Button>
+
+
+                <Control name="$(parent)SkullListHolder" resizeToFitDescendents="true" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+                    <Controls>
+
+                        <Texture name="$(parent)Bg" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds" alpha="0.7">
+                            <AnchorFill />
+                            <TextureCoords left="0.5" right="0.5" top="0.5" bottom="0.5" />
+                        </Texture>
+
+                    </Controls>
+                </Control>
+                -->
+            </Controls>
+        </TopLevelControl>
+
+        <Control name="EventTicketsSkullTimerTemplate" virtual="true">
+            <Dimensions y="32" />
+
+            <Controls>
+                <Texture name="$(parent)Bg" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds" alpha="0.3">
+                    <AnchorFill />
+                    <TextureCoords left="0" right="1" top="0" bottom=".8125" />
+                </Texture>
+                <Texture name="$(parent)Icon" textureFile="/esoui/art/icons/event_halloween_dremora_skull_bucket.dds">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" />
+                    <Dimensions x="32" y="32" />
+                </Texture>
+                <Label name="$(parent)Timer" font="ZoFontWinH3" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="18:00:00">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="4" />
+                    <Dimensions x="85" y="32" />
+                </Label>
+                <Label name="$(parent)Name" font="ZoFontWinH3" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Timer" />
+                    <Dimensions y="32" />
+                </Label>
+
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

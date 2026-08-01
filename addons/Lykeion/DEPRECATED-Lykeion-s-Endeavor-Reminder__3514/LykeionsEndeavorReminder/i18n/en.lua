@@ -1,0 +1,8 @@
+ZO_CreateStringId("LER_TIPS","Tips")
+ZO_CreateStringId("LER_TIPS_TEXT","|c275a91Daily|r endeavor is not yet completed, do you want to check it out?")
+ZO_CreateStringId("LER_TIPS_TEXT_WEEKLY","|ccc922fWeekly|r endeavor is not yet completed, do you want to check it out?")
+ZO_CreateStringId("LER_BUTTON_1","Check Endeavor")
+ZO_CreateStringId("LER_MENU_DESCRIPTION","A simple addon that prompts you when you log out with an incomplete endeavor (if any).")
+ZO_CreateStringId("LER_ENABLE","Enable")
+ZO_CreateStringId("LER_ONE_TIP","Once per day")
+ZO_CreateStringId("LER_ONE_TIP_TOOLTIP","When enabled, after a prompt is triggered, the addon will not prompt you again until the next Endeavor is refreshed.")

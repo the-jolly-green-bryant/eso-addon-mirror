@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kafeijao/TBag-Counter__1976",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kafeijao",
+  "canonical_id": "esoui:1976",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:1976",
+  "deleted": false,
+  "directories": [
+    "TBagCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1976/",
+  "fingerprint": "e263668607ae9caf61c8f820178287548aaf39b213fd2b094f7f94596f25d31f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6664.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1976",
+  "source_url": "https://www.esoui.com/downloads/info1976-TBagCounter.html",
+  "stats": {
+    "downloads": 10509,
+    "favorites": 10,
+    "monthly_downloads": 32
+  },
+  "title": "TBag Counter",
+  "updated_at": 1633786641000,
+  "version": "0.4"
+}

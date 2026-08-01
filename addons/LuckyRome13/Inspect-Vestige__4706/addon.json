@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/LuckyRome13/Inspect-Vestige__4706",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "LuckyRome13",
+  "canonical_id": "esoui:4706",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4706",
+  "deleted": false,
+  "directories": [
+    "InspectVestige"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4706/",
+  "fingerprint": "2bfd620c995e852eeff6afcda187edaa56583651d1de02285ee77b021f237a8e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16690.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16825.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16827.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16826.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16828.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4706",
+  "source_url": "https://www.esoui.com/downloads/info4706-InspectVestige.html",
+  "stats": {
+    "downloads": 135,
+    "favorites": 2,
+    "monthly_downloads": 132
+  },
+  "title": "Inspect Vestige",
+  "updated_at": 1785015196000,
+  "version": "1.4.0"
+}

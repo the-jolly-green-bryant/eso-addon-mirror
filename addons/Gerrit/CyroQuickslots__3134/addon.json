@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Gerrit/CyroQuickslots__3134",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Gerrit",
+  "canonical_id": "esoui:3134",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:3134",
+  "deleted": false,
+  "directories": [
+    "CyroQuickslots"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3134/",
+  "fingerprint": "e7da16b886973e276947600a81bd2da8eaf54deec0ad7cadf9f117235133909e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10610.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3134",
+  "source_url": "https://www.esoui.com/downloads/info3134-CyroQuickslots.html",
+  "stats": {
+    "downloads": 2649,
+    "favorites": 4,
+    "monthly_downloads": 14
+  },
+  "title": "CyroQuickslots",
+  "updated_at": 1629736919000,
+  "version": "1.31.1"
+}

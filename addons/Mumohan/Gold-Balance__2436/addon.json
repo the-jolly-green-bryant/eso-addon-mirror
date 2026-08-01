@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Mumohan/Gold-Balance__2436",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mumohan",
+  "canonical_id": "esoui:2436",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2436",
+  "deleted": false,
+  "directories": [
+    "GoldBalance"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2436/",
+  "fingerprint": "d847d7f008cca94dcaeeffc5b17be0a61ff794c4e009d9c99d6d550396374bc2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8306.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2436",
+  "source_url": "https://www.esoui.com/downloads/info2436-GoldBalance.html",
+  "stats": {
+    "downloads": 2724,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "Gold Balance",
+  "updated_at": 1565016134000,
+  "version": "1.01"
+}

@@ -1,0 +1,7 @@
+## Title: UpdateFurnitureCache
+## APIVersion: 100018
+## Version: 1.0
+## Author: manavortex
+## Description: For some reason my furntiure list wasn't reloaded when I placed an item. This Add-On fixes that. It does literally nothing else.
+
+UpdateFurnitureCache.lua

@@ -1,0 +1,80 @@
+<GuiXml>
+  <Controls>
+
+ 		<Control name="QualityRowTemplate" mouseEnabled="true" tier="MEDIUM" layer="CONTROLS" virtual="true">
+      <Dimensions y="28" />
+      <OnMouseEnter>
+        --d("MouseEnter")
+        CookeryWizQualitySelector:ShowQualityToolTip(self, true)
+        CookeryWizQualitySelector:SetHighlight(self, true)
+      </OnMouseEnter>
+      <OnMouseExit>
+        CookeryWizQualitySelector:ShowQualityToolTip(self, false)
+        CookeryWizQualitySelector:SetHighlight(self, false)
+      </OnMouseExit>
+      <OnMouseUp>
+        CookeryWizQualitySelector:OnMouseUp(self)
+      </OnMouseUp>
+			<Controls>
+
+      <!--
+				<Label name="$(parent)Right" font="ZoFontGameSmall" text="-   -" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-2" offsetY="4"/>
+        </Label>          
+        -->
+				<Texture name="$(parent)Highlight" hidden="true" textureFile="EsoUI/Art/Miscellaneous/listItem_highlight.dds" alpha="0.5">
+					<AnchorFill />
+					<TextureCoords left="0" right="1" top="0" bottom=".625" />
+				</Texture>
+        
+        <Control name="$(parent)Right" inheritAlpha="false" alpha="1">
+          <Dimensions x="20" y="20" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-2" offsetY="4"/>
+          <Controls> 
+            <Backdrop name="$(parent)BD" centerColor="FF00FF" >
+              <Edge file="/EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />              
+            </Backdrop>
+          </Controls>
+        </Control>
+        
+        <Control name="$(parent)Middle" inheritAlpha="false" alpha="1">
+          <Dimensions x="20" y="20" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Right" relativePoint="TOPLEFT" offsetX="-6" offsetY="0"/>
+          <Controls> 
+            <Backdrop name="$(parent)BD" centerColor="FF00FF" inheritAlpha="true">
+              <Edge file="/EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />              
+            </Backdrop>
+          </Controls>
+        </Control>
+
+        <Control name="$(parent)Left" inheritAlpha="false" alpha="1">
+          <Dimensions x="20" y="20" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Middle" relativePoint="TOPLEFT" offsetX="-6" offsetY="0"/>
+          <Controls> 
+            <Backdrop name="$(parent)BD" centerColor="FF00FF" alpha="1" >
+              <Edge file="/EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />              
+            </Backdrop>
+          </Controls>
+        </Control>
+        
+        <!--
+        <Tooltip name="$(parent)Tooltip" inherits="ZO_ItemIconTooltip" mouseEnabled="true" movable="true" hidden="true">
+          <ResizeToFitPadding width="48" height="57"/>
+          <DimensionConstraints minX="416" maxX="416" />
+          <OnInitialized>
+            CookeryWizQualitySelector:OnQualityTooltipInitialized(self)
+          </OnInitialized>           
+        </Tooltip>  
+        -->
+      </Controls>
+      
+    </Control>  
+  </Controls>
+</GuiXml>     
+        

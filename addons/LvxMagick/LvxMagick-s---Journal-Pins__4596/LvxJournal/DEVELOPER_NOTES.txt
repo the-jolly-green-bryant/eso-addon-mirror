@@ -1,0 +1,16 @@
+Lvx Journal - Chronicles developer notes
+
+Code organization
+- LvxJournal.lua: saved variables, UI views, editor/read/archive/search pages, map markers, map pins, event logging, slash commands.
+- LvxJournalTools.lua: roleplay tools pages, Map Marker Manager buttons, export/backup helpers, oracle/dice/coin/random tools.
+
+ESOUI safety
+- No loadstring or dynamic code execution.
+- No external file I/O, network access, shell commands, or operating-system APIs.
+- Export features rely on ESO SavedVariables only and are written by the client during /reloadui, logout, or exit.
+- Optional libraries such as LibMapPins and Clock are guarded with existence checks.
+
+Maintenance notes
+- Keep UI control creation inside CreateWindow and use RefreshAll/RefreshOptionsPage/Tools.RefreshPage for visibility.
+- Keep map marker page refreshes delayed while typing so edit boxes do not lose focus.
+- When adding a new UI element, add it to the appropriate control table so read/edit/tool modes hide it correctly.

@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Just_Merlin/Merlin-s-Heal-Helper__1599",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Just_Merlin",
+  "canonical_id": "esoui:1599",
+  "category_id": "150",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1599",
+  "deleted": false,
+  "directories": [
+    "MerlinsHealHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1599/",
+  "fingerprint": "c5703085a565efb414a6cf06a8e9aed3d8e728d8d8e1f46103fa677a6f98b258",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5235.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5236.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5237.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1599",
+  "source_url": "https://www.esoui.com/downloads/info1599-MerlinsHealHelper.html",
+  "stats": {
+    "downloads": 41751,
+    "favorites": 53,
+    "monthly_downloads": 101
+  },
+  "title": "Merlin's Heal Helper",
+  "updated_at": 1592952745000,
+  "version": "1.2.0"
+}

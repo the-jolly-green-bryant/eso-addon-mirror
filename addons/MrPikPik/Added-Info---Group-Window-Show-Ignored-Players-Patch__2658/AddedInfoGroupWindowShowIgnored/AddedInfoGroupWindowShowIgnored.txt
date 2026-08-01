@@ -1,0 +1,12 @@
+;This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+;The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+;All rights reserved.
+
+## Title: Added Info - Group Window (Show Ignored Players Patch)
+## Description: Hightlights ignored players in the first column
+## Author: MrPikPik
+## Version: 1.1
+## DependsOn: AddedInfoGroupWindow
+## APIVersion: 100032
+
+AddedInfoGroupWindowShowIgnored.lua

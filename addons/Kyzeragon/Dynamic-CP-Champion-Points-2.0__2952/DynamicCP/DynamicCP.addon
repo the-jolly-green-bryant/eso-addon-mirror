@@ -1,0 +1,67 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Dynamic CP
+## Description: Champion Point presets per tree, with role filters, quality of life changes, and more!
+## Author: Kyzeragon
+## Contributors: Raijindono (UX), camrenis (testing & feedback), Plonkerr (testing & feedback)
+## Version: 3.3.0
+## AddOnVersion: 30300
+## APIVersion: 101049 101050
+
+## DependsOn: LibAddonMenu-2.0>=43
+## PCDependsOn: LibDialog>=127
+## OptionalDependsOn: LibFilteredChatPanel
+
+## SavedVariables: DynamicCPSavedVariables
+
+src/init.lua
+
+src/common/Style.lua
+src/common/Dialog.lua
+src/common/PointsStringBuilder.lua
+
+src/cooldown.lua
+src/screenUpdates.lua
+src/customRules.lua
+src/changelog.lua
+
+src/points.lua
+src/slottables.lua
+
+src/API.lua
+
+src/smartPresets/presets/blueAutoPve.lua
+src/smartPresets/presets/greenCombat.lua
+src/smartPresets/presets/greenLootGoblin.lua
+src/smartPresets/presets/greenThieving.lua
+src/smartPresets/presets/redAutoPve.lua
+src/smartPresets/smartPresets.lua
+
+data/presetData.lua
+data/zoneData.lua
+data/ruleData.lua
+data/convertDataIndices.lua
+
+PC/Settings.lua
+PC/CustomRulesSettings.lua
+
+ui/presets.lua
+ui/pulldown.lua
+ui/quickstars.lua
+ui/quickstarsSlotGroupMenu.lua
+ui/modelessDialog.lua
+
+xml/presets.xml
+xml/sidePresets.xml
+xml/infolabel.xml
+xml/warning.xml
+xml/mildWarning.xml
+xml/pulldown.xml
+xml/quickstars.xml
+xml/modelessDialog.xml
+
+PC/bindings.xml

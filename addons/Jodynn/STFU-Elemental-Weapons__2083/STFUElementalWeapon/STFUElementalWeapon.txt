@@ -1,0 +1,11 @@
+## Title: |cffaaaaSTFU Element Weapons|r
+## APIVersion: 100030
+## SavedVariables: STFU_Account
+## Author: Jodynn
+## Version: 1.7
+## Description: Try to reduce the |cff0000painful|r sound of imbue/crushing/elemental weapon.
+## DependsOn: LibAddonMenu-2.0 LibMediaProvider-1.0
+
+STFUElementalWeapon.lua
+STFUElementalWeapon.xml
+bindings.xml

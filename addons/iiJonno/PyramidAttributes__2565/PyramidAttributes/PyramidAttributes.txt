@@ -1,0 +1,11 @@
+## APIVersion: 101044
+## Title: PyramidAttributes
+## Author: |cff9beaJonno|r
+## Version: 4.5
+## Description : Moves Health Mag Stam bars to centre and arranges in a pyramid
+## SavedVariables: PyramidAttributesVars
+## DependsOn: LibAddonMenu-2.0>=32
+
+
+PyramidAttributes.lua
+PyramidAttributes.xml

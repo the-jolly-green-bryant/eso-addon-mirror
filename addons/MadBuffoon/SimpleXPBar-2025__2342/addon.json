@@ -1,0 +1,33 @@
+{
+  "archive_path": "addons/MadBuffoon/SimpleXPBar-2025__2342",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MadBuffoon",
+  "canonical_id": "esoui:2342",
+  "category_id": "17",
+  "compatibility": [],
+  "content_id": "esoui:2342",
+  "deleted": false,
+  "directories": [
+    "SimpleXPBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2342/",
+  "fingerprint": "38c1d2ff3c6a9edd0d392f26e445d846b4b205c97172c520f9978a0f201d9b86",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10202.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10201.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2342",
+  "source_url": "https://www.esoui.com/downloads/info2342-SimpleXPBar2025.html",
+  "stats": {
+    "downloads": 16168,
+    "favorites": 8,
+    "monthly_downloads": 154
+  },
+  "title": "SimpleXPBar (2025)",
+  "updated_at": 1618463613000,
+  "version": "2.2"
+}

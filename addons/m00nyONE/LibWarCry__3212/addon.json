@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/m00nyONE/LibWarCry__3212",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "m00nyONE",
+  "canonical_id": "esoui:3212",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3212",
+  "deleted": false,
+  "directories": [
+    "LibWarCry"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3212/",
+  "fingerprint": "0de5c6a64f60fdb252a33bf2355bbf1ae4f14321c22b670ab047f7bcdfdba151",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10932.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3212",
+  "source_url": "https://www.esoui.com/downloads/info3212-LibWarCry.html",
+  "stats": {
+    "downloads": 73607,
+    "favorites": 4,
+    "monthly_downloads": 399
+  },
+  "title": "LibWarCry",
+  "updated_at": 1671472832000,
+  "version": "2.1.1"
+}

@@ -1,0 +1,89 @@
+<GuiXml>
+    <Controls>
+        <Control name="FFFDragonLairWeyrRunGUIItemListItemTemplate" mouseEnabled="true" virtual="true">
+            <Dimensions x="400" y="26" />
+            <Anchor point="LEFT" relativeTo="$(parent)" offsetX="10" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-10" />
+            <Controls>
+                <Texture name="$(parent)Icon" alpha="1">
+                <Dimensions x="24" y="24" />
+                <Anchor point="LEFT" offsetX="0" offsetY="0" />
+                <TextureCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Label name="$(parent)NameLabel" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="_NAME_">
+                <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="30" offsetY="0" />
+                </Label>
+                <Label name="$(parent)CountsLabel" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="D/H">
+                <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-120" offsetY="0" />
+                </Label>
+                <Label name="$(parent)PriceLabel" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="D/H">
+                <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-5" offsetY="0" />
+                </Label>
+            </Controls>
+        </Control>
+        <TopLevelControl name="FFFDragonLairWeyrRunWindow" mouseEnabled="true" movable="true" resizeHandleSize="8" hidden="true" alpha="1.0">
+            <Dimensions x="400" y="650" />
+            <DimensionConstraints minX="400" minY="300" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetY="20" offsetX="20" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.3" />
+                <Label name="$(parent)TitleLabel" font="$(ANTIQUE_FONT)|18|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Dragon Lair Weyr Run">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="10" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+                </Label>
+                <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						FFFDragonLairWeyrRun.HideDetail()
+					</OnClicked>
+				</Button>
+                <Control name="$(parent)DetailPanel" alpha="1.0">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-40" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.5"/>
+                        <Control name="$(parent)ItemList" inherits="ZO_ScrollList" >
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                        </Control>
+                    </Controls>
+                </Control>
+				<Button name="$(parent)ButtonShowOwnItems" mouseEnabled="true" inherits="ZO_DefaultButton">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="0" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="140" offsetY="40" />
+                    <Controls>
+                        <Label name="$(parent)ButtonShowOwnLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" color="CFDCBD" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Showing Group">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                    <OnClicked>
+                        FFFDragonLairWeyrRun.ShowOwnItems()
+                    </OnClicked>
+                </Button>
+				<Button name="$(parent)ButtonShowDeposits" mouseEnabled="true" inherits="ZO_DefaultButton">
+                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)ButtonShowOwnItems" offsetX="5" offsetY="00" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)ButtonShowOwnItems" offsetX="100" offsetY="0" />
+                    <Controls>
+                        <Label name="$(parent)ButtonShowDepositsLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" color="CFDCBD" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Farmed">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                    <OnClicked>
+                        FFFDragonLairWeyrRun.ShowOwnDeposits()
+                    </OnClicked>
+                </Button>
+                
+                <Label name="$(parent)TotalLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="-80" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="0" offsetY="40" />
+                </Label>
+				
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

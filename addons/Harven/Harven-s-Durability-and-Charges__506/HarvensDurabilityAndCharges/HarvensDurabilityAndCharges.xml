@@ -1,0 +1,53 @@
+<GuiXml>
+	<Controls>
+		<StatusBar name="HarvensDaCGamepadStatusBar" inherits="ZO_GamepadArrowStatusBarWithBGLarge" virtual="true">
+            <Controls>
+				<Label name="$(parent)Value" font="EsoUI/Common/Fonts/FTN47.otf|40|soft-shadow-thick" color="INTERFACE_COLOR_TYPE_GAMEPAD_TOOLTIP:GENERAL_COLOR_WHITE" horizontalAlignment="CENTER">
+					<Anchor point="LEFT" relativePoint="RIGHT" offsetX="24" />
+				</Label>
+            </Controls>
+		</StatusBar>
+		<Control name="HarvensTooltipStatusBar" inherits="ZO_PlayerAttributeContainer" virtual="true">
+			<Controls>
+				<Label name="$(parent)Value" font="$(MEDIUM_FONT)|14|thick-outline" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHTED" horizontalAlignment="CENTER">
+					<Anchor point="CENTER" />
+				</Label>
+				
+				<Control name="$(parent)BgContainer" inherits="ZO_PlayerAttributeBgContainer">
+					<Anchor point="CENTER" />
+					<Controls>
+						<Texture name="$(parent)BgLeft" inherits="ZO_PlayerAttributeBgLeftArrow" />
+						<Texture name="$(parent)BgRight" inherits="ZO_PlayerAttributeBgRightArrow" />
+						<Texture name="$(parent)BgCenter" inherits="ZO_PlayerAttributeBgSmallCenter" />
+					</Controls>
+				</Control>
+
+				<StatusBar name="$(parent)BarLeft" inherits="ZO_PlayerAttributeStatusBar" barAlignment="REVERSE">
+					<Anchor point="LEFT" />
+					<Anchor point="RIGHT" relativePoint="CENTER" />
+					<Controls>
+						<StatusBar name="$(parent)Gloss" inherits="ZO_PlayerAttributeStatusBarGloss" barAlignment="REVERSE" />
+					</Controls>
+				</StatusBar>
+				
+				<StatusBar name="$(parent)BarRight" inherits="ZO_PlayerAttributeStatusBar">
+					<Anchor point="RIGHT" />
+					<Anchor point="LEFT" relativePoint="CENTER" />
+					<Controls>
+						<StatusBar name="$(parent)Gloss" inherits="ZO_PlayerAttributeStatusBarGloss" />
+					</Controls>
+				</StatusBar>
+
+				<Texture name="$(parent)FrameLeft" inherits="ZO_PlayerAttributeFrameLeftArrow" />
+				<Texture name="$(parent)FrameRight" inherits="ZO_PlayerAttributeFrameRightArrow" />
+				<Texture name="$(parent)FrameCenter" inherits="ZO_PlayerAttributeFrameCenter" />
+			</Controls>
+		</Control>
+		<Texture name="HarvensCharacterSheetRepairAll" inherits="ZO_CharacterSheetDivider" virtual="true">
+			<OnInitialized>
+				self:GetNamedChild("Text"):SetText(string.upper(GetString(SI_ITEM_ACTION_REPAIR).." "..GetString(SI_REPAIR_SORT_TYPE_COST)))
+			</OnInitialized>
+		</Texture>
+		<Label name="HarvensCharacterSheetRepairAllLabel" inherits="ZO_CurrencyTemplate" virtual="true"/>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/h.metaverse/JP-Patch-for-Untaunted-v0.1.5-Menu-translation__1500",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "h.metaverse",
+  "canonical_id": "esoui:1500",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1500",
+  "deleted": false,
+  "directories": [
+    "Untaunted",
+    "__MACOSX"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1500/",
+  "fingerprint": "1f881094d3512c0c276528ae3f5cc85017a4929250bd410f2b0fc93d82b0d3fd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4870.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4871.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1500",
+  "source_url": "https://www.esoui.com/downloads/info1500-JPPatchforUntauntedv0.1.5Menutranslation.html",
+  "stats": {
+    "downloads": 4473,
+    "favorites": 0,
+    "monthly_downloads": 15
+  },
+  "title": "JP Patch for Untaunted v0.1.5(Menu translation)",
+  "updated_at": 1476355649000,
+  "version": "1.0"
+}

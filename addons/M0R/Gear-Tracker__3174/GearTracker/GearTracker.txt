@@ -1,0 +1,8 @@
+## Title: |cFFD700Gear Tracker|r
+## APIVersion: 100031
+## Description: A tool to track gear sets for submitting for discord roles
+## Author: |c0DC1CF@M0R_Gaming|r
+## DependsOn: LibScroll LibAddonMenu-2.0
+
+GearTracker.lua
+GearTracker.xml

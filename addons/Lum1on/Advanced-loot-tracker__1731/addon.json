@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Lum1on/Advanced-loot-tracker__1731",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lum1on",
+  "canonical_id": "esoui:1731",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:1731",
+  "deleted": false,
+  "directories": [
+    "AdvancedLootTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1731/",
+  "fingerprint": "a47356e8ddfa1f1966e68585d5c95ee4a44340d559dd58d9df9b9ec659b43f32",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5722.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1731",
+  "source_url": "https://www.esoui.com/downloads/info1731-Advancedloottracker.html",
+  "stats": {
+    "downloads": 37520,
+    "favorites": 28,
+    "monthly_downloads": 31
+  },
+  "title": "Advanced loot tracker",
+  "updated_at": 1497948016000,
+  "version": "1.3"
+}

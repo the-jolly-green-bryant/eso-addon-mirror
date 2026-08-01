@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/katkat42/Bait-Counter__538",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "katkat42",
+  "canonical_id": "esoui:538",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:538",
+  "deleted": false,
+  "directories": [
+    "BaitCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl538/",
+  "fingerprint": "42a1cfeaee98ba4b8d5ea352b0d7da0bbce6e9afc1ed7c84828de95883e4b75c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1966.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "538",
+  "source_url": "https://www.esoui.com/downloads/info538-BaitCounter.html",
+  "stats": {
+    "downloads": 24883,
+    "favorites": 72,
+    "monthly_downloads": 28
+  },
+  "title": "Bait Counter",
+  "updated_at": 1613833525000,
+  "version": "1.6.3"
+}

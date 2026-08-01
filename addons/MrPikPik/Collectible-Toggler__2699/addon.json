@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/MrPikPik/Collectible-Toggler__2699",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:2699",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2699",
+  "deleted": false,
+  "directories": [
+    "MPPCollectibles"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2699/",
+  "fingerprint": "fa7115d3a88453fa48c7646be0687d453001c34923be51021171474be7c5f0cf",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2699",
+  "source_url": "https://www.esoui.com/downloads/info2699-CollectibleToggler.html",
+  "stats": {
+    "downloads": 2852,
+    "favorites": 3,
+    "monthly_downloads": 15
+  },
+  "title": "Collectible Toggler",
+  "updated_at": 1636579848000,
+  "version": "1.2"
+}

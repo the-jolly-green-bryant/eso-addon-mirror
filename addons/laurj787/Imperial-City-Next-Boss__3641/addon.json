@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/laurj787/Imperial-City-Next-Boss__3641",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "laurj787",
+  "canonical_id": "esoui:3641",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3641",
+  "deleted": false,
+  "directories": [
+    "ICTheNextBoss"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3641/",
+  "fingerprint": "052020b0da05a9ce1266c7bd72858d25552c8b2be8602a74991d53ccd43956c6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12413.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12412.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12437.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3641",
+  "source_url": "https://www.esoui.com/downloads/info3641-ImperialCityNextBoss.html",
+  "stats": {
+    "downloads": 6235,
+    "favorites": 6,
+    "monthly_downloads": 48
+  },
+  "title": "Imperial City Next Boss",
+  "updated_at": 1685930350000,
+  "version": "1.4"
+}

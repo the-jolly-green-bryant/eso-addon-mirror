@@ -1,0 +1,10 @@
+## Title: AsylumPT.|c02fcffLangPatch|r
+## Description: Руссификатор для аддона "Asylum Priority Target"
+## Author: |c02fcffLost.Seeker|r
+## APIVersion: 101038 101039
+## Version: 1.2.2
+## DependsOn: AsylumPriorityTarget
+
+
+
+AsylumPriorityTarget.lua

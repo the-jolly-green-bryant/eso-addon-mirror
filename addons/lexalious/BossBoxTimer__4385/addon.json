@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/lexalious/BossBoxTimer__4385",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "lexalious",
+  "canonical_id": "esoui:4385",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4385",
+  "deleted": false,
+  "directories": [
+    "BossBoxTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4385/",
+  "fingerprint": "d15222738ace937edf5a645e40b24dff75d144b76141af578e682ad8c3364973",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15242.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15238.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4385",
+  "source_url": "https://www.esoui.com/downloads/info4385-BossBoxTimer.html",
+  "stats": {
+    "downloads": 361,
+    "favorites": 3,
+    "monthly_downloads": 22
+  },
+  "title": "BossBoxTimer",
+  "updated_at": 1771750703000,
+  "version": "1.1.1"
+}

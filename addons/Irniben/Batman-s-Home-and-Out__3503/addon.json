@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Irniben/Batman-s-Home-and-Out__3503",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Irniben",
+  "canonical_id": "esoui:3503",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3503",
+  "deleted": false,
+  "directories": [
+    "BatmansHomeAndOut"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3503/",
+  "fingerprint": "420bc166efe60e7887cdd791619236ec0e7c7fd95d2890a322542068cdbb7427",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12309.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3503",
+  "source_url": "https://www.esoui.com/downloads/info3503-BatmansHomeandOut.html",
+  "stats": {
+    "downloads": 2057,
+    "favorites": 1,
+    "monthly_downloads": 6
+  },
+  "title": "Batman's Home and Out",
+  "updated_at": 1680425692000,
+  "version": "1.0.0"
+}

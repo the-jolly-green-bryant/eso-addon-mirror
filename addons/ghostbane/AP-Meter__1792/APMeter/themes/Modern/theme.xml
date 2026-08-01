@@ -1,0 +1,169 @@
+<GuiXml>
+    <Animations>
+
+        <AnimationTimeline name="APMeter_Modern_RangeGlowIn">
+            <Animations>
+                <AlphaAnimation startAlpha="0.0" endAlpha="1.0" duration="500">
+                    <EasingFunction>
+                        return ZO_EaseInQuadratic(progress)
+                    </EasingFunction>
+                </AlphaAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="APMeter_Modern_RangeGlowOut">
+            <Animations>
+                <AlphaAnimation startAlpha="1.0" endAlpha="0.0" duration="500">
+                    <EasingFunction>
+                        return ZO_EaseInQuadratic(progress)
+                    </EasingFunction>
+                </AlphaAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="APMeter_Modern_EasingGreen">
+            <Animations>
+                <CustomAnimation duration="2000">
+                    <UpdateFunction>
+                        if self:GetTimeline()._previewMode then
+                            APMeter.Theme.Preview:AnimationCallback('GreenBarUpdate', progress)
+                        else
+                            APMeter.Theme.Selected():AnimationCallback('GreenBarUpdate', progress)
+                        end
+                    </UpdateFunction>
+                    <EasingFunction>
+                        return ZO_EaseOutQuadratic(progress)
+                    </EasingFunction>
+                    <OnStop>
+                        if self:GetTimeline()._previewMode then
+                            APMeter.Theme.Preview:AnimationCallback('GreenBarComplete', progress)
+                        else
+                            APMeter.Theme.Selected():AnimationCallback('GreenBarComplete', progress)
+                        end
+                    </OnStop>
+                </CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="APMeter_Modern_EasingBlue">
+            <Animations>
+                <CustomAnimation duration="2000">
+                    <UpdateFunction>
+                        if self:GetTimeline()._previewMode then
+                            APMeter.Theme.Preview:AnimationCallback('BlueBarUpdate', progress)
+                        else
+                            APMeter.Theme.Selected():AnimationCallback('BlueBarUpdate', progress)
+                        end
+                    </UpdateFunction>
+                    <EasingFunction>
+                        return ZO_EaseOutQuadratic(progress)
+                    </EasingFunction>
+                    <OnStop>
+                        if self:GetTimeline()._previewMode then
+                            APMeter.Theme.Preview:AnimationCallback('BlueBarComplete', progress)
+                        else
+                            APMeter.Theme.Selected():AnimationCallback('BlueBarComplete', progress)
+                        end
+                    </OnStop>
+                </CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+    
+    </Animations>
+    <Controls>
+
+        <Control name="APMeter_Theme_Modern" virtual="true">
+            <Dimensions x="248" y="112" />
+            <Controls>
+                <Control name="$(parent)Gauge" tier="1">
+                    <Dimensions x="112" y="112"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                    <Controls>
+                        <Texture name="$(parent)BG" textureFile="APMeter/themes/Modern/textures/Gauge.dds">
+                            <Dimensions x="112" y="112"/>
+                            <AnchorFill/>
+                        </Texture>
+                        <Cooldown name="$(parent)GreenBar" textureFile="APMeter/themes/Modern/textures/GreenBar.dds" hidden="true">
+                            <Dimensions x="112" y="112"/>
+                            <AnchorFill/>
+                        </Cooldown>
+                        <Cooldown name="$(parent)BlueBar" textureFile="APMeter/themes/Modern/textures/BlueBar.dds" hidden="true">
+                            <Dimensions x="112" y="112"/>
+                            <AnchorFill/>
+                        </Cooldown>
+                        <Label name="$(parent)Perc" text="0" verticalAlignment="CENTER" font="$(GAMEPAD_BOLD_FONT)|40|soft-shadow-thick" color="ffffff">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-4" offsetY="6" />
+                            <Controls>
+                                <Label name="$(parent)Label" text="%" verticalAlignment="LEFT" font="$(GAMEPAD_MEDIUM_FONT)|25|soft-shadow-thick" color="ffffff">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="3"/>
+                                </Label>
+                            </Controls>
+                        </Label>
+                        <Label name="$(parent)GoalPerc" text="0" verticalAlignment="CENTER" font="$(GAMEPAD_MEDIUM_FONT)|20|soft-shadow-thin" color="00a6f2">
+                            <Anchor point="TOP" relativeTo="$(parent)Perc" relativePoint="BOTTOM" offsetY="-11" />
+                            <Controls>
+                                <Label name="$(parent)Label" text="%" verticalAlignment="LEFT" font="$(GAMEPAD_MEDIUM_FONT)|16|soft-shadow-thin" color="00a6f2">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="1" offsetY="2"/>
+                                </Label>
+                            </Controls>
+                        </Label>
+                         <Texture name="$(parent)RankIcon" layer="2" textureFile="$(GetAvARankIcon(GetUnitAvARank('player')))">
+                            <Dimensions x="50" y="50"/>
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-2" />
+                        </Texture>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)SideSpace">
+                    <Dimensions x="156" y="72"/>
+                    <Anchor point="BOTTOM" relativeTo="$(parent)Gauge" relativePoint="BOTTOM" offsetY="-11" offsetX="111"/>
+                    <Controls>
+                        <Texture name="$(parent)BG" textureFile="APMeter/themes/Modern/textures/SideSpace.dds">
+                            <Dimensions x="156" y="72"/>
+                            <AnchorFill/>
+                        </Texture>
+                        <Button name="$(parent)PanelButton">
+                            <Dimensions x="124" y="20" />
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)BG" relativePoint="TOPLEFT" offsetY="7" />
+                            <Textures normal="APMeter/themes/Modern/textures/button_down.dds"
+                                mouseOver="APMeter/themes/Modern/textures/button_up.dds" />
+                            <Controls>
+                                <Label name="$(parent)Label" text="MENU" color="ffffff" font="$(GAMEPAD_MEDIUM_FONT)|16|soft-shadow-thick">
+                                    <Anchor point="CENTER" offsetY="1" />
+                                </Label>
+                                <Texture name="$(parent)Icon" textureFile="/esoui/art/tutorial/gamepad/gp_playermenu_icon_textchat.dds">
+                                    <Dimensions x="18" y="18" />
+                                    <Anchor point="RIGHT" relativeTo="$(parent)Label" relativePoint="LEFT" offsetX="-2" />
+                                </Texture>
+                            </Controls>
+                            <OnClicked>
+                                APMeter.Panel.Toggle()
+                            </OnClicked>
+                        </Button>
+                        <Label name="$(parent)Value" text="0" font="$(GAMEPAD_MEDIUM_FONT)|28|soft-shadow-thin" verticalAlignment="RIGHT" color="4dff00">
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-10" offsetY="-9" />
+                        </Label>
+                        <Control name="$(parent)Range">
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-48" offsetY="21" />
+                            <Controls>
+                                <Label name="$(parent)Label" text=" " font="$(CHAT_FONT)|12|soft-shadow-thin" verticalAlignment="RIGHT" color="ffffff">
+                                    <Anchor point="RIGHT" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Glow" tier="1" alpha="0">
+                    <Dimensions x="300" y="160"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Gauge" relativePoint="TOPLEFT" offsetX="-29" offsetY="-26"/>
+                    <Controls>
+                        <Texture name="$(parent)BG" textureFile="APMeter/themes/Modern/textures/Glow.dds">
+                            <Dimensions x="300" y="160"/>
+                            <AnchorFill/>
+                        </Texture>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+
+    </Controls>
+</GuiXml>

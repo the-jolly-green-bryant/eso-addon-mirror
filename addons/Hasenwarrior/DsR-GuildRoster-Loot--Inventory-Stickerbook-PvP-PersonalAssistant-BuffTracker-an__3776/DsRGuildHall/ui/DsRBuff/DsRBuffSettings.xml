@@ -1,0 +1,175 @@
+<GuiXml>
+    <Controls>
+
+        <TopLevelControl name="DsRBuffSettingsWindow"
+                         movable="true"
+                         mouseEnabled="true"
+                         clampedToScreen="true"
+                         hidden="true">
+            <Dimensions x="900" y="920" />
+
+            <Controls>
+
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Label name="$(parent)Title"
+                       font="ZoFontWinH1"
+                       horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="20" />
+                </Label>
+
+                <Label name="$(parent)SubTitle"
+                       font="ZoFontGame"
+                       horizontalAlignment="CENTER"
+                       wrapMode="ELLIPSIS">
+                    <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetY="0" />
+                    <Dimensions x="800" y="30" />
+                </Label>
+
+                <Button name="$(parent)SettingsButton">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-30" offsetY="20" />
+                    <Dimensions x="46" y="46" />
+                    <Textures normal="esoui/art/chatwindow/chat_options_up.dds"
+                              pressed="esoui/art/chatwindow/chat_options_down.dds"
+                              mouseOver="esoui/art/chatwindow/chat_options_over.dds" />
+                    <OnMouseUp>
+                        if button == MOUSE_BUTTON_INDEX_LEFT then
+                            DsRBuffSettingsWindow:SetHidden(true)
+                            DsR.Menu.Open()
+                        end
+                    </OnMouseUp>
+                </Button>
+
+                <Control name="$(parent)DropdownContainer">
+                    <Dimensions x="660" y="60" />
+                    <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetY="20" />
+
+                    <Controls>
+                        <Control name="$(parent)Ort" inherits="ZO_ComboBox">
+                            <Dimensions x="180" y="28" />
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="20" offsetY="0" />
+                        </Control>
+
+                        <Control name="$(parent)Char" inherits="ZO_ComboBox">
+                            <Dimensions x="180" y="28" />
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="90" offsetY="0" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Label name="$(parent)InfoTitleA"
+                       font="ZoFontGame"
+                       horizontalAlignment="CENTER"
+                       wrapMode="ELLIPSIS">
+                    <Anchor point="TOP" relativeTo="$(parent)DropdownContainer" relativePoint="BOTTOM" offsetY="0" />
+                    <Dimensions x="800" y="30" />
+                </Label>
+
+                <Label name="$(parent)InfoTitleB"
+                       font="ZoFontGame"
+                       horizontalAlignment="CENTER"
+                       wrapMode="ELLIPSIS">
+                    <Anchor point="TOP" relativeTo="$(parent)InfoTitleA" relativePoint="BOTTOM" offsetY="-5" />
+                    <Dimensions x="800" y="30" />
+                </Label>
+
+                <!-- TANK -->
+                <Label name="$(parent)TankLabel"
+                       font="ZoFontGame"
+                       horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)InfoTitleB" relativePoint="BOTTOM" offsetY="0" />
+                </Label>
+
+                <Button name="$(parent)TankSetRoleButton"
+                        inherits="ZO_DefaultButton">
+                    <Dimensions x="200" y="28" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="190" />
+                </Button>
+
+                <Button name="$(parent)TankShowListButton"
+                        inherits="ZO_DefaultButton">
+                    <Dimensions x="120" y="28" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="190" />
+                </Button>
+
+                <EditBox name="$(parent)TankEdit"
+                         inherits="ZO_DefaultEditMultiLine">
+                    <Dimensions x="600" y="80" />
+                    <Anchor point="TOP" relativeTo="$(parent)TankLabel" relativePoint="BOTTOM" offsetY="10" />
+                </EditBox>
+
+                <!-- HEAL -->
+                <Label name="$(parent)HealLabel"
+                       font="ZoFontGame"
+                       horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)TankEdit" relativePoint="BOTTOM" offsetY="30" />
+                </Label>
+
+                <Button name="$(parent)HealSetRoleButton"
+                        inherits="ZO_DefaultButton">
+                    <Dimensions x="200" y="28" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="425" />
+                </Button>
+
+                <Button name="$(parent)HealShowListButton"
+                        inherits="ZO_DefaultButton">
+                    <Dimensions x="120" y="28" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="425" />
+                </Button>
+
+                <EditBox name="$(parent)HealEdit"
+                         inherits="ZO_DefaultEditMultiLine">
+                    <Dimensions x="600" y="80" />
+                    <Anchor point="TOP" relativeTo="$(parent)HealLabel" relativePoint="BOTTOM" offsetY="10" />
+                </EditBox>
+
+                <!-- DD -->
+                <Label name="$(parent)DDLabel"
+                       font="ZoFontGame"
+                       horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)HealEdit" relativePoint="BOTTOM" offsetY="30" />
+                </Label>
+
+                <Button name="$(parent)DDSetRoleButton"
+                        inherits="ZO_DefaultButton">
+                    <Dimensions x="200" y="28" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="660" />
+                </Button>
+
+                <Button name="$(parent)DDShowListButton"
+                        inherits="ZO_DefaultButton">
+                    <Dimensions x="120" y="28" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="660" />
+                </Button>
+
+                <EditBox name="$(parent)DDEdit"
+                         inherits="ZO_DefaultEditMultiLine">
+                    <Dimensions x="600" y="80" />
+                    <Anchor point="TOP" relativeTo="$(parent)DDLabel" relativePoint="BOTTOM" offsetY="10" />
+                </EditBox>
+
+                <Button name="$(parent)AnalyseButton"
+                        inherits="ZO_DefaultButton">
+                    <Dimensions x="160" y="28" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="-10" />
+                </Button>
+
+                <Button name="$(parent)DoubleCheckButton"
+                        inherits="ZO_DefaultButton">
+                    <Dimensions x="240" y="28" />
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-10" />
+                </Button>
+
+                <Button name="$(parent)CloseButton"
+                        inherits="ZO_DefaultButton">
+                    <Dimensions x="160" y="28" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-20" offsetY="-10" />
+                </Button>
+
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

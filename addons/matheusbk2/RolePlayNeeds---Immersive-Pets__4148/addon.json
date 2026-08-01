@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/matheusbk2/RolePlayNeeds---Immersive-Pets__4148",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "matheusbk2",
+  "canonical_id": "esoui:4148",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4148",
+  "deleted": false,
+  "directories": [
+    "ImmersivePets"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4148/",
+  "fingerprint": "c9b5cd636458b794f71fee86e2df5987cce185b81178ee165dbdf01042e08d3e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14218.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14164.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14190.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14191.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4148",
+  "source_url": "https://www.esoui.com/downloads/info4148-RolePlayNeeds-ImmersivePets.html",
+  "stats": {
+    "downloads": 643,
+    "favorites": 5,
+    "monthly_downloads": 18
+  },
+  "title": "RolePlayNeeds - Immersive Pets!",
+  "updated_at": 1751653379000,
+  "version": "0.3.1 BETA"
+}

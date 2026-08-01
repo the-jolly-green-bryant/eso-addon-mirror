@@ -1,0 +1,9 @@
+## APIVersion: 101044
+## Title: CrosshairInfo
+## Author: |cff9beaJonno|r
+## Version: 1.2
+## Description : Adds extra info on target in your crosshair
+## SavedVariables: CrosshairInfoVars
+## DependsOn: LibAddonMenu-2.0
+
+CrosshairInfo.lua

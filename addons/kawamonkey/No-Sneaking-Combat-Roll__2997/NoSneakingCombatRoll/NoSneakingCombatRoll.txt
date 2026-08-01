@@ -1,0 +1,5 @@
+## Title: No Sneaking Combat Roll
+## Author: Kawamonkey
+## APIVersion: 100034
+
+NoSneakingCombatRoll.lua

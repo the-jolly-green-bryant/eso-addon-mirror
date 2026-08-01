@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Kyzeragon/LibFilteredChatPanel__3240",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyzeragon",
+  "canonical_id": "esoui:3240",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3240",
+  "deleted": false,
+  "directories": [
+    "LibFilteredChatPanel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3240/",
+  "fingerprint": "addc35a7ea673e3002e19eabe25d99f870ccc18c76009bbe83e8a772fd852345",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11047.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11048.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3240",
+  "source_url": "https://www.esoui.com/downloads/info3240-LibFilteredChatPanel.html",
+  "stats": {
+    "downloads": 60632,
+    "favorites": 2,
+    "monthly_downloads": 400
+  },
+  "title": "LibFilteredChatPanel",
+  "updated_at": 1637294994000,
+  "version": "1.0.0"
+}

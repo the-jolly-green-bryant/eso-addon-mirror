@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Kriax/Tamriel-Trade-Centre-Simple-Price__3078",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "_Kriax",
+  "canonical_id": "esoui:3078",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3078",
+  "deleted": false,
+  "directories": [
+    "TamrielTradeCentreSimplePrice"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3078/",
+  "fingerprint": "28f22dd3a8ddc8931e0151f59a3e8c25c9b74b3c80e61559d1a0edc104041e27",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10292.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10294.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10296.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3078",
+  "source_url": "https://www.esoui.com/downloads/info3078-TamrielTradeCentreSimplePrice.html",
+  "stats": {
+    "downloads": 35797,
+    "favorites": 26,
+    "monthly_downloads": 282
+  },
+  "title": "Tamriel Trade Centre Simple Price",
+  "updated_at": 1622402691000,
+  "version": "1.1.3"
+}

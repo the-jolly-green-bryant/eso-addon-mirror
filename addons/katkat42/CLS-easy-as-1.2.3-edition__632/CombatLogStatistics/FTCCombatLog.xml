@@ -1,0 +1,9 @@
+<GuiXml>
+	<Controls>
+		<TextBuffer name="CLSTab_text" verticalAlignment="CENTER" text="Hello" horizontalAlignment="LEFT" maxHistoryLines="20">
+        </TextBuffer>
+		<TopLevelControl name="HIDDENDPS">
+			<OnUpdate>FCL.DPSUpdate( self , time )</OnUpdate>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

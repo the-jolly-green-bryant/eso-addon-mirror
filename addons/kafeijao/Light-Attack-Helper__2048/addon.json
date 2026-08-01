@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/kafeijao/Light-Attack-Helper__2048",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kafeijao",
+  "canonical_id": "esoui:2048",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:2048",
+  "deleted": false,
+  "directories": [
+    "LightAttackHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2048/",
+  "fingerprint": "12ba39513b3343faef84e50bb3a4be047b7a7f8af6cd744b9dab4fd484b42ce8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7379.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7382.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6904.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6976.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7380.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7381.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2048",
+  "source_url": "https://www.esoui.com/downloads/info2048-LightAttackHelper.html",
+  "stats": {
+    "downloads": 284097,
+    "favorites": 216,
+    "monthly_downloads": 285
+  },
+  "title": "Light Attack Helper",
+  "updated_at": 1635514990000,
+  "version": "4.2"
+}

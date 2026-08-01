@@ -1,0 +1,164 @@
+Sheath Weapon is a ESO addon created by Kelnoreem
+When out of combat, toggles the weapon to be sheathed. 
+
+==================================
+Summary of changes: 3.23
+==================================
+Update to API 101050 (Update 50) 
+
+==================================
+Summary of changes: 3.22
+==================================
+Update to API 101048 (Update 48 - Feast of Shadows) 
+
+==================================
+Summary of changes: 3.20
+==================================
+Update to API 101047 (Update 47 - Feast of Shadows) 
+
+==================================
+Summary of changes: 3.19
+==================================
+Update to API 101046 (Update 46) 
+
+==================================
+Summary of changes: 3.18
+==================================
+Update to API 101045 
+(Update 45 Exiled Redoubt and Lep Seclusa)
+
+==================================
+Summary of changes: 3.17
+==================================
+Update to API 101044 (Update 44)
+
+==================================
+Summary of changes: 3.16
+==================================
+Moved event registration and 
+updated LAM settings
+
+==================================
+Summary of changes: 3.15
+==================================
+Update to API 101043 (Update 43)
+
+==================================
+Summary of changes: 3.14
+==================================
+Update to API 101042 (Gold Road)
+
+==================================
+Summary of changes: 3.13
+==================================
+Update to API 101041 (Update 41)
+
+==================================
+Summary of changes: 3.12
+==================================
+Update to API 101040 (Update 40)
+
+==================================
+Summary of changes: 3.11
+==================================
+Update to API 101039 (Update 39)
+
+==================================
+Summary of changes: 3.10
+==================================
+Update to API 101038 (Necrom)
+
+==================================
+Summary of changes: 3.09
+==================================
+Update to API 101037 (Scribes of Fate)
+
+==================================
+Summary of changes: 3.08
+==================================
+Update to API 101036 (Firesong)
+
+==================================
+Summary of changes: 3.07
+==================================
+Update to API 101035 (Lost Depths)
+
+==================================
+Summary of changes: 3.06
+==================================
+Update to API 101034 (High Isle)
+Cooperate with game pad mode
+
+==================================
+Summary of changes: 3.05
+==================================
+Update to API 101033 (Ascending Tide)
+
+==================================
+Summary of changes: 3.04
+==================================
+Some skills, like Biting Jabs are
+sheathed early, so increasing the
+timing in settings.
+
+==================================
+Summary of changes: 3.03
+==================================
+Expose times in addon settings to
+allow customization of the timers.
+
+==================================
+Summary of changes: 2.27
+==================================
+Update to API 101032 (Deadlands)
+
+==================================
+Summary of changes: 2.26
+==================================
+Update to API 101031 (Waking Flame)
+
+==================================
+Summary of changes: 2.25
+==================================
+Update to API 100035 (Blackwood)
+
+==================================
+Summary of changes: 2.24
+==================================
+Update to API 100034 (Flames of Ambition)
+
+==================================
+Summary of changes: 2.22
+==================================
+Update to API 100032 (StoneThorn)
+
+==================================
+Summary of changes: 2.21
+==================================
+Update to API 100031 (Greymore)
+
+==================================
+Summary of changes: 2.20
+==================================
+Update to API 100030 (Harrowstorm)
+removed addon lib folder
+
+==================================
+Summary of changes: 2.19
+==================================
+LibMenu API bump to r30 
+
+==================================
+Summary of changes: 2.18
+==================================
+Update to API 100029 (Dragonhold)
+
+==================================
+Summary of changes: 2.17.1
+==================================
+Update to API 100028 (Scalebreaker)
+Increased timer to 2 seconds for slow PC
+
+
+This addon was originally created as a learning tool for my daughter who was exploring software development as a college choice.  There were many topics and languges we explored besides ESO and LUA. I recently was informed the code used to originate this addon was copied from an addon called StowIt by stjobe in 2014.
+

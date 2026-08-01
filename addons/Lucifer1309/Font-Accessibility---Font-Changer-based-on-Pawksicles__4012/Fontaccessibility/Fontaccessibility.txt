@@ -1,0 +1,19 @@
+## Title: Fontaccessibility
+## Description: Font changer tool based on Pawksickles Updated
+; This is based on Pawksickles Updated by Garkin, Pawkette https://www.esoui.com/downloads/info723-PawksicklesUpdated.html
+## APIVersion: 101044 101045
+## Version: 1.7.0
+## Author: Lucifer1309
+## OptionalDependsOn: LibMediaProvider-1.0>=32 LibAddonMenu-2.0>=34
+## SavedVariables: FONTACCESSIBILITY_DB
+
+FontaccessibilityConfig.lua
+Fontaccessibility.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

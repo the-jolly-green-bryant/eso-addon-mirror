@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Jarva/Group-User-ID__2589",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jarva",
+  "canonical_id": "esoui:2589",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:2589",
+  "deleted": false,
+  "directories": [
+    "GroupUserId"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2589/",
+  "fingerprint": "2b3befbcfae6ea51b5d11c25ebd0de836deeb76b8518686512e39d60c666b9b7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8832.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12328.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12329.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12330.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2589",
+  "source_url": "https://www.esoui.com/downloads/info2589-GroupUserID.html",
+  "stats": {
+    "downloads": 25796,
+    "favorites": 34,
+    "monthly_downloads": 1449
+  },
+  "title": "Group User ID",
+  "updated_at": 1783578324000,
+  "version": "2026.07.09"
+}

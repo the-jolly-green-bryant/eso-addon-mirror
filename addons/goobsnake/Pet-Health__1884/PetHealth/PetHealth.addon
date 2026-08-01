@@ -1,0 +1,19 @@
+## Title: Pet Health
+## Description: Allows for in-game Pet Health bars!
+## APIVersion: 101048
+## Author: Scootworks, Goobsnake, Baertram
+## Contributors: chaoticvoid & SheogorathGR
+## AddOnVersion: 1.14
+## Version: 1.14
+## SavedVariables: PetHealth_Save
+## OptionalDependsOn: LibSlashCommander>=45 LibAddonMenu-2.0>=40 LibAddonMenuOrderListBox>=13
+
+##Libraries:
+##LibAddonMenu-2.0 and LibSlashCommander need to be installed as standalone versions in order to change default settings!
+
+lang/en.lua
+lang/$(language).lua
+
+PetHealth_settingsMenu.lua
+PetHealth.lua
+PetHealthTemplates.xml

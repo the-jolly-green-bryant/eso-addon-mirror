@@ -1,0 +1,19 @@
+
+## Title: |c3CB371Offered Items|r
+## Author: @Marify
+## APIVersion: 100034
+## Version: 0.9.23
+## DependsOn: LibAddonMenu-2.0 LibMarify
+## OptionalDependsOn: AwesomeGuildStore
+## SavedVariables: OfferedItemsVariables
+
+## Thanks for help me... Gamer1986PAN / Baertram / fritzOSU03 / Rhyono / lokicoon / Chuaznega
+
+
+OfferedItems.lua
+OfferedItems.xml
+lang/EN.lua
+lang/$(language).lua
+
+bindings.xml
+

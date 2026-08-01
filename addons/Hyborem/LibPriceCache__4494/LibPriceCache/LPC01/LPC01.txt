@@ -1,0 +1,10 @@
+## Title: LPC01
+## APIVersion: 101049
+## Version: 1.1.3
+## AddOnVersion: 10103
+## IsLibrary: true
+## Description: Price database for weapons, armor and jewelry
+## DependsOn: LibSavedVars>=60007
+## SavedVariables: LibPriceCache_LPC01_DB
+
+LPC01.lua

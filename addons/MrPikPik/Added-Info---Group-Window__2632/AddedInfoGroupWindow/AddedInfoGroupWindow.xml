@@ -1,0 +1,41 @@
+<GuiXml>
+  <Controls>       
+        <Control name="AIGWGroupMemberDetails" virtual="true" hidden="true" >
+            <Dimensions x="372" y="150"/>
+            <Controls>
+                <Label name="$(parent)Test" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="TestLabel">
+            </Controls>
+        </Control>
+        
+        <TopLevelControl name="AIGWGroupMemberDetails" hidden="false" clampedToScreen="true">
+			<Dimensions x="165" y="64"/>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="200" offsetY="200"/>
+
+
+			<Controls>
+                <Label name="$(parent)Name" font="$(CHAT_FONT)|$(KB_24)|soft-shadow-thick" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+				</Label>
+                <Label name="$(parent)RaceClass" font="$(CHAT_FONT)|$(KB_24)|soft-shadow-thick" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Name" />
+				</Label>
+                <Label name="$(parent)Title" font="$(CHAT_FONT)|$(KB_24)|soft-shadow-thick" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)RaceClass" />
+				</Label>
+                <Texture name="$(parent)GenderIcon" textureFile="EsoUI/Art/ActionBar/abilityInset.dds" verticalAlignment="TOP">
+                    <Dimensions x="50" y="50" />
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+                </Texture>
+                
+                <Texture name="$(parent)FriendIcon" textureFile="EsoUI/Art/ActionBar/abilityInset.dds" verticalAlignment="TOP">
+                    <Dimensions x="50" y="50" />
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+                </Texture>
+                <Texture name="$(parent)GuildMemberIcon" textureFile="EsoUI/Art/ActionBar/abilityInset.dds" verticalAlignment="TOP">
+                    <Dimensions x="50" y="50" />
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+                </Texture>
+			</Controls>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

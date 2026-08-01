@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/gianfrid/BlockCounter__3511",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "gianfrid",
+  "canonical_id": "esoui:3511",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3511",
+  "deleted": false,
+  "directories": [
+    "BlockCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3511/",
+  "fingerprint": "91fabc417a38565322cd6145c937da4a3a5d1e5d68277e1fe6236cd43162ee5d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11955.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3511",
+  "source_url": "https://www.esoui.com/downloads/info3511-BlockCounter.html",
+  "stats": {
+    "downloads": 2139,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "BlockCounter",
+  "updated_at": 1680706327000,
+  "version": "0.3"
+}

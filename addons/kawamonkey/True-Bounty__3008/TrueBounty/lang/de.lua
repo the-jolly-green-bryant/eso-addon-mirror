@@ -1,0 +1,2 @@
+-- Translated by @Kisakee
+SafeAddString(SI_INTERACT_OPTION_PAY_BOUNTY_FORFEIT_ITEMS_COST, "[Zahlen] Hier sind <<1>> Gold und <<2[/1 gestohlener Gegenstand/$d gestohlene Gegenstände]>>  im Wert von <<3>> Gold. Begleicht mein Kopfgeld.", 0)

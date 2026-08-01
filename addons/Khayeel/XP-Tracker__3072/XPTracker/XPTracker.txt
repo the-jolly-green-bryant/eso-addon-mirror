@@ -1,0 +1,12 @@
+## Title: XP Tracker
+## Author: Khayeel
+## APIVersion: 100034 100035 101033
+## AddOnVersion: 1
+## Version: 1.3
+## DependsOn: LibAddonMenu-2.0
+## Description: Shows information about your experience point gain.
+## SavedVariables: XPSavedVariables
+
+XPTracker.xml
+XPTracker.lua
+Bindings.xml

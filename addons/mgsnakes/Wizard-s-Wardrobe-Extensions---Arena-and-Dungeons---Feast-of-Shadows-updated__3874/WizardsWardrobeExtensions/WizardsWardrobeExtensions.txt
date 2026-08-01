@@ -1,0 +1,81 @@
+## Title: Wizards Wardrobe Extensions
+## Author: |c00ff00MGSnakes|r
+## Version: 1.1
+## Description: Extension for Wizardwardrobe which adds Arenas and Dungeons.
+## APIVersion: 101047 101048
+## DependsOn: WizardsWardrobe
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lang/en.lua
+lang/$(language).lua
+
+Zones/arenas/DSA.lua
+Zones/arenas/MA.lua
+Zones/arenas/VH.lua
+
+Zones/Dungeons/FG1.lua
+Zones/Dungeons/FG2.lua
+Zones/Dungeons/SC1.lua
+Zones/Dungeons/SC2.lua
+Zones/Dungeons/BC1.lua
+Zones/Dungeons/BC2.lua
+Zones/Dungeons/DSC1.lua
+Zones/Dungeons/DSC2.lua
+Zones/Dungeons/EH1.lua
+Zones/Dungeons/EH2.lua
+Zones/Dungeons/WRS1.lua
+Zones/Dungeons/WRS2.lua
+Zones/Dungeons/AC.lua
+Zones/Dungeons/COA1.lua
+Zones/Dungeons/COA2.lua
+Zones/Dungeons/COH1.lua
+Zones/Dungeons/COH2.lua
+Zones/Dungeons/DFK.lua
+Zones/Dungeons/TI.lua
+Zones/Dungeons/VF.lua
+Zones/Dungeons/BHH.lua
+Zones/Dungeons/BC.lua
+Zones/Dungeons/SW.lua
+Zones/Dungeons/VOM.lua
+
+Zones/DLCDungeons/WGT.lua
+Zones/DLCDungeons/ICP.lua
+Zones/DLCDungeons/ROM.lua
+Zones/DLCDungeons/COS.lua
+Zones/DLCDungeons/FH.lua
+Zones/DLCDungeons/BF.lua
+Zones/DLCDungeons/FL.lua
+Zones/DLCDungeons/SCP.lua
+Zones/DLCDungeons/MHK.lua
+Zones/DLCDungeons/MOS.lua
+Zones/DLCDungeons/FV.lua
+Zones/DLCDungeons/DOM.lua
+Zones/DLCDungeons/LOM.lua
+Zones/DLCDungeons/MGF.lua
+Zones/DLCDungeons/IR.lua
+Zones/DLCDungeons/UHG.lua
+Zones/DLCDungeons/SG.lua
+Zones/DLCDungeons/CT.lua
+Zones/DLCDungeons/BDV.lua
+Zones/DLCDungeons/TC.lua
+Zones/DLCDungeons/RPB.lua
+Zones/DLCDungeons/DC.lua
+Zones/DLCDungeons/CA.lua
+Zones/DLCDungeons/SR.lua
+Zones/DLCDungeons/ERE.lua
+Zones/DLCDungeons/GD.lua
+Zones/DLCDungeons/BS.lua
+Zones/DLCDungeons/SH.lua
+Zones/DLCDungeons/BV.lua
+Zones/DLCDungeons/OP.lua
+Zones/DLCDungeons/ER.lua
+Zones/DLCDungeons/LS.lua
+Zones/DLCDungeons/NC.lua
+Zones/DLCDungeons/BGF.lua
+
+## WizardsWardrobeExtensions.lua

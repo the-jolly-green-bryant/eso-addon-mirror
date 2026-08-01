@@ -1,0 +1,64 @@
+{
+  "archive_path": "addons/IsJustaGhost/IsJusta-Gamepad-Inventory-Update__2748",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IsJustaGhost",
+  "canonical_id": "esoui:2748",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2748",
+  "deleted": false,
+  "directories": [
+    "IsJustaGamepadInventory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2748/",
+  "fingerprint": "4bdead715ccd803ab211c311c713d98a71cc4c9a9e93188a71323d729eb434ba",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9308.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9309.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9310.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9311.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9312.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9313.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9314.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9376.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2748",
+  "source_url": "https://www.esoui.com/downloads/info2748-IsJustaGamepadInventoryUpdate.html",
+  "stats": {
+    "downloads": 22069,
+    "favorites": 30,
+    "monthly_downloads": 68
+  },
+  "title": "IsJusta Gamepad Inventory Update",
+  "updated_at": 1719800973000,
+  "version": "2.8"
+}

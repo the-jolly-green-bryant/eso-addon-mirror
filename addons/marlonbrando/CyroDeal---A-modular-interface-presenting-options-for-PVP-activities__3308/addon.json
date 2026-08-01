@@ -1,0 +1,67 @@
+{
+  "archive_path": "addons/marlonbrando/CyroDeal---A-modular-interface-presenting-options-for-PVP-activities__3308",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "marlonbrando",
+  "canonical_id": "esoui:3308",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3308",
+  "deleted": false,
+  "directories": [
+    "CyroDeal"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3308/",
+  "fingerprint": "631b423b7b3a3b8193b28af6d799a37c0632cf0afb9dfa8bba36028ab495da08",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3308",
+  "source_url": "https://www.esoui.com/downloads/info3308-CyroDeal-AmodularinterfacepresentingoptionsforPVPactivities.html",
+  "stats": {
+    "downloads": 2894,
+    "favorites": 1,
+    "monthly_downloads": 8
+  },
+  "title": "CyroDeal - A modular interface presenting options for PVP activities",
+  "updated_at": 1654469146000,
+  "version": "1.02"
+}

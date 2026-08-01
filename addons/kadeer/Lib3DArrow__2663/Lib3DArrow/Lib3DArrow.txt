@@ -1,0 +1,12 @@
+## Title: Lib3DArrow
+## Author: kadeer
+## Description: Displays 3D arrows
+## APIVersion: 100029 100030
+## AddOnVersion: 1
+## IsLibrary: true
+## DependsOn: Lib3D
+
+components\arrow.lua
+components\distance.lua
+components\marker.lua
+Lib3DArrow.lua

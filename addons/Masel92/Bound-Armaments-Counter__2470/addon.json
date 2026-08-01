@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Masel92/Bound-Armaments-Counter__2470",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masel92",
+  "canonical_id": "esoui:2470",
+  "category_id": "58",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    }
+  ],
+  "content_id": "esoui:2470",
+  "deleted": false,
+  "directories": [
+    "BoundArmamentsCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2470/",
+  "fingerprint": "f84348cd20ca8ba05ca491eae497be46c1b510cc6f7e861cd33d987201b55abf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8418.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2470",
+  "source_url": "https://www.esoui.com/downloads/info2470-BoundArmamentsCounter.html",
+  "stats": {
+    "downloads": 20473,
+    "favorites": 13,
+    "monthly_downloads": 101
+  },
+  "title": "Bound Armaments Counter",
+  "updated_at": 1582154694000,
+  "version": "1.0.7"
+}

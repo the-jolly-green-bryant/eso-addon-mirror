@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/GankisKhan/Raffle-Gold-Regrouper-Workaround__2413",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "GankisKhan",
+  "canonical_id": "esoui:2413",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2413",
+  "deleted": false,
+  "directories": [
+    "RaffleGold"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2413/",
+  "fingerprint": "7ea32e21899ace38cc0afab21fedfc5726f4da8bfa4f854f7faa27acf08a9bdd",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2413",
+  "source_url": "https://www.esoui.com/downloads/info2413-RaffleGoldRegrouperWorkaround.html",
+  "stats": {
+    "downloads": 3971,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "Raffle Gold (Regrouper Workaround)",
+  "updated_at": 1561687623000,
+  "version": "18.23.1"
+}

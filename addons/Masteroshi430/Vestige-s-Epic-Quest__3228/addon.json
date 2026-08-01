@@ -1,0 +1,64 @@
+{
+  "archive_path": "addons/Masteroshi430/Vestige-s-Epic-Quest__3228",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:3228",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3228",
+  "deleted": false,
+  "directories": [
+    "VEQ"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3228/",
+  "fingerprint": "5288ae7b3407f19d5f6c323b5947019d8deea1b2331c900ddb24cc4360026f5c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11147.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14291.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11119.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11010.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14295.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11050.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14299.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14300.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11088.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11103.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11104.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14297.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11120.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11121.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11126.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11182.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11183.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14301.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14298.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14296.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12736.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14293.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14294.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14292.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14311.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11004.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11003.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11002.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3228",
+  "source_url": "https://www.esoui.com/downloads/info3228-VestigesEpicQuest.html",
+  "stats": {
+    "downloads": 158105,
+    "favorites": 143,
+    "monthly_downloads": 2520
+  },
+  "title": "Vestige's Epic Quest",
+  "updated_at": 1785404387000,
+  "version": "2026.07.30"
+}

@@ -1,0 +1,22 @@
+## Title: |c7c42f2Imp|rified UI
+## AddOnVersion: 2
+## APIVersion: 101046
+## Author: |c7c42f2@impda|r [EU]
+## DependsOn: LibAddonMenu-2.0>=40
+## OptionalDependsOn: LibDebugLogger>=268
+## SavedVariables: ImpifiedUISavedVariables
+
+; logger.lua
+
+main.lua
+
+; DO NOT CHANGE THE ORDER or it will change order in settings
+
+groupfinder/ownrole.lua
+guildbrowser/alphabetsorting.lua
+characterwindow/mundusresize.lua
+
+other/permaglow.lua
+; other/vibration.lua
+
+; collectibles/tree.lua

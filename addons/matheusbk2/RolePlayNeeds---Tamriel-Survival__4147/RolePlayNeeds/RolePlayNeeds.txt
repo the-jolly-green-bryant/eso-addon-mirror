@@ -1,0 +1,16 @@
+## Title: RolePlayNeeds - Tamriel Survival
+## APIVersion: 101046
+## Version: BETA 0.7.1
+## Author: Matheus Macedo | @matheusbk2
+## Description: The Elder Scrolls Survival System Addon! - BETA
+## SavedVariables: RolePlayNeedsSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+
+Messages.lua
+RolePlayNeeds.lua
+bindings.xml
+RadialMenu.xml
+RadialMenu.lua
+
+

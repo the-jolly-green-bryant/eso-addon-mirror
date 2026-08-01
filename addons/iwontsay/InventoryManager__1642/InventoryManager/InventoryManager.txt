@@ -1,0 +1,30 @@
+## Title: InventoryManager
+## APIVersion: 100033 100034
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: IMSavedVars
+## Version: 2.5.2
+## Author: iwontsay & iFedix
+## Description: Automatically stash, retrieve and dispose your items with custom rules!
+
+InventoryManager.lua
+Modules/Data.lua
+Modules/DelayedProcessor.lua
+Modules/Banking.lua
+Modules/GuildBanking.lua
+Modules/Junker.lua
+Modules/Seller.lua
+Modules/Extractor.lua
+
+CraftStoreLink.lua
+FCOISLink.lua
+ItemSaverLink.lua
+
+Rulesets.lua
+RulesetsV2.lua
+UI/RuleEdit.lua
+UI/ProfileEdit.lua
+UI/Settings.lua
+
+lang/en.lua
+lang/$(language).lua
+

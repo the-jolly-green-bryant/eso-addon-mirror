@@ -1,0 +1,33 @@
+## Title: ITTs |c04B4AEGhostwriter
+## Author: |c268074JN_Slevin|r
+## Version: 2.2.3
+## AddOnVersion: 223
+## Description: Keeps on top of newcomers, woosh! Part of the ITTs Bot family, handy helpers for Trade Guilds.
+## APIVersion: 101041
+## SavedVariables: GWSettings GWData
+## DependsOn: LibDebugLogger>=263 LibAddonMenu-2.0>=35 LibChatMessage>=105 LibGuildRoster>=103 LibCustomMenu>=711 LibAsync>=20304
+## OptionalDependsOn: ITTsRosterBot>=106
+
+ITTsGhostwriter.lua
+Log.lua
+CategoryManager.lua
+
+Icons.lua
+IconPicker/IconPicker.lua
+IconPicker/IconPicker.xml
+
+NewCategoryDialog/Dialog.lua
+NewCategoryDialog/Dialog.xml
+
+GuildManagement.lua
+Interface.lua
+Settings.lua
+Utilities.lua
+Events.lua
+
+ITTsGhostwriter.xml
+Bindings.xml
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

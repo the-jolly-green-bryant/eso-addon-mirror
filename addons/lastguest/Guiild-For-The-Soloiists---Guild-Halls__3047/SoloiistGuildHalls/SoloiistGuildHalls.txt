@@ -1,0 +1,6 @@
+## Title: |cffd700Guiild For The Soloiist|r - GuildHalls
+## Author: |c9400d3lastguest|r
+## Version: 1.0.0
+## APIVersion: 100034
+
+SoloiistGuildHalls.lua

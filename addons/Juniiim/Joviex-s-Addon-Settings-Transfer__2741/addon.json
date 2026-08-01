@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Juniiim/Joviex-s-Addon-Settings-Transfer__2741",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Juniiim",
+  "canonical_id": "esoui:2741",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2741",
+  "deleted": false,
+  "directories": [
+    "jovAST"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2741/",
+  "fingerprint": "85dcefc006180427804bc6560c2a8f2862b3db791dc2f45a96416a5393d2bc18",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2741",
+  "source_url": "https://www.esoui.com/downloads/info2741-JoviexsAddonSettingsTransfer.html",
+  "stats": {
+    "downloads": 22844,
+    "favorites": 33,
+    "monthly_downloads": 168
+  },
+  "title": "Joviex's Addon Settings Transfer",
+  "updated_at": 1597344915000,
+  "version": "1.6.6"
+}

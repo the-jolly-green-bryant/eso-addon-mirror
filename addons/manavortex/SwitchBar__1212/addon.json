@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/manavortex/SwitchBar__1212",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1212",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:1212",
+  "deleted": false,
+  "directories": [
+    "SwitchBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1212/",
+  "fingerprint": "68306d67323b095d946376fabdf21f3a9a857cc21467152fcc838f24bff1c1c3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3886.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1212",
+  "source_url": "https://www.esoui.com/downloads/info1212-SwitchBar.html",
+  "stats": {
+    "downloads": 8662,
+    "favorites": 7,
+    "monthly_downloads": 15
+  },
+  "title": "SwitchBar",
+  "updated_at": 1662114355000,
+  "version": "1.3.7"
+}

@@ -1,0 +1,131 @@
+[COLOR="RED"]====READ THE CHANGELOG. Updated to Worm Cult===[/COLOR]
+
+If you've ever had a conversation like this..
+[COLOR="DarkOrange"]"Do you want to join us in dungeon X?"
+
+"Yes, I'm sure one of my 8 chars hasn't done it. Wait a mo while I login to them all..." [/COLOR]
+
+
+Then you know the motivation for this addon.
+
+
+Dad's History Addon collects achievements from your adventuring and presents it to a Desktop application called HistOffline.lua. This runs under windows using the IUP toolkit.
+[B]The addon has no in-game user interface.[/B]
+
+The game does not have to be running to use histoffline.
+
+Game information is updated when your character logs out.
+
+Histoffline presents information on your Dungeon achievements.
+It is ideal for seeing which dungeons you haven't completed.
+
+When installed for the first time, it will load your achievement list, which populates the Dungeon panels.
+
+If more than one account is used on the computer, you have an option to select the account you wish to view.
+
+
+[SIZE=4]Achievements[/SIZE]
+[LIST]
+[*]All Achievements uncompleted have red background.
+[*]Veteran Dungeons have several achievements.
+[/LIST]
+
+[SIZE=4]Trials  **See below[/SIZE]
+[LIST]
+[*]Normal, Veteran and Veteran Hard Mode
+[*]Veteran Mode has the sub-achievements
+[*]For some achievements, its impossible to be sure if its a veteran achievement or not. If I've guessed wrong, let me know.
+[/LIST]
+
+
+[SIZE=4]World Bosses **See below[/SIZE]
+[LIST]
+[*]There are six bosses in a zone, 5 zones in an Alliance. Get all 30!
+[*]Select the zone to show the detail.
+[/LIST]
+
+[SIZE=4]Quests With Skill Points[/SIZE]
+[LIST]
+[*]See if you have missed any!
+[*]Select the zone to show the detail.
+[*]Click on link to browse to UESP's webpage on the quest.
+[*] Zos bug in Malabal Tor, can't fix, SOL
+[/LIST]
+
+[SIZE=4]DLC Group **See below[/SIZE]
+[LIST]
+[*]This is the Group Dungeons. DLC public Dungeons are in "Public"
+[*]DLC Trials are in "Trials Norm, Vet Hard"
+[/LIST]
+
+
+
+[SIZE=4]DLC[/SIZE]
+Its the ten year anniversary now, and the game is far different from its beginnings.
+In particular.
+There are many DLC/Chapters  etc.
+This content is  not documented as to what the achievements are.
+But then /None/of it is!.
+His Dad's History works with achievements.
+Achievements may grant a skill point. This is not part of the API.
+They may be part of a world boss. This is not documented.
+They may be part of a dungeon. But  plain dungeons (compared with  Vet) are not separated out.
+Hard mode is not distinguished.
+
+So its a dumpster fire and I have long since given up caring.
+>> Everything now is under the DLC2 tab. <<
+Pubic, Trials, World Bosses, DLC_Grp etc are getting no updates.
+
+But all is not lost! translations are now perfect!
+HA! just joking! They are just as half arsed as we know and love from ZOS.
+The DLC source is "categories" from the in-game API. ** mail me if you really want to know. **
+A couple are translated to DE FR and ES. No two the same, naturally.
+RU is different. RU looks like all RU.  Now is a good time to be Russian! Go Putin!	 get the the game translated!.
+
+I'm not messing with this. You now get the system translations of DLC names.
+But you can now customise it with your own translations that will not clobber on upgrade.
+
+In the .\data\<lang>\  directory
+create a lua file like this
+
+MYDLC.lua   -- example provided in data\en\
+
+
+MyDLC_Names={
+["Infinite Archive"] = "Archive",
+["Seasons of the Worm Cult"] = "Worm Cult",
+["Gold Road"] = "Fred",
+}
+
+
+That translates the system base DLC names which are located:
+.\data\meta\DLC_Order.lua
+
+And are updated on every DLC release, to your visible names.
+EN included.
+
+
+When I import possible achievements, I have to post process before sending to 'history' to weed out the crap
+And un-weed some.
+
+To make things easier for you users, I have saved filter data to .\data\meta\ignored.zip
+
+If you think something is badly wrong, check there, and then use the forum.
+
+[SIZE=4]Installation[/SIZE]
+Install the Add-on in the usual way.
+Read "installation.pdf" in the Doc folder for details on installing the IUP toolkit
+
+
+
+Enjoy. Please report bugs to the forum.#
+
+[SIZE=4]Translations[/SIZE]
+German Translations by Joklix and Snakefish.
+French Translations by Joklix.
+With Thanks..
+
+[SIZE=4]License[/SIZE]
+Some code taken from the Luatz project under the MIT License.
+The dump code function I found on the net. Sorry I don't know who wrote it.
+The rest is my code,  MIT license.

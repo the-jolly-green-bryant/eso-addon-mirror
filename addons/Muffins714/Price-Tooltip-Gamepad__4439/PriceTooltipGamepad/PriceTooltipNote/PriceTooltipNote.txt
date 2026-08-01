@@ -1,0 +1,12 @@
+## APIVersion: 101049 101050
+## Title: Price Tooltip Note
+## Version: 1.1.2
+## Author: Mladen90 (@Mladen90 EU)
+## Description: Make a Note for an Item
+## DependsOn: LibAddonMenu-2.0>=38 LibCustomMenu>=730
+## SavedVariables: PriceTooltipNote_Settings
+
+PriceTooltipNote.lua
+PriceTooltipNote_Default.lua
+PriceTooltipNote_Globals.lua
+PriceTooltipNote_Menu.lua

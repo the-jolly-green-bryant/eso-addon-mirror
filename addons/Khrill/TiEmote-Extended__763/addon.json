@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Khrill/TiEmote-Extended__763",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Khrill",
+  "canonical_id": "esoui:763",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:763",
+  "deleted": false,
+  "directories": [
+    "TiEmote"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl763/",
+  "fingerprint": "930df678ad115fea4797b084aa170b7e9fdbd758cc76927c01bb6c8d42f31f29",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2336.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3169.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2502.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2375.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3498.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2595.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "763",
+  "source_url": "https://www.esoui.com/downloads/info763-TiEmoteExtended.html",
+  "stats": {
+    "downloads": 59681,
+    "favorites": 77,
+    "monthly_downloads": 22
+  },
+  "title": "TiEmote Extended",
+  "updated_at": 1468164244000,
+  "version": "1.83"
+}

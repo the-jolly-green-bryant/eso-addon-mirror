@@ -1,0 +1,30 @@
+<GuiXml>
+    <Controls>
+        <Control name="ZO_LootAlphaContainerButtonDestroy" inherits="ZO_DialogButton" tier="MEDIUM">
+            <Anchor point="TOPRIGHT" relativeTo="ZO_LootAlphaContainerButton1" relativePoint="BOTTOMRIGHT"/>
+            <OnInitialized>
+                self:SetParent(ZO_LootAlphaContainer)
+                ZO_KeybindButtonTemplate_Setup(self, "MSAL_DESTROY", function() MuchSmarterAutoLoot.Destroy(self) end, GetString(SI_LOOT_TAKE_ALL) .. " &amp; " .. GetString(SI_ITEM_ACTION_DESTROY))
+            </OnInitialized>
+        </Control>
+        <Control name="ZO_LootAlphaContainerButtonJunking" inherits="ZO_DialogButton" tier="MEDIUM">
+            <Anchor point="TOPRIGHT" relativeTo="ZO_LootAlphaContainerButton1" relativePoint="BOTTOMRIGHT"/>
+            <OnInitialized>
+                self:SetParent(ZO_LootAlphaContainer)
+                ZO_KeybindButtonTemplate_Setup(self, "MSAL_JUNKING", function() MuchSmarterAutoLoot.Junking(self) end, GetString(SI_LOOT_TAKE_ALL) .. " &amp; " .. GetString(SI_ITEM_ACTION_MARK_AS_JUNK))
+            </OnInitialized>
+        </Control>
+
+        <Button name="ZO_LootMSALShortcut" inherits="ZO_ButtonBehaviorClickSound" virtual="true">
+            <Dimensions x="36" y="36" />
+            <Anchor point="TOPRIGHT" relativeTo="ZO_Loot" relativePoint="TOPRIGHT" />
+            <Textures normal="/esoui/art/skillsadvisor/advisor_tabicon_settings_up.dds"
+                pressed="/esoui/art/skillsadvisor/advisor_tabicon_settings_down.dds"
+                mouseOver="/esoui/art/skillsadvisor/advisor_tabicon_settings_over.dds"
+                disabled="/esoui/art/skillsadvisor/advisor_tabicon_settings_disabled.dds" />
+            <OnClicked>
+              MuchSmarterAutoLoot.MenuShortcut()
+            </OnClicked>
+        </Button>
+    </Controls>
+</GuiXml>

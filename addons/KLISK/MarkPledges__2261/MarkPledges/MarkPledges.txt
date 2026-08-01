@@ -1,0 +1,12 @@
+## APIVersion: 100031
+## Version: 1.0.5
+## Title: MarkPledges
+## Author: @KL1SK
+## Description: Marks dungeons in which you took the "Undaunted Pledge".
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: MarkPledges
+
+lang/en.lua
+lang/$(language).lua
+
+MarkPledges.lua

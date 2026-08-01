@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/hatsune681/Mini-Clock__1197",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "hatsune681",
+  "canonical_id": "esoui:1197",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:1197",
+  "deleted": false,
+  "directories": [
+    "MiniClock"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1197/",
+  "fingerprint": "4d74203b03fd5a3056ab9b0bb2b7ff96146e21cd7357a0c44d2ac6c872b33f17",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4335.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8549.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8550.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1197",
+  "source_url": "https://www.esoui.com/downloads/info1197-MiniClock.html",
+  "stats": {
+    "downloads": 66986,
+    "favorites": 67,
+    "monthly_downloads": 62
+  },
+  "title": "Mini Clock",
+  "updated_at": 1653041035000,
+  "version": "7.101035"
+}

@@ -1,0 +1,12 @@
+## Title: Antiquity Compare Keybind
+## Description: Shows equipped-item comparison tooltips in the Antiquities Journal only while Shift or a user-assigned key is held.
+## Author: Mandemikc, with development support from OpenAI ChatGPT
+## Version: 1.2.2
+## AddOnVersion: 10202
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0>=43
+## SavedVariables: AntiquityCompareKeybindSavedVariables
+
+en.lua
+AntiquityCompareKeybind.lua
+Bindings.xml

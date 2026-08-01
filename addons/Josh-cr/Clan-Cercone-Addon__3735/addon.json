@@ -1,0 +1,77 @@
+{
+  "archive_path": "addons/Josh-cr/Clan-Cercone-Addon__3735",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Josh-cr",
+  "canonical_id": "esoui:3735",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3735",
+  "deleted": false,
+  "directories": [
+    "CerconeAddon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3735/",
+  "fingerprint": "3597b9ae649ad7bf1402ec7ef7a05f6564fa145f051734e1159ae2fc05ffee19",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14052.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13971.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14106.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12742.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12652.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3735",
+  "source_url": "https://www.esoui.com/downloads/info3735-ClanCerconeAddon.html",
+  "stats": {
+    "downloads": 3735,
+    "favorites": 1,
+    "monthly_downloads": 7
+  },
+  "title": "Clan Cercone Addon",
+  "updated_at": 1749073137000,
+  "version": "4.4.0"
+}

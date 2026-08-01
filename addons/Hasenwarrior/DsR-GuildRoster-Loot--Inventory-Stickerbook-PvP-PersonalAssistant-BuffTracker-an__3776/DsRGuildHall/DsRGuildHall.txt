@@ -1,0 +1,165 @@
+## Add-on Details
+## Title: |c9fb6cdDsR GuildRoster|r
+## Author: |cD8F781Has|r|cF3F781enw|r|cF5DA81arr|r|cF7BE81ior|r
+## AddOnVersion: 20260429
+## Version: 2026.04.29
+## SavedVariables: DsRGuildRosterUpdateVersion DsRGuildRosterSettings DsRGuildPriceSettings DsRGuildAchievTrackerSettings DsRGuildPersonalSettings DsRGuildBuffsCharSettings
+## SavedVariables: DsRGuildInventorySettings DsRGuildBarSettings DsRGuildUnknownML DsRGuildUnknownDD DsRGuildUnknownOpts DsRGuildUnknownChars DsRGuildHallPvPcount
+## DependsOn: DsRPlayerDBData
+## DependsOn: LibAddonMenu-2.0>=40 LibMapPins-1.0>=10045 LibFoodDrinkBuff>=18 LibAsync>=30002 LibSlashCommander>=36 LibLazyCrafting>=4014 LibCustomMenu>=730
+## DependsOn: LibAnimation-1.0>=023 LibCustomIcons>=20250705 LibCustomNames>=20251221 LibImplex>=14 LibGPS>=73 LibGroupBroadcast>=91
+## OptionalDependsOn: TamrielTradeCentre MasterMerchant>=3811 ArkadiusTradeTools>=20000 OdySupportIcons
+## APIVersion: 101048 101049
+;
+;  This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+;  The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+;  All rights reserved
+;
+;  You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+DsRglobals.lua
+menu/DsRMenuVars.lua
+
+languages/de.lua
+languages/$(language).lua
+
+cmd/Bindings.xml
+
+data/DsRBuffData.lua
+
+DsRdefaults.lua
+DsRVersionDefaults.lua
+
+menu/DsRMenuControls.lua
+menu/DsRMenuFunc.lua
+menu/DsRMenu.lua
+
+DsRVersion.lua
+DsRVersion.xml
+
+DsRGuildHall.lua
+DsRGuildHall.xml
+
+ui/DsRWacht/DsRGuildRabenwacht.lua
+
+ui/DsRUtil/DsRGuildHoliday.lua
+ui/DsRUtil/DsRGuildHoliday.xml
+ui/DsRUtil/DsRGuildFriends.lua
+ui/DsRUtil/DsRGuildGroup.lua
+ui/DsRUtil/DsRGuildRoster.lua
+ui/DsRUtil/DsRGuildMail.lua
+ui/DsRUtil/DsRGuildMail.xml
+ui/DsRUtil/DsRGuildBind.lua
+ui/DsRUtil/DsRGuildAchievTracker.lua
+ui/DsRUtil/DsRGuildWelcome.lua
+ui/DsRUtil/DsRGuildNeedOne.lua
+ui/DsRUtil/DsRGuildDeveloper.lua
+
+ui/DsRLoot/DsRGuildLoot.lua
+ui/DsRLoot/DsRGuildLootHistory.lua
+
+ui/DsRAllies/DsRGuildAllies.lua
+ui/DsRAllies/Bindings.xml
+
+ui/DsRPanel/DsRGuildAdmin.lua
+ui/DsRPanel/DsRGuildAdmin.xml
+ui/DsRPanel/DsRGuildInfo.lua
+ui/DsRPanel/DsRGuildInfo.xml
+ui/DsRPanel/DsRGuildLeader.lua
+ui/DsRPanel/DsRGuildLeader.xml
+ui/DsRPanel/DsRGuildRaid.lua
+ui/DsRPanel/DsRGuildRaid.xml
+
+ui/DsRPvP/DsRGuildfonts.lua
+ui/DsRPvP/DsRGuildPvP.lua
+ui/DsRPvP/DsRGuildPvPcyro.lua
+ui/DsRPvP/DsRGuildPvPstatus.lua
+ui/DsRPvP/DsRGuildPvPscore.lua
+ui/DsRPvP/DsRGuildPvPdoor.lua
+ui/DsRPvP/DsRGuildPvPdoorPins.lua
+ui/DsRPvP/DsRGuildPvP.xml
+ui/DsRPvP/DsRGuildPvPBossTimer.xml
+ui/DsRPvP/DsRGuildPvPBossTimer.lua
+ui/DsRPvP/DsRGuildPvPPlayerPos.lua
+ui/DsRPvP/DsRGuildPvPKeepInfo.lua
+ui/DsRPvP/DsRGuildPvPICdistrictName.lua
+ui/DsRPvP/DsRGuildPvPAbilityData.lua
+ui/DsRPvP/DsRGuildPvPcountPlayer.lua
+ui/DsRPvP/DsRGuildPvPCrown.lua
+ui/DsRPvP/DsRGuildPvPCrownTable.xml
+
+ui/DsRBeam/DsRGuildBeam.lua
+ui/DsRBeam/DsRGuildBeamUtilities.lua
+ui/DsRBeam/DsRGuildBeamUI.lua
+ui/DsRBeam/DsRGuildBeamEffects.lua
+ui/DsRBeam/DsRGuildBeamMenu.lua
+ui/DsRBeam/DsRGuildBeamHandlers.lua
+
+ui/DsRAI/DsRAI_guild.lua
+ui/DsRAI/DsRAI_kick.lua
+ui/DsRAI/DsRAI_queue.lua
+ui/DsRAI/DsRAI_AutoInviteUI.lua
+ui/DsRAI/DsRAI_half_grouplist.lua
+ui/DsRAI/DsRAI_half_grouplist.xml
+ui/DsRAI/DsRAI_ai_enabled_fragment.lua
+ui/DsRAI/DsRAI_ai_options_fragment.lua
+ui/DsRAI/DsRAI_autoinvitescene.lua
+ui/DsRAI/DsRAI_AutoInvite.lua
+
+ui/DsRInventory/IA_MultiIcon.lua
+ui/DsRInventory/IA_MultiIcon.xml
+ui/DsRInventory/InventoryAssistant.lua
+ui/DsRInventory/InventoryAssistantList.lua
+ui/DsRInventory/InventoryAssistant.xml
+ui/DsRInventory/InventoryAssistantMenu.lua
+
+ui/DsRCrafting/DsRGuildPrecrafterQueue.lua
+ui/DsRCrafting/DsRGuildPrecrafter.lua
+ui/DsRCrafting/DsRGuildAlchemy.lua
+ui/DsRCrafting/DsRGuildProvision.lua
+
+ui/DsRPrice/DsRGuildPrice.lua
+ui/DsRPrice/DsRGuildPriceDefaults.lua
+ui/DsRPrice/DsRGuildPriceGlobals.lua
+ui/DsRPrice/DsRGuildPriceMenu.lua
+
+ui/DsRUnknown/DsRGuildUnknownDefaults.lua
+ui/DsRUnknown/DsRGuildUnknownUtility.lua
+ui/DsRUnknown/DsRGuildUnknownData.lua
+ui/DsRUnknown/DsRGuildUnknown.lua
+ui/DsRUnknown/DsRGuildUnknownMenu.lua
+
+ui/DsRBar/DsRGuildBarDefaults.lua
+ui/DsRBar/DsRGuildBar.lua
+ui/DsRBar/DsRGuildBar.xml
+ui/DsRBar/DsRGuildBarMenu.lua
+
+ui/DsRPersonal/DsRGuildPersonal.lua
+ui/DsRPersonal/DsRGuildPersonalDefaults.lua
+ui/DsRPersonal/DsRGuildPersonalGlobals.lua
+ui/DsRPersonal/DsRGuildPersonalMouseMenu.lua
+ui/DsRPersonal/DsRGuildPersonalMenu.lua
+ui/DsRPersonal/DsRGuildPersonalBanking.lua
+ui/DsRPersonal/DsRGuildPersonalAvA.lua
+ui/DsRPersonal/DsRGuildPersonalDeconJunk.lua
+ui/DsRPersonal/DsRGuildPersonalConsumer.lua
+ui/DsRPersonal/DsRGuildPersonalRepair.lua
+ui/DsRPersonal/DsRGuildPersonalJunkTable.lua
+ui/DsRPersonal/DsRGuildPersonalJunkTable.xml
+
+ui/DsRDeathTable/DsRGuildDeathTable.lua
+ui/DsRDeathTable/DsRGuildDeathTable.xml
+
+ui/DsRBuff/DsRBuffAnalyseList.xml
+ui/DsRBuff/DsRBuffSettings.xml
+ui/DsRBuff/DsRGuildBuffAnalyse.lua
+ui/DsRBuff/DsRGuildBuffs.lua
+ui/DsRBuff/DsRGuildBuffSetting.lua
+
+modules/GroupAttack/DsRGroupAttackProtocol.lua
+
+cmd/DsRslashcmd.lua
+cmd/DsRInventoryButton.lua
+
+ui/DsRWacht/DsRGuildTestDatei.lua
+ui/DsRWacht/DsRGuildTEMPSaveChange.lua

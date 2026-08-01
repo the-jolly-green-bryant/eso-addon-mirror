@@ -1,0 +1,61 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CampaignRewardTrackerControl" clampedToScreen="true" resizeToFitDescendents="true" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions/>
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"/>
+            <Controls>
+                <Backdrop name="$(parent)Background" centerColor="cc000000" edgeColor="e6000000">
+                    <AnchorFill />
+                    <Edge edgeSize="3"/>
+                </Backdrop>
+
+                <Control name="$(parent)Headers">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="16"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-16" offsetY="16"/>
+                    <Dimensions y="32"/>
+                    <Controls>
+                        <Control name="$(parent)Name" inherits="ZO_SortHeaderAppearance">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Name", "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                            <Dimensions x="200" y="32"/>
+                        </Control>
+                        <Control name="$(parent)Tier" inherits="ZO_SortHeaderAppearance">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Tier", "tier", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="16"/>
+                            <Dimensions x="50" y="32"/>
+                        </Control>
+                        <Control name="$(parent)Spacer">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Tier" relativePoint="TOPRIGHT"/>
+                            <Dimensions x="16" y="32"/>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+        <Label name="CRTListRowLabel" font="ZoFontGame" wrapMode="ELLIPSIS"
+               horizontalAlignment="LEFT" verticalAlignment="CENTER" virtual="true"/>
+
+        <Control name="CRTListRow" virtual="true">
+            <Dimensions y="30"/>
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip"/>
+                <Label name="$(parent)Name" inherits="CRTListRowLabel">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                    <Dimensions x="200" y="30"/>
+                </Label>
+                <Label name="$(parent)Tier" horizontalAlignment="RIGHT" inherits="CRTListRowLabel">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="16"/>
+                    <Dimensions x="50" y="30"/>
+                </Label>
+            </Controls>
+        </Control>
+        <Control name="CRTSpacer" virtual="true">
+            <Dimensions y="16"/>
+        </Control>
+    </Controls>
+</GuiXml>

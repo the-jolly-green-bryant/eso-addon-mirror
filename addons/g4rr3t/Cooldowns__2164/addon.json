@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/g4rr3t/Cooldowns__2164",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "g4rr3t",
+  "canonical_id": "esoui:2164",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2164",
+  "deleted": false,
+  "directories": [
+    "Cooldowns"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2164/",
+  "fingerprint": "84379052bde871bad045557d2a65c4ffc12da4e0399372c7e01539141c444b46",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7365.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7458.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2164",
+  "source_url": "https://www.esoui.com/downloads/info2164-Cooldowns.html",
+  "stats": {
+    "downloads": 104927,
+    "favorites": 61,
+    "monthly_downloads": 327
+  },
+  "title": "Cooldowns",
+  "updated_at": 1565765571000,
+  "version": "1.6.1"
+}

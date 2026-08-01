@@ -1,0 +1,115 @@
+<!--                v 1.4.3               -->
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="TiEmote" mouseEnabled="true" movable="true" drawLevel="DL_BACKGROUND">
+			<Dimensions x="200" y="120"/>
+			<Anchor point="TOPLEFT"/>
+			<OnUpdate>
+				TiEmoteUpdate()
+			</OnUpdate>
+			<OnMouseUp>
+				TiEmoteSaveAnchor()
+			</OnMouseUp>
+			<Controls>
+				<Label name="$(parent)Label" mouseEnabled="true" font="ZoFontGameLargeBoldShadow" color="CFDCBD" styleColor="0A0A0A" wrapmode="ELLIPSIS" verticalAlignment="CENTER" text="TiEmote">
+					<Anchor point="TOPLEFT" offsetX="-10"/>
+					<Controls>
+						<Button name="$(parent)Button" font="ZoFontGame" text="" hidden="false" >
+							<AnchorFill />
+							<OnMouseDown>
+								TiEmoteToggleMain()
+							</OnMouseDown>
+						</Button>
+					</Controls>
+				</Label>
+				
+				<Control name="TE_EmotePanel" mouseEnabled="true">
+					<Dimensions x="160" y="560"/>
+					<Anchor relativeTo="$(parent)Label" point="TOPLEFT" offsetX="10" offsetY="50"/>
+				</Control>
+				<Button name="TE_ShowListButton" inherits="ZO_DefaultButton" text="list">
+					<Anchor relativeTo="TE_EmotePanel" point="TOPLEFT" offsetX="0" offsetY="-25"/>
+					<Dimensions x="160" y="20"/>
+					<OnClicked>
+						TiEmoteToggleList()
+					</OnClicked>
+				</Button>
+				<Button name="TE_EmoteRandomButton" inherits="ZO_DefaultButton" drawLayer="DL_CONTROLS">
+					<Anchor relativeTo="TE_ShowListButton" point="BOTTOM" relativePoint="TOP" offsetX="0" offsetY="0"/>
+					<Dimensions x="32" y="32"/>
+					<Textures fill="$(parent)" normal="/esoui/art/icons/gift_box_003.dds" pressed="/esoui/art/icons/gift_box_001.dds" />
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, TOP, "|cFF6A00Random|r")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()					
+					</OnMouseExit>
+					<OnClicked>
+						TiEmoteRandom(0)
+					</OnClicked>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+
+		<Button name="TE_EmoteButton" font="ZoFontGameSmall" inherits="ZO_DefaultButton" virtual="true" drawLevel="DL_BACKGROUND" text="Click_">
+			<Dimensions x="160" y="25"/>
+			<Anchor relativeTo="TE_EmotePanel" point="TOPLEFT" offsetX="0" offsetY="-5"/>
+			<MouseButton button="1" enabled="true"/>
+			<MouseButton button="2" enabled="true"/> 
+		</Button>
+
+		<Control name="TE_FavPanel" mouseEnabled="true" movable="true" virtual="true" drawLayer="DL_BACKGROUND" >
+			<Dimensions x="160" y="600"/>
+			<Anchor relativeTo="TiEmoteLabel" point="TOPLEFT" offsetX="160" offsetY="0"/>
+			<OnMouseUp>
+				TiEmoteSaveAnchor()
+			</OnMouseUp>
+			<Controls>
+				<Button name="$(parent)GroupButton" inherits="ZO_DefaultButton" text="group" drawLayer="DL_OVERLAY">
+					<Dimensions x="160" y="20"/>
+					<Anchor relativeTo="TE_FavPanel" point="TOPLEFT" offsetX="0" offsetY="25"/>
+					<MouseButton button="1" enabled="true"/>
+					<MouseButton button="2" enabled="true"/>
+				</Button>
+				<Button name="$(parent)RandomButton" inherits="ZO_DefaultButton" drawLayer="DL_CONTROLS">
+					<Anchor relativeTo="$(parent)GroupButton" point="BOTTOM" relativePoint="TOP" offsetX="0" offsetY="0"/>
+					<Dimensions x="32" y="32"/>
+					<Textures fill="$(parent)" normal="/esoui/art/icons/gift_box_002.dds" pressed="/esoui/art/icons/gift_box_001.dds" />
+				</Button>
+				<Button name="$(parent)SettingsButton" inherits="ZO_DefaultButton" drawLayer="DL_CONTROLS">
+					<Anchor relativeTo="$(parent)GroupButton" point="TOPRIGHT" offsetX="0" offsetY="-20"/>
+					<Dimensions x="32" y="32"/>
+					<Textures fill="$(parent)" normal="/esoui/art/chatwindow/chat_options_up.dds" pressed="/esoui/art/chatwindow/chat_options_down.dds" />
+				</Button>
+				<Control name="$(parent)FavList" mouseEnabled="true" drawLayer="DL_BACKGROUND">
+					<Dimensions x="190" y="560"/>
+					<Controls>
+  <!--              <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" /> -->
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+		<Button name="TE_FavButton" font="ZoFontGameSmall" inherits="ZO_DefaultButton" virtual="true" drawLayer="DL_BACKGROUND" text="Click_">
+			<Dimensions x="160" y="25"/>
+			<Anchor relativeTo="TE_FavPanelFavList" point="TOPLEFT" offsetX="0" offsetY="-5"/>
+			<MouseButton button="1" enabled="true"/>
+			<MouseButton button="2" enabled="true"/>
+		</Button>
+		<Button name="TE_DownButton" inherits="ZO_DefaultButton" text="" virtual="true" drawLayer="DL_CONTROLS">
+			<Dimensions x="25" y="25"/>
+			<Anchor relativeTo="TE_FavPanelFavList" point="TOPLEFT" offsetX="150" offsetY="-6"/>
+		</Button>
+		<Button name="TE_UpButton" inherits="ZO_DefaultButton" text="" virtual="true" drawLayer="DL_CONTROLS">
+			<Dimensions x="25" y="25"/>
+			<Anchor relativeTo="TE_FavPanelFavList" point="TOPLEFT" offsetX="165" offsetY="-3"/>
+		</Button>
+		<Button name="TE_ColorButton" inherits="ZO_DefaultButton" text="" virtual="true" drawLayer="DL_CONTROLS" >
+			<Dimensions x="28" y="28"/>
+			<Anchor relativeTo="TE_FavPanelFavList" point="TOPLEFT" offsetX="130" offsetY="-8"/>
+			<Textures excludeFromResizeToFitExtents="true" normal="/esoui/art/dye/dyes_toolicon_paint_up.dds" pressed="/esoui/art/dye/dyes_toolicon_paint_down.dds" />
+			<MouseButton button="1" enabled="true"/>
+			<MouseButton button="2" enabled="true"/> 
+		</Button>
+		
+	</Controls>
+</GuiXml>

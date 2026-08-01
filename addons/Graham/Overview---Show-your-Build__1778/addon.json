@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/Graham/Overview---Show-your-Build__1778",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Graham",
+  "canonical_id": "esoui:1778",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1778",
+  "deleted": false,
+  "directories": [
+    "Overview"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1778/",
+  "fingerprint": "c3f4911d220997e47b0485e50646c75f10a3d133c4a26c0e3d294f70989c5578",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11201.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1778",
+  "source_url": "https://www.esoui.com/downloads/info1778-Overview-ShowyourBuild.html",
+  "stats": {
+    "downloads": 46682,
+    "favorites": 71,
+    "monthly_downloads": 77
+  },
+  "title": "Overview - Show your Build",
+  "updated_at": 1643321455000,
+  "version": "1.5"
+}

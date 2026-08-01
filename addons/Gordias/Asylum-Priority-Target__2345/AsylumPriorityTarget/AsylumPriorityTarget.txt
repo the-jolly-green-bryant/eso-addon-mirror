@@ -1,0 +1,8 @@
+## Title: AsylumPriorityTarget
+## Description: Asylum Priority Target Addon
+## APIVersion: 101039
+## SavedVariables: AsylumPriorityTargetVars
+## DependsOn: LibAddonMenu-2.0
+
+AsylumPriorityTarget.lua
+AsylumPriorityTarget.xml

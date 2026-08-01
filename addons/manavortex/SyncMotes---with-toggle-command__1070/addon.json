@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/manavortex/SyncMotes---with-toggle-command__1070",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1070",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1070",
+  "deleted": false,
+  "directories": [
+    "SyncMotes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1070/",
+  "fingerprint": "24c8d0af3c63ebe56dc04b529bcc17a23e25314d0cd93010fea1ec4c88720fe4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3344.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1070",
+  "source_url": "https://www.esoui.com/downloads/info1070-SyncMotes-withtogglecommand.html",
+  "stats": {
+    "downloads": 5100,
+    "favorites": 2,
+    "monthly_downloads": 12
+  },
+  "title": "SyncMotes - with toggle command",
+  "updated_at": 1430421518000,
+  "version": "1.1.4"
+}

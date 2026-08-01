@@ -1,0 +1,11 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="merlinsRezHelperFrameRoot" movable="false">
+            <Dimensions x="58" y="58" />
+            <Anchor point="CENTER" />
+            <OnUpdate>
+                merlinsRezHelperUpdate()
+            </OnUpdate>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

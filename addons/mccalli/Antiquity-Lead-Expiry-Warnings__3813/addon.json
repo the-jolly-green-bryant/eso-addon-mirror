@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/mccalli/Antiquity-Lead-Expiry-Warnings__3813",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mccalli",
+  "canonical_id": "esoui:3813",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3813",
+  "deleted": false,
+  "directories": [
+    "AntiquityLeadsExpiryWarnings"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3813/",
+  "fingerprint": "d76eb26622b9422bf842ddb24d50eb748536a558d7311c4bfb9e554903a9586f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12960.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3813",
+  "source_url": "https://www.esoui.com/downloads/info3813-AntiquityLeadExpiryWarnings.html",
+  "stats": {
+    "downloads": 4343,
+    "favorites": 10,
+    "monthly_downloads": 51
+  },
+  "title": "Antiquity Lead Expiry Warnings",
+  "updated_at": 1717952449000,
+  "version": "1.0.8"
+}

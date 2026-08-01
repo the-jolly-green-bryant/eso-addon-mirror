@@ -1,0 +1,433 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+	<Controls>  
+        <Control name="LibDataPacker_Build_AttributeTemplate" virtual="true">
+            <Dimensions y="32" />
+            <Controls>
+                <Texture name="$(parent)Icon" color="FF0000">
+                    <Dimensions x="24" y="24" />
+                    <Anchor point="LEFT" />
+                </Texture>
+                <Label name="$(parent)AttributeValue" font="ZoFontHeader2" horizontalAlignment="LEFT" text="64">
+                    <Dimensions x="36" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="8" />
+                </Label>
+                <Label name="$(parent)ResourceValue" font="ZoFontHeader2" horizontalAlignment="RIGHT" text="40000">
+                    <Dimensions x="60" />
+                    <Anchor point="LEFT" relativeTo="$(parent)AttributeValue" relativePoint="RIGHT" offsetX="4" />
+                </Label>
+                <Label name="$(parent)RegenerationValue" font="ZoFontHeader2" horizontalAlignment="RIGHT" text="2400">
+                    <Dimensions x="45" />
+                    <Anchor point="LEFT" relativeTo="$(parent)ResourceValue" relativePoint="RIGHT" offsetX="4" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <Texture name="LibDataPacker_Build_SkillTextureTemplate" virtual="true">
+            <Dimensions x="48" y="48" />
+        </Texture>
+
+        <Control name="LibDataPacker_Build_SkillbarTemplate" virtual="true">
+            <Dimensions y="48" />
+            <Controls>
+                <Texture name="$(parent)Icon" inherits="LibDataPacker_Build_SkillTextureTemplate" hidden="true">
+                    <Anchor point="LEFT" />
+                </Texture>
+                <Texture name="$(parent)Skill3" inherits="LibDataPacker_Build_SkillTextureTemplate">
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="6" />
+                </Texture>
+                <Texture name="$(parent)Skill4" inherits="LibDataPacker_Build_SkillTextureTemplate">
+                    <Anchor point="LEFT" relativeTo="$(parent)Skill3" relativePoint="RIGHT" offsetX="2" />
+                </Texture>
+                <Texture name="$(parent)Skill5" inherits="LibDataPacker_Build_SkillTextureTemplate">
+                    <Anchor point="LEFT" relativeTo="$(parent)Skill4" relativePoint="RIGHT" offsetX="2" />
+                </Texture>
+                <Texture name="$(parent)Skill6" inherits="LibDataPacker_Build_SkillTextureTemplate">
+                    <Anchor point="LEFT" relativeTo="$(parent)Skill5" relativePoint="RIGHT" offsetX="2" />
+                </Texture>
+                <Texture name="$(parent)Skill7" inherits="LibDataPacker_Build_SkillTextureTemplate">
+                    <Anchor point="LEFT" relativeTo="$(parent)Skill6" relativePoint="RIGHT" offsetX="2" />
+                </Texture>
+                <Texture name="$(parent)Skill8" inherits="LibDataPacker_Build_SkillTextureTemplate">
+                    <Anchor point="LEFT" relativeTo="$(parent)Skill7" relativePoint="RIGHT" offsetX="12" />
+                </Texture>
+            </Controls>
+        </Control>
+
+        <Label name="LibDataPacker_Build_StatDamageTemplate" font="ZoFontHeader2" horizontalAlignment="CENTER" text="Damage" virtual="true">
+            <Dimensions x="80" />
+            <Anchor point="LEFT" />
+        </Label>
+    
+        <Label name="LibDataPacker_Build_StatCritTemplate" font="ZoFontHeader2" horizontalAlignment="CENTER" text="Crit" virtual="true">
+            <Dimensions x="80" />
+            <Anchor point="LEFT" relativeTo="$(parent)Damage" relativePoint="RIGHT" offsetX="4" />
+        </Label>
+    
+        <Label name="LibDataPacker_Build_StatPenetrationTemplate" font="ZoFontHeader2" horizontalAlignment="CENTER" text="Penetration" virtual="true">
+            <Dimensions x="90" />
+            <Anchor point="LEFT" relativeTo="$(parent)Crit" relativePoint="RIGHT" offsetX="4" />
+        </Label>
+    
+        <Label name="LibDataPacker_Build_StatResistanceTemplate" font="ZoFontHeader2" horizontalAlignment="CENTER" text="Resistance" virtual="true">
+            <Dimensions x="90" />
+            <Anchor point="LEFT" relativeTo="$(parent)Penetration" relativePoint="RIGHT" offsetX="4" />
+        </Label>
+
+        <Control name="LibDataPacker_Build_StatTemplate" virtual="true">
+            <Dimensions x="370" y="24" />
+            <Controls>
+                <Label name="$(parent)Damage" inherits="LibDataPacker_Build_StatDamageTemplate" mouseEnabled="true" text="-" />
+                <Label name="$(parent)Crit" inherits="LibDataPacker_Build_StatCritTemplate" mouseEnabled="true" text="-" />
+                <Label name="$(parent)Penetration" inherits="LibDataPacker_Build_StatPenetrationTemplate" mouseEnabled="true" text="-" />
+                <Label name="$(parent)Resistance" inherits="LibDataPacker_Build_StatResistanceTemplate" mouseEnabled="true" text="-" />
+            </Controls>
+        </Control>
+        
+        <Control name="LibDataPacker_Build_GearPeaceTemplate" mouseEnabled="true" virtual="true" resizeToFitDescendents="true">
+            <Anchor point="TOPLEFT" />
+            <Controls>
+                <!-- <Texture name="$(parent)BG" color="FFFFFF" alpha="0.3" excludeFromResizeToFitExtents="true">
+                    <AnchorFill />
+                </Texture> -->
+                <Label name="$(parent)SlotName" modifyTextType="UPPERCASE" font="ZoFontHeader2" text="-">
+                    <Dimensions x="100" />
+                    <Anchor point="TOPLEFT" />
+                </Label>
+                
+                <Label name="$(parent)GearName" font="ZoFontHeader2" text="-">
+                    <Anchor point="LEFT" relativeTo="$(parent)SlotName" relativePoint="RIGHT" offsetX="80" />
+                </Label>
+
+                <Label name="$(parent)Level" horizontalAlignment="RIGHT" font="ZoFontHeader2" text="-">
+                    <!-- <Dimensions x="32" /> -->
+                    <Anchor point="RIGHT" relativeTo="$(parent)GearName" relativePoint="LEFT" offsetX="-4" />
+                </Label>
+                <Texture name="$(parent)CPIcon" textureFile="esoui/art/champion/champion_icon.dds" hidden="true">
+                    <Dimensions x="24" y="24" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)Level" relativePoint="LEFT" />
+                </Texture>
+                
+                <Label name="$(parent)Set" font="ZoFontHeader2" text="-" hidden="true">
+                    <Anchor point="LEFT" relativeTo="$(parent)GearName" relativePoint="RIGHT" offsetX="16" />
+                </Label>
+                <Label name="$(parent)Trait" font="ZoFontGameSmall" text="-">
+                    <Dimensions x="70" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)GearName" relativePoint="BOTTOMLEFT" />
+                </Label>
+                <Label name="$(parent)Enchantment" font="ZoFontGameSmall" text="-">
+                    <Anchor point="LEFT" relativeTo="$(parent)Trait" relativePoint="RIGHT" offsetX="16" />
+                </Label>
+            </Controls>
+
+            <OnMouseEnter>
+                if self.itemLink then
+                    InitializeTooltip(ItemTooltip, self, LEFT, 0, 0, RIGHT)
+                    ItemTooltip:SetLink(self.itemLink)
+                end
+            </OnMouseEnter>
+
+            <OnMouseExit>
+                ClearTooltip(ItemTooltip)
+            </OnMouseExit>
+        </Control>
+
+        <Control name="LibDataPacker_Build_DisciplineTemplate" virtual="true">
+            <Dimensions y="32" />
+            <Anchor point="TOPLEFT" />
+            <Controls>
+                <Texture name="$(parent)Icon">
+                    <Dimensions x="24" y="24" />
+                    <Anchor point="LEFT" />
+                </Texture>
+                <Label name="$(parent)Name" font="ZoFontHeader2" text="-">
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="6" />
+                </Label>    
+            </Controls>
+        </Control>
+
+        <Control name="LibDataPacker_Build_ConstellationTemplate" virtual="true">
+            <Dimensions y="24" />
+            <Anchor point="TOPLEFT" />
+            <Controls>
+                <Texture name="$(parent)IconBorder">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" />
+                </Texture>
+                <Texture name="$(parent)Icon">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="LEFT" offsetY="1" />
+                </Texture>
+                <Label name="$(parent)Name" font="ZoFontHeader2" text="-">
+                    <Anchor point="LEFT" relativeTo="$(parent)IconBorder" relativePoint="RIGHT" offsetX="6" />
+                </Label>    
+            </Controls>
+        </Control>
+
+        <Label name="LibDataPacker_Build_SkillLineTemplate" font="ZoFontHeader2" text="-" virtual="true">
+            <Dimensions y="24" />
+            <Controls>
+                <Label name="$(parent)ClassName" font="ZoFontGameSmall" text="(-)">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" />
+                </Label>
+            </Controls>
+        </Label>
+
+		<TopLevelControl name="LibDataPacker_Build_TLC" resizeToFitDescendents="true" mouseEnabled="true" movable="true" hidden="true">
+            <!-- <Dimensions x="700" y="900" /> -->
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_FrameBackdrop">
+                    <Anchor point="TOPLEFT" offsetX="-10" offsetY="-5" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="10" offsetY="10" />
+                </Backdrop>
+                
+                <Label name="$(parent)Header" font="ZoFontHeader3" horizontalAlignment="CENTER" text="Build Viewer">
+                    <Anchor point="TOP" offsetY="4" /> 
+                </Label>
+                <Button name="$(parent)CloseButton" excludeFromResizeToFitExtents="true">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="6" offsetY="-6" />
+                    <Dimensions x="42" y="42"/>
+                    <Textures 
+                        normal="/esoui/art/hud/radialicon_cancel_up.dds"
+                        mouseOver="/esoui/art/hud/radialicon_cancel_over.dds"
+                    />
+                    <OnClicked>
+                        self:GetParent():SetHidden(true)
+                    </OnClicked>
+                </Button>
+
+                <Control name="$(parent)BasicInfo">
+                    <Dimensions x="360" y="80" />
+                    <Anchor point="TOPLEFT" offsetY="48" />
+                    <Controls>
+                        <!-- <Backdrop name="$(parent)BG" inherits="ZO_FrameBackdrop" /> -->
+                        <Texture name="$(parent)AllianceIcon">
+                            <Dimensions x="56" y="56" />
+                            <Anchor point="TOPLEFT" />
+                        </Texture>
+                        <Label name="$(parent)ChampionPoints" font="ZoFontHeader3" text="-">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)AllianceIcon" relativePoint="TOPRIGHT" offsetX="36" />
+                            <Controls>
+                                <Texture name="$(parent)Icon" textureFile="EsoUI/Art/Champion/champion_icon.dds">
+                                    <Dimensions x="24" y="24" />
+                                    <Anchor point="RIGHT" relativePoint="LEFT" offsetX="-4" />
+                                </Texture>
+                            </Controls>
+                        </Label>
+                        <Label name="$(parent)RaceAndClass" font="ZoFontHeader2" text="-">
+                            <Anchor point="LEFT" relativeTo="$(parent)ChampionPoints" relativePoint="RIGHT" offsetX="6" />
+                        </Label>
+                        <Label name="$(parent)AVARank" font="ZoFontHeader3" text="-">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)ChampionPoints" relativePoint="BOTTOMLEFT" />
+                            <Controls>
+                                <Texture name="$(parent)Icon">
+                                    <Dimensions x="24" y="24" />
+                                    <Anchor point="RIGHT" relativePoint="LEFT" offsetX="-4" />
+                                </Texture>
+                                <Label name="$(parent)Label" font="ZoFontHeader2" text="(-)">
+                                    <Anchor point="LEFT" relativePoint="RIGHT" offsetX="6" />
+                                </Label>
+                            </Controls>
+                        </Label>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Attributes">
+                    <Dimensions x="200" y="108" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)BasicInfo" relativePoint="BOTTOMLEFT" />
+                    <Controls>
+                        <!-- <Backdrop name="$(parent)BG" inherits="ZO_FrameBackdrop" /> -->
+                        <Control name="$(parent)Magicka" inherits="LibDataPacker_Build_AttributeTemplate">
+                            <Anchor point="TOPLEFT" />
+                            <OnInitialized>
+                                local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_POWER, COMBAT_MECHANIC_FLAGS_MAGICKA)
+                                for childIndex = 1, self:GetNumChildren() do
+                                    self:GetChild(childIndex):SetColor(r, g, b)
+                                end
+                            </OnInitialized>
+                        </Control>
+                        <Control name="$(parent)Health" inherits="LibDataPacker_Build_AttributeTemplate">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Magicka" relativePoint="BOTTOMLEFT"/>
+                            <OnInitialized>
+                                local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_POWER, COMBAT_MECHANIC_FLAGS_HEALTH)
+                                for childIndex = 1, self:GetNumChildren() do
+                                    self:GetChild(childIndex):SetColor(r, g, b)
+                                end
+                            </OnInitialized>
+                        </Control>
+                        <Control name="$(parent)Stamina" inherits="LibDataPacker_Build_AttributeTemplate">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Health" relativePoint="BOTTOMLEFT"/>
+                            <OnInitialized>
+                                local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_POWER, COMBAT_MECHANIC_FLAGS_STAMINA)
+                                for childIndex = 1, self:GetNumChildren() do
+                                    self:GetChild(childIndex):SetColor(r, g, b)
+                                end
+                            </OnInitialized>
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Skills">
+                    <Dimensions x="370" y="100" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)BasicInfo" relativePoint="TOPRIGHT" offsetX="-50" /> <!-- offsetX="20" /> -->
+                    <Controls>
+                        <!-- <Backdrop name="$(parent)BG" inherits="ZO_FrameBackdrop" /> -->
+                        <Control name="$(parent)Primary" inherits="LibDataPacker_Build_SkillbarTemplate">
+                            <Anchor point="TOPLEFT" />
+                        </Control>
+                        <Control name="$(parent)Backup" inherits="LibDataPacker_Build_SkillbarTemplate">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Primary" relativePoint="BOTTOMLEFT" offsetY="4" />
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Stats">
+                    <Dimensions x="370" y="90" />
+                    <!-- <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Attributes" relativePoint="BOTTOMRIGHT" offsetX="100" /> -->
+                    <Anchor point="TOP" relativeTo="$(parent)Skills" relativePoint="BOTTOM" />
+                    <Controls>
+                        <!-- <Backdrop name="$(parent)BG" inherits="ZO_FrameBackdrop" /> -->
+                        <Control name="$(parent)Headers">
+                            <Dimensions x="370" y="30" />
+                            <Anchor point="TOP" />
+                            <Controls>
+                                <Label name="$(parent)Damage" inherits="LibDataPacker_Build_StatDamageTemplate" font="ZoFontGame" />
+                                <Label name="$(parent)Crit" inherits="LibDataPacker_Build_StatCritTemplate" font="ZoFontGame" />
+                                <Label name="$(parent)Penetration" inherits="LibDataPacker_Build_StatPenetrationTemplate" font="ZoFontGame" />
+                                <Label name="$(parent)Resistance" inherits="LibDataPacker_Build_StatResistanceTemplate" font="ZoFontGame" />
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)Magickal" inherits="LibDataPacker_Build_StatTemplate">
+                            <Anchor point="TOP" relativeTo="$(parent)Headers" relativePoint="BOTTOM" />
+                            <OnInitialized>
+                                local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_POWER, COMBAT_MECHANIC_FLAGS_MAGICKA)
+                                for childIndex = 1, self:GetNumChildren() do
+                                    self:GetChild(childIndex):SetColor(r, g, b)
+                                end
+                            </OnInitialized>
+                        </Control>
+                        <Control name="$(parent)Physical" inherits="LibDataPacker_Build_StatTemplate">
+                            <Anchor point="TOP" relativeTo="$(parent)Magickal" relativePoint="BOTTOM" />
+                            <OnInitialized>
+                                local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_POWER, COMBAT_MECHANIC_FLAGS_STAMINA)
+                                for childIndex = 1, self:GetNumChildren() do
+                                    self:GetChild(childIndex):SetColor(r, g, b)
+                                end
+                            </OnInitialized>
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Gear" resizeToFitDescendents="true">
+                    <!-- <Dimensions x="520" y="700" /> -->
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Attributes" relativePoint="BOTTOMLEFT"/>
+                    <Controls>
+                        <!-- <Texture name="$(parent)BG" color="0000AA" excludeFromResizeToFitExtents="true">
+                            <AnchorFill />
+                        </Texture> -->
+                    </Controls>
+                    <OnInitialized>
+                        LibDataPacker_Build_InitializeGearSlots(self)
+                    </OnInitialized>
+                </Control>
+                <Control name="$(parent)Disciplines" resizeToFitDescendents="true">
+                    <!-- <Dimensions x="160" y="400" /> -->
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Gear" relativePoint="TOPRIGHT" offsetX="16" />
+                    <Controls>
+                        <!-- <Texture name="$(parent)BG" color="00AA00" excludeFromResizeToFitExtents="true">
+                            <AnchorFill />
+                        </Texture> -->
+                    </Controls>
+                    <OnInitialized>
+                        LibDataPacker_Build_InitializeDisciplineSlots(self)
+                    </OnInitialized>
+                </Control>
+                <Control name="$(parent)SkillLines" resizeToFitDescendents="true">
+                    <!-- <Dimensions x="160" y="150" /> -->
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Disciplines" relativePoint="BOTTOMLEFT" offsetY="8" />
+                    <Controls>
+                        <!-- <Texture name="$(parent)BG" color="0000AA" excludeFromResizeToFitExtents="true">
+                            <AnchorFill />
+                        </Texture> -->
+                        <Label name="$(parent)SkillLine1" inherits="LibDataPacker_Build_SkillLineTemplate">
+                            <Anchor point="TOPLEFT" />
+                        </Label>
+                        <Label name="$(parent)SkillLine2" inherits="LibDataPacker_Build_SkillLineTemplate">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)SkillLine1" relativePoint="BOTTOMLEFT" offsetY="20" />
+                        </Label>
+                        <Label name="$(parent)SkillLine3" inherits="LibDataPacker_Build_SkillLineTemplate">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)SkillLine2" relativePoint="BOTTOMLEFT" offsetY="20" />
+                        </Label>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Boons" resizeToFitDescendents="true">
+                    <!-- <Dimensions x="160" y="70" /> -->
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SkillLines" relativePoint="BOTTOMLEFT" offsetY="8" />
+                    <Controls>
+                        <!-- <Texture name="$(parent)BG" color="00AA00" excludeFromResizeToFitExtents="true">
+                            <AnchorFill />
+                        </Texture> -->
+                        <Control name="$(parent)Main" hidden="true">
+                            <Dimensions x="160" y="32"/>
+                            <Anchor point="TOPLEFT" />
+                            <Controls>
+                                <Texture name="$(parent)Icon">
+                                    <Dimensions x="32" y="32" />
+                                    <Anchor point="LEFT" />
+                                </Texture>
+                                <Label name="$(parent)Name" font="ZoFontHeader2" verticalAlignment="CENTER" text="-">
+                                    <Dimensions y="32" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="4" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)Secondary" hidden="true">
+                            <Dimensions x="160" y="32"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Main" relativePoint="BOTTOMLEFT" offsetY="4" />
+                            <Controls>
+                                <Texture name="$(parent)Icon" color="00FF00">
+                                    <Dimensions x="32" y="32" />
+                                    <Anchor point="LEFT" />
+                                </Texture>
+                                <Label name="$(parent)Name" font="ZoFontHeader2" verticalAlignment="CENTER" text="-">
+                                    <Dimensions y="32" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="4" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Food" resizeToFitDescendents="true">
+                    <!-- <Dimensions x="160" y="32" /> -->
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Boons" relativePoint="BOTTOMLEFT" offsetY="8" />
+                    <Controls>
+                        <!-- <Texture name="$(parent)BG" color="0000AA" excludeFromResizeToFitExtents="true">
+                            <AnchorFill />
+                        </Texture> -->
+                        <Texture name="$(parent)Icon">
+                            <Dimensions x="32" y="32" />
+                            <Anchor point="LEFT" />
+                        </Texture>
+                        <Label name="$(parent)Name" font="ZoFontHeader2" verticalAlignment="CENTER" text="-">
+                            <Dimensions y="32" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="4" />
+                        </Label>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)VampWW" resizeToFitDescendents="true">
+                    <!-- <Dimensions x="160" y="32" /> -->
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Food" relativePoint="BOTTOMLEFT" offsetY="8" />
+                    <Controls>
+                        <!-- <Texture name="$(parent)BG" color="00AA00" excludeFromResizeToFitExtents="true">
+                            <AnchorFill />
+                        </Texture> -->
+                        <Texture name="$(parent)Icon">
+                            <Dimensions x="32" y="32" />
+                            <Anchor point="LEFT" />
+                        </Texture>
+                        <Label name="$(parent)Name" font="ZoFontHeader2" verticalAlignment="CENTER" text="-">
+                            <Dimensions y="32" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="4" />
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl> 
+	</Controls>
+</GuiXml>

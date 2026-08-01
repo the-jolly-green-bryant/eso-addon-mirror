@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/manavortex/MapRightClickHouse__1800",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1800",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    }
+  ],
+  "content_id": "esoui:1800",
+  "deleted": false,
+  "directories": [
+    "MapRightClickHouse"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1800/",
+  "fingerprint": "8c6669e3901423098b024868513eadbfc31f32a3e04343ea2aacbb0398918ff1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6112.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1800",
+  "source_url": "https://www.esoui.com/downloads/info1800-MapRightClickHouse.html",
+  "stats": {
+    "downloads": 7601,
+    "favorites": 6,
+    "monthly_downloads": 13
+  },
+  "title": "MapRightClickHouse",
+  "updated_at": 1510777992000,
+  "version": "1.1"
+}

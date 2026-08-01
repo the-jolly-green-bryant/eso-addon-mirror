@@ -1,0 +1,197 @@
+<GuiXml>
+  <Controls>
+
+    <!-- Virtuals -->
+    <Label name="RF_ListLabel" font="ZoFontGameBold" maxLineCount="2" wrapMode="ELLIPSIS" virtual="true"/>
+    <Label name="RF_NumericLabel" font="ZoFontWinH1" color="FFFFFF" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" wrapMode="ELLIPSIS" virtual="true" />
+    <Label name="RF_AbilityTypeLabel" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" virtual="true"/>
+
+    <Label name="RF_ListLabelCompact" font="ZoFontGameBold" maxLineCount="2" wrapMode="ELLIPSIS" virtual="true"/>
+    <Label name="RF_NumericLabelCompact" font="ZoFontGameBold" color="FFFFFF" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" wrapMode="ELLIPSIS" virtual="true" />
+    <Label name="RF_AbilityTypeLabelCompact" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" virtual="true"/>
+
+    <!-- Full Display Mode -->
+    <Control name="RecapRowFull" resizeToFitDescendents="true" virtual="true">
+      <DimensionConstraints minY="64" />
+      <Controls>
+
+        <Label name="$(parent)Timestamp" inherits="RF_ListLabel">
+          <Anchor point="LEFT" offsetX="20"/>
+        </Label>
+
+        <Texture name="$(parent)Icon" tier="MEDIUM" excludeFromResizeToFitExtents="true">
+          <Dimensions x="56" y="56"/>
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Timestamp" offsetX="20"/>
+        </Texture>
+
+        <Label name="$(parent)SourceName" inherits="RF_ListLabel" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+          <Anchor point="BOTTOMLEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="20"/>
+        </Label>
+
+        <Label name="$(parent)AbilityName" inherits="RF_ListLabel" modifyTextType="UPPERCASE">
+          <Anchor point="TOPLEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="20"/>
+        </Label>
+
+        <Label name="$(parent)Multiplier" inherits="RF_ListLabel" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)AbilityName" offsetX="10"/>
+        </Label>
+
+        <Label name="$(parent)AbilityType" text="AbilityType" inherits="RF_AbilityTypeLabel">
+          <Dimensions x="50" />
+          <Anchor point="RIGHT" offsetX="-20"/>
+        </Label>
+
+        <Label name="$(parent)HitValue" inherits="RF_NumericLabel">
+          <Dimensions x="150"/>
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)AbilityType" offsetX="-10"/>
+        </Label>
+
+      </Controls>
+    </Control>
+
+    <!-- Compact Display Mode -->
+    <Control name="RecapRowCompact" resizeToFitDescendents="true" virtual="true">
+      <Controls>
+
+        <Label name="$(parent)Timestamp" inherits="RF_ListLabelCompact">
+          <Anchor point="LEFT" offsetX="5"/>
+        </Label>
+
+        <Texture name="$(parent)Icon">
+        </Texture>
+
+        <Label name="$(parent)SourceName">
+        </Label>
+
+        <Label name="$(parent)AbilityName" inherits="RF_ListLabelCompact">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Timestamp" offsetX="20"/>
+        </Label>
+
+        <Label name="$(parent)Multiplier" inherits="RF_ListLabelCompact" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)AbilityName" offsetX="10"/>
+        </Label>
+
+        <Label name="$(parent)AbilityType" text="TBD" inherits="RF_AbilityTypeLabelCompact">
+          <Dimensions x="50" />
+          <Anchor point="RIGHT" offsetX="-5"/>
+        </Label>
+
+        <Label name="$(parent)HitValue" inherits="RF_NumericLabelCompact">
+          <Dimensions x="150"/>
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)AbilityType" offsetX="-10"/>
+        </Label>
+
+      </Controls>
+    </Control>
+
+    <!-- Main Recap UI -->
+    <TopLevelControl name="RF_RECAP" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" resizeHandleSize="10">
+      <DimensionConstraints minX="410" minY="300" maxX="640" maxY="640"/>
+      <OnMoveStop>RipFilter:onMoveStop()</OnMoveStop>
+      <OnResizeStart>RipFilter:onResizeStart()</OnResizeStart>
+      <OnResizeStop>RipFilter:onResizeStop()</OnResizeStop>
+      <Controls>
+
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"><AnchorFill/></Backdrop>
+
+        <Button name="$(parent)Close">
+          <Anchor point="TOPRIGHT" relativeTo="RF_RECAP" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10"/>
+          <OnMouseUp>RipFilter:SetHiddenRecap(not RF_RECAP:IsHidden())</OnMouseUp>
+          <Dimensions x="25" y="25" />
+          <Textures normal="EsoUI/art/buttons/decline_up.dds"
+                    pressed="EsoUI/art/buttons/decline_down.dds"
+                    mouseOver="EsoUI/art/buttons/decline_over.dds"
+          />
+        </Button>
+
+        <Control name="$(parent)_PlayersList">
+          <Anchor point="TOPLEFT" relativeTo="RF_RECAP" relativePoint="TOPLEFT" offsetX="10" offsetY="10"/>
+          <Controls>
+            <Control name="$(parent)Status" mouseEnabled="true" inherits="ZO_ComboBox">
+              <Anchor point="TOPLEFT"/>
+              <Dimensions x="48" y="32"/>
+              <!-- <OnInitialized> ZO_ComboBox:New(self) </OnInitialized> -->
+              <OnMouseUp>
+                if button == MOUSE_BUTTON_INDEX_LEFT and upInside then
+                    ZO_ComboBox_DropdownClicked(self:GetParent())
+                end
+              </OnMouseUp>
+              <Controls>
+                <Button name="$(parent)SelectedItem" mouseOverBlendMode="ADD">
+                  <Dimensions x="32" y="32"/>
+                  <Anchor point="TOPLEFT"/>
+                  <Textures normal="EsoUI/Art/Contacts/social_status_online.dds"
+                            mouseOver="EsoUI/Art/Contacts/social_status_highlight.dds"/>
+                  <OnClicked> ZO_ComboBox_DropdownClicked(self:GetParent()) </OnClicked>
+                </Button>
+                <!-- <Button name="$(parent)OpenDropdown" inherits="ZO_DropdownButton">
+                  <Dimensions x="16" y="16"/>
+                  <Anchor point="LEFT" relativeTo="$(parent)SelectedItem" relativePoint="RIGHT" offsetX="-4"/>
+                  <OnClicked> ZO_ComboBox_DropdownClicked(self:GetParent()) </OnClicked>
+                </Button> -->
+              </Controls>
+            </Control>
+          </Controls>
+        </Control>
+
+        <Label name="$(parent)_Title" font="ZoFontGameBold" text="DEATH RECAP" modifyTextType="UPPERCASE">
+          <Anchor point="TOP" offsetY="10" />
+        </Label>
+
+        <Texture name="$(parent)TitleDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="640" y="8"/>
+          <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)_Title" offsetY="10" />
+        </Texture>
+
+        <!-- Recap List -->
+        <Control name="$(parent)_Recap_List" resizeToFitDescendents="true">
+          <!-- <Dimensions x="620" y="500"/> -->
+          <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)TitleDivider" offsetY="10" />
+          <Controls>
+            <Control name="$(parent)List" inherits="ZO_ScrollList">
+              <AnchorFill/>
+            </Control>
+          </Controls>
+        </Control>
+
+        <Label name="$(parent)_Footer" font="ZoFontGameBold" text="" modifyTextType="UPPERCASE">
+          <Anchor point="BOTTOM" offsetY="-10" />
+        </Label>
+
+        <Texture name="$(parent)FooterDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="640" y="8"/>
+          <Anchor point="BOTTOM" relativePoint="TOP" relativeTo="$(parent)_Footer" offsetY="-2" />
+        </Texture>
+
+        <Button name="$(parent)Previous" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="40" y="40" />
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)_Footer"/>
+          <Textures normal="EsoUI/Art/Buttons/leftarrow_up.dds"
+            pressed="EsoUI/Art/Buttons/leftarrow_down.dds"
+            mouseOver="EsoUI/Art/Buttons/leftarrow_mouseover.dds"
+            disabled="EsoUI/Art/Buttons/leftarrow_disabled.dds"/>
+          <OnClicked>
+            RipFilter.RecapScrollList:Previous()
+          </OnClicked>
+        </Button>
+
+        <Button name="$(parent)Next" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="40" y="40" />
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)_Footer"/>
+          <Textures normal="EsoUI/Art/Buttons/rightarrow_up.dds"
+            pressed="EsoUI/Art/Buttons/rightarrow_down.dds"
+            mouseOver="EsoUI/Art/Buttons/rightarrow_mouseover.dds"
+            disabled="EsoUI/Art/Buttons/rightarrow_disabled.dds"/>
+          <OnClicked>
+            RipFilter.RecapScrollList:Next()
+          </OnClicked>
+        </Button>
+
+        <Label name="$(parent)_AddonNameVersion" text="" inherits="RF_AbilityTypeLabelCompact" >
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="-5" />
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,28 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|c8c7037LorePlay">
+      <Action name="PERFORM_SMART_EMOTE">
+        <Down>LorePlay.PerformSmartEmote()</Down>
+      </Action>
+      <Action name="TOGGLE_IDLEEMOTES_ON/OFF">
+        <Down>LorePlay.ToggleIdleEmotes(not LorePlay.savedSettingsTable.isIdleEmotesOn)</Down>
+      </Action>
+      <Action name="SHOW/HIDE_LOREWEAR_CLOTHES">
+        <Down>LorePlay.KeypressToggleLoreWearClothes()</Down>
+      </Action>
+      <Action name="FORCE_EQUIP_CITY_OUTFIT">
+        <Down>LorePlay.KeypressEquipOutfit("City")</Down>
+      </Action>
+      <Action name="FORCE_EQUIP_HOUSING_OUTFIT">
+        <Down>LorePlay.KeypressEquipOutfit("Housing")</Down>
+      </Action>
+      <Action name="FORCE_EQUIP_DUNGEON_OUTFIT">
+        <Down>LorePlay.KeypressEquipOutfit("Dungeon")</Down>
+      </Action>
+      <Action name="FORCE_EQUIP_ADVENTURE_OUTFIT">
+        <Down>LorePlay.KeypressEquipOutfit("Adventure")</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>
+

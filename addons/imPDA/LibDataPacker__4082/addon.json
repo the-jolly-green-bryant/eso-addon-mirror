@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/imPDA/LibDataPacker__4082",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "imPDA",
+  "canonical_id": "esoui:4082",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4082",
+  "deleted": false,
+  "directories": [
+    "LibDataPacker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4082/",
+  "fingerprint": "9973fed38b175d3cf9d766dc40f949818397f9d4ec7d51bc46c57a5d0ca4fc0c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4082",
+  "source_url": "https://www.esoui.com/downloads/info4082-LibDataPacker.html",
+  "stats": {
+    "downloads": 8074,
+    "favorites": 4,
+    "monthly_downloads": 432
+  },
+  "title": "LibDataPacker",
+  "updated_at": 1781183017000,
+  "version": "v5"
+}

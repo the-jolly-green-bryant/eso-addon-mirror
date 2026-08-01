@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Lledos/Orgeborn__4278",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lledos",
+  "canonical_id": "esoui:4278",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4278",
+  "deleted": false,
+  "directories": [
+    "Orgeborn"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4278/",
+  "fingerprint": "3b3dd8cdf62dbd24799da91d23899c4c5fdacd343c5300e7cbdf8bd294e6aaa2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14699.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4278",
+  "source_url": "https://www.esoui.com/downloads/info4278-Orgeborn.html",
+  "stats": {
+    "downloads": 231,
+    "favorites": 0,
+    "monthly_downloads": 6
+  },
+  "title": "Orgeborn",
+  "updated_at": 1760745892000,
+  "version": "1.0"
+}

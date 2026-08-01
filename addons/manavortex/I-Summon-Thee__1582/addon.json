@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/manavortex/I-Summon-Thee__1582",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1582",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1582",
+  "deleted": false,
+  "directories": [
+    "ISummonThee"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1582/",
+  "fingerprint": "1f961d5ba3025c1de314912e9866285d9c79306af36a8cbb3412127089ddf03c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5175.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1582",
+  "source_url": "https://www.esoui.com/downloads/info1582-ISummonThee.html",
+  "stats": {
+    "downloads": 3975,
+    "favorites": 2,
+    "monthly_downloads": 23
+  },
+  "title": "I Summon Thee",
+  "updated_at": 1485451779000,
+  "version": "0.3b"
+}

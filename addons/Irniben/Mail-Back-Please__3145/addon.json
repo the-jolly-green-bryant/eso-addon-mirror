@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Irniben/Mail-Back-Please__3145",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Irniben",
+  "canonical_id": "esoui:3145",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3145",
+  "deleted": false,
+  "directories": [
+    "MailBackPlease"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3145/",
+  "fingerprint": "6b2e43f5c01a918ba3d2b28a1208c695bba27b03be7c6f7a52994b40cf977983",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3145",
+  "source_url": "https://www.esoui.com/downloads/info3145-MailBackPlease.html",
+  "stats": {
+    "downloads": 4090,
+    "favorites": 3,
+    "monthly_downloads": 7
+  },
+  "title": "Mail Back Please",
+  "updated_at": 1676101348000,
+  "version": "1.0.2"
+}

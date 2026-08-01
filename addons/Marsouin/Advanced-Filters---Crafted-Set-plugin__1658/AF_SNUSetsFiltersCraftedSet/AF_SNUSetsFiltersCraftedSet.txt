@@ -1,0 +1,9 @@
+## Title: Advanced Filters - Crafted Sets Filter
+## Author: Sylvain Neau
+## Version: 2.0.1
+## APIVersion: 100018 100019
+## DependsOn: AdvancedFilters
+## FastAPI : 100018
+
+Lang/$(language).lua
+AF_SNUSetsFiltersCraftedSet.lua

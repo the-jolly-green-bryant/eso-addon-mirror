@@ -1,0 +1,11 @@
+## Title: |c00FF7FSmart|cFFD700Pricer|r
+## Description: Displays a gold icon on valuable items based on TTC prices.
+## Author: LimPack
+## Version: 1.1.0
+## APIVersion: 101049
+## SavedVariables: SmartPricerSavedVars
+## DependsOn: LibAddonMenu-2.0 TamrielTradeCentre
+
+SmartPricerBadges.xml
+SmartPricer_Strings.lua
+SmartPricer.lua

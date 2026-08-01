@@ -1,0 +1,6 @@
+## Title: AutoAcceptDuel
+## Description: Lets the world know you ain't no bitch.
+## Author: |c42BCF4|GhostGat
+## APIVersion: 100026
+## SavedVariables: AD_DB
+AutoAcceptDuel.lua

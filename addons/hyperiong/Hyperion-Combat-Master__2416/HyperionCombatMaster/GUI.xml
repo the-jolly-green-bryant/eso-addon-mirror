@@ -1,0 +1,120 @@
+<GuiXml>
+  <Controls>
+
+    <TopLevelControl name="ActiveBarIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="60" y="30" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-100" />
+      <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12)</OnMouseEnter>
+      <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0)</OnMouseExit>
+      <OnMoveStop>HCMAddon.OnActiveBarIndicatorMoveStop()</OnMoveStop>
+      <Controls>
+        <Label name="$(parent)Label" font="$(BOLD_FONT)|24|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="" horizontalAlignment="" text="">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetY ="0" />
+        </Label>
+        <Label name="$(parent)Label2" hidden="true" font="$(BOLD_FONT)|12|thin-outline" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="" horizontalAlignment="CENTER" text="BAR">
+          <Anchor point="CENTER" relativeTo="$(parent)Label" relativePoint="CENTER" offsetY="-20" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="InCombatIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="160" y="50" />
+      <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetY="70" />
+      <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12)</OnMouseEnter>
+      <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0)</OnMouseExit>
+      <OnMoveStop>HCMAddon.OnInCombatIndicatorMoveStop()</OnMoveStop>
+      <Controls>
+        <Label name="$(parent)Label" font="$(BOLD_FONT)|30|soft-shadow-thick" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="IN COMBAT">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="PowerIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="60" y="50" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-100" offsetY="50" />
+      <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12)</OnMouseEnter>
+      <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0)</OnMouseExit>
+      <OnMoveStop>HCMAddon.OnPowerIndicatorMoveStop()</OnMoveStop>
+      <Controls>
+        <Button name="$(parent)Button" topmost="true">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+          <Dimensions x="60" y="20" />
+          <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(6)</OnMouseEnter>
+          <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0)</OnMouseExit>
+          <OnClicked>HCMAddon.PostPower()</OnClicked>
+        </Button>
+        <Label name="$(parent)Label" font="$(BOLD_FONT)|28|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY ="0" />
+        </Label>
+        <Label name="$(parent)Label2" hidden="" font="$(BOLD_FONT)|12|thin-outline" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="POWER">
+          <Anchor point="CENTER" relativeTo="$(parent)Label" relativePoint="CENTER" offsetY="-20" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="CriticalPowerIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="60" y="40" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-100" offsetY="100" />
+      <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12)</OnMouseEnter>
+      <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0)</OnMouseExit>
+      <OnMoveStop>HCMAddon.OnCriticalPowerIndicatorMoveStop()</OnMoveStop>
+      <Controls>
+        <Label name="$(parent)Label" font="$(BOLD_FONT)|24|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY ="0" />
+        </Label>
+        <Label name="$(parent)Label2" font="$(BOLD_FONT)|12|thin-outline" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="CRITICAL">
+          <Anchor point="CENTER" relativeTo="$(parent)Label" relativePoint="CENTER" offsetY="-20" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="GlobalCooldownIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="100" y="30" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-50" />
+      <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12)</OnMouseEnter>
+      <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0)</OnMouseExit>
+      <OnMoveStop>HCMAddon.OnGlobalCooldownIndicatorMoveStop()</OnMoveStop>
+      <Controls>
+        <Label name="$(parent)Label" font="$(BOLD_FONT)|24|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="" horizontalAlignment="" text="">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetY ="0" />
+        </Label>
+        <Label name="$(parent)Label2" hidden="true" font="$(BOLD_FONT)|12|thin-outline" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="" horizontalAlignment="CENTER" text="GCD">
+          <Anchor point="CENTER" relativeTo="$(parent)Label" relativePoint="CENTER" offsetY="-20" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>
+
+
+<!-- cursorTypes:
+0: default cursor
+1: left to right arrows
+2: up to down arrows
+3: diagonal arrows up-r to down-l
+4: diagnoal arrows up-l to down-r
+5: green trait item cursor
+6: pointing finger hand
+7: eraser
+8: fill
+9: 3 bars rectangle (copy palette)
+10: paint brush
+11: pipette
+12: 4 direction arrows
+13: left right rotate
+14: left rotate
+15: right rotate
+16: magnifying glass
+(17+: none)
+-->

@@ -1,0 +1,9 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Overview">
+            <Action name="OVERVIEW_OPEN">
+                <Down>GlByGrhmForOverview.openKeyBinding()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

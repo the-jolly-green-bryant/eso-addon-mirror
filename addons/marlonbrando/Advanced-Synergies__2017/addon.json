@@ -1,0 +1,70 @@
+{
+  "archive_path": "addons/marlonbrando/Advanced-Synergies__2017",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "marlonbrando",
+  "canonical_id": "esoui:2017",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2017",
+  "deleted": false,
+  "directories": [
+    "AdvancedSynergies"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2017/",
+  "fingerprint": "1b2f07c48db31c0a233c07452baf847266f7c52d58d93174ac889eb7f7701dba",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6790.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6791.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2017",
+  "source_url": "https://www.esoui.com/downloads/info2017-AdvancedSynergies.html",
+  "stats": {
+    "downloads": 10460,
+    "favorites": 10,
+    "monthly_downloads": 70
+  },
+  "title": "Advanced Synergies",
+  "updated_at": 1654469108000,
+  "version": "1.0.7"
+}

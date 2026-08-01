@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Garkin/Inventory-Item-Borders-for-Update-6__626",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Garkin",
+  "canonical_id": "esoui:626",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:626",
+  "deleted": false,
+  "directories": [
+    "InventoryItemBorders"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl626/",
+  "fingerprint": "c9cd0365bcaecd624864fba97a1677ed5d3d4d561dee3a6e65b08abccd00e5b9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1920.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "626",
+  "source_url": "https://www.esoui.com/downloads/info626-InventoryItemBordersforUpdate6.html",
+  "stats": {
+    "downloads": 63451,
+    "favorites": 94,
+    "monthly_downloads": 39
+  },
+  "title": "Inventory Item Borders (for Update 6)",
+  "updated_at": 1425424238000,
+  "version": "1.4"
+}

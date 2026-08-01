@@ -1,0 +1,17 @@
+## Title: BankerShutUp
+
+## Author: @awesomebilly
+## APIVersion: 100010
+## SavedVariables: Luminary_BankerShutup_SV
+## Version: 3.5c
+## OptionalDependsOn: LibStub-1.0 LibAddonMenu-2.0 LibAddonMenu-1.0-to-2.0
+
+lib/LibStub.lua
+lib/LibAddonMenu-2.0.lua
+
+BankerShutUpGlobals.lua
+lib/SI.lua
+localization/$(language).lua
+BankerShutUpCommons.lua
+BankerUI.lua
+BankerShutUp.lua

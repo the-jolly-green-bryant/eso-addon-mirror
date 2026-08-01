@@ -1,0 +1,426 @@
+<GuiXml>	
+	<Controls>
+    <!-- Control Templates  -->
+    <Backdrop name="IA_WindowDecoration" virtual="true">
+        <Anchor point="TOPLEFT" offsetX="-ZO_DEFAULT_BACKDROP_ANCHOR_OFFSET" offsetY="-ZO_DEFAULT_BACKDROP_ANCHOR_OFFSET" />
+        <Anchor point="BOTTOMRIGHT" offsetX="ZO_DEFAULT_BACKDROP_ANCHOR_OFFSET" offsetY="ZO_DEFAULT_BACKDROP_ANCHOR_OFFSET" />
+        <Edge file="DsRGuildHall/misc/window_border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+        <Center file="DsRGuildHall/misc/window_center.dds" />
+        <Insets left="16" top="16" right="-16" bottom="-16" />
+    </Backdrop>
+		<Control name="IA_GenericRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="30" />
+			<OnMouseEnter>
+				IA_InventoryAssistantList_OnMouseEnter ( self )
+			</OnMouseEnter>
+			<OnMouseExit>
+				IA_InventoryAssistantList_OnMouseExit ( self )
+			</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				<Label name="$(parent)Name" font="ZoFontGame" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+					<Anchor point="TOPLEFT" offsetX="8" />
+					<Anchor point="BOTTOMRIGHT" />
+        </Label>
+			</Controls>
+		</Control>
+		<Control name="IA_HeaderRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="40" />
+			<OnMouseEnter>
+				IA_InventoryAssistantList_OnMouseEnter ( self )
+			</OnMouseEnter>
+			<OnMouseExit>
+				IA_InventoryAssistantList_OnMouseExit ( self )
+			</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        <Texture name="$(parent)Icon" alpha="0">
+          <Dimensions x="1" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="3" offsetY="8" />
+        </Texture>
+				<Label name="$(parent)Name" font="ZoFontWinH2" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetX="3" offsetY="-8" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+				</Label>
+			</Controls>
+		</Control>
+		<Control name="IA_ItemRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="30" />
+			<OnMouseEnter>
+				IA_InventoryAssistantList_OnMouseEnter ( self )
+        self:GetNamedChild ( "Name" ):SetColor ( 1, 1, 1 )
+        self:GetNamedChild ( "Bag" ):SetColor ( 1, 1, 1 )
+			</OnMouseEnter>
+			<OnMouseExit>
+				IA_InventoryAssistantList_OnMouseExit ( self )
+        self:GetNamedChild ( "Name" ):SetColor ( 0.4, 0.4, 0.4 )
+        self:GetNamedChild ( "Bag" ):SetColor ( 0.4, 0.4, 0.4 )
+			</OnMouseExit>
+      <OnMouseUp>
+        ClearMenu ( )
+        if button == MOUSE_BUTTON_INDEX_RIGHT then
+          local currentCharId = zo_strformat( "&lt;&lt;1&gt;&gt;", GetCurrentCharacterId ( ) )
+          local canLockNow = self.data.item.charId and self.data.item.charId == currentCharId
+                             or ( type ( self.data.item.bagId ) == "number" and self.data.item.bagId &gt;= BAG_HOUSE_BANK_ONE and self.data.item.bagId &lt;= BAG_HOUSE_BANK_TEN and IsOwnerOfCurrentHouse ( ) )
+                             or self.data.item.bagId == BAG_BANK
+                             or self.data.item.bagId == BAG_SUBSCRIBER_BANK
+          local lockable = self.data.item.bagId ~= BAG_GUILDBANK
+          if canLockNow then 
+            locable = lockable and CanItemBePlayerLocked ( self.data.item.bagId, self.data.item.slotIndex )
+          end
+          local usePlayerLock = true
+          if usePlayerLock then 
+            if lockable and canLockNow then 
+              if not self.data.item.locked then
+                AddCustomMenuItem ( GetString(DsRGuildInventory_ItemLock), function () 
+                  SetItemIsPlayerLocked ( self.data.item.bagId, self.data.item.slotIndex, not self.data.item.locked )
+                  IA_InventoryAssistant.settings.actionQueue.lock [ self.data.item.uniqueId ] = nil
+                  IA_InventoryAssistant.settings.actionQueue.unlock [ self.data.item.uniqueId ] = nil
+                  d ( string.format( "%s  |c666666(%s)|r  |c008000%s|r", self.data.item.link, self.data.item.traitTypeName, GetString(DsRGuildInventory_ChatLock) ) )
+                  self.data.item.locked = not self.data.item.locked
+                  self.list:RefreshVisible ( )
+                end )
+              else
+                AddCustomMenuItem ( GetString(DsRGuildInventory_ItemUnLock), function () 
+                  SetItemIsPlayerLocked ( self.data.item.bagId, self.data.item.slotIndex, not self.data.item.locked )
+                  IA_InventoryAssistant.settings.actionQueue.lock [ self.data.item.uniqueId ] = nil
+                  IA_InventoryAssistant.settings.actionQueue.unlock [ self.data.item.uniqueId ] = nil
+                  d ( string.format( "%s  |c666666(%s)|r  |c008000%s|r", self.data.item.link, self.data.item.traitTypeName, GetString(DsRGuildInventory_ChatUnLock) ) )
+                  self.data.item.locked = not self.data.item.locked
+                  self.list:RefreshVisible ( )
+                end )
+              end
+            elseif lockable and not canLockNow then 
+              if not self.data.item.locked then
+                if not IA_InventoryAssistant.settings.actionQueue.lock [ self.data.item.uniqueId ] then
+                  AddCustomMenuItem ( GetString(DsRGuildInventory_ItemLockQueued), function () 
+                    IA_InventoryAssistant.settings.actionQueue.lock [ self.data.item.uniqueId ] = 1
+                    IA_InventoryAssistant.settings.actionQueue.unlock [ self.data.item.uniqueId ] = nil
+                    d ( string.format( "%s  |c666666(%s)|r |c008000%s|r", self.data.item.link, self.data.item.traitTypeName, GetString(DsRGuildInventory_ChatLockQueued) ) )
+                    self.list:RefreshVisible ( )
+                  end )
+                else
+                  AddCustomMenuItem ( GetString(DsRGuildInventory_ItemLockQueuedCan), function () 
+                    IA_InventoryAssistant.settings.actionQueue.lock [ self.data.item.uniqueId ] = nil
+                    IA_InventoryAssistant.settings.actionQueue.unlock [ self.data.item.uniqueId ] = nil
+                    d ( string.format( "%s  |c666666(%s)|r |cff0000%s|r", self.data.item.link, self.data.item.traitTypeName, GetString(DsRGuildInventory_ChatLockQueuedREM) ) )
+                    self.list:RefreshVisible ( )
+                  end )
+                end
+              else
+                if not IA_InventoryAssistant.settings.actionQueue.unlock [ self.data.item.uniqueId ] then
+                  AddCustomMenuItem ( GetString(DsRGuildInventory_ItemUnLockQueued), function () 
+                    IA_InventoryAssistant.settings.actionQueue.lock [ self.data.item.uniqueId ] = nil
+                    IA_InventoryAssistant.settings.actionQueue.unlock [ self.data.item.uniqueId ] = 1
+                    d ( string.format( "%s  |c666666(%s)|r |c008000%s|r", self.data.item.link, self.data.item.traitTypeName, GetString(DsRGuildInventory_ChatUnLockQueued) ) )
+                    self.list:RefreshVisible ( )
+                  end )
+                else
+                  AddCustomMenuItem ( GetString(DsRGuildInventory_ItemUnLockQueuedCan), function () 
+                    IA_InventoryAssistant.settings.actionQueue.lock [ self.data.item.uniqueId ] = nil
+                    IA_InventoryAssistant.settings.actionQueue.unlock [ self.data.item.uniqueId ] = nil
+                    d ( string.format( "%s  |c666666(%s)|r |cff0000%s|r", self.data.item.link, self.data.item.traitTypeName, GetString(DsRGuildInventory_ChatLockQueuedREM) ) )
+                    self.list:RefreshVisible ( )
+                  end )
+                end
+              end
+            end
+          end
+          AddCustomMenuItem ( "Link in Chat", function () 
+            if IsChatSystemAvailableForCurrentPlatform ( ) then
+              local itemLink = "|H1:" .. self.data.itemLink:sub ( 5 )
+              ZO_LinkHandler_InsertLink ( zo_strformat ( SI_TOOLTIP_ITEM_NAME, itemLink ) )
+            end
+          end )
+          ShowMenu ( self )
+        end
+      </OnMouseUp>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        <Texture name="$(parent)Tradeable" textureFile="esoui/art/inventory/inventory_tradable_icon.dds" layer="1">
+          <Dimensions x="24" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="3" offsetY="3" />
+        </Texture>
+        <Texture name="$(parent)Marker" inherits="IA_MultiIcon" layer="2">
+          <Dimensions x="24" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="3" offsetY="3" />
+        </Texture>
+        <Texture name="$(parent)Icon">
+          <Dimensions x="24" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Marker" relativePoint="TOPRIGHT" />
+        </Texture>
+				<Label name="$(parent)Bag" font="ZoFontGame" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT" verticalAlignment="CENTER" color="666666">
+          <DimensionConstraints minX="0" maxX="250" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+				</Label>
+				<Label name="$(parent)Level" font="ZoFontGame" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" color="666666">
+					<Dimensions x="0" />
+          <DimensionConstraints minX="0" maxX="50" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Bag" relativePoint="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Bag" relativePoint="BOTTOMLEFT" offsetX="0" />
+        </Label>
+				<Label name="$(parent)Name" font="ZoFontGame" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" color="666666">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetX="3" offsetY="-3" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Level" relativePoint="BOTTOMLEFT" offsetX="-8" />
+        </Label>
+			</Controls>
+		</Control>
+    <!--  Inventory Assistant Main Window  -->
+    <TopLevelControl name="IA_Main" resizeHandleSize="ZO_DEFAULT_BACKDROP_ANCHOR_OFFSET" tier="LOW" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+      <DimensionConstraints minX="630" minY="400" />
+      <OnInitialized>
+        IA_InventoryAssistant_OnInitialize ( self )
+      </OnInitialized>
+      <Controls>
+        <Control name="$(parent)Window">
+          <Anchor point="TOPLEFT" offsetX="ZO_DEFAULT_BACKDROP_ANCHOR_OFFSET" offsetY="ZO_DEFAULT_BACKDROP_ANCHOR_OFFSET" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-ZO_DEFAULT_BACKDROP_ANCHOR_OFFSET" offsetY="-ZO_DEFAULT_BACKDROP_ANCHOR_OFFSET" />
+          <Controls>
+            <Backdrop name="$(parent)Decoration" inherits="IA_WindowDecoration" />
+            <Control name="$(parent)TitleBar">
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="-5" offsetY="-5" />
+              <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="3" offsetY="27" />
+              <Controls>
+                  <Texture name="$(parent)Background" color="808080" alpha="0.2">
+                  <AnchorFill />
+                </Texture>
+                <Label name="$(parent)Text" font="ZoFontWinH4" text="DsRGuildInventory_HeaderWindow" color="FFFFFF" verticalAlignment="CENTER" multiLine="false" wrapMode="ELLIPSIS">
+                  <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" />
+                  <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" offsetX="-32" />
+                </Label>
+                <Button name="$(parent)SettingsButton">
+                  <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-32" offsetY="0" />
+                  <Dimensions x="32" y="32" />
+                  <Textures normal="esoui/art/chatwindow/chat_options_up.dds" pressed="esoui/art/chatwindow/chat_options_down.dds" mouseOver="esoui/art/chatwindow/chat_options_over.dds" />
+                  <OnMouseUp>
+                    ClearMenu ( )
+                    if button == MOUSE_BUTTON_INDEX_LEFT then 
+                      local checkbox = IA_InventoryAssistant.onlyCP160 and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
+                      AddCustomMenuItem ( checkbox .. GetString(DsRGuildInventory_ShowOnlyCP160), function () 
+                        IA_InventoryAssistant.onlyCP160 = not IA_InventoryAssistant.onlyCP160
+                        IA_InventoryAssistant:Refresh ( false )
+                      end )
+                      local checkbox = IA_InventoryAssistant.onlyNonCP160 and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
+                      AddCustomMenuItem ( checkbox .. GetString(DsRGuildInventory_ShowOnlyNonCP160), function () 
+                        IA_InventoryAssistant.onlyNonCP160 = not IA_InventoryAssistant.onlyNonCP160
+                        IA_InventoryAssistant:Refresh ( false )
+                      end )
+                      AddCustomMenuItem( "-" )
+                      local checkbox = IA_InventoryAssistant.onlyLoots and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
+                      AddCustomMenuItem ( checkbox .. GetString(DsRGuildInventory_ShowOnlyLoots), function () 
+                        IA_InventoryAssistant.onlyLoots = not IA_InventoryAssistant.onlyLoots
+                        IA_InventoryAssistant:Refresh ( false )
+                      end )
+                      AddCustomMenuItem( "-" )
+                      local checkbox = IA_InventoryAssistant.showCrafted and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
+                      AddCustomMenuItem ( checkbox .. GetString(DsRGuildInventory_ShowCraftedSets), function () 
+                        IA_InventoryAssistant.showCrafted = not IA_InventoryAssistant.showCrafted
+                        IA_InventoryAssistant:Refresh ( false )
+                      end )
+                      local checkbox = IA_InventoryAssistant.showBuyable and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
+                      AddCustomMenuItem ( checkbox .. GetString(DsRGuildInventory_ShowTradeableSets), function () 
+                        IA_InventoryAssistant.showBuyable = not IA_InventoryAssistant.showBuyable
+                        IA_InventoryAssistant:Refresh ( false )
+                      end )
+                      local checkbox = IA_InventoryAssistant.showBound and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
+                      AddCustomMenuItem ( checkbox .. GetString(DsRGuildInventory_ShowBoundSets), function () 
+                        IA_InventoryAssistant.showBound = not IA_InventoryAssistant.showBound
+                        IA_InventoryAssistant:Refresh ( false )
+                      end )
+                      local checkbox = IA_InventoryAssistant.showMonsterSets and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
+                      AddCustomMenuItem ( checkbox .. GetString(DsRGuildInventory_ShowMonsterSets), function () 
+                        IA_InventoryAssistant.showMonsterSets = not IA_InventoryAssistant.showMonsterSets
+                        IA_InventoryAssistant:Refresh ( false )
+                      end )
+                      local checkbox = IA_InventoryAssistant.showNonSetItems and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
+                      AddCustomMenuItem ( checkbox .. GetString(DsRGuildInventory_ShowOtherItems), function () 
+                        IA_InventoryAssistant.showNonSetItems = not IA_InventoryAssistant.showNonSetItems
+                        IA_InventoryAssistant:Refresh ( false )
+                      end )
+                      AddCustomMenuItem ( "-" )
+                      AddCustomMenuItem ( "|u16:0:: Reset filters|u", function () 
+                        IA_InventoryAssistant.onlyDuplicates  = IA_InventoryAssistant.settings.onlyDuplicates
+                        IA_InventoryAssistant.onlyMarkedItems = IA_InventoryAssistant.settings.onlyMarkedItems
+                        IA_InventoryAssistant.onlyLoots       = IA_InventoryAssistant.settings.onlyLoots
+                        IA_InventoryAssistant.showCrafted     = IA_InventoryAssistant.settings.showCrafted
+                        IA_InventoryAssistant.showBuyable     = IA_InventoryAssistant.settings.showBuyable
+                        IA_InventoryAssistant.showBound       = IA_InventoryAssistant.settings.showBound
+                        IA_InventoryAssistant.showMonsterSets = IA_InventoryAssistant.settings.showMonsterSets
+                        IA_InventoryAssistant.showNonSetItems = IA_InventoryAssistant.settings.showNonSetItems
+                        IA_InventoryAssistant.showItemLevels  = IA_InventoryAssistant.settings.showItemLevels
+                        IA_InventoryAssistant.showEnchants    = IA_InventoryAssistant.settings.showEnchants
+                        IA_InventoryAssistant.onlyCP160       = false
+                        IA_InventoryAssistant.onlyNonCP160    = false
+                        IA_InventoryAssistant.searchbox:SetText ( "" )
+                        IA_InventoryAssistant:Refresh ( true )
+                      end )
+                      ShowMenu ( self )
+                    end
+                  </OnMouseUp>
+                </Button>
+                <Button name="$(parent)CloseButton">
+                  <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+                  <Dimensions x="32" y="32" />
+                  <Textures normal="esoui/art/hud/radialicon_cancel_up.dds" pressed="esoui/art/hud/radialicon_cancel_down.dds" mouseOver="esoui/art/hud/radialicon_cancel_over.dds" />
+                  <OnMouseUp>
+                    if button == MOUSE_BUTTON_INDEX_LEFT then 
+                      IA_InventoryAssistant:ToggleWindow ( )
+                    end
+                  </OnMouseUp>
+                </Button>
+                <Texture name="$(parent)Divider" textureFile="DsRGuildHall/misc/window_topdivider.dds">
+                    <Dimensions y="4"/>
+                    <Anchor point="TOPLEFT" offsetY="33" offsetX="0" />
+                    <Anchor point="TOPRIGHT" offsetY="33" offsetX="0"/>
+                    <TextureCoords top="0" bottom="1" left="0.081640625" right="0.918359375"/>
+                </Texture>
+              </Controls>
+            </Control>
+            <Control name="$(parent)Canvas">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)TitleBar" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="4" />
+              <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" offsetX="3" offsetY="3" />
+              <Controls>
+                <!-- Search box  -->
+         				<Backdrop name="$(parent)Search" inherits="IA_WindowDecoration">
+                  <Anchor point="TOPLEFT" />
+                  <Anchor point="TOPRIGHT" offsetX="2" />
+                  <OnInitialized>
+                      ZO_SingleLineEditContainerSize_Keyboard_OnInitialized(self)
+                  </OnInitialized>
+                  <Controls>
+                    <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" />
+                  </Controls>
+                </Backdrop>
+                <!-- Item Lists  -->
+         				<Control name="$(parent)List" inherits="ZO_ScrollList">
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)Search" relativePoint="BOTTOMRIGHT"  />
+                  <Anchor point="BOTTOMLEFT" />
+                </Control>
+              </Controls>
+            </Control>
+          </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+
+ 		<TopLevelControl name="IA_CharacterTooltipTopLevel" inherits="TooltipTopLevel" resizeToFitDescendents="true">
+			<Controls>
+        <Tooltip name="IA_CharacterTooltip" inherits="ZO_BaseTooltip" resizeToFitDescendents="true">
+          <Controls>
+            <!-- top side -->
+            <Texture name="$(parent)Head">
+                <Dimensions x="44" y="44" />
+                <Anchor point="TOP" relativePoint="TOPLEFT" offsetX="118" offsetY="20" />
+                <Controls>
+                    <Label name="$(parent)Count" color="FFFFFF" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" font="ZoFontGameOutline" inheritScale="false">
+                        <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="2" />
+                    </Label>
+                </Controls>
+            </Texture>
+            <!-- Silhuette -->
+            <Texture name="$(parent)Silhuette">
+                <Dimensions x="64" y="256" />
+                <Anchor point="TOP" relativeTo="$(parent)Head" relativePoint="BOTTOM" offsetY="6" />
+            </Texture>
+            <!-- left side -->
+            <Texture name="$(parent)Shoulders">
+                <Dimensions x="44" y="44" />
+                <Anchor point="TOPLEFT" offsetX="41" offsetY="76" />
+                <Controls>
+                    <Label name="$(parent)Count" color="FFFFFF" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" font="ZoFontGameOutline" inheritScale="false">
+                        <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="2" />
+                    </Label>
+                </Controls>
+            </Texture>
+            <Texture name="$(parent)Hands">
+                <Dimensions x="44" y="44" />
+                <Anchor point="TOP" relativeTo="$(parent)Shoulders" relativePoint="BOTTOM" offsetY="10" />
+                <Controls>
+                    <Label name="$(parent)Count" color="FFFFFF" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" font="ZoFontGameOutline" inheritScale="false">
+                        <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="2" />
+                    </Label>
+                </Controls>
+            </Texture>
+            <Texture name="$(parent)Legs">
+                <Dimensions x="44" y="44" />
+                <Anchor point="TOP" relativeTo="$(parent)Hands" relativePoint="BOTTOM" offsetY="10" />
+                <Controls>
+                    <Label name="$(parent)Count" color="FFFFFF" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" font="ZoFontGameOutline" inheritScale="false">
+                        <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="2" />
+                    </Label>
+                </Controls>
+            </Texture>
+            <!-- right side -->
+            <Texture name="$(parent)Chest">
+                <Dimensions x="44" y="44" />
+                <Anchor point="TOPLEFT" offsetX="149" offsetY="76" />
+                <Controls>
+                    <Label name="$(parent)Count" color="FFFFFF" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" font="ZoFontGameOutline" inheritScale="false">
+                        <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="2" />
+                    </Label>
+                </Controls>
+            </Texture>
+            <Texture name="$(parent)Belt">
+                <Dimensions x="44" y="44" />
+                <Anchor point="TOP" relativeTo="$(parent)Chest" relativePoint="BOTTOM" offsetY="10" />
+                <Controls>
+                    <Label name="$(parent)Count" color="FFFFFF" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" font="ZoFontGameOutline" inheritScale="false">
+                        <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="2" />
+                    </Label>
+                </Controls>
+            </Texture>
+            <Texture name="$(parent)Feet">
+                <Dimensions x="44" y="44" />
+                <Anchor point="TOP" relativeTo="$(parent)Belt" relativePoint="BOTTOM" offsetY="10" />
+                <Controls>
+                    <Label name="$(parent)Count" color="FFFFFF" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" font="ZoFontGameOutline" inheritScale="false">
+                        <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="2" />
+                    </Label>
+                </Controls>
+            </Texture>
+            <!-- bottom part -->
+            <Texture name="$(parent)Neck">
+                <Dimensions x="44" y="44" />
+                <Anchor point="TOPLEFT" offsetX="14" offsetY="255" />
+                <Controls>
+                    <Label name="$(parent)Count" color="FFFFFF" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" font="ZoFontGameOutline" inheritScale="false">
+                        <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="2" />
+                    </Label>
+                </Controls>
+            </Texture>
+            <Texture name="$(parent)Ring">
+                <Dimensions x="44" y="44" />
+                <Anchor point="LEFT" relativeTo="$(parent)Neck" relativePoint="RIGHT" offsetX="10" />
+                <Controls>
+                    <Label name="$(parent)Count" color="FFFFFF" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" font="ZoFontGameOutline" inheritScale="false">
+                        <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="2" />
+                    </Label>
+                </Controls>
+            </Texture>
+            <Texture name="$(parent)MainHand">
+                <Dimensions x="44" y="44" />
+                <Anchor point="LEFT" relativeTo="$(parent)Ring" relativePoint="RIGHT" offsetX="10" />
+                <Controls>
+                    <Label name="$(parent)Count" color="FFFFFF" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" font="ZoFontGameOutline" inheritScale="false">
+                        <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="2" />
+                    </Label>
+                </Controls>
+            </Texture>
+            <Texture name="$(parent)OffHand">
+                <Dimensions x="44" y="44" />
+                <Anchor point="LEFT" relativeTo="$(parent)MainHand" relativePoint="RIGHT" offsetX="10" />
+                <Controls>
+                    <Label name="$(parent)Count" color="FFFFFF" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" font="ZoFontGameOutline" inheritScale="false">
+                        <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="2" />
+                    </Label>
+                </Controls>
+            </Texture>
+          </Controls>
+        </Tooltip>
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

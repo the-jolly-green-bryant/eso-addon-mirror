@@ -1,0 +1,9 @@
+## Title: Caro's Last Online Workaround
+## Description: As long as the 'last online' in the guild roster is broken this adds an info to the guild roster. Type \caroguild 1 to start recording data for your first guild (or 2-5 instead of 1 for one of the other 4).
+## APIVersion: 100034
+## Version: 0.1.1
+## Author: |c1d6dadIrniben|r
+## SavedVariables: CLOWSavedVariables
+## DependsOn: LibGuildRoster
+
+CarosLastOnlineWorkaround.lua

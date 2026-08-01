@@ -1,0 +1,27 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Wings of Wind Guildhall">
+            <Action name="WINGSOFWIND_GH_PRIMARYRESIDENCE">
+                <Down>WingsOfWindGuildhall.travelToGuildHall("primaryResidence")</Down>
+            </Action>
+            <Action name="WINGSOFWIND_GH_GROUPLEADER">
+                <Down>WingsOfWindGuildhall.travelToGroupLeader()</Down>
+            </Action>
+            <Action name="WINGSOFWIND_GH_CUSTOMPOINT_1">
+                <Down>WingsOfWindGuildhall.travelToCustomPoint(1)</Down>
+            </Action>
+            <Action name="WINGSOFWIND_GH_CUSTOMPOINT_2">
+                <Down>WingsOfWindGuildhall.travelToCustomPoint(2)</Down>
+            </Action>
+            <Action name="WINGSOFWIND_GH_CUSTOMPOINT_3">
+                <Down>WingsOfWindGuildhall.travelToCustomPoint(3)</Down>
+            </Action>
+            <Action name="WINGSOFWIND_GH_CUSTOMPOINT_4">
+                <Down>WingsOfWindGuildhall.travelToCustomPoint(4)</Down>
+            </Action>
+            <Action name="WINGSOFWIND_GH_CUSTOMPOINT_5">
+                <Down>WingsOfWindGuildhall.travelToCustomPoint(5)</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

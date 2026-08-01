@@ -1,0 +1,9 @@
+## Title: Scrooge McDuck
+## APIVersion: 100011
+## Description: Always display your current money.
+## Version: 1.1
+## Author: Mike Couture
+## SavedVariables: ScroogeMcDuckSavedVariables
+
+ScroogeMcDuck.lua
+ScroogeMcDuck.xml

@@ -1,0 +1,165 @@
+<GuiXml>
+  <Controls>
+
+
+    <Control name="OIListingsRowTemplate" virtual="true" mouseEnabled="false">
+      <Dimensions x="540" y="200" />
+      <Anchor point="TOPLEFT" />
+
+      <Controls>
+        <Label name="$(parent)RowItem" font="ZoFontGameSmall">
+          <Dimensions x="380" y="22" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+        </Label>
+
+        <Label name="$(parent)RowLimit" font="ZoFontGameSmall">
+          <Dimensions x="50" y="22" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)RowItem" relativePoint="TOPRIGHT" offsetX="0" />
+        </Label>
+
+        <Label name="$(parent)RowPrice" font="ZoFontGameSmall">
+          <Dimensions x="100" y="22" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)RowLimit" relativePoint="TOPRIGHT" offsetX="0" />
+        </Label>
+      </Controls>
+    </Control>
+
+
+    <TopLevelControl name="OIListings" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true" resizeToFitDescendents="true" tier="LOW">
+      <Dimensions x="550" y="200" />
+      <Anchor point="TOPLEFT" />
+
+
+      <OnMoveStop>
+        OfferedItems:OnMoveListings()
+      </OnMoveStop>
+
+
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" centerColor="020202" alpha="0.8" edgeSize="2" edgeColor="888888">
+          <AnchorFill />
+        </Backdrop>
+
+        <Label name="$(parent)Title" height="2">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+        </Label>
+        <Label name="$(parent)Total" height="24" font="ZoFontWinH5">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Title" offsetX="220" offsetY="16" />
+        </Label>
+        <Button name="$(parent)Close" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="30" y="30" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Title" offsetX="535" offsetY="6" />
+          <Textures normal    ="esoui/art/buttons/closebutton_up.dds"
+                    pressed   ="esoui/art/buttons/closebutton_down.dds"
+                    mouseOver ="esoui/art/buttons/closebutton_over.dds" />
+          <OnClicked>
+            OfferedItems:OnClickedClose()
+          </OnClicked>
+        </Button>
+
+        <Texture name="$(parent)Div" textureFile="esoui/art/quest/questjournal_divider.dds" tier="HIGH">
+          <Dimensions x="550" y="2"/>
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Title" offsetX="4" offsetY="40"/>
+        </Texture>
+
+        <Label name="$(parent)Message" height="24" font="ZoFontWinH5">
+          <Anchor point="TOPLEFT"relativeTo="$(parent)Title" offsetX="5" offsetY="40" />
+        </Label>
+
+        <Button name="$(parent)NameDown" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="16" y="16" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Div" offsetX="20" offsetY="15" />
+          <Textures normal    ="esoui/art/buttons/scrollbox_downarrow_up.dds"
+                    pressed   ="esoui/art/buttons/scrollbox_downarrow_down.dds"
+                    mouseOver ="esoui/art/buttons/scrollbox_downarrow_over.dds" />
+          <OnClicked>
+            OfferedItems:OnClickedSort(OfferedItems.SORT_NAME_UP)
+          </OnClicked>
+        </Button>
+
+        <Button name="$(parent)NameUp" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="16" y="16" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Div" offsetX="20" offsetY="15" />
+          <Textures normal    ="esoui/art/buttons/scrollbox_uparrow_up.dds"
+                    pressed   ="esoui/art/buttons/scrollbox_uparrow_down.dds"
+                    mouseOver ="esoui/art/buttons/scrollbox_uparrow_over.dds" />
+          <OnClicked>
+            OfferedItems:OnClickedSort(OfferedItems.SORT_NAME_DOWN)
+          </OnClicked>
+        </Button>
+
+        <Button name="$(parent)TimeDown" inherits="ZO_ButtonBehaviorClickSound" hidden="false">
+          <Dimensions x="16" y="16" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Div" offsetX="380" offsetY="16" />
+          <Textures normal    ="esoui/art/buttons/scrollbox_downarrow_up.dds"
+                    pressed   ="esoui/art/buttons/scrollbox_downarrow_down.dds"
+                    mouseOver ="esoui/art/buttons/scrollbox_downarrow_over.dds" />
+          <OnClicked>
+            OfferedItems:OnClickedSort(OfferedItems.SORT_TIME_UP)
+          </OnClicked>
+        </Button>
+
+        <Button name="$(parent)TimeUp" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="16" y="16" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Div" offsetX="380" offsetY="16" />
+          <Textures normal    ="esoui/art/buttons/scrollbox_uparrow_up.dds"
+                    pressed   ="esoui/art/buttons/scrollbox_uparrow_down.dds"
+                    mouseOver ="esoui/art/buttons/scrollbox_uparrow_over.dds" />
+          <OnClicked>
+            OfferedItems:OnClickedSort(OfferedItems.SORT_TIME_DOWN)
+          </OnClicked>
+        </Button>
+
+        <Button name="$(parent)PriceDown" inherits="ZO_ButtonBehaviorClickSound" hidden="false">
+          <Dimensions x="16" y="16" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Div" offsetX="430" offsetY="16" />
+          <Textures normal    ="esoui/art/buttons/scrollbox_downarrow_up.dds"
+                    pressed   ="esoui/art/buttons/scrollbox_downarrow_down.dds"
+                    mouseOver ="esoui/art/buttons/scrollbox_downarrow_over.dds" />
+          <OnClicked>
+            OfferedItems:OnClickedSort(OfferedItems.SORT_PRICE_UP)
+          </OnClicked>
+        </Button>
+
+        <Button name="$(parent)PriceUp" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="16" y="16" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Div" offsetX="430" offsetY="16" />
+          <Textures normal    ="esoui/art/buttons/scrollbox_uparrow_up.dds"
+                    pressed   ="esoui/art/buttons/scrollbox_uparrow_down.dds"
+                    mouseOver ="esoui/art/buttons/scrollbox_uparrow_over.dds" />
+          <OnClicked>
+            OfferedItems:OnClickedSort(OfferedItems.SORT_PRICE_DOWN)
+          </OnClicked>
+        </Button>
+
+        <!-- ZO_ScrollList : esoui/libraries/zo_templates/scrolltemplates.xml -->
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Dimensions x="550" y="660" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Div" relativePoint="TOPLEFT" offsetX="2" offsetY="18" />
+        </Control>
+
+        <Button name="$(parent)Plus" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="32" y="32" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)List" offsetX="-30" offsetY="30" />
+          <Textures normal    ="esoui/art/buttons/plus_up.dds"
+                    pressed   ="esoui/art/buttons/plus_down.dds"
+                    mouseOver ="esoui/art/buttons/plus_over.dds" />
+          <OnClicked>
+            OfferedItems:OnClickedPlus()
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)Minus" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="32" y="32" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)List" offsetX="0" offsetY="30" />
+          <Textures normal    ="esoui/art/buttons/minus_up.dds"
+                    pressed   ="esoui/art/buttons/minus_down.dds"
+                    mouseOver ="esoui/art/buttons/minus_over.dds" />
+          <OnClicked>
+            OfferedItems:OnClickedMinus()
+          </OnClicked>
+        </Button>
+
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

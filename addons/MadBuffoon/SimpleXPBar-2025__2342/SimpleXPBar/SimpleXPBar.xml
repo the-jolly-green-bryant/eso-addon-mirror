@@ -1,0 +1,26 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="SimpleXPBarWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+			<Dimensions x="300" y="50" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" edgeColor="00000000" layer="0" level="0" centerColor="AAAAAA" alpha="1.0"  hidden="false">
+					<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+					<Edge edgeSize="0"/>
+				</Backdrop>
+				<StatusBar name="$(parent)StatusBar" color="444444" layer="0" level="1" centerColor="225588" alpha="1.0">
+					<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="4" offsetY="4"/>
+					<Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="-4"/>
+					<Limits min="0" max="100" />
+				</StatusBar>
+				<Label name="$(parent)Label" font="ZoFontWinH1" color="ffffff" text="Status Bar" verticalAlignment="CENTER" horizontalAlignment="CENTER"  alpha="1.0">
+					<Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER"/>
+				</Label>
+				<Label name="$(parent)AltLabel" clampedToScreen="false" font="ZoFontWinH1" color="ffffff" text="Status Bar" hidden="true" verticalAlignment="CENTER" horizontalAlignment="CENTER"  alpha="1.0">
+					<Anchor point="BOTTOMLEFT"  relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-20"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

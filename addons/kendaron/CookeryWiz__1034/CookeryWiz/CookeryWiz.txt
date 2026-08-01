@@ -1,0 +1,49 @@
+## APIVersion: 100029
+## Title: |t32:32:CookeryWiz/Graphics/cookerywiz-noone1.dds|t CookeryWiz
+## Author: kendaron
+## Version 1.0.71
+## Description: The essential provisioner addon
+## License: Distribution or use of addon or code without attribution to author is prohibited!
+## LastUpdated: Feb 2018
+## SavedVariables: CookeryWizSavedVariables
+## DependsOn: EasyFrame
+Lang\en.lua
+Lang\$(language).lua
+CookeryWizUtils.lua
+CookeryWizEvents.lua
+CookeryWizRegistrations.lua
+Lib\CookeryWizAutoHide.lua
+Lib\CookeryWizAsync.lua
+Lib\CookeryWizAsyncOld.lua
+Lib\CookeryWizScrollList.lua
+Lib\CookeryWizPage.lua
+Lib\CookeryWizChapter.lua
+Lib\CookeryWizBook.lua
+Lib\CookeryWizPopulateRecipeIndexes.lua
+Lib\CookeryWizMissingRecipes.lua
+Lib\CookeryWizMissingIngredients.lua
+Lib\CookeryWizStartup.lua
+CookeryWizBank.lua
+CookeryWizGuildBank.lua
+CookeryWizWritQuest.lua
+CookeryWizMailMessage.lua
+CookeryWizMailHandler.lua
+CookeryWizOptions.lua
+CookeryWizQuality.lua
+CookeryWizQualitySelector.lua
+CookeryWizMailer.lua
+CookeryWizRecipeCategory.lua
+CookeryWizIngredient.lua
+CookeryWizIngredients.lua
+CookeryWizRecipeEntry.lua
+CookeryWizRecipeList.lua
+CookeryWizStockpile.lua
+CookeryWizStockpiles.lua
+CookeryWiz.lua
+Xml\CookeryWizBook.xml
+Xml\CookeryWizQualitySelector.xml
+Xml\CookeryWiz.xml
+Xml\CookeryWizOptions.xml
+Xml\CookeryWizMailer.xml
+Xml\CookeryWizStockpiles.xml
+bindings.xml

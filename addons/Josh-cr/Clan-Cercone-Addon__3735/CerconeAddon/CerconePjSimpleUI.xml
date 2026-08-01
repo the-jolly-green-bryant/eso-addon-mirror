@@ -1,0 +1,256 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="CerconePjSimpleUI" clampedToScreen="false" movable="true" mouseEnabled="true" hidden="true" resizeHandleSize="10">
+			<Dimensions x="1100" y="1100"/>
+			<Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" offsetX="0" offsetY="0" />
+			<Controls>
+
+				<Label name="PjName" text="Cercone Pj UI" font="$(ANTIQUE_FONT)|30|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="CENTER" fontSize="50">
+					<Anchor point="TOP" relativeTo="CerconePjSimpleUI" relativePoint="CENTER" offsetY="-297" />
+				</Label>
+				<Label name="DatosLabel" text="DATOS" font="$(ANTIQUE_FONT)|22|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="30">
+					<Anchor point="TOP" relativeTo="PjName" relativePoint="TOP" offsetX="-280" offsetY="60" />
+				</Label>
+				<Label name="ProgresoLabel" text="PROGRESO" font="$(ANTIQUE_FONT)|22|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="RIGHT" fontSize="30">
+					<Anchor point="TOP" relativeTo="PjName" relativePoint="TOP" offsetX="-15" offsetY="60" />
+				</Label>
+				<Label name="PjRaza" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="DatosLabel" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjRango" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="RIGHT" fontSize="17">
+					<Anchor point="TOP" relativeTo="ProgresoLabel" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjNacimiento" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjRaza" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjOrden" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="RIGHT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjRango" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjSire" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjNacimiento" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjArma" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="RIGHT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjOrden" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjConvertido" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjSire" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjArmadura" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjArma" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjMeritos" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="RIGHT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjArmadura" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+
+				<Label name="PjHP" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjConvertido" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjDef" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjHP" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjMagicka" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjDef" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+
+
+				<Label name="HabilidadesLabel" text="HABILIDADES" font="$(ANTIQUE_FONT)|22|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="RIGHT" fontSize="30">
+					<Anchor point="TOP" relativeTo="PjName" relativePoint="TOP" offsetX="270" offsetY="60" />
+				</Label>
+
+				<Label name="PjExploracion" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="HabilidadesLabel" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjInvestigacion" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjExploracion" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjInutilizar" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjInvestigacion" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjSigilo" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjInutilizar" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjPersuacion" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjSigilo" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjIntimidacion" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjPersuacion" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjVoluntad" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjIntimidacion" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjPercepcion" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjVoluntad" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+				<Label name="PjFuerza" font="$(ANTIQUE_FONT)|18|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="LEFT" fontSize="17">
+					<Anchor point="TOP" relativeTo="PjPercepcion" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+				</Label>
+
+				<Label name="AcademiaLabel" text="Academia" font="$(ANTIQUE_FONT)|22|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="RIGHT" fontSize="50">
+					<Anchor point="TOP" relativeTo="PjMeritos" relativePoint="TOP" offsetX="0" offsetY="138" />
+				</Label>
+				<Label name="PjClaseAc" text="Academia" font="$(ANTIQUE_FONT)|22|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="RIGHT" fontSize="50">
+					<Anchor point="TOP" relativeTo="AcademiaLabel" relativePoint="TOP" offsetX="-250" offsetY="48" />
+				</Label>
+				<Label name="PjArteGuerra" text="Arte de la Guerra:" font="$(ANTIQUE_FONT)|22|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="RIGHT" fontSize="50">
+					<Anchor point="TOP" relativeTo="PjClaseAc" relativePoint="TOP" offsetX="0" offsetY="35" />
+				</Label>
+				<Label name="PjProfesion" text=" " font="$(ANTIQUE_FONT)|22|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="RIGHT" fontSize="50">
+					<Anchor point="TOP" relativeTo="PjArteGuerra" relativePoint="TOP" offsetX="0" offsetY="35" />
+				</Label>
+				<Label name="PjLinaje" text="Linaje:" font="$(ANTIQUE_FONT)|22|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="RIGHT" fontSize="50">
+					<Anchor point="TOP" relativeTo="PjProfesion" relativePoint="TOP" offsetX="0" offsetY="35" />
+				</Label>
+				<Label name="PjOrdenAcademia" text="Élite de la Orden:" font="$(ANTIQUE_FONT)|22|soft-shadow-thin" verticalAlignment="TOP" horizontalAlignment="RIGHT" fontSize="50">
+					<Anchor point="TOP" relativeTo="PjLinaje" relativePoint="TOP" offsetX="0" offsetY="35" />
+				</Label>
+
+				<Button name="CerrarPjInfo">
+					<Dimensions x="85" y="90" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-180" offsetY="230" />
+					<Textures normal="CerconeAddon/Assets/Scroll/Boton_X.dds" pressed="CerconeAddon/Assets/Scroll/X.dds" disabled="CerconeAddon/Assets/Scroll/Boton_X.dds"/>
+					<OnClicked>
+                        CerconeAddon.ClosePjUI()
+					</OnClicked>
+				</Button>
+
+				<Texture name="TexturePergamino" textureFile="CerconeAddon/Assets/Scroll/CerconeCharacterSheetUI.dds">
+					<Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" offsetX="0" offsetY="0" />
+					<Dimensions x="1100" y="1100"/>
+				</Texture>
+
+				<Texture name="MarkClass1">
+					<Anchor point="CENTER" relativeTo="PjClaseAc" relativePoint="CENTER" offsetX="116" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkClass2">
+					<Anchor point="CENTER" relativeTo="MarkClass1" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkClass3">
+					<Anchor point="CENTER" relativeTo="MarkClass2" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkClass4">
+					<Anchor point="CENTER" relativeTo="MarkClass3" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkClass5">
+					<Anchor point="CENTER" relativeTo="MarkClass4" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkClass6">
+					<Anchor point="CENTER" relativeTo="MarkClass5" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkClass7">
+					<Anchor point="CENTER" relativeTo="MarkClass6" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkClass8">
+					<Anchor point="CENTER" relativeTo="MarkClass7" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkClass9">
+					<Anchor point="CENTER" relativeTo="MarkClass8" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+
+				<Texture name="MarkWar1">
+					<Anchor point="CENTER" relativeTo="MarkClass1" relativePoint="CENTER" offsetX="0" offsetY="34" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkWar2">
+					<Anchor point="CENTER" relativeTo="MarkWar1" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkWar3">
+					<Anchor point="CENTER" relativeTo="MarkWar2" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkWar4">
+					<Anchor point="CENTER" relativeTo="MarkWar3" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkWar5">
+					<Anchor point="CENTER" relativeTo="MarkWar4" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkWar6">
+					<Anchor point="CENTER" relativeTo="MarkWar5" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkWar7">
+					<Anchor point="CENTER" relativeTo="MarkWar6" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				
+				<Texture name="MarkProf1">
+					<Anchor point="CENTER" relativeTo="MarkWar1" relativePoint="CENTER" offsetX="0" offsetY="34" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkProf2">
+					<Anchor point="CENTER" relativeTo="MarkProf1" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkProf3">
+					<Anchor point="CENTER" relativeTo="MarkProf2" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				
+				<Texture name="MarkL1">
+					<Anchor point="CENTER" relativeTo="MarkProf1" relativePoint="CENTER" offsetX="0" offsetY="34" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkL2">
+					<Anchor point="CENTER" relativeTo="MarkL1" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+				<Texture name="MarkL3">
+					<Anchor point="CENTER" relativeTo="MarkL2" relativePoint="CENTER" offsetX="34" offsetY="0" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+
+				<Texture name="MarkOrden1">
+					<Anchor point="CENTER" relativeTo="MarkL1" relativePoint="CENTER" offsetX="0" offsetY="34" />
+					<Dimensions x="50" y="50"/>
+				</Texture>
+
+				<!-- Insignias -->
+				<!-- Izquierda -->
+				<Texture name="Insignia2" textureFile="CerconeAddon/Assets/Scroll/Insignia/Pericia.dds">
+					<Anchor point="CENTER" relativeTo="CerconePjSimpleUI" relativePoint="CENTER" offsetX="-430" offsetY="-195" />
+					<Dimensions x="100" y="150"/>
+				</Texture>
+				<Texture name="Insignia1" textureFile="CerconeAddon/Assets/Scroll/Insignia/Inteligencia.dds">
+					<Anchor point="CENTER" relativeTo="Insignia2" relativePoint="CENTER" offsetX="0" offsetY="120" />
+					<Dimensions x="100" y="150"/>
+				</Texture>
+				<Texture name="Insignia5" textureFile="CerconeAddon/Assets/Scroll/Insignia/Fervor.dds">
+					<Anchor point="CENTER" relativeTo="Insignia1" relativePoint="CENTER" offsetX="0" offsetY="160" />
+					<Dimensions x="100" y="150"/>
+				</Texture>
+				<Texture name="Insignia6" textureFile="CerconeAddon/Assets/Scroll/Insignia/Expiacion.dds">
+					<Anchor point="CENTER" relativeTo="Insignia5" relativePoint="CENTER" offsetX="0" offsetY="140" />
+					<Dimensions x="100" y="150"/>
+				</Texture>
+				<!-- Derecha -->
+				<Texture name="Insignia4" textureFile="CerconeAddon/Assets/Scroll/Insignia/Presicion.dds">
+					<Anchor point="CENTER" relativeTo="CerconePjSimpleUI" relativePoint="CENTER" offsetX="430" offsetY="-195" />
+					<Dimensions x="100" y="150"/>
+				</Texture>
+				<Texture name="Insignia3" textureFile="CerconeAddon/Assets/Scroll/Insignia/Discrecion.dds">
+					<Anchor point="CENTER" relativeTo="Insignia4" relativePoint="CENTER" offsetX="0" offsetY="120" />
+					<Dimensions x="100" y="150"/>
+				</Texture>
+				<Texture name="Insignia8" textureFile="CerconeAddon/Assets/Scroll/Insignia/Valor.dds">
+					<Anchor point="CENTER" relativeTo="Insignia3" relativePoint="CENTER" offsetX="0" offsetY="160" />
+					<Dimensions x="100" y="150"/>
+				</Texture>
+				<Texture name="Insignia7" textureFile="CerconeAddon/Assets/Scroll/Insignia/Liderazgo.dds">
+					<Anchor point="CENTER" relativeTo="Insignia8" relativePoint="CENTER" offsetX="0" offsetY="140" />
+					<Dimensions x="100" y="150"/>
+				</Texture>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

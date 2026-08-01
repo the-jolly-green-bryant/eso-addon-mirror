@@ -1,0 +1,10 @@
+## Title: Are we there yet?  0.6.4
+## Version: 0.6.4
+## Description: Calculates the date on which you will reach CP3600.
+## APIVersion: 100034 100035
+## Author: René
+## SavedVariables: AreWeThereYetSavedVariables
+
+AreWeThereYet.lua
+AreWeThereYet.xml
+bindings.xml

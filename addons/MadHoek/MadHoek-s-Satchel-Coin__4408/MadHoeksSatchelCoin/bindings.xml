@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cA02EF7MadHoek’s Satchel & Coin|r">
+			<Action name="MHSBC_WINDOW_TOGGLE">
+				<Up>MHSBC.ToggleMHSBCWindow()</Up>
+			</Action>
+			<Action name="MHSBC_WINDOW_MOVABLE">
+				<Up>MHSBC.ToggleMHSBCMovable()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

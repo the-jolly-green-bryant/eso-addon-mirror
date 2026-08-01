@@ -1,0 +1,35 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="BlindRunToplevel" layer="0">
+		</TopLevelControl>
+
+		<Control name="BlindRunTemplate" virtual="true" space="WORLD">
+			<Dimensions x="100" y="100" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+			<Controls>
+				<Backdrop name="$(parent)Box" hidden="false" edgeColor="aaaaaa" centerColor="00000000" layer="0" tier="0">
+					<Edge edgeSize="20"/>
+					<AnchorFill />
+				</Backdrop>
+			</Controls>
+		</Control>
+
+		<Control name="BlindRunGroupMemberTemplate" virtual="true" space="WORLD">
+			<Dimensions x="100" y="100" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+			<Controls>
+				<Texture name="$(parent)Image" hidden="false" layer="0" textureFile="BlindRun/groupmember.dds" inheritScale="true">
+					<AnchorFill />
+				</Texture>
+				<Label name="$(parent)Text" font="$(GAMEPAD_BOLD_FONT)|12|thick-outline" horizontalAlignment="1" verticalAlignment="1" inheritScale="true">
+					<Anchor point="BOTTOM" relativePoint="TOP" relativeTo="$(parent)" offsetY="-5"/>
+					<Dimensions x="100" y="30" />
+				</Label>
+				<!-- <Backdrop name="$(parent)Box" hidden="false" edgeColor="ff0000" centerColor="00000000" layer="0" tier="0">
+					<Edge edgeSize="20"/>
+					<AnchorFill />
+				</Backdrop> -->
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

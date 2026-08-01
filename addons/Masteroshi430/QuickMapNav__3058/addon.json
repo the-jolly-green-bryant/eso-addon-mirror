@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/Masteroshi430/QuickMapNav__3058",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:3058",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3058",
+  "deleted": false,
+  "directories": [
+    "QuickMapNav"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3058/",
+  "fingerprint": "18e3868fb6b519b86c136835f7c76d5c28c47b8667682a6fd5d84490987a494e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11736.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11735.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10906.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10905.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10901.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10902.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10903.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10904.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10907.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11737.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11738.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11739.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11740.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3058",
+  "source_url": "https://www.esoui.com/downloads/info3058-QuickMapNav.html",
+  "stats": {
+    "downloads": 104186,
+    "favorites": 106,
+    "monthly_downloads": 821
+  },
+  "title": "QuickMapNav",
+  "updated_at": 1783489929000,
+  "version": "2026.07.08"
+}

@@ -1,0 +1,19 @@
+
+<GuiXml>
+    <Controls>
+        <Backdrop name="PlayerStatus_BG" mouseEnabled="true" movable="true" clampedToScreen="true" edgeColor="80aaffff" centerColor="40aaffff" alpha="0">
+            <Anchor relativeTo="GuiRoot" relativePoint="TOPRIGHT" point="TOPRIGHT"/>
+            <Dimensions y="60" x="60"/>
+            <Edge edgeSize="1"/>
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+            <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_PAN);self:SetAlpha(1)</OnMouseEnter>
+            <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_DO_NOT_CARE);self:SetAlpha(0)</OnMouseExit>
+        </Backdrop>
+
+        <Texture name="PlayerStatusIndi" textureFile="">
+            <Dimensions x="50" y="50" />
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+            <Anchor point="CENTER" relativeTo="PlayerStatus_BG" relativePoint="CENTER" />
+        </Texture>
+    </Controls>
+</GuiXml>

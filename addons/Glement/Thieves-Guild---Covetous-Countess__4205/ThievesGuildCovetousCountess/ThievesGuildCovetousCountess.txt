@@ -1,0 +1,7 @@
+## APIVersion: 101040
+## Title: ThievesGuildCovetousCountess
+## Version: 1.0.1
+## Author: Glement
+## Description: Allows you to only take Covetous Countess from the Thieves Guild Tip Board.
+
+ThievesGuildCovetousCountess.lua

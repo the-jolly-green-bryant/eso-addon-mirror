@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ghostbane/Auto-Research-Scrolls__3659",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ghostbane",
+  "canonical_id": "esoui:3659",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3659",
+  "deleted": false,
+  "directories": [
+    "AutoResearchScrolls"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3659/",
+  "fingerprint": "da5bcd5be36a775dbe9e6d846a3fd9a17ad88716945a7e9accc9948c3df749f8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12466.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3659",
+  "source_url": "https://www.esoui.com/downloads/info3659-AutoResearchScrolls.html",
+  "stats": {
+    "downloads": 3347,
+    "favorites": 5,
+    "monthly_downloads": 29
+  },
+  "title": "Auto Research Scrolls",
+  "updated_at": 1687280614000,
+  "version": "1.2.0"
+}

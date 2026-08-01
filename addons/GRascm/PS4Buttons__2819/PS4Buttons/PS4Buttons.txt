@@ -1,0 +1,7 @@
+## Title: PS4 Buttons
+## Description: AddOn replaces all XBox buttons textures to PS4
+## Author: GRascm (Грас)
+## APIVersion: 100032
+## Version: 1.0.0
+
+PS4Buttons.lua

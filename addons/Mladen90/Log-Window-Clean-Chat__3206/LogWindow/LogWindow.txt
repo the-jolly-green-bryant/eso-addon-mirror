@@ -1,0 +1,10 @@
+## APIVersion: 101031
+## Title: Log Window
+## Version: 1.0.0
+## Author: Mladen90 (@Mladen90 EU)
+## Description: Log Window for AddOn Logs
+## SavedVariables: LogWindow_Settings
+
+
+LogWindow.lua
+LogWindow.xml

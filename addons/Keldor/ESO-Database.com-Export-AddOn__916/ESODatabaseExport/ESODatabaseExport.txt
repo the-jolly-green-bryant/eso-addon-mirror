@@ -1,0 +1,33 @@
+## DisableSavedVariablesAutoSaving: 1
+## Title: |c2080D0ESO-Database.com|r Export |c00C000v4.6.18|r
+## Description: The ESO-Database Export AddOn exports the information, data and statistics of your characters. For more information, visit https://www.eso-database.com
+## Author: |cEFEBBEKeldor|r
+## Version: 4.6.18
+## IntVersion: 4618
+## APIVersion: 101048
+## SavedVariables: ESODBDataExportV4
+## IsLibrary: false
+
+Database/ESODatabaseExportDatabaseIds.lua
+Database/ESODatabaseExportRecipes.lua
+Database/ESODatabaseExportEventPOIZones.lua
+Database/ESODatabaseSpecialNPCNames.lua
+
+Core/ESODatabaseExportConst.lua
+Core/ESODatabaseExportStats.lua
+Core/ESODatabaseExportUtils.lua
+Core/ESODatabaseExportCommand.lua
+
+Language/en.lua
+Language/$(language).lua
+
+ESODatabaseExport.lua
+Bindings.xml
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

@@ -1,0 +1,33 @@
+## Title: Tamriel Chronos
+## Description: v2.1.1 - Tamriel Time, Calendar, Holidays and astronomical data
+## Author: Gandalf (@Gandalf2675)
+## Version: 20101
+## AddOnVersion: 20101
+## APIVersion: 101034 101035
+## DependsOn: LibAddonMgmt>=10104 LibAddonMenu-2.0>=34
+## SavedVariables: TamrielChronosVar
+## DisableSavedVariablesAutoSaving: 0
+
+lang/en.lua
+lang/$(language).lua
+
+TamrielChronos.lua
+config/cm.lua
+complications/const.lua
+complications/calendar.lua
+complications/conv.lua
+complications/conv.xml
+complications/health.lua
+complications/holydays.lua
+complications/moon.lua
+complications/sun.lua
+clocks/base/base.lua
+clocks/h24/h24.lua
+clocks/e24/e24.lua
+clocks/dualA/dualA.lua
+clocks/dualD/dualD.lua
+clocks/mon/mon.lua
+clocks/monD/monD.lua
+clocks/noMoD/noMoD.lua
+bindings.xml  
+

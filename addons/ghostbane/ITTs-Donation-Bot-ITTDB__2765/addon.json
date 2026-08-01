@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/ghostbane/ITTs-Donation-Bot-ITTDB__2765",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ghostbane",
+  "canonical_id": "esoui:2765",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2765",
+  "deleted": false,
+  "directories": [
+    "ITTSDonationBot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2765/",
+  "fingerprint": "6b666ac0cf94a4b7e04068abf0d5357bc8cd276167e285afa98b57d6b3ec8627",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9357.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9358.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9360.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9359.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2765",
+  "source_url": "https://www.esoui.com/downloads/info2765-ITTsDonationBotITTDB.html",
+  "stats": {
+    "downloads": 18142,
+    "favorites": 21,
+    "monthly_downloads": 374
+  },
+  "title": "ITTs Donation Bot ( ITTDB )",
+  "updated_at": 1785460428000,
+  "version": "2.1.3"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/mgsnakes/Wizard-s-Wardrobe-Extensions---Arena-and-Dungeons---Feast-of-Shadows-updated__3874",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mgsnakes",
+  "canonical_id": "esoui:3874",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3874",
+  "deleted": false,
+  "directories": [
+    "WizardsWardrobeExtensions"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3874/",
+  "fingerprint": "65012746b7b6a203022f1376853afb2029175989b8f8635938b6882eff124224",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13143.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3874",
+  "source_url": "https://www.esoui.com/downloads/info3874-WizardsWardrobeExtensions-ArenaandDungeons-FeastofShadowsupdated.html",
+  "stats": {
+    "downloads": 21402,
+    "favorites": 14,
+    "monthly_downloads": 260
+  },
+  "title": "Wizard's Wardrobe Extensions - Arena and Dungeons - Feast of Shadows updated",
+  "updated_at": 1756376295000,
+  "version": "2.2"
+}

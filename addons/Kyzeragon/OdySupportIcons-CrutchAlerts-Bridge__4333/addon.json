@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Kyzeragon/OdySupportIcons-CrutchAlerts-Bridge__4333",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyzeragon",
+  "canonical_id": "esoui:4333",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4333",
+  "deleted": false,
+  "directories": [
+    "OSICrutchBridge"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4333/",
+  "fingerprint": "b5be57721539085a6a9bce5ed0281aaf4bed2cf11aa49465c96f60a0e6714006",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14949.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4333",
+  "source_url": "https://www.esoui.com/downloads/info4333-OdySupportIcons-CrutchAlertsBridge.html",
+  "stats": {
+    "downloads": 1466,
+    "favorites": 8,
+    "monthly_downloads": 122
+  },
+  "title": "OdySupportIcons-CrutchAlerts Bridge",
+  "updated_at": 1766504782000,
+  "version": "1.0.0"
+}

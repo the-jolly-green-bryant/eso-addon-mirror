@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Kyzeragon/Mudballed---Memento-Counter__3218",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyzeragon",
+  "canonical_id": "esoui:3218",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:3218",
+  "deleted": false,
+  "directories": [
+    "Mudballed"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3218/",
+  "fingerprint": "44d022e88848badec02fe4f7870fa5b73114964f3e418e4ea4713291cc75f53b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10939.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3218",
+  "source_url": "https://www.esoui.com/downloads/info3218-Mudballed-MementoCounter.html",
+  "stats": {
+    "downloads": 3142,
+    "favorites": 5,
+    "monthly_downloads": 23
+  },
+  "title": "Mudballed - Memento Counter",
+  "updated_at": 1744574932000,
+  "version": "1.0.2"
+}

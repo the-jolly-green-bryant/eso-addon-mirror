@@ -1,0 +1,18 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Leo's Trainer">
+      <Action name="LEOTRAINER_TOGGLE_WINDOW">
+        <Down>LeoTrainer.ui:ToggleUI()</Down>
+      </Action>
+      <Action name="LEOTRAINER_CRAFT_NEXT">
+        <Down>LeoTrainer.CraftNext()</Down>
+      </Action>
+      <Action name="LEOTRAINER_DECON">
+        <Down>LeoTrainer.deconstruct.DoDeconstruct()</Down>
+      </Action>
+      <Action name="LEOTRAINER_RESEARCH">
+        <Down>LeoTrainer.research.ResearchNext()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

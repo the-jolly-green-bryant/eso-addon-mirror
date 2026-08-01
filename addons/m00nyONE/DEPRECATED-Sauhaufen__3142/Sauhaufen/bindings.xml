@@ -1,0 +1,15 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|cFFC0CBSauhaufen|r">
+            <Action name="SAUHAUFEN_OPEN">
+                <Down>Sauhaufen.GUIToggleMain()</Down>
+            </Action>
+            <Action name="SAUHAUFEN_POST_DISCORD_LINK">
+                <Down>Sauhaufen.PostDiscordLink()</Down>
+            </Action>
+            <Action name="SAUHAUFEN_RECRUIT">
+                <Down>Sauhaufen.Recruit()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

@@ -1,0 +1,50 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ASYChangeFilterDialog" inherits="ZO_CustomDialogBase">
+			<Dimensions x="800" y="225" />
+			<Anchor point="CENTER" offsetY="-45" />
+			<Controls>
+				<Control name="$(parent)Content" inherits="ZO_DialogContentAnchors">
+					<Controls>
+						<!-- filter for basic green leads -->
+						<Button name="$(parent)ShowBasicLeadsCheck" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)ShowAvailableCheck" relativePoint="BOTTOMLEFT" offsetY="3" />
+                    		<OnClicked>
+                        		ZO_CheckButton_OnClicked(...)
+                    		</OnClicked>
+						</Button>
+
+                        <Label name="$(parent)ShowBasicLeadsLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT" text="Show requires lead">
+							<Anchor point="LEFT" relativeTo="$(parent)ShowBasicLeadsCheck" relativePoint="RIGHT" offsetX="5"  />
+                        </Label>
+
+						<!-- filter for zones  -->
+						<Button name="$(parent)ShowAllZonesCheck" inherits="ZO_CheckButton">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)ShowBasicLeadsCheck" relativePoint="BOTTOMLEFT" offsetY="5" />
+                    		<OnClicked>
+                        		ZO_CheckButton_OnClicked(...)
+                    		</OnClicked>
+						</Button>
+
+                        <Label name="$(parent)ShowAllZonesLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT" text="Show in progress">
+							<Anchor point="LEFT" relativeTo="$(parent)ShowAllZonesCheck" relativePoint="RIGHT" offsetX="5"  />
+                        </Label>
+
+						<!-- Quality filter -->
+                        <Label name="$(parent)MinimumQualityLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT" text="Minimum quality:"> 
+							<Anchor point="TOPLEFT" relativeTo="$(parent)ShowAllZonesCheck" relativePoint="BOTTOMLEFT" offsetY="5" />
+							<Dimensions x="350" y="20" />
+                        </Label>
+
+	                    <Control name="$(parent)MinQualityDropdown" inherits="ZO_ComboBox">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)MinimumQualityLabel" relativePoint="BOTTOMLEFT" offsetY="5"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)MinimumQualityLabel" relativePoint="BOTTOMRIGHT" offsetY="5"/>
+                        </Control>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton" />
+				<Control name="$(parent)Accept" inherits="ZO_CustomDialogButton" />
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

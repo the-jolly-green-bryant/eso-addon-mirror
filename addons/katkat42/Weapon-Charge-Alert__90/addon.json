@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/katkat42/Weapon-Charge-Alert__90",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "katkat42",
+  "canonical_id": "esoui:90",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:90",
+  "deleted": false,
+  "directories": [
+    "WeaponChargeAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl90/",
+  "fingerprint": "04daefa0656dced8b1007bf87c7e26f0746f8d77ffc4e57fd81ad8fe93a37a68",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw221.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "90",
+  "source_url": "https://www.esoui.com/downloads/info90-WeaponChargeAlert.html",
+  "stats": {
+    "downloads": 105613,
+    "favorites": 227,
+    "monthly_downloads": 26
+  },
+  "title": "Weapon Charge Alert",
+  "updated_at": 1534451456000,
+  "version": "1.1.24"
+}

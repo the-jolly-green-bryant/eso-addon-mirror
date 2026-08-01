@@ -1,0 +1,8 @@
+## Title: Troop Transport
+## APIVersion: 101038
+## Author: @KermitTheFrog88
+## DependsOn: LibAddonMenu-2.0>=28
+## SavedVariables: TroopTransportVars
+
+TroopTransport.lua
+TroopTransport.xml

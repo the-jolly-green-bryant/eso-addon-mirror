@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/im_rookie/Thank-You-3__3822",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "im_rookie",
+  "canonical_id": "esoui:3822",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3822",
+  "deleted": false,
+  "directories": [
+    "ThankYou"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3822/",
+  "fingerprint": "22ee9bd4bb5dfa86ceba91e32b55a86c46a714c55cc7d620e65d293809e3480d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12985.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12986.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3822",
+  "source_url": "https://www.esoui.com/downloads/info3822-ThankYou3.html",
+  "stats": {
+    "downloads": 1236,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "Thank You <3",
+  "updated_at": 1711929830000,
+  "version": "1.1"
+}

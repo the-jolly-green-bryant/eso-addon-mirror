@@ -1,0 +1,34 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="LogBoardToplevel" layer="0">
+            <Dimensions x="400" y="200" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" alpha="0.8" centerColor="000000" edgeColor="000000">
+                    <AnchorFill />
+                    <Edge edgeSize="3"/>
+                </Backdrop>
+
+               
+                <Label name="$(parent)Text" font="$(ANTIQUE_FONT)|40|thick-outline" horizontalAlignment="1" verticalAlignment="1" text="|cFF0000You are NOT Logging|r">
+                    <Dimensions x="400" y="100" />
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+                </Label>
+
+
+                <Button name="$(parent)Button" inherits="ZO_ExtraLargeButton" text="Start Logging" hidden="false" font="ZoFontGamepadBookPaper">
+                    <OnClicked>
+                        LogBoard.ToggleLogging()
+                    </OnClicked>
+
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+                </Button>
+
+                <Backdrop name="$(parent)SignPost" alpha="1" centerColor="000000" edgeColor="000000">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+                    <Dimensions x="20" y="270" />
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Masteroshi430/MiniMap-by-Fyrakin-Masteroshi430-s-branch__3384",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:3384",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3384",
+  "deleted": false,
+  "directories": [
+    "MiniMap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3384/",
+  "fingerprint": "076fddd2542383cf1fb45fb11adac6a6e826f4efea8cd30d8e869fc684ed891a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12275.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11995.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12038.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11878.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11992.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11993.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11994.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12543.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11879.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11575.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3384",
+  "source_url": "https://www.esoui.com/downloads/info3384-MiniMapbyFyrakinMasteroshi430sbranch.html",
+  "stats": {
+    "downloads": 1420039,
+    "favorites": 423,
+    "monthly_downloads": 14295
+  },
+  "title": "MiniMap by Fyrakin [Masteroshi430's branch]",
+  "updated_at": 1785527976000,
+  "version": "2026.07.31"
+}

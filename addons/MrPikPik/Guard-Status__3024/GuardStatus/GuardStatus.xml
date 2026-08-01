@@ -1,0 +1,40 @@
+<GuiXml>
+	<Animations>
+        <AnimationTimeline name="GuardStatusAnimation">
+            <Animations>
+                <AlphaAnimation duration="500" startAlpha="0.0" endAlpha="1.0" />
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+
+	<Controls>
+		<TopLevelControl name="GuardStatusWindow" mouseEnabled="true" movable="true" hidden="false" clampedToScreen="true">
+			<Dimensions x="165" y="64"/>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="200" offsetY="200"/>
+						
+			<OnMoveStop>
+				GuardStatus_OnMoveStop(self)
+			</OnMoveStop>
+
+			<Controls>               
+                <Texture name="$(parent)Icon" textureFile="EsoUI/Art/ActionBar/abilityInset.dds" verticalAlignment="TOP">
+                    <Dimensions x="50" y="50" />
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+                </Texture>
+                
+                <Label name="$(parent)Desc" font="$(CHAT_FONT)|$(KB_16)|soft-shadow-thick" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Icon" offsetX="5" />
+				</Label>
+                
+				<Label name="$(parent)Text" font="$(CHAT_FONT)|$(KB_24)|soft-shadow-thick" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Desc" />
+				</Label>
+                
+                <Texture name="$(parent)Backdrop" textureFile="EsoUI/Art/ActionBar/abilityFrame64_up.dds">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Icon"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Icon"/>
+                </Texture>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

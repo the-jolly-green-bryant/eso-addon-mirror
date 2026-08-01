@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Lykeion/DEPRECATED-Lykeion-s-Siphoning-Strikes-Blocker__3374",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lykeion",
+  "canonical_id": "esoui:3374",
+  "category_id": "152",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3374",
+  "deleted": false,
+  "directories": [
+    "SiphoningStrikesBlocker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3374/",
+  "fingerprint": "5c42db949838b4f34b0ee126816e7219e39268572bf8f7a7bdecdcd731f56937",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11515.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3374",
+  "source_url": "https://www.esoui.com/downloads/info3374-DEPRECATEDLykeionsSiphoningStrikesBlocker.html",
+  "stats": {
+    "downloads": 4097,
+    "favorites": 2,
+    "monthly_downloads": 14
+  },
+  "title": "DEPRECATED: Lykeion's Siphoning Strikes Blocker",
+  "updated_at": 1653885875000,
+  "version": "2.0"
+}

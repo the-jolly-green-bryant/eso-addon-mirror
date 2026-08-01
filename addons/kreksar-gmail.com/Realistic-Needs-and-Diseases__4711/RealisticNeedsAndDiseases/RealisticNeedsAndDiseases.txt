@@ -1,0 +1,20 @@
+## Title: Realistic Needs and Diseases
+## Author: @Kreksar5 and Claude.ai
+## Version: 0.19.13
+## AddOnVersion: 23
+## APIVersion: 101050 101051
+## SavedVariables: RealisticNeedsAndDiseasesSavedVars
+## DependsOn: LibAddonMenu-2.0>=43 LibFoodDrinkBuff>=19
+## OptionalDependsOn: Frostfall LibZoneTemp
+## Description: A survival-needs and disease system for ESO, inspired by the Skyrim mod of the same name (not a port, not affiliated). Tracks hunger, thirst, fatigue with temperature-accelerated decay, plus 5 diseases cured by alchemy ingredients. AI-ASSISTED, written with Claude.ai, reviewed and tested in-game by the author — see README.
+
+RealisticNeedsAndDiseases_Data.lua
+RealisticNeedsAndDiseases_Calculator.lua
+RealisticNeedsAndDiseases_Feedback.lua
+RealisticNeedsAndDiseases_Rest.lua
+RealisticNeedsAndDiseases_Disease.lua
+RealisticNeedsAndDiseases_Overlay.lua
+RealisticNeedsAndDiseases_StatusBar.lua
+RealisticNeedsAndDiseases_Settings.lua
+RealisticNeedsAndDiseases.lua
+bindings.xml

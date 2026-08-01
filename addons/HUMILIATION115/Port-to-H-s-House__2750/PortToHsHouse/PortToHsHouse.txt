@@ -1,0 +1,21 @@
+#Manifest File
+
+## Title: |c00E600PortToHsHouse|r
+## Description: Use "/hhouse" to port to H's primary.
+## Author: |c787878HUMILIATION115|r
+## Version: 10.0.0.6
+## APIVersion: 101041 101042
+## SavedVariables:
+## DependsOn:
+
+##AddOnVersion: 69
+##IsLibrary: false
+
+
+PortToHsHouse.lua
+
+# This Addon is not created by, affiliated with, or sponsored by
+# ZeniMax Media Inc. or its affiliates
+# The Elder Scrolls (c) and related logos are registered trademarks
+# or trademarks of ZeniMax Media Inc. in the United States and/or
+# other countries.  All rights reserved

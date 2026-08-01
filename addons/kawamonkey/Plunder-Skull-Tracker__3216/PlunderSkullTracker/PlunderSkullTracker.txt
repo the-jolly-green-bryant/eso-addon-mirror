@@ -1,0 +1,11 @@
+## Title: Plunder Skull Tracker
+## Author: Kawamonkey
+## APIVersion: 101035
+## Version: 1.2
+## SavedVariables: PlunderSkullTracker
+
+lang/en.lua
+lang/$(language).lua
+
+PlunderSkullTracker.lua
+PlunderSkullTracker.xml

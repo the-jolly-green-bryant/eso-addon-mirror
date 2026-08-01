@@ -1,0 +1,584 @@
+Version 97
+For update 50
+Update API Version
+
+ESO have changed their internal data structure "Category". This relates an achievement to its description.
+It is category that organises it all.
+
+This is a small step in the right direction.
+
+What I do when a new release is out, is to run a "dump" addon to get the achievements from the GetAchievementCategoryInfo() function call. This lets me populate the control tables in "History".
+
+My ongoing aim is to automate this as much as possible.
+
+I'm reviewing it all so you may see "History" lagging on new achievements even though its not "out of date"
+
+
+Version 96
+For update 49
+Update API Version
+Move some code around
+
+
+Version 95
+For update 48
+
+Version 94
+Internal Cleanup. Now a bit faster
+It is now possible for you to prune and sort the base game dungeons to be processed.
+Also the DLC modules.  DLC are getting out of hand, so you can "nope" DLC that you dont want to see.
+This speeds it up a lot and stops the DLC2 tab from running off to the right.
+
+It does not affect the data collected. You can change it back and your achievements will still be there.
+
+
+This is done by editing the my/custom.lua file.  There is no GUI for this.
+It will not be changed by any upgrades. An example file is provided.
+
+
+In addition, the amount of data collected has been reduced, making the savedvariables/history.lua file smaller.
+
+
+Version 93
+Removed old code never used.
+Change presentation of base game panels to be like the DLC2 tabs.
+Remove mouseovers in favor of description text.
+Achievements are presented in no particular order.
+If anyone prefers Ach_ID order or alpha on the name, let me know in the forum.
+
+Version 92
+No Changes
+
+Version 92-Beta1
+Major changes on
+How translations are processed.
+How I'm processing DLC
+
+You can maintain your own DLC translations. These are persistent.
+See Doc\Description.txt
+If you want to update the UI translations, please edit the -ui.lua file and contact me on the forum.
+in the data\meta\  directory is a zip file of how I'm filtering achievements.
+If its wrong, let me know.
+
+
+
+Version 91
+Update 47 Feast of Shadows
+
+
+Version 90
+Problem with git tagging
+
+
+Version 89
+Update 46
+2025-04-16
+Bumped API
+Added Seasons of the Worm Cult
+
+Version 88
+Update 45
+2025-01-15
+Bumped API
+Added Fallen Banners
+
+Version 87
+Update 43
+2024-08-23
+Bumped API
+
+Version 86
+2024-06-
+Update 42
+
+This removed data and processing for
+* Levelling data
+* Locations and their visits
+
+This simplifies the code a little and reduces the size of the data retained, a little.
+
+The ingame module is updated.
+
+
+Version 85
+2024-04-17
+Update 42
+Added Gold Road, Fixed Acheivements for 2 hard mode trials
+Bumped API
+
+
+Version 84
+2024-01-30
+Update 41
+Added Scions of Thingy, 2 GRP Dungeons
+Bumped API
+
+
+Version 83
+2023-09-24
+
+Added Endless Archive As DLC2
+Bump API
+
+Version 82
+2023-09-18
+
+Simplified World Boss and Skill Quest Code. A lot faster and a lot Simpler. 3.5 Sec Vs 30s to start.
+Found some missing Quests.
+
+
+Version 81
+Version 81-beta2
+2023-07
+Still Raging, but bored enough to update this.
+API Bump,
+Stuff up to Necrom.
+
+
+Note this is a lot of added data and History is now quite slow to load. 15 sec or more.
+
+
+Version 80
+Rage Quit Edition
+With update 29 they reset all Skill points.
+For no particular reason.
+So I'm now facing reassigning 360 skill points to 9 chars.
+No, I'm not. I have Closed my Eso+ Subs and deleted the program.
+I don't expect to be back within the next few years.
+
+The in game part of this should remain compatible with future game updates.
+Thanks for using History.
+
+
+version 79
+Minor cleanup in game module.
+
+2021-02-01 version 78
+Added Flames of Ambition. 2 Dungeons
+Api bump
+
+2021-01-27 version 77
+Added Markath  Skill  Quests
+
+2020-09-29 version 76
+
+Removed Greymoor world bosses
+Added as Markath
+
+
+2020-09-22 version 75
+Added Markath
+Add missing Greymoor world bosses
+Made some Detail fields a bit longer.
+
+
+2020-09-13  version 74
+Added Missing:
+Frostvault
+Lair of Maarselok
+Moongrave Fane
+
+
+2020-09-09 verion 73
+Missing Depths of malatar
+
+
+2020-09-07 Version 72
+Added missing Greymoor Skillquest
+
+2020-09-05 Version 71
+The IUP-LUA 5.4. code was fixed on sourceforge, so redownload it if you need it.
+Moved some Code around.
+Fixed an issue that ignored some achievements.
+
+
+2020-08-21  Version 70
+==Known not to work with IUP-Lua 5.4===
+Updated Install Docs (Not Video)
+Southern Elsweyr Skill Quests  (Dragonhold)  The "Reformation" quest is not available. Case opened with Zos
+
+Update of the Account and Character Delete Scripts
+Character Delete now gives more information to distinguish between identically named characters.
+
+Moved some files to a new "Prog" directory
+
+Fixed issue with a crash on very old character data (Peter)
+
+2020-08-14 Version 69
+Wasn't recording the DLC Grp events correctly.
+Nobody cared.
+
+
+2020-08-08 Version 68
+
+Removed the Asp Awareness Achievement from Summerset World Bosses
+Added Moonwalker to Elsweyr SkillQuests
+
+
+2020-7-30 version 67
+Add Stonethorn
+Add Greymoor 2 Skill quests
+Has Ru data
+
+2020-05-29 version 66
+Added 2 Skill quests for Elsweyr
+
+2020-05-28 version 65
+Api update.
+
+
+2020-04-22 version 64
+Api update.
+Add Greymoor
+
+2020-04-17 version 63
+Fix crash in Utility at startup on a new installation.
+
+
+2020-01-28 version 62
+Add Harrowstorm
+
+2019-11-03 version 61
+Update to DLC without worrying about Skill Quests or World Bosses
+Update to API version
+
+
+
+2019-05-28 version 60
+Copied the Sunspire Trials main achievements to the Trials tab while leaving them also in Elsweyr.
+
+
+2019-05-27 version 59
+Update for Elsweyr.
+Achievement Columns are a bit wider.
+German Achievements may still be a bit long.
+
+2019-02-09 version 58-beta 02
+Very major changes to simplify the programming.
+It is mostly data driven, which limits how I can present the information.
+If its not in the Achievement text, too bad..
+
+Must use IUP 3.26 or later
+
+
+2018-11-29 version 57
+	Fix Murkmire WB MIssing
+
+
+2018-11-26 version 56
+	Restructure of Game data.
+	Murkmire
+
+2018-09-28 version 55
+	Backported WorldBoss and SkillQuest code from Beta.
+	Please report bugs
+
+2018-09-17 version 54
+	fix for DE and FR skillquests, Imperial City
+
+2018-09-15 version 53
+    Thanks Snakefish!
+	Added missing skillquests,
+	Some code has been refactored
+	In game part changed to cope with ZOS.
+	After installing  type  /histload  for the current char. Other wise it may take 1 day to get the historic achievements.
+
+
+2018-09-11 version 53-beta
+	Added missing skillquests,
+	Some code has been refactored
+
+2018-08-15 version 52-beta-01
+	Now have HistOfflineBeta.lua.
+	Additional DLC data.
+
+
+2018-08-14 version 52
+	Preliminary Support for Wolfhunter
+	Fix mouseover on a tab
+
+2018-08-14 version 51
+	Removed the Mouseover from Dungeon Mode (didn't work anyway)
+	Add "ru" lingua, which has english data
+	Mouseover on completed dungeon in char mode now displays the datetime completed in the bottom panel.
+
+2018-08-08 version 50
+	The Toggle to hide characters that have completed all dungeons (Dungeon Mode) would crash the program if you had no vet characters.
+
+2018-08-03 version 49
+	Add Toggle to hide characters that have completed all dungeons (Dungeon Mode)
+
+2018-05-18  version 48
+	Made TG/DB/Clockwork Groups Bosses available.
+
+
+2018-05-18 version 47
+	Changed WB display to have detail panel
+	Made Dungeon Mode scrollable for people with lots of chars
+
+
+
+2018-05-17 version 46
+	Fixed missing Vvardendell World Boss
+	Thanks Snakefish!!!
+
+
+2018-05-14 version 45
+	Fixed problems with Trials
+	Added Asylum
+	Improved DE translations by Snakefish.
+	Lots of other help from Snakefish!!!
+
+
+2018-05-11 version 44
+	This release dedicated to snakefish for his DE translations!
+	No other changes.
+
+2018-05-10 version 43
+	Major Changes WRT Trials. Dumped Craglorn, It's now all under "Trials"
+	NOTE: It is sometimes impossible to sure from the Achievement description if its Vet or not.
+	Also "hard mode" seems to be deprecated. Let me know if you think something is wrong.
+
+	Did Minimal work on FR and DE translation.
+
+2018-05-05 version 42
+	Adding Support for Bones,Horns
+	Renamed Morrowind to Vvardenfell
+	The situation with locations, Vet, Vet hard, Trials, Special conditions is such bloody mess that I'm holding off on clockwork city.
+	I will have to restructure this and and it going to be a dog of thing, just to figure out, let alone to do.
+
+2018-05-04 version 41
+	Adding Support for Morrowind.
+	*)Pub Dungeons
+	*)Skill Quests
+
+2018-03-09 version 40  (no change to code)
+	API Bump
+
+
+2017-06-13 version 39
+	API Bump
+
+2017-06-13 version 38
+	Translation fixes, UTF8 now working
+	Localised Dates.
+	Thanks, Snakefish!
+
+2017-05-21 version 37
+	API Bump
+	Fixed up old character deletion. Decided to keep it simple and not worry about servers.
+
+2017-02-11 version 36
+	Fixed bug for crash starting new character
+
+2017-02-03 version 35
+	Craglorn Trials working
+	Hist DLC added
+	Changed presentation. Background is now green when done.
+	Fixed bug not recording map visits. Shows blank. Not bothering to fix old data.
+	Now saving only the exact Achievement data we are reporting on. Save file is smaller
+
+
+2017-01-06 version 34
+	API Update
+	Achievement text hoverover (WIP)
+	Fixed: Fungal Grotto VH wrong
+	Fixed: Maelstrom vet/normal was reversed
+
+2017-01-01 version 33
+	Fixed Veteran hard Volenfell
+
+2016-12-31 version 32
+	Fix to dying when just leaving non-vet, when the account has CP (error line 314)
+	(Non vet only goes to level 49, not 50)
+
+2016-12-07 version 31
+	Fixed Veteran Volenfell
+
+
+2016-12-07 version 30
+	Added IC dungeons in DLC
+
+2016-12-03 version 29
+	Filtered too many achievements, stopping world boss and skill quests  being populated.
+
+2016-11-30 version 28
+	Fix for Wrong Achievements on some mode II veteran dungeons
+
+2016-11-26 version 27
+	Internal changes. Unused achievement categories not saved.
+	Now recording levelling again.
+	had been broken for ages and no one noticed, even me.
+	The savedvariables files should be smaller.
+	We now account for characters in different servers, however this working stil pending in the UI.
+	Fixes for some dungeon achievements.
+
+2016-10-12 version 25
+	Sorts characters names
+	Doesn't log messages about levelling while history not working. As CP are levelling and are global, this is inevitable.
+
+2016-10-04 version 24
+	A minor to fix to record time played.
+	Now records Leveling when Champion Points are earned. Looks a bit odd since that's account wide.
+	No Change to histoffline, but I'm starting work on the trials.
+
+2016-10-01 version 23
+    No change to in-game client, histoffline code has been refactored.
+	The saved variables  data file format is unchanged. You can revert to an earlier version ok.
+	Ready for version 12, with new dungeon scheme.
+	Tracking sub achievements for Vet dungeons has been scrapped.
+	v11 has 2 more DLC dungeons and trials in normal modes. I'm not up to date with these. Will work on it.
+	v12 will make craglorn less of a joke. Will track what to do there.
+
+2016-08-09 version 22
+	A BPB bug affecting users with more than 2 accounts
+
+
+2016-08-07 version 21
+	Internal changes in the save file to allow correct operation when the character is
+	Renamed
+	Race changed
+	Gender Changed
+
+	After installing this update, you should log in to all your characters so it will update.
+
+	Included are
+	Delete-Account.lua
+	Delete-Character.lua
+
+	Which you can run from the iuplua53 console.
+	They will perform one operation and then quit. This is so you can use histoffline to confirm its doing what you think.
+	You should BACKUP YOUR savedvariables/History.lua file.
+	The apps copy the datafile into a sub folder called History_bak, with a timestamp in the name, before writing any data.
+	This is new code..... you do have a backup, don't you?
+
+	This addon could use some love from DE and FR speakers.
+
+
+2016-08-01 version 20
+	API for Update 11
+
+
+2016-06-01 version 19
+	API for Dark Brotherhood
+
+2016-02-28 version 18
+	Display DLC data (Orsinium)
+	No changes to the in-game code.
+
+2016-02-28 version 17
+	Fix for missed level if done while addon was disabled.
+	API level ready for TG
+
+2016-02-14 version 16
+	Change Greenshade skill quest
+
+
+2015-11-03 version 15
+	API bump for Orsinium
+
+2015-09-10 version 14
+	Perform an achievement load on login, but not more often than every 23 hours.
+	This will help with people who do a dungeon then CTD on exit.
+
+	Try setting UTF8 mode, left commented out
+
+
+2015-09-01 version 13
+	API bump
+
+2015-07-04 version 12
+	A significant update, adding a "Dungeons" mode.
+	In Character Mode:
+	Split Trials Away from vet dungeons, as they are quite different.
+	Trials show details for achievements.
+	Characters which aren't Veteran won't get Vet Dungeon or Trial Tabs.
+
+	History Addon:
+	added slash command to delete old data.  (/hostdelold)
+	UPGRADE
+	Nothing special required.
+
+
+2015-05-20 version 11
+	De translation done.
+	Moving out of "Beta" category on Minion.
+	Change Description so is doesn't have the installation data.
+	UPGRADE
+	Nothing special required.
+
+
+
+2015-05-13 version 10
+	Quests awarding Skill points, Now has detail panel with clickable link
+
+	UPGRADE
+	Nothing special required.
+
+
+2015-05-09 version 9
+	Quests awarding Skill points, work in progress.
+	Thankyou Joklix.
+
+	UPGRADE
+	Nothing special required.
+
+2015-05-04 version 8
+	World Bosses!!
+	UPGRADE
+	Nothing special required.
+
+
+2015-05-04
+	Changed Description to specify IUP 3.13
+
+2015-05-02
+	version 7
+	Update to German translation
+	UPGRADE
+	Nothing special required.
+
+
+2015-05-02
+	version 6
+	Refactored localisation. DE mostly done, FR needs work.
+	Language in use saved by the addon when you log out from the game.
+	Fixed one dungeon with wrong achievement.
+	UPGRADE
+	Nothing special required.
+
+
+2015-05-01
+	Version 5
+	Mostly fixed operation on non-english Lingua. Some locations have mangled text.
+	Hid Empty Vet Coldhabour Panel
+
+	UPGRADE
+	English users Don't need to delete saved variables
+	French and German users should delete savedvariables/history.lua, if it exists..
+
+	Special Thankyou to Joklix, without whom I would not of had a clue.
+
+
+
+
+2015-04-27
+	Version 4
+	Added Dragonstar Arena
+	Adjusted size of some fields
+
+
+2015-04-27
+	Version 3
+	Oops! incorrect initialise on new char causes crash.
+	Log in with each char to let the updated addon fix the data file.
+	Histoffline  won't wont until all have been fixed
+
+
+2015-04-26
+	Version 2
+	Beta Code, fixed packaging problem.
+
+2015-04-26
+	Version 1
+	Beta Code, no known bugs.

@@ -1,0 +1,267 @@
+<GuiXml>
+  <Font name="BAFWinH1" font="$(BOLD_FONT)|$(KB_30)|soft-shadow-thick" />
+  <Font name="BAFWinH2" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" />
+  <Font name="BAFWinH3" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick" />
+  <Font name="BAFWinH4" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thick" />
+  <Font name="BAFWinH4T" font="$(MEDIUM_FONT)|$(KB_18)|soft-shadow-thick" />
+  <Font name="BAFWinH5" font="$(BOLD_FONT)|$(KB_15)|soft-shadow-thick" />
+  <Font name="BAFMetalTitle" font="$(ANTIQUE_FONT)|30|soft-shadow-thick" />
+  <Controls>
+    <Button name="BAFTriggle_Button" topmost="true" clickSound="Click" movable="true" clampedToScreen="true">
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+      <Dimensions x="54" y="54"/>
+      <Textures normal="esoui/art/lfg/lfg_indexicon_dungeon_up.dds" pressed="esoui/art/lfg/lfg_indexicon_dungeon_down.dds" mouseOver="esoui/art/lfg/lfg_indexicon_dungeon_over.dds"/>
+      <OnInitialized> self:SetParent(ZO_MainMenu) </OnInitialized>
+      <OnClicked> BetterDungonFinder.ShowWindow() </OnClicked>
+      <OnMouseExit> BetterDungonFinder.WindowPosition()</OnMouseExit>
+    </Button>
+
+    <TopLevelControl name="BAFTopLevel" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" allowBringToTop="true" tier="MEDIUM">
+      <Dimensions x="1500" y="800" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+      <OnMouseUp> BetterDungonFinder.WindowPosition() </OnMouseUp>
+      <Controls>
+        <Backdrop name="BAFPureBlack" centerColor="000000" edgeColor="000000" layer="BACKGROUND">
+          <AnchorFill/>
+          <Edge edgeSize="1"/>
+        </Backdrop>
+        
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" mouseEnabled="false" layer="BACKGROUND"/>
+        
+        <Label name="BAFWindow_Title" width="100" height="40" font="BAFMetalTitle" inheritAlpha="true" color="FFD700" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" layer="TEXT">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+          <OnInitialized>self:SetText(BAFLang_SI.TITLE)</OnInitialized>
+        </Label>
+        
+        <Label name="BAFWindow_Base" width="50" height="30" font="BAFWinH2" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" layer="TEXT">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-645" offsetY="-348"/>
+          <OnInitialized>self:SetText(BAFLang_SI.TITLE_BaseDungeon)</OnInitialized>
+        </Label>
+        
+        <Label name="BAFWindow_DLC" width="50" height="30" font="BAFWinH2" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" layer="TEXT">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-145" offsetY="-348"/>
+          <OnInitialized>self:SetText(BAFLang_SI.TITLE_DLCDungeon)</OnInitialized>
+        </Label>
+        
+        <Label name="BAFWindow_Unduanted" width="50" height="30" font="BAFWinH2" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" layer="TEXT">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="595" offsetY="-348"/>
+          <OnInitialized>self:SetText(BAFLang_SI.TITLE_Undauted)</OnInitialized>
+        </Label>
+  
+        <Label name="BAFWindow_Info" font="BAFWinH4" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="by @MelanAster" layer="TEXT">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="450" offsetY="-380"/>
+        </Label>
+        
+        <Label name="BAFWindow_Figure" font="BAFWinH4" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" layer="TEXT">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-450" offsetY="-380"/>
+          <OnInitialized>self:SetText(
+          "|t26:26:esoui/art/mappins/skyshard_complete.dds|t"..BAFLang_SI.Caption_SK.." / "..
+          "|t24:24:esoui/art/tradinghouse/gamepad/gp_tradinghouse_trophy_treasure_map.dds|t".." "..BAFLang_SI.Caption_HM.." / "..
+          "|t25:25:esoui/art/miscellaneous/timer_64.dds|t"..BAFLang_SI.Caption_SR.." / "..
+          "|t25:25:esoui/art/treeicons/gamepad/gp_tutorial_idexicon_death.dds|t"..BAFLang_SI.Caption_ND.." / "..
+          "|t25:25:esoui/art/currency/gamepad/gp_crowns_mipmap.dds|t"..BAFLang_SI.Caption_TR)</OnInitialized>
+        </Label>
+        
+        <Button name="BAFRan_N" clickSound="Click" layer="CONTROLS">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="547" offsetY="280"/>
+          <Dimensions x="50" y="50"/>
+          <Textures 
+            normal="/esoui/art/treeicons/reconstruction_tabicon_dungeon_up.dds" 
+            pressed="/esoui/art/treeicons/reconstruction_tabicon_dungeon_down.dds"
+            mouseOver="/esoui/art/treeicons/reconstruction_tabicon_dungeon_over.dds"/>
+          <OnClicked> BetterDungonFinder.Queue(self, 62) </OnClicked>
+          <OnMouseEnter> BetterDungonFinder.DailyInfo(self, 1) </OnMouseEnter>
+          <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+        </Button>
+        
+        <Button name="BAFRan_V" clickSound="Click" layer="CONTROLS">                          
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="608" offsetY="278.5"/>
+          <Dimensions x="50" y="50"/>
+          <Textures 
+            normal="/esoui/art/tutorial/leaderboard_indexicon_raids_up.dds" 
+            pressed="/esoui/art/journal/leaderboard_indexicon_raids_down.dds"
+            mouseOver="/esoui/art/journal/leaderboard_indexicon_raids_over.dds"/>
+          <OnClicked> BetterDungonFinder.Queue(self, 61) </OnClicked>
+          <OnMouseEnter> BetterDungonFinder.DailyInfo(self, 2) </OnMouseEnter>
+          <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+        </Button>
+        
+        <Button name="BAFRan_BG" clickSound="Click" layer="CONTROLS">                          
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="663" offsetY="279"/>
+          <Dimensions x="50" y="50"/>
+          <Textures 
+            normal="/esoui/art/lfg/lfg_indexicon_battlegrounds_up.dds" 
+            pressed="/esoui/art/lfg/lfg_indexicon_battlegrounds_down.dds"
+            mouseOver="/esoui/art/lfg/lfg_indexicon_battlegrounds_over.dds"/>
+          <MouseButton button="2" enabled="true"/>
+          <OnClicked> BetterDungonFinder.Queue(...) </OnClicked>
+          <OnMouseEnter> BetterDungonFinder.DailyInfo(self, 3) </OnMouseEnter>
+          <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+        </Button>
+        
+        
+        <Button name="BAFRole_T" clickSound="Click" layer="CONTROLS">                          
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="547" offsetY="330"/>
+          <Dimensions x="50" y="50"/>
+          <Textures 
+            normal="/esoui/art/lfg/lfg_tank_up_64.dds" 
+            pressed="/esoui/art/lfg/lfg_tank_down_64.dds"
+            mouseOver="/esoui/art/lfg/lfg_tank_over_64.dds"/>
+          <OnClicked> BetterDungonFinder.RoleChange(2) </OnClicked>
+        </Button>
+        
+        <Button name="BAFRole_H" clickSound="Click" layer="CONTROLS">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="605" offsetY="331"/>
+          <Dimensions x="50" y="50"/>
+          <Textures 
+            normal="/esoui/art/lfg/lfg_healer_up_64.dds" 
+            pressed="/esoui/art/lfg/lfg_healer_down_64.dds"
+            mouseOver="/esoui/art/lfg/lfg_healer_over_64.dds"/>
+          <OnClicked> BetterDungonFinder.RoleChange(4) </OnClicked>
+        </Button>
+        
+        <Button name="BAFRole_D" clickSound="Click" layer="CONTROLS">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="663" offsetY="328"/>
+          <Dimensions x="50" y="50"/>
+          <Textures 
+            normal="/esoui/art/lfg/lfg_dps_up_64.dds" 
+            pressed="/esoui/art/lfg/lfg_dps_down_64.dds"
+            mouseOver="/esoui/art/lfg/lfg_dps_over_64.dds"/>
+          <OnClicked> BetterDungonFinder.RoleChange(1) </OnClicked>
+        </Button>
+		
+        <Button name ="BAFWindow_Empty" inherits ="ZO_DefaultButton" fon="BAFWinH3" layer="CONTROLS">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="CENTER" offsetX="480" offsetY="360"/>
+          <OnInitialized>self:SetText(BAFLang_SI.BUTTON_Empty_Clear)</OnInitialized>
+          <OnClicked> BetterDungonFinder.EmptyDungeon() </OnClicked>
+        </Button>
+        
+        <Button name ="BAFWindow_Queue" inherits ="ZO_DefaultButton" fon="BAFWinH3" layer="CONTROLS">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="CENTER" offsetX="600" offsetY="360"/>
+          <OnInitialized>self:SetText(BAFLang_SI.BUTTON_Queue_Status_Queue)</OnInitialized>
+          <MouseButton button="2" enabled="true"/>
+          <OnClicked> BetterDungonFinder.QueueButton(...) </OnClicked>
+          <OnMouseEnter> BetterDungonFinder.DungeonSelectedInfo(self) </OnMouseEnter>
+          <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+        </Button>
+        
+        <Label name="BAFWindow_CD" font="BAFWinH3" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="/" hidden="true" layer="TEXT">
+          <Anchor point="CENTER" relativeTo="BAFWindow_Queue" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+        </Label>
+        
+        <Label name="BAFWindow_CD2" font="BAFWinH3" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="/" hidden="true" layer="TEXT">
+          <Anchor point="CENTER" relativeTo="BAFRan_BG" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+        </Label>
+        
+        <Button name ="BAFWindow_Close" inherits="ZO_CloseButton" layer="CONTROLS">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="CENTER" offsetX="720" offsetY="-395"/>
+          <Dimensions x="24" y="24" />
+          <OnClicked> BetterDungonFinder.ShowWindow() </OnClicked>
+        </Button>
+
+      </Controls>
+    </TopLevelControl>
+  
+    <Control name="BAFSingleDungeon" virtual = "true" tier = "MEDIUM" layer="CONTROLS">
+      <Dimensions x="300" y="20" />
+      <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetY="60" />
+      <Controls>
+        <Label name = "$(parent)_Title" inherits ="ZO_ClickableKeybindLabel" font="BAFWinH4" inheritAlpha="true" color="FFFFFF" horizontalAlignment="LEFT" clickSound="Click" level="2">
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetX="5" offsetY = "15"/>
+          <OnInitialized> BetterDungonFinder.LabelFont(self) </OnInitialized>
+          <OnMouseUp> BetterDungonFinder.AchievementPopup(self) </OnMouseUp>
+        </Label>
+        
+        <Button name = "$(parent)_N" inherits ="ZO_CheckButton" level="1">
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetX="105" offsetY = "-3" />
+          <MouseButton button="2" enabled="true"/>
+          <OnClicked> BetterDungonFinder.SquareButton(...) </OnClicked>
+          <OnMouseUp> BetterDungonFinder.SelectDungeonUpdate() </OnMouseUp>
+          <OnMouseEnter> InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 0, TOP) SetTooltipText(InformationTooltip, BAFLang_SI.BUTTON_N_Info) </OnMouseEnter>
+          <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+        </Button>
+        
+        <Button name = "$(parent)_V" inherits ="ZO_CheckButton" level="1">
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetX="130" offsetY = "-3" />
+          <MouseButton button="2" enabled="true"/>
+          <OnClicked> BetterDungonFinder.SquareButton(...) </OnClicked>
+          <OnMouseUp> BetterDungonFinder.SelectDungeonUpdate() </OnMouseUp>
+          <OnMouseEnter> InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 0, TOP) SetTooltipText(InformationTooltip, BAFLang_SI.BUTTON_V_Info) </OnMouseEnter>
+          <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+        </Button>
+        
+        <Button name = "$(parent)_GearLink" clickSound="Click" level="1">
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-35" offsetY="31.2" />
+          <Dimensions x="32" y="32" />
+          <Textures 
+            normal="esoui/art/collections/collections_tabicon_itemsets_up.dds" 
+            pressed="esoui/art/collections/collections_tabicon_itemsets_down.dds" 
+            mouseOver="esoui/art/collections/collections_tabicon_itemsets_over.dds"/>
+          <OnMouseUp> BetterDungonFinder.OpenCollection(self) </OnMouseUp>
+        </Button>
+        
+        <Label name = "$(parent)_Gears" font="BAFWinH4T" inheritAlpha="true" color="FFFFFF" level="2">
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetX="5" offsetY="26.5"/>
+        </Label>
+        
+        <Button name = "$(parent)_SK" clickSound="Click" level="1">
+          <Dimensions x="28" y="28" />
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-60" offsetY="29.8"/>
+          <Textures normal="esoui/art/mappins/skyshard_complete.dds"/>
+          <OnMouseDoubleClick> BetterDungonFinder.AllSK() </OnMouseDoubleClick>
+          <OnMouseEnter> InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 0, TOP) SetTooltipText(InformationTooltip, BAFLang_SI.BUTTON_Sky_Info) </OnMouseEnter>
+          <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+        </Button>
+        
+        <Button name = "$(parent)_HM" clickSound="Click" level="1">
+          <Dimensions x="22" y="22" />
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetX="130" offsetY="25"/>
+          <Textures normal="esoui/art/tradinghouse/gamepad/gp_tradinghouse_trophy_treasure_map.dds"/>
+          <OnMouseUp> BetterDungonFinder.AchievementPopup(self) </OnMouseUp>
+        </Button>
+        
+        <Button name = "$(parent)_SR" clickSound="Click" level="1">
+          <Dimensions x="25" y="25" />
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetX="103" offsetY="27"/>
+          <Textures normal="esoui/art/miscellaneous/timer_64.dds"/>
+          <OnMouseUp> BetterDungonFinder.AchievementPopup(self) </OnMouseUp>
+        </Button>
+        
+        <Button name = "$(parent)_ND" clickSound="Click" level="1">
+          <Dimensions x="25" y="27.5" />
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetX="76" offsetY="28.2"/>
+          <Textures normal="esoui/art/treeicons/gamepad/gp_tutorial_idexicon_death.dds"/>
+          <OnMouseUp> BetterDungonFinder.AchievementPopup(self) </OnMouseUp>
+        </Button>
+        
+        <Button name = "$(parent)_TR" clickSound="Click" level="1">
+          <Dimensions x="25" y="25" />
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetX="49" offsetY="27"/>
+          <Textures normal="esoui/art/currency/gamepad/gp_crowns_mipmap.dds"/>
+          <OnMouseUp> BetterDungonFinder.AchievementPopup(self) </OnMouseUp>
+        </Button>
+        
+        <Texture name = "$(parent)_BG" textureFile = "/BetterDungeonFinder/src/pic/BG_4.dds" alpha=".3" level="0">
+          <Dimensions x="240" y="61" />
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="CENTER" offsetX="40" offsetY="30" />
+        </Texture>
+        
+      </Controls>
+    </Control>
+    
+    <Button name ="BAFSavedBar" inherits="ZO_DefaultTextButton" font="BAFWinH4" clickSound="Click" virtual="true" horizontalAlignment="LEFT" tier="MEDIUM" layer="TEXT">
+      <Dimensions x="160" y="40" />
+      <MouseButton button="2" enabled="true"/>
+      <OnClicked> BetterDungonFinder.SavedButton(...) </OnClicked>
+      <OnMouseEnter> BetterDungonFinder.SavedBarInfo(self) </OnMouseEnter>
+      <OnMouseExit> ClearTooltip(InformationTooltip) </OnMouseExit>
+      <Controls>
+        <Texture name="$(parent)Bg" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds">
+          <AnchorFill/>
+          <TextureCoords left="0" right="1" top="0" bottom=".8125" />
+        </Texture>
+      </Controls>
+    </Button>
+    
+  </Controls>
+</GuiXml>

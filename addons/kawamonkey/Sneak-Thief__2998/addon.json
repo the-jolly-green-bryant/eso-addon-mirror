@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/kawamonkey/Sneak-Thief__2998",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:2998",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2998",
+  "deleted": false,
+  "directories": [
+    "SneakThief"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2998/",
+  "fingerprint": "23c88fa6042831f1dc2532b9ae96c55c3861f1ee27d8b321beeb04a4200a2f9f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10111.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10112.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2998",
+  "source_url": "https://www.esoui.com/downloads/info2998-SneakThief.html",
+  "stats": {
+    "downloads": 5208,
+    "favorites": 13,
+    "monthly_downloads": 99
+  },
+  "title": "Sneak Thief",
+  "updated_at": 1617199217000,
+  "version": "1.0"
+}

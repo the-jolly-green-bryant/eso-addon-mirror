@@ -1,0 +1,64 @@
+{
+  "archive_path": "addons/kadeer/NamePlater-Custom-Fonts-Styles-Sizes__2344",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kadeer",
+  "canonical_id": "esoui:2344",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:2344",
+  "deleted": false,
+  "directories": [
+    "NamePlater"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2344/",
+  "fingerprint": "138888383570c2c4797676c9c9e8f31e6d5b94e934d1d29f62175f6a46404641",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8321.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8026.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8014.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8025.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2344",
+  "source_url": "https://www.esoui.com/downloads/info2344-NamePlaterCustomFontsStylesSizes.html",
+  "stats": {
+    "downloads": 27612,
+    "favorites": 37,
+    "monthly_downloads": 246
+  },
+  "title": "NamePlater (Custom Fonts/Styles/Sizes)",
+  "updated_at": 1699397427000,
+  "version": "v0.15"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/g0dpain/Guild-Events-Enhanced__3105",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "g0dpain",
+  "canonical_id": "esoui:3105",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3105",
+  "deleted": false,
+  "directories": [
+    "GuildEventsEnhanced"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3105/",
+  "fingerprint": "6e2e6f71cbd4c1d6fc7a487403be27f63451e9260634b7ac223135e07b00ad8c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10457.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3105",
+  "source_url": "https://www.esoui.com/downloads/info3105-GuildEventsEnhanced.html",
+  "stats": {
+    "downloads": 4468,
+    "favorites": 3,
+    "monthly_downloads": 57
+  },
+  "title": "Guild Events Enhanced",
+  "updated_at": 1624395037000,
+  "version": "1.3.4.1"
+}

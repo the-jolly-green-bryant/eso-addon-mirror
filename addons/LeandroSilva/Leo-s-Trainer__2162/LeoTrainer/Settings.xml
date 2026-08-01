@@ -1,0 +1,135 @@
+<GuiXml>
+	<Controls>
+		<Control name="LeoTrainer_SettingsCharacters" resizeToFitDescendents="true" virtual="true">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+			<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+			<Controls>
+				<Control name="$(parent)Icons">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="280"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="36"/>
+					<Controls>
+						<Label name="$(parent)ST_Label" text="Can be trained" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="10"/>
+							<Dimensions x="290" y="26"/>
+						</Label>
+						<Texture name="$(parent)ST_1" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_blacksmithing_up.dds" mouseEnabled="true">
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetY="30"/>
+							<Dimensions x="36" y="36"/>
+							<OnMouseEnter>LeoTrainer_SettingsMenu_OnMouseEnter(self, zo_strformat(SI_ABILITY_NAME, ZO_GetCraftingSkillName(CRAFTING_TYPE_BLACKSMITHING)))</OnMouseEnter>
+							<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+						</Texture>
+						<Texture name="$(parent)ST_2" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_clothing_up.dds" mouseEnabled="true">
+							<Anchor point="LEFT" relativeTo="$(parent)ST_1" relativePoint="RIGHT" offsetX="-4"/>
+							<Dimensions x="36" y="36"/>
+							<OnMouseEnter>LeoTrainer_SettingsMenu_OnMouseEnter(self, zo_strformat(SI_ABILITY_NAME, ZO_GetCraftingSkillName(CRAFTING_TYPE_CLOTHIER)))</OnMouseEnter>
+							<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+						</Texture>
+						<Texture name="$(parent)ST_6" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_woodworking_up.dds" mouseEnabled="true">
+							<Anchor point="LEFT" relativeTo="$(parent)ST_2" relativePoint="RIGHT" offsetX="-4"/>
+							<Dimensions x="36" y="36"/>
+							<OnMouseEnter>LeoTrainer_SettingsMenu_OnMouseEnter(self, zo_strformat(SI_ABILITY_NAME, ZO_GetCraftingSkillName(CRAFTING_TYPE_WOODWORKING)))</OnMouseEnter>
+							<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+						</Texture>
+						<Texture name="$(parent)ST_7" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_jewelrycrafting_up.dds" mouseEnabled="true">
+							<Anchor point="LEFT" relativeTo="$(parent)ST_6" relativePoint="RIGHT" offsetX="-4"/>
+							<Dimensions x="36" y="36"/>
+							<OnMouseEnter>LeoTrainer_SettingsMenu_OnMouseEnter(self, zo_strformat(SI_ABILITY_NAME, ZO_GetCraftingSkillName(CRAFTING_TYPE_JEWELRYCRAFTING)))</OnMouseEnter>
+							<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+						</Texture>
+
+						<Label name="$(parent)FS_Label" text="Fill empty slots" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="200"/>
+							<Dimensions x="290" y="26"/>
+						</Label>
+						<Texture name="$(parent)FS_1" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_blacksmithing_up.dds" mouseEnabled="true">
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="190" offsetY="30"/>
+							<Dimensions x="36" y="36"/>
+							<OnMouseEnter>LeoTrainer_SettingsMenu_OnMouseEnter(self, zo_strformat(SI_ABILITY_NAME, ZO_GetCraftingSkillName(CRAFTING_TYPE_BLACKSMITHING)))</OnMouseEnter>
+							<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+						</Texture>
+						<Texture name="$(parent)FS_2" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_clothing_up.dds" mouseEnabled="true">
+							<Anchor point="LEFT" relativeTo="$(parent)FS_1" relativePoint="RIGHT" offsetX="-4"/>
+							<Dimensions x="36" y="36"/>
+							<OnMouseEnter>LeoTrainer_SettingsMenu_OnMouseEnter(self, zo_strformat(SI_ABILITY_NAME, ZO_GetCraftingSkillName(CRAFTING_TYPE_CLOTHIER)))</OnMouseEnter>
+							<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+						</Texture>
+						<Texture name="$(parent)FS_6" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_woodworking_up.dds" mouseEnabled="true">
+							<Anchor point="LEFT" relativeTo="$(parent)FS_2" relativePoint="RIGHT" offsetX="-4"/>
+							<Dimensions x="36" y="36"/>
+							<OnMouseEnter>LeoTrainer_SettingsMenu_OnMouseEnter(self, zo_strformat(SI_ABILITY_NAME, ZO_GetCraftingSkillName(CRAFTING_TYPE_WOODWORKING)))</OnMouseEnter>
+							<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+						</Texture>
+						<Texture name="$(parent)FS_7" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_jewelrycrafting_up.dds" mouseEnabled="true">
+							<Anchor point="LEFT" relativeTo="$(parent)FS_6" relativePoint="RIGHT" offsetX="-4"/>
+							<Dimensions x="36" y="36"/>
+							<OnMouseEnter>LeoTrainer_SettingsMenu_OnMouseEnter(self, zo_strformat(SI_ABILITY_NAME, ZO_GetCraftingSkillName(CRAFTING_TYPE_JEWELRYCRAFTING)))</OnMouseEnter>
+							<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+						</Texture>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Container" resizeToFitDescendents="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="36"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="36"/>
+				</Control>
+			</Controls>
+		</Control>
+
+		<Control name="LeoTrainer_SettingsCharacter" virtual="true">
+			<Controls>
+				<Label name="$(parent)Name" text="?" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+					<Dimensions x="290" y="26"/>
+				</Label>
+				<Button name="$(parent)ST_1" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT"/>
+					<Dimensions x="22" y="22"/>
+					<OnMouseEnter>ZO_Options_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ST_2" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)ST_1" relativePoint="RIGHT" offsetX="10"/>
+					<Dimensions x="22" y="22"/>
+					<OnMouseEnter>ZO_Options_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ST_6" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)ST_2" relativePoint="RIGHT" offsetX="10"/>
+					<Dimensions x="22" y="22"/>
+					<OnMouseEnter>ZO_Options_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ST_7" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)ST_6" relativePoint="RIGHT" offsetX="10"/>
+					<Dimensions x="22" y="22"/>
+					<OnMouseEnter>ZO_Options_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+				</Button>
+
+				<Button name="$(parent)FS_1" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)ST_7" relativePoint="RIGHT" offsetX="70"/>
+					<Dimensions x="22" y="22"/>
+					<OnMouseEnter>ZO_Options_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+				</Button>
+				<Button name="$(parent)FS_2" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)FS_1" relativePoint="RIGHT" offsetX="10"/>
+					<Dimensions x="22" y="22"/>
+					<OnMouseEnter>ZO_Options_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+				</Button>
+				<Button name="$(parent)FS_6" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)FS_2" relativePoint="RIGHT" offsetX="10"/>
+					<Dimensions x="22" y="22"/>
+					<OnMouseEnter>ZO_Options_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+				</Button>
+				<Button name="$(parent)FS_7" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)FS_6" relativePoint="RIGHT" offsetX="10"/>
+					<Dimensions x="22" y="22"/>
+					<OnMouseEnter>ZO_Options_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+				</Button>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

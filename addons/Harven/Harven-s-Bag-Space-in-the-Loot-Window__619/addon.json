@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Bag-Space-in-the-Loot-Window__619",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:619",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:619",
+  "deleted": false,
+  "directories": [
+    "HarvensBagSpace"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl619/",
+  "fingerprint": "13bf410fea0d61c3bfd50715a6e32a84f4ec0492873854c1678dc4021a22aef8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1907.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "619",
+  "source_url": "https://www.esoui.com/downloads/info619-HarvensBagSpaceintheLootWindow.html",
+  "stats": {
+    "downloads": 23871,
+    "favorites": 81,
+    "monthly_downloads": 24
+  },
+  "title": "Harven's Bag Space (in the Loot Window)",
+  "updated_at": 1585511346000,
+  "version": "1.1e"
+}

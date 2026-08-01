@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/MrPikPik/Trial-Completion-Counter__3186",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:3186",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3186",
+  "deleted": false,
+  "directories": [
+    "TrialCompletionCount"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3186/",
+  "fingerprint": "06626126177c44c56231a973df8c229283062d1eacfc851e901c27c9ae5e4f42",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3186",
+  "source_url": "https://www.esoui.com/downloads/info3186-TrialCompletionCounter.html",
+  "stats": {
+    "downloads": 4007,
+    "favorites": 3,
+    "monthly_downloads": 16
+  },
+  "title": "Trial Completion Counter",
+  "updated_at": 1757891916000,
+  "version": "1.5"
+}

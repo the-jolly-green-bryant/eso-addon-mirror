@@ -1,0 +1,32 @@
+
+## Title: |c3CB371J2E Update|r
+## Author: |c3CB371@Marify|r (Original:@Naaa)
+## APIVersion: 101042
+## Version: 1.7.0
+## DependsOn: LibAddonMenu-2.0 LibCustomMenu LibMarify LibAsync
+## OptionalDependsOn: pChat AwesomeGuildStore LuiExtended TamrielTradeCentre CraftedPotions
+## SavedVariables: J2EUpdateVariables
+
+## Thanks for help me... Dolgubon / Baertram / KiriX
+
+J2EUpdate.lua
+J2EUpdate.xml
+J2EItemFormat.lua
+J2ESkillFormat.lua
+
+J2EArmorData.lua
+J2EItemData.lua
+J2EItemEenchantData.lua
+J2EItemLinkData.lua
+J2EItemNormalData.lua
+J2EItemSetData.lua
+J2EItemTraitData.lua
+J2ESkillData.lua
+J2EWeaponData.lua
+J2EFurnishingData.lua
+J2ERecipeData.lua
+J2EWardData.lua
+
+lang/en.lua
+lang/$(language).lua
+

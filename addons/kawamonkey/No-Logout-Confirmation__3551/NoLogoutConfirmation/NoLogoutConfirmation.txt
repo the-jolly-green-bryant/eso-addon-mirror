@@ -1,0 +1,6 @@
+## APIVersion: 101036
+## Title: No Logout Confirmation
+## Author: Kawamonkey
+## Version: 1.0
+
+NoLogoutConfirmation.lua

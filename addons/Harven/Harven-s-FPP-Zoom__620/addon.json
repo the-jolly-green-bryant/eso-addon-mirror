@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Harven/Harven-s-FPP-Zoom__620",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:620",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:620",
+  "deleted": false,
+  "directories": [
+    "HarvensFPPZoom"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl620/",
+  "fingerprint": "ebb4d20a0bd77cc8bb69b99d06ade51f38f85c9c9968e02f79cb50491f047ea8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1908.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "620",
+  "source_url": "https://www.esoui.com/downloads/info620-HarvensFPPZoom.html",
+  "stats": {
+    "downloads": 7018,
+    "favorites": 10,
+    "monthly_downloads": 8
+  },
+  "title": "Harven's FPP Zoom",
+  "updated_at": 1585512222000,
+  "version": "1.2a"
+}

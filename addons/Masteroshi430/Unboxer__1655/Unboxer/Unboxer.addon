@@ -1,0 +1,62 @@
+## Title: Unboxer
+## Author: silvereyes, |c3CB371@Masteroshi430|r
+## Description: Adds an Unbox All command that loots all containers of a configured type in the player inventory.
+## Version: 2026.06.07
+## APIVersion: 101050
+## DependsOn: LibSavedVars>=50000 LibAddonMenu-2.0>=40 LibLootSummary>=30103 LibCustomMenu LibChatMessage
+## OptionalDependsOn: DolgubonsLazyWritCreator FCOItemSaver
+## SavedVariables: Unboxer_Account
+## SavedVariables: Unboxer_Character
+## SavedVariables: Unboxer_Tracking
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the 
+## United States and/or other countries. All rights reserved.
+
+localization\Default.lua
+localization\$(language).lua
+localization\CreateStrings.lua
+
+Unboxer.lua
+classes\ChatProxy.lua
+classes\Settings.lua
+classes\Rule.lua
+classes\BoxOpener.lua
+classes\BoxProtector.lua
+classes\UnboxAll.lua
+
+## Rules engines for different categories
+classes\rules\collectibles\Runeboxes.lua
+classes\rules\collectibles\StylePages.lua
+classes\rules\crafting\CraftingRewards.lua
+classes\rules\crafting\Materials.lua
+classes\rules\crafting\UnknownWrits.lua
+classes\rules\crafting\UnidentifiedSurveys.lua
+classes\rules\currency\Transmutation.lua
+classes\rules\currency\TelVar.lua
+classes\rules\hidden\Excluded.lua
+classes\rules\hidden\Excluded2.lua
+classes\rules\hidden\Excluded3.lua
+classes\rules\hidden\Pts.lua
+classes\rules\hidden\TreasureMaps.lua
+classes\rules\general\Companions.lua
+classes\rules\general\Festival.lua
+classes\rules\general\Fishing.lua
+classes\rules\general\Legerdemain.lua
+classes\rules\general\ShadowySupplier.lua
+classes\rules\general\Vendor.lua
+classes\rules\general\UnopenedTreasureMaps.lua
+classes\rules\rewards\Dragons.lua
+classes\rules\rewards\Dungeon.lua
+classes\rules\rewards\PvP.lua
+classes\rules\rewards\Solo.lua
+classes\rules\rewards\SoloRepeatable.lua
+classes\rules\rewards\Trial.lua
+classes\rules\rewards\TalesOfTribute.lua
+classes\rules\vendor\Furnisher.lua
+classes\rules\vendor\LoreLibraryReprints.lua
+classes\rules\vendor\VendorGear.lua
+classes\rules\currency\ArchivalFortunes.lua
+
+
+Bindings.xml

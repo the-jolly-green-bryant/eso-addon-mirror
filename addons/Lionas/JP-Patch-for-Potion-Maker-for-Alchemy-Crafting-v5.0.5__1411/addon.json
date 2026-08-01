@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Lionas/JP-Patch-for-Potion-Maker-for-Alchemy-Crafting-v5.0.5__1411",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lionas",
+  "canonical_id": "esoui:1411",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:1411",
+  "deleted": false,
+  "directories": [
+    "PotionMaker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1411/",
+  "fingerprint": "97381a8f68861885282afedbbe39152dbecf72e1d1ff848bb2a7037c05b58ff9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4567.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4568.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4569.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4570.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1411",
+  "source_url": "https://www.esoui.com/downloads/info1411-JPPatchforPotionMakerforAlchemyCraftingv5.0.5.html",
+  "stats": {
+    "downloads": 21269,
+    "favorites": 2,
+    "monthly_downloads": 57
+  },
+  "title": "JP Patch for Potion Maker (for Alchemy Crafting)  v5.0.5",
+  "updated_at": 1468053514000,
+  "version": "5.0.5-r4"
+}

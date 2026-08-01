@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/maraud/Bureau-of-Acceptable-Views__4720",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "maraud",
+  "canonical_id": "esoui:4720",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4720",
+  "deleted": false,
+  "directories": [
+    "BureauOfAcceptableViews"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4720/",
+  "fingerprint": "e9a78d58b19c7ced80ee6e1f0bc4ed9850bb7facde79f1688715d7dec3471869",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16775.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16776.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16777.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16778.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16779.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4720",
+  "source_url": "https://www.esoui.com/downloads/info4720-BureauofAcceptableViews.html",
+  "stats": {
+    "downloads": 34,
+    "favorites": 0,
+    "monthly_downloads": 33
+  },
+  "title": "Bureau of Acceptable Views",
+  "updated_at": 1784978872000,
+  "version": "3.2.072916"
+}

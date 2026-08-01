@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/h.metaverse/JP-Patch-for-Librarian-Book-Manager-v1.6.3-Menu-translation__1498",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "h.metaverse",
+  "canonical_id": "esoui:1498",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1498",
+  "deleted": false,
+  "directories": [
+    "Librarian",
+    "__MACOSX"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1498/",
+  "fingerprint": "96d05a9981876f07e9b6a0d18990a80ecccbd8e5aa867c45de66019b0c6eef46",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4861.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4862.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1498",
+  "source_url": "https://www.esoui.com/downloads/info1498-JPPatchforLibrarianBookManagerv1.6.3Menutranslation.html",
+  "stats": {
+    "downloads": 40324,
+    "favorites": 2,
+    "monthly_downloads": 154
+  },
+  "title": "JP Patch for Librarian Book Manager v1.6.3(Menu translation)",
+  "updated_at": 1476266041000,
+  "version": "1.0"
+}

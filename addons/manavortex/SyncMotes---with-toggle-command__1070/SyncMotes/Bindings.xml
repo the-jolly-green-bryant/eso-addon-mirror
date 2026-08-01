@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<Category name="|c880000SyncMotes|r">
+			<Action name="OPEN_SYNCMOTES_MENU">
+				<Down>ESO_SM.openmenu()</Down>
+			</Action>
+			<Action name="OPEN_PHRASELIST_MENU">
+				<Down>ESO_SM.openphrasemenu()</Down>
+			</Action>
+			<Action name="OPEN_EMOTELIST_MENU">
+				<Down>ESO_SM.openemotemenu()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

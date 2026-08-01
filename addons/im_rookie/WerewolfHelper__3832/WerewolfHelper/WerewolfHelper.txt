@@ -1,0 +1,9 @@
+## Title: |cdededeWerewolf|r|c6b6b6bHelper|r
+## Author: |c0040ff@im|r|c0050ff_ro|r|c0060ffok|r|c0070ffie|r
+## Description: No more annoying synergies
+## APIVersion: 101041
+## AddOnVersion: 1.1
+## SavedVariables: WerewolfHelperVariables
+## DependsOn: LibAddonMenu-2.0>=34
+
+WerewolfHelper.lua

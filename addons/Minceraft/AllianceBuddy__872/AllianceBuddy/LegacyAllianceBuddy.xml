@@ -1,0 +1,104 @@
+<GuiXml>
+  <Controls>
+    
+    <TopLevelControl name = "ZO_AllianceBuddyUI" hidden= "false"  movable="true" mouseEnabled="true" layer ="0" level="0"  clampedToScreen = "true" alpha = "1">  
+       <Anchor point= "TOPLEFT" relativeTo= "GuiRoot" relativePoint="TOPLEFT" offsetX= "0" offsetY ="0"/> 
+        
+        
+          
+          
+          <Controls>
+              <Backdrop name = "ZO_Hold" movable = "true"  mouseEnabled = "true" centerColor = "00000000" edgeColor = "00000000" hidden = "false" layer ="1" level="3"   alpha = "1">
+                <Dimensions x= "400" y = "90"/>
+                <Anchor point = "TOPLEFT" relativeTo = "ZO_AllianceBuddyUI" relativePoint = "TOPLEFT" offsetX = "0" offsetY ="0"/> 
+               <OnMoveStop>
+                 AllianceBuddy.SaveLegacyLocation()
+              </OnMoveStop>
+               
+               
+               <Controls> 
+             <Texture name= "$(parent)AllianceFlag" movable="true"  mouseEnabled = "false" hidden = "false" layer ="0" level="3" textureFile= "" verticalAlignment="CENTER"> 
+             <Dimensions x="74" y="150"/>
+             <Anchor point= "TOPLEFT" relativeTo= "ZO_HoldRankBGOverlay" relativePoint="TOPLEFT" offsetX= "10" offsetY ="13"/> 
+<!--              <OnInitialized>
+                   GetAllianceFlag()  
+                 </OnInitialized> -->
+             </Texture>
+             
+             <Label name="$(parent)AllianceRankDisplay" font="$(STONE_TABLET_FONT)|15|shadow"    color="" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Rank/Title Goes Here">
+		    
+		     <Anchor  point= "LEFT"  relativeTo = "ZO_HoldAllianceIconDisplay" relativePoint = "LEFT" offsetX="98" offsetY="-13"/>              
+             </Label>
+             <Texture name= "$(parent)AllianceIconDisplay"   hidden = "false" color ="" layer ="1" level="1" movable="false" mouseEnabled = "false" textureFile="" > 
+             <Dimensions x="64" y="64"/>
+             
+             <Anchor point= "BOTTOM" relativeTo= "ZO_HoldFrame" relativePoint="LEFT" offsetX= "80" offsetY ="14"/> 
+             </Texture>
+             
+             <Label name="$(parent)AllianceLevelDisplay"  font="$(STONE_TABLET_FONT)|55|shadow"    color="" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="0">
+		     <Anchor  point= "BOTTOM"  relativeTo = "ZO_HoldAllianceFlag" relativePoint = "CENTER" offsetX="-6" offsetY="0"/>              
+             
+             </Label>
+             
+             <Label name="$(parent)AlliancePointsDisplay" font="$(STONE_TABLET_FONT)|17|shadow"    color="" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="000/000">
+		     <Anchor  point= "LEFT"  relativeTo = "ZO_HoldAllianceFlag" relativePoint = "CENTER" offsetX="27" offsetY="-5"/>              
+             </Label>
+             
+             <Texture name= "$(parent)RankBG" color ="000000" layer ="0" level="1" movable="false" mouseEnabled = "false" textureFile="esoui/art/achievements/achievements_iconbg.dds" > 
+             <Dimensions x="60" y="60"/>
+             <Anchor point= "LEFT" relativeTo= "ZO_Hold" relativePoint="LEFT" offsetX= "13" offsetY ="0"/> 
+             </Texture>
+             <Texture name= "$(parent)RankBGOverlay" mouseEnabled = "false" color ="FFFFFF" layer ="0" level="2" movable="false"  textureFile="esoui/art/deathrecap/deathrecap_attackbossframe.dds" > 
+             <Dimensions x="130" y="130"/>
+             <Anchor point= "LEFT" relativeTo= "ZO_Hold" relativePoint="LEFT" offsetX= "-25" offsetY ="0"/> 
+             </Texture>
+             
+             
+             <Texture name= "$(parent)Frame" mouseEnabled = "false" color ="FFFFFF" layer ="0" level="3" movable="true" textureFile="esoui/art/miscellaneous/progressbar_frame.dds" > 
+             <Dimensions x="500" y="50"/>
+             <Anchor point= "BOTTOMLEFT" relativeTo= "ZO_HoldRankBGOverlay" relativePoint="BOTTOMRIGHT" offsetX= "-32" offsetY ="-20"/> 
+             </Texture>
+             
+             <Texture name= "$(parent)FrameBG" mouseEnabled= "false"  layer ="0" level="1" movable="true" alpha = "1" color = "000000" textureFile="esoui/art/miscellaneous/progressbar_frame_bg.dds"> 
+             <Dimensions x="500" y="50"/>
+             <Anchor point= "TOPLEFT" relativeTo= "ZO_HoldFrame" relativePoint="TOPLEFT" offsetX= "0" offsetY ="0"/> 
+             </Texture>
+             <Texture name= "$(parent)FrameBG2" mouseEnabled= "false"  layer ="0" level="1" movable="true" alpha = "1" color = "000000" textureFile="esoui/art/miscellaneous/progressbar_frame_bg.dds"> 
+             <Dimensions x="500" y="50"/>
+             <Anchor point= "TOPLEFT" relativeTo= "ZO_HoldFrame" relativePoint="TOPLEFT" offsetX= "0" offsetY ="0"/> 
+             </Texture>
+             
+             <StatusBar name = "$(parent)StatusBar" textureFile="esoui/art/miscellaneous/progressbar_genericfill.dds" mouseEnabled= "false" movable="true" layer = "0" level = "2" color = "FF0000" alpha = "1" >
+             <Dimensions x="302" y="35" />
+             <Anchor point="TOPLEFT" relativeTo="$(parent)FrameBG" relativePoint="TOPLEFT" offsetX="0" offsetY="-2"/>
+             <LeadingEdge textureFile = "esoui/art/miscellaneous/progressbar_genericfill_leadingedge.dds" width = "18" height = "55" />
+             <Limits min="0" max="100" />             
+             </StatusBar>
+             				<StatusBar name = "$(parent)GOStatusBar" textureFile="esoui/art/miscellaneous/progressbar_genericfill.dds" mouseEnabled= "false" movable="false" hidden = "false" layer = "0" level = "2" color = "" alpha = "0.25" >
+					<Dimensions x="302" y="35" />
+					<Anchor point="CENTER" relativeTo="$(parent)StatusBar" offsetX="0" offsetY="15"/>
+					<LeadingEdge textureFile = "esoui\art\miscellaneous\progressbar_genericfill_leadingedge.dds" level = "1" width="6" height="28" />
+					<Limits min="0" max="100" />
+				</StatusBar>
+             				<StatusBar name = "$(parent)StatusBarGloss" textureFile="esoui\art\miscellaneous\progressbar_genericfill_gloss.dds" mouseEnabled= "false" movable="false" layer = "1" level = "4" color = "" alpha = "1" >
+					<Dimensions x="301" y="28" />
+					<Anchor point="CENTER" relativeTo="$(parent)StatusBar" offsetX="0" offsetY="-1"/>
+					<LeadingEdge textureFile = "esoui\art\miscellaneous\progressbar_genericfill_leadingedge_gloss.dds" level = "1" width="6" height="28" />
+					<Limits min="0" max="100" />
+				</StatusBar>
+             </Controls>
+             </Backdrop>
+           
+           
+           </Controls>
+    </TopLevelControl>
+   
+    
+  
+  
+  
+  
+  
+  </Controls>
+</GuiXml>
+  

@@ -1,0 +1,41 @@
+
+J2EUpdate.enchantDataTable = {
+    ["最大体力付呪"]                = "Maximum Health",
+    ["体力再生付呪"]                = "Health  Recovery",
+    ["武器ダメージ付呪"]            = "Weapon Damage",
+    ["増幅錬金術付呪"]              = "Alchemical Amplification",
+    ["強撃付呪"]                    = "Bashing",
+    ["毒の武器付呪"]                = "Poisoned Weapon",
+    ["氷の武器付呪"]                = "Frozen Weapon",
+    ["硬化付呪"]                    = "Hardening",
+    ["最大スタミナ付呪"]            = "Maximum Stamina",
+    ["スタミナ再生付呪"]            = "Stamina Recoveryh",
+    ["汚れた武器付呪"]              = "Befouled Weapon",
+    ["呪文ダメージ付呪"]            = "Spell Damage",
+    ["最大マジカ付呪"]              = "Maximum Magicka",
+    ["マジカ再生付呪"]              = "Magicka Recovery",
+    ["雷の武器付呪"]                = "Charged Weapon",
+    ["炎の武器付呪"]                = "Fiery Weapon",
+
+    ["ライフドレイン付呪"]          = "Life Drain",
+    ["体力低下付呪"]                = "Decrease Health",
+    ["弱体化付呪"]                  = "Weakening",
+    ["加速錬金術付呪"]              = "Alchemical Acceleration",
+    ["踏ん張り付呪"]                = "Bracing",
+    ["毒耐性付呪"]                  = "Poison Resistance",
+    ["物理耐性付呪"]                = "Physical Resistance",
+    ["氷結耐性付呪"]                = "Cold Resistance",
+    ["クラッシャー付呪"]            = "Crusher",
+    ["スタミナ吸収付呪"]            = "Absorb Stamina",
+    ["スタミナ消費減少付呪"]        = "Reduce Stamina Cost",
+    ["病気耐性付呪"]                = "Disease Resistance",
+    ["呪文耐性付呪"]                = "Spell Resistance",
+    ["マジカ吸収付呪"]              = "Absorb Magicka",
+    ["呪文の消費を減少させる付呪"]  = "Reduce Spell Cost",
+    ["雷撃耐性付呪"]                = "Shock Resistance",
+    ["炎耐性付呪"]                  = "Fire Resistance",
+
+    ["分光コスト減少付呪"]          = "Reduce Prismatic Cost",
+    ["付呪"]                        = "", -- ?
+}
+

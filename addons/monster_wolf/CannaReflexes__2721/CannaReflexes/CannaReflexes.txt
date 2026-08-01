@@ -1,0 +1,8 @@
+## Title: CannaReflexes
+## Version: 0.0.3
+## Author: |cFF0000monster_wolf|
+## APIVersion: 100031
+## AddOnVersion: 3
+## DependsOn: HodorReflexes>=1705
+
+CannaReflexes.lua

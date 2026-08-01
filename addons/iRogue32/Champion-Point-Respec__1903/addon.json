@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/iRogue32/Champion-Point-Respec__1903",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "iRogue32",
+  "canonical_id": "esoui:1903",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:1903",
+  "deleted": false,
+  "directories": [
+    "ChampionPointRespec"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1903/",
+  "fingerprint": "397a5f0fcfa76e43ae5f308c36785fe4b420ca0b7c8e84e9160013a4ba23c2c2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7215.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7216.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1903",
+  "source_url": "https://www.esoui.com/downloads/info1903-ChampionPointRespec.html",
+  "stats": {
+    "downloads": 135312,
+    "favorites": 131,
+    "monthly_downloads": 61
+  },
+  "title": "Champion Point Respec",
+  "updated_at": 1610387722000,
+  "version": "2.4.3"
+}

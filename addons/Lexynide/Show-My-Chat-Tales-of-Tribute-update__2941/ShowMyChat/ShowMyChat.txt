@@ -1,0 +1,12 @@
+## Title: ShowMyChat
+## Author: |c880000@|r|cf44444Lexynide|r
+## APIVersion: 101034
+## AddOnVersion: 150
+## Version: 1.50
+## IsLibrary: false
+## DependsOn: LibAddonMenu-2.0
+## Description: Forces chat window to stay open when interacting with various scenes (traders, banks, et cetera)
+## SavedVariables: ShowMyChatVars
+
+ShowMyChat.lua 
+AddonMenu.lua

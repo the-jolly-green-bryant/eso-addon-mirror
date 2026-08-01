@@ -1,0 +1,316 @@
+<GuiXml>
+  <Controls>
+
+    <!-- =========================================================
+         FENETRE PRINCIPALE
+         ========================================================= -->
+    <TopLevelControl name="ZMS_UIWindow" mouseEnabled="true" movable="true"
+                     clampedToScreen="true" hidden="true" layer="2" level="1">
+      <Dimensions x="720" y="530"/>
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+      <OnMoveStop>ZMS.UI.OnMoveStop()</OnMoveStop>
+      <Controls>
+
+        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop">
+          <AnchorFill/>
+        </Backdrop>
+
+        <!-- Titre -->
+        <Label name="$(parent)Title" font="ZoFontWinH2" color="87CEEB"
+               text="Zone Mount Switcher">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="12" offsetY="8"/>
+        </Label>
+
+        <!-- Bouton fermer -->
+        <Button name="$(parent)CloseBtn" inherits="ZO_DefaultButton" text="X">
+          <Dimensions x="26" y="22"/>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-6" offsetY="6"/>
+          <OnClicked>ZMS.UI.Close()</OnClicked>
+        </Button>
+
+        <!-- Bouton scope compte / personnage -->
+        <Button name="$(parent)ScopeBtn" inherits="ZO_DefaultButton"
+                text="Mode: Compte">
+          <Dimensions x="130" y="22"/>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-38" offsetY="6"/>
+          <OnClicked>ZMS.UI.ToggleAccountWide()</OnClicked>
+        </Button>
+
+        <!-- Separateur horizontal sous le titre -->
+        <Texture name="$(parent)TitleSep"
+                 textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+          <Dimensions x="706" y="4"/>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="7" offsetY="34"/>
+        </Texture>
+
+        <!-- =================================================
+             PANNEAU GAUCHE – liste des groupes
+             ================================================= -->
+        <Control name="$(parent)Left">
+          <Dimensions x="200" y="487"/>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="7" offsetY="38"/>
+          <Controls>
+
+            <Label name="$(parent)Header" font="ZoFontWinH4" color="CCCCCC"
+                   text="Groupes">
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="2" offsetY="2"/>
+            </Label>
+
+            <!-- Liste des groupes (ZO_ScrollList) -->
+            <Control name="$(parent)List" inherits="ZO_ScrollList">
+              <Dimensions x="200" y="400"/>
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="22"/>
+            </Control>
+
+            <!-- Bouton Universel -->
+            <Button name="$(parent)UniversalBtn" inherits="ZO_DefaultButton"
+                    text="Universal (toutes zones)">
+              <Dimensions x="200" y="26"/>
+              <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT"
+                      offsetX="0" offsetY="-28"/>
+              <OnClicked>ZMS.UI.SelectUniversal()</OnClicked>
+            </Button>
+
+            <!-- Bouton Nouveau groupe -->
+            <Button name="$(parent)NewGroupBtn" inherits="ZO_DefaultButton"
+                    text="+ Nouveau groupe">
+              <Dimensions x="200" y="26"/>
+              <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT"
+                      offsetX="0" offsetY="0"/>
+              <OnClicked>ZMS.UI.OpenCreateGroupDialog()</OnClicked>
+            </Button>
+
+          </Controls>
+        </Control>
+
+        <!-- Separateur vertical -->
+        <Texture name="$(parent)VSep"
+                 textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+          <Dimensions x="3" y="490"/>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="209" offsetY="37"/>
+        </Texture>
+
+        <!-- =================================================
+             PANNEAU DROIT – detail du groupe selectionne
+             ================================================= -->
+        <Control name="$(parent)Right">
+          <Dimensions x="497" y="487"/>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="214" offsetY="38"/>
+          <Controls>
+
+            <!-- Nom du groupe -->
+            <Label name="$(parent)GroupName" font="ZoFontWinH3" color="FFFF00"
+                   text="Selectionner un groupe a gauche">
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="4" offsetY="4"/>
+              <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-230" offsetY="4"/>
+            </Label>
+
+            <!-- Bouton Renommer (groupes custom uniquement) -->
+            <Button name="$(parent)RenameBtn" inherits="ZO_DefaultButton"
+                    text="Renommer" hidden="true">
+              <Dimensions x="108" y="22"/>
+              <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT"
+                      offsetX="-114" offsetY="4"/>
+              <OnClicked>ZMS.UI.OpenRenameDialog()</OnClicked>
+            </Button>
+
+            <!-- Bouton Supprimer (groupes custom uniquement) -->
+            <Button name="$(parent)DeleteBtn" inherits="ZO_DefaultButton"
+                    text="Supprimer" hidden="true">
+              <Dimensions x="108" y="22"/>
+              <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT"
+                      offsetX="0" offsetY="4"/>
+              <OnClicked>ZMS.UI.DeleteCurrentGroup()</OnClicked>
+            </Button>
+
+            <!-- Onglets -->
+            <Button name="$(parent)TabZones" inherits="ZO_DefaultButton"
+                    text="Zones" hidden="true">
+              <Dimensions x="161" y="26"/>
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT"
+                      offsetX="0" offsetY="32"/>
+              <OnClicked>ZMS.UI.SelectTab("zones")</OnClicked>
+            </Button>
+            <Button name="$(parent)TabMounts" inherits="ZO_DefaultButton"
+                    text="Montures" hidden="true">
+              <Dimensions x="161" y="26"/>
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT"
+                      offsetX="165" offsetY="32"/>
+              <OnClicked>ZMS.UI.SelectTab("mounts")</OnClicked>
+            </Button>
+            <Button name="$(parent)TabPets" inherits="ZO_DefaultButton"
+                    text="Familiers" hidden="true">
+              <Dimensions x="161" y="26"/>
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT"
+                      offsetX="330" offsetY="32"/>
+              <OnClicked>ZMS.UI.SelectTab("pets")</OnClicked>
+            </Button>
+
+            <!-- Liste des items (zones / montures / familiers) -->
+            <Control name="$(parent)ItemList" inherits="ZO_ScrollList">
+              <Dimensions x="494" y="385"/>
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT"
+                      offsetX="0" offsetY="64"/>
+            </Control>
+
+            <!-- Bouton Ajouter -->
+            <Button name="$(parent)AddBtn" inherits="ZO_DefaultButton"
+                    text="+ Ajouter actuel" hidden="true">
+              <Dimensions x="244" y="26"/>
+              <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT"
+                      offsetX="0" offsetY="0"/>
+              <OnClicked>ZMS.UI.AddCurrent()</OnClicked>
+            </Button>
+
+            <!-- Bouton Tout effacer -->
+            <Button name="$(parent)ClearAllBtn" inherits="ZO_DefaultButton"
+                    text="Tout effacer" hidden="true">
+              <Dimensions x="244" y="26"/>
+              <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"
+                      offsetX="0" offsetY="0"/>
+              <OnClicked>ZMS.UI.ClearAll()</OnClicked>
+            </Button>
+
+          </Controls>
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!-- =========================================================
+         DIALOGUE – Creer un groupe
+         ========================================================= -->
+    <TopLevelControl name="ZMS_UICreateDialog" mouseEnabled="true" movable="true"
+                     clampedToScreen="true" hidden="true" layer="3" level="1">
+      <Dimensions x="340" y="200"/>
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+      <Controls>
+        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop">
+          <AnchorFill/>
+        </Backdrop>
+
+        <Label name="$(parent)Title" font="ZoFontWinH3" color="87CEEB"
+               text="Nouveau groupe">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="12" offsetY="10"/>
+        </Label>
+
+        <Label name="$(parent)KeyLabel" font="ZoFontGame" color="CCCCCC"
+               text="Cle interne (ex: JUNGLE) :">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="12" offsetY="46"/>
+        </Label>
+        <EditBox name="$(parent)KeyInput" inherits="ZO_DefaultEditForBackdrop"
+                 maxInputCharacters="30">
+          <Dimensions x="316" y="26"/>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="12" offsetY="64"/>
+        </EditBox>
+
+        <Label name="$(parent)NameLabel" font="ZoFontGame" color="CCCCCC"
+               text="Nom d'affichage (optionnel) :">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="12" offsetY="98"/>
+        </Label>
+        <EditBox name="$(parent)NameInput" inherits="ZO_DefaultEditForBackdrop"
+                 maxInputCharacters="50">
+          <Dimensions x="316" y="26"/>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="12" offsetY="116"/>
+        </EditBox>
+
+        <Button name="$(parent)OkBtn" inherits="ZO_DefaultButton" text="Creer">
+          <Dimensions x="150" y="26"/>
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT"
+                  offsetX="12" offsetY="-8"/>
+          <OnClicked>ZMS.UI.ConfirmCreateGroup()</OnClicked>
+        </Button>
+        <Button name="$(parent)CancelBtn" inherits="ZO_DefaultButton" text="Annuler">
+          <Dimensions x="150" y="26"/>
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"
+                  offsetX="-12" offsetY="-8"/>
+          <OnClicked>ZMS_UICreateDialog:SetHidden(true)</OnClicked>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- =========================================================
+         DIALOGUE – Renommer un groupe
+         ========================================================= -->
+    <TopLevelControl name="ZMS_UIRenameDialog" mouseEnabled="true" movable="true"
+                     clampedToScreen="true" hidden="true" layer="3" level="1">
+      <Dimensions x="340" y="145"/>
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+      <Controls>
+        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop">
+          <AnchorFill/>
+        </Backdrop>
+
+        <Label name="$(parent)Title" font="ZoFontWinH3" color="87CEEB"
+               text="Renommer le groupe">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="12" offsetY="10"/>
+        </Label>
+
+        <Label name="$(parent)NameLabel" font="ZoFontGame" color="CCCCCC"
+               text="Nouveau nom :">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="12" offsetY="50"/>
+        </Label>
+        <EditBox name="$(parent)NameInput" inherits="ZO_DefaultEditForBackdrop"
+                 maxInputCharacters="50">
+          <Dimensions x="316" y="26"/>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="12" offsetY="70"/>
+        </EditBox>
+
+        <Button name="$(parent)OkBtn" inherits="ZO_DefaultButton" text="Renommer">
+          <Dimensions x="150" y="26"/>
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT"
+                  offsetX="12" offsetY="-8"/>
+          <OnClicked>ZMS.UI.ConfirmRename()</OnClicked>
+        </Button>
+        <Button name="$(parent)CancelBtn" inherits="ZO_DefaultButton" text="Annuler">
+          <Dimensions x="150" y="26"/>
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"
+                  offsetX="-12" offsetY="-8"/>
+          <OnClicked>ZMS_UIRenameDialog:SetHidden(true)</OnClicked>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- =========================================================
+         GABARIT VIRTUEL – ligne de groupe (panneau gauche)
+         ========================================================= -->
+    <Control name="ZMS_UIGroupRow" virtual="true" mouseEnabled="true">
+      <Dimensions x="0" y="28"/>
+      <Controls>
+        <Backdrop name="$(parent)Bg" inherits="ZO_ThinBackdrop" hidden="true">
+          <AnchorFill/>
+        </Backdrop>
+        <Label name="$(parent)Name" font="ZoFontGame" wrapMode="ELLIPSIS"
+               color="DDDDDD" horizontalAlignment="LEFT">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="8" offsetY="0"/>
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"
+                  offsetX="-8" offsetY="0"/>
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- =========================================================
+         GABARIT VIRTUEL – ligne d'item (zone / monture / familier)
+         ========================================================= -->
+    <Control name="ZMS_UIItemRow" virtual="true" mouseEnabled="true">
+      <Dimensions x="0" y="28"/>
+      <Controls>
+        <Backdrop name="$(parent)Bg" inherits="ZO_ThinBackdrop" hidden="true">
+          <AnchorFill/>
+        </Backdrop>
+        <Label name="$(parent)Name" font="ZoFontGame" wrapMode="ELLIPSIS"
+               color="DDDDDD" horizontalAlignment="LEFT">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="8" offsetY="0"/>
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"
+                  offsetX="-36" offsetY="0"/>
+        </Label>
+        <Button name="$(parent)RemoveBtn" inherits="ZO_DefaultButton" text="X">
+          <Dimensions x="30" y="26"/>
+          <Anchor point="RIGHT" relativePoint="RIGHT" offsetX="-2" offsetY="0"/>
+          <OnClicked>ZMS.UI.RemoveItemByRow(self:GetParent())</OnClicked>
+        </Button>
+      </Controls>
+    </Control>
+
+  </Controls>
+</GuiXml>

@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Mouton/ToxicPlayers-Easy-Targets__1894",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mouton",
+  "canonical_id": "esoui:1894",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:1894",
+  "deleted": false,
+  "directories": [
+    "ToxicPlayers"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1894/",
+  "fingerprint": "0953f247e09a70988f1850f3a0a166a680e970f6ece11ba9bc269a080db1ffe3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12213.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12643.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12202.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12212.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7141.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7142.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6444.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1894",
+  "source_url": "https://www.esoui.com/downloads/info1894-ToxicPlayersEasyTargets.html",
+  "stats": {
+    "downloads": 34446,
+    "favorites": 71,
+    "monthly_downloads": 81
+  },
+  "title": "ToxicPlayers: Easy Targets",
+  "updated_at": 1747249323000,
+  "version": "2.1.1"
+}

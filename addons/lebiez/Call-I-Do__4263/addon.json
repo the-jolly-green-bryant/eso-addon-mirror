@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/lebiez/Call-I-Do__4263",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "lebiez",
+  "canonical_id": "esoui:4263",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4263",
+  "deleted": false,
+  "directories": [
+    "CallIDo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4263/",
+  "fingerprint": "1ef7aafa61e9f9516faaacbd109cd9857b8fdc0adea2c25492da32172bda51d7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14624.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14635.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14634.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14633.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14637.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14638.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4263",
+  "source_url": "https://www.esoui.com/downloads/info4263-Call-I-Do.html",
+  "stats": {
+    "downloads": 413,
+    "favorites": 1,
+    "monthly_downloads": 7
+  },
+  "title": "Call-I-Do",
+  "updated_at": 1775570177000,
+  "version": "1.09"
+}

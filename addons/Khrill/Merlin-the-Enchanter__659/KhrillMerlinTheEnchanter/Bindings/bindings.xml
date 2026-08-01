@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|cFF6A00Khrill|r Merlin the Enchanter">
+      <Action name="KMTEENABLE">
+        <Down>KMTE_ToggleEnable()</Down>
+      </Action>
+      <Action name="KMTETOGGLE">
+        <Down>KMTE_ToggleByKey()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

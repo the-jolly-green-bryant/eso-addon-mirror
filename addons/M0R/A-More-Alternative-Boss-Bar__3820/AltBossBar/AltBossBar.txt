@@ -1,0 +1,17 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## APIVersion: 101046
+## Title: A M0R Alternative Boss Bar
+## Author: |c943810BulDeZir|r, |c0DC1CF@M0R_Gaming|r
+## Version: 3.0.1
+## AddonVersion: 301
+## Description: A modification to BulDeZir's Alternative Boss Bar which includes reading Crutch Alerts Mechanics and adds a few custom mechanics.
+## SavedVariables: AltBossBarSavedVariables
+## DependsOn: LibAddonMenu-2.0>=39 CrutchAlerts
+
+AltBossBar.lua
+AltBossBar.xml

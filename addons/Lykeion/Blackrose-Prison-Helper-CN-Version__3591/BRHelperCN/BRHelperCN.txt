@@ -1,0 +1,12 @@
+## Title: Blackrose Prison Helper CN Version
+## Version: 1.0.6-CN
+## APIVersion: 100050
+## Author: |cFFFF00andy.s|r
+## AddOnVersion: 106
+## SavedVariables: BRHelperCNSavedVariables
+## DependsOn: LibAddonMenu-2.0>=30 LibSimpleArrow LibUnits2
+
+BRHelperCN.xml
+BRHelperCN.lua
+BRHelperMenu.lua
+BRHelperAbilities.lua

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Lionas/JP-Patch-for-Votan-s-Fisherman-v1.9.8__1406",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lionas",
+  "canonical_id": "esoui:1406",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    }
+  ],
+  "content_id": "esoui:1406",
+  "deleted": false,
+  "directories": [
+    "VotansFisherman"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1406/",
+  "fingerprint": "d04bd380152a1906c7bffccc0d954a894f6684e9b2307a898677f797bb1ae75d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4563.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1406",
+  "source_url": "https://www.esoui.com/downloads/info1406-JPPatchforVotansFishermanv1.9.8.html",
+  "stats": {
+    "downloads": 10419,
+    "favorites": 1,
+    "monthly_downloads": 84
+  },
+  "title": "JP Patch for Votan's Fisherman v1.9.8",
+  "updated_at": 1467289309000,
+  "version": "1.9.8"
+}

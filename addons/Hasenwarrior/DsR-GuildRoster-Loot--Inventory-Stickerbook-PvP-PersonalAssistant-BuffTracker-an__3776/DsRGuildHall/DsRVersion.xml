@@ -1,0 +1,106 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="DsRVersion_Updated" clampedToScreen="true" hidden="true" tier="HIGH">
+            <Dimensions x="650" y="500" />
+            <Anchor point="CENTER" />
+            <Controls>
+                <Label name="$(parent)_Title" inherits="ZO_WindowTitle" text="DsRVersion_Title"/>
+                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+                <Button name="$(parent)_Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetY="3" />
+                    <OnClicked>
+                        DsRVersion_Updated:SetHidden(true)
+                    </OnClicked>
+                </Button>
+				<Label name="$(parent)_Version" font="ZoFontWinH3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="DsRVersion_Version"
+						verticalAlignment="TOP" horizontalAlignment="CENTER">
+						<Anchor point="TOP" relativeTo="$(parent)_Title" relativePoint="BOTTOM" offsetX="0" offsetY="5"/>
+				</Label>                
+                <Texture name="$(parent)_Divider1" textureFile="/esoui/art/miscellaneous/horizontaldivider_mythic.dds"
+                    verticalAlignment="TOP" horizontalAlignment="CENTER" >
+                    <Dimensions x="600" y="10" />
+                    <Anchor point="TOP" relativeTo="$(parent)_Version" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                </Texture>
+				<Label name="$(parent)_NEW" font="ZoFontWinH3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="DsRVersion_NEW"
+						verticalAlignment="TOP" horizontalAlignment="CENTER">
+						<Anchor point="TOP" relativeTo="$(parent)_Version" relativePoint="BOTTOM" offsetX="0" offsetY="10"/>
+				</Label>
+				<Label name="$(parent)_NEWtxt" font="ZoFontWinT1" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="DsRVersion_NEWtxt"
+						verticalAlignment="TOP" horizontalAlignment="CENTER">
+						<Anchor point="TOP" relativeTo="$(parent)_NEW" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Label>
+                <Texture name="$(parent)_Divider2" textureFile="/esoui/art/miscellaneous/listitem_divider.dds"
+                    verticalAlignment="TOP" horizontalAlignment="CENTER" >
+                    <Dimensions x="300" y="5" />
+                    <Anchor point="TOP" relativeTo="$(parent)_NEW" relativePoint="BOTTOM" offsetX="0" offsetY="-13"/>
+                </Texture>
+				<Label name="$(parent)_MOD" font="ZoFontWinH3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="DsRVersion_MOD"
+						verticalAlignment="TOP" horizontalAlignment="CENTER">
+						<Anchor point="TOP" relativeTo="$(parent)_NEWtxt" relativePoint="BOTTOM" offsetX="0" offsetY="10"/>
+				</Label>
+				<Label name="$(parent)_MODtxt" font="ZoFontWinT1" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="DsRVersion_MODtxt"
+						verticalAlignment="TOP" horizontalAlignment="CENTER">
+						<Anchor point="TOP" relativeTo="$(parent)_MOD" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Label>
+                <Texture name="$(parent)_Divider3" textureFile="/esoui/art/miscellaneous/listitem_divider.dds"
+                    verticalAlignment="TOP" horizontalAlignment="CENTER" >
+                    <Dimensions x="300" y="5" />
+                    <Anchor point="TOP" relativeTo="$(parent)_MOD" relativePoint="BOTTOM" offsetX="0" offsetY="-13"/>
+                </Texture>
+				<Label name="$(parent)_FIX" font="ZoFontWinH3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="DsRVersion_FIX"
+						verticalAlignment="TOP" horizontalAlignment="CENTER">
+						<Anchor point="TOP" relativeTo="$(parent)_MODtxt" relativePoint="BOTTOM" offsetX="0" offsetY="10"/>
+				</Label>
+				<Label name="$(parent)_FIXtxt" font="ZoFontWinT1" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="DsRVersion_FIXtxt"
+						verticalAlignment="TOP" horizontalAlignment="CENTER">
+						<Anchor point="TOP" relativeTo="$(parent)_FIX" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+				</Label>
+                <Texture name="$(parent)_Divider4" textureFile="/esoui/art/miscellaneous/listitem_divider.dds"
+                    verticalAlignment="TOP" horizontalAlignment="CENTER" >
+                    <Dimensions x="300" y="5" />
+                    <Anchor point="TOP" relativeTo="$(parent)_FIX" relativePoint="BOTTOM" offsetX="0" offsetY="-13"/>
+                </Texture>
+
+                <Button name="$(parent)_Dismiss" inherits="ZO_DefaultButton ZO_ButtonBehaviorClickSound" font="ZoFontGamepadBold22" text="DsRVersion_Accept"
+                    endCapWidth="9" verticalAlignment="CENTER" horizontalAlignment="CENTER" mouseOverBlendMode="ADD" >
+                    <Dimensions x="200" y="28" />
+                    <Anchor point="BOTTOM" relativeTo="$(parent)_BG" relativePoint="BOTTOM" offsetX="0" offsetY="-80" />
+                    <OnClicked>
+                        DsRVersion_Updated:SetHidden(true)
+                    </OnClicked>
+                </Button>
+				<Label name="$(parent)_DonationTxT" font="ZoFontWinT1" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="DsRGuild_donationTxt"
+						verticalAlignment="CENTER" horizontalAlignment="CENTER">
+						<Anchor point="BOTTOM" relativeTo="$(parent)_Dismiss" relativePoint="BOTTOM" offsetX="0" offsetY="40" />
+				</Label>
+                <Button name="$(parent)_DonationSmall" inherits="ZO_DefaultButton ZO_ButtonBehaviorClickSound" font="ZoFontGamepadBold22" text="DsRGuild_donationSmall"
+                    endCapWidth="9" verticalAlignment="CENTER" horizontalAlignment="CENTER" mouseOverBlendMode="ADD" >
+                    <Dimensions x="200" y="28" />
+                    <Anchor point="BOTTOM" relativeTo="$(parent)_DonationTxT" relativePoint="BOTTOM" offsetX="-220" offsetY="30" />
+                    <OnClicked>
+                        DsRVersion_Updated:SetHidden(true)
+                        DsRVersion.DsRdonation(100000)
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)_DonationMiddle" inherits="ZO_DefaultButton ZO_ButtonBehaviorClickSound" font="ZoFontGamepadBold22" text="DsRGuild_donationMiddle"
+                    endCapWidth="9" verticalAlignment="CENTER" horizontalAlignment="CENTER" mouseOverBlendMode="ADD" >
+                    <Dimensions x="200" y="28" />
+                    <Anchor point="BOTTOM" relativeTo="$(parent)_DonationTxT" relativePoint="BOTTOM" offsetX="0" offsetY="30" />
+                    <OnClicked>
+                        DsRVersion_Updated:SetHidden(true)
+                        DsRVersion.DsRdonation(250000)
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)_DonationBig" inherits="ZO_DefaultButton ZO_ButtonBehaviorClickSound" font="ZoFontGamepadBold22" text="DsRGuild_donationBig"
+                    endCapWidth="9" verticalAlignment="CENTER" horizontalAlignment="CENTER" mouseOverBlendMode="ADD" >
+                    <Dimensions x="200" y="28" />
+                    <Anchor point="BOTTOM" relativeTo="$(parent)_DonationTxT" relativePoint="BOTTOM" offsetX="220" offsetY="30" />
+                    <OnClicked>
+                        DsRVersion_Updated:SetHidden(true)
+                        DsRVersion.DsRdonation(500000)
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

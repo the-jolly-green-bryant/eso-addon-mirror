@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Monkieponkie/Wading-Kilt-tracker-Thrassian-Rip-Off__3090",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Monkieponkie",
+  "canonical_id": "esoui:3090",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3090",
+  "deleted": false,
+  "directories": [
+    "WadingKilt"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3090/",
+  "fingerprint": "e423c44776a29c977c3cba0be3b92cdcb5a139387776141ea0f3d083cff9b286",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10381.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3090",
+  "source_url": "https://www.esoui.com/downloads/info3090-WadingKilttrackerThrassianRipOff.html",
+  "stats": {
+    "downloads": 5222,
+    "favorites": 4,
+    "monthly_downloads": 16
+  },
+  "title": "Wading Kilt tracker | Thrassian Rip Off",
+  "updated_at": 1622569386000,
+  "version": "1.0"
+}

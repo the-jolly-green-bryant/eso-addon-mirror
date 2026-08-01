@@ -1,0 +1,7 @@
+﻿## Title: AddOn for Grandparents holiday Guild
+## APIVersion: 100034
+## Author: EagleMoor edited by Kes_Bruun
+## Version: 0.1.1
+## Description: AddOn for Grandparents holiday Guild
+
+Grandparents.lua

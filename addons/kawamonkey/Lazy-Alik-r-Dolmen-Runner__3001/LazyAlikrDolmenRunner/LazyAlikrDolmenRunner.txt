@@ -1,0 +1,9 @@
+## APIVersion: 100034
+## Title: Lazy Alik'r Dolmen Runner
+## Author: Kawamonkey
+## SavedVariables: LazyAlikrDolmenRunner
+
+lang\en.lua
+lang\$(language).lua
+
+LazyAlikrDolmenRunner.lua

@@ -1,0 +1,6 @@
+## Title: NoMoreOzezan
+## Author: Geldis1306
+## APIVersion: 100024
+## Version: 1.0
+
+NoMoreOzezan.lua

@@ -1,0 +1,49 @@
+
+<GuiXml>
+    <Controls>
+        <Button name="Auto_Object" virtual="true" horizontalAlignment="0">
+            <Dimensions x="50" y="25"/>
+            <Textures normal="NULL" mouseOver="EsoUI/Art/ActionBar/actionBar_mouseOver.dds" />
+
+            <Controls>
+                <Texture name="$(parent)Icon" textureFile="">
+                    <Dimensions x="25" y="25" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                </Texture>
+
+                <Label name="$(parent)Text" font="$(MEDIUM_FONT)|$(KB_14)|soft-shadow-thin" textureFile="" text="500">
+                    <Dimensions x="25" y="25" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" />
+                </Label>
+            </Controls>
+        </Button>
+
+        <Backdrop name="AutoHouse" mouseEnabled="true" clampedToScreen="true" movable="true" edgeColor="00000000" centerColor="00000000" alpha="0.3">
+            <OnInitialized>self:SetParent(ZO_MainMenu);</OnInitialized>
+            <Edge edgeSize="2"/>
+            <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_PAN);self:SetCenterColor(0,1,1,0.3);self:SetEdgeColor(0,1,1,0.4)</OnMouseEnter>
+            <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_DO_NOT_CARE);self:SetCenterColor(0,0,0,1);self:SetEdgeColor(0,0,0,1)</OnMouseExit>
+            <Controls>
+            </Controls>
+        </Backdrop>
+
+        <Backdrop name="AutoWindow" mouseEnabled="true" clampedToScreen="true" movable="true" edgeColor="aa000000" centerColor="aa000000" alpha="1" hidden="true">
+            <Dimensions x="50" y="100"/>
+            <Edge edgeSize="2"/>
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+            <Controls>
+                <Button name="$(parent)SoulGem" inherits="Auto_Object" >
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="5"/>
+                </Button>
+
+                <Button name="$(parent)Food" inherits="Auto_Object" >
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT"/>
+                </Button>
+
+                <Button name="$(parent)RepairKits" inherits="Auto_Object" >
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+                </Button>
+            </Controls>
+        </Backdrop>
+    </Controls>
+</GuiXml>

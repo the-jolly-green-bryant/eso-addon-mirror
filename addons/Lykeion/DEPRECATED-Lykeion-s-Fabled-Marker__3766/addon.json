@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Lykeion/DEPRECATED-Lykeion-s-Fabled-Marker__3766",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lykeion",
+  "canonical_id": "esoui:3766",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3766",
+  "deleted": false,
+  "directories": [
+    "LykeionsFabledMarker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3766/",
+  "fingerprint": "498fbced25d23599652d366a545b61674bd54b65bbbe1eed13b57028e40266b8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12760.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12761.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12762.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12763.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12764.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12765.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3766",
+  "source_url": "https://www.esoui.com/downloads/info3766-DEPRECATEDLykeionsFabledMarker.html",
+  "stats": {
+    "downloads": 1988,
+    "favorites": 2,
+    "monthly_downloads": 8
+  },
+  "title": "DEPRECATED: Lykeion's Fabled Marker",
+  "updated_at": 1703794065000,
+  "version": "1.1.0"
+}

@@ -1,0 +1,183 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <Label name="IMP_STATS_Tribute_Leaderboard_Column1" horizontalAlignment="RIGHT" virtual="true"><Dimensions x="40" y="32" /></Label>
+		<Label name="IMP_STATS_Tribute_Leaderboard_Column2" virtual="true"><Dimensions x="220" y="32" /></Label>
+	    <Label name="IMP_STATS_Tribute_Leaderboard_Column3" horizontalAlignment="CENTER" virtual="true"><Dimensions x="70" y="32" /></Label>
+	    <Label name="IMP_STATS_Tribute_Leaderboard_Column4" horizontalAlignment="RIGHT" virtual="true"><Dimensions x="40" y="32" /></Label>
+		
+		<Label name="IMP_STATS_Tribute_Leaderboard_Row" inherits="ZO_SelectableLabel" virtual="true">
+			<Dimensions y="32" />
+			<Controls>
+                <!-- Can use to select some element -->
+				<Texture name="$(parent)Highlight" textureFile="EsoUI/Art/Miscellaneous/listItem_selectedHighlight.dds" hidden="true" color="00FF00">
+					<Dimensions x="425" y="52" />
+					<Anchor point="TOPLEFT" />
+				</Texture>
+				<Label name="$(parent)Index" inherits="IMP_STATS_Listing_Cell IMP_STATS_Tribute_Leaderboard_Column1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+				</Label>
+                <!-- <Button name="$(parent)Note">
+                    <Textures
+                        normal="EsoUI/Art/Contacts/social_note_up.dds"
+                        pressed="EsoUI/Art/Contacts/social_note_down.dds"
+                        mouseOver="EsoUI/Art/Contacts/social_note_over.dds"
+                    />                        
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Level" offsetX="18"/>
+                    <Dimensions x="32" y="32"/>
+                    <OnMouseEnter>
+                        ZO_FriendsListRowNote_OnMouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_FriendsListRowNote_OnMouseExit(self)
+                    </OnMouseExit>
+                    <OnClicked>
+                        ZO_FriendsListRowNote_OnClicked(self)
+                    </OnClicked>
+                </Button> -->
+				<Label name="$(parent)Name" inherits="IMP_STATS_Listing_Cell IMP_STATS_Tribute_Leaderboard_Column2">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Index" relativePoint="TOPRIGHT" offsetX="25" />
+				</Label>
+                <Texture name="$(parent)NoteIcon" textureFile="EsoUI/Art/Contacts/social_note_up.dds" hidden="false">
+                    <Dimensions x="24" y="24" />
+					<Anchor point="RIGHT" relativeTo="$(parent)Name" relativePoint="LEFT" offsetX="5" />
+                </Texture>  
+                <Label name="$(parent)Stats" inherits="IMP_STATS_Listing_Cell IMP_STATS_Tribute_Leaderboard_Column3" text="-">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT"/>
+				</Label>
+				<Label name="$(parent)MMR" inherits="IMP_STATS_Listing_Cell IMP_STATS_Tribute_Leaderboard_Column4">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Stats" relativePoint="TOPRIGHT" />
+				</Label>
+			</Controls>
+		</Label>
+
+        <Control name="IMP_STATS_LeftPanelBackgroundFootprint" virtual="true">
+            <Dimensions x="425" y="690" />
+            <Anchor point="LEFT" relativeTo="GuiRoot" offsetY="32" />
+        </Control>
+
+        <TopLevelControl name="IMP_STATS_LeftPanelBackground" inherits="IMP_STATS_LeftPanelBackgroundFootprint" hidden="true">  <!-- layer="BACKGROUND" level="1" -->
+            <Controls>
+            	<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="00FF00" centerColor="000000" /> -->
+                <Texture name="$(parent)Right" textureFile="EsoUI/Art/Miscellaneous/centerscreen_right.dds">
+                    <Dimensions x="64" y="1024" />
+                    <Anchor point="TOPRIGHT" offsetX="95" offsetY="-95" />
+                </Texture>
+                <Texture name="$(parent)Left" textureFile="EsoUI/Art/Miscellaneous/centerscreen_left.dds">
+                    <Dimensions x="1024" y="1024" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Right" relativePoint="TOPLEFT" />
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+
+		<TopLevelControl name="IMP_STATS_TRIBUTE_LEADERBOARD" inherits="IMP_STATS_LeftPanelBackgroundFootprint" hidden="true">
+			<!-- <Dimensions x="425" y="690" />
+            <Anchor point="LEFT" relativeTo="GuiRoot" offsetY="32" /> -->
+            <!-- <OnInitialized>
+                IMP_STATS_TributeLeaderboard_OnInitialize(self)
+            </OnInitialized> -->
+            <OnShow>
+                IMP_STATS_TributeLeaderboard_OnShow(self)
+            </OnShow>
+			<Controls>
+				<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FFFF00" centerColor="000000" /> -->
+				<!-- <Control name="$(parent)Background" inherits="IMP_STATS_LEFT_PANEL_BACKGROUND" /> -->
+
+				<!-- <Backdrop name="$(parent)OpponentSearch" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+					<Anchor point="TOPRIGHT" offsetX="-16" offsetY="8" />
+                    <Dimensions x="270" />
+                    <Controls>
+                        <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" defaultText="SI_REQUEST_NAME_INSTRUCTIONS" />
+						<Label name="$(parent)Label" inherits="IMP_STATS_StatName" text="Opponent:">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-4" />
+						</Label>
+                    </Controls>
+                </Backdrop> -->
+								
+				<!-- <Control name="$(parent)Divider">
+					<Dimensions y="4" />
+					<Anchor point="TOPLEFT" offsetY="32" />
+					<Anchor point="TOPRIGHT" offsetY="32" />
+					<Controls>
+						<Texture name="$(parent)Left" textureFile="EsoUI/Art/Guild/sectionDivider_left.dds">
+							<Anchor point="TOPLEFT"/>
+							<Dimensions x="400" y="4"/>
+						</Texture>
+						<Texture name="$(parent)Right" textureFile="EsoUI/Art/Guild/sectionDivider_right.dds">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Left" relativePoint="TOPRIGHT"/>
+							<Dimensions x="100" y="4"/>
+						</Texture>
+					</Controls>
+				</Control> -->
+
+				<Control name="$(parent)Listing">
+					<Anchor point="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" offsetY="-56" />
+					<Controls>
+						<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FF0000" centerColor="00FF00" /> -->
+						<Control name="$(parent)Header">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="40"/>
+							<Controls>
+								<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FF0000" centerColor="00FF00" /> -->
+								<Label name="$(parent)Index" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Leaderboard_Column1" text="###">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+								</Label>
+								<Label name="$(parent)Name" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Leaderboard_Column2" text="Name">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Index" relativePoint="TOPRIGHT" offsetX="25" />
+								</Label>
+								<Label name="$(parent)Stats" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Leaderboard_Column3" text="WR">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" />
+								</Label>
+								<Label name="$(parent)MMR" inherits="IMP_STATS_Listing_Header IMP_STATS_Tribute_Leaderboard_Column4" text="MMR">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Stats" relativePoint="TOPRIGHT" />
+								</Label>
+							</Controls>
+						</Control>
+						<Control name="$(parent)ScrollableList" inherits="ZO_ScrollList">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+							<Controls>
+								<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="0000FF" centerColor="00FF00" /> -->
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Divider" hidden="true">
+					<Dimensions y="4" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Listing" relativePoint="BOTTOMLEFT" offsetY="12"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Listing" relativePoint="BOTTOMRIGHT" offsetY="12" />
+					<!-- <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)StatsBlock" relativePoint="BOTTOMRIGHT" offsetY="24" /> -->
+					<Controls>
+						<Texture name="$(parent)Left" textureFile="EsoUI/Art/Guild/sectionDivider_left.dds">
+							<Anchor point="TOPLEFT"/>
+							<Dimensions x="400" y="4"/>
+						</Texture>
+						<Texture name="$(parent)Right" textureFile="EsoUI/Art/Guild/sectionDivider_right.dds">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Left" relativePoint="TOPRIGHT"/>
+							<Dimensions x="100" y="4"/>
+						</Texture>
+					</Controls>
+				</Control>
+
+				<Button name="$(parent)Queue" inherits="ZO_DefaultButton" text="Queue Ranked">
+					<Dimensions x="160" y="28" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" offsetX="90" offsetY="12" />
+
+					<OnClicked>
+						IMP_STATS_QueueTributeRanked()
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)LeaveQueue" inherits="ZO_DefaultButton" text="SI_LFG_LEAVE_QUEUE">
+					<Dimensions x="160" y="28" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Queue" relativePoint="TOPRIGHT" />
+
+					<OnClicked>
+						ZO_SearchingForGroupQueueButton_OnClicked(self, button)
+					</OnClicked>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

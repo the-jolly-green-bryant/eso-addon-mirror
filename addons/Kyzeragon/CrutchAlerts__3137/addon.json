@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Kyzeragon/CrutchAlerts__3137",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyzeragon",
+  "canonical_id": "esoui:3137",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3137",
+  "deleted": false,
+  "directories": [
+    "CrutchAlerts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3137/",
+  "fingerprint": "721ef2768367e7986f6160c46d4c83d8bf78a017d6b4f4f03a082ce44990e622",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10631.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12589.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15218.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14539.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14540.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15510.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10632.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10826.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3137",
+  "source_url": "https://www.esoui.com/downloads/info3137-CrutchAlerts.html",
+  "stats": {
+    "downloads": 953596,
+    "favorites": 157,
+    "monthly_downloads": 21580
+  },
+  "title": "CrutchAlerts",
+  "updated_at": 1784354018000,
+  "version": "2.23.0"
+}

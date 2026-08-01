@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/manavortex/UnstuffMyBags__640",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:640",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:640",
+  "deleted": false,
+  "directories": [
+    "UnstuffMyBags"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl640/",
+  "fingerprint": "7c2f7570ecb8ff3764f5a22690a6b7d23addfb376f1f0c3003888a9f5300a71e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "640",
+  "source_url": "https://www.esoui.com/downloads/info640-UnstuffMyBags.html",
+  "stats": {
+    "downloads": 6498,
+    "favorites": 8,
+    "monthly_downloads": 7
+  },
+  "title": "UnstuffMyBags",
+  "updated_at": 1487426938000,
+  "version": "1.8a"
+}

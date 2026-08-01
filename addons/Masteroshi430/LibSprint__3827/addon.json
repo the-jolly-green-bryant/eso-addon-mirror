@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Masteroshi430/LibSprint__3827",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:3827",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3827",
+  "deleted": false,
+  "directories": [
+    "LibSprint"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3827/",
+  "fingerprint": "de647059e3efa214914c36d9b45910d4171eaa1602c71422c158255a9c7c4244",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3827",
+  "source_url": "https://www.esoui.com/downloads/info3827-LibSprint.html",
+  "stats": {
+    "downloads": 33634,
+    "favorites": 15,
+    "monthly_downloads": 754
+  },
+  "title": "LibSprint",
+  "updated_at": 1777834572000,
+  "version": "2026.05.03"
+}

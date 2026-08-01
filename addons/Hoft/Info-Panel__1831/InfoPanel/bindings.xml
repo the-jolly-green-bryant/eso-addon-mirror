@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c4B8BFETimer">
+			<Action name="IP_TIMER_START">
+				<Down>InfoPanel.TimerStart()</Down>
+			</Action>
+			<Action name="IP_TIMER_STOP">
+				<Down>InfoPanel.TimerStop()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

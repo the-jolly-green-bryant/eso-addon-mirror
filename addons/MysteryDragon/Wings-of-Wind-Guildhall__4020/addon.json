@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/MysteryDragon/Wings-of-Wind-Guildhall__4020",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MysteryDragon",
+  "canonical_id": "esoui:4020",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4020",
+  "deleted": false,
+  "directories": [
+    "WingsOfWindGuildhall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4020/",
+  "fingerprint": "cb2dd8820d3072530b05a98cc030d8f1ecd5dce0d234fa78418f5474ce4efed3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13671.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13672.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4020",
+  "source_url": "https://www.esoui.com/downloads/info4020-WingsofWindGuildhall.html",
+  "stats": {
+    "downloads": 525,
+    "favorites": 2,
+    "monthly_downloads": 18
+  },
+  "title": "Wings of Wind Guildhall",
+  "updated_at": 1772342844000,
+  "version": "2.0.2"
+}

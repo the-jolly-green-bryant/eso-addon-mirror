@@ -1,0 +1,10 @@
+## Title: |cFFD700Campaign Reward Tracker|r
+## APIVersion:  101040
+## Version: 1.0
+## AddOnVersion: 10
+## Description: A tracker to see your reward teir on chars
+## Author: |c0DC1CF@M0R_Gaming|r
+## SavedVariables: CRTtiers CRTNextCampaign
+
+tracker.lua
+tracker.xml

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Llether/Guild-Notificator---Updated__3614",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Llether",
+  "canonical_id": "esoui:3614",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3614",
+  "deleted": false,
+  "directories": [
+    "GuildNotificator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3614/",
+  "fingerprint": "c998f468f3294dc73d4baddbb1311309a595950114c1b4530a66a62a01913d34",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3614",
+  "source_url": "https://www.esoui.com/downloads/info3614-GuildNotificator-Updated.html",
+  "stats": {
+    "downloads": 1117,
+    "favorites": 1,
+    "monthly_downloads": 11
+  },
+  "title": "Guild Notificator - Updated",
+  "updated_at": 1681150266000,
+  "version": "1.0.1"
+}

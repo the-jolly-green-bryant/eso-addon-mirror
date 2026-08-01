@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Geldis/GeldisBarsRestyle__3968",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Geldis",
+  "canonical_id": "esoui:3968",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3968",
+  "deleted": false,
+  "directories": [
+    "GeldisBarsRestyle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3968/",
+  "fingerprint": "2b72738fc74a0c041cb7a064bbcf87bf1983c411abad334251c157e7d9f779a9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13462.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13463.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13460.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13461.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13455.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13457.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3968",
+  "source_url": "https://www.esoui.com/downloads/info3968-GeldisBarsRestyle.html",
+  "stats": {
+    "downloads": 1652,
+    "favorites": 6,
+    "monthly_downloads": 12
+  },
+  "title": "GeldisBarsRestyle",
+  "updated_at": 1772624128000,
+  "version": "1.04"
+}

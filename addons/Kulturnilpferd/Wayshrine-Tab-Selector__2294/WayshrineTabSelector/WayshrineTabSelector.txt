@@ -1,0 +1,10 @@
+## Title: Wayshrine Tab Selector
+## Description: Set a custom default tab on wayshrine menu
+## Author: Kulturnilpferd
+## Version: 1.3
+## APIVersion: 100026
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: FasterTravel
+## SavedVariables: WayshrineTabSelectorDB
+
+WayshrineTabSelector.lua

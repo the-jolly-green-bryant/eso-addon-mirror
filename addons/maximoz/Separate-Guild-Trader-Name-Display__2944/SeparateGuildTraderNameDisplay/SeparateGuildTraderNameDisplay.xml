@@ -1,0 +1,32 @@
+<GuiXml> 
+   <Controls>
+		<TopLevelControl name="SeparateGuildTraderNameDisplayWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" layer="0" level="0">
+			<Anchor point="CENTER"  relativeTo="GuiRoot" relativePoint="CENTER"/>
+			<Dimensions x="300" y="30"/>
+			<OnMoveStop>
+				SeparateGuildTraderNameDisplay.SaveLoc(self)
+			</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)_Backdrop" edgeColor="000000" centerColor="000000" hidden="true"  alpha="0.5" layer="0" level="1">
+					<Dimensions x="300" y="30"/>
+					<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Edge edgeSize="2"/>
+				</Backdrop>
+				<Button name="$(parent)_LockUIButton" font="ZoFontWinH5" color="ffffff" text="Lock UI" hidden="true" layer="0" level="1">
+					<Dimensions x="60" y="20"/>
+					<Anchor point="BOTTOMLEFT"  relativeTo="$(parent)_Backdrop" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+					<Textures normal="esoui/art/buttons/eso_buttonlarge_normal.dds"
+						pressed="esoui/art/buttons/eso_buttonllarge_mousedown.dds"
+						mouseOver="esoui/art/buttons/eso_buttonlarge_mouseover.dds"/>
+					<OnClicked>
+						SeparateGuildTraderNameDisplay.ClickLockUIButton(self)
+					</OnClicked>
+				</Button>				
+				<Label name="$(parent)_Caption" font="ZoFontWinH5" text="Guild Name" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="1" layer="0" level="2">			
+					<Dimensions x="0" y="0"/>
+					<Anchor point="TOPLEFT"  relativeTo="$(parent)_Backdrop" relativePoint="TOPLEFT"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

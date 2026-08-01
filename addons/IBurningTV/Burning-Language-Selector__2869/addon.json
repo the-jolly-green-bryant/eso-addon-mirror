@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/IBurningTV/Burning-Language-Selector__2869",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IBurningTV",
+  "canonical_id": "esoui:2869",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2869",
+  "deleted": false,
+  "directories": [
+    "BurningLanguageSelector"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2869/",
+  "fingerprint": "765561fb6431a230537342276024ead81e7eef3de0722823824105ef9916b80c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9715.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2869",
+  "source_url": "https://www.esoui.com/downloads/info2869-BurningLanguageSelector.html",
+  "stats": {
+    "downloads": 3873,
+    "favorites": 3,
+    "monthly_downloads": 9
+  },
+  "title": "Burning Language Selector",
+  "updated_at": 1627078962000,
+  "version": "1.2"
+}

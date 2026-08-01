@@ -1,0 +1,17 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="AutoRefinePanel" hidden="true" movable="true" mouseEnabled="true">
+      <Dimensions x="300" y="33" />
+      <Anchor point="BOTTOM" offsetY="-98" />
+      <Controls>
+	       <Button name="$(parent)RefineButton" inheritAlpha="false" text="Auto Refine" inherits="ZO_DefaultButton">
+            <Dimensions x="135" y="25" />
+            <Anchor point="BOTTOM" relativeTo="$(parent)Content" relativePoint="CENTER" offsetX="0" />
+            <OnClicked>
+              AutoRefine:OnRefineButtonClicked(self)
+            </OnClicked>      
+          </Button>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

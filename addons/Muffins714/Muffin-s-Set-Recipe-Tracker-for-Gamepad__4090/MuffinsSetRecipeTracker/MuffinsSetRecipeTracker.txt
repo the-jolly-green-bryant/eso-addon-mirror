@@ -1,0 +1,36 @@
+## Title: |c7851a9Muffin's|r Set & Recipe Tracker
+## APIVersion: 101049 101050
+## Author: |c7851a9Muffins714|r
+## Description: Inspired by the popular “Character Knowledge” addon. Bringing recipe, furnishing plan, motif and script tracking directly into your Gamepad tooltip. It also overlays a set collection summary with a collected‑vs‑missing progress bar.
+## SavedVariables: MSRTSavedVars MSRTGlobalSavedVars 
+## Version: 1.6.1
+## DependsOn: LibCharacterKnowledge>=201020 LibAddonMenu-2.0>=39
+
+; Localization
+Localization\en.lua
+
+; Data
+Data.lua
+
+; Core 
+MSRT.lua
+
+; Recipe & motif knowledge 
+Recipe.lua
+
+; Set collection tracking
+Set.lua
+
+; Settings
+MSRTMenu.lua
+
+; Gamepad tooltip frames
+Recipe.xml
+Set.xml
+
+; ZeniMax legal
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms

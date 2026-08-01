@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Leonardo1123/Leonardo-s-Wardrobe-Manager__3180",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Leonardo1123",
+  "canonical_id": "esoui:3180",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:3180",
+  "deleted": false,
+  "directories": [
+    "LeonardosWardrobeManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3180/",
+  "fingerprint": "090b5e9c8c6b3bced86b6f3769cf85ed179d60bad9ad23caf3b1d43027b369f4",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3180",
+  "source_url": "https://www.esoui.com/downloads/info3180-LeonardosWardrobeManager.html",
+  "stats": {
+    "downloads": 4690,
+    "favorites": 8,
+    "monthly_downloads": 18
+  },
+  "title": "Leonardo's Wardrobe Manager",
+  "updated_at": 1631057016000,
+  "version": "0.4.2"
+}

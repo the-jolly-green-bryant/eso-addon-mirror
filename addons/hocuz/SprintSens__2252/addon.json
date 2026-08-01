@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/hocuz/SprintSens__2252",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "hocuz",
+  "canonical_id": "esoui:2252",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2252",
+  "deleted": false,
+  "directories": [
+    "SprintSens"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2252/",
+  "fingerprint": "eca644992e326de2c43b4de506dfc1b6359bb20b3057935cef7a3f0ffb98c66a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7715.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2252",
+  "source_url": "https://www.esoui.com/downloads/info2252-SprintSens.html",
+  "stats": {
+    "downloads": 6710,
+    "favorites": 5,
+    "monthly_downloads": 29
+  },
+  "title": "SprintSens",
+  "updated_at": 1573135070000,
+  "version": "1.7"
+}

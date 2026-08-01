@@ -1,0 +1,8 @@
+## Title: Advanced Filters - Duplicate items filter
+## Author: Hobicabobjob
+## Version: 1.2
+## APIVersion: 100018 100019 100020 100021 100022 100023
+## DependsOn: AdvancedFilters
+## FastAPI : 100020
+
+AF_FCODuplicateFilter.lua

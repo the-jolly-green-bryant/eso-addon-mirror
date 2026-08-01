@@ -1,0 +1,240 @@
+<GuiXml>
+  <!-- ===================== Zeilen-Template ===================== -->
+  <Controls>
+    <Control name="DungeonFinderPlus_Row"
+             virtual="true"
+             mouseEnabled="true">
+      <Dimensions x="1080" y="32"/>
+
+      <!-- Tooltip-Hooks -->
+      <OnMouseEnter>DungeonFinderPlus.Finder:OnRowMouseEnter(self)</OnMouseEnter>
+      <OnMouseExit>DungeonFinderPlus.Finder:OnRowMouseExit(self)</OnMouseExit>
+
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip"/>
+
+        <!-- Auswahl -->
+        <Button name="$(parent)Check" inherits="ZO_CheckButton">
+          <Anchor point="LEFT" offsetX="10"/>
+        </Button>
+
+        <!-- Dungeon-Name -->
+        <Label name="$(parent)Name"
+               font="ZoFontGameBold"
+               verticalAlignment="CENTER"
+               text="-">
+          <Anchor point="LEFT" relativeTo="$(parent)Check" relativePoint="RIGHT" offsetX="10"/>
+          <Dimensions x="600" y="24"/>
+        </Label>
+
+        <!-- Typ (DLC/Base) -->
+        <Label name ="$(parent)Type"
+               font="ZoFontGame"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER"
+               text="-">
+          <Anchor point="RIGHT" offsetX="-210"/>
+          <Dimensions x="80" y="22"/>
+        </Label>
+
+        <!-- Segment-Schalter -->
+        <Control name="$(parent)Mode" mouseEnabled="true">
+          <Anchor point="RIGHT" offsetX="-8"/>
+          <Dimensions x="190" y="24"/>
+          <Controls>
+            <Backdrop name ="$(parent)BG" inherits="ZO_EditBackdrop">
+              <AnchorFill/>
+            </Backdrop>
+
+            <Button name="$(parent)Normal" inherits="ZO_DefaultButton" text="Normal">
+              <Anchor point="LEFT" offsetX="6"/>
+              <Dimensions x="86" y="20"/>
+            </Button>
+
+            <Button name="$(parent)Vet" inherits="ZO_DefaultButton" text="Vet">
+              <Anchor point="LEFT" relativeTo="$(parent)Normal" relativePoint="RIGHT" offsetX="6"/>
+              <Dimensions x="68" y="20"/>
+            </Button>
+          </Controls>
+        </Control>
+
+      </Controls>
+    </Control>
+  </Controls>
+
+  <!-- ===================== Hauptfenster ===================== -->
+  <Controls>
+
+    <TopLevelControl name="DFP_Window"
+                     hidden="true"
+                     clampedToScreen="true"
+                     movable="true"
+                     mouseEnabled="true"
+                     keyboardEnabled="false"
+                     tier="HIGH"
+                     level="20">
+
+      <OnShow>
+        if SetGameCameraUIMode then SetGameCameraUIMode(true) end
+        if DungeonFinderPlus and DungeonFinderPlus.Finder and DungeonFinderPlus.Finder.ActivateKeybinds then
+          DungeonFinderPlus.Finder:ActivateKeybinds()
+        end
+      </OnShow>
+
+      <OnHide>
+        if SetGameCameraUIMode then SetGameCameraUIMode(false) end
+        if DungeonFinderPlus and DungeonFinderPlus.Finder and DungeonFinderPlus.Finder.DeactivateKeybinds then
+          DungeonFinderPlus.Finder:DeactivateKeybinds()
+        end
+      </OnHide>
+
+      <Dimensions x="1120" y="760"/>
+      <Anchor point="CENTER" relativeTo="GuiRoot"/>
+
+      <Controls>
+
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+          <AnchorFill/>
+        </Backdrop>
+
+        <!-- Kopfzeile -->
+        <Control name="$(parent)Toolbar">
+          <Anchor point="TOPLEFT" offsetX="14" offsetY="12"/>
+          <Dimensions x="1092" y="40"/>
+
+          <Controls>
+            <Label name="$(parent)Title" font="ZoFontWinH1" text="DungeonFinderPlus">
+              <Anchor point="LEFT" offsetX="10"/>
+              <Dimensions x="520" y="32"/>
+            </Label>
+
+            <Label name="DFP_WindowToolbarAuthor" font="ZoFontGame" text="Autor: @LugenKrebs">
+              <Anchor point="LEFT" relativeTo="$(parent)Title" relativePoint="RIGHT" offsetX="10"/>
+              <Dimensions x="330" y="24"/>
+            </Label>
+
+            <Button name="$(parent)Close" inherits="ZO_DefaultButton" text="Schließen">
+              <Anchor point="RIGHT" offsetX="-8"/>
+              <Dimensions x="120" y="28"/>
+              <OnClicked>DungeonFinderPlus.Toggle()</OnClicked>
+            </Button>
+          </Controls>
+        </Control>
+
+        <!-- Suche -->
+        <Control name="$(parent)SearchRow">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Toolbar" relativePoint="BOTTOMLEFT" offsetX="14" offsetY="8"/>
+          <Dimensions x="1092" y="36"/>
+
+          <Controls>
+
+            <Control name="$(parent)Buttons">
+              <Anchor point="RIGHT"/>
+              <Dimensions x="446" y="32"/>
+
+              <Controls>
+                <Button name="$(parent)BtnSelectAll" inherits="ZO_DefaultButton" text="Alle auswählen">
+                  <Anchor point="LEFT"/>
+                  <Dimensions x="120" y="32"/>
+                  <OnClicked>DungeonFinderPlus.Finder:SelectAll(true)</OnClicked>
+                </Button>
+
+                <Button name="$(parent)BtnClearSel" inherits="ZO_DefaultButton" text="Auswahl leeren">
+                  <Anchor point="LEFT" relativeTo ="$(parent)BtnSelectAll" relativePoint="RIGHT" offsetX="6"/>
+                  <Dimensions x="120" y="32"/>
+                  <OnClicked>DungeonFinderPlus.Finder:SelectAll(false)</OnClicked>
+                </Button>
+
+                <Button name ="$(parent)BtnAllNormal" inherits="ZO_DefaultButton" text="Alle Normal">
+                  <Anchor point="LEFT" relativeTo ="$(parent)BtnClearSel" relativePoint="RIGHT" offsetX="6"/>
+                  <Dimensions x="110" y="32"/>
+                  <OnClicked>DungeonFinderPlus.Finder:SetAllModes(false)</OnClicked>
+                </Button>
+
+                <Button name ="$(parent)BtnAllVet" inherits="ZO_DefaultButton" text="Alle Vet">
+                  <Anchor point="LEFT" relativeTo ="$(parent)BtnAllNormal" relativePoint="RIGHT" offsetX="6"/>
+                  <Dimensions x="90" y="32"/>
+                  <OnClicked>DungeonFinderPlus.Finder:SetAllModes(true)</OnClicked>
+                </Button>
+
+              </Controls>
+            </Control>
+
+            <Backdrop name="$(parent)SearchBackdrop" inherits="ZO_EditBackdrop">
+              <Anchor point="LEFT"/>
+              <Anchor point="RIGHT" relativeTo="$(parent)Buttons" relativePoint="LEFT" offsetX="-10"/>
+
+              <Controls>
+                <EditBox name="DFP_WindowSearchRowSearchBackdropEdit"
+                         font="ZoFontGame"
+                         maxInputCharacters="80"
+                         inherits="ZO_DefaultEditForBackdrop"
+                         mouseEnabled="true">
+                  <AnchorFill/>
+                  <OnTextChanged>DungeonFinderPlus.OnSearchTextChanged()</OnTextChanged>
+                  <OnEnter>self:LoseFocus()</OnEnter>
+                  <OnEscape>self:LoseFocus()</OnEscape>
+                </EditBox>
+              </Controls>
+
+            </Backdrop>
+
+          </Controls>
+        </Control>
+
+        <!-- Liste -->
+        <Control name="$(parent)List">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)SearchRow" relativePoint="BOTTOMLEFT" offsetX="14" offsetY="6"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-54"/>
+
+          <Controls>
+            <Control name="DFP_WindowListScroll" inherits="ZO_ScrollList">
+              <AnchorFill/>
+            </Control>
+          </Controls>
+        </Control>
+
+        <!-- Fußzeile -->
+        <Control name="$(parent)Footer">
+          <Anchor point="BOTTOMLEFT" offsetX="14" offsetY="-12"/>
+          <Dimensions x="1092" y="32"/>
+
+          <Controls>
+            <!-- Hintergrund -->
+            <Backdrop name="$(parent)BG"
+                      centerColor="000000"
+                      edgeColor="333333"
+                      alpha="0.3">
+              <AnchorFill/>
+            </Backdrop>
+
+            <!-- Queue Button -->
+            <Button name="$(parent)QueueBtn"
+                    inherits="ZO_DefaultButton"
+                    text="Suche starten">
+              <Anchor point="RIGHT"/>
+              <Dimensions x="240" y="28"/>
+              <OnClicked>DungeonFinderPlus.Finder:QueueSelection()</OnClicked>
+            </Button>
+
+            <!-- Status Label -->
+            <Label name="$(parent)Status"
+                   font="ZoFontGame"
+                   fontSize="16"
+                   color="DDDDDD"
+                   verticalAlignment="CENTER"
+                   horizontalAlignment="LEFT"
+                   text="Bereit.">
+              <Anchor point="LEFT" offsetX="8"/>
+              <Anchor point="RIGHT" relativeTo="$(parent)QueueBtn" relativePoint="LEFT" offsetX="-12"/>
+              <Dimensions y="28"/>
+            </Label>
+
+          </Controls>
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+
+</GuiXml>

@@ -1,0 +1,87 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <Label name="IMP_STATS_TributeOpponentPreview_Label" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="LEFT" text="-" virtual="true">
+			<Dimensions y="24" />
+		</Label>
+
+		<TopLevelControl name="IMP_STATS_TributeOpponentPreview" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="180" y="70" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+
+			<OnMoveStop>
+                IMP_STATS_TributeOpponentPreview_OnMoveStop(self)
+            </OnMoveStop>
+
+			<Controls>
+				<!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FFFF00" centerColor="000000" /> -->
+
+				<Label name="$(parent)OpponentName" inherits="IMP_STATS_TributeOpponentPreview_Label" text="@ID">
+					<Anchor point="TOPLEFT" />
+				</Label>
+
+				<!-- <Label name="$(parent)OpponentNameValue" inherits="IMP_STATS_TributeOpponentPreview_Label">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)OpponentName" relativePoint="TOPRIGHT" offsetX="4" />
+				</Label> -->
+
+				<Label name="$(parent)OpponentRank" inherits="IMP_STATS_TributeOpponentPreview_Label" text="Not in top-100">
+					<!-- <Anchor point="TOPLEFT" relativeTo="$(parent)OpponentName" relativePoint="BOTTOMLEFT" /> -->
+					<Anchor point="TOPLEFT" relativeTo="$(parent)OpponentName" relativePoint="BOTTOMLEFT" />
+				</Label>
+				<!-- <Label name="$(parent)OpponentMMRValue" inherits="IMP_STATS_TributeOpponentPreview_Label">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)OpponentMMR" relativePoint="TOPRIGHT" offsetX="4" />
+				</Label> -->
+
+				<Label name="$(parent)PlayedBefore" inherits="IMP_STATS_TributeOpponentPreview_Label" text="Not played before">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)OpponentRank" relativePoint="BOTTOMLEFT" />
+				</Label>
+				<!-- <Label name="$(parent)TotalGamesValue" inherits="IMP_STATS_TributeOpponentPreview_Label">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TotalGames" relativePoint="TOPRIGHT" offsetX="4" />
+				</Label> -->
+
+				<Label name="$(parent)Winrate" inherits="IMP_STATS_TributeOpponentPreview_Label" text="Winrate:">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)PlayedBefore" relativePoint="BOTTOMLEFT" />
+				</Label>
+				<Label name="$(parent)WinrateValue" inherits="IMP_STATS_TributeOpponentPreview_Label" text="-">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Winrate" relativePoint="TOPRIGHT" offsetX="4" />
+				</Label>
+
+                <!-- <Texture name="$(parent)NoteIcon" textureFile="EsoUI/Art/Contacts/social_note_up.dds" hidden="true">
+                    <Dimensions x="24" y="24" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" />
+                </Texture> -->
+
+                <Button name="$(parent)NoteIcon">
+                    <Textures
+                        normal="EsoUI/Art/Contacts/social_note_up.dds"
+                        mouseOver="EsoUI/Art/Contacts/social_note_over.dds"
+                        pressed="EsoUI/Art/Contacts/social_note_down.dds" 
+                    />                     
+                    <Dimensions x="22" y="22"/>
+                    <TextureCoords left="0.15625" right="0.84375" top="0.15625" bottom="0.84375"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="2" />
+                    <OnMouseEnter>
+                        IMP_STATS_TributeOpponentPreview_NoteIcon_OnMouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        IMP_STATS_TributeOpponentPreview_NoteIcon_OnMouseExit(self)
+                    </OnMouseExit>
+                    <OnClicked>
+                        IMP_STATS_TributeOpponentPreview_NoteIcon_OnClicked(self)
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)AddNoteIcon" inherits="ZO_PlusButton">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="2" />
+                    <OnMouseEnter>
+                        IMP_STATS_TributeOpponentPreview_AddNoteIcon_OnMouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        IMP_STATS_TributeOpponentPreview_AddNoteIcon_OnMouseExit(self)
+                    </OnMouseExit>
+                    <OnClicked>
+                        IMP_STATS_TributeOpponentPreview_AddNoteIcon_OnClicked(self)
+                    </OnClicked>
+                </Button> 
+			</Controls>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

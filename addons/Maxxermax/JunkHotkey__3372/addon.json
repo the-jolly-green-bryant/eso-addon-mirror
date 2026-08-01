@@ -1,0 +1,74 @@
+{
+  "archive_path": "addons/Maxxermax/JunkHotkey__3372",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Maxxermax",
+  "canonical_id": "esoui:3372",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3372",
+  "deleted": false,
+  "directories": [
+    "JunkHotkey"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3372/",
+  "fingerprint": "9b588c7b8296c94186edb5b28cb8df4d5830182c708cc86fc9c72e1bafce6675",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11501.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11502.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3372",
+  "source_url": "https://www.esoui.com/downloads/info3372-JunkHotkey.html",
+  "stats": {
+    "downloads": 8254,
+    "favorites": 12,
+    "monthly_downloads": 92
+  },
+  "title": "JunkHotkey",
+  "updated_at": 1724329682000,
+  "version": "1.9"
+}

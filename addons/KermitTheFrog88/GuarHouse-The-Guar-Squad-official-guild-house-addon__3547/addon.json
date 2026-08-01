@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/KermitTheFrog88/GuarHouse-The-Guar-Squad-official-guild-house-addon__3547",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KermitTheFrog88",
+  "canonical_id": "esoui:3547",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3547",
+  "deleted": false,
+  "directories": [
+    "GuarHouse"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3547/",
+  "fingerprint": "0f4842d9e55adadf5b5c9749221af296f9d9817e1404e50c7516867f28680ba9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12047.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3547",
+  "source_url": "https://www.esoui.com/downloads/info3547-GuarHouseTheGuarSquadofficialguildhouseaddon.html",
+  "stats": {
+    "downloads": 1860,
+    "favorites": 0,
+    "monthly_downloads": 11
+  },
+  "title": "GuarHouse (The Guar Squad official guild house addon)",
+  "updated_at": 1686872316000,
+  "version": "1.2"
+}

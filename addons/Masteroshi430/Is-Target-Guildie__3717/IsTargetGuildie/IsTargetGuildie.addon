@@ -1,0 +1,11 @@
+## Title: |cf49b42IsTargetGuildie|r
+## Description: Displays if target is guildie for each of your guilds using guild chat colors   
+## Version: 2026.07.06
+## Author: |c3CB371@Masteroshi430|r
+## APIVersion: 101050
+## SavedVariables: ITGVars
+## DependsOn: LibAddonMenu-2.0>=38
+## OptionalDependsOn: CombatTopHealthbar
+
+IsTargetGuildie.lua
+

@@ -1,0 +1,24 @@
+<GuiXml>
+  <Controls>
+	<TopLevelControl name="CarosWornSetsIndicator" mouseEnabled="true" resizeToFitDescendents="true" movable="true" clampedToScreen="true" hidden="true">
+		<ResizeToFitPadding height="10" width="10"/>
+		<OnMoveStop>
+			CarosWornSets.OnIndicatorMoveStop()
+		</OnMoveStop>
+		<OnMouseUp>
+			if upInside and button == 2 then CarosWornSets.OnRightClick(ctrl, shift) end
+		</OnMouseUp>
+		<OnMouseDoubleClick>
+			CarosWornSets.DoubleClick(button, ctrl, shift)
+		</OnMouseDoubleClick>
+		<Controls>
+			<Texture name="$(parent)_BG" color="000000" alpha="0.8" hidden="false" excludeFromResizeToFitExtents="true">
+					<AnchorFill />
+				</Texture>
+			<Label name="$(parent)Label" width="20" height="10" font="ZoFontGameSmall" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="BOTTOM" horizontalAlignment="LEFT" text="Getragene Sets...">
+				<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+			</Label>
+		</Controls>
+	</TopLevelControl>
+  </Controls>
+</GuiXml>

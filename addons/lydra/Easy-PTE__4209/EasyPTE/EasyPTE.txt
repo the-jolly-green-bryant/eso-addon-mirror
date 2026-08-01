@@ -1,0 +1,10 @@
+## Title: EasyPTE
+## Author: Lydra
+## APIVersion: 101047
+## AddOnVersion: 011
+
+EasyPTE.lua
+
+## Keybind
+Bindings/Bindings.lua
+Bindings/Bindings.xml

@@ -1,0 +1,8 @@
+1.31.1
+API-bump for Update 31 (Waking Flame)
+
+0.35.2
+When a profile cannot be loaded because there is none yet, a message is displayed, that a profile is created.
+
+0.35.1
+First release. First addon. Ever. API 35 (Blackwood).

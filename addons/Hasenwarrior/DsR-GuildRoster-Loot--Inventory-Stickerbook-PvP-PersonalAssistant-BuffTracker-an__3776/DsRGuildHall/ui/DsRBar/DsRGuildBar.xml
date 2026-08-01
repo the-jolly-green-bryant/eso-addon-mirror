@@ -1,0 +1,126 @@
+<GuiXml> 
+	<!-- New Font definition -->
+	<Font name="DsRGuildBarFontToolbarM"  font="$(MEDIUM_FONT)|16|soft-shadow-thin"/>
+	<Font name="DsRGuildBarFontToolbarB"  font="$(BOLD_FONT)|16|soft-shadow-thin"/>
+	<Font name="DsRGuildBarFontToolbarT"  font="$(MEDIUM_FONT)|18|soft-shadow-thin"/>
+	<Font name="DsRGuildBarFontToolbarT2" font="$(MEDIUM_FONT)|17|soft-shadow-thin"/>
+<Controls> 
+	
+	<!--Toolbox-->
+	<TopLevelControl name="DsRGuildBarWindow" clampedToScreen="true" mouseEnabled="false"> 
+		<Dimensions y="30"/>
+		<Anchor point="TOP" relativeTo="GUI_ROOT" relativePoint="TOP" offsetY="0"/>
+		<!--Toolbar-->
+		<Controls>
+    		<Backdrop name="$(parent)BG" inherits="ZO_MinorMungeBackdrop_SolidWhite" alpha="0.75" edgeColor="INTERFACE_COLOR_TYPE_GENERAL:INTERFACE_GENERAL_COLOR_BLACK" centerColor="INTERFACE_COLOR_TYPE_GENERAL:INTERFACE_GENERAL_COLOR_BLACK">
+				<AnchorFill/>
+    		</Backdrop>
+			<!-- Zeit -->
+			<Label name="$(parent)Info01" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="0"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetY="0"/>
+			</Label>
+			<!-- Spielerinfos -->
+			<Label name="$(parent)Info02" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info01" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info01" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info03" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarB">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info02" relativePoint="TOPRIGHT" offsetY="1"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info02" relativePoint="BOTTOMRIGHT" offsetY="1"/>
+			</Label>
+			<Label name="$(parent)Info04" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info03" relativePoint="TOPRIGHT" offsetY="-1"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info03" relativePoint="BOTTOMRIGHT" offsetY="-1"/>
+			</Label>
+			<!-- Platz -->
+			<Label name="$(parent)Info05" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info04" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info04" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info06" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info05" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info05" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<!-- Währungen -->
+			<Label name="$(parent)Info07" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info06" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info06" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info08" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info07" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info07" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info09" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info08" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info08" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info10" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info09" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info09" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info11" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info10" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info10" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info12" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info11" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info11" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info13" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info12" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info12" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info14" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info13" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info13" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info15" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info14" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info14" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info16" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info15" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info15" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info17" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info16" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info16" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info18" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info17" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info17" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info19" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info18" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info18" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info20" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info19" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info19" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info21" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info20" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info20" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<!-- Inventar -->
+			<Label name="$(parent)Info22" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info21" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info21" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info23" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info22" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info22" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info24" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info23" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info23" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+			<Label name="$(parent)Info25" verticalAlignment="CENTER" font="DsRGuildBarFontToolbarM">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info24" relativePoint="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info24" relativePoint="BOTTOMRIGHT"/>
+			</Label>
+		</Controls>.
+	</TopLevelControl>
+</Controls>
+</GuiXml>

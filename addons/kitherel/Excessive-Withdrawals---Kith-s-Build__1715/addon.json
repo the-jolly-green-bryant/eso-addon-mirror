@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kitherel/Excessive-Withdrawals---Kith-s-Build__1715",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kitherel",
+  "canonical_id": "esoui:1715",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:1715",
+  "deleted": false,
+  "directories": [
+    "ExcessiveWithdrawals"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1715/",
+  "fingerprint": "7035ba83a4fbf9a356757aa0677b0e03c547076e8d8044da4a6a598b65a24b1e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5664.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1715",
+  "source_url": "https://www.esoui.com/downloads/info1715-ExcessiveWithdrawals-KithsBuild.html",
+  "stats": {
+    "downloads": 2607,
+    "favorites": 2,
+    "monthly_downloads": 7
+  },
+  "title": "Excessive Withdrawals - Kith's Build",
+  "updated_at": 1496666493000,
+  "version": "1"
+}

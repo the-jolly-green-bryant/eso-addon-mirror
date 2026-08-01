@@ -1,0 +1,19 @@
+## Title: |cF24D8CKayzar|cFFFFFFUI|r
+## Description: Custom unit frames, buff tracker, and action bar overlay.
+## Author: |c09e8ech|r|c4509eca|r|c094decz|r|c09e8ece|r|cec09e5068|r
+## Version: 1.1.0
+## AddOnVersion: 2
+## APIVersion: 101047 101048
+## SavedVariables: KayzarUI_SavedVars
+## DependsOn: LibAddonMenu-2.0>=41
+## OptionalDependsOn: FancyTitles
+
+lang/en.lua
+lang/$(language).lua
+
+KayzarUI.lua
+
+modules/KayzarUI_UnitFrames.lua
+modules/KayzarUI_Buffs.lua
+modules/KayzarUI_ActionBar.lua
+modules/KayzarUI_Settings.lua

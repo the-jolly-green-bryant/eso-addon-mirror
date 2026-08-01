@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Mladen90/Log-Window-Clean-Chat__3206",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mladen90",
+  "canonical_id": "esoui:3206",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:3206",
+  "deleted": false,
+  "directories": [
+    "LogWindow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3206/",
+  "fingerprint": "9ba8738a892d809d15053a29781df85ec78fd96a1f02eb238efe30de1428e88c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10896.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3206",
+  "source_url": "https://www.esoui.com/downloads/info3206-LogWindowCleanChat.html",
+  "stats": {
+    "downloads": 4434,
+    "favorites": 8,
+    "monthly_downloads": 10
+  },
+  "title": "Log Window (Clean Chat)",
+  "updated_at": 1632675856000,
+  "version": "1.0.0"
+}

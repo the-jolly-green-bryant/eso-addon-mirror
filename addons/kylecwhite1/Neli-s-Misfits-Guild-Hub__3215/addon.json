@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/kylecwhite1/Neli-s-Misfits-Guild-Hub__3215",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kylecwhite1",
+  "canonical_id": "esoui:3215",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3215",
+  "deleted": false,
+  "directories": [
+    "NMGuildHall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3215/",
+  "fingerprint": "6a0927798da6479b576d9dc0f65b98c110f0f0534370a812027f0c0e1189dd28",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3215",
+  "source_url": "https://www.esoui.com/downloads/info3215-NelisMisfitsGuildHub.html",
+  "stats": {
+    "downloads": 5828,
+    "favorites": 2,
+    "monthly_downloads": 14
+  },
+  "title": "Neli's Misfits Guild Hub",
+  "updated_at": 1779581635000,
+  "version": "9.0"
+}

@@ -1,0 +1,12 @@
+## Title: |cFFD700Log Board|r
+## APIVersion:  101049
+## Version: 1.0.4
+## AddOnVersion: 104
+## Description: An addon that puts up boards at the start of each trial, telling you if you are logging or not.
+## Author: |c0DC1CF@M0R_Gaming|r
+## SavedVariables: LogBoardVars
+## OptionalDependsOn: LibAddonMenu-2.0>41
+
+
+layout.xml
+main.lua

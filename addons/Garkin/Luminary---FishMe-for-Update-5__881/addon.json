@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Garkin/Luminary---FishMe-for-Update-5__881",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Garkin",
+  "canonical_id": "esoui:881",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:881",
+  "deleted": false,
+  "directories": [
+    "Luminary_FishMe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl881/",
+  "fingerprint": "1661ba9166ac0996413338a06889e60fea33d7091cfdbd96113f3b864fafdba6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2675.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "881",
+  "source_url": "https://www.esoui.com/downloads/info881-Luminary-FishMeforUpdate5.html",
+  "stats": {
+    "downloads": 16203,
+    "favorites": 9,
+    "monthly_downloads": 23
+  },
+  "title": "Luminary - FishMe (for Update 5)",
+  "updated_at": 1420038209000,
+  "version": "3.16"
+}

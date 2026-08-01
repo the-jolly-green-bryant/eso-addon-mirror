@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/haidan/Flamechasers-Travel-Slots__4738",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "haidan",
+  "canonical_id": "esoui:4738",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4738",
+  "deleted": false,
+  "directories": [
+    "FlamechasersTravelSlots"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4738/",
+  "fingerprint": "1041617f4ae7a9a62ffdd6c1ac08bc0504d04ff2383ac64f3c18568da6ca9436",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16858.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4738",
+  "source_url": "https://www.esoui.com/downloads/info4738-FlamechasersTravelSlots.html",
+  "stats": {
+    "downloads": 30,
+    "favorites": 0,
+    "monthly_downloads": 15
+  },
+  "title": "Flamechasers Travel Slots",
+  "updated_at": 1785526285000,
+  "version": "0.7.5"
+}

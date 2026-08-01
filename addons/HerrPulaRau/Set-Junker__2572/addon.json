@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/HerrPulaRau/Set-Junker__2572",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "HerrPulaRau",
+  "canonical_id": "esoui:2572",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2572",
+  "deleted": false,
+  "directories": [
+    "SetJunker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2572/",
+  "fingerprint": "740990450490728decfdb680f6d7b430a80992b35e37bda14fab3d1bc4ddd449",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8794.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8795.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9106.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8796.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8810.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2572",
+  "source_url": "https://www.esoui.com/downloads/info2572-SetJunker.html",
+  "stats": {
+    "downloads": 5424,
+    "favorites": 6,
+    "monthly_downloads": 10
+  },
+  "title": "Set Junker",
+  "updated_at": 1597354323000,
+  "version": "1.3.1"
+}

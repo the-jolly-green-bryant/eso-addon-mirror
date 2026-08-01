@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/imPDA/ImperialCartographer__4112",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "imPDA",
+  "canonical_id": "esoui:4112",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4112",
+  "deleted": false,
+  "directories": [
+    "ImperialCartographer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4112/",
+  "fingerprint": "2bb143220cf6ca2a39c5e97322965b0672c0fefab89d7d7b8af3cd8637357d53",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14051.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14050.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14060.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4112",
+  "source_url": "https://www.esoui.com/downloads/info4112-ImperialCartographer.html",
+  "stats": {
+    "downloads": 4077,
+    "favorites": 11,
+    "monthly_downloads": 64
+  },
+  "title": "ImperialCartographer",
+  "updated_at": 1781004692000,
+  "version": "v22"
+}

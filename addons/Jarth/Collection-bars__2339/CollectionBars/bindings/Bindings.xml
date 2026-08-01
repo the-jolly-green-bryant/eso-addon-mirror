@@ -1,0 +1,309 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Collection bars">
+      <Action name="CBs_Settings">
+        <Down>CBs_ShowSettings()</Down>
+      </Action>
+      <Action name="CBs_1">
+        <Down>CBs_Clicked(1)</Down>
+      </Action>
+      <Action name="CBs_2">
+        <Down>CBs_Clicked(2)</Down>
+      </Action>
+      <Action name="CBs_3">
+        <Down>CBs_Clicked(3)</Down>
+      </Action>
+      <Action name="CBs_4">
+        <Down>CBs_Clicked(4)</Down>
+      </Action>
+      <Action name="CBs_5">
+        <Down>CBs_Clicked(5)</Down>
+      </Action>
+      <Action name="CBs_6">
+        <Down>CBs_Clicked(6)</Down>
+      </Action>
+      <Action name="CBs_7">
+        <Down>CBs_Clicked(7)</Down>
+      </Action>
+      <Action name="CBs_8">
+        <Down>CBs_Clicked(8)</Down>
+      </Action>
+      <Action name="CBs_9">
+        <Down>CBs_Clicked(9)</Down>
+      </Action>
+      <Action name="CBs_10">
+        <Down>CBs_Clicked(10)</Down>
+      </Action>
+      <Action name="CBs_11">
+        <Down>CBs_Clicked(11)</Down>
+      </Action>
+      <Action name="CBs_12">
+        <Down>CBs_Clicked(12)</Down>
+      </Action>
+      <Action name="CBs_13">
+        <Down>CBs_Clicked(13)</Down>
+      </Action>
+      <Action name="CBs_14">
+        <Down>CBs_Clicked(14)</Down>
+      </Action>
+      <Action name="CBs_15">
+        <Down>CBs_Clicked(15)</Down>
+      </Action>
+      <Action name="CBs_16">
+        <Down>CBs_Clicked(16)</Down>
+      </Action>
+      <Action name="CBs_17">
+        <Down>CBs_Clicked(17)</Down>
+      </Action>
+      <Action name="CBs_18">
+        <Down>CBs_Clicked(18)</Down>
+      </Action>
+      <Action name="CBs_19">
+        <Down>CBs_Clicked(19)</Down>
+      </Action>
+      <Action name="CBs_20">
+        <Down>CBs_Clicked(20)</Down>
+      </Action>
+      <Action name="CBs_21">
+        <Down>CBs_Clicked(21)</Down>
+      </Action>
+      <Action name="CBs_22">
+        <Down>CBs_Clicked(22)</Down>
+      </Action>
+      <Action name="CBs_23">
+        <Down>CBs_Clicked(23)</Down>
+      </Action>
+      <Action name="CBs_24">
+        <Down>CBs_Clicked(24)</Down>
+      </Action>
+      <Action name="CBs_25">
+        <Down>CBs_Clicked(25)</Down>
+      </Action>
+      <Action name="CBs_26">
+        <Down>CBs_Clicked(26)</Down>
+      </Action>
+      <Action name="CBs_27">
+        <Down>CBs_Clicked(27)</Down>
+      </Action>
+      <Action name="CBs_28">
+        <Down>CBs_Clicked(28)</Down>
+      </Action>
+      <Action name="CBs_29">
+        <Down>CBs_Clicked(29)</Down>
+      </Action>
+      <Action name="CBs_30">
+        <Down>CBs_Clicked(30)</Down>
+      </Action>
+      <Action name="CBs_31">
+        <Down>CBs_Clicked(31)</Down>
+      </Action>
+      <Action name="CBs_32">
+        <Down>CBs_Clicked(32)</Down>
+      </Action>
+      <Action name="CBs_33">
+        <Down>CBs_Clicked(33)</Down>
+      </Action>
+      <Action name="CBs_34">
+        <Down>CBs_Clicked(34)</Down>
+      </Action>
+      <Action name="CBs_35">
+        <Down>CBs_Clicked(35)</Down>
+      </Action>
+      <Action name="CBs_36">
+        <Down>CBs_Clicked(36)</Down>
+      </Action>
+      <Action name="CBs_37">
+        <Down>CBs_Clicked(37)</Down>
+      </Action>
+      <Action name="CBs_38">
+        <Down>CBs_Clicked(38)</Down>
+      </Action>
+      <Action name="CBs_39">
+        <Down>CBs_Clicked(39)</Down>
+      </Action>
+      <Action name="CBs_40">
+        <Down>CBs_Clicked(40)</Down>
+      </Action>
+      <Action name="CBs_41">
+        <Down>CBs_Clicked(41)</Down>
+      </Action>
+      <Action name="CBs_42">
+        <Down>CBs_Clicked(42)</Down>
+      </Action>
+      <Action name="CBs_43">
+        <Down>CBs_Clicked(43)</Down>
+      </Action>
+      <Action name="CBs_44">
+        <Down>CBs_Clicked(44)</Down>
+      </Action>
+      <Action name="CBs_45">
+        <Down>CBs_Clicked(45)</Down>
+      </Action>
+      <Action name="CBs_46">
+        <Down>CBs_Clicked(46)</Down>
+      </Action>
+      <Action name="CBs_47">
+        <Down>CBs_Clicked(47)</Down>
+      </Action>
+      <Action name="CBs_48">
+        <Down>CBs_Clicked(48)</Down>
+      </Action>
+      <Action name="CBs_49">
+        <Down>CBs_Clicked(49)</Down>
+      </Action>
+      <Action name="CBs_50">
+        <Down>CBs_Clicked(50)</Down>
+      </Action>
+      <Action name="CBs_51">
+        <Down>CBs_Clicked(51)</Down>
+      </Action>
+      <Action name="CBs_52">
+        <Down>CBs_Clicked(52)</Down>
+      </Action>
+      <Action name="CBs_53">
+        <Down>CBs_Clicked(53)</Down>
+      </Action>
+      <Action name="CBs_54">
+        <Down>CBs_Clicked(54)</Down>
+      </Action>
+      <Action name="CBs_55">
+        <Down>CBs_Clicked(55)</Down>
+      </Action>
+      <Action name="CBs_56">
+        <Down>CBs_Clicked(56)</Down>
+      </Action>
+      <Action name="CBs_57">
+        <Down>CBs_Clicked(57)</Down>
+      </Action>
+      <Action name="CBs_58">
+        <Down>CBs_Clicked(58)</Down>
+      </Action>
+      <Action name="CBs_59">
+        <Down>CBs_Clicked(59)</Down>
+      </Action>
+      <Action name="CBs_60">
+        <Down>CBs_Clicked(60)</Down>
+      </Action>
+      <Action name="CBs_61">
+        <Down>CBs_Clicked(61)</Down>
+      </Action>
+      <Action name="CBs_62">
+        <Down>CBs_Clicked(62)</Down>
+      </Action>
+      <Action name="CBs_63">
+        <Down>CBs_Clicked(63)</Down>
+      </Action>
+      <Action name="CBs_64">
+        <Down>CBs_Clicked(64)</Down>
+      </Action>
+      <Action name="CBs_65">
+        <Down>CBs_Clicked(65)</Down>
+      </Action>
+      <Action name="CBs_66">
+        <Down>CBs_Clicked(66)</Down>
+      </Action>
+      <Action name="CBs_67">
+        <Down>CBs_Clicked(67)</Down>
+      </Action>
+      <Action name="CBs_68">
+        <Down>CBs_Clicked(68)</Down>
+      </Action>
+      <Action name="CBs_69">
+        <Down>CBs_Clicked(69)</Down>
+      </Action>
+      <Action name="CBs_70">
+        <Down>CBs_Clicked(70)</Down>
+      </Action>
+      <Action name="CBs_71">
+        <Down>CBs_Clicked(71)</Down>
+      </Action>
+      <Action name="CBs_72">
+        <Down>CBs_Clicked(72)</Down>
+      </Action>
+      <Action name="CBs_73">
+        <Down>CBs_Clicked(73)</Down>
+      </Action>
+      <Action name="CBs_74">
+        <Down>CBs_Clicked(74)</Down>
+      </Action>
+      <Action name="CBs_75">
+        <Down>CBs_Clicked(75)</Down>
+      </Action>
+      <Action name="CBs_76">
+        <Down>CBs_Clicked(76)</Down>
+      </Action>
+      <Action name="CBs_77">
+        <Down>CBs_Clicked(77)</Down>
+      </Action>
+      <Action name="CBs_78">
+        <Down>CBs_Clicked(78)</Down>
+      </Action>
+      <Action name="CBs_79">
+        <Down>CBs_Clicked(79)</Down>
+      </Action>
+      <Action name="CBs_80">
+        <Down>CBs_Clicked(80)</Down>
+      </Action>
+      <Action name="CBs_81">
+        <Down>CBs_Clicked(81)</Down>
+      </Action>
+      <Action name="CBs_82">
+        <Down>CBs_Clicked(82)</Down>
+      </Action>
+      <Action name="CBs_83">
+        <Down>CBs_Clicked(83)</Down>
+      </Action>
+      <Action name="CBs_84">
+        <Down>CBs_Clicked(84)</Down>
+      </Action>
+      <Action name="CBs_85">
+        <Down>CBs_Clicked(85)</Down>
+      </Action>
+      <Action name="CBs_86">
+        <Down>CBs_Clicked(86)</Down>
+      </Action>
+      <Action name="CBs_87">
+        <Down>CBs_Clicked(87)</Down>
+      </Action>
+      <Action name="CBs_88">
+        <Down>CBs_Clicked(88)</Down>
+      </Action>
+      <Action name="CBs_89">
+        <Down>CBs_Clicked(89)</Down>
+      </Action>
+      <Action name="CBs_90">
+        <Down>CBs_Clicked(90)</Down>
+      </Action>
+      <Action name="CBs_91">
+        <Down>CBs_Clicked(91)</Down>
+      </Action>
+      <Action name="CBs_92">
+        <Down>CBs_Clicked(92)</Down>
+      </Action>
+      <Action name="CBs_93">
+        <Down>CBs_Clicked(93)</Down>
+      </Action>
+      <Action name="CBs_94">
+        <Down>CBs_Clicked(94)</Down>
+      </Action>
+      <Action name="CBs_95">
+        <Down>CBs_Clicked(95)</Down>
+      </Action>
+      <Action name="CBs_96">
+        <Down>CBs_Clicked(96)</Down>
+      </Action>
+      <Action name="CBs_97">
+        <Down>CBs_Clicked(97)</Down>
+      </Action>
+      <Action name="CBs_98">
+        <Down>CBs_Clicked(98)</Down>
+      </Action>
+      <Action name="CBs_99">
+        <Down>CBs_Clicked(99)</Down>
+      </Action>
+      <Action name="CBs_100">
+        <Down>CBs_Clicked(100)</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

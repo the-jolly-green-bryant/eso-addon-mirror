@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kitkathy1994/Keep-Tracker__3360",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kitkathy1994",
+  "canonical_id": "esoui:3360",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3360",
+  "deleted": false,
+  "directories": [
+    "KeepTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3360/",
+  "fingerprint": "2a0202f987430b6d447217d2efcdc67c44f8c85547f571ef847b77cb6c10ef96",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11459.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3360",
+  "source_url": "https://www.esoui.com/downloads/info3360-KeepTracker.html",
+  "stats": {
+    "downloads": 1878,
+    "favorites": 4,
+    "monthly_downloads": 10
+  },
+  "title": "Keep Tracker",
+  "updated_at": 1652124095000,
+  "version": "1.0.2"
+}

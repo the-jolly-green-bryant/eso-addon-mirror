@@ -1,0 +1,26 @@
+## Title: Aethluna Antiquarian's Eye Helper
+## Author: Aethluna
+## APIVersion: 101050
+## AddOnVersion 10101
+## Version: 1.1.1
+## IsLibrary: false
+## SavedVariables: AAEH_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=43
+## Keybinds: AAEH_USE_EYE
+
+#Load language texts depending on the client's language
+Locales/en.lua
+Locales/$(language).lua
+
+#Addon XML
+AethlunaAntiquariansEyeHelper.xml
+
+#Keybindings
+bindings.xml
+
+#Addon base functions and code
+AethlunaAntiquariansEyeHelper.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

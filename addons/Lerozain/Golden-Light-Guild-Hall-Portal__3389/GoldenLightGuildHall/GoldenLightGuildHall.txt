@@ -1,0 +1,9 @@
+## Title: |cc9af28Golden |cc9af28Light |cFFFFFFGuild Hall
+## Author: Lerozain
+## Description: |cFFFFFFAccessing the GL Guild Hall is easier than ever. Click the added gold icon in your chat window to teleport, or use the added slash command /glhall - or keybind it!
+## Version: 1.0
+## APIVersion: 101034
+## SavedVariables: GoldenLightGuildHall
+## DependsOn: LibAddonMenu-2.0
+Bindings.xml
+GoldenLightGuildHall.lua

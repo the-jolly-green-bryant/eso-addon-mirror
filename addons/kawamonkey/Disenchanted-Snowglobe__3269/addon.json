@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/Disenchanted-Snowglobe__3269",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3269",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3269",
+  "deleted": false,
+  "directories": [
+    "DisenchantedSnowglobe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3269/",
+  "fingerprint": "90ced9da9d4abb7dbc2ed43e2eb66d4902db8605f9c336fc21ce10ff9c5c1de8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11116.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3269",
+  "source_url": "https://www.esoui.com/downloads/info3269-DisenchantedSnowglobe.html",
+  "stats": {
+    "downloads": 2308,
+    "favorites": 0,
+    "monthly_downloads": 14
+  },
+  "title": "Disenchanted Snowglobe",
+  "updated_at": 1639837464000,
+  "version": "1.0"
+}

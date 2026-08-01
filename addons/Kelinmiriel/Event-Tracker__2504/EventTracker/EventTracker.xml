@@ -1,0 +1,29 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="EVTFrame" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<OnMoveStop>
+				EVT.OnMoveStop()
+			</OnMoveStop>
+			<Controls>
+				<Texture name="$(parent)Icon">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="24" y="24" />
+				</Texture>
+				<Button name="$(parent)Info" inherits="ZO_ButtonBehaviorClickSound" >
+				<OnClicked>EVT.ShowDialog()</OnClicked>
+				<Dimensions x="30" y="30" />
+				<Anchor point="TOPRIGHT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+				<Textures
+					normal     ="EventTracker/tradebar48.dds"
+					pressed    ="EventTracker/tradebar48.dds"
+					mouseOver  ="EventTracker/tradebar48.dds"
+				/>
+				</Button>
+				<Label name="$(parent)Label" font="ZoFontHeader2" horizontalAlignment="LEFT" verticalAlignment="BOTTOM">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="3" offsetY="12"/>
+					<Dimensions y="96" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

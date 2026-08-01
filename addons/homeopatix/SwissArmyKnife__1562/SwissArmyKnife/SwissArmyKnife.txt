@@ -1,0 +1,64 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder ScrollsÆ and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: |cff0000Swiss|r|cffffffArmy|r|cff0000Knife|r
+## Description: Little information's board
+## Author: |c0080ffHomeo|r
+## Version: 5.7.2
+## APIVersion: 100031 100032
+## SavedVariables: SwissArmyKnife_Save
+## OptionalDependsOn: LibAddonMenu-2.0
+
+-- Library
+libs\LibStub\LibStub.lua
+
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\controls\submenu.lua
+libs\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\controls\colorpicker.lua
+libs\LibAddonMenu-2.0\controls\custom.lua
+libs\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\controls\dropdown.lua
+libs\LibAddonMenu-2.0\controls\editbox.lua
+libs\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\controls\slider.lua
+libs\LibAddonMenu-2.0\controls\texture.lua
+libs\LibAddonMenu-2.0\controls\iconpicker.lua
+libs\LibAddonMenu-2.0\controls\divider.lua
+
+-- Datas and Secondary Addon
+Add/KFVars.lua
+Add/KFInitialize.lua
+Add/KFSlashCommand.lua
+Add/KFCharacter.lua
+Add/KFMoneyBank.lua
+Add/KFRepairCost.lua
+Add/KFDisplay.lua
+Add/KFDisplayArmor.lua
+Add/KFThief.lua
+Add/KFMount.lua
+Add/KFAutoSell.lua
+Add/KFWritCrafting.lua
+Add/KFLocker.lua
+Add/KFBandDisplay.lua
+Add/KFAutoCharge.lua
+Add/KFStats.lua
+
+-- Main Addon
+SwissArmyKnife.lua
+SwissArmyKnife.xml
+lang\$(language).lua
+
+-- Small Displayer
+SAKDisplayWrit.xml
+
+-- KeyBinding
+Bindings.xml
+
+
+-- Settings
+Add/KFSettings.lua

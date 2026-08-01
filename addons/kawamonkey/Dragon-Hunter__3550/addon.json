@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/Dragon-Hunter__3550",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3550",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3550",
+  "deleted": false,
+  "directories": [
+    "DragonHunter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3550/",
+  "fingerprint": "817ce65d6906702dd86efc2109a02dce039e048f3afe796d70e98b3cd966cd67",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12049.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3550",
+  "source_url": "https://www.esoui.com/downloads/info3550-DragonHunter.html",
+  "stats": {
+    "downloads": 2784,
+    "favorites": 9,
+    "monthly_downloads": 7
+  },
+  "title": "Dragon Hunter",
+  "updated_at": 1674730696000,
+  "version": "1.0"
+}

@@ -1,0 +1,38 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: |cFFD700P|rersonal|cFFD700A|rssistant |cFFD700J|runk
+## Description: PAJunk marks items as junk for you and sells them at merchants.
+## Version: 2026.07.31
+## AddOnVersion: 20260731
+## Author: Klingo, |c3CB371@Masteroshi430|r
+## APIVersion: 101050 
+## SavedVariables: PersonalAssistantJunk_SavedVariables
+## DependsOn: PersonalAssistant
+## OptionalDependsOn: PersonalAssistantIntegration
+
+# Localization
+localization/en.lua
+localization/$(language).lua
+
+# Profiles
+Profiles/PAJunkSavedVarsPatcher.lua
+Profiles/PAJunkProfileManager.lua
+
+# Core
+PersonalAssistantJunk.lua
+
+# PAJunk
+PAJunk/PAJunk.lua
+PAJunk/PAJunkCustom.lua
+PAJunk/PAJunkKeybindStrip.lua
+
+# Menu
+Menu/PAJunkMenuDefaults.lua
+Menu/PAJunkMenuFunctions.lua
+Menu/PAJunkMenu.lua
+
+# Bindings
+bindings/Bindings.xml

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/m00nyONE/LibDataStructures__4001",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "m00nyONE",
+  "canonical_id": "esoui:4001",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4001",
+  "deleted": false,
+  "directories": [
+    "LibDataStructures"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4001/",
+  "fingerprint": "0ea09c744f8d7ebcfcb2365f13beeb14080dd4f77d142e31180ecdcd4d0923ee",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4001",
+  "source_url": "https://www.esoui.com/downloads/info4001-LibDataStructures.html",
+  "stats": {
+    "downloads": 17591,
+    "favorites": 0,
+    "monthly_downloads": 524
+  },
+  "title": "LibDataStructures",
+  "updated_at": 1733517098000,
+  "version": "2024.12.06"
+}

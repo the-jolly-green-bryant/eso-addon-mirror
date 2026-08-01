@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/MrPikPik/Added-Info---Raid-Info-Panel__3026",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:3026",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3026",
+  "deleted": false,
+  "directories": [
+    "AddedInfoRaidInfo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3026/",
+  "fingerprint": "51f3a683c4fad0a2dcfbc3fd5772a612acbea9e15f036eb584fca6daf56b8c1a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10165.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3026",
+  "source_url": "https://www.esoui.com/downloads/info3026-AddedInfo-RaidInfoPanel.html",
+  "stats": {
+    "downloads": 4317,
+    "favorites": 4,
+    "monthly_downloads": 23
+  },
+  "title": "Added Info - Raid Info Panel",
+  "updated_at": 1655569871000,
+  "version": "1.2.2"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/manavortex/Update-Furniture-Cache__1597",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1597",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:1597",
+  "deleted": false,
+  "directories": [
+    "UpdateFurnitureCache"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1597/",
+  "fingerprint": "6e254f9e534cd7101917e30c34226c72dc5dc23796dd9f672ef27ab4e34297aa",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1597",
+  "source_url": "https://www.esoui.com/downloads/info1597-UpdateFurnitureCache.html",
+  "stats": {
+    "downloads": 3420,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "Update Furniture Cache",
+  "updated_at": 1486507343000,
+  "version": "1.0"
+}

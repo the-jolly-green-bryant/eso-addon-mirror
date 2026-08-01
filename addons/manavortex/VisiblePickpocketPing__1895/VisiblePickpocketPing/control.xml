@@ -1,0 +1,34 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="VisiblePickpocketingIndicator" resizeHandleSize="8" mouseEnabled="true" movable="true" hidden="true">
+			<Anchor point= "TOPLEFT" relativeTo="GUIROOT" relativePoint="TOPLEFT"  /> 
+			<Dimensions x="500" y="500" />
+			<OnMoveStop>
+				VisiblePickpocketPing.SaveControl()
+			</OnMoveStop>	
+			<OnResizeStop>
+				VisiblePickpocketPing.SaveControl()
+			</OnResizeStop>			
+			<Controls>
+			
+				 <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" >
+				  <AnchorFill/>
+				  <Edge edgeSize="1"/>
+				</Backdrop>
+				
+				<Texture name="$(parent)Tex" textureFile="esoui/art/treeicons/tutorial_idexicon_thievesguild_down.dds" color="42f445"> 		
+					<Anchor point= "TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"  /> 
+					<Anchor point= "BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT"  /> 
+				</Texture>
+				
+				<Button name="$(parent)LockButton" inherits="ZO_DefaultButton" font="ZoFontWinH4" text="lock">	
+						<Dimensions x="200" y="50" />
+						<Anchor point= "TOP" relativeTo="$(parent)" relativePoint="TOP"  /> 
+						<OnMouseUp>VisiblePickpocketPing.SetLocked(true)</OnMouseUp>
+				</Button>
+				
+			</Controls>
+			
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

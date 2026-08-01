@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/harog/Effective-Damage__3975",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "harog",
+  "canonical_id": "esoui:3975",
+  "category_id": "149",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:3975",
+  "deleted": false,
+  "directories": [
+    "EffectiveDamage"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3975/",
+  "fingerprint": "79b227315dcf9359345e3ba99372b26203bc16ee7a4335c096c4b6db46d96ac7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13487.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3975",
+  "source_url": "https://www.esoui.com/downloads/info3975-EffectiveDamage.html",
+  "stats": {
+    "downloads": 2536,
+    "favorites": 2,
+    "monthly_downloads": 38
+  },
+  "title": "Effective Damage",
+  "updated_at": 1741621828000,
+  "version": "1.5"
+}

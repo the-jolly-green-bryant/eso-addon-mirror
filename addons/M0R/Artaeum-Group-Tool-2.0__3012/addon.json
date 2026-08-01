@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/M0R/Artaeum-Group-Tool-2.0__3012",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "M0R",
+  "canonical_id": "esoui:3012",
+  "category_id": "96",
+  "compatibility": [],
+  "content_id": "esoui:3012",
+  "deleted": false,
+  "directories": [
+    "ArtaeumGroupTool"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3012/",
+  "fingerprint": "d3d02e975f58304f4ccfa42f3bf44d1656357af99120523d3e6eea062d8b24ca",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14078.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3012",
+  "source_url": "https://www.esoui.com/downloads/info3012-ArtaeumGroupTool2.0.html",
+  "stats": {
+    "downloads": 13811,
+    "favorites": 13,
+    "monthly_downloads": 150
+  },
+  "title": "Artaeum Group Tool 2.0",
+  "updated_at": 1777663670000,
+  "version": "5.0.2"
+}

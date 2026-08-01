@@ -1,0 +1,12 @@
+<GuiXml>
+    <Controls>
+        <Control name="MSRT_GamepadTooltip2" virtual="true">
+            <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-25" />
+            <Controls>
+                <Control name="$(parent)Tip" inherits="ZO_Tooltip" tier="MEDIUM">
+                    <Anchor point="TOP" offsetY="0" />
+                </Control>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

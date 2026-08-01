@@ -1,0 +1,28 @@
+
+<GuiXml>
+    <Controls>
+        <Backdrop name="AutoEnchant" mouseEnabled="true" clampedToScreen="true" movable="true" edgeColor="aa000000" centerColor="aa000000" alpha="1">
+            <Dimensions x="100" y="100"/>
+            <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+            <Edge edgeSize="2"/>
+            <Controls>
+                <Button name="$(parent)Main" inherits="Auto_Object">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                </Button>
+
+                <Button name="$(parent)Off" inherits="Auto_Object" >
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+                </Button>
+
+
+                <Button name="$(parent)BackMain" inherits="Auto_Object">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT"/>
+                </Button>
+
+                <Button name="$(parent)BackOff" inherits="Auto_Object" >
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+                </Button>
+            </Controls>
+        </Backdrop>
+    </Controls>
+</GuiXml>

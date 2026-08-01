@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/loosej/Armory-Style-Manager-for-Update-44__3949",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "loosej",
+  "canonical_id": "esoui:3949",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:3949",
+  "deleted": false,
+  "directories": [
+    "ArmoryStyleManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3949/",
+  "fingerprint": "04ef0036cef6021b3e031a9ea3cd9404862bcb2e9e9c8be260ea6fde7c2dab74",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13437.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13438.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13439.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13440.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13441.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13442.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3949",
+  "source_url": "https://www.esoui.com/downloads/info3949-ArmoryStyleManagerforUpdate44.html",
+  "stats": {
+    "downloads": 7708,
+    "favorites": 16,
+    "monthly_downloads": 126
+  },
+  "title": "Armory Style Manager (for Update 44)",
+  "updated_at": 1735581749000,
+  "version": "0.15.1"
+}

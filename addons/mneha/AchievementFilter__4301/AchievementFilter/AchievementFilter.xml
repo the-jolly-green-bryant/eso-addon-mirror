@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GuiXml>
+    <Controls>
+        <!-- Simple scroll list row with a label that fills the row -->
+        <Control name="AchievementFilterRow" virtual="true" mouseEnabled="true">
+            <Dimensions x="0" y="28" />
+            <Controls>
+                <Label name="$(parent)Label"
+                       font="ZoFontGame"
+                       wrapMode="ELLIPSIS"
+                       verticalAlignment="CENTER"
+                       horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="0"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-8" offsetY="0"/>
+                </Label>
+            </Controls>
+        </Control>
+        <!-- Table row with multiple columns -->
+        <Control name="AchievementFilterTableRow" virtual="true" mouseEnabled="true">
+            <Dimensions x="0" y="40"/>
+            <Controls>
+                <Texture name="$(parent)Hover" textureFile="EsoUI/Art/Miscellaneous/listItem_highlight.dds" hidden="true">
+                    <AnchorFill/>
+                    <TextureCoords left="0" right="1" top="0" bottom=".625"/>
+                </Texture>
+                <Texture name="$(parent)Icon" pixelRoundingEnabled="true">
+                    <Dimensions x="24" y="24"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="4" offsetY="0"/>
+                </Texture>
+                <Label name="$(parent)Title" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="350" y="40"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)Source" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="300" y="40"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="390" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)RewardType" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="110" y="40"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="700" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)RewardName" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="420" y="40"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="820" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)Points" font="ZoFontGame" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                    <Dimensions x="50" y="40"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="1250" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)Progress" font="ZoFontGame" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="130" y="40"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="1310" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)Status" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="90" y="40"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="1470" offsetY="0"/>
+                </Label>
+            </Controls>
+        </Control>
+
+    </Controls>
+</GuiXml>

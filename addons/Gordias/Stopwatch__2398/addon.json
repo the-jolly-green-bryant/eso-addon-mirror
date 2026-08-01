@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Gordias/Stopwatch__2398",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Gordias",
+  "canonical_id": "esoui:2398",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    }
+  ],
+  "content_id": "esoui:2398",
+  "deleted": false,
+  "directories": [
+    "Stopwatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2398/",
+  "fingerprint": "70da969d60f1b390109539dc76ea7668e66f97e2e0fb7df5ce73394ff72dcc60",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8161.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8159.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8160.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2398",
+  "source_url": "https://www.esoui.com/downloads/info2398-Stopwatch.html",
+  "stats": {
+    "downloads": 3961,
+    "favorites": 3,
+    "monthly_downloads": 16
+  },
+  "title": "Stopwatch",
+  "updated_at": 1567905293000,
+  "version": "1.1"
+}

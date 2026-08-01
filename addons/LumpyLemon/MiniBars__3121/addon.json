@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/LumpyLemon/MiniBars__3121",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "LumpyLemon",
+  "canonical_id": "esoui:3121",
+  "category_id": "21",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3121",
+  "deleted": false,
+  "directories": [
+    "MiniBars"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3121/",
+  "fingerprint": "b6d66d5bb9c737b51118b70702e91eae6f1ebc60c66415f824ce9c764ba3a78b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10560.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10561.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3121",
+  "source_url": "https://www.esoui.com/downloads/info3121-MiniBars.html",
+  "stats": {
+    "downloads": 4236,
+    "favorites": 9,
+    "monthly_downloads": 15
+  },
+  "title": "MiniBars",
+  "updated_at": 1624633643000,
+  "version": "0.3"
+}

@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Subtitles__339",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:339",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:339",
+  "deleted": false,
+  "directories": [
+    "HarvensSubtitleAddon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl339/",
+  "fingerprint": "8a46a1459ae123fa87cf0765fa333aacdcb631f3d26db1aba596039d0a631468",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw984.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw904.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw939.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw985.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1306.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "339",
+  "source_url": "https://www.esoui.com/downloads/info339-HarvensSubtitles.html",
+  "stats": {
+    "downloads": 75634,
+    "favorites": 154,
+    "monthly_downloads": 81
+  },
+  "title": "Harven's Subtitles",
+  "updated_at": 1758461403000,
+  "version": "2.0.4"
+}

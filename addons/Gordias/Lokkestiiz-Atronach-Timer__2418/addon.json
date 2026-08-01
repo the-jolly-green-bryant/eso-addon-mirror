@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Gordias/Lokkestiiz-Atronach-Timer__2418",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Gordias",
+  "canonical_id": "esoui:2418",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    }
+  ],
+  "content_id": "esoui:2418",
+  "deleted": false,
+  "directories": [
+    "LokkestiizAtronachTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2418/",
+  "fingerprint": "45cbfd6db3ed96c8fba2cdb3ecb370acf33c79e04f0794748f3d0e606b2d352f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8237.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8236.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2418",
+  "source_url": "https://www.esoui.com/downloads/info2418-LokkestiizAtronachTimer.html",
+  "stats": {
+    "downloads": 2894,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "Lokkestiiz Atronach Timer",
+  "updated_at": 1567263633000,
+  "version": "1.01"
+}

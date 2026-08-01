@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Hyborem/Flowers-She-Likes-Fixed-Modernized---original-by-Ayantir__4398",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hyborem",
+  "canonical_id": "esoui:4398",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4398",
+  "deleted": false,
+  "directories": [
+    "FlowersSheLikes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4398/",
+  "fingerprint": "6c2abf8a226830889728f6bd3029b8ac47b9f6147dcdeb1d374a0f089886f19d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4398",
+  "source_url": "https://www.esoui.com/downloads/info4398-FlowersSheLikesFixedModernized-originalbyAyantir.html",
+  "stats": {
+    "downloads": 215,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "Flowers She Likes (Fixed & Modernized) - original by Ayantir",
+  "updated_at": 1774882071000,
+  "version": "v.14.2"
+}

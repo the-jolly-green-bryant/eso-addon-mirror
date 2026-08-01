@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Kyoma/Kyoma-s-Repair-n-Recharge__1828",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyoma",
+  "canonical_id": "esoui:1828",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    }
+  ],
+  "content_id": "esoui:1828",
+  "deleted": false,
+  "directories": [
+    "kyoRepairAndRecharge"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1828/",
+  "fingerprint": "862634fa37855faddf37a075e85fcfa9f6bb240a0c6e8e26489ec3a4a9a3e791",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6191.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1828",
+  "source_url": "https://www.esoui.com/downloads/info1828-KyomasRepairnRecharge.html",
+  "stats": {
+    "downloads": 30288,
+    "favorites": 31,
+    "monthly_downloads": 53
+  },
+  "title": "Kyoma's Repair 'n Recharge",
+  "updated_at": 1508523583000,
+  "version": "1.1"
+}

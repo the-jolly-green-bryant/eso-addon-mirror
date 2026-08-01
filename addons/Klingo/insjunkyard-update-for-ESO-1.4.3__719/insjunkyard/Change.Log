@@ -1,0 +1,157 @@
+insJunkyard change Log
+========================
+v1.03	- 2014-09-20
+* ESO 1.4.3 APIVersion update
+
+v1.02a	- 2014-09-03
+* GetBagInfo fix
+
+v1.02	- 2014-08-25
+* ESO 1.3.3 fix
+
+v1.0a1	- 2014-05-01
+[Added]
+* Option to have the junkmark list global or per character (/jy set globaljunk)
+* Option to delete everything on the mark list. (/jy delmark all)
+* "dm" as an option instead of typing "delmark"
+
+[Bugfix]
+* (More) input validation on /jy delmark
+* Fixed the listbox selection for quality levels
+* Small bug with party loot output.
+
+ 0.9999 2014-04-28 
+ [BugFix:] (I hope).
+ Some problems with all the settings being reset and either set to all TRUE or all FALSE. 
+ I hopefully fixed it. 
+
+ 0.999 2014-04-27 
+ [New:]
+ +Not yet a full rewrite, but I did spend two days getting a setup screen working without using LibAddonMenu
+ as I didn't want the list to grow any larger.  Type '/junkyard setup' to use it.
+ 
+ [New:]
+ + Autodestrction of 0 value, marked and junked items when low inventory
+   "/junkyard set destroy"
+ 
+ [New:]
+ + GLOBAL or Character-specific settings. (Yes, this will destroy your savedvariables).
+   "/junkyard set global" to toggle it.
+   Remember to RELOAD THE UI _AND_ confirm your settings after using this option.
+ 
+ [New:]
+ + Added a itemstrip function to get a lot of itemdata. This will be used in a future update that will
+ destroy your JUNK list but also make it more 'flexible'. 
+
+ [New:]
+ + Toggle to see the welcome message on addon loading or not.
+   /junkyard set welcome
+
+ [Change:]
+ * Changed some of the "/jy list" listings to include more information about the items, such as
+ the trait, value and type of item. Did you know there are two types of Disguises for example.
+ 
+ 
+
+ 0.99  2014-04-22
+ [Bugfix:]
+ +Apparently using global variables and function names is not a good idea, as this addon and other unnamed
+ addons also using global variables ran into a bit of a fight.
+
+ Change:
+ +Redid everything to local, then had to swap things around as they were refering to functions that didn't exist yet. 
+ What came first, the function or the call? Well, with Globals it doesn't matter, with locals it does.
+ 			
+
+ 0.98  [NEW] With "/junkyard set auto" option enabled, any time you add an item to JUNK through the UI, it will 
+       automatically be added to the Junkyard list, so it will be remembered for other gaming sessions.
+       This also works the other way, so if you remove something from 'junk' it will also be removed from the MARK list.
+       
+       [NEW] Added a option to /Junkyard set trait #0-5<- which identifies the item quality the trait must be equal to or 
+       below for it to be auto-added to the junk list.
+       
+       [NEW] Shortcut /jy added in addition to /junkyard -- save you all that typing. :)
+       
+       [CHANGE] If an item is "TRASH" item, and is autojunked, it will not be added to the MARK list, since the 
+       whole purpose of the addon as for these items to be Junked to begin with. (Should make the MARK list shorter)
+          + Need to change how this works in v2.x 
+          
+       I really should get an option menu for this soon..
+       
+
+ 0.97  [CHANGE] Had to redo the saved-variables as I suspect another addon used the same name which might have caused problems.
+       [CHANGE] Changed the way inventory size warnings work. 
+
+ 0.96  [NEW] Toggle for messages when items are added to junk (/junkyard set junkspam)
+ 			 [NEW] Now shows 'stack count' for stackable items (those that go to 100) when looted.
+ 			        Note: Might bug if you have multiple stacks of 100. 
+       [CHANGE] Toggle for item sale feedback moved to (/junkyard set salespam)      
+       [CHANGE] Items added to junk list are now "Links" instead of "Names". Hopefully this means
+       that "Cake"(gray) and "Cake"(white) are no longer mistaken for the same "cake". 
+       We all know Pie is better anyway. Blueberry pie. 
+       [CHANGE] Savedvariables has changed, so all settings had to be reset.
+       (I added a few extra "backup settings" so maybe I wont have to reset this again as I can reuse them)
+
+ 0.95  [NEW] Toggle automarking items with "Sell to vendor for % more" as junk (/junkyard set trait)
+       [NEW] Added (/junkyard help) for help text. (Currently it only tells you to read this read.me)
+       [CHANGE] Savedvariable setup. After this you'll only need to redo your settings when there are options added.
+       [CHANGE] (/junkyard set) will now show all the settings available (and the current value)
+       (moved it out from the default /junkyard command list to reduce spam.)
+       
+
+ 0.94  [NEW] Autojunk will now also add items with the trait
+       "This item will sell to vendors for 125%" etc. to the junk. 
+       (This option may not add every item with these traits, please send
+       a bug report when it does so I can troubleshoot it. )
+
+ 0.92  [BUGFIX] Pesky bug. Had a slight error that caused the mark list fail
+       on anything but the first entry.
+
+ 0.91  [BUGFIX] Fixed a bug with the saving of the marked list :-(
+       [ADDED] A listing option to see items of a particular quality 
+        /junkyard list q #
+              0  = trash
+              1  = normal
+              2  = magical
+              3  = superior
+              4  = epic
+              5  = legendary          
+
+ 0.9   [NEW] Added option "/junkyard add all" to add ALL ITEMS you currently have
+       in your junk inventory to the autojunk list.
+       
+ 0.85- [NEW] Save a list of items to be marked as junk
+       [NEW] Add items to list of items to be marked as junk
+       [NEW] Remove items from auto+junk list. (TRASH items will be marked regardless)
+       [CHANGE] Modified the LIST and LIST ALL output to include Item Quality and ID.
+       [CHANGE] Inventory Size warnings set on a 40 second timer. Hopefully.
+
+ 0.7 - [NEW] Configure Autosell ON/OFF
+       [NEW] Configure Inventory size warning (0 disables). 
+       [CHANGE] Some output changes
+
+ 0.6c- [BUGFIX] Renamed Readme.txt to Read.ME as the game thinks all TXT 
+       files are addons.
+
+ 0.6b- [BUGFIX] Local Colours are bad, Globals are bad too - Seems like there
+       is no such thing as magic. (: 
+       Easter egg bug found by ESOUI@Graywind! Thanks.
+       
+ 0.6 - [NEW]More configuration options
+       * Automark TRASH as Junk (/junkyard set junkyard)
+       * Vendor feedbar per item (/junkyard set spam)
+       * Vendor summary on store exit (/junkyard set vendor)
+       * Loot messages in chat (/junkyard set loot)
+       * Loot messages from party members (/junkyard set party)
+       
+       [CHANGE]Internal code for handling input events
+       [CHANGE]Did some things with the output to make it more magic
+
+ 0.5 - [NEW]Automark TRASH ITEMS as JUNK. (/wave to ESOUI@Ayuki & ESOUI@Garkin)
+
+ 0.4 - [NEW]Toggle chat spam on/off
+       * [BONUS FEATURE] Save the setting! 
+       [NEW]List all inventory items
+       [NEW]List all JUNK items in inventory     
+
+ 0.2 - Bugfix: Clear the junk history on vendor exit.

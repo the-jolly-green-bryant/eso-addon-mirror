@@ -1,0 +1,6 @@
+## Title: No Auto Pinned Golden Pursuits
+## Author: Kawamonkey
+## APIVersion: 101044
+## Version: 1.0
+
+NoAutoPinnedGoldenPursuits.lua

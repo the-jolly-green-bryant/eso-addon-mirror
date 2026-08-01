@@ -1,0 +1,142 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="TXMWindow" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOM" offsetX="0" offsetY="-196"/>
+            <Dimensions x="380" y="150" />
+			
+			<OnInitialized>
+				Taximeter_Initialize(self)
+			</OnInitialized>
+
+
+			<Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" edgeColor="88FFFFFF" alpha="0.5"/>
+				<Control name="$(parent)Title">
+					<Anchor point="TOPLEFT" />
+                    <Anchor point="TOPRIGHT" />
+					<Dimensions y="30" />
+					<Controls>
+						<Label name="$(parent)Heading" horizontalAlignment="CENTER" font="ZoFontGameLarge" text="Taximeter">    
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+                            <Dimensions y="20"/>
+                        </Label>
+						<Button name="$(parent)Close">
+                            <Anchor point="TOPRIGHT"  offsetX="-5" offsetY="5"/>
+                            <OnClicked>Taximeter_ToggleWindow()</OnClicked>
+                            <Dimensions x="25" y="25" />
+                            <Textures normal="/esoui/art/buttons/decline_up.dds" pressed="/esoui/art/buttons/decline_down.dds" mouseOver="/esoui/art/buttons/decline_over.dds" />
+                        </Button>
+					</Controls>
+                </Control>
+                
+                <Control name="$(parent)Base">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="10"/>
+                    <Dimensions x="300" y="20"/>
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontGameLarge" text="TXM_BASE_FARE">    
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                            <Dimensions x="125" y="20"/>
+                        </Label>
+								
+						<Label name="$(parent)Amount" horizontalAlignment="RIGHT" font="ZoFontGameLarge">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT"/>
+                            <Dimensions x="80" y="20"/>
+						</Label>
+						
+						<Label name="$(parent)Mult" font="ZoFontGameLarge" text="1">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Amount" relativePoint="TOPRIGHT" offsetX="5"/>
+                            <Dimensions x="75" y="20"/>
+						</Label>
+						
+						<Label name="$(parent)Total" font="ZoFontGameLarge" text="">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Mult" relativePoint="TOPRIGHT" offsetX="5"/>
+                            <Dimensions x="100" y="20"/>
+						</Label>
+                    </Controls>
+                </Control>
+				
+				<Control name="$(parent)Fare">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Base" relativePoint="BOTTOMLEFT"/>
+                    <Dimensions x="300" y="20"/>
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontGameLarge" text="TXM_DIST_FARE">    
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                            <Dimensions x="125" y="20"/>
+                        </Label>
+						
+						<Label name="$(parent)Amount" horizontalAlignment="RIGHT" font="ZoFontGameLarge">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT"/>
+                            <Dimensions x="80" y="20"/>
+						</Label>
+						
+						<Label name="$(parent)Mult" font="ZoFontGameLarge">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Amount" relativePoint="TOPRIGHT" offsetX="5"/>
+                            <Dimensions x="75" y="20"/>
+						</Label>
+						
+						<Label name="$(parent)Total" font="ZoFontGameLarge" text=" = XXXX">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Mult" relativePoint="TOPRIGHT" offsetX="5"/>
+                            <Dimensions x="100" y="20"/>
+						</Label>
+                    </Controls>
+                </Control>
+				
+				<Control name="$(parent)Time">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Fare" relativePoint="BOTTOMLEFT"/>
+                    <Dimensions x="300" y="20"/>
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontGameLarge" text="TXM_TIME_FARE">    
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                            <Dimensions x="125" y="20"/>
+                        </Label>
+						
+						<Label name="$(parent)Amount" horizontalAlignment="RIGHT" font="ZoFontGameLarge">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT"/>
+                            <Dimensions x="80" y="20"/>
+						</Label>
+						
+						<Label name="$(parent)Mult" font="ZoFontGameLarge">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Amount" relativePoint="TOPRIGHT" offsetX="5"/>
+                            <Dimensions x="75" y="20"/>
+						</Label>
+						
+						<Label name="$(parent)Total" font="ZoFontGameLarge" text=" = XXXX">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Mult" relativePoint="TOPRIGHT" offsetX="5"/>
+                            <Dimensions x="100" y="20"/>
+						</Label>
+                    </Controls>
+                </Control>
+				
+				<Control name="$(parent)Total">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Time" relativePoint="BOTTOMLEFT"/>
+                    <Dimensions x="200" y="20"/>
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontGameLarge" text="Total">    
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                            <Dimensions x="125" y="20"/>
+                        </Label>
+						
+						<Label name="$(parent)Total" font="ZoFontGameLarge" text=" = XXXX">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT" offsetX="165"/>
+                            <Dimensions x="100" y="20"/>
+						</Label>
+                    </Controls>
+                </Control>
+				
+				<Button name="$(parent)ResetButton" inherits="ZO_DefaultButton">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Total" relativePoint="BOTTOMLEFT" offsetY="5"/>
+					<Dimensions x="175"/>
+					<OnInitialized>self:SetText(GetString(TXM_BTN_RESET))</OnInitialized>
+					<OnClicked>Taximeter_Reset()</OnClicked>
+				</Button>
+				<Button name="$(parent)SendButton" inherits="ZO_DefaultButton">
+					<Anchor point="LEFT" relativeTo="$(parent)ResetButton" relativePoint="RIGHT" offsetX="10"/>
+					<Dimensions x="175"/>
+					<OnInitialized>self:SetText(GetString(TXM_BTN_BILL))</OnInitialized>
+					<OnClicked>Taximeter_SendBill()</OnClicked>
+				</Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

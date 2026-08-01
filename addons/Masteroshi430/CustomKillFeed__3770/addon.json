@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Masteroshi430/CustomKillFeed__3770",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:3770",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3770",
+  "deleted": false,
+  "directories": [
+    "CustomKillFeed"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3770/",
+  "fingerprint": "5724ab063d54ce99c65db65e902846d79e3b929c58191d02efefe671f5e57de7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12770.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12771.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3770",
+  "source_url": "https://www.esoui.com/downloads/info3770-CustomKillFeed.html",
+  "stats": {
+    "downloads": 3202,
+    "favorites": 3,
+    "monthly_downloads": 90
+  },
+  "title": "CustomKillFeed",
+  "updated_at": 1783356794000,
+  "version": "2026.07.06"
+}

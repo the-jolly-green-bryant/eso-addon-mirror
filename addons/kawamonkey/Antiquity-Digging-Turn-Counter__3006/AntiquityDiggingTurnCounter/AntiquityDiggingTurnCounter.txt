@@ -1,0 +1,5 @@
+## Title: Antiquity Digging Turn Counter
+## Author: Kawamonkey
+## APIVersion: 100034
+
+AntiquityDiggingTurnCounter.lua

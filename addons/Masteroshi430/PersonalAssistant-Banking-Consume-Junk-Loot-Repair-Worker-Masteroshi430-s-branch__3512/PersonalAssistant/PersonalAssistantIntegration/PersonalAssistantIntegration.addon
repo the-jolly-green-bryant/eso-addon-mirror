@@ -1,0 +1,33 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: |cFFD700P|rersonal|cFFD700A|rssistant |cFFD700I|rntegration
+## Description: PAIntegration can bring additional features by integrating other addons such as FCO ItemSaver
+## Version: 2026.07.31
+## AddOnVersion: 20260731
+## Author: Klingo, |c3CB371@Masteroshi430|r
+## APIVersion: 101050 
+## SavedVariables: PersonalAssistantIntegration_SavedVariables
+## DependsOn: PersonalAssistant
+## OptionalDependsOn: DolgubonsLazyWritCreator FCOItemSaver>=221 LibCharacterKnowledge>=11
+
+# Localization
+localization/en.lua
+localization/$(language).lua
+
+# Profiles
+Profiles/PAIntegrationSavedVarsPatcher.lua
+Profiles/PAIntegrationProfileManager.lua
+
+# Core
+PersonalAssistantIntegration.lua
+
+# PAIntegration
+# PAIntegration/PAIntegrationXYU.lua
+
+# Menu
+Menu/PAIntegrationMenuDefaults.lua
+Menu/PAIntegrationMenuFunctions.lua
+Menu/PAIntegrationMenu.lua

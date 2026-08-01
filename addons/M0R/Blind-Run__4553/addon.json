@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/M0R/Blind-Run__4553",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "M0R",
+  "canonical_id": "esoui:4553",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4553",
+  "deleted": false,
+  "directories": [
+    "BlindRun"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4553/",
+  "fingerprint": "6b6433e276417cfcbe793ec9fa21aebc56743b3b3b139c32287c98c31d5e52e8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15932.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4553",
+  "source_url": "https://www.esoui.com/downloads/info4553-BlindRun.html",
+  "stats": {
+    "downloads": 127,
+    "favorites": 3,
+    "monthly_downloads": 40
+  },
+  "title": "Blind Run",
+  "updated_at": 1777531415000,
+  "version": "1.0"
+}

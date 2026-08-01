@@ -1,0 +1,21 @@
+﻿## Title: WheresMyGuildHall
+## Author: Shadowfen
+## Version: 2.1.2
+## APIVersion: 100028 100029
+## DependsOn: LibSFUtils LibAddonMenu-2.0
+## SavedVariables: WheresMyGuildHallVars
+
+; Localisation\en must always be loaded because it is the fall-back (default) language
+Localisation\en.lua
+Localisation\$(language).lua
+
+Controls.xml
+WheresMyGuildHall.lua
+Settings.lua
+
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

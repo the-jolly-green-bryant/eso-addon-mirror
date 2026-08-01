@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Halja/ESOTheater__59",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Halja",
+  "canonical_id": "esoui:59",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:59",
+  "deleted": false,
+  "directories": [
+    "ESOTheater"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl59/",
+  "fingerprint": "0dede64a757e20fa1883b8516b843514554313d12c1335e429c91cbe7285e5db",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw940.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw941.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw942.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw331.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw943.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "59",
+  "source_url": "https://www.esoui.com/downloads/info59-ESOTheater.html",
+  "stats": {
+    "downloads": 203429,
+    "favorites": 309,
+    "monthly_downloads": 82
+  },
+  "title": "ESOTheater",
+  "updated_at": 1477172717000,
+  "version": "0.4.8"
+}

@@ -1,0 +1,23 @@
+## Title: JoGroup
+## APIVersion: 100034 100035
+## Author: @lwndow, @Deandra & JoyceKimberly
+## AddOnVersion: 191
+## Version: 1.9.1
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: JoGroupVars
+
+lang/en.lua
+lang/$(language).lua
+
+JoGroup_Defaults.lua
+JoGroup_Controls.lua
+JoGroup_Buffs.lua
+JoGroup_Notifications.lua
+JoGroup.lua
+JoGroup_Settings.lua
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

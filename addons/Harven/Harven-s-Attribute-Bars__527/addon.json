@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Attribute-Bars__527",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:527",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:527",
+  "deleted": false,
+  "directories": [
+    "HarvensAttributeBars"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl527/",
+  "fingerprint": "0776a6b9aab766b1f2fb7ced24d0801c147e99cfbcc4b218468fe4e338973d5e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1575.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1576.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "527",
+  "source_url": "https://www.esoui.com/downloads/info527-HarvensAttributeBars.html",
+  "stats": {
+    "downloads": 27024,
+    "favorites": 63,
+    "monthly_downloads": 26
+  },
+  "title": "Harven's Attribute Bars",
+  "updated_at": 1585511193000,
+  "version": "1.6a"
+}

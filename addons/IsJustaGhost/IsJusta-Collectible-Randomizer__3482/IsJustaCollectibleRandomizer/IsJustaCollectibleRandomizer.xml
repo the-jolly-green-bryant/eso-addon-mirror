@@ -1,0 +1,22 @@
+<GuiXml>
+	<Controls>
+	
+		<Control name="IJA_CollectibleRandomizerTile_Keyboard_Control" mouseEnabled="true" inherits="ZO_CollectibleImitationTile_Keyboard_Control" virtual="true">
+			<OnInitialized>
+				IJA_COLLECTIBLERANDOMIZER:InitializeKeyboardImitationTile(self)
+			</OnInitialized>
+		</Control>
+		
+		<Control name="IJA_CollectibleTile_Keyboard_Control" mouseEnabled="true" inherits="ZO_CollectibleImitationTile_Keyboard_Control" virtual="true">
+			<OnInitialized>
+				IJA_COLLECTIBLERANDOMIZER:InitializeKeyboardTile(self)
+			</OnInitialized>
+		</Control>
+		
+		<TopLevelControl name="IJA_CollectibleRandomizer" hidden="true">
+			<OnInitialized>
+				IJA_CollectibleRandomizer_Initialize(self)
+			</OnInitialized>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

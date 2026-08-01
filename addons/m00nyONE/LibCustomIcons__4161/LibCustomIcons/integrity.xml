@@ -1,0 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2025 m00nyONE
+SPDX-License-Identifier: Artistic-2.0
+-->
+
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="LibCustomIcons_IntegrityCheck" mouseEnabled="true" movable="true" resizeToFitDescendents="true" clampedToScreen="true" hidden="true">
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

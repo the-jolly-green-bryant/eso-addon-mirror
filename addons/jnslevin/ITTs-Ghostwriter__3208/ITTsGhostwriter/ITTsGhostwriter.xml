@@ -1,0 +1,253 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+
+	<Controls>
+		<!-- Every control's name must be _unique_. -->
+		<Button name="GW_button" inherits="ZO_DefaultButton" text="Backup Notes" hidden="true">
+			<OnClicked>ITTsGhostwriter.GuildRoster.BackupNotes(GUILD_ROSTER_MANAGER:GetGuildId())</OnClicked>
+
+			<OnInitialized> self:SetParent(ZO_GuildRoster) </OnInitialized>
+			<Anchor point="LEFT" relativeTo="ZO_GuildRosterHideOffline" relativePoint="LEFT" offsetX="-135" offsetY="0" />
+		</Button>
+		<TopLevelControl name="GW_NotePad" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="1000" y="500" />
+			<OnMoveStop>ITTsGhostwriter.UI.UpdateNotePadPosition()</OnMoveStop>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="50" offsetY="50" />
+			<Controls>
+				<Button name="$(parent)_HideWindow" inherits="ZO_ButtonBehaviorClickSound">
+					<OnClicked>ITTsGhostwriter.UI.HideNotePad()</OnClicked>
+					<Dimensions x="30" y="30" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+					<Textures
+						normal="/esoui/art/buttons/decline_up.dds"
+						pressed="/esoui/art/buttons/decline_down.dds"
+						mouseOver="/esoui/art/buttons/decline_over.dds"
+					/>
+				</Button>
+				<Backdrop name="$(parent)_ScrollBackdrop" inherits="ZO_DefaultBackdrop" layer="BACKGROUND" level="1" edgeColor="00000000" centerColor="00000000">
+					<Anchor point="BOTTOMLEFT" relativeTo="GW_NotePad" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="-10" />
+					<Dimensions x="300" y="400" />
+				</Backdrop>
+				<Control name="$(parent)_Title">
+					<Dimensions x="300" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="GW_NotePad" relativePoint="TOPLEFT" offsetX="20" offsetY="20" />
+					<Controls>
+						<Label name="$(parent)_ITT" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" text="ITTs" color="FDB813">
+							<Dimensions x="100" y="30" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Label>
+
+						<Label name="$(parent)_Ghostwriter" font="$(HANDWRITTEN_FONT)|24" text="Ghostwriter" color="FDB813">
+							<Dimensions x="200" y="30" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)_ITT" relativePoint="TOPRIGHT" offsetX="175" offsetY="-5" />
+						</Label>
+					</Controls>
+				</Control>
+				<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+					<AnchorFill />
+				</Backdrop>
+				<Backdrop name="$(parent)_Compose" inherits="ZO_EditBackdrop" level="2">
+					<Dimensions x="350" y="350" />
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-25" />
+					<!-- <Controls>
+						<EditBox name="$(parent)_Box" inherits="ZO_DefaultEditForBackdrop" multiLine="true" maxInputCharacters="3000">
+							<Dimensions x="350" y="350" />
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+							<OnTextChanged>UpdatePreview()</OnTextChanged>
+						</EditBox>
+					</Controls> -->
+				</Backdrop>
+				<Backdrop name="$(parent)_NoteTitle" inherits="ZO_EditBackdrop" level="2">
+					<Dimensions x="350" y="25" />
+					<Anchor point="TOP" relativeTo="$(parent)_Compose" relativePoint="TOP" offsetX="0" offsetY="-50" />
+					<Controls>
+						<EditBox name="$(parent)_Box" inherits="ZO_DefaultEditForBackdrop" multiLine="false" maxInputCharacters="MAIL_MAX_SUBJECT_CHARACTERS" defaultText="Type your title here...">
+							<Dimensions x="350" y="25" />
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+							<OnTab> GW_NotePad_ComposeScrollContainer_Box:TakeFocus()</OnTab>
+							<OnTextChanged>UpdateTitlePreview()</OnTextChanged>
+						</EditBox>
+						<Label name="$(parent)_Preview" font="ZoFontGame">
+							<Dimensions x="350" y="25" />
+							<Anchor point="LEFT" relativeTo="$(parent)_NoteTitle_Box" relativePoint="RIGHT" offsetX="35" />
+						</Label>
+					</Controls>
+				</Backdrop>
+				<Backdrop name="$(parent)_Preview" inherits="ZO_DefaultBackdrop" level="2" edgeColor="00000000" centerColor="00000000">
+					<Dimensions x="325" y="350" />
+					<Anchor point="RIGHT" relativeTo="$(parent)_Box" relativePoint="RIGHT" offsetX="10" offsetY="-25" />
+
+				</Backdrop>
+				<Button name="$(parent)_HidePreview" layer="CONTROLS" level="3">
+					<Dimensions x="40" y="40" />
+					<Anchor point="CENTER" relativeTo="$(parent)_HideWindow" relativePoint="CENTER" offsetX="-50" offsetY="-2" />
+					<Textures normal="/esoui/art/miscellaneous/keyboard/visible_up.dds"
+						pressed="/esoui/art/miscellaneous/keyboard/visible_down.dds"
+						mouseOver="/esoui/art/miscellaneous/keyboard/visible_over.dds" />
+					<!-- /esoui/art/lfg/lfg_tabicon_grouptools_down.dds / visible remorph buyback tradinghouse_racial_style_motif_book_down-->
+					<OnClicked>ITTsGhostwriter.TogglePreview()</OnClicked>
+
+				</Button>
+
+				<Control name="$(parent)_Buttons">
+					<Dimensions x="370" y="25" />
+					<Anchor point="TOP" relativeTo="$(parent)_NoteTitle" relativePoint="BOTTOM" offsetX="0" offsetY="-60" />
+
+					<Controls>
+						<Button name="$(parent)_Button1" inherits="ZO_DefaultButton" text="Run as Lua script">
+							<Dimensions x="150" y="25" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+							<ButtonState state="disabled" />
+							<OnClicked>RunAsScript()</OnClicked>
+						</Button>
+						<Button name="$(parent)_Button2" text="Save">
+							<Dimensions x="32" y="32" />
+							<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+							<OnClicked>SaveNoteInCategory()</OnClicked>
+							<Textures normal="/esoui/art/buttons/edit_save_up.dds"
+								pressed="/esoui/art/buttons/edit_save_down.dds"
+								mouseOver="/esoui/art/buttons/edit_save_over.dds"
+								disabled="/esoui/art/buttons/edit_save_disabled.dds" />
+						</Button>
+					</Controls>
+				</Control>
+				<Label name="$(parent)_Count" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thin" text="4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor relativePoint="LEFT" relativeTo="$(parent)_Buttons_Button2" point="RIGHT" offsetY="2" />
+
+				</Label>
+				<Texture name="$(parent)_VerticalDivider" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds" layer="OVERLAY">
+					<Dimensions x="450" y="5" />
+					<Anchor point="RIGHT" relativeTo="$(parent)_ScrollBackdrop" relativePoint="RIGHT" offsetX="250" />
+				</Texture>
+				<Texture name="$(parent)_HorizontalDivider" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds" layer="OVERLAY">
+					<Dimensions x="1100" y="5" />
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="75" />
+				</Texture>
+			</Controls>
+		</TopLevelControl>
+		<Control name="GW_NewCategory" virtual="true" mouseEnabled="true" inherits="ZO_StatusIconHeader">
+			<Controls>
+				<Button name="$(parent)Button" scale="0.5" excludeFromResizeToFitExtents="true">
+					<Anchor point="CENTER" relativePoint="TOPLEFT" offsetX="35" offsetY="24" />
+					<Dimensions x="64" y="64" />
+
+					<Textures normal="/esoui/art/buttons/pointsplus_up.dds"
+						pressed="/esoui/art/buttons/pointsplus_down.dds"
+						disabled="/esoui/art/buttons/pointsplus_disabled.dds"
+						mouseOver="/esoui/art/buttons/pointsplus_over.dds"
+					/>
+					<Controls>
+						<Texture name="$(parent)Highlight" hidden="true" blendMode="ADD">
+							<AnchorFill />
+						</Texture>
+					</Controls>
+				</Button>
+			</Controls>
+		</Control>
+		<Control name="GW_Category" virtual="true" mouseEnabled="true" inherits="ZO_StatusIconHeader">
+			<OnInitialized>ITTsGW_IconHeader_OnInitialized( self )</OnInitialized>
+			<Controls>
+				<Label name="$(parent)Count" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="4">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Text" relativePoint="TOPRIGHT" offsetX="15" offsetY="0" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Label name="GW_Entry" virtual="true" mouseEnabled="true" inherits="ZO_TreeLabelSubCategory"> </Label>
+
+		<TopLevelControl name="GW_Delete_Category_Dialog" inherits="ZO_CustomDialogBase" hidden="true" tier="DT_LOW">
+			<Dimensions x="600" y="225" />
+			<OnInitialized> ITT_GW_DeleteCategoryDialog_OnInitialized(self) </OnInitialized>
+			<Controls>
+
+				<Label name="$(parent)Text" inherits="ZO_SmallKeyMarkupLabel ZO_DialogContentAnchors" font="ZoFontGameMedium" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" />
+				<Button name="$(parent)Checkbox" inherits="ZO_CheckButton">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Text" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="20" />
+				</Button>
+
+
+				<Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton" />
+				<Control name="$(parent)Save" inherits="ZO_CustomDialogButton" />
+			</Controls>
+		</TopLevelControl>
+		<TopLevelControl name="GW_Delete_Note_Dialog" inherits="ZO_CustomDialogBase" hidden="true" tier="DT_LOW">
+			<Dimensions x="450" y="175" />
+			<OnInitialized> ITT_GW_DeleteNoteDialog_OnInitialized(self) </OnInitialized>
+			<Controls>
+				<Label name="$(parent)Text" inherits="ZO_SmallKeyMarkupLabel ZO_DialogContentAnchors" font="ZoFontGameMedium" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" />
+				<Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton" />
+				<Control name="$(parent)Save" inherits="ZO_CustomDialogButton" />
+			</Controls>
+		</TopLevelControl>
+		<!-- /esoui/art/tradinghouse/tradinghouse_trophy_scroll_down.dds -->
+		<Control name="ITTsSendMailExtension" hidden="true">
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+			<Dimensions x="200" y="200" />
+			<OnInitialized>self:SetParent(ZO_MailSend)</OnInitialized>
+			<Controls>
+				<Texture name="$(parent)_BG" textureFile="/esoui/art/login/login_uiwindowbg_left.dds" layer="BACKGROUND">
+					<Anchor point="RIGHT" relativeTo="ZO_MailSend" relativePoint="LEFT" />
+					<Dimensions x="300" y="650" />
+				</Texture>
+				<Texture name="$(parent)_BG2" textureFile="/esoui/art/miscellaneous/centerscreen_indexarea_left.dds" layer="BACKGROUND">
+					<Anchor point="RIGHT" relativeTo="ZO_MailSend" relativePoint="LEFT" offsetY="25" />
+					<Dimensions x="300" y="900" />
+				</Texture>
+				<Control name="$(parent)_CategoryComboBox" inherits="ZO_ComboBox" layer="1">
+					<!-- <OnInitialized>self:SetParent(ZO_MailSend)</OnInitialized> -->
+					<Dimensions x="200" y="30" />
+					<Anchor point="TOPRIGHT" relativeTo="ZO_MailSendToField" relativePoint="TOPLEFT" offsetX="-15" offsetY="0" />
+				</Control>
+				<Control name="$(parent)_NoteEntries" inherits="ZO_ScrollContainer" layer="0">
+					<Anchor point="TOPRIGHT" relativeTo="ZO_MailSendSubjectField" relativePoint="TOPLEFT" offsetX="-10" />
+					<Dimensions x="200" y="375" />
+					<Controls>
+						<!-- <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+							<AnchorFill />
+						</Backdrop> -->
+					</Controls>
+				</Control>
+				<!-- <Control name="$(parent)_CategoryLabel" inherits="ZO_StatusIconHeader" layer="1">
+					<Dimensions x="200" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_NoteEntries" relativePoint="TOPLEFT" offsetX="-40" offsetY="-50" />
+				</Control> -->
+			</Controls>
+		</Control>
+		<Button name="ITTsMailExtensionButton">
+			<OnInitialized>self:SetParent(ZO_MailSend)</OnInitialized>
+			<Dimensions x="32" y="32" />
+			<Anchor point="TOPLEFT" relativeTo="ZO_MailSend" relativePoint="TOPLEFT" offsetX="-10" offsetY="0" />
+			<Textures
+				pressed="/esoui/art/tradinghouse/tradinghouse_trophy_runebox_fragment_down.dds"
+				mouseOver="/esoui/art/tradinghouse/tradinghouse_trophy_runebox_fragment_over.dds"
+				normal="/esoui/art/tradinghouse/tradinghouse_trophy_runebox_fragment_up.dds" />
+			<OnClicked>ITTsGhostwriter.UI.OnMailButtonClicked(self)</OnClicked>
+		</Button>
+		<Label name="ITTsSendMailExtension_Entry" virtual="true" inherits="ZO_SelectableLabel">
+			<Dimensions x="200" y="20" />
+			<Anchor point="RIGHT" />
+			<OnInitialized> 
+				ZO_SelectableLabel_OnInitialized(self)
+             </OnInitialized>
+		</Label>
+
+		<!-- <Control name="ITTsChatWindowExtension" maybe one day>
+			<OnInitialized>self:SetParent(ZO_ChatWindow)</OnInitialized>
+			<Anchor point="LEFT" relativeTo="ZO_ChatWindowNotifications" relativePoint="RIGHT" offsetX="20" />
+			<Controls>
+				<Button name="$(parent)Applications" mouseOverBlendMode="ADD">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetY="0" />
+					<Dimensions x="32" y="32." />
+					<Textures
+						pressed="/esoui/art/guildfinder/keyboard/guildrecruitment_applications_down.dds"
+						mouseOver="/esoui/art/guildfinder/keyboard/guildrecruitment_applications_over.dds"
+						normal="/esoui/art/guildfinder/keyboard/guildrecruitment_applications_up.dds" />
+				</Button>
+				<Label name="$(parent)Count" font="ZoFontGame" text="4">
+					<Anchor point="LEFT" relativeTo="$(parent)Applications" relativePoint="RIGHT" />
+				</Label>
+			</Controls>
+		</Control> -->
+
+
+	</Controls>
+</GuiXml>

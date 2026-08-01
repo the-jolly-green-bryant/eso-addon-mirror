@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Khrill/KHC-Helmet-FOV-add-in__1032",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Khrill",
+  "canonical_id": "esoui:1032",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:1032",
+  "deleted": false,
+  "directories": [
+    "KhrillHelmControlFOVaddin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1032/",
+  "fingerprint": "4c189904dcfd3dc640af4b5c0f9b3cb53a623680da7cced488bd60dba5b8cde6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3248.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3525.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3246.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3273.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1032",
+  "source_url": "https://www.esoui.com/downloads/info1032-KHCHelmetFOVadd-in.html",
+  "stats": {
+    "downloads": 13082,
+    "favorites": 18,
+    "monthly_downloads": 14
+  },
+  "title": "KHC Helmet FOV add-in",
+  "updated_at": 1465941278000,
+  "version": "1.4.0"
+}

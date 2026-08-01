@@ -1,0 +1,73 @@
+{
+  "archive_path": "addons/m00nyONE/FastReset__3257",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "m00nyONE",
+  "canonical_id": "esoui:3257",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3257",
+  "deleted": false,
+  "directories": [
+    "FastReset"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3257/",
+  "fingerprint": "20ee44ba19c9f9c1cc60abb3a7830ac6724f530b5088cf31a1aa52b5c29ef109",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11206.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3257",
+  "source_url": "https://www.esoui.com/downloads/info3257-FastReset.html",
+  "stats": {
+    "downloads": 9166,
+    "favorites": 7,
+    "monthly_downloads": 17
+  },
+  "title": "FastReset",
+  "updated_at": 1749226118000,
+  "version": "2025-06-06"
+}

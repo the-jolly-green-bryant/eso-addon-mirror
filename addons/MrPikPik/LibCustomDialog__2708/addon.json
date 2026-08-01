@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/MrPikPik/LibCustomDialog__2708",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:2708",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2708",
+  "deleted": false,
+  "directories": [
+    "LibCustomDialog"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2708/",
+  "fingerprint": "d5e432bb02780f9d809b31e0400697c638f35bf04cce8383fc98562212939458",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9175.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9174.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2708",
+  "source_url": "https://www.esoui.com/downloads/info2708-LibCustomDialog.html",
+  "stats": {
+    "downloads": 188286,
+    "favorites": 20,
+    "monthly_downloads": 1202
+  },
+  "title": "LibCustomDialog",
+  "updated_at": 1595671458000,
+  "version": "0.3"
+}

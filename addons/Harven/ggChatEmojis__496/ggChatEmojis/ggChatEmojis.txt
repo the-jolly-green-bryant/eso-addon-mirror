@@ -1,0 +1,25 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: ggChatEmojis
+
+## Version: 1.18
+
+## Author: Michael Lynch (@gamegenius86)
+
+## Description: Adds Game Emojis to Chat
+
+## APIVersion: 100024
+
+
+
+lib/LibStub.lua
+
+lib/libChat.lua
+
+
+ggChatEmojis.lua
+
+emojiList.lua

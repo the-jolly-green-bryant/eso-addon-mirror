@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/MightyWrath/Mighty-Experience-Bar__3126",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MightyWrath",
+  "canonical_id": "esoui:3126",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3126",
+  "deleted": false,
+  "directories": [
+    "MightyExperienceBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3126/",
+  "fingerprint": "d11a191a9ae86cd46ee86c057667842d96c75bbec9e53430a845c725d678a155",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10565.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10562.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10563.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3126",
+  "source_url": "https://www.esoui.com/downloads/info3126-MightyExperienceBar.html",
+  "stats": {
+    "downloads": 15878,
+    "favorites": 20,
+    "monthly_downloads": 113
+  },
+  "title": "Mighty Experience Bar",
+  "updated_at": 1715111164000,
+  "version": "1.1.0"
+}

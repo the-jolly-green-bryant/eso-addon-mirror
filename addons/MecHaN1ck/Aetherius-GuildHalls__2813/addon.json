@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/MecHaN1ck/Aetherius-GuildHalls__2813",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MecHaN1ck",
+  "canonical_id": "esoui:2813",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:2813",
+  "deleted": false,
+  "directories": [
+    "AetheriusGuildHalls"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2813/",
+  "fingerprint": "1d45a25c286d5066fd191659bdddf602ffaad555842991eac60be2fcb561986e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9497.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9496.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2813",
+  "source_url": "https://www.esoui.com/downloads/info2813-AetheriusGuildHalls.html",
+  "stats": {
+    "downloads": 4487,
+    "favorites": 2,
+    "monthly_downloads": 13
+  },
+  "title": "Aetherius GuildHalls",
+  "updated_at": 1631868942000,
+  "version": "V0.0.6"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Hochbrawn/Loot-Value__2567",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hochbrawn",
+  "canonical_id": "esoui:2567",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2567",
+  "deleted": false,
+  "directories": [
+    "FFFLootValue"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2567/",
+  "fingerprint": "c467a2e9534aa1c52fd1d0721619f3fd94e4a41c2d0b253bdca34c82dffe176c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8762.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2567",
+  "source_url": "https://www.esoui.com/downloads/info2567-LootValue.html",
+  "stats": {
+    "downloads": 6424,
+    "favorites": 4,
+    "monthly_downloads": 45
+  },
+  "title": "Loot Value",
+  "updated_at": 1584451779000,
+  "version": "0.0.0.3"
+}

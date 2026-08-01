@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/megawriter/GearSetsSort__1608",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "megawriter",
+  "canonical_id": "esoui:1608",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:1608",
+  "deleted": false,
+  "directories": [
+    "GearSetsSort"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1608/",
+  "fingerprint": "eb715c4ab3c02486042ab5971372f50a3eb6a2258881dd3c5f518aa147d370a1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5472.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5278.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1608",
+  "source_url": "https://www.esoui.com/downloads/info1608-GearSetsSort.html",
+  "stats": {
+    "downloads": 82330,
+    "favorites": 83,
+    "monthly_downloads": 219
+  },
+  "title": "GearSetsSort",
+  "updated_at": 1741912180000,
+  "version": "2.0.0.5"
+}

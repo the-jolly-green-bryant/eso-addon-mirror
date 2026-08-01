@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Hiiko/LanguageChanger-for-1.5.5__827",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hiiko",
+  "canonical_id": "esoui:827",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:827",
+  "deleted": false,
+  "directories": [
+    "LanguageChanger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl827/",
+  "fingerprint": "49e807ad371d72426bbe954226f7d9583f7f86c52984634ae27d0095c79ab4f3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2533.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "827",
+  "source_url": "https://www.esoui.com/downloads/info827-LanguageChangerfor1.5.5.html",
+  "stats": {
+    "downloads": 6167,
+    "favorites": 5,
+    "monthly_downloads": 8
+  },
+  "title": "LanguageChanger for 1.5.5",
+  "updated_at": 1416424381000,
+  "version": "0.1"
+}

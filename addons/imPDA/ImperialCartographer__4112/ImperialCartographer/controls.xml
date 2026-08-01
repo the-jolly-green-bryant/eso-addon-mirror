@@ -1,0 +1,9 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Font name="ImperialCartographer_ZoFontWinH2" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick" />
+	
+    <Controls>
+        <Label name="ImperialCartographer_DistanceLabelTemplate" tier="DT_LOW" layer="DL_BACKGROUND" font="ImperialCartographer_ZoFontWinH2" text="-" virtual="true">
+            <Anchor point="TOP" relativePoint="BOTTOM" offsetY="-8" />
+        </Label>
+    </Controls>
+</GuiXml>

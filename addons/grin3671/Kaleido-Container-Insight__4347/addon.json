@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/grin3671/Kaleido-Container-Insight__4347",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "grin3671",
+  "canonical_id": "esoui:4347",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4347",
+  "deleted": false,
+  "directories": [
+    "KaleidoContainerInsight"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4347/",
+  "fingerprint": "6e3a5e9a3ccec0a6e4534f24540e599feaa3bf436d20a08735dbec1ccdaa28ca",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15050.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4347",
+  "source_url": "https://www.esoui.com/downloads/info4347-KaleidoContainerInsight.html",
+  "stats": {
+    "downloads": 233,
+    "favorites": 2,
+    "monthly_downloads": 8
+  },
+  "title": "Kaleido Container Insight",
+  "updated_at": 1768892771000,
+  "version": "1.0.4"
+}

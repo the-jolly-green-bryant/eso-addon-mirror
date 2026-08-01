@@ -1,0 +1,16 @@
+<GuiXml> 
+	<Controls>
+		<TopLevelControl name="LATWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">	
+			<Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="-100" offsetY="200"/>
+			<Dimensions x="64" y="95"/>
+			<OnMoveStop>
+            	LokkestiizAtronachTimer.SaveGUILocation()
+			</OnMoveStop>
+			<Controls>
+				<Label name="$(parent)Label" width="64" height="25" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Next spawn in 0s">
+          			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-32" offsetY="95"/>
+        		</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

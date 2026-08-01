@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Kalinfe/Kal-s-Crown__2866",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kalinfe",
+  "canonical_id": "esoui:2866",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2866",
+  "deleted": false,
+  "directories": [
+    "KalsCrown"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2866/",
+  "fingerprint": "33a4e2872e387d9e0080e456aec1f21dee0a6268d6f9e2f8d86fe7cf5f139929",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9695.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2866",
+  "source_url": "https://www.esoui.com/downloads/info2866-KalsCrown.html",
+  "stats": {
+    "downloads": 3722,
+    "favorites": 2,
+    "monthly_downloads": 14
+  },
+  "title": "Kal's Crown",
+  "updated_at": 1612686805000,
+  "version": "1.1.3"
+}

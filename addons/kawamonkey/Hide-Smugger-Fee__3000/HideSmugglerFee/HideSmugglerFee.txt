@@ -1,0 +1,5 @@
+## Title: Hide Smuggler Fee
+## Author: Kawamonkey
+## APIVersion: 100034
+
+HideSmugglerFee.lua

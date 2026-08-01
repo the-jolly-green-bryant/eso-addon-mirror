@@ -1,0 +1,26 @@
+## Title: Caro's Pre-Crafter
+## Description: Pre-craft provisioning and alchemy items for writs (level 50).
+## APIVersion: 101037 101038
+## Version: 2.3.1
+## Author: |c1d6dadIrniben|r
+## SavedVariables: CarosPreCrafterSavedVariables
+## DependsOn: LibAddonMenu-2.0>=34 LibCustomMenu>=713
+## OptionalDependsOn: LibPrice CraftStoreFixedAndImproved LibLazyCrafting AwesomeGuildStore
+
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lang\en.lua
+lang\$(language).lua
+
+CarosPreCrafter.lua
+cpc_restock.lua
+cpc_research.lua
+cpc_bank.lua
+cpc_custom.lua
+bindings.xml
+cpc_ui.xml

@@ -1,0 +1,9 @@
+## Title: LinkMyAchievements
+## APIVersion: 101050 101051
+## Version: 1.2.0
+## Author: |cFF9B15@Konten|r
+## SavedVariables: LinkMyAchievements
+## Description: Uses your real achievement completion date when available. If you haven’t earned the achievement, the addon generates a believable timestamp based on the trial’s original release date.
+## AI-Generated: Ðeveloped with the assistance of Google Gemini.
+
+LinkMyAchievements.lua

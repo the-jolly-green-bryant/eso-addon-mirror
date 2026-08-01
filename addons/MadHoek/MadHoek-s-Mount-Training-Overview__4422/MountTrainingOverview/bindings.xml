@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cA02EF7Mount Training Overview|r">
+			<Action name="MHMTO_WINDOW_TOGGLE">
+				<Up>MHMTO.ToggleWindow()</Up>
+			</Action>
+			<Action name="MHMTO_WINDOW_MOVABLE">
+				<Up>MHMTO.ToggleMovable()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

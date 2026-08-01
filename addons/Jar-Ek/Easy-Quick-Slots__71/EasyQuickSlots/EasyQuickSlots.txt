@@ -1,0 +1,6 @@
+## Title: EasyQuickSlots
+## APIVersion: 100011
+
+EasyQuickSlots.lua
+EasyQuickSlots.xml
+bindings.xml

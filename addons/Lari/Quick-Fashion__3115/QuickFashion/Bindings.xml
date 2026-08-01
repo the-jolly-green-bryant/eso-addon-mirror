@@ -1,0 +1,51 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|c7B68EEQuick|r |c9F00FFFashion|r">
+      <Action name="QUICK_FASHION_TOGGLE_BOTH_PANELS">
+        <Down>QF_Toggle_Window()</Down>
+      </Action>
+      <Action name="QUICK_FASHION_TOGGLE_PANEL">
+        <Down>QF_Toggle_Fashion_Panel()</Down>
+      </Action>
+      <Action name="QUICK_FAVOURITES_TOGGLE_PANEL">
+        <Down>QF_Toggle_Fav_Panel()</Down>
+      </Action>
+      <Action name="QUICK_PROFILES_TOGGLE_PANEL">
+        <Down>QF_Toggle_Profiles_Panel()</Down>
+      </Action>
+      <Action name="QF_RANDOMIZE_COLLECTIBLES">
+        <Down>QF_Randomize_Collectibles()</Down>
+      </Action>
+      <Action name="QF_EQUIP_PROFILE_1">
+        <Down>QF_EQUIP_PROFILE_BY_HOTKEY(1)</Down>
+      </Action>
+      <Action name="QF_EQUIP_PROFILE_2">
+        <Down>QF_EQUIP_PROFILE_BY_HOTKEY(2)</Down>
+      </Action>
+      <Action name="QF_EQUIP_PROFILE_3">
+        <Down>QF_EQUIP_PROFILE_BY_HOTKEY(3)</Down>
+      </Action>
+      <Action name="QF_EQUIP_PROFILE_4">
+        <Down>QF_EQUIP_PROFILE_BY_HOTKEY(4)</Down>
+      </Action>
+      <Action name="QF_EQUIP_PROFILE_5">
+        <Down>QF_EQUIP_PROFILE_BY_HOTKEY(5)</Down>
+      </Action>
+      <Action name="QF_EQUIP_PROFILE_6">
+        <Down>QF_EQUIP_PROFILE_BY_HOTKEY(6)</Down>
+      </Action>
+      <Action name="QF_EQUIP_PROFILE_7">
+        <Down>QF_EQUIP_PROFILE_BY_HOTKEY(7)</Down>
+      </Action>
+      <Action name="QF_EQUIP_PROFILE_8">
+        <Down>QF_EQUIP_PROFILE_BY_HOTKEY(8)</Down>
+      </Action>
+      <Action name="QF_EQUIP_PROFILE_9">
+        <Down>QF_EQUIP_PROFILE_BY_HOTKEY(9)</Down>
+      </Action>
+      <Action name="QF_EQUIP_PROFILE_10">
+        <Down>QF_EQUIP_PROFILE_BY_HOTKEY(10)</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

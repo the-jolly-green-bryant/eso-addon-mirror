@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Katorrei/RP-Finder__3843",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Katorrei",
+  "canonical_id": "esoui:3843",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3843",
+  "deleted": false,
+  "directories": [
+    "RPFinder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3843/",
+  "fingerprint": "7a7b3652105e8033689f1c4bd6b049ce5a9b203c894fe540ddc72d6b8883f6bf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13063.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3843",
+  "source_url": "https://www.esoui.com/downloads/info3843-RPFinder.html",
+  "stats": {
+    "downloads": 980,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "RP Finder",
+  "updated_at": 1712866482000,
+  "version": "1.0.4"
+}

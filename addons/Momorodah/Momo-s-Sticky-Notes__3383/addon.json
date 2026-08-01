@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Momorodah/Momo-s-Sticky-Notes__3383",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Momorodah",
+  "canonical_id": "esoui:3383",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3383",
+  "deleted": false,
+  "directories": [
+    "MomosStickyNotes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3383/",
+  "fingerprint": "ab4554dddd0cae0ad5145d78ff0b04fecba682f1243a57e8b70f6a4669353f43",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11567.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3383",
+  "source_url": "https://www.esoui.com/downloads/info3383-MomosStickyNotes.html",
+  "stats": {
+    "downloads": 3311,
+    "favorites": 9,
+    "monthly_downloads": 13
+  },
+  "title": "Momo's Sticky Notes",
+  "updated_at": 1654771309000,
+  "version": "1.0.1"
+}

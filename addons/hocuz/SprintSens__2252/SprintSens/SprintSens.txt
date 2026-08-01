@@ -1,0 +1,21 @@
+## Title: SprintSens
+## Author: Hoci Poci Li
+## Version: 1.7
+## APIVersion: 100029 100030
+## SavedVariables: SprintSensSettings
+## OptionalDependsOn: LibAddonMenu-2.0
+
+libs/LibStub/LibStub.lua
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+libs/LibAddonMenu-2.0/controls/panel.lua
+libs/LibAddonMenu-2.0/controls/submenu.lua
+libs/LibAddonMenu-2.0/controls/colorpicker.lua
+libs/LibAddonMenu-2.0/controls/description.lua
+libs/LibAddonMenu-2.0/controls/dropdown.lua
+libs/LibAddonMenu-2.0/controls/editbox.lua
+libs/LibAddonMenu-2.0/controls/header.lua
+libs/LibAddonMenu-2.0/controls/slider.lua
+
+SprintSens-api.lua
+SprintSens-settings.lua
+SprintSens-reg.lua

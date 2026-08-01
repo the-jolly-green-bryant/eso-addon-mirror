@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Gloomwidow/Flex__2943",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Gloomwidow",
+  "canonical_id": "esoui:2943",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2943",
+  "deleted": false,
+  "directories": [
+    "Flex"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2943/",
+  "fingerprint": "fd0349b872e8566f9bd5e55606b5693c16fdb510b49da27afb9c420eb5cfbdf2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2943",
+  "source_url": "https://www.esoui.com/downloads/info2943-Flex.html",
+  "stats": {
+    "downloads": 2165,
+    "favorites": 2,
+    "monthly_downloads": 11
+  },
+  "title": "Flex",
+  "updated_at": 1616004262000,
+  "version": "1.0.1"
+}

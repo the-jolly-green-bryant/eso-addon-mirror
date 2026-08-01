@@ -1,0 +1,198 @@
+<GuiXml>
+    <Controls >
+        <TopLevelControl  name="KillCounter_Stats" mouseEnabled="true" virtual="true" movable="true" >
+            <Dimensions x="900" y="650" />
+            <Anchor point="CENTER" />
+            <Controls>
+                <Texture name="$(parent)_BG" textureFile="/esoui/art/screens/loadscreen_topmunge_tile.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.6" textureBlendMode="TEX_BLEND_MODE_ALPHA">
+                    <AnchorFill/>
+                </Texture>
+                <Texture name="$(parent)_BG2" textureFile="/esoui/art/unitattributevisualizer/attributebar_dynamic_invulnerable_munge.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.4">
+                    <AnchorFill/>
+                </Texture>
+                    
+                    <Texture name="$(parent)_BG3_Texture" textureFile="/esoui/art/screens/loadscreen_bottommunge_tile.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.6" textureBlendMode="TEX_BLEND_MODE_ADD">
+                        <AnchorFill/>
+                    </Texture>
+
+                <Button name="$(parent)_Stats_Close_Button" font="ZoFontChat" color="EEEEEE">
+                    <Anchor point="TOPRIGHT" offsetY="0" offsetX="0" />
+                    <Dimensions y="40" x="40"/>
+                    <OnClicked>KC_G.closeStats()</OnClicked>
+                        <Controls>
+                            <Texture name="$(parent)_BG3_Texture" textureFile="/esoui/art/buttons/cancel_up.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="1.0">
+                                <AnchorFill/>
+                            </Texture>
+                        </Controls>
+                </Button>
+
+                <Control name="$(parent)_Banner">
+                    <Dimensions x="300" y="600" />
+                    <Anchor point="TOPLEFT" />
+                    <Controls>
+                        <Texture name="$(parent)_Texture" textureFile="/esoui/art/campaign/leaderboard_top20banner.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.25">
+                            
+                                <AnchorFill/>
+                            </Texture>
+                    </Controls>
+                </Control>
+
+                <Label name="$(parent)_Stats_Kills_Header" font="ZoFontAnnounceLarge" color="6D8F3D" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Kill Counter Stats: ">
+                 <AnchorFill />
+                 <Anchor point="TOPLEFT" offsetX="25" offsetY="20" />
+                </Label> 
+
+                <Control name="$(parent)_Logo">
+                    <Dimensions x="100" y="200" />
+                    <Anchor point="TOPRIGHT" offsetY="5" offsetX="-50"/>
+                    <Controls>
+                        <Texture name="$(parent)_Texture" textureFile="/esoui/art/guild/banner_ebonheart.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="1.0">
+                            
+                                <AnchorFill/>
+                            </Texture>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)_Kills_Logo">
+                    <Dimensions x="80" y="80" />
+                    <Anchor point="TOPLEFT" offsetY="110" offsetX="10"/>
+                    <Controls>
+                        <Texture name="$(parent)_Texture" textureFile="/esoui/art/campaign/campaign_tabicon_browser_down.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="1.0">
+                            
+                                <AnchorFill/>
+                            </Texture>
+                    </Controls>
+                </Control>
+
+               
+
+            </Controls>
+        </TopLevelControl>
+        <Label name="KillCounter_Kills_Label" virtual="true" font="ZoFontChat" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Example Kill Label">
+             <AnchorFill />
+             <Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+        </Label> 
+
+        <Control name="KillCounter_Overview_Line" virtual="true">
+            <Controls>
+                <Texture name="$(parent)_Texture" textureFile="/esoui/art/actionbar/abilityinset.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="1.0">
+                    <AnchorFill/>
+                </Texture>
+            </Controls>
+        </Control> 
+        <Control name="KillCounter_Kills_Table_Line" virtual="true">
+            <Controls>
+                <Texture name="$(parent)_Texture" textureFile="/esoui/art/actionbar/abilityinset.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="1.0">
+                            
+                    <AnchorFill/>
+                </Texture>
+            </Controls>
+        </Control> 
+
+        <Control name="KillCounter_Graph_Line_Templar" virtual="true">
+            <Controls>
+
+                <Texture name="$(parent)_Texture" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.8" color="EFFF32" >
+                            
+                    <AnchorFill/>
+                </Texture>
+            </Controls>
+        </Control>
+
+        <Control name="KillCounter_Graph_Line_DragonKnight" virtual="true">
+            <Controls>
+
+                <Texture name="$(parent)_Texture" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.8" color="881717" >
+                            
+                    <AnchorFill/>
+                </Texture>
+            </Controls>
+        </Control> 
+
+        <Control name="KillCounter_Graph_Line_NightBlade" virtual="true">
+            <Controls>
+
+                <Texture name="$(parent)_Texture" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.8" color="1C801C" >
+                            
+                    <AnchorFill/>
+                </Texture>
+            </Controls>
+        </Control> 
+
+        <Control name="KillCounter_Graph_Line_Sorcerer" virtual="true">
+            <Controls>
+
+                <Texture name="$(parent)_Texture" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.8" color="166C8C" >
+                            
+                    <AnchorFill/>
+                </Texture>
+            </Controls>
+        </Control> 
+	<Control name="KillCounter_Graph_Line_Warden" virtual="true">
+            <Controls>
+
+                <Texture name="$(parent)_Texture" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.8" color="5FD362" >
+                            
+                    <AnchorFill/>
+                </Texture>
+            </Controls>
+        </Control> 
+	<Control name="KillCounter_Graph_Line_Necromancer" virtual="true">
+            <Controls>
+
+                <Texture name="$(parent)_Texture" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.8" color="AFB6B2" >
+                            
+                    <AnchorFill/>
+                </Texture>
+            </Controls>
+        </Control> 		
+	<Control name="KillCounter_Graph_Line_Arcanist" virtual="true">
+            <Controls>
+
+                <Texture name="$(parent)_Texture" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.8" color="1ED400" >
+                            
+                    <AnchorFill/>
+                </Texture>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="KillCounter_Player_View" mouseEnabled="true" virtual="true" movable="true">
+            <Dimensions x="350" y="400" />
+            <Anchor point="BOTTOMRIGHT" />
+            <Controls>
+                <Texture name="$(parent)_BG" textureFile="/esoui/art/screens/loadscreen_topmunge_tile.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.6" textureBlendMode="TEX_BLEND_MODE_ALPHA">
+                    <AnchorFill/>
+                </Texture>
+                <Texture name="$(parent)_BG2" textureFile="/esoui/art/unitattributevisualizer/attributebar_dynamic_invulnerable_munge.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.4">
+                    <AnchorFill/>
+                </Texture>
+                    
+                    <Texture name="$(parent)_BG3_Texture" textureFile="/esoui/art/screens/loadscreen_bottommunge_tile.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.6" textureBlendMode="TEX_BLEND_MODE_ADD">
+                        <AnchorFill/>
+                    </Texture>
+
+                    <Control name="$(parent)_Alliance_Logo">
+                    <Dimensions x="300" y="600" />
+                    <Anchor point="TOPLEFT" offsetY="0" offsetX="37"/>
+                    <Controls>
+                        <Texture name="$(parent)_Texture" textureFile="/esoui/art/campaign/campaign_tabicon_browser_down.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="0.3">
+                            
+                                <AnchorFill/>
+                            </Texture>
+                    </Controls>
+                </Control>
+
+                <Button name="$(parent)_Stats_Close_Button" font="ZoFontChat" color="EEEEEE">
+                    <Anchor point="TOPRIGHT" offsetY="0" offsetX="0" />
+                    <Dimensions y="40" x="40"/>
+                    <OnClicked>KC_G.ClosePlayer()</OnClicked>
+                        <Controls>
+                            <Texture name="$(parent)_BG3_Texture" textureFile="/esoui/art/buttons/cancel_up.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="1.0">
+                                <AnchorFill/>
+                            </Texture>
+                        </Controls>
+                </Button>
+            </Controls>
+        </TopLevelControl> 
+    </Controls>
+</GuiXml>

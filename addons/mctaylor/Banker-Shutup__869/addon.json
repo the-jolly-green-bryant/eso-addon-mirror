@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/mctaylor/Banker-Shutup__869",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mctaylor",
+  "canonical_id": "esoui:869",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:869",
+  "deleted": false,
+  "directories": [
+    "BankerShutUp"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl869/",
+  "fingerprint": "00191953f62a1ed088901c4ee6f8d8a7183a66b4af3a56a1fa5b88cfd3861b8d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2629.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2630.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2631.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "869",
+  "source_url": "https://www.esoui.com/downloads/info869-BankerShutup.html",
+  "stats": {
+    "downloads": 6156,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "Banker Shutup",
+  "updated_at": 1418604423000,
+  "version": "3.5c"
+}

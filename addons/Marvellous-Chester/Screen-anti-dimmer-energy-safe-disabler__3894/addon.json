@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Marvellous-Chester/Screen-anti-dimmer-energy-safe-disabler__3894",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marvellous Chester",
+  "canonical_id": "esoui:3894",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3894",
+  "deleted": false,
+  "directories": [
+    "ScreenAntiDimmer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3894/",
+  "fingerprint": "daaac626149992ebf84173bfb2769fc74de3f0e24501103dd2aa1a293c3b1519",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3894",
+  "source_url": "https://www.esoui.com/downloads/info3894-Screenantidimmerenergysafedisabler.html",
+  "stats": {
+    "downloads": 2967,
+    "favorites": 7,
+    "monthly_downloads": 19
+  },
+  "title": "Screen anti dimmer (energy safe disabler)",
+  "updated_at": 1718222069000,
+  "version": "1.0"
+}

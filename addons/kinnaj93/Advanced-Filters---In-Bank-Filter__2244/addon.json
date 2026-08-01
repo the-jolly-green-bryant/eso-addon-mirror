@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/kinnaj93/Advanced-Filters---In-Bank-Filter__2244",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kinnaj93",
+  "canonical_id": "esoui:2244",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2244",
+  "deleted": false,
+  "directories": [
+    "AF_InBankFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2244/",
+  "fingerprint": "62a7536309c26e27e7d8e07dc1ff66e603efe4797096f4c8a1cd4188d614ee87",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7681.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2244",
+  "source_url": "https://www.esoui.com/downloads/info2244-AdvancedFilters-InBankFilter.html",
+  "stats": {
+    "downloads": 16273,
+    "favorites": 5,
+    "monthly_downloads": 57
+  },
+  "title": "Advanced Filters - In Bank Filter",
+  "updated_at": 1548338438000,
+  "version": "1.0.0.0"
+}

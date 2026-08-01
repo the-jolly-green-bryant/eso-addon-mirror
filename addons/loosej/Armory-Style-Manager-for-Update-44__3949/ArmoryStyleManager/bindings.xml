@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="Armory Style Manager">
+            <Action name="ARMORY_STYLE_MANAGER_SUMMON_GRASHOROG">
+                <Down>ArmoryStyleManager.SummonGrashorog()</Down>
+            </Action>
+            <Action name="ARMORY_STYLE_MANAGER_SUMMON_ZUQOTH">
+                <Down>ArmoryStyleManager.SummonZuqoth()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

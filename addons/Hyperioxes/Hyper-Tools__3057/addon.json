@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/Hyperioxes/Hyper-Tools__3057",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hyperioxes",
+  "canonical_id": "esoui:3057",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3057",
+  "deleted": false,
+  "directories": [
+    "HyperTools"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3057/",
+  "fingerprint": "610c3174ca8f924b12d059e8ada0a6434f0a36cc86154e2dfdd13aa7f51efa18",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10267.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10253.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10252.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10255.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10256.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3057",
+  "source_url": "https://www.esoui.com/downloads/info3057-HyperTools.html",
+  "stats": {
+    "downloads": 38549,
+    "favorites": 49,
+    "monthly_downloads": 506
+  },
+  "title": "Hyper Tools",
+  "updated_at": 1690697050000,
+  "version": "0.12f"
+}

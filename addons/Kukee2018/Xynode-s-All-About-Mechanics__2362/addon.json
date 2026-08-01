@@ -1,0 +1,88 @@
+{
+  "archive_path": "addons/Kukee2018/Xynode-s-All-About-Mechanics__2362",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kukee2018",
+  "canonical_id": "esoui:2362",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2362",
+  "deleted": false,
+  "directories": [
+    "Xynode"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2362/",
+  "fingerprint": "46c1b569f5470fc9afc304c64dcb3ff24e3ed00da0a155d607b0f9ade2ec9424",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8207.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8206.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8205.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8139.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2362",
+  "source_url": "https://www.esoui.com/downloads/info2362-XynodesAllAboutMechanics.html",
+  "stats": {
+    "downloads": 125087,
+    "favorites": 126,
+    "monthly_downloads": 169
+  },
+  "title": "Xynode's All About Mechanics",
+  "updated_at": 1770753704000,
+  "version": "1.71"
+}

@@ -1,0 +1,6 @@
+## Title: |cFFD700Request Deathmatch|r
+## APIVersion: 100035
+## Description: An addon that requests each team in a BG to treat it a deathmatch.
+## Author: |c0DC1CF@M0R_Gaming|r
+
+RequestDM.lua

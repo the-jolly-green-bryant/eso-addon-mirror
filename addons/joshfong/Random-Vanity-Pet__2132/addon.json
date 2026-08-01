@@ -1,0 +1,52 @@
+{
+  "archive_path": "addons/joshfong/Random-Vanity-Pet__2132",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "joshfong",
+  "canonical_id": "esoui:2132",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:2132",
+  "deleted": false,
+  "directories": [
+    "lang",
+    "libs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2132/",
+  "fingerprint": "9d3ebd45b99a046d674bf0f2d9a6e69591339104cd6d61dfc863e7e5e99482ac",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2132",
+  "source_url": "https://www.esoui.com/downloads/info2132-RandomVanityPet.html",
+  "stats": {
+    "downloads": 6802,
+    "favorites": 9,
+    "monthly_downloads": 18
+  },
+  "title": "Random Vanity Pet",
+  "updated_at": 1565566105000,
+  "version": "1.5.2"
+}

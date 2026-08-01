@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/Jodynn/Auto-Eat-Recharge-Repair__2198",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jodynn",
+  "canonical_id": "esoui:2198",
+  "category_id": "22",
+  "compatibility": [],
+  "content_id": "esoui:2198",
+  "deleted": false,
+  "directories": [
+    "Auto"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2198/",
+  "fingerprint": "72431c30a5047cd9e19555f905faa201bc3c667c47e25fb4abaf8ca190907192",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7554.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2198",
+  "source_url": "https://www.esoui.com/downloads/info2198-AutoEatRechargeRepair.html",
+  "stats": {
+    "downloads": 20535,
+    "favorites": 25,
+    "monthly_downloads": 90
+  },
+  "title": "Auto Eat, Recharge, Repair",
+  "updated_at": 1605364820000,
+  "version": "1.1"
+}

@@ -1,0 +1,21 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="PillarOfNirnFrame" mouseEnabled="false" movable="false" hidden="false" clampedToScreen="true" >
+			<Dimensions x="300" y="50" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+			
+			<OnMoveStop>
+				PillarOfNirn.savePos()
+			</OnMoveStop>
+
+			<Controls>
+				<Label name="$(parent)Time" text="PON!!" color="FFED6E" inheritAlpha="true" font="$(CHAT_FONT)|$(KB_48)|shadow" verticalAlignment="TOP" horizontalAlignment="CENTER" >
+					<AnchorFill />
+				</Label>
+				<Label name="$(parent)Countdown" text="0" color="FFED6E" inheritAlpha="true" font="$(CHAT_FONT)|$(KB_36)|shadow" verticalAlignment="TOP" horizontalAlignment="CENTER" >
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Time" />
+				</Label>	
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

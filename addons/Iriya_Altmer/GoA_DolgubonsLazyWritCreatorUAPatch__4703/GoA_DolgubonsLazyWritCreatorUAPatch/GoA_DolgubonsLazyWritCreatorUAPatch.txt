@@ -1,0 +1,9 @@
+## Title: GoA_UA Patch for Dolgubon's Lazy Writ Creator
+## Description: UA Patch for Dolgubon's Lazy Writ Creator. Written with AI assistance (Claude).
+## Author: GoA
+## Version: 1.1ua
+## AddOnVersion: 110
+## APIVersion: 101049 101050
+## DependsOn: ESO_UA_GoA>=107 DolgubonsLazyWritCreator>=4057
+
+Languages/$(language).lua

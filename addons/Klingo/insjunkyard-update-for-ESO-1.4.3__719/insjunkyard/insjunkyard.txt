@@ -1,0 +1,8 @@
+## Title: ins:junkyard by instant
+## APIVersion: 100009
+## Version: 1.03
+## Author: ins@ESOUI
+## SavedVariables: insJY_SV
+
+insjunkyard.lua
+insjunkyard.xml

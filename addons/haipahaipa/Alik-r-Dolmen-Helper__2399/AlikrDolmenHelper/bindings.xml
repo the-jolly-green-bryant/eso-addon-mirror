@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cFFD700Alik'r |cFFFFFFDolmen Helper|r">
+			<Action name="ADH_TOGGLE_AUTO_TRAVEL">
+				<Up>ADH.ToggleAutoTravel()</Up>
+			</Action>
+			<Action name="ADH_TOGGLE_DIRECTION">
+				<Up>ADH.ToggleDirection()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

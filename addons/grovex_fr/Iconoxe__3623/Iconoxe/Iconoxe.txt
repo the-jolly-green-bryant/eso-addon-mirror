@@ -1,0 +1,15 @@
+## Title: Iconoxe
+## APIVersion: 101045
+## Version: 4.6.1
+## Author: |cFFD433@grovex_fr|r (PC/EU)
+## Description: Icônes pour la guilde d'Equinoxe et amis
+## DependsOn: OdySupportIcons HodorReflexes 
+
+IconoxeGH.lua
+Iconoxe.lua
+IconoxeHodor.lua
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks
+; of ZeniMax Media Inc. in the United States and/or other countries.

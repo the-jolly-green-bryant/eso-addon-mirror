@@ -1,0 +1,26 @@
+<GuiXml>
+	<Controls>
+		<Control name="HealerBFFPanel" resizeToFitDescendents="true" hidden="true" virtual="true">
+			<Controls>
+				<Backdrop name="$(parent)Backdrop">
+					<Anchor point="LEFT" />
+					<Dimensions x="150" y="24" />
+				</Backdrop>
+				<Label name="$(parent)Name" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+					<Anchor point="LEFT" offsetX="4" />
+					<Dimensions x="122" y="24" />
+				</Label>
+				<Texture name="$(parent)Role">
+					<Anchor point="RIGHT" offsetX="-2" />
+					<Dimensions x="20" y="20" />
+				</Texture>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="HealerBFFFrame" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<OnMoveStop>
+				HealerBFF.OnMoveStop()
+			</OnMoveStop>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,58 @@
+{
+  "archive_path": "addons/merlight/Mer-Character-Sheet__742",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "merlight",
+  "canonical_id": "esoui:742",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:742",
+  "deleted": false,
+  "directories": [
+    "merCharacterSheet"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl742/",
+  "fingerprint": "3a9b7664b945bbb86dce67834db4e71ca4b4073acaee779ef5d5d9d3f5e97460",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2272.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2307.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "742",
+  "source_url": "https://www.esoui.com/downloads/info742-MerCharacterSheet.html",
+  "stats": {
+    "downloads": 21937,
+    "favorites": 74,
+    "monthly_downloads": 43
+  },
+  "title": "Mer Character Sheet",
+  "updated_at": 1655585200000,
+  "version": "5.3"
+}

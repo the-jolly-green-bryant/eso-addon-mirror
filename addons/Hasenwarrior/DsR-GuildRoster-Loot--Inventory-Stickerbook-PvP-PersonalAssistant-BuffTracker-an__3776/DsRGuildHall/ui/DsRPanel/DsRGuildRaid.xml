@@ -1,0 +1,192 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+  <Controls>
+    <TopLevelControl name="DsRGuildRaidFrame" hidden="true">
+      <Dimensions x="700" y="100" />
+      <Anchor point="TOPRIGHT" relativeTo="ZO_GuildHome" relativePoint="TOPLEFT" offsetX="-20" offsetY="30" />
+      <OnInitialized>
+            DsRGuildRaid.Check()
+      </OnInitialized>
+      <Controls>
+        <Control name="DsRGuildRaidInformations"> 
+            <Controls>
+                <Texture name="DsRGuildRaidBg" textureFile="/DsRGuildHall/misc/DsRInfoBG.dds" override="true">
+                    <Anchor point="TOPRIGHT" relativeTo="ZO_GuildHome" relativePoint="TOPLEFT" offsetX="-20" offsetY="60" />
+                    <Dimensions x="700" y="1100" />
+                </Texture>
+                <Texture name="DsRGuildRaidDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider_mythic.dds"
+                         verticalAlignment="LEFT" horizontalAlignment="LEFT" >
+                    <Dimensions x="900" y="10" />
+                    <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidFrame" relativePoint="TOPLEFT" offsetX="-90" offsetY="250"/>
+                </Texture>
+                <Label name="DsRGuildRaidHeaderTXT" width="700" height="25" font="ZoFontWinH2" inheritAlpha="true"  color="9fb6cd"
+                        wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="CENTER"  text="Raid‘s & PvP" modifyTextType="UPPERCASE">
+                        <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildRaidDivider" relativePoint="LEFT" offsetX="230" offsetY="35"/>
+                </Label>
+                <Button name="DsRGuildRaidINVon" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+                        wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER"
+                        text="Start Auto-INV">
+                        <OnClicked>
+                            DsRGuildRaid.OnClickedINVon(...)
+                        </OnClicked>
+                      <Anchor point="TOP" relativeTo="DsRGuildRaidHeaderTXT" relativePoint="TOP" offsetX="160" offsetY="5"/>
+                      <Dimensions x="170" />
+                  </Button>
+                <Button name="DsRGuildRaidINVoff" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+                        wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER"
+                        text="Stop Auto-INV">
+                        <OnClicked>
+                            DsRGuildRaid.OnClickedINVoff(...)
+                        </OnClicked>
+                      <Anchor point="TOP" relativeTo="DsRGuildRaidINVon" relativePoint="TOP" offsetX="170" offsetY="0"/>
+                      <Dimensions x="170" />
+                  </Button>
+        <!-- Raid-->
+                <Control name="DsRGuildRaids"> 
+                    <Controls>
+                        <Label name="DsRGuildRaidTXT" width="700" height="10" font="ZoFontWinH4" inheritAlpha="true"  color="FF7F50"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="CENTER"  text="Raid‘s" >
+                                <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildRaidHeaderTXT" relativePoint="LEFT" offsetX="-30" offsetY="40"/>
+                        </Label>
+                        <Label name="DsRGuildRaidTXTInfo" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidTXT" relativePoint="CENTERRIGHT" offsetX="70" offsetY="3"/>
+                        </Label>
+		<!-- Dienstag Anfänger -->
+                        <Label name="DsRGuildRaidDienstag" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildRaidTXT" relativePoint="LEFT" offsetX="10" offsetY="30"/>
+                        </Label>
+                        <Label name="DsRGuildRaidDienstagTXT" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidDienstag" relativePoint="CENTERRIGHT" offsetX="140" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildRaidDienstagOrt" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidDienstagTXT" relativePoint="CENTERRIGHT" offsetX="80" offsetY="0"/>
+                        </Label>
+		<!-- Killerkrähen Mittwoch-->
+                        <Label name="DsRGuildRaidKillerkraehen" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildRaidDienstag" relativePoint="LEFT" offsetX="0" offsetY="30"/>
+                        </Label>
+                        <Label name="DsRGuildRaidKillerkraehenTXT" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidKillerkraehen" relativePoint="CENTERRIGHT" offsetX="140" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildRaidKillerkraehenOrt" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidKillerkraehenTXT" relativePoint="CENTERRIGHT" offsetX="80" offsetY="0"/>
+                        </Label>
+		<!-- Mittwoch VET-Farm Raid -->
+                        <Label name="DsRGuildRaidMittwoch" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildRaidKillerkraehen" relativePoint="LEFT" offsetX="0" offsetY="30"/>
+                        </Label>
+                        <Label name="DsRGuildRaidMittwochTXT" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidMittwoch" relativePoint="CENTERRIGHT" offsetX="140" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildRaidMittwochOrt" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidMittwochTXT" relativePoint="CENTERRIGHT" offsetX="80" offsetY="0"/>
+                        </Label>
+		<!-- Killerkrähen Freitag -->
+                        <Label name="DsRGuildRaidKillerkraehenFR" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildRaidMittwoch" relativePoint="LEFT" offsetX="0" offsetY="30"/>
+                        </Label>
+                        <Label name="DsRGuildRaidKillerkraehenFRTXT" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidKillerkraehenFR" relativePoint="CENTERRIGHT" offsetX="140" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildRaidKillerkraehenFROrt" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidKillerkraehenFRTXT" relativePoint="CENTERRIGHT" offsetX="80" offsetY="0"/>
+                        </Label>
+		<!-- Freitag VET -->
+                        <Label name="DsRGuildRaidFreitag" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildRaidKillerkraehenFR" relativePoint="LEFT" offsetX="0" offsetY="30"/>
+                        </Label>
+                        <Label name="DsRGuildRaidFreitagTXT" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidFreitag" relativePoint="CENTERRIGHT" offsetX="140" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildRaidFreitagOrt" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidFreitagTXT" relativePoint="CENTERRIGHT" offsetX="80" offsetY="0"/>
+                        </Label>
+		<!-- Samstag Anfänger -->
+                        <Label name="DsRGuildRaidSamstagAnf" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildRaidFreitag" relativePoint="LEFT" offsetX="0" offsetY="30"/>
+                        </Label>
+                        <Label name="DsRGuildRaidSamstagAnfTXT" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidSamstagAnf" relativePoint="CENTERRIGHT" offsetX="140" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildRaidSamstagAnfOrt" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidSamstagAnfTXT" relativePoint="CENTERRIGHT" offsetX="80" offsetY="0"/>
+                        </Label>
+		<!-- Samstag Hardmode -->
+                        <Label name="DsRGuildRaidSamstagHard" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildRaidSamstagAnf" relativePoint="LEFT" offsetX="0" offsetY="30"/>
+                        </Label>
+                        <Label name="DsRGuildRaidSamstagHardTXT" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidSamstagHard" relativePoint="CENTERRIGHT" offsetX="140" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildRaidSamstagHardOrt" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildRaidSamstagHardTXT" relativePoint="CENTERRIGHT" offsetX="80" offsetY="0"/>
+                        </Label>
+                    </Controls>
+                </Control>
+        <!-- PvP -->
+                <Control name="DsRGuildPvP"> 
+                    <Controls>
+                        <Label name="DsRGuildPvPTXT" width="700" height="10" font="ZoFontWinH4" inheritAlpha="true"  color="FF7F50"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="CENTER"  text="PvP" >
+                                <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildRaidTXT" relativePoint="LEFT" offsetX="0" offsetY="180"/>
+                        </Label>
+                        <Label name="DsRGuildPvPTXTInfo" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildPvPTXT" relativePoint="CENTERRIGHT" offsetX="70" offsetY="3"/>
+                        </Label>
+                <!-- Sonntag -->
+                        <Label name="DsRGuildPvP1" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildPvPTXT" relativePoint="LEFT" offsetX="10" offsetY="30"/>
+                        </Label>
+                        <Label name="DsRGuildPvP1Start" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildPvP1" relativePoint="CENTERRIGHT" offsetX="140" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildPvP1Ort" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildPvP1Start" relativePoint="CENTERRIGHT" offsetX="80" offsetY="0"/>
+                        </Label>
+                <!-- Montag -->
+                        <Label name="DsRGuildPvP2" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="BOTTOMLEFT" relativeTo="DsRGuildPvP1" relativePoint="LEFT" offsetX="0" offsetY="25"/>
+                        </Label>
+                        <Label name="DsRGuildPvP2Start" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildPvP2" relativePoint="CENTERRIGHT" offsetX="140" offsetY="0"/>
+                        </Label>
+                        <Label name="DsRGuildPvP2Ort" width="700" height="10" font="ZoFontGameSmall" inheritAlpha="true"  color="FFFFFF"
+                                wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="TOP"  text="" >
+                                <Anchor point="TOPLEFT" relativeTo="DsRGuildPvP2Start" relativePoint="CENTERRIGHT" offsetX="80" offsetY="0"/>
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>
+

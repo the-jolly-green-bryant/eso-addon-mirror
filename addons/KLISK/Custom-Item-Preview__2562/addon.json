@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/KLISK/Custom-Item-Preview__2562",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KLISK",
+  "canonical_id": "esoui:2562",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2562",
+  "deleted": false,
+  "directories": [
+    "CustomItemPreview"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2562/",
+  "fingerprint": "0f9889df3dfa2412c75132b1e364d2c97c580eafb16e61e9d6f717017bf2cb5c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8751.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2562",
+  "source_url": "https://www.esoui.com/downloads/info2562-CustomItemPreview.html",
+  "stats": {
+    "downloads": 36585,
+    "favorites": 69,
+    "monthly_downloads": 100
+  },
+  "title": "Custom Item Preview",
+  "updated_at": 1616162965000,
+  "version": "1.0"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kreksar-gmail.com/LibArmorInsulation__4709",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kreksar@gmail.com",
+  "canonical_id": "esoui:4709",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4709",
+  "deleted": false,
+  "directories": [
+    "LibArmorInsulation"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4709/",
+  "fingerprint": "6c6506c2406d19e7facd8a0b908ab0c3a94192440e04b70e7da33bea5007de81",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16734.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4709",
+  "source_url": "https://www.esoui.com/downloads/info4709-LibArmorInsulation.html",
+  "stats": {
+    "downloads": 232,
+    "favorites": 0,
+    "monthly_downloads": 210
+  },
+  "title": "LibArmorInsulation",
+  "updated_at": 1785195519000,
+  "version": "2.7.11"
+}

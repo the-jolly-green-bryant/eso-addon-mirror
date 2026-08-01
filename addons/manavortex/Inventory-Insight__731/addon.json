@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/manavortex/Inventory-Insight__731",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:731",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:731",
+  "deleted": false,
+  "directories": [
+    "IIfA"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl731/",
+  "fingerprint": "dfc01869b10586434ada0256a42fc94d4901a88db193caaefe2eea4a0fbc1b04",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7743.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7742.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4588.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "731",
+  "source_url": "https://www.esoui.com/downloads/info731-InventoryInsight.html",
+  "stats": {
+    "downloads": 2773092,
+    "favorites": 1054,
+    "monthly_downloads": 5212
+  },
+  "title": "Inventory Insight",
+  "updated_at": 1760234233000,
+  "version": "3.93"
+}

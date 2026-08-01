@@ -1,0 +1,11 @@
+## Title: RolePlayNeeds - I Heard a Rumor
+## APIVersion: 101046
+## Version: BETA 0.3.2
+## Author: Matheus Macedo | @matheusbk2
+## Description: Immersive Tavern Rurmors And NPC Directions Addon - BETA
+## SavedVariables: IHeardARumor
+## DependsOn: LibAddonMenu-2.0>=40
+
+Tamriel_Data.lua
+IHeardARumor.lua
+bindings.xml

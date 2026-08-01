@@ -1,0 +1,9 @@
+## Title: m00SupportIconsExtension
+## Version: 1.1.0
+## Author: |c76c3f4@m00nyONE|r
+## APIVersion: 101036 101035
+## AddOnVersion: 010100
+## DependsOn: OdySupportIcons
+
+main.lua
+icons.lua

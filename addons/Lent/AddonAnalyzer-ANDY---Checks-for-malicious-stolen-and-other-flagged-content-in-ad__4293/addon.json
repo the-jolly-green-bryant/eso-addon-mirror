@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Lent/AddonAnalyzer-ANDY---Checks-for-malicious-stolen-and-other-flagged-content-in-ad__4293",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lent",
+  "canonical_id": "esoui:4293",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4293",
+  "deleted": false,
+  "directories": [
+    "Andy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4293/",
+  "fingerprint": "a3a06c0283468c2f43a81328ad34314441c99f7d5184613f5a15a0926ef247e5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14740.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14741.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14742.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4293",
+  "source_url": "https://www.esoui.com/downloads/info4293-AddonAnalyzerANDY-Checksformaliciousstolenandotherflaggedcontentinaddons.html",
+  "stats": {
+    "downloads": 410,
+    "favorites": 0,
+    "monthly_downloads": 11
+  },
+  "title": "AddonAnalyzer (ANDY) - Checks for malicious, stolen, and other flagged content in addons",
+  "updated_at": 1762903368000,
+  "version": "1.1.1"
+}

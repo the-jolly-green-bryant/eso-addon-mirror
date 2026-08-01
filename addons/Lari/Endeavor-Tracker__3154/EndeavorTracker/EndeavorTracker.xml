@@ -1,0 +1,362 @@
+<GuiXml>
+  <Controls>
+
+    <!-- SHORTCUT BUTTON BACKDROP -->
+    <Backdrop name="ET_ShortcutBG" alpha="0" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="80" y="80"/>
+      <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="GuiRoot" offsetX="10" offsetY="-10"/>
+      <OnInitialized>
+        self:SetParent(ZO_MainMenu)
+      </OnInitialized>
+    </Backdrop>
+
+    <!-- SHORTCUT BUTTON -->
+    <Button name="ET_ShortcutButton">
+      <Dimensions x="45" y="45"/>
+      <Anchor point="CENTER" relativeTo="ET_ShortcutBG" relativePoint="CENTER"/>
+      <Textures normal="esoui/art/currency/currency_seals_of_endeavor_64.dds"/>
+      <OnInitialized>
+        self:SetParent(ZO_MainMenu)
+      </OnInitialized>
+    </Button>
+
+    <!-- ET MAIN PANEL -->
+    <TopLevelControl name="ET_Panel" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" resizeToFitDescendents="true">
+      <DimensionConstraints minX="340" minY="200" maxX="340" />
+      <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="GuiRoot" offsetX="10" offsetY="80"/>
+
+      <Controls>
+        <!-- TITLE -->
+        <Label name="$(parent)Title" font="ZoFontGameBold" text="|cECB8A2ENDEAVOR TRACKER|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="15"/>
+        </Label>
+
+        <Button name="$(parent)Refresh" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="22" y="22"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="TOPRIGHT" offsetX="10"/>
+          <Textures normal="/esoui/art/mounts/ridingskill_ready.dds"/>
+        </Button>
+
+        <Button name="$(parent)HistoryButton" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="22" y="22"/>
+          <Anchor point="LEFT" relativeTo="$(parent)Title" relativePoint="RIGHT" offsetX="40"/>
+          <Textures normal="/esoui/art/tutorial/gamepad/achievement_categoryicon_summary.dds"/>
+        </Button>
+
+        <Button name="$(parent)EndeavorTotal" font="ZoFontGameBold" text="0" mouseEnabled="true" horizontalAlignment="RIGHT">
+          <Dimensions x="80" y="20"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="15"/>
+        </Button>
+
+        <Texture name="$(parent)TopDivider" textureFile="/esoui/art/characterwindow/characterwindow_leftside_divider.dds" tier="HIGH">
+          <Dimensions x="400" y="4"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="20" offsetY="50"/>
+        </Texture>
+
+        <!-- DAILY ENDEAVORS -->
+        <Control name="$(parent)_Daily">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)TopDivider" relativePoint="BOTTOMLEFT"/>
+
+          <Controls>
+            <Button name="$(parent)CollapseButton" inherits="ZO_ButtonBehaviorClickSound">
+              <Dimensions x="15" y="15"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-1" offsetY="12"/>
+              <Textures normal="esoui\art\buttons\pointsminus_up.dds"
+                        pressed="esoui\art\buttons\pointsminus_down.dds"
+                        mouseOver="esoui\art\buttons\pointsminus_over.dds" />
+            </Button>
+
+            <Button name="$(parent)ExpandButton" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+              <Dimensions x="17" y="17"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-2" offsetY="12"/>
+              <Textures normal="esoui\art\buttons\pointsplus_up.dds"
+                        pressed="esoui\art\buttons\pointsplus_down.dds"
+                        mouseOver="esoui\art\buttons\pointsplus_over.dds" />
+            </Button>
+
+            <Label name="$(parent)Header" font="ZoFontWinT2" text="DAILY ENDEAVORS">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="10"/>
+              <DimensionConstraints minX="255" minY="20" maxX="255" maxY="0"/>
+            </Label>
+
+            <Label name="$(parent)Status" font="ZoFontWinT2" text="0/0">
+              <Anchor point="TOPRIGHT" relativeTo="ET_PanelTopDivider" relativePoint="BOTTOMRIGHT" offsetX="-100" offsetY="10"/>
+            </Label>
+
+            <Control name="ET_DailyActivities" resizeToFitDescendents="true">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT"/>
+              <DimensionConstraints minX="320"/>
+            </Control>
+          </Controls>
+        </Control>
+
+        <Texture name="$(parent)MiddleDivider" textureFile="/esoui/art/characterwindow/characterwindow_leftside_divider.dds" tier="HIGH">
+          <Dimensions x="400" y="4"/>
+          <Anchor point="TOPLEFT" relativeTo="ET_DailyActivities" relativePoint="BOTTOMLEFT" offsetX="-20" offsetY="15"/>
+        </Texture>
+
+        <!-- WEEKLY ENDEAVORS -->
+        <Control name="$(parent)_Weekly">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)MiddleDivider" relativePoint="BOTTOMLEFT"/>
+
+          <Controls>
+            <Button name="$(parent)CollapseButton" inherits="ZO_ButtonBehaviorClickSound">
+              <Dimensions x="15" y="15"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-1" offsetY="12"/>
+              <Textures normal="esoui\art\buttons\pointsminus_up.dds"
+                        pressed="esoui\art\buttons\pointsminus_down.dds"
+                        mouseOver="esoui\art\buttons\pointsminus_over.dds" />
+            </Button>
+
+            <Button name="$(parent)ExpandButton" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+              <Dimensions x="17" y="17"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-2" offsetY="12"/>
+              <Textures normal="esoui\art\buttons\pointsplus_up.dds"
+                        pressed="esoui\art\buttons\pointsplus_down.dds"
+                        mouseOver="esoui\art\buttons\pointsplus_over.dds" />
+            </Button>
+
+            <Label name="$(parent)Header" font="ZoFontWinT2" text="WEEKLY ENDEAVORS">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="10"/>
+              <DimensionConstraints minX="255" minY="20" maxX="255" maxY="0"/>
+            </Label>
+
+            <Label name="$(parent)Status" font="ZoFontWinT2" text="0/0">
+              <Anchor point="TOPRIGHT" relativeTo="ET_PanelMiddleDivider" relativePoint="BOTTOMRIGHT" offsetX="-100" offsetY="10"/>
+            </Label>
+
+            <Control name="ET_WeeklyActivities" resizeToFitDescendents="true">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="350"/>
+            </Control>
+          </Controls>
+        </Control>
+
+        <Texture name="$(parent)BottomDivider" textureFile="/esoui/art/characterwindow/characterwindow_leftside_divider.dds" tier="HIGH">
+          <Dimensions x="400" y="4"/>
+          <Anchor point="TOPLEFT" relativeTo="ET_WeeklyActivities" relativePoint="BOTTOMLEFT" offsetX="-20" offsetY="15"/>
+        </Texture>
+
+        <Backdrop name="$(parent)BG" inherits="ZO_MinorMungeBackdrop_SemiTransparentBlack">
+          <Dimensions x="360"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-10" offsetY="-10"/>
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)BottomDivider" relativePoint="BOTTOMLEFT" offsetX="-30" offsetY="30"/>
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- ET HISTORY PANEL -->
+    <TopLevelControl name="ET_History" mouseEnabled="true" movable="true" clampedToScreen="true" resizeHandleSize="10" hidden="true">
+      <DimensionConstraints minX="600" minY="400" maxX="600" maxY="800" />
+      <Anchor point="CENTER" relativePoint="CENTER" relativeTo="GuiRoot" />
+
+      <OnResizeStop>
+        ET_History_On_Resize_Stop()
+      </OnResizeStop>
+
+      <Controls>
+        <!--TITLE -->
+        <Label name="$(parent)Title" font="ZoFontGameBold" text="|cECB8A2ENDEAVOR HISTORY|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="15"/>
+        </Label>
+
+        <Button name="$(parent)EndeavorTotal" font="ZoFontGameBold" text="0" mouseEnabled="true" horizontalAlignment="RIGHT">
+          <Dimensions x="80" y="20"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-50" offsetY="15"/>
+        </Button>
+
+        <Button name="$(parent)CloseButton" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="30" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="18" />
+          <Textures normal="esoui\art\buttons\closebutton_up.dds"
+                    pressed="esoui\art\buttons\closebutton_down.dds"
+                    mouseOver="esoui\art\buttons\closebutton_mouseover.dds" />
+        </Button>
+
+        <Texture name="$(parent)TopDivider" textureFile="/esoui/art/characterwindow/characterwindow_leftside_divider.dds" tier="HIGH">
+          <Dimensions x="750" y="4"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="20" offsetY="50"/>
+        </Texture>
+
+        <Button name="$(parent)DailiesButton" inherits="ZO_MenuDropDownTextButton">
+          <Dimensions x="220" y="30" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)TopDivider" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
+          <PressedOffset x="0" y="0" />
+          <Textures mouseOver="/esoui/art/buttons/eso_buttonlarge_mouseover.dds"
+                    pressed="/esoui/art/buttons/eso_buttonlarge_mouseover.dds" />
+          <OnInitialized>
+            self:SetText(GetString(ENDEAVOR_TRACKER_HistoryPanelDailiesButton))
+          </OnInitialized>
+        </Button>
+
+        <Button name="$(parent)WeekliesButton" inherits="ZO_MenuDropDownTextButton">
+          <Dimensions x="220" y="30" />
+          <Anchor point="LEFT" relativeTo="$(parent)DailiesButton" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+          <PressedOffset x="0" y="0" />
+          <Textures mouseOver="/esoui/art/buttons/eso_buttonlarge_mouseover.dds"
+                    pressed="/esoui/art/buttons/eso_buttonlarge_mouseover.dds" />
+          <OnInitialized>
+            self:SetText(GetString(ENDEAVOR_TRACKER_HistoryPanelWeekliesButton))
+          </OnInitialized>
+        </Button>
+
+        <Button name="$(parent)StatsButton" inherits="ZO_MenuDropDownTextButton" text="Stats">
+          <Dimensions x="110" y="30" />
+          <Anchor point="LEFT" relativeTo="$(parent)WeekliesButton" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+          <PressedOffset x="0" y="0" />
+          <Textures mouseOver="/esoui/art/buttons/eso_buttonlarge_mouseover.dds"
+                    pressed="/esoui/art/buttons/eso_buttonlarge_mouseover.dds" />
+          <OnInitialized>
+            self:SetText(GetString(ENDEAVOR_TRACKER_HistoryPanelStatsButton))
+          </OnInitialized>
+        </Button>
+
+        <Texture name="$(parent)MiddleDivider" textureFile="/esoui/art/characterwindow/characterwindow_leftside_divider.dds" tier="HIGH">
+          <Dimensions x="750" y="4"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="20" offsetY="100"/>
+        </Texture>
+
+        <Control name="$(parent)Headers">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="110" />
+          <Dimensions y="32" />
+          <Controls>
+            <Control name="$(parent)Date" inherits="ZO_SortHeader">
+              <Anchor point="TOPLEFT" />
+              <Dimensions x="100" y="32" />
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, GetString(ENDEAVOR_TRACKER_HistoryPanelHeaderDate), "date", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontWinT2")
+              </OnInitialized>
+            </Control>
+            <Control name="$(parent)Name" inherits="ZO_SortHeader">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Date" relativePoint="TOPRIGHT" />
+              <Dimensions x="250" y="32" />
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, GetString(ENDEAVOR_TRACKER_HistoryPanelHeaderName), "name", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontWinT2")
+              </OnInitialized>
+            </Control>
+            <Control name="$(parent)Rewards" inherits="ZO_SortHeader" horizontalAlignment="RIGHT">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" />
+              <Dimensions x="120" y="32" />
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, GetString(ENDEAVOR_TRACKER_HistoryPanelHeaderRewards), "rewards", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, "ZoFontWinT2")
+              </OnInitialized>
+            </Control>
+            <Control name="$(parent)Misc" inherits="ZO_SortHeader" horizontalAlignment="RIGHT">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Rewards" relativePoint="TOPRIGHT" />
+              <Dimensions x="80" y="32" />
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, GetString(ENDEAVOR_TRACKER_HistoryPanelHeaderMisc), "misc", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, "ZoFontWinT2")
+              </OnInitialized>
+            </Control>
+          </Controls>
+        </Control>
+
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-20" />
+        </Control>
+
+        <Control name="$(parent)Stats">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="110" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-20" />
+          <Controls>
+
+            <Label name="$(parent)TrackingDate" font="$(BOLD_FONT)|$(KB_16)|soft-shadow-thick" horizontalAlignment="RIGHT" mouseEnabled="true">
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-25" offsetY="0" />
+            </Label>
+
+            <Control name="$(parent)Container" inherits="ZO_ScrollContainer">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="32" />
+              <Anchor point="BOTTOMRIGHT"/>
+              <OnInitialized>
+                ZO_Scroll_Initialize(self)
+              </OnInitialized>
+            </Control>
+          </Controls>
+        </Control>
+
+        <Backdrop name="$(parent)BG" inherits="ZO_MinorMungeBackdrop_SemiTransparentBlack">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-15" offsetY="-15"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="15" offsetY="15"/>
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- VIRTUALs -->
+
+    <!--ET ENDEAVOR TEMPLATE -->
+    <Control name="ET_EndeavorTemplate" resizeToFitDescendents="true" virtual="true">
+      <Controls>
+        <Button name="$(parent)_Checkbox" inherits="ZO_CheckButton">
+          <Dimensions x="16" y="16"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-5" offsetY="2" />
+          <OnInitialized>
+            ZO_CheckButton_SetToggleFunction(self, ET.OnEndeavorCheckboxClicked)
+          </OnInitialized>
+        </Button>
+        <Label name="$(parent)_Name" mouseEnabled="true" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" text="0/0" wrapMode="ELLIPSIS">
+          <DimensionConstraints minX="230" minY="20" maxX="230" maxY="0"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+        </Label>
+        <Label name="$(parent)_Progress" mouseEnabled="true" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" horizontalAlignment="RIGHT" wrapMode="ELLIPSIS" text="0/0">
+          <DimensionConstraints minX="50" minY="20" maxX="50" maxY="0" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Name" relativePoint="TOPRIGHT"/>
+        </Label>
+      </Controls>
+    </Control>
+
+    <Button name="ET_HistoryRowTemplate" virtual="true">
+      <Dimensions y="30" />
+      <Anchor point="RIGHT" relativeTo="$(parent)" />
+      <OnMouseEnter>
+        ET.HistoryRowOnMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+        ET.HistoryRowOnMouseExit(self)
+      </OnMouseExit>
+      <Controls>
+        <Label name="$(parent)Date" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" wrapMode="ELLIPSIS">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="4" />
+          <Dimensions x="100" y="32" />
+        </Label>
+        <Label name="$(parent)Name" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" wrapMode="ELLIPSIS">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Date" relativePoint="TOPRIGHT" />
+          <Dimensions x="285" y="32" />
+        </Label>
+        <Label name="$(parent)Rewards" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" />
+          <Dimensions x="80" y="32" />
+        </Label>
+        <Label name="$(parent)Misc" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Rewards" relativePoint="TOPRIGHT" />
+          <Dimensions x="80" y="32" />
+        </Label>
+      </Controls>
+    </Button>
+
+    <Control name="ET_StatsRowTemplate" mouseEnabled="true" virtual="true">
+      <Dimensions x="600" y="32" />
+      <Controls>
+        <Texture name="$(parent)BG" textureFile="/esoui/art/miscellaneous/listitem_highlight.dds" hidden="true">
+          <Dimensions x="545" y="50" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="-4" />
+        </Texture>
+        <Label name="$(parent)Name" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" wrapMode="ELLIPSIS">
+          <Dimensions x="445" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+        </Label>
+        <Label name="$(parent)Value" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+          <Dimensions x="100" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT"/>
+        </Label>
+      </Controls>
+      <OnMouseEnter>
+        GetControl(self, "BG"):SetHidden(false)
+      </OnMouseEnter>
+      <OnMouseExit>
+        GetControl(self, "BG"):SetHidden(true)
+      </OnMouseExit>
+    </Control>
+
+  </Controls>
+</GuiXml>

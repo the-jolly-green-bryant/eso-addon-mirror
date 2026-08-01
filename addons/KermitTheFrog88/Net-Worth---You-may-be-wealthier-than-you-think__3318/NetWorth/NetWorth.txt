@@ -1,0 +1,8 @@
+## Title: Net Worth
+## APIVersion: 101038
+## Author: @KermitTheFrog88
+## DependsOn: LibAddonMenu-2.0>=28 TamrielTradeCentre
+## SavedVariables: NetWorthVars
+
+NetWorth.lua
+NetWorth.xml

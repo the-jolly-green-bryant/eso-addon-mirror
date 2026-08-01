@@ -1,0 +1,11 @@
+## Title: OffTaunt
+## Author: @Jarva [EU]
+## APIVersion: 100033
+## DependsOn: LibAddonMenu-2.0 LibSkillBlocker
+## SavedVariables: OffTauntVars
+## Version: 1.0.0
+## AddOnVersion: 100
+
+core.lua
+data.lua
+menu.lua

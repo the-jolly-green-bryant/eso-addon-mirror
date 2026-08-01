@@ -1,0 +1,64 @@
+{
+  "archive_path": "addons/kanori/Chaotic-Tools__3686",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kanori",
+  "canonical_id": "esoui:3686",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3686",
+  "deleted": false,
+  "directories": [
+    "ChaoticTools"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3686/",
+  "fingerprint": "76eba2bdb7e8ee5ccc18fc6da0457257643ec00974186a9866f0414d40b50cfb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12520.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12521.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12522.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12523.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3686",
+  "source_url": "https://www.esoui.com/downloads/info3686-ChaoticTools.html",
+  "stats": {
+    "downloads": 1905,
+    "favorites": 1,
+    "monthly_downloads": 11
+  },
+  "title": "Chaotic Tools",
+  "updated_at": 1697131554000,
+  "version": "2.171"
+}

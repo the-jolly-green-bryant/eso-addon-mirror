@@ -1,0 +1,19 @@
+
+## Title: |c3CB371Confirm Master Writ|r
+## Author: |c3CB371@Marify|r
+## APIVersion: 101036
+## Version: 1.4.0
+## DependsOn: LibAddonMenu-2.0 LibCustomMenu Lib3D LibSets LibMarify CustomCompassPins LibCharacterKnowledge
+## OptionalDependsOn: AwesomeGuildStore DailyAlchemy DailyProvisioning
+## SavedVariables: ConfirmMasterWritVariables
+
+ConfirmMasterWrit.lua
+ConfirmMasterWrit.xml
+Marker.lua
+Inventory.lua
+
+lang/en.lua
+lang/$(language).lua
+
+bindings.xml
+

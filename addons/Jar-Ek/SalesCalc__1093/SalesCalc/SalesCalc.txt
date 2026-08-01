@@ -1,0 +1,7 @@
+## Title: SalesCalc
+## APIVersion: 100011
+## SavedVariables: SalesCalc_Save
+
+SalesCalc.lua
+SalesCalc.xml
+bindings.xml

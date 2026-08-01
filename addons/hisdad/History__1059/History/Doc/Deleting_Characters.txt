@@ -1,0 +1,26 @@
+Characters come and go, but History remembers them.
+Until there are too many and it locks up.
+
+Solution:
+Delete your old scrap characters.
+
+Go to the savedvariables folder and copy the history.lua file somewhere safe.
+The script makes a backup into a subfolder History_bak. You can totally trust that, Right?!  Nope.
+
+
+Start the iuplua53.exe  console
+Use the "Load" button, navigate to the history folder and select  Delete-Character.lua
+Click Execute.
+
+If there is more than one account in use, select the account.
+
+Make the dialog wider, because I can't be arsed figuring out how to do it under program control.
+
+Select a Character to be deleted.
+Confirm.
+
+Click "Execute" again to delete another char and repeat.
+
+Close the iuplua console when finished.
+
+

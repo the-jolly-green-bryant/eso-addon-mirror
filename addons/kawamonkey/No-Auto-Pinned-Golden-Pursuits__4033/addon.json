@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/No-Auto-Pinned-Golden-Pursuits__4033",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:4033",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4033",
+  "deleted": false,
+  "directories": [
+    "NoAutoPinnedGoldenPursuits"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4033/",
+  "fingerprint": "eafe18ef3d679e20e5df268b2ab07f16ff6496fbff7c329477941f8dfedfc4ec",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13742.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4033",
+  "source_url": "https://www.esoui.com/downloads/info4033-NoAutoPinnedGoldenPursuits.html",
+  "stats": {
+    "downloads": 1124,
+    "favorites": 3,
+    "monthly_downloads": 34
+  },
+  "title": "No Auto Pinned Golden Pursuits",
+  "updated_at": 1739012824000,
+  "version": "1.0"
+}

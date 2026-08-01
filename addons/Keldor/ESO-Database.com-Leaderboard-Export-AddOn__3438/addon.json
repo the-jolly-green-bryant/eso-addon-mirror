@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/Keldor/ESO-Database.com-Leaderboard-Export-AddOn__3438",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Keldor",
+  "canonical_id": "esoui:3438",
+  "category_id": "26",
+  "compatibility": [],
+  "content_id": "esoui:3438",
+  "deleted": false,
+  "directories": [
+    "ESODatabaseLeaderboardExport"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3438/",
+  "fingerprint": "3b188e56aa24676513103d7d7168560ff949d614399a6422d6f8387867745512",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3438",
+  "source_url": "https://www.esoui.com/downloads/info3438-ESO-Database.comLeaderboardExportAddOn.html",
+  "stats": {
+    "downloads": 22992,
+    "favorites": 2,
+    "monthly_downloads": 24
+  },
+  "title": "ESO-Database.com Leaderboard Export AddOn",
+  "updated_at": 1755615532000,
+  "version": "1.0.13"
+}

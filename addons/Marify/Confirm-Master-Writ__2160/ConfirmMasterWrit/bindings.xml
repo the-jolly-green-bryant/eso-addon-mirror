@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+
+    <Category name="|c3CB371ConfirmMasterWrit|r">
+      <Action name="CMW_ALL_MARK">
+        <Down>ConfirmMasterWrit:ShowMarker()</Down>
+      </Action>
+    </Category>
+
+  </Layer>
+</Bindings>
+

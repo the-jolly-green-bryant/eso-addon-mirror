@@ -1,0 +1,9 @@
+## APIVersion: 101034
+## AddonVersion: 1003
+## Title: CyroDeal Leader Tool
+## Author: |c66ffff|Valandil|r
+## Description: CyroDeal module for tracking guild attendance in Cyrodiil
+## IsLibrary: false
+## DependsOn: CyroDeal LibGuildRoster
+
+CyroLeader.lua

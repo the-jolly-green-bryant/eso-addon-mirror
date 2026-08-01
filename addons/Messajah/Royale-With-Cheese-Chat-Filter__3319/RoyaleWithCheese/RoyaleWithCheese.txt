@@ -1,0 +1,19 @@
+## Title: Royale With Cheese (Chat Filter)
+## Author: |cb7ff00@Messajah (EU)|r
+## Description: Cleans up the Elder Scrolls Online chat, Quentin Tarantino style with guns blazing. You know what they call a Quarter Pounder with Cheese in Paris? They call it a Royale with Cheese... Well, they can keep it. It's called a Quarter Pounder!
+## Version: 1.1.0
+## APIVersion: 101032 101033
+## DependsOn: LibAddonMenu-2.0>=32
+## OptionalDependsOn: pChat
+## OptionalDependsOn: EnglishMfkr
+## SavedVariables: ROYALEWITHCHEESE_DB
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media
+## Inc. or its affiliates. The Elder Scrolls and related logos are registered
+## trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+## other countries. All rights reserved.
+
+## ADDON CODE LICENSE: All rights reserved.
+
+
+Main.lua

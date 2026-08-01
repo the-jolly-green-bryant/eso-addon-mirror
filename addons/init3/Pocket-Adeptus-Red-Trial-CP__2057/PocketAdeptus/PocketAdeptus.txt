@@ -1,0 +1,19 @@
+﻿##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+##
+
+## Title: |cff0096Pocket|r |cB41400Adeptus|r
+## Description: Gives a simple way to send all group members CP before trials
+## APIVersion: 100027 100028
+## Author: |cff0096init3|r, |cff966ds.av|r & |c721919adeptusminor|
+## Version: 2.4
+## SavedVariables: PocketAdeptusVars PocketAdeptusCharacterVars
+## DependsOn: LibAddonMenu-2.0 LibSlashCommander
+
+src/PocketAdeptus.lua
+src/Defaults.lua
+src/Settings.lua

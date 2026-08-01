@@ -1,0 +1,38 @@
+--------------------------------------
+ Khrill Helm Control HELMET FOV addin
+        Package instructions
+--------------------------------------
+
+1. Find a name for your package ^^ (<yourPachageName>)
+
+2. Create a folder named <yourPachageName> in KhrillHelmControlFOVaddin\Fov directory
+
+3. Copy all your textures in directory KhrillHelmControlFOVaddin\Fov\<yourPachageName>
+
+4. Create an instance of file example.lua named <yourPachageName> in KhrillHelmControlFOVaddin\Fov directory
+
+5. Edit this file and change :
+5.1.	change line 10 : local PACKAGE_NAME = "<yourPachageName>"
+5.2.	list all your texture's files (line 38) into itemStyle category like this :
+			addinList[<ITEMSTYLE1>] = {
+				"file1.dds",
+				"file2.dds",
+			}
+			addinList[<ITEMSTYLE2>] = {
+				"file3.dds",
+			}
+
+
+6. Create an instance of file KhrillHelmControlFOVpackexample.txt named KhrillHelmControlFOVpack<yourPachageName>.txt in KhrillHelmControlFOVaddin directory
+
+7. Edit this file and change
+7.1.	edit header strings (title, author, description, version)
+7.2.	must have this line (8) :
+			../KhrillHelmControlFOVaddin/Fov/<yourPachageName>.lua
+			
+8. Make a zip file with this structure :
+	KhrillHelmControlFOVpack<yourPachageName>/KhrillHelmControlFOVpack<yourPachageName>.txt
+	KhrillHelmControlFOVpack<yourPachageName>/Fov/<yourPachageName>.lua
+	KhrillHelmControlFOVpack<yourPachageName>/Fov/<yourPachageName>/(all your dds texture files)
+
+9. Post this package on ESOUI ;)

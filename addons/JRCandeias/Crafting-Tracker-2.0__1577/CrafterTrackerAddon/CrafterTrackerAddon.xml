@@ -1,0 +1,465 @@
+<GuiXml> 
+   <Controls>
+   <TopLevelControl name = "CrafterTrackerAddonContainer" clampedToScreen = "true" mouseEnabled = "true" movable = "true" hidden = "false">
+  
+       <Dimensions x = "340" y = "295" />      
+	   <Anchor point = "TOPLEFT" relativeTo = "GuiRoot" relativePoint = "CENTER" offsetX = "0" offsetY = "0"/>
+       <OnMoveStop>
+            CrafterTrackerAddon.SaveLoc()
+       </OnMoveStop>
+       <Controls>
+			<!-- Background -->
+			<Backdrop name="$(parent)MainBackground" edgeColor="FF000000" centerColor="FF333333" >
+				<Edge edgeSize="1"/>	
+				<Dimensions x = "340" y = "295" />
+				<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="0"/>
+			</Backdrop>
+		   
+			<Label name="$(parent)Header" font="ZoFontGameOutline" color="ffffff" text="Crafting Tracker 2.0" verticalAlignment="CENTER" horizontalAlignment="LEFT">			
+               <Dimensions x="188" y="20" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)MainBackground" relativePoint="TOPLEFT" offsetX="5" offsetY="0"/>
+			</Label>
+			
+			<Button name = "$(parent)_Collected"  inherits = "ZO_DefaultButton" text = "Collected" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+				<Anchor point = "BOTTOMLEFT" relativeTo="$(parent)MainBackground" relativePoint="BOTTOMLEFT "offsetX="5" offsetY="-5"/>
+		        <Dimensions x = "130" y = "20" />
+				<MouseButton enabled = "true" />
+					<OnMouseDown>
+						CrafterTrackerAddon.ShowCollected()
+					</OnMouseDown>
+			</Button>
+			
+			<Button name = "$(parent)_Total"  inherits = "ZO_DefaultButton" text = "Total" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+				<Anchor point = "BOTTOMRIGHT" relativeTo="$(parent)MainBackground" relativePoint="BOTTOMRIGHT "offsetX="-5" offsetY="-5"/>
+		        <Dimensions x = "130" y = "20" />
+				<MouseButton enabled = "true" />
+					<OnMouseDown>
+						CrafterTrackerAddon.ShowTotal()
+					</OnMouseDown>
+			</Button>
+			
+			<Button name = "$(parent)_Hide"  inherits = "ZO_DefaultButton" text = "X">
+				<Anchor point = "TOPRIGHT" relativeTo="$(parent)MainBackground" relativePoint="TOPRIGHT "offsetX="0" offsetY="0"/>
+		        <Dimensions x = "20" y = "20" />
+				<MouseButton enabled = "true" />
+					<OnMouseDown>
+						CrafterTrackerAddonShow()
+					</OnMouseDown>
+			</Button>
+	   
+		    <!-------------------------------------------------------------------- FIRST ROW -------------------------------------------------------------------->
+		    <Control name="$(parent)MaterialRow" hidden = "false" > 
+			<Anchor point="TOPLEFT"  relativeTo="$(parent)MainBackground" relativePoint="TOPLEFT" offsetX="0" offsetY="5"/>
+				<Controls>
+					<Backdrop name="$(parent)Content" edgeColor="FF000000" centerColor="FF1a1a1a" >
+						<Edge edgeSize="1"/>	
+						<Dimensions x = "330" y = "64" />		
+						<Anchor point="TOPLEFT"  relativeTo="$(parent)MaterialRow" relativePoint="TOPLEFT" offsetX="5" offsetY="20"/>
+					</Backdrop>
+					
+				    <!-- Tempering Alloy -->
+				    <Texture name="$(parent)TemperingAlloyIcon" textureFile="/esoui/art/icons/crafting_tempering_alloy.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)Content" relativePoint="TOPLEFT" offsetX="3" offsetY="5"/>
+					   <Dimensions x="32" y="32"/>
+				    </Texture>
+				    <Label name="$(parent)TemperingAlloyLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="32" y="32" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)TemperingAlloyIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				    </Label>
+
+				    <!-- Dreugh Wax -->
+				    <Texture name="$(parent)DreughWaxIcon" textureFile="/esoui/art/icons/crafting_outfitter_potion_014.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)TemperingAlloyIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+					   <Dimensions x="32" y="32"/>
+				    </Texture>
+				    <Label name="$(parent)DreughWaxLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="32" y="32" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)DreughWaxIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				    </Label>
+
+				    <!-- Rosin -->
+				    <Texture name="$(parent)RosinIcon" textureFile="/esoui/art/icons/crafting_wood_rosin.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)DreughWaxIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+					   <Dimensions x="32" y="32"/>
+				    </Texture>  
+				    <Label name="$(parent)RosinLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="32" y="32" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)RosinIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				    </Label>
+				   
+				   <!-- Kuta -->
+				   <Texture name="$(parent)KutaIcon" textureFile="/esoui/art/icons/crafting_components_runestones_001.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)RosinIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+					   <Dimensions x="32" y="32"/>
+				   </Texture>              
+					<Label name="$(parent)KutaLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="32" y="32" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)KutaIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				   </Label>
+				   
+				   <!-- Perfect Roe -->
+				   <Texture name="$(parent)PerfectRoeIcon" textureFile="/esoui/art/icons/crafting_heavy_armor_vendor_component_002.dds">
+					  <Anchor point="TOPLEFT" relativeTo="$(parent)KutaIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+					   <Dimensions x="32" y="32"/>
+				   </Texture>
+				   <Label name="$(parent)PerfectRoeLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="32" y="32" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)PerfectRoeIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				   </Label>
+				   
+				   <!-- Potent Nirncrux -->
+				   <Texture name="$(parent)PotentNirncruxIcon" textureFile="/esoui/art/icons/crafting_potent_nirncrux_dust.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)PerfectRoeIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+					   <Dimensions x="32" y="32"/>
+				   </Texture>
+				   <Label name="$(parent)PotentNirncruxLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="32" y="32" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)PotentNirncruxIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				   </Label>
+				   
+				   <!-- Fortified Nirncrux -->
+				   <Texture name="$(parent)FortifiedNirncruxIcon" textureFile="/esoui/art/icons/crafting_potent_nirncrux_stone.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)PotentNirncruxIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+					   <Dimensions x="32" y="32"/>
+				   </Texture>
+				   <Label name="$(parent)FortifiedNirncruxLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="32" y="32" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)FortifiedNirncruxIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				   </Label>
+				   
+					<!-- Zircon Plating -->
+				   <Texture name="$(parent)ZirconPlatingIcon" textureFile="/esoui/art/icons/jewelrycrafting_booster_refined_zircon.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)FortifiedNirncruxIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+					   <Dimensions x="32" y="32"/>
+				   </Texture>
+				   <Label name="$(parent)ZirconPlatingLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="32" y="32" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)ZirconPlatingIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				   </Label>
+
+				   <!-- Chromium Plating -->
+				   <Texture name="$(parent)ChromiumPlatingIcon" textureFile="/esoui/art/icons/jewelrycrafting_booster_refined_chromium.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)ZirconPlatingIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+					   <Dimensions x="32" y="32"/>
+				   </Texture>
+				   <Label name="$(parent)ChromiumPlatingLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="32" y="32" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)ChromiumPlatingIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				   </Label>
+				</Controls>
+			</Control>
+				   
+			<!-------------------------------------------------------------------- SECOND ROW -------------------------------------------------------------------->
+			<Control name="$(parent)RawMaterialRow" hidden = "false"> 
+			<Anchor point="TOPLEFT"  relativeTo="$(parent)MaterialRow" relativePoint="TOPLEFT" offsetX="0" offsetY="64"/>
+				<Controls>
+					<Backdrop name="$(parent)Content" edgeColor="FF000000" centerColor="FF1a1a1a" >
+						<Edge edgeSize="1"/>	
+						<Dimensions x = "330" y = "64" />		
+						<Anchor point="TOPLEFT"  relativeTo="$(parent)RawMaterialRow" relativePoint="TOPLEFT" offsetX="5" offsetY="20"/>
+					</Backdrop>
+					<!-- Rubedite Ore -->
+					<Texture name="$(parent)RubediteOreIcon" textureFile="/esoui/art/icons/crafting_jewelry_base_ruby_r1.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)Content" relativePoint="TOPLEFT" offsetX="3" offsetY="5"/>
+						<Dimensions x="32" y="32"/>
+					</Texture>
+					<Label name="$(parent)RubediteOreLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+						<Dimensions x="32" y="32" />
+						<Anchor point="TOPLEFT"  relativeTo="$(parent)RubediteOreIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+					</Label>
+
+				   <!-- Raw Ancestor Silk -->
+				   <Texture name="$(parent)RawAncestorSilkIcon" textureFile="/esoui/art/icons/crafting_light_armor_standard_f_005.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)RubediteOreIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+					   <Dimensions x="32" y="32"/>
+				   </Texture>
+				   <Label name="$(parent)RawAncestorSilkLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="32" y="32" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)RawAncestorSilkIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				   </Label>
+				   
+				   <!-- Rubedo Hide Scraps -->
+				   <Texture name="$(parent)RubedoHideScrapsIcon" textureFile="/esoui/art/icons/crafting_leather_ambergris.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)RawAncestorSilkIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+					   <Dimensions x="32" y="32"/>
+				   </Texture>
+				   <Label name="$(parent)RubedoHideScrapsLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="32" y="32" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)RubedoHideScrapsIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				   </Label>
+
+				   <!-- Rough Ruby Ash -->
+				   <Texture name="$(parent)RoughRubyAshIcon" textureFile="/esoui/art/icons/crafting_woodworking_rough_ruby_ash.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)RubedoHideScrapsIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+					   <Dimensions x="32" y="32"/>
+				   </Texture>  
+				   <Label name="$(parent)RoughRubyAshLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="32" y="32" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)RoughRubyAshIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				   </Label>
+				   
+				   <!-- Platinum Dust -->
+				    <Texture name="$(parent)PlatinumDustIcon" textureFile="/esoui/art/icons/crafting_platinum_dust.dds">
+				  	   <Anchor point="TOPLEFT" relativeTo="$(parent)RoughRubyAshIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+				 	   <Dimensions x="32" y="32"/>
+				    </Texture>  
+				    <Label name="$(parent)PlatinumDustLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+				 	   <Dimensions x="32" y="32" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)PlatinumDustIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				    </Label>
+				   
+				    <!-- Aetherial Dust -->
+				    <Texture name="$(parent)AetherialDustIcon" textureFile="/esoui/art/icons/crafting_ghost_vital_glow_dust.dds">
+				  	   <Anchor point="TOPLEFT" relativeTo="$(parent)PlatinumDustIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+				 	   <Dimensions x="32" y="32"/>
+				    </Texture>  
+				    <Label name="$(parent)AetherialDustLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+				 	   <Dimensions x="32" y="32" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)AetherialDustIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				    </Label>
+				   
+				    <!-- Zircon Grains -->
+					<Texture name="$(parent)ZirconGrainsIcon" textureFile="/esoui/art/icons/jewelrycrafting_booster_raw_zircon.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)AetherialDustIcon" relativePoint="TOPLEFT" offsetX="68" offsetY="0"/>
+						<Dimensions x="32" y="32"/>
+					</Texture>
+					<Label name="$(parent)ZirconGrainsLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+						<Dimensions x="32" y="32" />
+						<Anchor point="TOPLEFT"  relativeTo="$(parent)ZirconGrainsIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+					</Label>
+				   
+					<!-- Chromium Grains -->
+					<Texture name="$(parent)ChromiumGrainsIcon" textureFile="/esoui/art/icons/jewelrycrafting_booster_raw_chromium.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)ZirconGrainsIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+						<Dimensions x="32" y="32"/>
+					</Texture>
+					<Label name="$(parent)ChromiumGrainsLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+						<Dimensions x="32" y="32" />
+						<Anchor point="TOPLEFT"  relativeTo="$(parent)ChromiumGrainsIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+					</Label>
+					
+					
+				</Controls>
+			</Control>
+			
+			<!-------------------------------------------------------------------- THIRD ROW -------------------------------------------------------------------->		   
+			<Control name="$(parent)FurnitureMaterialRow" hidden = "false"> 
+			<Anchor point="TOPLEFT"  relativeTo="$(parent)RawMaterialRow" relativePoint="TOPLEFT" offsetX="0" offsetY="64"/>
+				<Controls>
+					<Backdrop name="$(parent)Content" edgeColor="FF000000" centerColor="FF1a1a1a" >
+						<Edge edgeSize="1"/>	
+						<Dimensions x = "330" y = "64" />		
+						<Anchor point="TOPLEFT"  relativeTo="$(parent)FurnitureMaterialRow" relativePoint="TOPLEFT" offsetX="5" offsetY="20"/>
+					</Backdrop>
+					<!-- Regulus -->
+					<Texture name="$(parent)RegulusIcon" textureFile="/esoui/art/icons/crafting_furniture_base_regulus.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)Content" relativePoint="TOPLEFT" offsetX="3" offsetY="5"/>
+						<Dimensions x="32" y="32"/>
+					</Texture>
+					<Label name="$(parent)RegulusLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+						<Dimensions x="32" y="32" />
+						<Anchor point="TOPLEFT"  relativeTo="$(parent)RegulusIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+					</Label>
+
+					<!-- Bast -->
+					<Texture name="$(parent)BastIcon" textureFile="/esoui/art/icons/crafting_furniture_base_bast_fiber.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)RegulusIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+						<Dimensions x="32" y="32"/>
+					</Texture>
+					<Label name="$(parent)BastLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+						<Dimensions x="32" y="32" />
+						<Anchor point="TOPLEFT"  relativeTo="$(parent)BastIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+					</Label>
+				   
+					<!-- Clean Pelt -->
+					<Texture name="$(parent)CleanPeltIcon" textureFile="/esoui/art/icons/crafting_furniture_base_clean_pelt.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)BastIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+						<Dimensions x="32" y="32"/>
+					</Texture>
+					<Label name="$(parent)CleanPeltLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+						<Dimensions x="32" y="32" />
+						<Anchor point="TOPLEFT"  relativeTo="$(parent)CleanPeltIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+					</Label>
+
+					<!-- Heartwood -->
+					<Texture name="$(parent)HeartwoodIcon" textureFile="/esoui/art/icons/crafting_furniture_base_heartwood.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)CleanPeltIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+						<Dimensions x="32" y="32"/>
+					</Texture>  
+					<Label name="$(parent)HeartwoodLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+						<Dimensions x="32" y="32" />
+						<Anchor point="TOPLEFT"  relativeTo="$(parent)HeartwoodIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+					</Label>
+				   
+					<!-- Mundane Rune -->
+					<Texture name="$(parent)MundaneRuneIcon" textureFile="/esoui/art/icons/crafting_furniture_base_mundante_rune.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)HeartwoodIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+						<Dimensions x="32" y="32"/>
+					</Texture>              
+					<Label name="$(parent)MundaneRuneLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+						<Dimensions x="32" y="32" />
+						<Anchor point="TOPLEFT"  relativeTo="$(parent)MundaneRuneIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+				   </Label>
+				   
+					<!-- Alchemical Resin -->
+					<Texture name="$(parent)AlchemicalResinIcon" textureFile="/esoui/art/icons/crafting_furniture_base_alchemical_resin.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)MundaneRuneIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+						<Dimensions x="32" y="32"/>
+					</Texture>
+					<Label name="$(parent)AlchemicalResinLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+						<Dimensions x="32" y="32" />
+						<Anchor point="TOPLEFT"  relativeTo="$(parent)AlchemicalResinIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+					</Label>
+				   
+					<!-- Decorative Wax -->
+					<Texture name="$(parent)DecorativeWaxIcon" textureFile="/esoui/art/icons/crafting_furniture_base_decorative_wax.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)AlchemicalResinIcon" relativePoint="TOPLEFT" offsetX="36" offsetY="0"/>
+						<Dimensions x="32" y="32"/>
+					</Texture>
+					<Label name="$(parent)DecorativeWaxLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+						<Dimensions x="32" y="32" />
+						<Anchor point="TOPLEFT"  relativeTo="$(parent)DecorativeWaxIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="32"/>
+					</Label>	
+				</Controls>
+			</Control>
+			
+			<!-------------------------------------------------------------------- FOURTH ROW -------------------------------------------------------------------->		   
+			<Control name="$(parent)AlchemyRow" hidden = "false"> 
+			<Anchor point="TOPLEFT"  relativeTo="$(parent)FurnitureMaterialRow" relativePoint="TOPLEFT" offsetX="0" offsetY="64"/>
+				<Controls>
+					<Backdrop name="$(parent)Content" edgeColor="FF000000" centerColor="FF1a1a1a" >
+						<Edge edgeSize="1"/>	
+						<Dimensions x = "330" y = "50" />		
+						<Anchor point="TOPLEFT"  relativeTo="$(parent)AlchemyRow" relativePoint="TOPLEFT" offsetX="5" offsetY="20"/>
+					</Backdrop>
+				
+					<!-- Blessed Thistle -->
+				    <Texture name="$(parent)BlessedThistleIcon" textureFile="/esoui/art/icons/crafting_cloth_serrated_leaves.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)Content" relativePoint="TOPLEFT" offsetX="2" offsetY="5"/>
+					   <Dimensions x="25" y="25"/>
+				    </Texture>
+				    <Label name="$(parent)BlessedThistleLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="25" y="25" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)BlessedThistleIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="25"/>
+				    </Label>
+					
+					<!-- Bugloss -->
+				    <Texture name="$(parent)BuglossIcon" textureFile="/esoui/art/icons/crafting_flower_vipers_bugloss_r1.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)BlessedThistleIcon" relativePoint="TOPLEFT" offsetX="30" offsetY="0"/>
+					   <Dimensions x="25" y="25"/>
+				    </Texture>
+				    <Label name="$(parent)BuglossLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="25" y="25" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)BuglossIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="25"/>
+				    </Label>
+					
+					<!-- Columbine -->
+				    <Texture name="$(parent)ColumbineIcon" textureFile="/esoui/art/icons/crafting_flower_columbine_r1.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)BuglossIcon" relativePoint="TOPLEFT" offsetX="30" offsetY="0"/>
+					   <Dimensions x="25" y="25"/>
+				    </Texture>
+				    <Label name="$(parent)ColumbineLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="25" y="25" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)ColumbineIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="25"/>
+				    </Label>
+					
+					<!-- Corn Flower -->
+				    <Texture name="$(parent)CornFlowerIcon" textureFile="/esoui/art/icons/crafting_flower_corn_flower_r1.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)ColumbineIcon" relativePoint="TOPLEFT" offsetX="30" offsetY="0"/>
+					   <Dimensions x="25" y="25"/>
+				    </Texture>
+				    <Label name="$(parent)CornFlowerLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="25" y="25" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)CornFlowerIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="25"/>
+				    </Label>
+					
+					<!-- Crimson Nirnroot 
+				    <Texture name="$(parent)CrimsonNirnrootIcon" textureFile="/esoui/art/icons/crafting_water_plant_nirnroot_crimson.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)CornFlowerIcon" relativePoint="TOPLEFT" offsetX="30" offsetY="0"/>
+					   <Dimensions x="25" y="25"/>
+				    </Texture>
+				    <Label name="$(parent)CrimsonNirnrootLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="25" y="25" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)CrimsonNirnrootIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="25"/>
+				    </Label>
+					-->
+					
+					<!-- Dragonthorn -->
+				    <Texture name="$(parent)DragonthornIcon" textureFile="/esoui/art/icons/crafting_forester_potion_sp_names_002.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)CornFlowerIcon" relativePoint="TOPLEFT" offsetX="30" offsetY="0"/>
+					   <Dimensions x="25" y="25"/>
+				    </Texture>
+				    <Label name="$(parent)DragonthornLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="25" y="25" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)DragonthornIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="25"/>
+				    </Label>
+					
+					<!-- Lady's Smoke -->
+				    <Texture name="$(parent)LadysSmokeIcon" textureFile="/esoui/art/icons/crafting_forester_potion_sp_names_001.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)DragonthornIcon" relativePoint="TOPLEFT" offsetX="30" offsetY="0"/>
+					   <Dimensions x="25" y="25"/>
+				    </Texture>
+				    <Label name="$(parent)LadysSmokeLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="25" y="25" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)LadysSmokeIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="25"/>
+				    </Label>
+					
+					<!-- Mountain Flower -->
+				    <Texture name="$(parent)MountainFlowerIcon" textureFile="/esoui/art/icons/crafting_flower_mountain_flower_r1.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)LadysSmokeIcon" relativePoint="TOPLEFT" offsetX="30" offsetY="0"/>
+					   <Dimensions x="25" y="25"/>
+				    </Texture>
+				    <Label name="$(parent)MountainFlowerLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="25" y="25" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)MountainFlowerIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="25"/>
+				    </Label>
+					
+					<!-- Nightshade -->
+				    <Texture name="$(parent)NightshadeIcon" textureFile="/esoui/art/icons/crafting_nightshade_01.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)MountainFlowerIcon" relativePoint="TOPLEFT" offsetX="30" offsetY="0"/>
+					   <Dimensions x="25" y="25"/>
+				    </Texture>
+				    <Label name="$(parent)NightshadeLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="25" y="25" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)NightshadeIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="25"/>
+				    </Label>
+					
+					<!-- Nirnroot -->
+				    <Texture name="$(parent)NirnrootIcon" textureFile="/esoui/art/icons/crafting_water_plant_nirnroot_r1.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)NightshadeIcon" relativePoint="TOPLEFT" offsetX="30" offsetY="0"/>
+					   <Dimensions x="25" y="25"/>
+				    </Texture>
+				    <Label name="$(parent)NirnrootLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="25" y="25" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)NirnrootIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="25"/>
+				    </Label>
+					
+					<!-- Water Hyacinth -->
+				    <Texture name="$(parent)WaterHyacinthIcon" textureFile="/esoui/art/icons/crafting_water_plant_water_hyacinth_r1.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)NirnrootIcon" relativePoint="TOPLEFT" offsetX="30" offsetY="0"/>
+					   <Dimensions x="25" y="25"/>
+				    </Texture>
+				    <Label name="$(parent)WaterHyacinthLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="25" y="25" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)WaterHyacinthIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="25"/>
+				    </Label>
+					
+					<!-- Wormwood -->
+				    <Texture name="$(parent)WormwoodIcon" textureFile="/esoui/art/icons/crafting_flower_wormwood_r1.dds">
+					   <Anchor point="TOPLEFT" relativeTo="$(parent)WaterHyacinthIcon" relativePoint="TOPLEFT" offsetX="30" offsetY="0"/>
+					   <Dimensions x="25" y="25"/>
+				    </Texture>
+				    <Label name="$(parent)WormwoodLabel" font="ZoFontGameSmall" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="CENTER">			
+					   <Dimensions x="25" y="25" />
+					   <Anchor point="TOPLEFT"  relativeTo="$(parent)WormwoodIcon" relativePoint="TOPLEFT" offsetX="0" offsetY="25"/>
+				    </Label>
+					
+					
+					
+				</Controls>
+			</Control>
+				   
+		</Controls>
+   </TopLevelControl>
+   </Controls>
+</GuiXml>

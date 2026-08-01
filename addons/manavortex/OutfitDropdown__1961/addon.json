@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/manavortex/OutfitDropdown__1961",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1961",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    }
+  ],
+  "content_id": "esoui:1961",
+  "deleted": false,
+  "directories": [
+    "OutfitDropdown"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1961/",
+  "fingerprint": "c43e3014ea8ecc816d9a91d5087ee72343b89b4ed2de5c18505bdf4ff44f388d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6615.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1961",
+  "source_url": "https://www.esoui.com/downloads/info1961-OutfitDropdown.html",
+  "stats": {
+    "downloads": 3321,
+    "favorites": 6,
+    "monthly_downloads": 19
+  },
+  "title": "OutfitDropdown",
+  "updated_at": 1522597441000,
+  "version": "1.0"
+}

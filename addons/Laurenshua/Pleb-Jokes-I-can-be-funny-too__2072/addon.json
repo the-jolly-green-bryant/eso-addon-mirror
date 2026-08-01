@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/Laurenshua/Pleb-Jokes-I-can-be-funny-too__2072",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Laurenshua",
+  "canonical_id": "esoui:2072",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:2072",
+  "deleted": false,
+  "directories": [
+    "PlebJokes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2072/",
+  "fingerprint": "19aa9d93583469a4b639ad57bae9f0df7bd9ba22d32b8a3c0d349d83e3e05879",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6985.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2072",
+  "source_url": "https://www.esoui.com/downloads/info2072-PlebJokesIcanbefunnytoo.html",
+  "stats": {
+    "downloads": 4276,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "Pleb Jokes: I can be funny too",
+  "updated_at": 1558567802000,
+  "version": "1.5.0"
+}

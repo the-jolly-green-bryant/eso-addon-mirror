@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/MycroftJr/Where-s-My-Guildhall---MycroftJr-Patch__2454",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MycroftJr",
+  "canonical_id": "esoui:2454",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:2454",
+  "deleted": false,
+  "directories": [
+    "WheresMyGuildHall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2454/",
+  "fingerprint": "b35a6e834ce05a140a7138936d6504a2510fa24bed7f5768911eaa0ebe2ce9cc",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2454",
+  "source_url": "https://www.esoui.com/downloads/info2454-WheresMyGuildhall-MycroftJrPatch.html",
+  "stats": {
+    "downloads": 7150,
+    "favorites": 0,
+    "monthly_downloads": 13
+  },
+  "title": "Where's My Guildhall - MycroftJr Patch",
+  "updated_at": 1567280846000,
+  "version": "2.1.3"
+}

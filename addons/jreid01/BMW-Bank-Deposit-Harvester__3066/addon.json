@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/jreid01/BMW-Bank-Deposit-Harvester__3066",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "jreid01",
+  "canonical_id": "esoui:3066",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3066",
+  "deleted": false,
+  "directories": [
+    "BMWDataHarvester"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3066/",
+  "fingerprint": "8fe13ccc91b4a2c8bf5f4246b1e542e725063c6b85d28e15fa49b79ab809fbac",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3066",
+  "source_url": "https://www.esoui.com/downloads/info3066-BMWBankDepositHarvester.html",
+  "stats": {
+    "downloads": 4992,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "BMW Bank Deposit Harvester",
+  "updated_at": 1692649808000,
+  "version": "2.0.9"
+}

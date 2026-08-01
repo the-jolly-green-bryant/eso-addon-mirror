@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Lerozain/Golden-Light-Guild-Hall-Portal__3389",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lerozain",
+  "canonical_id": "esoui:3389",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3389",
+  "deleted": false,
+  "directories": [
+    "GoldenLightGuildHall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3389/",
+  "fingerprint": "c1f4033762a02a60ed0b3ffeda0125c5edf9e50e4a103b7fc3f3aaf4eb872363",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11587.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3389",
+  "source_url": "https://www.esoui.com/downloads/info3389-GoldenLightGuildHallPortal.html",
+  "stats": {
+    "downloads": 2073,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "Golden Light Guild Hall Portal",
+  "updated_at": 1655672713000,
+  "version": "1.1"
+}

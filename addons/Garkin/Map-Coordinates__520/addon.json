@@ -1,0 +1,33 @@
+{
+  "archive_path": "addons/Garkin/Map-Coordinates__520",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Garkin",
+  "canonical_id": "esoui:520",
+  "category_id": "24",
+  "compatibility": [],
+  "content_id": "esoui:520",
+  "deleted": false,
+  "directories": [
+    "MapCoordinates"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl520/",
+  "fingerprint": "fae51860b4bcaa49e7a0d70ff907df15a406737fc0feced9f979c5f0db6d1807",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1581.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1580.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "520",
+  "source_url": "https://www.esoui.com/downloads/info520-MapCoordinates.html",
+  "stats": {
+    "downloads": 140626,
+    "favorites": 201,
+    "monthly_downloads": 237
+  },
+  "title": "Map Coordinates",
+  "updated_at": 1667336828000,
+  "version": "5.04"
+}

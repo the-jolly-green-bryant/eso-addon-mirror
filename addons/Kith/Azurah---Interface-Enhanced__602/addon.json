@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Kith/Azurah---Interface-Enhanced__602",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kith",
+  "canonical_id": "esoui:602",
+  "category_id": "21",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:602",
+  "deleted": false,
+  "directories": [
+    "Azurah"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl602/",
+  "fingerprint": "9f0d9e5bee0ffcbc4e329c01922164ff8c1284d050e1f0b2051da12805b7eac6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7441.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11308.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11309.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11310.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1853.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "602",
+  "source_url": "https://www.esoui.com/downloads/info602-Azurah-InterfaceEnhanced.html",
+  "stats": {
+    "downloads": 1466745,
+    "favorites": 1168,
+    "monthly_downloads": 2269
+  },
+  "title": "Azurah - Interface Enhanced",
+  "updated_at": 1731441651000,
+  "version": "2.4.47"
+}

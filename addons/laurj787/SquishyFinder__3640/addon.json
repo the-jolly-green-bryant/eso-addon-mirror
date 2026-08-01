@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/laurj787/SquishyFinder__3640",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "laurj787",
+  "canonical_id": "esoui:3640",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3640",
+  "deleted": false,
+  "directories": [
+    "SquishyFinder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3640/",
+  "fingerprint": "997a8bbb112e7aa65f1d43068169b4ec08ccee5b97bbf7953d11460e365f41dd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12407.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12408.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12411.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12410.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12409.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3640",
+  "source_url": "https://www.esoui.com/downloads/info3640-SquishyFinder.html",
+  "stats": {
+    "downloads": 3742,
+    "favorites": 8,
+    "monthly_downloads": 36
+  },
+  "title": "SquishyFinder",
+  "updated_at": 1684940951000,
+  "version": "1.7"
+}

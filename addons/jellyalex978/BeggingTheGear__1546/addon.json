@@ -1,0 +1,72 @@
+{
+  "archive_path": "addons/jellyalex978/BeggingTheGear__1546",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "jellyalex978",
+  "canonical_id": "esoui:1546",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1546",
+  "deleted": false,
+  "directories": [
+    "BeggingTheGear"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1546/",
+  "fingerprint": "2f4393cfe6003e77bbf19c048327578cbd2c0ad804cda9d562ecde0c847a9bd2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8838.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8839.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8840.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8837.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1546",
+  "source_url": "https://www.esoui.com/downloads/info1546-BeggingTheGear.html",
+  "stats": {
+    "downloads": 22616,
+    "favorites": 36,
+    "monthly_downloads": 26
+  },
+  "title": "BeggingTheGear",
+  "updated_at": 1675646921000,
+  "version": "2.3.2"
+}

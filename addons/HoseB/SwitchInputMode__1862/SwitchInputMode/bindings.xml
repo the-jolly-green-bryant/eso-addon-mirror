@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="General">
+    <Category name="Switch Input Mode">
+      <Action name="CHANGE_INPUT">
+        <Down>SwitchInputMode.InputChanged()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

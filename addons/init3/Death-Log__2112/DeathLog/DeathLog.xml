@@ -1,0 +1,81 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="DeathLogWindow" mouseEnabled="true" hidden="true" movable="true">
+			<Dimensions x="300" y="400"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+
+			<Controls>
+                    <Backdrop name="$(parent)Backdrop" edgeColor="000000" centerColor="222222" alpha="0.6" >
+                         <Dimensions x="300" y="400" />
+                         <Anchor point="TOPLEFT"  relativePoint="TOPLEFT"/>
+                         <Edge edgeSize="4" />
+                    </Backdrop>
+				<Label name="$(parent)Title" font="$(ANTIQUE_FONT)|18" text="Death Log" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions y="24"/>
+                         <Anchor point="TOP" relativeTo="DeathLogWindow" offsetX="0" offsetY="0" />
+				</Label>
+                    <Button name="$(parent)Button" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="32" y="32" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="6" offsetY="4" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						DeathLogWindow:SetHidden(true)
+                              DeathLog.sv["isWindowOpen"] = false
+					</OnClicked>
+				</Button>
+				<Button name="$(parent)MinimizeButton" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="32" y="32" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-26" offsetY="-3" />
+					<OnClicked>
+						if DeathLog.sv["isMinimized"] then
+							DeathLog.MaximizeWindow()
+						else
+							DeathLog.MinimizeWindow()
+						end
+					</OnClicked>
+				</Button>
+				<Button name="$(parent)ResetButton" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="32" y="32" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="-5" />
+					<Textures normal="EsoUI/Art/Buttons/edit_save_up.dds"
+						 pressed="EsoUI/Art/Buttons/edit_save_down.dds"
+						 mouseOver="EsoUI/Art/Buttons/edit_save_over.dds"
+						 disabled="EsoUI/Art/Buttons/edit_save_disabled.dds"/>
+					<OnClicked>
+						DeathLog.ResetLog()
+					</OnClicked>
+				</Button>
+				<Button name="$(parent)PinnedButton" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="50" y="50" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="26" offsetY="-4" />
+					<OnClicked>
+						if DeathLog.sv["isPinned"] then
+							DeathLog.UnpinWindow()
+						else
+							DeathLog.PinWindow()
+						end
+					</OnClicked>
+				</Button>
+			</Controls>
+               <Controls>
+                    <Backdrop name="$(parent)Backdrop2" edgeColor="000000" centerColor="000000" alpha="1" >
+                         <Dimensions x="300" y="27" />
+                         <Anchor point="TOPLEFT"  relativePoint="TOPLEFT"/>
+                         <Edge edgeSize="0" />
+                    </Backdrop>
+				<EditBox name="$(parent)Textbox" font="ZoFontWinT1" inherits="ZO_DefaultEditForBackdrop" maxInputCharacters="40000" editEnabled="false" multiLine="true">
+					<Anchor point="TOPLEFT" offsetX="6" offsetY="30" />
+					<Anchor point="BOTTOMRIGHT" />
+					<OnMouseEnter> self:TakeFocus() </OnMouseEnter>
+					<OnMouseExit> self:LoseFocus() </OnMouseExit>
+				</EditBox>
+               </Controls>
+               <OnMoveStop>
+                    DeathLog.SavePosition()
+               </OnMoveStop>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,23 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+	<Controls>
+        <TopLevelControl name="KillLocationsTooltip_TLC" inherits="TooltipTopLevel">
+            <Controls>
+                <Tooltip name="KillLocationsTooltip" inherits="ZO_BaseTooltip">
+                    <OnCleared>
+                        ZO_Tooltip_OnCleared(self)
+                    </OnCleared>
+                </Tooltip>
+            </Controls>
+        </TopLevelControl>
+
+        <Label name="IMP_KillLocations_PerformanceMeterTemplate" font="ZoFontTooltipSubtitle" color="EDE8D0" text="Update: - ms" mouseEnabled="true" virtual="true">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)Listing" relativePoint="BOTTOMLEFT" offsetX="4" offsetY="4" />
+            <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, BOTTOM, 'How fast kill locations updates. Let me know if it is too high (normally should be &lt;200 us). Will hide later.')
+            </OnMouseEnter>
+            <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+            </OnMouseExit>
+        </Label>
+	</Controls>
+</GuiXml>

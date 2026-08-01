@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/manavortex/ReloadUiButton__1474",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:1474",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    }
+  ],
+  "content_id": "esoui:1474",
+  "deleted": false,
+  "directories": [
+    "ReloadUiButton"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1474/",
+  "fingerprint": "2f49e2843fd9b0a34f2c680beff7e4284eceb5eafd331fe5ecbed26b7b92b92e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4768.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1474",
+  "source_url": "https://www.esoui.com/downloads/info1474-ReloadUiButton.html",
+  "stats": {
+    "downloads": 9061,
+    "favorites": 11,
+    "monthly_downloads": 21
+  },
+  "title": "ReloadUiButton",
+  "updated_at": 1473598500000,
+  "version": "0.2"
+}

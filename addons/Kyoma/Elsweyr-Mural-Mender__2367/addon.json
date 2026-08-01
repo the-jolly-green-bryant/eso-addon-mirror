@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Kyoma/Elsweyr-Mural-Mender__2367",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyoma",
+  "canonical_id": "esoui:2367",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2367",
+  "deleted": false,
+  "directories": [
+    "ElsweyrMuralMender"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2367/",
+  "fingerprint": "67d7bcb5df3cc19c838a9d02af5ca1ee217f322686c667ccd43252925a338915",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2367",
+  "source_url": "https://www.esoui.com/downloads/info2367-ElsweyrMuralMender.html",
+  "stats": {
+    "downloads": 49461,
+    "favorites": 52,
+    "monthly_downloads": 52
+  },
+  "title": "Elsweyr Mural Mender",
+  "updated_at": 1592224771000,
+  "version": "1.2"
+}

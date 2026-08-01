@@ -1,0 +1,14 @@
+## Title: Uhryels Ring of the Pale Order Reminder
+## Description: Whenever you enter a dungeon or trial as member of a group and wearing the Ring of the Pale Order, you will be reminded of that.
+## APIVersion: 101032
+## Version: 1.1.0
+## Author: |c1d6dadIrniben|r
+
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+UhryelsPaleRingReminder.lua

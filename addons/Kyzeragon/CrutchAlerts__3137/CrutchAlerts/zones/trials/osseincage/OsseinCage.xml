@@ -1,0 +1,41 @@
+<GuiXml>
+    <Controls>
+<!-- ======================================================================================================================= -->
+        <TopLevelControl name="CrutchAlertsCausticCarrion" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="true">
+            <Dimensions x="240" y="30"/>
+            <OnMoveStop>
+                CrutchAlerts:SavePosition()
+            </OnMoveStop>
+            <Controls>
+                <StatusBar name="$(parent)Bar" orientation="HORIZONTAL" hidden="false" value="0" layer="1" level="2">
+                    <Dimensions x="320" y="30"/>
+                    <AnchorFill/>
+                    <Limits min="0" max="10"/>
+                    <Controls>
+                        <Backdrop name="$(parent)Backdrop" centerColor="AA000000" edgeColor="AA000000" layer="1" level="0">
+                            <Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+                            <Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+                            <Edge edgeSize="2"/>
+                        </Backdrop>
+                    </Controls>
+                    <OnInitialized>
+                        ZO_StatusBar_SetGradientColor(self, ZO_XP_BAR_GRADIENT_COLORS)
+                        self.gloss = self:GetNamedChild("Gloss")
+                        CrutchAlerts.AddCarrionBarNotches()
+                    </OnInitialized>
+                </StatusBar>
+                <Label name="$(parent)Stacks" color="FFFFFF" text="0" verticalAlignment="CENTER" horizontalAlignment="LEFT" hidden="false">
+                    <Anchor point="LEFT" relativeTo="$(parent)Bar" relativePoint="RIGHT" offsetX="10"/>
+                </Label>
+                <Label name="$(parent)Text" color="CCCCCC" text="Individual Stacks" verticalAlignment="TOP" horizontalAlignment="LEFT" hidden="true">
+                    <Dimensions x="500" y="600"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetY="24"/>
+                </Label>
+                <Label name="$(parent)Title" color="FFFFFF" text="Group Carrion" verticalAlignment="BOTTOM" horizontalAlignment="LEFT" hidden="false">
+                    <Dimensions x="500" y="600"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="-6"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

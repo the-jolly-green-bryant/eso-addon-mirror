@@ -1,0 +1,218 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <!--<String name="TEXTURE_JEWELRY_NECK" value="LibIcons/Assets/Jewelry/jewelry_up.dds"/>-->
+
+    <Controls>
+        <TopLevelControl name="WishListAddItemDialog" inherits="ZO_CustomDialogBase" resizeToFitDescendents="true">
+            <!-- <Dimensions x="470" y="415" /> -->
+            <Anchor point="CENTER" offsetY="-45" />
+            <Controls>
+                <Control name="$(parent)Content" inherits="ZO_DialogContentAnchors" >
+                    <Controls>
+                        <Label name="$(parent)LastAddedHistoryLabel" font="ZoFontGame"
+                               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HINT"
+                               horizontalAlignment="LEFT" text="xxx">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="-10" />
+                        </Label>
+                        <Control name="$(parent)LastAddedHistoryCombo" inherits="ZO_ComboBox" >
+                            <Dimensions x="180" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="-10" />
+                        </Control>
+                        <Texture name="$(parent)LastAddedHistoryTexture" textureFile="" hidden="true">
+                            <Dimensions x="28" y="28"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)LastAddedHistoryCombo" relativePoint="TOPRIGHT" offsetX="2" />
+                        </Texture>
+                        <Label name="$(parent)Text" font="ZoFontGame"
+                               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+                               horizontalAlignment="CENTER" text="xxx">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" />
+                        </Label>
+
+                        <Label name="$(parent)ItemTypeText" font="ZoFontGame"
+                               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+                               horizontalAlignment="LEFT" text="xxx">
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="55"/>
+                        </Label>
+                        <Control name="$(parent)ItemTypeCombo" inherits="ZO_ComboBox" >
+                            <Dimensions x="180" />
+                            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="0" offsetY="55" />
+                        </Control>
+
+                        <Label name="$(parent)ArmorOrWeaponTypeText" font="ZoFontGame"
+                               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+                               horizontalAlignment="LEFT" text="xxx">
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="95"/>
+                        </Label>
+                        <Control name="$(parent)ArmorOrWeaponTypeCombo" inherits="ZO_ComboBox">
+                            <Dimensions x="180" />
+                            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="0" offsetY="95" />
+                        </Control>
+
+                        <Label name="$(parent)SlotText" font="ZoFontGame"
+                               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+                               horizontalAlignment="LEFT" text="xxx">
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="135"/>
+                        </Label>
+                        <Control name="$(parent)SlotCombo" inherits="ZO_ComboBox">
+                            <Dimensions x="180" />
+                            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="0" offsetY="135" />
+                        </Control>
+
+                        <Label name="$(parent)TraitText" font="ZoFontGame"
+                               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+                               horizontalAlignment="LEFT" text="xxx">
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="175"/>
+                        </Label>
+                        <Control name="$(parent)TraitCombo" inherits="ZO_ComboBox">
+                            <Dimensions x="180" />
+                            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="0" offsetY="175" />
+                        </Control>
+
+                        <Label name="$(parent)QualityText" font="ZoFontGame"
+                               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+                               horizontalAlignment="LEFT" text="xxx">
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="215"/>
+                        </Label>
+                        <Control name="$(parent)QualityCombo" inherits="ZO_ComboBox">
+                            <Dimensions x="180" />
+                            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="0" offsetY="215" />
+                        </Control>
+
+                        <Label name="$(parent)CharsText" font="ZoFontGame"
+                               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+                               horizontalAlignment="LEFT" text="xxx">
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="255"/>
+                        </Label>
+                        <Control name="$(parent)CharsCombo" inherits="ZO_ComboBox">
+                            <Dimensions x="180" />
+                            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="0" offsetY="255" />
+                        </Control>
+
+                        <Button name="$(parent)ButtonAddWholeSet" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="24" y="24" />
+                            <Anchor point="TOPLEFT" relativeTo="$(grandparent)" relativePoint="TOPLEFT" offsetX="3" offsetY="3" />
+                            <Textures normal    = "esoui/art/chatwindow/chat_addtab_up.dds"
+                                      pressed   = "esoui/art/chatwindow/chat_addtab_down.dds"
+                                      mouseOver = "esoui/art/chatwindow/chat_addtab_over.dds"
+                                      disabled  = "esoui/art/chatwindow/chat_addtab_disabled.dds" />
+                            <OnClicked>
+                                WishList.AddSetItems(WISHLIST_ADD_TYPE_WHOLE_SET)
+                            </OnClicked>
+                            <OnMouseEnter>
+                                WishList.ShowTooltip(self, RIGHT, GetString(WISHLIST_DIALOG_ADD_WHOLE_SET_TT))
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                WishList.HideTooltip()
+                            </OnMouseExit>
+                        </Button>
+                        <Button name="$(parent)ButtonAddWholeItemTypeOfSet" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="26" y="20" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)ItemTypeText" relativePoint="LEFT" offsetX="-10" offsetY="0" />
+                            <Textures normal    = "esoui/art/charactercreate/rotate_right_up.dds"
+                                      pressed   = "esoui/art/charactercreate/rotate_right_down.dds"
+                                      mouseOver = "esoui/art/charactercreate/rotate_right_over.dds"
+                                      disabled  = "esoui/art/charactercreate/rotate_right_disabled.dds" />
+                            <OnClicked>
+                                WishList.AddSetItems(WISHLIST_ADD_TYPE_BY_ITEMTYPE)
+                            </OnClicked>
+                            <OnMouseEnter>
+                                WishList.ShowTooltip(self, RIGHT, GetString(WISHLIST_DIALOG_ADD_ALL_TYPE_OF_SET_TT), WishListAddItemDialogContentItemTypeCombo.m_comboBox.m_selectedItemText:GetText())
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                WishList.HideTooltip()
+                            </OnMouseExit>
+                        </Button>
+                        <Button name="$(parent)ButtonAddWholeItemTypeTypeOfSet" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="26" y="20" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)ArmorOrWeaponTypeText" relativePoint="LEFT" offsetX="-10" offsetY="0" />
+                            <Textures normal    = "esoui/art/characterwindow/gearslot_quickslot.dds"
+                                      pressed   = "esoui/art/characterwindow/gearslot_quickslot.dds"
+                                      mouseOver = "esoui/art/characterwindow/gearslot_quickslot.dds"
+                                      disabled  = "esoui/art/characterwindow/gearslot_quickslot.dds" />
+                            <OnClicked>
+                                WishList.AddSetItems(WISHLIST_ADD_TYPE_BY_ITEMTYPE_AND_ARMOR_WEAPON_TYPE)
+                            </OnClicked>
+                            <OnMouseEnter>
+                                WishList.ShowTooltip(self, RIGHT, GetString(WISHLIST_DIALOG_ADD_ALL_TYPE_TYPE_OF_SET_TT), WishListAddItemDialogContentItemTypeCombo.m_comboBox.m_selectedItemText:GetText(), WishListAddItemDialogContentArmorOrWeaponTypeCombo.m_comboBox.m_selectedItemText:GetText())
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                WishList.HideTooltip()
+                            </OnMouseExit>
+                        </Button>
+
+        <!-- NEW BUTTONS 2018-12-18 -->
+                        <Button name="$(parent)ButtonAddTwoHandedWeaponsOfSet" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)SlotCombo" relativePoint="LEFT" offsetX="-4" offsetY="0" />
+                            <Textures normal    = "esoui/art/icons/progression_tabicon_2handed_up.dds"
+                                      pressed   = "esoui/art/icons/progression_tabicon_2handed_down.dds"
+                                      mouseOver = "esoui/art/icons/progression_tabicon_2handed_over.dds"
+                                      disabled  = "esoui/art/icons/progression_tabicon_2handed_up.dds" />
+                            <OnClicked>
+                                WishList.AddSetItems(WISHLIST_ADD_TWO_HANDED_WEAPONS)
+                            </OnClicked>
+                            <OnMouseEnter>
+                                WishList.ShowTooltip(self, RIGHT, GetString(WISHLIST_DIALOG_ADD_TWO_HANDED_WEAPONS_OF_SET_TT), nil, nil)
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                WishList.HideTooltip()
+                            </OnMouseExit>
+                        </Button>
+                        <Button name="$(parent)ButtonAddOneHandedWeaponsOfSet" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)ButtonAddTwoHandedWeaponsOfSet" relativePoint="LEFT" offsetX="-4" offsetY="0" />
+                            <Textures normal    = "esoui/art/icons/progression_tabicon_1handed_up.dds"
+                                      pressed   = "esoui/art/icons/progression_tabicon_1handed_down.dds"
+                                      mouseOver = "esoui/art/icons/progression_tabicon_1handed_over.dds"
+                                      disabled  = "esoui/art/icons/progression_tabicon_1handed_up.dds" />
+                            <OnClicked>
+                                WishList.AddSetItems(WISHLIST_ADD_ONE_HANDED_WEAPONS)
+                            </OnClicked>
+                            <OnMouseEnter>
+                                WishList.ShowTooltip(self, RIGHT, GetString(WISHLIST_DIALOG_ADD_ONE_HANDED_WEAPONS_OF_SET_TT), nil, nil)
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                WishList.HideTooltip()
+                            </OnMouseExit>
+                        </Button>
+                        <Button name="$(parent)ButtonAddMonsterSetPartsOfSet" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)ButtonAddOneHandedWeaponsOfSet" relativePoint="LEFT" offsetX="-4" offsetY="0" />
+                            <Textures normal    = "esoui/art/icons/gear_undauntedspider_head_a.dds"
+                                      pressed   = "esoui/art/icons/gear_undauntedspider_head_a.dds"
+                                      mouseOver = "esoui/art/icons/gear_undauntedspider_head_a.dds"
+                                      disabled  = "esoui/art/icons/gear_undauntedspider_head_a.dds" />
+                            <OnClicked>
+                                WishList.AddSetItems(WISHLIST_ADD_MONSTER_SET_PARTS_ARMOR)
+                            </OnClicked>
+                            <OnMouseEnter>
+                                WishList.ShowTooltip(self, RIGHT, GetString(WISHLIST_DIALOG_ADD_MONSTER_SET_PARTS_ARMOR_OF_SET_TT), nil, nil)
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                WishList.HideTooltip()
+                            </OnMouseExit>
+                        </Button>
+                        <Button name="$(parent)ButtonAddBodyPartsOfSet" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)ButtonAddMonsterSetPartsOfSet" relativePoint="LEFT" offsetX="-4" offsetY="0" />
+                            <Textures normal    = "esoui/art/crafting/smithing_tabicon_armorset_up.dds"
+                                      pressed   = "esoui/art/crafting/smithing_tabicon_armorset_down.dds"
+                                      mouseOver = "esoui/art/crafting/smithing_tabicon_armorset_over.dds"
+                                      disabled  = "esoui/art/crafting/smithing_tabicon_armorset_disabled.dds" />
+                            <OnClicked>
+                                WishList.AddSetItems(WISHLIST_ADD_BODY_PARTS_ARMOR)
+                            </OnClicked>
+                            <OnMouseEnter>
+                                WishList.ShowTooltip(self, RIGHT, GetString(WISHLIST_DIALOG_ADD_BODY_PARTS_ARMOR_OF_SET_TT), nil, nil)
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                WishList.HideTooltip()
+                            </OnMouseExit>
+                        </Button>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton" />
+                <Control name="$(parent)Accept" inherits="ZO_CustomDialogButton" />
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

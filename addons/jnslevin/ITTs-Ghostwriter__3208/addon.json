@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/jnslevin/ITTs-Ghostwriter__3208",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "jnslevin",
+  "canonical_id": "esoui:3208",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3208",
+  "deleted": false,
+  "directories": [
+    "ITTsGhostwriter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3208/",
+  "fingerprint": "91a84886b4b1b4b818220f3d80eef3f5c18dd9b2269f6991a167900c5c1723d8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12811.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12812.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12810.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10921.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10922.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10923.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10924.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3208",
+  "source_url": "https://www.esoui.com/downloads/info3208-ITTsGhostwriter.html",
+  "stats": {
+    "downloads": 6049,
+    "favorites": 5,
+    "monthly_downloads": 28
+  },
+  "title": "ITTs Ghostwriter",
+  "updated_at": 1710156517000,
+  "version": "2.2.3"
+}

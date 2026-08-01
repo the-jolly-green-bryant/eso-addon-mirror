@@ -1,0 +1,74 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <TopLevelControl name="IMP_CART_DiscoveredPOIs" hidden="true" mouseEnabled="true" movable="true">
+            <Dimensions x="400" y="900" />
+            <Anchor point="RIGHT" relativeTo="GuiRoot" offsetX="-100" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="000000" centerColor="000000">
+                    <Anchor point="TOPLEFT" offsetX="-16" offsetY="-12" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="16" offsetY="12" />
+                </Backdrop>
+                <Control name="$(parent)Header">
+                    <Anchor point="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" offsetY="32" relativePoint="TOPRIGHT" />
+                    <Controls>
+                        <!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="FF0000" centerColor="00FF00" /> -->
+                        <Label name="$(parent)Label" font="ZoFontWinH4" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Discovered POIs">
+                            <Anchor point="TOPLEFT" offsetY="-2" />
+                        </Label>
+                        <Label name="$(parent)TotalDiscoveredLabel" font="ZoFontWinH4" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="(total: -/-)">
+                            <Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" offsetX="4" />
+                        </Label>
+                        <Button name="$(parent)CloseButton">
+                            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="14" offsetY="-14" />
+                            <Dimensions x="42" y="42"/>
+                            <Textures 
+                                normal="/esoui/art/hud/radialicon_cancel_up.dds"
+                                mouseOver="/esoui/art/hud/radialicon_cancel_over.dds"
+                            />
+                            <OnClicked>
+                                self:GetParent():GetParent():SetHidden(true)
+                            </OnClicked>
+                        </Button>
+                        <Button name="$(parent)TrackButton">
+                            <Dimensions x="30" y="30" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)CloseButton" relativePoint="LEFT" offsetX="-16" />
+                            
+                            <Textures
+                                normal="EsoUI/Art/Buttons/radioButton_pin_up.dds"
+                                pressed="EsoUI/Art/Buttons/radioButton_pin_down.dds"
+                                disabled="EsoUI/Art/Buttons/radioButton_pin_up_disabled.dds"
+                                disabledPressed="EsoUI/Art/Buttons/radioButton_pin_down_disabled.dds"
+                            />
+                                <!-- mouseOver="EsoUI/Art/Buttons/radioButton_pin_highlight.dds" -->
+                        </Button>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)ScrollableList" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                    <Controls>
+                        <!-- <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" edgeColor="0000FF" centerColor="00FF00" /> -->
+                    </Controls>
+                </Control>
+            </Controls>
+
+            <OnInitialized>
+                IMP_CART_DiscoveredPOIs_OnInitialised(self)
+            </OnInitialized>
+        </TopLevelControl>
+
+        <TopLevelControl name="IMP_CART_Rangefinder" hidden="true">
+            <Dimensions x="200" y="100" />
+            <Anchor point="LEFT" relativePoint="CENTER" offsetX="100" />
+            <Controls>
+                <Label name="$(parent)Name" font="ZoFontWinH3" text="-">
+                    <Anchor point="TOP" />
+                </Label>
+                <Label name="$(parent)Distance" font="ZoFontWinH3" text="0.00 cm">
+                    <Anchor point="BOTTOM" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

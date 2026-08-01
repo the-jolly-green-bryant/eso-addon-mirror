@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/IsJustaGhost/IsJusta-Revive-Selective-Interact__3727",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IsJustaGhost",
+  "canonical_id": "esoui:3727",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3727",
+  "deleted": false,
+  "directories": [
+    "IsJustaReviveSelectiveInteract"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3727/",
+  "fingerprint": "87b7caded0bb7b5b214a1a751301ebf13c3523faae10d0ba5395f48e7a43fa3f",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3727",
+  "source_url": "https://www.esoui.com/downloads/info3727-IsJustaReviveSelectiveInteract.html",
+  "stats": {
+    "downloads": 1392,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "IsJusta Revive Selective Interact",
+  "updated_at": 1696093324000,
+  "version": "1.2.1"
+}

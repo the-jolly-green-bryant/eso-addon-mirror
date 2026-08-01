@@ -1,0 +1,7 @@
+## Title: DLC Notice
+## Author: GrilledSpamSteaks
+## Version: 1.6
+## Description: Popup alerts you to NPCs that launch DLC and chapters.
+## APIVersion: 101037 101038
+DLCNotice.lua
+DLCNotice.xml

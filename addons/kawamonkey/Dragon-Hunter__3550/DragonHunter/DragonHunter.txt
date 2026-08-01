@@ -1,0 +1,11 @@
+## APIVersion: 101036
+## Title: Dragon Hunter
+## Author: Kawamonkey
+## Version: 1.0
+## SavedVariables: DragonHunter
+## "This one knows! He shall write an addon to keep his family safe in Riverwood!"
+
+lang\en.lua
+lang\$(language).lua
+
+DragonHunter.lua

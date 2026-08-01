@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/g4rr3t/Seething-Fury-Counter__2397",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "g4rr3t",
+  "canonical_id": "esoui:2397",
+  "category_id": "57",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2397",
+  "deleted": false,
+  "directories": [
+    "SeethingFuryCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2397/",
+  "fingerprint": "906ec8f023470a819fdd74d1abd06f3af926cc50e121b8632e73640cec02fbef",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8158.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2397",
+  "source_url": "https://www.esoui.com/downloads/info2397-SeethingFuryCounter.html",
+  "stats": {
+    "downloads": 15627,
+    "favorites": 6,
+    "monthly_downloads": 119
+  },
+  "title": "Seething Fury Counter",
+  "updated_at": 1559881461000,
+  "version": "1.0.0"
+}

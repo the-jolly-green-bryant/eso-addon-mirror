@@ -1,0 +1,54 @@
+{
+  "archive_path": "addons/Hasenwarrior/DsR-GuildRoster-Loot--Inventory-Stickerbook-PvP-PersonalAssistant-BuffTracker-an__3776",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hasenwarrior",
+  "canonical_id": "esoui:3776",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3776",
+  "deleted": false,
+  "directories": [
+    "DsRGuildHall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3776/",
+  "fingerprint": "a0b209ced46e0b561a40b2d5d83f48f76bdb302b72cfc15bcbe143410b7aeb75",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15394.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15389.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13315.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15393.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13084.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13479.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13082.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13083.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13418.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13480.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3776",
+  "source_url": "https://www.esoui.com/downloads/info3776-DsRGuildRosterLoot-InventoryStickerbookPvPPersonalAssistantBuffTrackerandmore.html",
+  "stats": {
+    "downloads": 27006,
+    "favorites": 5,
+    "monthly_downloads": 85
+  },
+  "title": "DsR GuildRoster (Loot-/ Inventory, Stickerbook, PvP, PersonalAssistant, BuffTracker and more)",
+  "updated_at": 1777478701000,
+  "version": "2026.04.29"
+}

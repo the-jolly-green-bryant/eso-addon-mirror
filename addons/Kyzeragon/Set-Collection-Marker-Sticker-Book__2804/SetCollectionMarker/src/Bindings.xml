@@ -1,0 +1,9 @@
+<Bindings>
+    <Layer name="Set Collection Marker">
+        <Category name="Trading">
+            <Action name="SCM_ADDTOTRADE" inheritsBindFrom="ASSIST_NEXT_TRACKED_QUEST" rebindable="false">
+                <Down>SetCollectionMarker.Trade.AddItemsToTrade()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

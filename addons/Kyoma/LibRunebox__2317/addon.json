@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Kyoma/LibRunebox__2317",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyoma",
+  "canonical_id": "esoui:2317",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2317",
+  "deleted": false,
+  "directories": [
+    "LibRunebox"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2317/",
+  "fingerprint": "ecb847a0915425f2abd23f4dc779929d9f5ef2d23ea79e933513ba0b27c085c3",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2317",
+  "source_url": "https://www.esoui.com/downloads/info2317-LibRunebox.html",
+  "stats": {
+    "downloads": 496167,
+    "favorites": 255,
+    "monthly_downloads": 992
+  },
+  "title": "LibRunebox",
+  "updated_at": 1593815036000,
+  "version": "5"
+}

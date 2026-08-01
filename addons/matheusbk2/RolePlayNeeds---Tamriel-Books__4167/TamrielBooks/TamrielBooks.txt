@@ -1,0 +1,10 @@
+## Title: RolePlayNeeds - Tamriel Books
+## APIVersion: 101046
+## Version: BETA 0.1.0
+## Author: Matheus Macedo | @matheusbk2
+## Description: Immersive Book Recollection and Lore Journal Addon - BETA
+## SavedVariables: TamrielBooksSV
+
+
+TamrielBooks.lua
+bindings.xml

@@ -1,0 +1,4 @@
+<GuiXml>
+    <!-- Example custom font or definitions -->
+    <Font name="TTD_Font" font="$(MEDIUM_FONT)|14|soft-shadow-thin" />
+</GuiXml>

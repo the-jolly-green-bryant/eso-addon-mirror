@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/iFedix/Undaunted-Pledges-Utilities__2267",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "iFedix",
+  "canonical_id": "esoui:2267",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:2267",
+  "deleted": false,
+  "directories": [
+    "UndauntedPledgesUtilities"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2267/",
+  "fingerprint": "b9d86a2e939b8520320906b7e713fd580f21a0fbb94b7cc97920fd611415f8e1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10092.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7789.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7736.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8720.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8721.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7735.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8719.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2267",
+  "source_url": "https://www.esoui.com/downloads/info2267-UndauntedPledgesUtilities.html",
+  "stats": {
+    "downloads": 97523,
+    "favorites": 107,
+    "monthly_downloads": 197
+  },
+  "title": "Undaunted Pledges Utilities",
+  "updated_at": 1759268269000,
+  "version": "2.7"
+}

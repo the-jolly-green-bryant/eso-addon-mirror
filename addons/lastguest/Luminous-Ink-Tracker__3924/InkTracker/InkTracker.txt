@@ -1,0 +1,17 @@
+## Title: |cFCEB00Luminous Ink|r |c00C000Tracker|r
+## Description: Shows you an alert on screen when you drop a Luminous Ink.
+## Author: |c66ccfflastguest|r
+## Version: 1.0.0
+## IntVersion: 1000
+## APIVersion: 101042
+## IsLibrary: false
+
+InkTracker.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

@@ -1,0 +1,10 @@
+## Title: |c998899Player Status|r
+## Description: Sometimes, you just want to |c998899Hide|r|cff0000, Leave Group, not be disturbed|r|cffff00, be afk|r|c00ff00, or show yourself.|r
+## Author: Jodynn
+## Version: 1.7
+## APIVersion: 100030
+## SavedVariables: PlayerStatus_sv
+## DependsOn: LibAddonMenu-2.0
+
+PlayerStatus.xml
+PlayerStatus.lua

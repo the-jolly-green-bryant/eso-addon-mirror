@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Mladen90/Tel-Var-Counter-TelVar-Logger__2737",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mladen90",
+  "canonical_id": "esoui:2737",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:2737",
+  "deleted": false,
+  "directories": [
+    "TVCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2737/",
+  "fingerprint": "8c7052c920fcd353f2169d2e085968e7d0f350c12c9160f34f526a5f4f868e87",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10873.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2737",
+  "source_url": "https://www.esoui.com/downloads/info2737-TelVarCounterTelVarLogger.html",
+  "stats": {
+    "downloads": 4178,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "Tel Var Counter (TelVar Logger)",
+  "updated_at": 1632056482000,
+  "version": "1.1.0"
+}

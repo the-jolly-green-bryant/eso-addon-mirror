@@ -1,0 +1,14 @@
+## APIVersion: 100016
+## Author: kendaron
+## Title: GuildBankTwiddler
+## Description: Quickly swap between guild banks
+## Version 1.0.5
+## License: Distribution or use of addon or code without attribution to author is prohibited!
+## LastUpdated: June 2017
+## SavedVariables: GuildBankTwiddlerSavedVariables
+Lang\en.lua
+Lang\$(language).lua
+GuildBankTwiddlerUtils.lua
+GuildBankTwiddlerAutoHide.lua
+GuildBankTwiddler.lua
+GuildBankTwiddler.xml

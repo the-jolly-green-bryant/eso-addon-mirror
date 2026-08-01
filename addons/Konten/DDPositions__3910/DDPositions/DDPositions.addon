@@ -1,0 +1,69 @@
+; ============================================================================
+; DDPositions Add-on
+; ============================================================================
+; This add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc.
+; The Elder Scrolls name, logos, and related trademarks are the property of ZeniMax Media Inc.
+; All rights reserved.
+; For official add-on terms, see: https://account.elderscrollsonline.com/add-on-terms
+; ============================================================================
+
+## Title: DDPositions
+## APIVersion: 101048, 101049
+## Version: 3.3.0
+## Author: |cFF9B15@Konten|r
+## SavedVariables: DDPositions_SavedVars
+## Description: Displays DPS role assignments and positions for trial zones. Includes manual and free assignment modes, UI toggling, and zone-based role logic.
+
+## Change Log:
+## Version 3.3.0:
+## - Removed unfinished group join/leave notification functions (will be reintroduced in a future update).
+## - Improved overall stability.
+## - Fixed minor issues.
+
+## Version 3.2.0:
+## - Restored the /DDPositions command to open/close the panel without requiring a keybind.
+## - Fixed minor bugs.
+## - Added open license.
+
+## Version 3.1.3:
+## - Fixed minor bugs.
+## - Added assignments for the following trials:
+##   Hel Ra Citadel
+##   Aetherian Archive
+##   Halls of Fabrication
+##   Ossein Cage
+
+## Version 3.1.2:
+## - Fixed minor bugs.
+## 
+## Version 3.1.1:
+## - Fixed minor bugs.
+
+## Version 3.1.0:
+## - Fixed minor bugs.
+## - Added Manual assignments.
+## - Added Free assignments.
+
+## Version 3.0.0:
+## - Complete rework of addon functionality.
+## - Interface updates and improvements.
+## - Improved zone detection and role handling.
+## - Fixed rare UI overlap when toggling the panel.
+## - Various quality-of-life fixes.
+## - Enhanced overall UI/UX.
+
+## Version 2.0.0:
+## - Added Panel UI with keybind visibility toggle.
+## - Improved readability of position markers.
+## - Fixed saved variable load order.
+
+## Version 1.0.0:
+## - Displays DPS role positions for trial zones.
+## - Initial release!
+
+data/Bindings.xml
+data/DDPositions_Data.lua
+data/DDPositions_Utils.lua
+data/DDPositions_Core.lua
+data/DDPositions_UI.lua
+DDPositions.lua

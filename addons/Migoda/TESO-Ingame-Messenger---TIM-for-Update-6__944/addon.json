@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Migoda/TESO-Ingame-Messenger---TIM-for-Update-6__944",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Migoda",
+  "canonical_id": "esoui:944",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:944",
+  "deleted": false,
+  "directories": [
+    "Tim"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl944/",
+  "fingerprint": "6d9814dff5f160b00d413977814318324064291ed05f65a0624b64ccadcf13f5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2894.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "944",
+  "source_url": "https://www.esoui.com/downloads/info944-TESOIngameMessenger-TIMforUpdate6.html",
+  "stats": {
+    "downloads": 4746,
+    "favorites": 3,
+    "monthly_downloads": 14
+  },
+  "title": "TESO Ingame Messenger - TIM (for Update 6)",
+  "updated_at": 1425484406000,
+  "version": "5.52"
+}

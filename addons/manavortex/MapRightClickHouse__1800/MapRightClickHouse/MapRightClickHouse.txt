@@ -1,0 +1,7 @@
+## Title: MapClickHouse
+## Author: manavortex
+## Description: Right-clicking on a house in the map list of houses will now take you there if you own it.
+## Version: 1.1
+## APIVersion: 100020
+
+MapRightClickHouse.lua

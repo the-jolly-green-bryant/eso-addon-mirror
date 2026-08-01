@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Lykeion/ConcealedWeapon__3655",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lykeion",
+  "canonical_id": "esoui:3655",
+  "category_id": "152",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3655",
+  "deleted": false,
+  "directories": [
+    "ConcealedWeapon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3655/",
+  "fingerprint": "71b3f4e36ffbdb5d07a744f9c472a4ce9849731f2e82f5c3d658627a12054888",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12450.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12451.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12452.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3655",
+  "source_url": "https://www.esoui.com/downloads/info3655-ConcealedWeapon.html",
+  "stats": {
+    "downloads": 4910,
+    "favorites": 2,
+    "monthly_downloads": 31
+  },
+  "title": "ConcealedWeapon",
+  "updated_at": 1710147768000,
+  "version": "1.3"
+}

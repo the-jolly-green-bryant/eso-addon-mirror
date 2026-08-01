@@ -1,0 +1,38 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: BankDataExporter
+## Author: jreid01
+## Version: 1.0.3
+## APIVersion: 101046 101047
+## SavedVariables: ExportedBankData
+## Description: Exports bank deposit data for easy import into spreadsheets.
+
+BankDataExporter.lua
+
+; Changelog:
+;
+; Version 1.0.3.1 (2025/08/16)
+; Fix for bad release.
+;
+; Version 1.0.3 (2025/08/12)
+; Fix off-by-one error in data export, which resulted in one duplicate
+; transaction in each export.
+;
+; Version 1.0.2 (2025/06/08)
+; Add new /exportbankdatabycount command:
+; /exportbankdatabycount COUNT GUILD_NAME
+; COUNT: The number of entries to export, starting with the newest.
+; GUILD_NAME: The name of the guild to export.
+; 
+; This new function will export bank deposits by count rather than by date.
+; You will see slightly more than COUNT items. It should be able to export
+; data as far back as you have LibHistoire configured to save data.
+;
+; Update API Version support.
+;
+; Version 1.0.0 (2024/03/17)
+; Initial release.

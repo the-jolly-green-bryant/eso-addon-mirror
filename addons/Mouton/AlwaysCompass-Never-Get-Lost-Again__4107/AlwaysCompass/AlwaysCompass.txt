@@ -1,0 +1,16 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: AlwaysCompass
+## Description: Always keep the compass on, even when bosses are around.
+## Author: @mouton
+## APIVersion: 101045
+## Version: 0.0.2
+;## SavedVariables: AlwaysCompassVariables
+
+## Core
+AlwaysCompass.lua
+bossbar.xml

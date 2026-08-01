@@ -1,0 +1,10 @@
+## Title: LPC03
+## APIVersion: 101049
+## Version: 1.1.3
+## AddOnVersion: 10103
+## IsLibrary: true
+## Description: Price database for potions, food, drinks, poisons and soul gems
+## DependsOn: LibSavedVars>=60007
+## SavedVariables: LibPriceCache_LPC03_DB
+
+LPC03.lua

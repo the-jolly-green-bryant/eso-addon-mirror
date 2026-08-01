@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Harven/Harven-s-Durability-and-Charges__506",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:506",
+  "category_id": "98",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:506",
+  "deleted": false,
+  "directories": [
+    "HarvensDurabilityAndCharges"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl506/",
+  "fingerprint": "fb6d1e1f5f9da4c9768f573c5dacb063f55479f596e59ef85b38d7b1cffb55d1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1528.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1519.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1520.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "506",
+  "source_url": "https://www.esoui.com/downloads/info506-HarvensDurabilityandCharges.html",
+  "stats": {
+    "downloads": 24419,
+    "favorites": 124,
+    "monthly_downloads": 25
+  },
+  "title": "Harven's Durability and Charges",
+  "updated_at": 1623434731000,
+  "version": "1.5.0"
+}

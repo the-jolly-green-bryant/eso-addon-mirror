@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/Meai/GuildEvents__1145",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Meai",
+  "canonical_id": "esoui:1145",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    },
+    {
+      "name": "Update 7",
+      "version": "1.7.0"
+    },
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    },
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:1145",
+  "deleted": false,
+  "directories": [
+    "GuildEvents"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1145/",
+  "fingerprint": "1a89a50d5088da9a7fe21f7d2f3b4d6fe4d3bd2321ebdacc1014b4d0c495b427",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3696.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1145",
+  "source_url": "https://www.esoui.com/downloads/info1145-GuildEvents.html",
+  "stats": {
+    "downloads": 12846,
+    "favorites": 8,
+    "monthly_downloads": 12
+  },
+  "title": "GuildEvents",
+  "updated_at": 1449868260000,
+  "version": "1.1.16"
+}

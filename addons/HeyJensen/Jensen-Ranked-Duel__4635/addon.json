@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/HeyJensen/Jensen-Ranked-Duel__4635",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "HeyJensen",
+  "canonical_id": "esoui:4635",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4635",
+  "deleted": false,
+  "directories": [
+    "JensenRankedDuels"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4635/",
+  "fingerprint": "60742d57adfb0209205e1565275ed1a70109163bf15f7af4b0d2d61cdc6d53cd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16306.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16305.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4635",
+  "source_url": "https://www.esoui.com/downloads/info4635-JensenRankedDuel.html",
+  "stats": {
+    "downloads": 93,
+    "favorites": 1,
+    "monthly_downloads": 16
+  },
+  "title": "Jensen Ranked Duel",
+  "updated_at": 1781328898000,
+  "version": "1.2.8"
+}

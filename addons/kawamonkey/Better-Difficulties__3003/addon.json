@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/kawamonkey/Better-Difficulties__3003",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3003",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3003",
+  "deleted": false,
+  "directories": [
+    "BetterDifficulties"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3003/",
+  "fingerprint": "b203c97c9de116d41c5828ada71115351e2ea38765ad8c968840c01386635ae7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10120.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10121.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3003",
+  "source_url": "https://www.esoui.com/downloads/info3003-BetterDifficulties.html",
+  "stats": {
+    "downloads": 2561,
+    "favorites": 0,
+    "monthly_downloads": 19
+  },
+  "title": "Better Difficulties",
+  "updated_at": 1617391948000,
+  "version": "1.0.1"
+}

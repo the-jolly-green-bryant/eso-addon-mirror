@@ -1,0 +1,6 @@
+## Title: Less Bling Golden Pursuits
+## Author: Kawamonkey
+## Version: 1.0
+## APIVersion: 101036
+
+LessBlingGoldenPursuits.lua

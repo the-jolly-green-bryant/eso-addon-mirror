@@ -1,0 +1,44 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="MinimalizedDlg" tier="NORMAL" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" >
+			<Dimensions x="180" y="120" />
+			<OnMoveStop>
+				Translate.OnIndicatorMoveStopMinimalized()
+			</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)_BackGround" inherits="ZO_DefaultBackdrop" />
+				<Button name="$(parent)_ButtonClose" inherits="ZO_ButtonBehaviorClickSound" >
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						Translate.HideDialog()
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)_WindowTitle" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+					<Anchor point="TOP" relativeTo="TranslateDlg" relativePoint="TOP" offsetY="15" />
+				</Label>
+				<Texture name="$(parent)_TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" >
+					<Dimensions x="100" y="4"/>
+					<Anchor point="TOP" relativeTo="$(parent)_WindowTitle" relativePoint="BOTTOM" offsetY="9" />
+				</Texture>
+				<Label name="MaximalizedText" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" >
+					<Anchor point="TOP" relativeTo="$(parent)_TopDivider" relativePoint="TOP" offsetY="9" />
+				</Label>
+				<Button name="ButtonMaximize" inherits="ZO_ButtonBehaviorClickSound" >
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOP" relativeTo="MaximalizedText" relativePoint="BOTTOM" offsetY="5" />
+					<Textures normal="/esoui/art/buttons/accept_up.dds"
+						pressed="/esoui/art/buttons/accept_down.dds"
+						mouseOver="/esoui/art/buttons/accept_over.dds" />
+					<OnClicked>
+						Translate.Maximalize()
+					</OnClicked>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

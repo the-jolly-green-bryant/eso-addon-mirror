@@ -1,0 +1,21 @@
+You may have used an old account on your machine and now wish to remove it from History.
+
+Accounts take up display resources even if you don't select them.
+
+
+Solution:
+Delete your old accounts.
+
+Go to the savedvariables folder and copy the history.lua file somewhere safe.
+The script makes a backup into a subfolder History_bak. You can totally trust that, Right?!  Nope.
+
+
+Start the iuplua53.exe  console
+Use the "Load" button, navigate to the history folder and select  Delete-Account.lua
+Click "Execute".
+
+
+Select an Account to be deleted.
+Confirm.
+
+Close the iuplua console.

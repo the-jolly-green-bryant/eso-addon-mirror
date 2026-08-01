@@ -1,0 +1,20 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="|c800020Cercone Addon|r">
+            <Action name="CERCONEADDON_NB1TOGGLE">
+                <Up>CerconeAddon.SelectPjForDuel()</Up>
+            </Action>  
+            <Action name="CERCONEADDON_GRIMORIO">
+                <Up>
+                    CerconeAddon.ArbriGrimorio()
+                </Up>
+            </Action>   
+            <Action name="CERCONEADDON_TABLON">
+                <Up>CerconeAddon.ArbriTablon()</Up>
+            </Action>        
+            <Action name="CERCONEADDON_PJINFO">
+                <Up>CerconeAddon.ShowSimpleData()</Up>
+            </Action>        
+        </Category>
+    </Layer>
+</Bindings>

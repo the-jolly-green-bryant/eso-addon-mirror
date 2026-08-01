@@ -1,0 +1,9 @@
+## Title: MountTracker
+## Description: Adds the /mounted command. There are some things you never wanted to know.
+## APIVersion: 101049 101048
+## SavedVariables: MountTrackerVars
+## Version: 0.3.0
+## Author: L_cky
+## OptionalDependsOn: LibChatMessage LibAddonMenu-2.0
+
+MountTracker.lua

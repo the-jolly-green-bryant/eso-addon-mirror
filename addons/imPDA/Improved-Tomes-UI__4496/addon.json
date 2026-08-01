@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/imPDA/Improved-Tomes-UI__4496",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "imPDA",
+  "canonical_id": "esoui:4496",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4496",
+  "deleted": false,
+  "directories": [
+    "ImprovedTomesUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4496/",
+  "fingerprint": "bbc6b13d5312acd86cdef7476fb829c7452b91c9b1b6638b620244d5fb066af6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15743.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15744.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4496",
+  "source_url": "https://www.esoui.com/downloads/info4496-ImprovedTomesUI.html",
+  "stats": {
+    "downloads": 1467,
+    "favorites": 6,
+    "monthly_downloads": 429
+  },
+  "title": "Improved Tomes UI",
+  "updated_at": 1783756506000,
+  "version": "6"
+}

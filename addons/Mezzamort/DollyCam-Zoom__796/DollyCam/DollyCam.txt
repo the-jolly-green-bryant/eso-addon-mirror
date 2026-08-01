@@ -1,0 +1,7 @@
+## Title: DollyCam by Mezzamort
+## APIVersion: 100011
+## Description: Zoom 1st and 3rd person FOV. Set keybindings in Controls.
+## Version 1.1 Added a reset key
+## Version 1.2 Added 3rd person zoom, pan
+DollyCam.lua
+Bindings.xml

@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Lahabria/Visual-Swap---Lightweight-Clean-Swap-Indicator__2670",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lahabria",
+  "canonical_id": "esoui:2670",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2670",
+  "deleted": false,
+  "directories": [
+    "VisualSwap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2670/",
+  "fingerprint": "c89b53aa517b6299c0f941174c25f8ad82ea898901bf72115b1368b2ce3f2457",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9052.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9053.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9054.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9055.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2670",
+  "source_url": "https://www.esoui.com/downloads/info2670-VisualSwap-LightweightCleanSwapIndicator.html",
+  "stats": {
+    "downloads": 4136,
+    "favorites": 11,
+    "monthly_downloads": 16
+  },
+  "title": "Visual Swap - Lightweight & Clean Swap Indicator",
+  "updated_at": 1591919403000,
+  "version": "1.0"
+}

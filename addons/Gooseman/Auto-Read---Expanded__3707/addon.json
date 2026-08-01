@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Gooseman/Auto-Read---Expanded__3707",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Gooseman",
+  "canonical_id": "esoui:3707",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3707",
+  "deleted": false,
+  "directories": [
+    "AutoRead"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3707/",
+  "fingerprint": "7e2d9f9003c2f765a93886c498227d689a015248eba97add6f74aad82e2fc49f",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3707",
+  "source_url": "https://www.esoui.com/downloads/info3707-AutoRead-Expanded.html",
+  "stats": {
+    "downloads": 2155,
+    "favorites": 0,
+    "monthly_downloads": 18
+  },
+  "title": "Auto Read - Expanded",
+  "updated_at": 1700657297000,
+  "version": "4"
+}

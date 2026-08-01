@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Khrill/KHC-Helmet-FOV-texture-package---Example__1052",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Khrill",
+  "canonical_id": "esoui:1052",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1052",
+  "deleted": false,
+  "directories": [
+    "KhrillHelmControlFOVaddin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1052/",
+  "fingerprint": "474489d31fbc9370610779a0ad9d379ca0a71302c60bde69300b3014d463db44",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3272.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1052",
+  "source_url": "https://www.esoui.com/downloads/info1052-KHCHelmetFOVtexturepackage-Example.html",
+  "stats": {
+    "downloads": 5808,
+    "favorites": 3,
+    "monthly_downloads": 12
+  },
+  "title": "KHC Helmet FOV texture package - Example",
+  "updated_at": 1429975707000,
+  "version": "1.0.1"
+}

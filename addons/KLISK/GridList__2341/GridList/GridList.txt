@@ -1,0 +1,12 @@
+## APIVersion: 101045
+## Version: 1.3.2
+## Title: GridList
+## Author: @KL1SK
+## Description:
+## SavedVariables: GridList_SV
+
+## OptionalDependsOn: AutoCategory PerfectPixel LibAddonMenu-2.0
+
+Init.lua
+
+GridList.lua

@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/luocangli/Aethluna-Antiquarian-s-Eye-Helper__4646",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "luocangli",
+  "canonical_id": "esoui:4646",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4646",
+  "deleted": false,
+  "directories": [
+    "AethlunaAntiquariansEyeHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4646/",
+  "fingerprint": "ec68ab12d14c02e14f236302cc08759c72f7ff8cda5468c3765f218b7e43ca25",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16350.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16351.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16352.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16353.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16354.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16370.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4646",
+  "source_url": "https://www.esoui.com/downloads/info4646-AethlunaAntiquariansEyeHelper.html",
+  "stats": {
+    "downloads": 183,
+    "favorites": 2,
+    "monthly_downloads": 52
+  },
+  "title": "Aethluna Antiquarian's Eye Helper",
+  "updated_at": 1781902650000,
+  "version": "1.1.1"
+}

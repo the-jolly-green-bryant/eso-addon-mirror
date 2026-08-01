@@ -1,0 +1,22 @@
+Version 1.3.0
+----------
+Moved to LCA instead of Odys
+Added a prerendered Oax Poisons iamge
+
+Version 1.2.1
+----------
+Mapped out the exit right oax safe zone with @livelifesimply, @RinBC, @Jess182, @Sandman2055, @Trent-Alexios. 
+
+Version 1.2.0
+----------
+Added Bahsei Portal Sections visualizable with Breadcrumbs
+Fixed small bug with the group position icon while beaming
+
+Version 1.1.0
+----------
+Added Optional Breadcrumbs Integration
+Added Experimental Group position icon while beaming in bahsei
+
+Version 1.0.0
+----------
+Initial release

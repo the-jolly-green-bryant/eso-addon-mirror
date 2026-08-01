@@ -1,0 +1,22 @@
+<GuiXml>
+    <Controls>
+        <!-- <Label name="IMP_SelectableLabel" mouseEnabled="true" virtual="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+            <OnInitialized>
+                ZO_SelectableLabel_OnInitialized(self)
+            </OnInitialized>
+            <OnMouseEnter>
+                ZO_SelectableLabel_OnMouseEnter(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                ZO_SelectableLabel_OnMouseExit(self)
+            </OnMouseExit>
+        </Label> -->
+        <Texture name="IMP_TallListSelectedHighlight" textureFile="LibScrollList/textures/listItem_selectedHighlight.dds" alpha="0" level="1" virtual="true">
+            <AnchorFill/>
+            <TextureCoords left="0" right="1" top="0" bottom=".625"/>
+            <!-- <OnInitialized>
+                self.nonRecolorable = true
+            </OnInitialized> -->
+        </Texture>
+    </Controls>
+</GuiXml>

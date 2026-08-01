@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/KiriX/Homestead-Extended-Info__2134",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "KiriX",
+  "canonical_id": "esoui:2134",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:2134",
+  "deleted": false,
+  "directories": [
+    "HomesteadExtInfo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2134/",
+  "fingerprint": "f08e50fb4e25b9c0544b36e92508a687659d9fdf811492cd775aec8a9126ef73",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7245.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7246.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7247.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7224.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7225.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7237.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7248.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2134",
+  "source_url": "https://www.esoui.com/downloads/info2134-HomesteadExtendedInfo.html",
+  "stats": {
+    "downloads": 17832,
+    "favorites": 50,
+    "monthly_downloads": 34
+  },
+  "title": "Homestead Extended Info",
+  "updated_at": 1730221724000,
+  "version": "1.6"
+}

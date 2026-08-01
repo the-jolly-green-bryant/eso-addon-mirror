@@ -1,0 +1,9 @@
+## Title: |cC3870BBurning|r - |cEDBB55Language Selector|r
+## Author: |cC3870BIBurningTV|r
+## Description: Easily way to Change your Language :)
+## APIVersion: 100035
+## Version: 1.2
+## DependsOn: LibAddonMenu-2.0>=30
+## SavedVariables: BLS_DATA
+
+BurningLanguageSelector.lua

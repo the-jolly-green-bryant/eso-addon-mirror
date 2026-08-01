@@ -1,0 +1,72 @@
+<GuiXml>
+    <Controls>
+        <Control name="FFFDragonLairWeyrRunGuildBankDepositItemListTemplate" mouseEnabled="true" virtual="true">
+            <Dimensions x="500" y="52" />
+            <Anchor point="LEFT" relativeTo="$(parent)" offsetX="10" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-10" />
+			<OnMouseDoubleClick>
+				FFFDragonLairWeyrRun.ItemDeposit_GetItem(self)
+            </OnMouseDoubleClick>
+            <Controls>
+                <Texture name="$(parent)Icon" alpha="1">
+                <Dimensions x="48" y="48" />
+                <Anchor point="LEFT" offsetX="0" offsetY="0" />
+                <TextureCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Label name="$(parent)NameLabel" font="ZoFontWinH2" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="_NAME_">
+                <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="50" offsetY="0" />
+                </Label>
+                <Label name="$(parent)CountsLabel" font="ZoFontWinH2" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="D/H">
+                <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-120" offsetY="0" />
+                </Label>
+				<Label name="$(parent)ValueLabel" font="ZoFontWinH2" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="00">
+                <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-5" offsetY="0" />
+                </Label>
+				<Label name="$(parent)ItemId" hidden="true" font="ZoFontWinH2" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="D/H">
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" />
+                </Label>               
+            </Controls>
+        </Control>
+        <TopLevelControl name="FFFDragonLairWeyrRunGuildBankDepositWindow" mouseEnabled="true" movable="true" resizeHandleSize="8" hidden="true" alpha="1.0">
+            <Dimensions x="500" y="650" />
+            <DimensionConstraints minX="500" minY="300" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetY="150" offsetX="600" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.3" />
+                <Label name="$(parent)TitleLabel" font="$(ANTIQUE_FONT)|18|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="GUILD BANK DEPOSIT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="10" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+                </Label>
+                <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						FFFDragonLairWeyrRun.HideGuildBankDeposit()
+					</OnClicked>
+				</Button>
+                <Control name="$(parent)DetailPanel" alpha="1.0">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-40" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.5"/>
+                        <Control name="$(parent)ItemList" inherits="ZO_ScrollList" >
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                        </Control>
+                    </Controls>
+                </Control>
+				
+                <Label name="$(parent)NotifyLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="* Send Prepared Group Chat Message to Nofitfy Group After Each Deposit.">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="00" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="0" offsetY="30" />
+                </Label>
+                
+				
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

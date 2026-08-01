@@ -1,0 +1,9 @@
+## Title: |cf49b42CustomKillFeed|r
+## Description: a filtered version of ZOS' kill feed  
+## Version: 2026.07.06
+## Author: |c3CB371@Masteroshi430|r
+## SavedVariables: CKFVars
+## DependsOn: LibAddonMenu-2.0>=38
+## APIVersion: 101050
+
+CustomKillFeed.lua

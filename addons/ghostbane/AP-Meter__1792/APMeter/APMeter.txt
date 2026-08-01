@@ -1,0 +1,27 @@
+## Title: AP Meter
+## APIVersion: 100038
+## Description: Full utility belt for Alliance Point gain
+## Version: 2.0.4
+## AddOnVersion: 204
+## Author: |c00a313Ghostbane
+## SavedVariables: APMeterSettings
+## DependsOn: LibAddonMenu-2.0>=32 LibChatMessage
+## OptionalDependsOn: LibDebugLogger
+
+boot.lua
+settings.lua
+Panel.lua
+
+themes/Classic/theme.xml
+
+Theme.lua
+themes/Modern/theme.lua
+themes/Modern/theme.xml
+themes/Classic/theme.lua
+
+APMeter.xml
+bindings.xml
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

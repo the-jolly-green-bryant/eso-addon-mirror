@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/gitright/LFG-Auto-Accept__1754",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "gitright",
+  "canonical_id": "esoui:1754",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:1754",
+  "deleted": false,
+  "directories": [
+    "LFGAutoAccept"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1754/",
+  "fingerprint": "faf0eedec7e719d6bc19203a53808f9e8168306da264870600752811c18daf9d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1754",
+  "source_url": "https://www.esoui.com/downloads/info1754-LFGAutoAccept.html",
+  "stats": {
+    "downloads": 41716,
+    "favorites": 20,
+    "monthly_downloads": 104
+  },
+  "title": "LFG Auto Accept",
+  "updated_at": 1500411221000,
+  "version": "1.2.019"
+}

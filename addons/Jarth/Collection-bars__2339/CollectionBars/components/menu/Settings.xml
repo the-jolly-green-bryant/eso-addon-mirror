@@ -1,0 +1,244 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="CBs_Settings" clampedToScreen="true" movable="true" mouseEnabled="true" virtual="true">
+      <Anchor point="CENTER" relativePoint="CENTER"/>
+      <Dimensions x="544" y="944" />
+      <DimensionConstraints minX="544" minY="944" />
+      <Controls>
+        <Backdrop name="$(parent)Bg" integralWrapping="true">
+          <Anchor point="TOPLEFT" offsetX="-8" offsetY="-6"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="4" offsetY="4"/>
+
+          <Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeFileWidth="256" edgeFileHeight="256" edgeSize="32"/>
+          <Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" />
+          <Insets left="32" top="32" right="-32" bottom="-32" />
+        </Backdrop>
+        <Label name="$(parent)Title" font="ZoFontWinH1" modifyTextType="UPPERCASE">
+          <Anchor point="TOPLEFT" offsetX="22" offsetY="22" />
+        </Label>
+
+        <Texture name="$(parent)Divider" inherits="ZO_Options_Divider">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetY="2"/>
+        </Texture>
+
+        <Label name="$(parent)Label" inherits="ZO_Options_SectionTitleLabel">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="TOPLEFT" offsetY="5"/>
+        </Label>
+
+        <Button name="$(parent)General" inherits="ZO_DefaultButton" clickSound="Click" relativeTo="$(parent)">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetY="15"/>
+          <Dimensions x="122" y="22" />
+        </Button>
+        <Button name="$(parent)Categories" inherits="ZO_DefaultButton" clickSound="Click" relativeTo="$(parent)">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)General" relativePoint="TOPRIGHT" />
+          <Dimensions x="122" y="22" />
+        </Button>
+        <Button name="$(parent)Collectibles" inherits="ZO_DefaultButton" clickSound="Click" relativeTo="$(parent)">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Categories" relativePoint="TOPRIGHT" />
+          <Dimensions x="122" y="22" />
+        </Button>
+        <Button name="$(parent)Category" inherits="ZO_DefaultButton" clickSound="Click" relativeTo="$(parent)">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Collectibles" relativePoint="TOPRIGHT" />
+          <Dimensions x="122" y="22" />
+        </Button>
+        <Button name="$(parent)Combined" inherits="ZO_DefaultButton" clickSound="Click" relativeTo="$(parent)">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Category" relativePoint="TOPLEFT" offsetY="-5" />
+          <Dimensions x="122" y="22" />
+        </Button>
+
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)General" relativePoint="BOTTOMLEFT" offsetY="22"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-22" offsetY="-22" />
+        </Control>
+
+        <Button name="$(parent)Close" clickSound="Click" relativeTo="$(parent)">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+          <Dimensions x="22" y="22" />
+          <Textures name="$(parent)Textures" normal="/EsoUI/Art/Buttons/decline_up.dds" mouseOver="/EsoUI/Art/Buttons/decline_over.dds" pressed="/EsoUI/Art/Buttons/decline_down.dds" />
+        </Button>
+        <Button name="$(parent)Refresh" clickSound="Click" relativeTo="$(parent)">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Close" relativePoint="TOPRIGHT" offsetX="-32" />
+          <Dimensions x="22" y="22" />
+          <Textures name="$(parent)Textures" normal="/EsoUI/Art/Buttons/edit_save_up.dds" mouseOver="/EsoUI/Art/Buttons/edit_save_over.dds" pressed="/EsoUI/Art/Buttons/edit_save_down.dds" />
+        </Button>
+        <Button name="$(parent)Move" clickSound="Click" relativeTo="$(parent)">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Refresh" relativePoint="TOPRIGHT" offsetX="-32" />
+          <Dimensions x="22" y="22" />
+          <Textures name="$(parent)Textures" normal="/EsoUI/Art/Buttons/edit_up.dds" mouseOver="/EsoUI/Art/Buttons/edit_over.dds" pressed="/EsoUI/Art/Buttons/edit_down.dds" />
+        </Button>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- Inspiration: ZO_Options_Checkbox -->
+    <Control name="CBs_Settings_ListRow_Checkbox" mouseEnabled="true" virtual="true">
+      <Dimensions x="510" y="26" />
+      <Controls>
+        <Button name="$(parent)Checkbox" inherits="ZO_CheckButton_Text" horizontalAlignment="LEFT" font="ZoFontWinH4" modifyTextType="UPPERCASE">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="425" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+        </Button>
+      </Controls>
+    </Control>
+
+    <Control name="CBs_Settings_ListRow_Category_Title" mouseEnabled="true" virtual="true">
+      <Dimensions x="510" y="26" />
+      <Controls>
+        <Texture name="$(parent)Icon" relativeTo="$(parent)">
+          <Dimensions x="26" y="26" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="26" offsetY="26" />
+        </Texture>
+        <Label name="$(parent)Name" font="ZoFontWinH4" modifyTextType="NONE">
+          <Anchor point="TOPLEFT" offsetX="26" />
+          <OnLinkClicked>
+          </OnLinkClicked>
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- Inspiration: ZO_Options_Checkbox -->
+    <Control name="CBs_Settings_ListRow_Category_Checkbox" mouseEnabled="true" virtual="true">
+      <Dimensions x="510" y="26" />
+      <Controls>
+        <Texture name="$(parent)Icon" relativeTo="$(parent)">
+          <Dimensions x="26" y="26" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="26" offsetY="26" />
+        </Texture>
+        <Button name="$(parent)Button" relativeTo="$(parent)">
+          <Dimensions x="26" y="26" />
+          <MouseButton button="1" enabled="true" />
+          <MouseButton button="2" enabled="true" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-26" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+          <Textures name="$(parent)Textures" normal="/EsoUI/Art/Chatwindow/chat_options_up.dds" pressed="/EsoUI/Art/Chatwindow/chat_options_down.dds" mouseOver="/EsoUI/Art/Chatwindow/chat_options_over.dds" />
+        </Button>
+        <Button name="$(parent)Checkbox" inherits="ZO_CheckButton_Text" horizontalAlignment="LEFT" font="ZoFontWinH4" modifyTextType="UPPERCASE">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="425" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-26" />
+        </Button>
+      </Controls>
+    </Control>
+
+    <!-- Inspiration: ZO_ScrollableComboBox -->
+    <Control name="CBs_Settings_ListRow_Dropdown" mouseEnabled="true" virtual="true">
+      <Dimensions x="510" y="26" />
+      <OnMouseEnter>
+          ZO_Options_OnMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+          ZO_Options_OnMouseExit(self)
+      </OnMouseExit>
+
+      <Controls>
+        <Control name="$(parent)Dropdown" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="293" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+          <OnMouseEnter>
+            ZO_Options_OnMouseEnter(self:GetParent())
+          </OnMouseEnter>
+          <OnMouseExit>
+            ZO_Options_OnMouseExit(self:GetParent())
+          </OnMouseExit>
+        </Control>
+
+        <Label name="$(parent)Name" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+          <Anchor point="LEFT" />
+          <Anchor point="RIGHT" relativeTo="$(parent)Dropdown" relativePoint="LEFT" />
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- Inspiration: ZO_Options_Slider -->
+    <Control name="CBs_Settings_ListRow_Slider" mouseEnabled="true" virtual="true">
+      <Dimensions x="510" y="26" />
+      <OnMouseEnter>
+        ZO_Options_OnMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+        ZO_Options_OnMouseExit(self)
+      </OnMouseExit>
+      <OnShow>
+        ZO_Options_OnShow(self)
+      </OnShow>
+
+      <Controls>
+        <Slider name="$(parent)Slider" inherits="ZO_Slider">
+          <Dimensions x="150" y="16" />
+          <Anchor point="RIGHT" offsetX="-40" />
+          <OnMouseEnter>
+            ZO_Options_OnMouseEnter(self:GetParent())
+          </OnMouseEnter>
+          <OnMouseExit>
+            ZO_Options_OnMouseExit(self:GetParent())
+          </OnMouseExit>
+        </Slider>
+
+        <Label name="$(parent)Name" font="ZoFontWinH4" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+          <Dimensions y="26" />
+          <Anchor point="LEFT" />
+          <Anchor point="RIGHT" relativeTo="$(parent)Slider" relativePoint="LEFT" />
+        </Label>
+
+        <Label name="$(parent)ValueLabel" font="ZoFontWinH4" wrapMode="ELLIPSIS" verticalAlignment="CENTER" excludeFromResizeToFitExtents="true">
+          <Dimensions x="75" y="26" />
+          <Anchor point="LEFT" relativeTo="$(parent)Slider" relativePoint="RIGHT" offsetX="10" />
+        </Label>
+      </Controls>
+    </Control>
+
+    <Control name="CBs_Settings_ListRow_Label" mouseEnabled="true" virtual="true">
+      <Dimensions x="510" y="26" />
+      <OnMouseEnter>
+        ZO_Options_OnMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+        ZO_Options_OnMouseExit(self)
+      </OnMouseExit>
+
+      <Controls>
+        <Label name="$(parent)Name" font="ZoFontWinH4" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+          <Dimensions y="26" />
+          <Anchor point="LEFT" />
+          <Anchor point="RIGHT" relativeTo="$(parent)LowLabel" relativePoint="LEFT" />
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- Inspiration: ZO_EditDefaultText -->
+    <Control name="CBs_Settings_ListRow_EditBox" inherits="CBs_Settings_ListRow_Label" mouseEnabled="true" virtual="true">
+      <Dimensions x="510" y="26" />
+      <Controls>
+        <EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+          <Dimensions x="150" y="26" />
+          <Anchor point="RIGHT" offsetX="-40" />
+        </EditBox>
+      </Controls>
+    </Control>
+
+    <Control name="CBs_Settings_ListRow_Title" mouseEnabled="true" virtual="true">
+      <Dimensions x="510" y="38" />
+      <Controls>
+        <Label name="$(parent)Name" font="ZoFontWinH1" modifyTextType="UPPERCASE">
+          <Dimensions y="38" />
+          <Anchor point="LEFT" />
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- Inspiration: ZO_EditDefaultText -->
+    <Control name="CBs_Settings_ListRow_Button" inherits="CBs_Settings_ListRow_Label" mouseEnabled="true" virtual="true">
+      <Dimensions x="510" y="26" />
+      <Controls>
+        <Button name="$(parent)Button" inherits="ZO_DefaultButton" clickSound="Click" relativeTo="$(parent)">
+          <Anchor point="RIGHT" offsetX="-40" />
+          <Dimensions x="150" y="26" />
+        </Button>
+      </Controls>
+    </Control>
+
+    <Texture name="CBs_Settings_ListRow_Divider" inherits="ZO_Options_Divider" virtual="true">
+      <Dimensions x="512" y="2" />
+    </Texture>
+  </Controls>
+</GuiXml>      

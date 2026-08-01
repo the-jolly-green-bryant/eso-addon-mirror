@@ -1,0 +1,1 @@
+-- KayzarUI: Falls back to English strings.

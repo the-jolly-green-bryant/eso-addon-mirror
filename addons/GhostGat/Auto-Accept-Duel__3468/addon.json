@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/GhostGat/Auto-Accept-Duel__3468",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "GhostGat",
+  "canonical_id": "esoui:3468",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3468",
+  "deleted": false,
+  "directories": [
+    "AutoAcceptDuel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3468/",
+  "fingerprint": "d07c0f274872a7cd1b8f5753a52019d47f23ae9c0548a3d1fc76ee46258641cb",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3468",
+  "source_url": "https://www.esoui.com/downloads/info3468-AutoAcceptDuel.html",
+  "stats": {
+    "downloads": 2224,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "Auto Accept Duel",
+  "updated_at": 1663129651000,
+  "version": "1.0"
+}

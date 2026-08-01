@@ -1,0 +1,14 @@
+## Title: Hyborem's Tutor
+## APIVersion: 101050 101051
+## Version: 1.0.3
+## Author: Hyborem
+## SavedVariables: HyboremTutor_Vars
+## DependsOn: LibAddonMenu-2.0>=36 LibSavedVars>=60007 LibPriceCache>=10103 LibCharacterKnowledge>=300
+
+HyboremTutor.lua
+HT_LAM.lua
+HT_Knowledge.lua
+HT_Queue.lua
+HT_BankLogic.lua
+HT_BankWithdraw.lua
+HT_Tooltip.lua

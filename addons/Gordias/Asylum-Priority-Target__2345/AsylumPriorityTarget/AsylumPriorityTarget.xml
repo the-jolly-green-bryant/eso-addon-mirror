@@ -1,0 +1,36 @@
+<GuiXml> 
+	<Controls>
+		<TopLevelControl name="APTWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">	
+			<Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="-100" offsetY="200"/>
+			<Dimensions x="64" y="95"/>
+			<OnMoveStop>
+            	AsylumPriorityTarget.SaveGUILocation()
+			</OnMoveStop>
+			<Controls>
+				<Texture name="$(parent)TextureOlms" textureFile="AsylumPriorityTarget/Textures/olmsTexture.dds" hidden="false">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+				</Texture>
+				<Texture name="$(parent)TextureLlothis" textureFile="AsylumPriorityTarget/Textures/llothisTexture.dds" hidden="true">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+				</Texture>
+				<Texture name="$(parent)TextureFelms" textureFile="AsylumPriorityTarget/Textures/felmsTexture.dds" hidden="true">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+				</Texture>
+				<Texture name="$(parent)TextureProtector" textureFile="AsylumPriorityTarget/Textures/protectorTexture.dds" hidden="true">
+					<Dimensions x="64" y="64"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+				</Texture>
+				<StatusBar name="$(parent)StatusBar" inherits="ZO_ArrowStatusBarWithBG">
+					<Dimensions x="64" y="10" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="70"/>
+				</StatusBar>
+				<Label name="$(parent)Label" width="64" height="25" font="ZoFontAnnounceMessage" inheritAlpha="true" color="ff0000" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Olms">
+          			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-32" offsetY="95"/>
+        		</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

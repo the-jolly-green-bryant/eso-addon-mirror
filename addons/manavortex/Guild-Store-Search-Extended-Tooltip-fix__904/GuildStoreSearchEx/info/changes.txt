@@ -1,0 +1,10 @@
+== Guild Store Search Extended ==
+== Add-on Change Log ==
+
+ESO : Guild Store Extended - 0.05 
+=================================
+- 0000013: [Bug/Fault] Unit price over 1000g hides coin symbol (lw_admin) - resolved.
+- 0000014: [Bug/Fault] ESO/Zenimax have stopped multiple search of the AH in short succession. (lw_admin) - resolved.
+- 0000016: [Bug/Fault] Error since patch (lw_admin) - resolved.
+
+http://tracker.logic-worx.com/view_all_set.php?type=1&temporary=y&project_id=3&fixed_in_version=0.05

@@ -1,0 +1,205 @@
+<GuiXml>
+    <Controls>
+
+        <Control name="ITTsRosterBotGUIMailGuildNote" mouseEnabled="true" tier="MEDIUM" hidden="true" layer="CONTROLS" virtual="true">
+            <Dimensions x="132" y="32" />
+
+            <Controls>
+                <Texture name="$(parent)NoteIcon" textureFile="EsoUI/Art/Contacts/social_note_up.dds">
+
+                    <Dimensions x="36" y="36" />
+                    <Anchor point="LEFT" />
+                </Texture>
+                <Label name="$(parent)PrependText" text="Edit their" font="ZoFontGameShadow" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                    <Dimensions y="32" />
+                    <Anchor point="LEFT" relativeTo="$(parent)NoteIcon" relativePoint="RIGHT" offsetY="3" />
+                </Label>
+                <Label name="$(parent)Text" font="ZoFontGameShadow" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                    <Dimensions y="32" />
+                    <Anchor point="LEFT" relativeTo="$(parent)PrependText" relativePoint="RIGHT"  offsetX="6" />
+                </Label>
+                <Label name="$(parent)AppendText" text="note" font="ZoFontGameShadow" wrapMode="ELLIPSIS" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                    <Dimensions y="32" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Text" relativePoint="RIGHT" offsetX="6" />
+                </Label>
+            </Controls>
+
+        </Control>
+
+        <Control name="ITTsRosterBot_RosterBG" hidden="true" allowBringToTop="false" virtual="true">
+            <Dimensions x="288" y="600" />
+            <Anchor point="TOPRIGHT" relativeTo="ZO_GuildRosterList" relativePoint="TOPLEFT" offsetX="22"/>
+            <Controls>
+
+                <Backdrop name="$(parent)Area" edgeColor="000000" centerColor="eb4034" alpha="0">
+                    <Dimensions x="270" y="535" />
+                    <Edge edgeSize="1" alpha="0" />
+                    <Anchor point="TOPLEFT" offsetX="-22" />
+                 </Backdrop>
+
+                 <Label name="$(parent)RankTitle" color="FFFFFF" font="$(BOLD_FONT)|$(KB_13)|soft-shadow-thin" text="|t20:20:EsoUI/Art/Guild/guild_rankicon_officer.dds|t RANK FILTERS">
+                     <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Area" relativePoint="TOPLEFT" offsetY="-10"/>
+                 </Label>
+
+                <Backdrop name="$(parent)RankStatusBackdrop" edgeColor="00000000" centerColor="383838" alpha="0.5">
+                    <Dimensions x="269" y="4" />
+                    <Anchor point="CENTER" relativeTo="$(parent)"/>
+                    <Edge edgeSize="0" />
+                </Backdrop>
+
+                <StatusBar name="$(parent)RankStatusBar" color="00c0ff" alpha="0.7">
+                    <Dimensions x="269" y="4" />
+                    <Anchor point="CENTER" relativeTo="$(parent)RankStatusBackdrop"/>
+                    <Limits min="0" max="100" />
+                </StatusBar>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton" hidden="true">
+                    <Dimensions x="16" y="16" />
+                    <Textures normal="ITTsRosterBot/textures/closebutton_down.dds"
+                        pressed="ITTsRosterBot/textures/closebutton_down.dds"
+                        mouseOver="ITTsRosterBot/textures/closebutton_down.dds"
+                     />
+                </Button>
+
+                <Label name="$(parent)SelectionValue" color="00c0ff" font="$(BOLD_FONT)|$(KB_54)|soft-shadow-thin" text="128">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)RankStatusBar" relativePoint="BOTTOMLEFT" />
+                </Label>
+
+                <Label name="$(parent)SelectionSeperator" color="ffffff" font="$(BOLD_FONT)|29|shadow" text="/">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SelectionValue" relativePoint="TOPRIGHT" offsetX="8" offsetY="8" />
+                </Label>
+
+                <Label name="$(parent)SelectionTotal" color="ffffff" font="$(BOLD_FONT)|31|shadow" text="438">
+                    <Anchor point="LEFT" relativeTo="$(parent)SelectionSeperator" relativePoint="RIGHT" offsetX="6" offsetY="1" />
+                </Label>
+
+                <Label name="$(parent)SelectionPercSymbol" color="00c0ff" font="$(BOLD_FONT)|22|shadow" text="%">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)RankStatusBar" relativePoint="BOTTOMRIGHT" offsetX="-3" offsetY="7" />
+                </Label>
+
+                <Label name="$(parent)SelectionPerc" color="00c0ff" font="$(BOLD_FONT)|31|shadow" text="48">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)SelectionPercSymbol" relativePoint="TOPLEFT" offsetX="-3" offsetY="-2" />
+                </Label>
+
+                <Control name="$(parent)TimeRangeDropdown" inherits="ZO_ComboBox">
+                    <Dimensions x="269" y="40" />
+                    <Anchor point="TOP" relativeTo="$(parent)RankStatusBar" relativePoint="BOTTOM" offsetY="118" />
+                </Control>
+
+                <Label name="$(parent)TimeRangeTitle" color="FFFFFF" font="$(BOLD_FONT)|$(KB_13)|soft-shadow-thin" text="|t20:20:esoui/art/icons/mapkey/mapkey_respecaltar.dds|t TIME RANGE">
+                     <Anchor point="BOTTOMLEFT" relativeTo="$(parent)TimeRangeDropdown" relativePoint="TOPLEFT" offsetY="-10"/>
+                </Label>
+
+            </Controls>
+        </Control>
+
+        <Control name="ITTsRosterBot_SidebarTotal" virtual="true">
+            <Dimensions x="269" y="54" />
+            <Controls>
+                <Label name="$(parent)Value" color="ebbc2f" font="$(BOLD_FONT)|$(KB_36)|soft-shadow-thin">
+                    <Dimensions y="36"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+                </Label>
+
+                <Backdrop name="$(parent)StatusBackdrop" edgeColor="00000000" centerColor="383838" alpha="0.5">
+                    <Dimensions x="269" y="4" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Value" offsetY="-4" />
+                    <Edge edgeSize="0" />
+                </Backdrop>
+
+                <StatusBar name="$(parent)StatusBar" color="ebbc2f" alpha="0.7">
+                    <Dimensions x="269" y="4" />
+                    <Anchor point="CENTER" relativeTo="$(parent)StatusBackdrop"/>
+                    <Limits min="0" max="100" />
+                </StatusBar>
+
+                <Label name="$(parent)PercSymbol" color="00c0ff" font="$(BOLD_FONT)|18|soft-shadow-thin" text="%">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)StatusBar" relativePoint="BOTTOMRIGHT" offsetX="-3" offsetY="7" />
+                </Label>
+
+                <Label name="$(parent)Perc" color="00c0ff" font="$(BOLD_FONT)|27|soft-shadow-thin" text="48">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)PercSymbol" relativePoint="TOPLEFT" offsetX="-3" offsetY="-3" />
+                </Label>
+
+                <Label name="$(parent)Title" color="FFFFFF" font="$(BOLD_FONT)|$(KB_13)|soft-shadow-thin">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)StatusBackdrop" relativePoint="TOPLEFT" offsetY="-5"/>
+                </Label>
+
+                <Label name="$(parent)ExtraInfo" font="$(BOLD_FONT)|$(KB_16)|soft-shadow-thin" color="00c0ff">
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)StatusBackdrop" relativePoint="TOPRIGHT" offsetY="-5"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="ITTsRosterBot_Search" mouseEnabled="true" virtual="true">
+            <Dimensions x="140" y="32" />
+            <Controls>
+                <Texture name="$(parent)Icon" textureFile="esoui/art/lfg/lfg_tabicon_grouptools_up.dds">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="LEFT" />
+                </Texture>
+
+                <EditBox name="$(parent)Box" font="ZoFontWinT1" textType="TEXT_TYPE_ALL" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+                    <OnInitialized>
+                        ZO_EditDefaultText_Initialize(self, 'Search')
+                    </OnInitialized>
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetY="2" />
+                </EditBox>
+            </Controls>
+        </Control>
+
+        <Control name="ITTsRosterBot_RankFilter" mouseEnabled="true" virtual="true">
+            <Dimensions x="52" y="52" />
+            <Controls>
+                 <Backdrop name="$(parent)_BG" edgeColor="000000" centerColor="383838" alpha="0.4">
+                      <AnchorFill />
+                      <Edge edgeSize="1" alpha="0" />
+                 </Backdrop>
+                 <Button name="$(parent)_Button" inherits="ZO_ButtonBehaviorClickSound">
+                     <AnchorFill/>
+                 </Button>
+                 <Texture name="$(parent)_Icon" textureFile="/esoui/art/icons/guildranks/guild_rankicon_misc03.dds" mouseEnabled="false">
+                    <Dimensions x="38" y="38" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                </Texture>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="RB_EditMailNoteDialog" inherits="ZO_CustomDialogBase" hidden="true">
+            <OnInitialized>
+                RB_EditMailNoteDialog_OnInitialized(self)
+            </OnInitialized>
+            <Controls>
+                <Label name="$(parent)DisplayName" inherits="ZO_DialogContentAnchors" horizontalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontHeader3"/>
+
+                <Label name="$(parent)GuildName" inherits="ZO_DialogContentAnchors" horizontalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameShadow">
+                    <Anchor point="TOP" relativeTo="$(parent)DisplayName" relativePoint="BOTTOM" offsetY="3" />
+                </Label>
+
+                <Backdrop name="$(parent)Note" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)DisplayName" relativePoint="BOTTOMLEFT" offsetY="40"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)DisplayName" relativePoint="BOTTOMRIGHT" offsetY="40"/>
+                    <Dimensions y="265"/>
+                    <Controls>
+                        <EditBox name="$(parent)Edit" maxInputCharacters="254" inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText">
+                            <OnInitialized>
+                                ZO_EditDefaultText_Initialize(self, GetString(SI_EDIT_NOTE_DEFAULT_TEXT))
+                            </OnInitialized>
+                            <OnEffectivelyShown>
+                                self:TakeFocus()
+                            </OnEffectivelyShown>
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+
+                <Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton"/>
+                <Control name="$(parent)Save" inherits="ZO_CustomDialogButton"/>
+            </Controls>
+        </TopLevelControl>
+
+
+
+  
+        
+    </Controls>
+</GuiXml>

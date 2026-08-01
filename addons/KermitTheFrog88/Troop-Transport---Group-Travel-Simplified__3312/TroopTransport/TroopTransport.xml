@@ -1,0 +1,143 @@
+<GuiXml>
+
+    <Controls>
+	
+		<TopLevelControl name="TroopTransportMainButton" mouseEnabled="true" movable="true">
+			<Dimensions x="100" y="100" />
+            <Anchor point="CENTER" />
+					
+			<OnMoveStop>
+				TroopTransport.SaveLocButton()
+			</OnMoveStop>
+			
+			<OnMouseEnter>
+				TroopTransport.ShowButtonBG()
+			</OnMouseEnter>
+			<OnMouseExit>
+				TroopTransport.HideButtonBG()
+			</OnMouseExit>
+			
+		 	<Controls>
+			
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.1"></Backdrop>
+				
+				<Button name="$(parent)MainHUDButton" inherits="ZO_ButtonBehaviorClickSound" text="2" mouseEnabled="true">
+					<Dimensions x="75" y="75" />
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" />
+					<Textures 
+					pressed="esoui/art/treeicons/tutorial_idexicon_groups_down.dds"
+					mouseOver="esoui/art/treeicons/tutorial_idexicon_groups_over.dds" 
+					normal="esoui/art/treeicons/tutorial_idexicon_groups_up.dds" />
+					<OnMouseEnter>
+						TroopTransport.ShowButtonBG()
+						InitializeTooltip(InformationTooltip, self, TOPRIGHT)
+					    SetTooltipText(InformationTooltip, "Open/Close TroopTransport Window")
+					</OnMouseEnter>
+					<OnMouseExit>
+						TroopTransport.HideButtonBG()
+						ClearTooltip(InformationTooltip)
+					</OnMouseExit>
+					<OnClicked>
+					TroopTransport.ShowHideTTMainWindowOnClicked()
+					</OnClicked>
+				</Button>
+			
+			</Controls>
+				
+		</TopLevelControl>
+		
+        <TopLevelControl name="TroopTransport1" mouseEnabled="true" movable="true">
+            <Dimensions x="200" y="120" />
+            <Anchor point="LEFT" relativeTo="TroopTransportMainButton" relativePoint="BOTTOMRIGHT" />
+ 
+            <OnUpdate>
+            </OnUpdate>
+			
+			<OnMoveStop>
+				TroopTransport.SaveLocWindow()
+			</OnMoveStop>
+			
+			<OnResizeStart>
+			</OnResizeStart>
+			
+			<OnResizeStop>
+			</OnResizeStop>
+					
+			<Controls>	
+			
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"></Backdrop>
+ 
+				<Label name="$(parent)WindowTitle" font="ZoFontAnnounceMedium" text="|c1bbf01TROOP|r TRANSPORT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Label>
+ 
+				<Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+					<Dimensions x="200" y="4"/>
+					<Anchor point="TOP" relativeTo="$(parent)" offsetY="38" />
+				</Texture>
+				
+				<Button name="$(parent)ButtonTravelToLeader" inherits="ZO_ButtonBehaviorClickSound" Text="1">
+					<Dimensions x="80" y="80" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TopDivider" relativePoint="TOPLEFT" offsetX="0"/>
+					<Textures normal="esoui/art/guild/guild_indexicon_leader_up.dds"
+						pressed="esoui/art/guild/guild_indexicon_leader_down.dds"
+						mouseOver="esoui/art/guild/guild_indexicon_leader_over.dds"
+						disabled="esoui/art/guild/guild_indexicon_leader_down.dds" />
+					<OnMouseEnter>
+					 InitializeTooltip(InformationTooltip, self, TOPRIGHT)
+					 SetTooltipText(InformationTooltip, "Travel to group leader")
+					</OnMouseEnter>
+					<OnMouseExit>
+					ClearTooltip(InformationTooltip)
+					</OnMouseExit>
+					<OnClicked>
+					TroopTransport.TravelToLeaderOnClicked()
+					</OnClicked>
+					
+				</Button>
+				
+				<Button name="$(parent)ButtonTravelToGroupMember" inherits="ZO_ButtonBehaviorClickSound" text="2">
+					<Dimensions x="80" y="80" />
+					<Anchor point="TOP" relativeTo="$(parent)TopDivider" relativePoint="TOP" offsetX="0" />
+					<Textures normal="esoui/art/guild/guild_indexicon_member_up.dds"
+						pressed="esoui/art/guild/guild_indexicon_member_down.dds"
+						mouseOver="esoui/art/guild/guild_indexicon_member_over.dds"
+						disabled="esoui/art/guild/guild_indexicon_member_down.dds" />
+					<OnMouseEnter>
+					 InitializeTooltip(InformationTooltip, self, TOPRIGHT)
+					 SetTooltipText(InformationTooltip, "Travel to group member")
+					</OnMouseEnter>
+					<OnMouseExit>
+					ClearTooltip(InformationTooltip)
+					</OnMouseExit>
+					<OnClicked>
+					TroopTransport.TravelToGroupMemberOnClicked()
+					</OnClicked>
+				</Button>
+				
+				<Button name="$(parent)ButtonTravelToFriend" inherits="ZO_ButtonBehaviorClickSound" text="2">
+					<Dimensions x="75" y="75" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)TopDivider" relativePoint="TOPRIGHT" offsetX="0" />
+					<Textures normal="esoui/art/chatwindow/chat_friendsonline_up.dds"
+						pressed="esoui/art/chatwindow/chat_friendsonline_down.dds"
+						mouseOver="esoui/art/chatwindow/chat_friendsonline_over.dds"
+						disabled="esoui/art/chatwindow/chat_friendsonline_down.dds" />
+					<OnMouseEnter>
+					 InitializeTooltip(InformationTooltip, self, TOPRIGHT)
+					 SetTooltipText(InformationTooltip, "Travel to friend")
+					</OnMouseEnter>
+					<OnMouseExit>
+					ClearTooltip(InformationTooltip)
+					</OnMouseExit>
+					<OnClicked>
+					TroopTransport.TravelToFriendOnClicked()
+					</OnClicked>
+				</Button>
+				
+            </Controls>
+		
+        </TopLevelControl>
+		
+    </Controls>
+
+</GuiXml>

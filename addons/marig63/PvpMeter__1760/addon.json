@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/marig63/PvpMeter__1760",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "marig63",
+  "canonical_id": "esoui:1760",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:1760",
+  "deleted": false,
+  "directories": [
+    "PvPMeter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1760/",
+  "fingerprint": "68d2b890a0f019afff63bddb58b68e0b9951676020b68ab4d6f4e15d55eb30e3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6079.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6135.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6080.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5927.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5842.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5843.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6383.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6078.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5862.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6384.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1760",
+  "source_url": "https://www.esoui.com/downloads/info1760-PvpMeter.html",
+  "stats": {
+    "downloads": 98427,
+    "favorites": 98,
+    "monthly_downloads": 161
+  },
+  "title": "PvpMeter",
+  "updated_at": 1719739706000,
+  "version": "3.0.42"
+}

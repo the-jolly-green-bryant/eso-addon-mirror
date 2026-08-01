@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Harven/Harven-s-AS-to-LAM-adapter__937",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Harven",
+  "canonical_id": "esoui:937",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:937",
+  "deleted": false,
+  "directories": [
+    "has2lam"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl937/",
+  "fingerprint": "c6734a1395353d055e593a5823a3f3f85b3e62f5b228ae5a08397eb57b45550e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3797.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3798.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "937",
+  "source_url": "https://www.esoui.com/downloads/info937-HarvensAStoLAMadapter.html",
+  "stats": {
+    "downloads": 80806,
+    "favorites": 225,
+    "monthly_downloads": 82
+  },
+  "title": "Harven's AS to LAM adapter",
+  "updated_at": 1765021374000,
+  "version": "2.3.0"
+}

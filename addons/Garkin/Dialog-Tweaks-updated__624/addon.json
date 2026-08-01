@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Garkin/Dialog-Tweaks-updated__624",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Garkin",
+  "canonical_id": "esoui:624",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:624",
+  "deleted": false,
+  "directories": [
+    "DialogTweaks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl624/",
+  "fingerprint": "b3f27314cdff327dce75f51933cd70bdbee135b2a637e2dea5c917c3bd9711df",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2192.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1918.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "624",
+  "source_url": "https://www.esoui.com/downloads/info624-DialogTweaksupdated.html",
+  "stats": {
+    "downloads": 11195,
+    "favorites": 17,
+    "monthly_downloads": 16
+  },
+  "title": "Dialog Tweaks (updated)",
+  "updated_at": 1638775566000,
+  "version": "1.6"
+}

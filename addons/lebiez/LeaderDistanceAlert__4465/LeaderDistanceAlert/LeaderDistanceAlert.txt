@@ -1,0 +1,8 @@
+## Title: LeaderDistanceAlert
+## Author: Lebiez
+## Version: 1.2.0
+## APIVersion: 101041
+## SavedVariables: LeaderDistanceAlertSaved
+## OptionalDependsOn: LibAddonMenu-2.0>=40
+
+LeaderDistanceAlert.lua

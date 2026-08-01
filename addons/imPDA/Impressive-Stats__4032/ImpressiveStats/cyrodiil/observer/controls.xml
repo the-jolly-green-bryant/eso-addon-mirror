@@ -1,0 +1,14 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+		<TopLevelControl name="IMP_STATS_CyrodiilObserver" hidden="true" mouseEnabled="true" movable="true" resizeToFitDescendents="true">
+			<Dimensions x="900" y="600" />
+			<Anchor point="CENTER" />
+			<Controls>
+				<Backdrop name="$(parent)Background" inherits="ZO_DefaultBackdrop" excludeFromResizeToFitExtents="true" />
+				<Control name="$(parent)ScrollList">
+                    <AnchorFill />
+                </Control>
+			</Controls>
+		</TopLevelControl>	
+    </Controls>
+</GuiXml>

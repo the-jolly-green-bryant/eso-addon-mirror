@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/Keldor/ESO-Database.com-Game-Data-Export-AddOn__2687",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Keldor",
+  "canonical_id": "esoui:2687",
+  "category_id": "26",
+  "compatibility": [],
+  "content_id": "esoui:2687",
+  "deleted": false,
+  "directories": [
+    "ESODatabaseGameDataExport"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2687/",
+  "fingerprint": "d57b6728f4e762127a8dbaf259813cfc64a53bc39a2c2c8a9698c1f759fbc535",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2687",
+  "source_url": "https://www.esoui.com/downloads/info2687-ESO-Database.comGameDataExportAddOn.html",
+  "stats": {
+    "downloads": 55136,
+    "favorites": 12,
+    "monthly_downloads": 65
+  },
+  "title": "ESO-Database.com Game Data Export AddOn",
+  "updated_at": 1762972557000,
+  "version": "1.0.24"
+}

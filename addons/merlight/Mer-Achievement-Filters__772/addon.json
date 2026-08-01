@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/merlight/Mer-Achievement-Filters__772",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "merlight",
+  "canonical_id": "esoui:772",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:772",
+  "deleted": false,
+  "directories": [
+    "merAchievementFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl772/",
+  "fingerprint": "1ebab20313710e98d252db457fcba7df5c0ba1f29f46905d5372a055e3a1068f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2359.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "772",
+  "source_url": "https://www.esoui.com/downloads/info772-MerAchievementFilters.html",
+  "stats": {
+    "downloads": 6625,
+    "favorites": 14,
+    "monthly_downloads": 11
+  },
+  "title": "Mer Achievement Filters",
+  "updated_at": 1447509389000,
+  "version": "1.6b"
+}

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/MelanAster/ChatClassCP---Show-Class-and-Level-Prefixes-in-the-Chat__4315",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MelanAster",
+  "canonical_id": "esoui:4315",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4315",
+  "deleted": false,
+  "directories": [
+    "ChatClassCP"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4315/",
+  "fingerprint": "ecf5f74eb758fff4306afc87964419df65f20ff9ed78cea7f14b484df0236051",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14835.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4315",
+  "source_url": "https://www.esoui.com/downloads/info4315-ChatClassCP-ShowClassandLevelPrefixesintheChat.html",
+  "stats": {
+    "downloads": 383,
+    "favorites": 0,
+    "monthly_downloads": 14
+  },
+  "title": "ChatClassCP - Show Class and Level Prefixes in the Chat",
+  "updated_at": 1768038294000,
+  "version": "0.4"
+}

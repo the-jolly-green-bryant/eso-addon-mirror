@@ -1,0 +1,14 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: |cFF5FF5Kyoma's|r Global Achievements
+## Description: This addon allows you to view and link achievements from other characters. It will also provide a merged view of all characters combined.
+## Version: 2.4.0
+## Author: |cFF5FF5Kyoma|r
+## APIVersion: 100026
+## SavedVariables: kyoAchievenizerGlobal
+## DependsOn: LibStub LibCustomMenu
+
+code.lua

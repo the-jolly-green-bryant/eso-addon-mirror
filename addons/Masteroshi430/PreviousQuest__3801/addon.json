@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Masteroshi430/PreviousQuest__3801",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Masteroshi430",
+  "canonical_id": "esoui:3801",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3801",
+  "deleted": false,
+  "directories": [
+    "PreviousQuest"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3801/",
+  "fingerprint": "503c3f3699723bd16f6526443a604f7fe5731540c2884993786459c7895edae6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12887.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12886.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3801",
+  "source_url": "https://www.esoui.com/downloads/info3801-PreviousQuest.html",
+  "stats": {
+    "downloads": 4279,
+    "favorites": 10,
+    "monthly_downloads": 183
+  },
+  "title": "PreviousQuest",
+  "updated_at": 1783579810000,
+  "version": "2026.07.09"
+}

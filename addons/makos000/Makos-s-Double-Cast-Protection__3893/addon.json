@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/makos000/Makos-s-Double-Cast-Protection__3893",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "makos000",
+  "canonical_id": "esoui:3893",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3893",
+  "deleted": false,
+  "directories": [
+    "DoubleCastProtection"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3893/",
+  "fingerprint": "1b2cafd6689839694f5897d9b38fd8f75aaaad83431fc765cd936e7dac987267",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13247.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3893",
+  "source_url": "https://www.esoui.com/downloads/info3893-MakossDoubleCastProtection.html",
+  "stats": {
+    "downloads": 3792,
+    "favorites": 12,
+    "monthly_downloads": 40
+  },
+  "title": "Makos's Double Cast Protection",
+  "updated_at": 1718786714000,
+  "version": "1.0.1"
+}

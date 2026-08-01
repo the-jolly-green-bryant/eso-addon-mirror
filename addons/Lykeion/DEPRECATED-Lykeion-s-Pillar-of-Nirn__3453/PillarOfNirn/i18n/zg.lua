@@ -1,0 +1,10 @@
+ZO_CreateStringId("PON_PANEL_NAME", "Lykeion's Pillar Of Nirn")
+ZO_CreateStringId("PON_PANEL_DISPLAYNAME", "|c215895L|c2A5B90y|c325E8Bk|c3B6186e|c436481i|c4C677Co|c546976n'|c5D6C71s |c656F6CP|c6E7267i|c777562ll|c80785Da|c887B58r|c917E53 |c99814Eo|cA28449f|cAA8643 |cB3893EN|cBB8C39i|cC48F34r|cCC922Fn|r")
+
+ZO_CreateStringId("PON_LOCK_UI", "UI锁定/解锁")
+ZO_CreateStringId("PON_TEXT_SIZE", "字符大小")
+ZO_CreateStringId("PON_ONLY_DISPLAY_IN_COMBAT", "仅在战斗中显示")
+ZO_CreateStringId("PON_AVAILABLE_COLOR", "可用时颜色")
+ZO_CreateStringId("PON_WARNING_COLOR", "预备时颜色")
+ZO_CreateStringId("PON_COOLDOWN_COLOR", "冷却时颜色")
+ZO_CreateStringId("PON_COLOR_WARNING", "非默认的颜色只能在再次变化时应用")

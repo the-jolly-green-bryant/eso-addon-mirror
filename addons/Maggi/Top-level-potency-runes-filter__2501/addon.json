@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Maggi/Top-level-potency-runes-filter__2501",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Maggi",
+  "canonical_id": "esoui:2501",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2501",
+  "deleted": false,
+  "directories": [
+    "",
+    "lang"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2501/",
+  "fingerprint": "999428f25fcf93993d22ffc62b672f8a0ed68a67700481d3ad1058070af73d0a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2501",
+  "source_url": "https://www.esoui.com/downloads/info2501-Toplevelpotencyrunesfilter.html",
+  "stats": {
+    "downloads": 5210,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "Top level potency runes filter",
+  "updated_at": 1575157483000,
+  "version": "1.1.7a"
+}

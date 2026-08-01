@@ -1,0 +1,25 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|cff0000Swiss|r|cffffffArmy|r|cff0000Knife|r">
+      <Action name="SwissArmyKnifeTEXT">
+        <Down>if(SAK.settings.MUST_BE_SHOWN == false) then ShowKey() else HideKey() end</Down>
+      </Action>
+      <Action name="SwissArmyKnifeJUMP">
+        <Down>if(NameHome ~= "") then JollyJumper() end</Down>
+      </Action>
+	<Action name="SwissArmyKnifeJUNK">
+            <Down>JunkItem()</Down>
+         </Action>
+	<Action name="SwissArmyKnifeLOCK">
+            <Down>LockItem()</Down>
+         </Action>
+	<Action name="SwissArmyKnifeBAND">
+            <Down>ChangeBandeau()</Down>
+         </Action>
+	<Action name="SwissArmyKnifeHELMET">
+            <Down>ToggleHelmet()</Down>
+         </Action>
+    </Category>
+  </Layer>
+</Bindings>
+settings

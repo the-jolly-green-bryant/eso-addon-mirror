@@ -1,0 +1,24 @@
+<!--                v 1.6.0               -->
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="KLSUI" mouseEnabled="true" movable="true" drawLayer="DL_BACKGROUND" clampedToScreen="true" hidden="true">
+			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="GuiRoot" offsetX="20" offsetY="0" />
+			<OnMouseUp>
+				KLS_SaveAnchor()
+			</OnMouseUp>
+			<Controls>
+				<Backdrop name="$(parent)BGDark" alpha="0.3" inherits="ZO_ThinBackdrop"/>
+			</Controls>
+		</TopLevelControl>
+
+		<Button name="KLS_FlagControl" virtual="true" mouseEnabled="true" text="">
+			<Dimensions x="32" y="32" />
+			<Controls>
+				<Texture name="$(parent)Texture" alpha=".7" >
+					<Dimensions x="32" y="32" />
+					<Anchor fill="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0" />
+				</Texture>
+			</Controls>
+		</Button>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/iiJonno/Courage__2746",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "iiJonno",
+  "canonical_id": "esoui:2746",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2746",
+  "deleted": false,
+  "directories": [
+    "Courage"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2746/",
+  "fingerprint": "4ec13516e9a51d25812a53826e9e8fdd6412ae793f8e5af96d40dcb3b8e85171",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9297.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2746",
+  "source_url": "https://www.esoui.com/downloads/info2746-Courage.html",
+  "stats": {
+    "downloads": 3149,
+    "favorites": 3,
+    "monthly_downloads": 10
+  },
+  "title": "Courage",
+  "updated_at": 1615744123000,
+  "version": "1.5"
+}

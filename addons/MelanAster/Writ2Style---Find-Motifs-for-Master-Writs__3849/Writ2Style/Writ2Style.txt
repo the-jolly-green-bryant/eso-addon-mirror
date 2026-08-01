@@ -1,0 +1,25 @@
+## Title: Writ2Style
+## APIVersion: 101049
+## Version: 2.02
+## AddOnVersion: 20260203
+## Author: @MelanAster
+## Description: To Extract Crafting Motif Info from Master Writs.
+## DependsOn: LibCustomMenu
+## OptionalDependsOn: AwesomeGuildStore
+## SavedVariables: W2S_Vars
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+# The Elder Scrolls and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+# All rights reserved
+# You can read the full terms at https://account.elderscrollsonline.com/add-on-terms.
+
+Main.lua
+Data.lua
+AGS.lua
+
+# Writ2StyleByLink( ItemLink MasterWrit)
+# Return: ItemLink (Motif Chapter or Book)
+
+# Writ2StyleByLink( ItemLink MasterWrit, Boolean true)
+# Return: ItemLink(Motif Chapter), ItemLink(Motif Book)
+# Return nil when item not exist

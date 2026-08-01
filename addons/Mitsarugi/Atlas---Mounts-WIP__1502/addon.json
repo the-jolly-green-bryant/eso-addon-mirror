@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/Mitsarugi/Atlas---Mounts-WIP__1502",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Mitsarugi",
+  "canonical_id": "esoui:1502",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1502",
+  "deleted": false,
+  "directories": [
+    "AtlasMounts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1502/",
+  "fingerprint": "fff6409ca447d400fbd7fbd273fa3ed42d743a802fcabd868f663b3895d8f144",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4885.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1502",
+  "source_url": "https://www.esoui.com/downloads/info1502-Atlas-MountsWIP.html",
+  "stats": {
+    "downloads": 3924,
+    "favorites": 1,
+    "monthly_downloads": 11
+  },
+  "title": "Atlas - Mounts (WIP)",
+  "updated_at": 1476537523000,
+  "version": "0.1a"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/kawamonkey/New-Life-Festival-Wayshrines__3261",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3261",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3261",
+  "deleted": false,
+  "directories": [
+    "NewLifeFestivalWayshrines"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3261/",
+  "fingerprint": "d5f82be373fc51717adfd87d2a57167728bfb38bd218e68002692952f399d638",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3261",
+  "source_url": "https://www.esoui.com/downloads/info3261-NewLifeFestivalWayshrines.html",
+  "stats": {
+    "downloads": 2301,
+    "favorites": 0,
+    "monthly_downloads": 18
+  },
+  "title": "New Life Festival Wayshrines",
+  "updated_at": 1640124126000,
+  "version": "1.1"
+}

@@ -1,0 +1,24 @@
+"We have a no good sneak thief on our paws!"
+
+Dedicated to the hard-working cats at Rawl'kha Bank who continue not to ask questions about my goods, even when they saw me steal them earlier.
+
+
+Features
+--------
+
+* Only marks criminal actions as red if seen
+* Displays number of successful pickpockets
+* Highlights guards
+* Displays NPC pickpocket difficulty levels
+* Fixes game bug where suspicious NPCs are reported as being empty
+* Marks empty NPCs as empty rather than suspicious
+
+
+FAQs
+----
+
+*Attempt counter doesn't match number of items available*
+NPCs have a shared pool of items, so if another player has recently pickpocketed them, they will have less available.
+
+*Vvardenfell NPCs*
+Vvardenfell NPCs can allow four or more pickpocket attempts in certain circumstances. This is probably a bug and a very difficult one to accommodate, so any attempts outside the normal three are just marked as #3.

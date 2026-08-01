@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/GrumpyEthilin/SimplePlayTime__4452",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "GrumpyEthilin",
+  "canonical_id": "esoui:4452",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4452",
+  "deleted": false,
+  "directories": [
+    "SimplePlayTime"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4452/",
+  "fingerprint": "ce9af8d11f786048c127c333bc1114583b3762b868b16cadf22cbaa45583451d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15497.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15498.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15499.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4452",
+  "source_url": "https://www.esoui.com/downloads/info4452-SimplePlayTime.html",
+  "stats": {
+    "downloads": 349,
+    "favorites": 0,
+    "monthly_downloads": 21
+  },
+  "title": "SimplePlayTime",
+  "updated_at": 1779047056000,
+  "version": "1.1.3"
+}

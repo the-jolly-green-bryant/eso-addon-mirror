@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Jar-Ek/Easy-Quick-Slots__71",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jar-Ek",
+  "canonical_id": "esoui:71",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Live",
+      "version": "1.0"
+    }
+  ],
+  "content_id": "esoui:71",
+  "deleted": false,
+  "directories": [
+    "EasyQuickSlots"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl71/",
+  "fingerprint": "15faec62b8a1649145c0ec5a67e1104489d14909d93281756fc31a96282ecb54",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "71",
+  "source_url": "https://www.esoui.com/downloads/info71-EasyQuickSlots.html",
+  "stats": {
+    "downloads": 25999,
+    "favorites": 50,
+    "monthly_downloads": 14
+  },
+  "title": "Easy Quick Slots",
+  "updated_at": 1431462811000,
+  "version": "1.1"
+}

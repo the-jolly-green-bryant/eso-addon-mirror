@@ -1,0 +1,107 @@
+<GuiXml>
+	<Controls>
+		<Control name="IJA_ChatRight_Right_Template" virtual="true">
+			<Controls>
+				<Button name="$(parent)Minimize" mouseOverBlendMode="ADD" >
+					<Dimensions x="32" y="32" />
+					<Anchor point="BOTTOMLEFT" offsetY="-6"/>
+					<Textures
+						normal="EsoUI/Art/ChatWindow/minimize_up.dds"
+						disabled="EsoUI/Art/ChatWindow/minimize_up.dds"
+						pressed="EsoUI/Art/ChatWindow/minimize_down.dds"
+						mouseOver="EsoUI/Art/ChatWindow/minimize_over.dds"
+					/>
+
+					<OnClicked>
+						ZO_ChatSystem_OnMinMaxClicked()
+					</OnClicked>
+				</Button>
+
+				<Control name="$(parent)MinBar" hidden="true">
+					<Dimensions x="128" y="512"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" offsetY="-20"/>
+					<Controls>
+						<Texture name="$(parent)BG" textureFile="EsoUI/Art/ChatWindow/chat_minimized_mungeBG.dds">
+						<TextureCoords left="0.8" right="0" top="0" bottom="1" />
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT"/>
+						</Texture>
+						<Texture name="$(parent)BGHighlight" textureFile="EsoUI/Art/ChatWindow/chat_minimized_mungeBG_highlight.dds" alpha="0">
+							<Anchor point="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT"/>
+						</Texture>
+
+						<Button name="$(parent)Maximize" mouseOverBlendMode="ADD" >
+						<Dimensions x="32" y="32" />
+						<Anchor point="BOTTOMLEFT" offsetX="20" offsetY="-10" />
+						<Textures
+							normal="EsoUI/Art/ChatWindow/maximize_up.dds"
+							disabled="EsoUI/Art/ChatWindow/maximize_up.dds"
+							pressed="EsoUI/Art/ChatWindow/maximize_down.dds"
+							mouseOver="EsoUI/Art/ChatWindow/maximize_over.dds"
+						/>
+
+						<OnClicked>
+							ZO_ChatSystem_OnMinMaxClicked()
+						</OnClicked>
+						</Button>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+
+		<Control name="IJA_ChatRight_Left_Template" virtual="true">
+			<Controls>
+				<Button name="$(parent)Minimize" mouseOverBlendMode="ADD" >
+					<Dimensions x="32" y="32" />
+					<Anchor point="BOTTOMLEFT" offsetY="-6"/>
+					<Textures
+						normal="EsoUI/Art/ChatWindow/minimize_up.dds"
+						disabled="EsoUI/Art/ChatWindow/minimize_up.dds"
+						pressed="EsoUI/Art/ChatWindow/minimize_down.dds"
+						mouseOver="EsoUI/Art/ChatWindow/minimize_over.dds"
+					/>
+
+					<OnClicked>
+						ZO_ChatSystem_OnMinMaxClicked()
+					</OnClicked>
+				</Button>
+
+				<Control name="$(parent)MinBar" hidden="true">
+					<Dimensions x="128" y="512"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="GuiRoot" offsetY="-20"/>
+					<Controls>
+						<Texture name="$(parent)BG" textureFile="EsoUI/Art/ChatWindow/chat_minimized_mungeBG.dds">
+						<Anchor point="TOPRIGHT" />
+						<Anchor point="BOTTOMLEFT"/>
+						</Texture>
+						<Texture name="$(parent)BGHighlight" textureFile="EsoUI/Art/ChatWindow/chat_minimized_mungeBG_highlight.dds" alpha="0">
+							<Anchor point="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT"/>
+						</Texture>
+
+						<Button name="$(parent)Maximize" mouseOverBlendMode="ADD" >
+						<Dimensions x="32" y="32" />
+						<Anchor point="BOTTOMLEFT" offsetX="20" offsetY="-10" />
+						<Textures
+							normal="EsoUI/Art/ChatWindow/maximize_up.dds"
+							disabled="EsoUI/Art/ChatWindow/maximize_up.dds"
+							pressed="EsoUI/Art/ChatWindow/maximize_down.dds"
+							mouseOver="EsoUI/Art/ChatWindow/maximize_over.dds"
+						/>
+
+						<OnClicked>
+							ZO_ChatSystem_OnMinMaxClicked()
+						</OnClicked>
+						</Button>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+		<TopLevelControl name="IJA_ChatRight">
+			<OnInitialized>
+			IJA_ChatRight_Initialize(self)
+			</OnInitialized>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

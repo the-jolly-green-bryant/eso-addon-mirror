@@ -1,0 +1,15 @@
+## Title: PillagerIndicator
+## APIVersion: 101041
+## Description: Gives a overlay if player has received the Pillager Buff
+## Version: 1.0.0
+## AddOnVersion: 100
+## Author: |c268074JN Slevin
+## SavedVariables: PISettings
+## DependsOn:  LibAddonMenu-2.0>=36 LibChatMessage>=105
+
+PillagerIndicator.lua
+PillagerIndicator.xml
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

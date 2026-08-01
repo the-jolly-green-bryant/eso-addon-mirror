@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/Jarva/OffTaunt__2965",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Jarva",
+  "canonical_id": "esoui:2965",
+  "category_id": "19",
+  "compatibility": [],
+  "content_id": "esoui:2965",
+  "deleted": false,
+  "directories": [
+    "OffTaunt"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2965/",
+  "fingerprint": "e176cb6bedb304901183a526fe9ae969b72eef065baffe8591cbaf30c54aa660",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2965",
+  "source_url": "https://www.esoui.com/downloads/info2965-OffTaunt.html",
+  "stats": {
+    "downloads": 5402,
+    "favorites": 5,
+    "monthly_downloads": 13
+  },
+  "title": "OffTaunt",
+  "updated_at": 1615812288000,
+  "version": "1.0.0"
+}

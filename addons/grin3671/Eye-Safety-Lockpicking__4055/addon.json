@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/grin3671/Eye-Safety-Lockpicking__4055",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "grin3671",
+  "canonical_id": "esoui:4055",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4055",
+  "deleted": false,
+  "directories": [
+    "EyeSafetyLockpicking"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4055/",
+  "fingerprint": "34cff7ad3fbd455cf5903b9a35fd0f12b807be6710a90f4ccaf84dd22de199e4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13807.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13822.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13823.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4055",
+  "source_url": "https://www.esoui.com/downloads/info4055-EyeSafetyLockpicking.html",
+  "stats": {
+    "downloads": 937,
+    "favorites": 1,
+    "monthly_downloads": 29
+  },
+  "title": "Eye Safety: Lockpicking",
+  "updated_at": 1741619852000,
+  "version": "1.2.1"
+}

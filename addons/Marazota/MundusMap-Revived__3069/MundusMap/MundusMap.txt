@@ -1,0 +1,15 @@
+## Title: MundusMap
+## APIVersion: 101037 101038
+## Description: Shows the locations of Mundus Stones
+## Version: 0.28
+## Author: Marazota, QuinicAcid, Aruntas & Baertram
+## SavedVariables: MUNDUSMAP_DB
+## DependsOn: LibAddonMenu-2.0>=31
+
+
+libs\CustomMapPins\CustomMapPins.lua
+
+MundusMapData.lua
+MundusMapLocalization.lua
+MundusMap.lua
+MundusMap.xml

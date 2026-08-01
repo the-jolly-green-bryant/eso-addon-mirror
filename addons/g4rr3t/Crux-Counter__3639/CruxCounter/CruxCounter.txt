@@ -1,0 +1,34 @@
+## Title: Crux Counter
+## APIVersion: 101044 101045
+## SavedVariables: CruxCounterData
+## Description: Got Crux?
+## Version: 1.3.0
+## AddOnVersion: 010200
+## Author: |cFFCCCC@g4rr3t|r (NA)
+## DependsOn: LibAddonMenu-2.0>=28
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+## Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+## trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+## other countries. All rights reserved.
+
+src/Addon.lua
+src/Debug.lua
+src/Callbacks.lua
+
+src/lang/en.lua
+src/lang/$(language).lua
+src/Language.lua
+
+src/Settings.lua
+src/Interface.lua
+src/State.lua
+src/Events.lua
+src/Init.lua
+
+src/elements/Ring.lua
+src/elements/Rune.lua
+src/elements/Orbit.lua
+src/elements/Aura.lua
+
+CruxCounter.xml

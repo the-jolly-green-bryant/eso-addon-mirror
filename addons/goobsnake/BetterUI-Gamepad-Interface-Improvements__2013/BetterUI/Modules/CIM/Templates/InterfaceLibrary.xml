@@ -1,0 +1,621 @@
+<GuiXml>
+    <!--
+    File: Modules/CIM/Templates/InterfaceLibrary.xml
+    Purpose: Defines reusable UI controls, templates, and styles for the BetterUI gamepad interface.
+             These templates provide consistent visual styling and behavior across all BetterUI screens.
+
+    KEY TEMPLATES:
+    - BETTERUI_Generic_ScrollListTemplate: Mouse wheel support for parametric lists
+    - BETTERUI_NavQuadrant_1_Anchors: Custom positioning for the left panel
+    - BETTERUI_GenericColumn_TextTemplate: Column header styling
+    - BETTERUI_MenuEntryLabelTemplate: Standard menu entry text
+    - BETTERUI_FooterTemplate: Footer bar text styling
+    - BETTERUI_Gamepad_ParametricList_Screen: Full screen template with header/list/footer
+    - BETTERUI_GenericInterface: Banking/vendor window template
+
+    DESIGN NOTES:
+    - Uses BETTERUI_GAMEPAD_* constants for dimensions (defined in CONST.lua)
+    - Templates inherit from ZO_ base templates where possible for consistency
+    - Mouse wheel handlers enable hybrid controller+mouse navigation
+
+    -->
+
+    <Controls>
+        <!-- Reusable Anchor and Dimension Patterns -->
+        <Control name="BETTERUI_CenteredInParent_Anchors" virtual="true">
+            <AnchorFill />
+        </Control>
+
+        <Control name="BETTERUI_LeftMenuEntry_Anchors" virtual="true">
+            <Anchor point="TOPLEFT" offsetX="BETTERUI_GAMEPAD_CONTAINER_HORIZ_PADDING" />
+            <Dimensions x="BETTERUI_GAMEPAD_DEFAULT_LIST_ENTRY_WIDTH" />
+        </Control>
+
+
+        <!--
+            Template: Generic Scroll List
+            Purpose: Provides a parametric scroll list with custom mouse wheel handling.
+            Mechanics: Intercepts mouse wheel events to drive MoveNext/MovePrevious on the bound list.
+            References: Used by BETTERUI_GenericInterface in Banking and Inventory.
+        -->
+        <Control name="BETTERUI_Generic_ScrollListTemplate" mouseEnabled="true" virtual="true">
+            <OnMouseWheel>
+                if self.scrollList and self.scrollList.active then
+                if delta > 0 then
+                local atTop = self.scrollList:GetSelectedIndex() == 1
+                local succeeded = self.scrollList:MovePrevious()
+                -- If at top and MovePrevious fails, try to enter header/search
+                if atTop and not succeeded then
+                local owner = self.scrollList.owner
+                if owner and owner.RequestEnterHeader then
+                owner:RequestEnterHeader()
+                end
+                end
+                else
+                self.scrollList:MoveNext()
+                end
+                elseif self.scrollList and not self.scrollList.active and delta &lt; 0 then
+                -- List is not active (header/search is active) and scrolling down
+                -- Exit search and return to list
+                local owner = self.scrollList.owner
+                if owner then
+                if owner.ExitSearchFocus then
+                owner:ExitSearchFocus()
+                elseif owner.RequestLeaveHeader then
+                owner:RequestLeaveHeader()
+                end
+                end
+                end
+            </OnMouseWheel>
+
+            <OnMouseUp>
+            </OnMouseUp>
+
+            <Controls>
+                <Scroll name="$(parent)Scroll">
+                    <!-- <Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" /> -->
+                    <AnchorFill />
+                </Scroll>
+
+                <Control name="$(parent)ListScreenCenterIsAlongTop">
+                    <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="LEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" />
+
+                    <Controls>
+                        <Control name="$(parent)ListScreenCenter">
+                            <Anchor point="CENTER" relativePoint="TOPRIGHT" />
+                        </Control>
+
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+
+        <!-- The below 2 controls are redefinitions of ZOS's original NavQuadrant_1 anchors to
+        facilitate smooth transitions and compatibility -->
+        <Control name="BETTERUI_NavQuadrant_1_Anchors" virtual="true">
+            <Dimensions x="BETTERUI_GAMEPAD_DEFAULT_PANEL_WIDTH" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" offsetX="BETTERUI_GAMEPAD_QUADRANT_1_LEFT" />
+            <Anchor point="BOTTOMLEFT" relativeTo="GuiRoot"
+                offsetX="BETTERUI_GAMEPAD_QUADRANT_1_LEFT" />
+        </Control>
+        <Control name="BETTERUI_NavQuadrant_1_ContainerAnchors" virtual="true">
+            <Dimensions x="BETTERUI_GAMEPAD_DEFAULT_PANEL_CONTAINER_WIDTH" />
+            <Anchor point="TOPLEFT" offsetX="BETTERUI_GAMEPAD_CONTAINER_HORIZ_PADDING" />
+            <Anchor point="BOTTOMLEFT" offsetX="BETTERUI_GAMEPAD_CONTAINER_HORIZ_PADDING" />
+        </Control>
+
+        <Control name="BETTERUI_HeaderTitleAnchors" virtual="true">
+            <!-- Banking-specific: title aligned with LB spacing from divider -->
+            <Anchor point="TOPLEFT" offsetX="45" offsetY="-4" />
+            <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="0" />
+        </Control>
+
+        <Label name="BETTERUI_GenericColumn_TextTemplate" font="ZoFontGamepad27"
+            horizontalAlignment="LEFT" wrapMode="ELLIPSIS" virtual="true" modifyTextType="UPPERCASE" />
+
+        <Label name="BETTERUI_MenuEntryLabelTemplate" inherits="BETTERUI_LeftMenuEntry_Anchors"
+            font="ZoFontGamepad34" verticalAlignment="CENTER" wrapMode="ELLIPSIS" virtual="true" />
+
+        <Label name="BETTERUI_FooterTemplate" font="ZoFontGamepad45" wrapMode="ELLIPSIS"
+            virtual="true" modifyTextType="UPPERCASE" />
+        <Label name="BETTERUI_FooterSmallTemplate" font="ZoFontGamepad27" wrapMode="ELLIPSIS"
+            virtual="true" modifyTextType="UPPERCASE" />
+
+
+        <Texture name="BETTERUI_MenuEntryIconTemplate" tier="MEDIUM" inherits="ZO_MultiIcon"
+            excludeFromResizeToFitExtents="true" level="1" pixelRoundingEnabled="true"
+            virtual="true">
+            <Dimensions x="32" y="32" />
+            <Anchor point="CENTER" relativeTo="$(parent)Label" relativePoint="LEFT" offsetX="-24" />
+        </Texture>
+
+        <!-- SPINNER -->
+
+        <Control name="BETTERUI_SpinnerButtons" virtual="true">
+            <Controls>
+                <Button name="$(parent)Decrease">
+                    <Dimensions x="20" y="32" />
+                    <Anchor point="LEFT" />
+                    <Textures normal="EsoUI/Art/Miscellaneous/Gamepad/spinner_arrow_left_up.dds"
+                        pressed="EsoUI/Art/Miscellaneous/Gamepad/spinner_arrow_left_down.dds"
+                        disabled="EsoUI/Art/Miscellaneous/Gamepad/spinner_arrow_left_disabled.dds" />
+                    <OnClicked>
+                        BETTERUI.Banking.Window.spinner.spinner:ModifyValue(-1)
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)Increase">
+                    <Dimensions x="20" y="32" />
+                    <Anchor point="RIGHT" />
+                    <Textures normal="EsoUI/Art/Miscellaneous/Gamepad/spinner_arrow_right_up.dds"
+                        pressed="EsoUI/Art/Miscellaneous/Gamepad/spinner_arrow_right_down.dds"
+                        disabled="EsoUI/Art/Miscellaneous/Gamepad/spinner_arrow_right_disabled.dds" />
+                    <OnClicked>
+                        BETTERUI.Banking.Window.spinner.spinner:ModifyValue(1)
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </Control>
+
+        <Control name="BETTERUI_GamepadSpinner"
+            inherits="BETTERUI_SpinnerButtons ZO_GamepadSpinnerStyle" virtual="true">
+            <Controls>
+                <Label name="$(parent)Display" font="ZoFontGamepadCondensed34"
+                    horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Anchor point="TOPLEFT" offsetX="18" offsetY="-2" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-22" offsetY="0" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="BETTERUI_SpinnerContainerTemplate" virtual="true">
+            <OnInitialized>
+                ZO_GamepadLabeledQuantitySpinnerContainerTemplate_Initialize(self)
+            </OnInitialized>
+
+            <Controls>
+                <Backdrop name="$(parent)Highlight" inherits="ZO_GamepadWhiteOutlineHighlight">
+                    <Anchor point="TOPLEFT" offsetX="-20" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="20" />
+                </Backdrop>
+
+                <Label name="$(parent)Label" text="SI_GAMEPAD_QUANTITY_SPINNER_TEMPLATE_LABEL"
+                    font="ZoFontGamepad27"
+                    color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+                    modifyTextType="UPPERCASE">
+                    <Anchor point="LEFT" />
+                </Label>
+
+                <Control name="$(parent)Spinner" inherits="BETTERUI_GamepadSpinner">
+                    <Anchor point="CENTER" />
+                    <Dimensions x="97" y="42" />
+                    <Controls>
+                        <Label name="$(parent)Display" font="ZoFontGamepad42" override="true" />
+                    </Controls>
+                </Control>
+
+                <Label name="$(parent)Price" horizontalAlignment="RIGHT" hidden="true"
+                    inherits="ZO_CurrencyTemplate">
+                    <Anchor point="RIGHT" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="BETTERUI_GoldSpinnerContainerTemplate" virtual="true">
+            <Controls>
+
+
+                <Texture name="$(parent)CurrencyTexture"
+                    textureFile="EsoUI/Art/currency/gamepad/gp_gold.dds">
+                    <Dimensions x="28" y="28" />
+                    <Anchor point="RIGHT" offsetX="-35" />
+                </Texture>
+
+                <Control name="$(parent)Selector" inherits="ZO_GamepadCurrencySelectorTemplate">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)CurrencyTexture"
+                        relativePoint="TOPLEFT" offsetX="-10" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)CurrencyTexture"
+                        relativePoint="BOTTOMLEFT" offsetX="-10" />
+                </Control>
+            </Controls>
+        </Control>
+
+
+        <Control name="BETTERUI_HeaderRow_Template"
+            inherits="BETTERUI_GamepadMenuEntryLabelSizedTemplate BETTERUI_LeftMenuEntry_Anchors"
+            virtual="true">
+            <Controls>
+                <Label name="$(parent)Label" inherits="BETTERUI_MenuEntryLabelTemplate"
+                    font="ZoFontGamepad27">
+                    <Anchor point="TOPLEFT" offsetX="15" />
+                </Label>
+            </Controls>
+        </Control>
+
+
+        <Control name="BETTERUI_GenericEntry_Template"
+            inherits="BETTERUI_GamepadMenuEntryLabelSizedTemplate" virtual="true">
+            <!--  <Dimensions y="32" /> -->
+            <Anchor point="TOPLEFT" offsetX="55" />
+            <Dimensions x="BETTERUI_GAMEPAD_DEFAULT_LIST_ENTRY_WIDTH" />
+
+            <Controls>
+                <Label name="$(parent)Label" inherits="BETTERUI_MenuEntryLabelTemplate"
+                    font="ZoFontGamepad27" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" offsetX="28" />
+                </Label>
+                <Texture name="$(parent)Icon" inherits="BETTERUI_MenuEntryIconTemplate"
+                    edgeColor="00000000">
+                </Texture>
+                <Label name="$(parent)ItemType" inherits="BETTERUI_GamepadSubMenuEntryLabelTemplate"
+                    text="NONE" font="ZoFontGamepadCondensed25" override="true"
+                    verticalAlignment="CENTER" horizontalAlignment="LEFT"
+                    excludeFromResizeToFitExtents="true" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Label" offsetX="485" />
+                    <Dimensions x="180" y="40" />
+                </Label>
+                <Label name="$(parent)Stat" inherits="BETTERUI_GamepadSubMenuEntryLabelTemplate"
+                    text="-" font="ZoFontGamepadCondensed25" override="true"
+                    verticalAlignment="CENTER" horizontalAlignment="LEFT"
+                    excludeFromResizeToFitExtents="true" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Label" offsetX="679" />
+                    <Dimensions x="60" y="40" />
+                </Label>
+                <Label name="$(parent)Value" inherits="BETTERUI_GamepadSubMenuEntryLabelTemplate"
+                    text="0" font="ZoFontGamepadCondensed25" override="true"
+                    verticalAlignment="CENTER" horizontalAlignment="LEFT"
+                    excludeFromResizeToFitExtents="true" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Label" offsetX="744" />
+                    <Dimensions x="80" y="40" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <Label name="BETTERUI_GenericColumn_Label"
+            inherits="BETTERUI_GenericColumn_TextTemplate BETTERUI_HeaderTitleAnchors" text=""
+            virtual="true">
+            <Anchor point="LEFT" relativeTo="$(parent)TabBar" relativePoint="BOTTOMLEFT"
+                offsetX="28" />
+            <Anchor point="RIGHT" relativeTo="$(parent)TabBar" relativePoint="BOTTOMRIGHT"
+                offsetX="2" offsetY="109" />
+        </Label>
+
+        <Control name="BETTERUI_GenericInterfaceHeader" resizeToFitDescendents="true" virtual="true">
+            <Anchor point="TOPLEFT" />
+            <Anchor point="TOPRIGHT" />
+
+            <Controls>
+                <Control name="$(parent)TabBar" inherits="BETTERUI_GamepadTabBarScrollListTemplate"
+                    hidden="false">
+                    <!-- Using shared constant to match Inventory header positioning -->
+                    <Anchor point="TOPLEFT" offsetY="BETTERUI_HEADER_TABBAR_LIST_Y_OFFSET"
+                        offsetX="BETTERUI_GAMEPAD_CONTAINER_HORIZ_PADDING" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
+                    <Controls>
+                        <!-- Selection triangle - aligned under category icons -->
+                        <Button name="$(parent)SelectedBg">
+                            <Dimensions x="50" y="25" />
+                            <Anchor point="CENTER" relativeTo="$(parent)" offsetX="18" offsetY="45" />
+                            <Textures normal="BetterUI/Modules/CIM/Images/select_tabbar.dds" />
+                        </Button>
+                        <Button name="$(parent)LeftIcon">
+                            <Dimensions x="BETTERUI_HEADER_BUMPER_ICON_SIZE"
+                                y="BETTERUI_HEADER_BUMPER_ICON_SIZE" />
+                            <!-- Banking-specific: moved down +15, right +20 -->
+                            <Anchor point="LEFT" relativeTo="$(parent)"
+                                offsetX="15" offsetY="20" />
+                            <Textures normal="EsoUI/Art/Buttons/Gamepad/Xbox/Nav_XBone_LB.dds" />
+                            <OnClicked>
+                                if self:GetParent().scrollList then
+                                self:GetParent().scrollList:MovePrevious(true)
+                                end
+                            </OnClicked>
+                        </Button>
+                        <Button name="$(parent)RightIcon">
+                            <Dimensions x="BETTERUI_HEADER_BUMPER_ICON_SIZE"
+                                y="BETTERUI_HEADER_BUMPER_ICON_SIZE" />
+                            <!-- Banking-specific: RB moved further right -->
+                            <Anchor point="RIGHT" relativeTo="$(parent)" offsetX="25"
+                                offsetY="20" />
+                            <Textures normal="EsoUI/Art/Buttons/Gamepad/Xbox/Nav_XBone_RB.dds" />
+                            <OnClicked>
+                                if self:GetParent().scrollList then
+                                self:GetParent().scrollList:MoveNext(true)
+                                end
+                            </OnClicked>
+                        </Button>
+
+                        <Control name="$(parent)DividerBottomF"
+                            inherits="BETTERUI_GamepadHeaderHorizontalDivider">
+                            <!-- Banking-specific: extend dividers further right -->
+                            <Anchor point="LEFT" relativeTo="$(parent)"
+                                relativePoint="BOTTOMLEFT" offsetX="20" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)"
+                                relativePoint="BOTTOMRIGHT" offsetX="20"
+                                offsetY="90" />
+                        </Control>
+                        <Control name="$(parent)DividerBottomS"
+                            inherits="BETTERUI_GamepadHeaderHorizontalDivider">
+                            <!-- Banking-specific: extend dividers further right -->
+                            <Anchor point="LEFT" relativeTo="$(parent)"
+                                relativePoint="BOTTOMLEFT" offsetX="20" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)"
+                                relativePoint="BOTTOMRIGHT" offsetX="20"
+                                offsetY="94" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)TitleContainer" inherits="BETTERUI_HeaderTitleAnchors">
+                    <Controls>
+                        <Label name="$(parent)Title"
+                            inherits="BETTERUI_GamepadScreenHeaderTitleTextTemplate"
+                            text="|cFF6600 |r" hidden="false">
+                            <Anchor point="TOPLEFT" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)DividerBottom"
+                    inherits="BETTERUI_GamepadHeaderHorizontalDivider">
+                    <!-- Column header bottom divider - offset down/right to clear column names -->
+                    <Anchor point="LEFT" relativeTo="$(parent)TabBar" relativePoint="BOTTOMLEFT"
+                        offsetX="20" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)TabBar" relativePoint="BOTTOMRIGHT"
+                        offsetX="20" offsetY="125" />
+                </Control>
+            </Controls>
+        </Control>
+
+
+        <Control name="BETTERUI_VerticalDivider" resizeToFitDescendents="true" virtual="true">
+            <Controls>
+                <Texture name="$(parent)Backdrop"
+                    textureFile="BetterUI/Modules/Banking/Images/nav_vert.dds">
+                    <Anchor point="CENTER" offsetX="4" />
+                    <Dimensions x="9" y="90" />
+                </Texture>
+            </Controls>
+        </Control>
+
+
+        <Control name="BETTERUI_GenericInterfaceFooter" resizeToFitDescendents="false"
+            virtual="true">
+            <Anchor point="TOPLEFT" />
+            <Anchor point="TOPRIGHT" />
+
+            <Controls>
+
+                <Texture name="$(parent)SelectBg"
+                    textureFile="BetterUI/Modules/Banking/Images/selectbg.dds">
+                    <Dimensions x="BETTERUI_GAMEPAD_DEFAULT_PANEL_WIDTH" y="90" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="5"
+                        offsetY="210" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+                </Texture>
+                <Control name="$(parent)DividerCentre" inherits="BETTERUI_VerticalDivider">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT"
+                        offsetX="0" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="6" />
+                </Control>
+
+                <Control name="$(parent)DividerBottomT"
+                    inherits="BETTERUI_GamepadFooterHorizontalDivider">
+                    <Dimensions x="1325" y="5" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SelectBg" relativePoint="TOPLEFT"
+                        offsetX="45" offsetY="0" />
+                </Control>
+
+                <Control name="$(parent)DividerBottomB"
+                    inherits="BETTERUI_GamepadFooterHorizontalDivider">
+                    <!-- Extended width to match header dividers (minus 10px) -->
+                    <Dimensions x="1325" y="5" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SelectBg" relativePoint="TOPLEFT"
+                        offsetX="45" offsetY="4" />
+                </Control>
+
+                <Control name="$(parent)Withdraw">
+                    <Anchor point="LEFT" relativeTo="$(parent)DividerBottomT"
+                        relativePoint="TOPLEFT" offsetX="40" offsetY="45" />
+                    <Controls>
+                        <Button name="$(parent)Button">
+                            <Dimensions x="250" y="30" />
+                            <Anchor point="LEFT" offsetX="155" />
+                            <OnClicked>
+                                BETTERUI.Banking.Window:ToggleList(true)
+                            </OnClicked>
+                            <Controls>
+                                <Label name="$(parent)Label" text="SI_BETTERUI_BANKING_WITHDRAW"
+                                    horizontalAlignment="LEFT" inherits="BETTERUI_FooterTemplate"
+                                    font="ZoFontGamepad54">
+                                    <Anchor point="LEFT" offsetX="70" offsetY="-10" />
+                                </Label>
+                                <Label name="$(parent)SpaceLabel"
+                                    text="|t24:24:/esoui/art/icons/mapkey/mapkey_bank.dds|t 10/180"
+                                    horizontalAlignment="RIGHT"
+                                    inherits="BETTERUI_FooterSmallTemplate">
+                                    <Anchor point="LEFT" offsetX="70" offsetY="25" />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        <Texture name="$(parent)Icon"
+                            textureFile="/esoui/art/bank/bank_tabicon_deposit_up.dds" level="2">
+                            <Dimensions x="64" y="64" />
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"
+                                offsetY="0" />
+                        </Texture>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Deposit">
+                    <Anchor point="RIGHT" relativeTo="$(parent)DividerBottomT"
+                        relativePoint="TOPRIGHT" offsetX="0" offsetY="45" />
+                    <Controls>
+                        <Button name="$(parent)Button">
+                            <Dimensions x="250" y="30" />
+                            <Anchor point="RIGHT" offsetX="-205" />
+                            <OnClicked>
+                                BETTERUI.Banking.Window:ToggleList(false)
+                            </OnClicked>
+                            <Controls>
+                                <Label name="$(parent)Label" text="SI_BETTERUI_BANKING_DEPOSIT"
+                                    horizontalAlignment="RIGHT" inherits="BETTERUI_FooterTemplate"
+                                    color="444444" font="ZoFontGamepad54">
+                                    <Anchor point="RIGHT" offsetX="-100" offsetY="-10" />
+                                </Label>
+                                <Label name="$(parent)SpaceLabel"
+                                    text="|t24:24:/esoui/art/inventory/gamepad/gp_inventory_icon_all.dds|t 70/112"
+                                    horizontalAlignment="RIGHT"
+                                    inherits="BETTERUI_FooterSmallTemplate">
+                                    <Anchor point="RIGHT" offsetX="-100" offsetY="25" />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        <Texture name="$(parent)Icon"
+                            textureFile="/esoui/art/bank/bank_tabicon_withdraw_up.dds" level="2">
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"
+                                offsetX="-15" />
+                            <Dimensions x="64" y="64" />
+                        </Texture>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="BETTERUI_BankingFooterBar" level="120" tier="2" layer="1"
+            hidden="true">
+            <Controls>
+                <Label name="$(parent)Data1Value" level="0" tier="2" layer="2" text="100,000"
+                    font="ZoFontGamepad36" wrapMode="ELLIPSIS" modifyTextType="UPPERCASE"
+                    color="FFBF00">
+                    <Dimensions y="36" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT"
+                        offsetX="-300" offsetY="-65" />
+                </Label>
+                <Label name="$(parent)Data1Header" level="0" tier="2" layer="2"
+                    text="|t32:32:esoui/art/currency/currency_gold_32.dds|t" font="ZoFontGamepad34"
+                    wrapMode="ELLIPSIS" modifyTextType="UPPERCASE">
+                    <Dimensions y="32" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Data1Value"
+                        relativePoint="BOTTOMRIGHT" offsetX="" offsetY="-2" />
+                </Label>
+                <Label name="$(parent)Data2Value" level="0" tier="2" layer="2" text="100,000"
+                    font="ZoFontGamepad36" wrapMode="ELLIPSIS" modifyTextType="UPPERCASE"
+                    color="0066FF">
+                    <Dimensions y="36" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Data1Header"
+                        relativePoint="BOTTOMRIGHT" offsetX="25" />
+                </Label>
+                <Label name="$(parent)Data2Header" level="0" tier="2" layer="2"
+                    text="|t32:32:esoui/art/currency/currency_telvar_32.dds|t"
+                    font="ZoFontGamepad34" wrapMode="ELLIPSIS" modifyTextType="UPPERCASE">
+                    <Dimensions y="32" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Data2Value"
+                        relativePoint="BOTTOMRIGHT" offsetX="10" offsetY="-2" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!--
+            Template: Generic Interface
+            Purpose: The master layout for standard list windows (Banking, Vendor, etc).
+            Structure: Quadrant 1 (Left) layout with Header, Footer, and List containers.
+            References: Used as the base for BETTERUI_Banking_Window.
+            
+            DEPRECATED: Consider using BETTERUI_Gamepad_ParametricList_Screen with
+            BETTERUI.CIM.UnifiedScreen for new implementations. This template is
+            maintained for backward compatibility with existing Banking implementation.
+        -->
+        <TopLevelControl name="BETTERUI_GenericInterface" hidden="true" virtual="true">
+            <Controls>
+                <Control name="$(parent)Loading" hidden="true"
+                    inherits="ZO_GamepadCenteredLoadingIconAndLabelTemplate"
+                    text="SI_BETTERUI_LOADING_LIST" />
+
+                <Control name="$(parent)Container"
+                    inherits="BETTERUI_NavQuadrant_1_ContainerAnchors">
+                    <Controls>
+
+                        <Control name="$(parent)Footer" inherits="BETTERUI_NavQuadrant_1_Anchors">
+                            <Anchor point="TOPLEFT" />
+                            <Anchor point="BOTTOMRIGHT" offsetY="-60" relativeTo="GuiRoot" />
+                            <Dimensions y="90" />
+                            <Controls>
+                                <Control name="$(parent)Footer"
+                                    inherits="BETTERUI_GenericInterfaceFooter" override="true">
+                                    <Anchor point="BOTTOMLEFT" offsetY="-60" />
+                                    <Dimensions y="90" x="BETTERUI_GAMEPAD_DEFAULT_PANEL_WIDTH" />
+
+                                    <OnInitialized>
+                                        self:GetParent().footer = self
+                                    </OnInitialized>
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)Header" inherits="BETTERUI_NavQuadrant_1_Anchors">
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions y="115" x="BETTERUI_GAMEPAD_DEFAULT_PANEL_WIDTH" />
+
+                            <Controls>
+                                <Control name="$(parent)Header"
+                                    inherits="BETTERUI_GenericInterfaceHeader">
+                                    <Dimensions y="115" x="BETTERUI_GAMEPAD_DEFAULT_PANEL_WIDTH" />
+                                    <OnInitialized>
+                                        self:GetParent().header = self
+                                    </OnInitialized>
+                                </Control>
+                                <Control name="$(parent)HeaderColumnBar"
+                                    inherits="BETTERUI_HeaderTitleAnchors" />
+                            </Controls>
+                        </Control>
+
+
+                        <Control name="$(parent)List"
+                            inherits="BETTERUI_NavQuadrant_1_Anchors BETTERUI_Generic_ScrollListTemplate">
+                            <!-- Push list below header dividers - positive Y moves DOWN, less
+                            negative X shifts RIGHT -->
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)HeaderHeader"
+                                relativePoint="BOTTOMLEFT" offsetX="-27" offsetY="15" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FooterFooter"
+                                relativePoint="TOPRIGHT" offsetX="0" offsetY="-8" />
+
+                            <OnInitialized>
+                                self:GetParent().list = self
+                            </OnInitialized>
+
+                            <Controls>
+                                <Label name="$(parent)NoItemsLabel" font="ZoFontGamepadCondensed36"
+                                    horizontalAlignment="CENTER" text="SI_BETTERUI_EMPTY_LIST">
+                                    <Anchor point="TOPLEFT"
+                                        offsetX="BETTERUI_GAMEPAD_DEFAULT_HORIZ_PADDING" />
+                                    <Anchor point="BOTTOMRIGHT"
+                                        offsetX="-BETTERUI_GAMEPAD_DEFAULT_HORIZ_PADDING" />
+                                </Label>
+                                <!-- SpinnerContainer removed - quantity selection now uses
+                                BETTERUI_BANK_QUANTITY_DIALOG -->
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)InputContainer"
+                            inherits="BETTERUI_GoldSpinnerContainerTemplate" hidden="true">
+                            <Dimensions y="30" />
+                            <Anchor point="LEFT"
+                                relativeTo="$(parent)ListListScreenCenterIsAlongTopListScreenCenter"
+                                offsetX="200" />
+                            <Anchor point="RIGHT"
+                                relativeTo="$(parent)ListListScreenCenterIsAlongTopListScreenCenter"
+                                offsetX="200" />
+                        </Control>
+
+                    </Controls>
+                </Control>
+
+
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

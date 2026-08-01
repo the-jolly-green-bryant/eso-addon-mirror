@@ -1,0 +1,57 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="ChampionPointsSlots">
+            <Action name="CP_TOGGLE_UI">
+                <Down>toggleCPUI()</Down>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER1">
+                <Up>selectCPKeyBindingUser(1)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER2">
+                <Up>selectCPKeyBindingUser(2)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER3">
+                <Up>selectCPKeyBindingUser(3)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER4">
+                <Up>selectCPKeyBindingUser(4)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER5">
+                <Up>selectCPKeyBindingUser(5)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER6">
+                <Up>selectCPKeyBindingUser(6)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER7">
+                <Up>selectCPKeyBindingUser(7)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER8">
+                <Up>selectCPKeyBindingUser(8)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER_ACCOUNT1">
+                <Up>selectCPKeyBindingAccount(1)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER_ACCOUNT2">
+                <Up>selectCPKeyBindingAccount(2)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER_ACCOUNT3">
+                <Up>selectCPKeyBindingAccount(3)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER_ACCOUNT4">
+                <Up>selectCPKeyBindingAccount(4)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER_ACCOUNT5">
+                <Up>selectCPKeyBindingAccount(5)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER_ACCOUNT6">
+                <Up>selectCPKeyBindingAccount(6)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER_ACCOUNT7">
+                <Up>selectCPKeyBindingAccount(7)</Up>
+            </Action>
+            <Action name="CP_SLOT_BIND_USER_ACCOUNT8">
+                <Up>selectCPKeyBindingAccount(8)</Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

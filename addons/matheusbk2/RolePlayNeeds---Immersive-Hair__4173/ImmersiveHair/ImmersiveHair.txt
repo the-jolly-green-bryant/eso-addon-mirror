@@ -1,0 +1,10 @@
+## Title: RolePlayNeeds - Immersive Hair
+## Description: Immersive Beard&Hair growth System Framework for RP - BETA
+## APIVersion: 101046
+## Version: 0.1
+## Author: Matheus Macedo | @matheusbk2
+## SavedVariables: ImmersiveHair_SavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+ImmersiveHair.lua
+ImmersiveHairSettings.lua

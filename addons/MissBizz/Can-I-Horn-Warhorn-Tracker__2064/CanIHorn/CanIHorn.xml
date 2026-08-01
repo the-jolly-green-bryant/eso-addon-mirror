@@ -1,0 +1,24 @@
+<GuiXml>
+    <Controls>
+        <!-- All visual stuff from the addon is here -->
+        <TopLevelControl name="CanIHornIndicator" clampedToScreen="true" mouseEnabled="true" movable="true">
+            <!-- Sets dimension for top level control -->
+            <Dimensions x="150" y="25" />
+            <!-- Where the top level control is anchored and displayed on the screen. GUIRoot is the main screen of the game. X is horiztonal (positive is right, negative is left),
+            Y is vertical (negative up, positive down). -->
+            <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+            <OnMoveStop>
+                CAN_I_HORN.OnIndicatorMoveStop()
+            </OnMoveStop>
+            <!-- makes it so our function to save where we drag the text to runs  -->
+
+            <!-- Open new control, this will hold all our text indicators -->
+            <Controls>
+                <Label name="$(parent)Text" font="ZoFontWinH3" color="FFFFFF" text="Can I Horn is On" width="200" height="25">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

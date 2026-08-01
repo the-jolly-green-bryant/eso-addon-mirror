@@ -1,0 +1,10 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="BUI_Gear_Radial">
+			<AnchorFill/>
+			<Controls>
+				<Control name="$(parent)Menu" inherits="ZO_RadialMenuTemplate" hidden="true" />
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

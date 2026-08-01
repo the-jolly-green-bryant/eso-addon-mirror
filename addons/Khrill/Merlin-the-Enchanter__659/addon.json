@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Khrill/Merlin-the-Enchanter__659",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Khrill",
+  "canonical_id": "esoui:659",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:659",
+  "deleted": false,
+  "directories": [
+    "KhrillMerlinTheEnchanter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl659/",
+  "fingerprint": "0bd0782925100d1aee3f71467229f50debf97f76b420a55cbf55c497368916f9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2531.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2446.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2017.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2023.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2149.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2617.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2616.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2420.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "659",
+  "source_url": "https://www.esoui.com/downloads/info659-MerlintheEnchanter.html",
+  "stats": {
+    "downloads": 228983,
+    "favorites": 273,
+    "monthly_downloads": 171
+  },
+  "title": "Merlin the Enchanter",
+  "updated_at": 1467464913000,
+  "version": "1.8.2"
+}

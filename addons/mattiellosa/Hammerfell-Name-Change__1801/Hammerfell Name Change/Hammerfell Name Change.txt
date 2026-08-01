@@ -1,0 +1,11 @@
+## Title: |cFF8F00Hammerfell Name Change|r
+## Description: Changes the titles of other players.
+## Author: |cFFE800mattiellosa|r
+## Version: 1.0.0
+## APIVersion: 100020 100021
+## SavedVariables: HNCvars
+
+libs/LibStub/LibStub.lua
+libs/LibCustomTitles/LibTitleLocale.lua
+libs/LibCustomTitles/LibCustomTitles.lua
+libs/LibCustomTitles/Titles/mattiellosa.lua

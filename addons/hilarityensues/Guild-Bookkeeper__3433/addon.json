@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/hilarityensues/Guild-Bookkeeper__3433",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "hilarityensues",
+  "canonical_id": "esoui:3433",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3433",
+  "deleted": false,
+  "directories": [
+    "GuildBookkeeper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3433/",
+  "fingerprint": "dc3c405c60e8f1e1ea6a843f4a068c1e173617b1a02accfbd444d0a8c3abb228",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3433",
+  "source_url": "https://www.esoui.com/downloads/info3433-GuildBookkeeper.html",
+  "stats": {
+    "downloads": 3215,
+    "favorites": 0,
+    "monthly_downloads": 18
+  },
+  "title": "Guild Bookkeeper",
+  "updated_at": 1659712876000,
+  "version": "0.0.7"
+}

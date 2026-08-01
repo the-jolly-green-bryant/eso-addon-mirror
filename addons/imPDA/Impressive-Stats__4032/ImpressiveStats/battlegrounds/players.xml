@@ -1,0 +1,90 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+		<TopLevelControl name="IMP_STATS_PlayersSummary" resizeToFitDescendents="true" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="460" />
+			<Anchor point="TOPRIGHT" relativeTo="ZO_SharedRightBackground" relativePoint="TOPLEFT" offsetX="-16" />
+			<Anchor point="BOTTOMRIGHT" relativeTo="ZO_SharedRightBackground" relativePoint="BOTTOMLEFT" offsetX="-16" />
+			<Controls>
+                <!-- <Texture name="$(parent)ShowButton" mouseEnabled="true" alpha="0">
+                    <Dimensions x="36" y="600" />
+                    <Anchor point="RIGHT" relativeTo="IMP_STATS_MATCHES" relativePoint="LEFT" />
+                    <OnMouseDown>
+                        if self:GetParent():IsHidden() then
+                            self:GetParent():SetHidden(false)
+                        else
+                            self:GetParent():SetHidden(true)
+                        end
+                    </OnMouseDown>
+                </Texture> -->
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" excludeFromResizeToFitExtents="true"></Backdrop>
+                <Label name="$(parent)PerformanceMeter" font="ZoFontGame" color="777777AA" text="Update: - ms" mouseEnabled="true" hidden="true">
+                    <Anchor point="TOPLEFT" />
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, TOP, 'How fast list updates. Let me know if it is too high (>500ms). Will hide later.')
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                </Label>
+
+				<Control name="$(parent)Header" resizeToFitDescendents="true">
+					<Anchor point="TOP" />
+					<Controls>
+                        <Label name="$(parent)Label" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Players' Stats (mean)" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Dimensions x="460" y="32" />
+							<Anchor point="TOP" />
+						</Label>
+						<!-- <Button name="$(parent)CloseButton" excludeFromResizeToFitExtents="true">
+							<Anchor point="TOPRIGHT" relativeTo="$(grandparent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="-12" />
+							<Dimensions x="42" y="42"/>
+							<Textures 
+								normal="/esoui/art/hud/radialicon_cancel_up.dds"
+								mouseOver="/esoui/art/hud/radialicon_cancel_over.dds"
+							/>
+							<OnClicked>
+								self:GetParent():GetParent():SetHidden(true)
+								ZO_ScrollList_SelectData(IMP_STATS_MATCHESListingScrollableList)
+							</OnClicked>
+						</Button> -->
+                        <Backdrop name="$(parent)PlayerSearch" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Label" relativePoint="BOTTOMRIGHT" offsetY="8" />
+                            <Dimensions x="270" />
+                            <Controls>
+                                <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" defaultText="SI_REQUEST_NAME_INSTRUCTIONS" />
+                                <Label name="$(parent)Label" inherits="IMP_STATS_StatName" text="Search:">
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-4" />
+                                </Label>
+                            </Controls>
+                        </Backdrop>
+					</Controls>
+				</Control>
+
+                <Control name="$(parent)Divider">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetY="16" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" offsetY="30" />
+					<Controls>
+						<Texture name="$(parent)Left" textureFile="EsoUI/Art/Guild/sectionDivider_left.dds">
+							<Anchor point="TOPLEFT"/>
+							<Dimensions x="425" y="4"/>
+						</Texture>
+						<Texture name="$(parent)Right" textureFile="EsoUI/Art/Guild/sectionDivider_right.dds">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Left" relativePoint="TOPRIGHT"/>
+							<Dimensions x="100" y="4"/>
+						</Texture>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Body" resizeToFitDescendents="true">
+                    <Dimensions x="460" y="700" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" />
+					<Anchor point="BOTTOMRIGHT" />
+					<Controls>
+                        <Control name="$(parent)Table">
+                            <AnchorFill />
+                        </Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

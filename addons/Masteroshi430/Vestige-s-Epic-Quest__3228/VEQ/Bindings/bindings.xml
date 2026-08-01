@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<Bindings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esobindings.xsd">
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Vestige's Epic Quest">
+      <Action name="VEQ_TOOGLE_HIDDEN">
+        <Down>VEQ.ToggleHidden()</Down>
+      </Action>
+      <Action name="VEQ_TOGGLE_LOCK">
+        <Down>VEQ.CMD_ToggleLock()</Down>
+      </Action>
+      <Action name="VEQ_RESET_POS">
+        <Down>VEQ.CMD_Position()</Down>
+      </Action>	  
+<!-- 	  <Action name="VEQ_TOGGLE_HYBRID">
+        <Down>VEQ.ToggleHybrid()</Down>
+      </Action> -->	
+<!-- 	  <Action name="VEQ_TOGGLE_AUTO_HIDE_ZONES">
+        <Down>VEQ.ToggleAutoHideZones()</Down>
+      </Action>	 -->
+<!-- 	  <Action name="VEQ_TOGGLE_HIDE_OBJ_EXCEPT_FOCUSED">
+        <Down>VEQ.ToggleHideObjExceptFocused()</Down>
+      </Action> -->	
+<!-- 	  <Action name="VEQ_TOGGLE_NO_FOCUS_TRANS">
+        <Down>VEQ.ToggleQuestsNoFocusOption()</Down>
+      </Action>	 -->
+<!-- 	  <Action name="VEQ_TOGGLE_FOCUS_ZONE_TRANS">
+        <Down>VEQ.ToggleFocusedQuestAreaNoTrans()</Down>
+      </Action>	 -->
+	  <Action name="VEQ_TOGGLE_HINTS">
+        <Down>VEQ.ToggleHideInfoHintsOption()</Down>
+      </Action>	
+	  <Action name="VEQ_NEXT_MINI_QUEST">
+        <Down>VEQ.ChangeFocusedMiniQuest()</Down>
+      </Action>	
+    </Category>
+  </Layer>
+</Bindings>

@@ -1,0 +1,10 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="CrutchAlerts Extensions">
+            <Action name="CAE_SYNERGY_MODIFIER">
+                <Down>CrutchAlertsExtensions.ModifyKeyDown()</Down>
+                <Up>CrutchAlertsExtensions.ModifyKeyUp()</Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

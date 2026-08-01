@@ -1,0 +1,29 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+	<Controls>
+        <TopLevelControl name="LibImplex_RayIntersection" resizeToFitDescendents="true" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions x="270" y="100" />
+            <Anchor point="LEFT" relativePoint="CENTER" offsetX="150" />
+            <Controls>
+                <Texture name="$(parent)BG" color="19B5FE" alpha="0.4" excludeFromResizeToFitExtents="true">
+                    <Anchor point="TOPLEFT" offsetX="-20" offsetY="-20" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="20" offsetY="20" />
+                </Texture>
+                <Label name="$(parent)Text" font="ZoFontWinH4" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="EMPTY">
+                    <Anchor />
+                </Label>
+                <!-- <Label name="$(parent)Text2" font="ZoFontWinH4" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="-">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Text" relativePoint="BOTTOMLEFT" />
+                </Label> -->
+                <Button name="$(parent)Measure" inherits="ZO_DefaultTextButton" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thin" text="Measure">
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="-15" />
+                </Button>
+                <Button name="$(parent)R" inherits="ZO_DefaultTextButton" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thin" text="R">
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" />
+                </Button>
+                <Button name="$(parent)Clear" inherits="ZO_DefaultTextButton" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thin" text="Clear">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="15" />
+                </Button>
+            </Controls>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

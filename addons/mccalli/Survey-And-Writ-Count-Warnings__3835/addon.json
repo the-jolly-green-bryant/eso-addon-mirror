@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/mccalli/Survey-And-Writ-Count-Warnings__3835",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "mccalli",
+  "canonical_id": "esoui:3835",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3835",
+  "deleted": false,
+  "directories": [
+    "SurveyAndWritCountWarnings"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3835/",
+  "fingerprint": "4c4a13f80b16d01f6153e537a093634b05622971fac07ad2cab89b53749884b3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13030.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3835",
+  "source_url": "https://www.esoui.com/downloads/info3835-SurveyAndWritCountWarnings.html",
+  "stats": {
+    "downloads": 1424,
+    "favorites": 2,
+    "monthly_downloads": 22
+  },
+  "title": "Survey And Writ Count Warnings",
+  "updated_at": 1717952103000,
+  "version": "1.0.2"
+}

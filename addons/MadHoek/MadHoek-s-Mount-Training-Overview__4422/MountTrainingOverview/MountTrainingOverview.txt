@@ -1,0 +1,20 @@
+## Title: |cA02EF7MadHoek's Mount Training Overview|r
+## Author: MadHoek
+## Description: This addon is able to display the trainingtime, ridingstats, alliances and the character id of all characters at once.
+## APIVersion: 101050
+## AddOnVersion: 304
+## Version: 3.0.4
+## IsLibrary: false
+## DependsOn: LibAddonMenu-2.0>=43
+## SavedVariables: MountTrainingOverviewSavedVars
+##
+## This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+## and/or other countries. All rights reserved.
+
+MountTrainingOverviewMenu.lua
+MountTrainingOverview.lua
+bindings.xml
+
+lang/en.lua
+lang/$(language).lua

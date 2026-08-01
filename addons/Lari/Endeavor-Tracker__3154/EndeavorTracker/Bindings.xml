@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|cECB8A2Endeavor Tracker|r">
+      <Action name="ENDEAVOR_TRACKER_TOGGLE">
+        <Down>ET_Toggle_Panel()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

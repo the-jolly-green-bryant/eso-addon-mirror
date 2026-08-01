@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/IsJustaGhost/LibSeasonalEventManager__3670",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IsJustaGhost",
+  "canonical_id": "esoui:3670",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3670",
+  "deleted": false,
+  "directories": [
+    "LibSeasonalEventManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3670/",
+  "fingerprint": "a76e866a286a08ea444d202b11c013e7729b1177f2aff650354290b2719e35e1",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3670",
+  "source_url": "https://www.esoui.com/downloads/info3670-LibSeasonalEventManager.html",
+  "stats": {
+    "downloads": 36383,
+    "favorites": 6,
+    "monthly_downloads": 391
+  },
+  "title": "LibSeasonalEventManager",
+  "updated_at": 1699079549000,
+  "version": "1.3"
+}

@@ -1,0 +1,11 @@
+## APIVersion: 100034 100035
+## AddonVersion: 01000
+## Title: CyroDeal Group Tool
+## Author: |c66ffff|Valandil|r
+## Description: CyroDeal module for streamlining group interactions
+## IsLibrary: false
+## DependsOn: CyroDeal
+
+bindings.xml
+CyroGroup.lua
+CyroGroup.xml

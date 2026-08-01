@@ -1,0 +1,13 @@
+
+## Title: |c3CB371Tamriel Trade Centre jpPatch|r
+## Description: Addon for TamrielTradeCentre.com
+## Author: |c3CB371@Marify|r
+## APIVersion: 101038
+## Version: 0.11.0
+## DependsOn: TamrielTradeCentre J2EUpdate LibMarify
+## OptionalDependsOn: AwesomeGuildStore
+
+## Thanks for help me... @wakasaonkyoto
+
+TamrielTradeCentreInit.lua
+

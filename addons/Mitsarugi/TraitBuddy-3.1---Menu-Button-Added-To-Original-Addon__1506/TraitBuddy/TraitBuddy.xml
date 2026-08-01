@@ -1,0 +1,562 @@
+<GuiXml>
+	<Font name="TBFontItemCategory" font="$(BOLD_FONT)|16|soft-shadow-thin"/>
+	<Font name="TBFontGame16" font="$(MEDIUM_FONT)|16|soft-shadow-thin"/>
+	<Font name="TBFontResearchShadow" font="$(BOLD_FONT)|16|soft-shadow-thin"/>
+	<Controls>
+		<Control name="TB_MotifHeader" inherits="ZO_TreeHeader" virtual="true">
+			<Dimensions x="400" y="42"/>
+			<OnInitialized>
+				self.yes = self:GetNamedChild("Yes")
+				self.no = self:GetNamedChild("No")
+				self.knowText = self:GetNamedChild("KnowText")
+			</OnInitialized>
+            <OnMouseUp>
+				TraitBuddyUI:MotifHeader_OnMouseUp(self, upInside)
+            </OnMouseUp>
+			<OnMouseEnter>
+				TraitBuddyUI:MotifHeader_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				TraitBuddyUI:MotifHeader_OnMouseExit(self)
+			</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)Icon">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Dimensions x="42" y="42"/>
+				</Texture>
+				
+				<Texture name="$(parent)Yes" textureFile="esoui/art/loot/loot_finesseItem.dds" hidden="true">
+					<Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+				<Texture name="$(parent)No" textureFile="esoui/art/buttons/decline_up.dds" alpha="0.8">
+					<Anchor point="CENTER" relativeTo="$(parent)Yes" relativePoint="CENTER"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+				<Label name="$(parent)KnowText" font="TBFontGame16" hidden="true">
+					<Anchor point="CENTER" relativeTo="$(parent)Yes" relativePoint="CENTER"/>
+				</Label>
+				
+				<Button name="$(parent)Toggle" inherits="ZO_TreeButtonArrow">
+					<Anchor point="LEFT" relativeTo="$(parent)Yes" relativePoint="RIGHT" offsetX="-5"/>
+					<OnInitialized>
+						ZO_ToggleButton_Initialize(self, TOGGLE_BUTTON_TYPE_TREE, TOGGLE_BUTTON_CLOSED)
+					</OnInitialized>
+					<OnMouseUp>
+						TraitBuddyUI:MotifHeader_OnMouseUp(self:GetParent(), upInside)
+					</OnMouseUp>
+					<OnMouseEnter>
+						TraitBuddyUI:MotifHeader_OnMouseEnter(self:GetParent())
+					</OnMouseEnter>
+					<OnMouseExit>
+						TraitBuddyUI:MotifHeader_OnMouseExit(self:GetParent())
+					</OnMouseExit>
+				</Button>
+				<Label name="$(parent)Text" font="ZoFontHeader">
+					<Anchor point="LEFT" relativeTo="$(parent)Toggle" relativePoint="RIGHT" offsetX="-5"/>
+					<OnMouseUp>
+						TraitBuddyUI:MotifHeader_OnMouseUp(self:GetParent(), upInside)
+					</OnMouseUp>
+					<OnMouseEnter>
+						TraitBuddyUI:MotifHeader_OnMouseEnter(self:GetParent())
+					</OnMouseEnter>
+					<OnMouseExit>
+						TraitBuddyUI:MotifHeader_OnMouseExit(self:GetParent())
+					</OnMouseExit>
+				</Label>
+				<Texture name="$(parent)Material" textureFile="" mouseEnabled="true">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+			</Controls>
+		</Control>
+
+		<Control name="TB_MotifChildlessHeader" inherits="ZO_TreeHeader" virtual="true">
+			<Dimensions x="400" y="42"/>
+			<OnInitialized>
+				self.yes = self:GetNamedChild("Yes")
+				self.no = self:GetNamedChild("No")
+			</OnInitialized>
+			<OnMouseEnter>
+				TraitBuddyUI:MotifEntry_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				TraitBuddyUI:MotifEntry_OnMouseExit(self)
+			</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)Icon">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Dimensions x="42" y="42"/>
+				</Texture>
+				
+				<Texture name="$(parent)Yes" textureFile="esoui/art/loot/loot_finesseItem.dds" hidden="true">
+					<Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+				<Texture name="$(parent)No" textureFile="esoui/art/buttons/decline_up.dds" alpha="0.8">
+					<Anchor point="CENTER" relativeTo="$(parent)Yes" relativePoint="CENTER"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+				
+				<Label name="$(parent)Text" font="ZoFontHeader">
+					<Anchor point="LEFT" relativeTo="$(parent)Yes" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+				<Texture name="$(parent)Material" textureFile="" mouseEnabled="true">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+			</Controls>
+		</Control>
+
+		<Control name="TB_MotifEntry" inherits="ZO_TreeEntry" virtual="true">
+			<Dimensions x="400" y="24"/>
+			<OnInitialized>
+				self.yes = self:GetNamedChild("Yes")
+				self.no = self:GetNamedChild("No")
+			</OnInitialized>
+			<OnMouseEnter>
+				TraitBuddyUI:MotifEntry_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				TraitBuddyUI:MotifEntry_OnMouseExit(self)
+			</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)Yes" textureFile="esoui/art/loot/loot_finesseItem.dds" hidden="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="70"/>
+					<Dimensions x="24" y="24"/>
+				</Texture>
+				<Texture name="$(parent)No" textureFile="esoui/art/buttons/decline_up.dds" alpha="0.8">
+					<Anchor point="CENTER" relativeTo="$(parent)Yes" relativePoint="CENTER"/>
+					<Dimensions x="24" y="24"/>
+				</Texture>
+				
+				<Label name="$(parent)Text" font="TBFontGame16">
+					<Anchor point="LEFT" relativeTo="$(parent)Yes" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="TB_Trait" virtual="true">
+			<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+			<Dimensions x="40" y="34"/>
+			<OnInitialized>
+				self.craftingSkillType = nil
+				self.researchLineIndex = nil
+				self.traitIndex = nil
+				self.yes = self:GetNamedChild("Yes")
+				self.no = self:GetNamedChild("No")
+				self.research = self:GetNamedChild("Research")
+			</OnInitialized>
+			<Controls>
+				<Texture name="$(parent)Yes" textureFile="esoui/art/loot/loot_finesseItem.dds" mouseEnabled="true" hidden="true">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+					<Dimensions x="30" y="30"/>
+					<OnMouseEnter>
+						TraitBuddyUI:Trait_OnMouseEnter(self:GetParent())
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Texture>
+				<Texture name="$(parent)No" textureFile="esoui/art/buttons/decline_up.dds" mouseEnabled="true" alpha="0.8">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+					<Dimensions x="30" y="30"/>
+					<OnMouseEnter>
+						TraitBuddyUI:Trait_OnMouseEnter(self:GetParent())
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Texture>
+				<Texture name="$(parent)Research" textureFile="esoui/art/miscellaneous/timer_32.dds" mouseEnabled="true" hidden="true">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+					<Dimensions x="30" y="30"/>
+					<OnMouseEnter>
+						TraitBuddyUI:Trait_OnMouseEnter(self:GetParent())
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Texture>
+			</Controls>
+		</Control>
+
+		<Control name="TB_TraitColumn_Traits" virtual="true">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+			<Dimensions x="40"/>
+			<OnInitialized>
+				self.container = self:GetNamedChild("Container")
+				self.heading = self:GetNamedChild("Heading")
+			</OnInitialized>
+			<Controls>
+				<Texture name="$(parent)Heading" mouseEnabled="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Dimensions x="40" y="40"/>
+					<OnInitialized>
+						self.displayName = "?"
+					</OnInitialized>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.displayName)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Texture>
+				<Control name="$(parent)Container" resizeToFitDescendents="true">
+					<Anchor point="TOP" relativeTo="$(parent)Heading" relativePoint="BOTTOM" offsetY="20"/>
+				</Control>
+				<Label name="$(parent)Total" font="ZoFontGame" color="ffd801">
+					<Anchor point="TOP" relativeTo="$(parent)Container" relativePoint="BOTTOM"/>
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="TB_TraitColumn_Heading" virtual="true">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+			<Dimensions y="34"/>
+			<OnInitialized>
+				self.displayName = "?"
+				self.description = "?"
+				self.materialItemID = 0
+			</OnInitialized>
+			<Controls>
+				<Label name="$(parent)Name" font="ZoFontGame" mouseEnabled="true">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+					<Dimensions x="130" y="30"/>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, RIGHT, self:GetParent().displayName)
+						ZO_Tooltip_AddDivider(InformationTooltip)
+						SetTooltipText(InformationTooltip, self:GetParent().description)
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Label>
+				<Texture name="$(parent)Material" textureFile="" mouseEnabled="true">
+					<Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="10"/>
+					<Dimensions x="30" y="30"/>
+					<OnMouseEnter>
+						InitializeTooltip(ItemTooltip, self, LEFT, 5, 0)
+						ItemTooltip:SetLink(ZO_LinkHandler_CreateLink("",nil,ITEM_LINK_TYPE,self:GetParent().materialItemID,30,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0))
+					</OnMouseEnter>
+					<OnMouseExit>
+						ClearTooltip(ItemTooltip)
+					</OnMouseExit>
+				</Texture>
+			</Controls>
+		</Control>
+
+		<Control name="TB_TraitColumn_Headings" virtual="true">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+			<Dimensions x="180"/>
+			<OnInitialized>
+				self.container = self:GetNamedChild("Container")
+			</OnInitialized>
+			<Controls>
+				<Control name="$(parent)Container" resizeToFitDescendents="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="60"/>
+				</Control>
+				<Label name="$(parent)Total" font="ZoFontGame" color="ffd801">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Container" relativePoint="BOTTOMLEFT"/>
+				</Label>
+			</Controls>
+		</Control>
+
+        <Control name="TB_ResearchTimerBar" virtual="true">
+            <Dimensions x="121" y="28"/>
+            <Controls>
+				<StatusBar name="$(parent)Status" color="264D21">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="2"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-2" offsetY="-2"/>
+                </StatusBar>
+                <Label name="$(parent)Time" font="TBFontResearchShadow">
+                    <Anchor point="RIGHT" offsetX="-5"/>
+                </Label>
+				<Backdrop centerColor="070F06" edgeColor="ff000000" alpha="0.75">
+					<AnchorFill/>
+					<Edge edgeSize="2"/>
+				</Backdrop>
+            </Controls>
+		</Control>
+		<Control name="TB_ResearchCharacter" virtual="true" resizeToFitDescendents="true">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <OnInitialized>
+				self:GetNamedChild("P"..CRAFTING_TYPE_BLACKSMITHING):GetNamedChild("Icon"):SetTexture("esoui/art/inventory/inventory_tabicon_craftbag_blacksmithing_up.dds")
+				self:GetNamedChild("P"..CRAFTING_TYPE_CLOTHIER):GetNamedChild("Icon"):SetTexture("esoui/art/inventory/inventory_tabicon_craftbag_clothing_up.dds")
+				self:GetNamedChild("P"..CRAFTING_TYPE_WOODWORKING):GetNamedChild("Icon"):SetTexture("esoui/art/inventory/inventory_tabicon_craftbag_woodworking_up.dds")
+            </OnInitialized>
+			<Controls>
+            	<Label name="$(parent)Name" font="ZoFontWinH4" modifyTextType="UPPERCASE" horizontalAlignment="CENTER">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+				</Label>
+				<Control name="$(parent)P1" inherits="TB_ResearchProfession">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT"/>
+				</Control>
+				<Control name="$(parent)P2" inherits="TB_ResearchProfession">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)P1" relativePoint="TOPRIGHT"/>
+				</Control>
+				<Control name="$(parent)P6" inherits="TB_ResearchProfession">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)P2" relativePoint="TOPRIGHT"/>
+				</Control>
+			</Controls>
+		</Control>
+		<Control name="TB_ResearchProfession" virtual="true" resizeToFitDescendents="true">
+			<Controls>
+				<Texture name="$(parent)Icon">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Dimensions x="37" y="37"/>
+				</Texture>
+				<Label name="$(parent)NumResearching" font="ZoFontGame" text="x/x">
+					<Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT"/>
+					<Dimensions x="121" y="20"/>
+				</Label>
+				<Control name="$(parent)Research">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="BOTTOMLEFT"/>
+				</Control>
+			</Controls>
+		</Control>
+		<Control name="TB_Researching" virtual="true" resizeToFitDescendents="true" mouseEnabled="true">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+			<OnInitialized>
+				self.timer = ZO_TimerBar:New(self:GetNamedChild("TimerBar"))
+				self.timer:SetDirection(TIMER_BAR_COUNTS_DOWN)
+				--self.timer:SetTimeFormatParameters(TIME_FORMAT_STYLE_COLONS, TIME_FORMAT_PRECISION_TWELVE_HOUR) --This outputs 2 debug numbers
+				if (GetCVar("language.2")=="ru") then
+					self.timer.timeFormatStyle = TIME_FORMAT_STYLE_SHOW_LARGEST_UNIT_DESCRIPTIVE
+					self.timer.timePrecision = TIME_FORMAT_PRECISION_TWELVE_HOUR
+				else
+					self.timer.timeFormatStyle = TIME_FORMAT_STYLE_COLONS
+					self.timer.timePrecision = TIME_FORMAT_PRECISION_TWELVE_HOUR
+				end
+				self.timer:SetFades(true, 0.125)
+				self.craftingSkillType = nil
+				self.researchLineIndex = nil
+				self.traitIndex = nil
+			</OnInitialized>
+			<OnMouseEnter>
+				TraitBuddyUI:Trait_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				ZO_Tooltips_HideTextTooltip()
+			</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)Icon">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+				<Control name="$(parent)TimerBar" inherits="TB_ResearchTimerBar">
+					<Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="5"/>
+				</Control>
+			</Controls>
+		</Control>
+		<Control name="TB_AltsMenuBarButton" virtual="true" inherits="ZO_MenuBarButtonTemplate1">
+			<OnMouseEnter>
+				TraitBuddyUI:AltsMenuBarButton_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				TraitBuddyUI:AltsMenuBarButton_OnMouseExit(self)
+			</OnMouseExit>
+		</Control>
+
+		<TopLevelControl name="TB" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+			<Dimensions x="520" y="660"/>
+			<OnMoveStart>
+				TraitBuddyUI:MoveStart(self)
+			</OnMoveStart>
+			<OnMoveStop>
+				TraitBuddyUI:MoveStop(self)
+			</OnMoveStop>
+
+			<Controls>
+				<Backdrop>
+					<Anchor point="TOPLEFT" offsetX="-8" offsetY="-6"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="4" offsetY="4"/>
+					<DimensionConstraints minX="100" minY="100"/>
+					<Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeFileWidth="256" edgeFileHeight="256" edgeSize="32"/>
+					<Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds"/>
+					<Insets left="32" top="32" right="-32" bottom="-32"/>
+				</Backdrop>
+				
+				<Control name="$(parent)Title" resizeToFitDescendents="true">
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT"/>
+					<Controls>
+	  					<Label name="$(parent)H1" text="TraitBuddy" font="ZoFontWinH2" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+							<Anchor point="TOPLEFT" offsetX="20" offsetY="13"/>
+							<Anchor point="TOPRIGHT" offsetX="-20" offsetY="13"/>
+							<DimensionConstraints minX="40" minY="24"/>
+						</Label>
+						<Button name="TBClose" inherits="ZO_CloseButton">
+							<Anchor point="TOPRIGHT" offsetX="-10" offsetY="13"/>
+							<OnClicked>TraitBuddyUI:Toggle()</OnClicked>
+						</Button>
+						<Button>
+							<Anchor point="RIGHT" relativeTo="TBClose" relativePoint="LEFT" offsetX="5" offsetY="-1"/>
+							<Dimensions x="35" y="35"/>
+							<Textures normal="EsoUI/Art/Chatwindow/chat_options_up.dds" pressed="EsoUI/Art/Chatwindow/chat_options_down.dds" mouseOver="EsoUI/Art/Chatwindow/chat_options_over.dds"/>
+							<OnClicked>TraitBuddyUI:ToggleOptions()</OnClicked>
+						</Button>
+						<Button name="TBLocked" inherits="ZO_ButtonBehaviorClickSound">
+							<Anchor point="RIGHT" relativeTo="TBClose" relativePoint="LEFT" offsetX="-25"/>
+							<Dimensions x="20" y="20"/>
+							<OnInitialized>
+								ZO_ToggleButton_Initialize(self, TOGGLE_BUTTON_TYPE_PADLOCK)
+							</OnInitialized>
+							<OnMouseUp>
+								ZO_ToggleButton_Toggle(self)
+								TraitBuddyUI:SetLocked(self)
+							</OnMouseUp>
+						</Button>
+						<Texture textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)H1" relativePoint="BOTTOMLEFT" offsetX="-10" offsetY="5"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)H1" relativePoint="BOTTOMRIGHT" offsetX="10" offsetY="5"/>
+							<DimensionConstraints minX="4" minY="8"/>
+							<TextureCoords left="0.18164062" right="0.818359375" top="0" bottom="1"/>
+						</Texture>
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)Heading">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Title" relativePoint="BOTTOMRIGHT" offsetY="55"/>
+					<Controls>
+						<Label name="$(parent)Prof" font="ZoFontWinH3">
+							<Anchor point="LEFT" offsetX="20"/>
+						</Label>
+						<Texture textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="20"/>
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" offsetX="-20"/>
+							<DimensionConstraints minX="4" minY="8"/>
+							<TextureCoords left="0.18164062" right="0.818359375" top="0" bottom="1"/>
+						</Texture>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Area" hidden="true">
+					<!--Area where all the other screens get placed-->
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Heading" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" offsetY="-80"/>
+				</Control>
+
+				<Control name="$(parent)Alts">
+					<Anchor point="TOP" relativeTo="$(parent)Area" relativePoint="BOTTOM"/>
+					<Controls>
+						<Control name="$(parent)Dropdown" inherits="ZO_ComboBox">
+							<Anchor point="TOP" relativePoint="TOP" offsetY="15"/>
+							<Dimensions x="250"/>
+						</Control>
+						<Control name="$(parent)Alternative">
+							<Anchor point="TOP" relativePoint="TOP"/>
+							<Controls>
+								<Label name="$(parent)Name" font="ZoFontGame">
+									<Anchor point="TOP" relativePoint="TOP"/>
+								</Label>
+								<Control name="$(parent)Bar" inherits="ZO_MenuBarTemplate">
+									<Anchor point="TOP" relativeTo="$(parent)Name" relativePoint="BOTTOM"/>
+								</Control>
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Research" hidden="true" inherits="ZO_ScrollContainer">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Area" relativePoint="TOPLEFT" offsetX="20" offsetY="10"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-20"/>
+				</Control>
+
+				<Control name="$(parent)Motifs" hidden="true" inherits="ZO_ScrollContainer">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Area" relativePoint="TOPLEFT" offsetX="20" offsetY="10"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Area" relativePoint="BOTTOMRIGHT" offsetX="-20"/>
+				</Control>
+
+				<Control name="$(parent)Crafting">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Area" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Area" relativePoint="BOTTOMRIGHT"/>
+					<Controls>
+						<Control name="$(parent)Headings" resizeToFitDescendents="true">
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT"/>
+							<Controls>
+								<Label name="TB_Apparel" font="ZoFontWinH3">
+									<Anchor offsetX="20" offsetY="15"/>
+									<Anchor point="TOPRIGHT" offsetX="-20" offsetY="15"/>
+								</Label>
+								<!-- blacksmithing apparel -->
+								<Control name="TB_Apparel1" hidden="true">
+									<Anchor point="LEFT" relativeTo="TB_Apparel" relativePoint="LEFT"/>
+									<Anchor point="RIGHT" relativeTo="TB_Apparel" relativePoint="RIGHT"/>
+								</Control>
+								<!-- clothing apparel -->
+								<Control name="TB_Apparel2" hidden="true">
+									<Anchor point="LEFT" relativeTo="TB_Apparel" relativePoint="LEFT"/>
+									<Anchor point="RIGHT" relativeTo="TB_Apparel" relativePoint="RIGHT"/>
+								</Control>
+								<!-- woodworking apparel -->
+								<Control name="TB_Apparel6" hidden="true">
+									<Anchor point="LEFT" relativeTo="TB_Apparel" relativePoint="LEFT"/>
+									<Anchor point="RIGHT" relativeTo="TB_Apparel" relativePoint="RIGHT"/>
+								</Control>
+									
+								<Texture textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+									<Anchor point="TOPLEFT" offsetX="20" offsetY="55"/>
+									<Anchor point="TOPRIGHT" offsetX="-20" offsetY="55"/>
+									<DimensionConstraints minX="4" minY="8"/>
+									<TextureCoords left="0.18164062" right="0.818359375" top="0" bottom="1"/>
+								</Texture>
+								
+								<Texture name="TB_MaxResearch_Icon" textureFile="esoui/art/miscellaneous/timer_32.dds" color="3f7fff">
+									<Anchor offsetX="20" offsetY="65"/>
+									<Dimensions x="30" y="30"/>
+								</Texture>
+								<Label name="TB_MaxResearch" font="ZoFontGame">
+									<Anchor point="LEFT" relativeTo="TB_MaxResearch_Icon" relativePoint="RIGHT" offsetX="5"/>
+								</Label>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)1" hidden="true">
+							<!-- CRAFTING_TYPE_BLACKSMITHING Weapons=7x9 Armour=7x9 -->
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Headings" relativePoint="BOTTOMLEFT" offsetX="20"/>
+							<Controls>
+								<Control name="$(parent)Weapons" hidden="true">
+									<Anchor point="TOPLEFT"/>
+								</Control>
+								<Control name="$(parent)Armour" hidden="true">
+									<Anchor point="TOPLEFT"/>
+								</Control>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)2" hidden="true">
+							<!-- CRAFTING_TYPE_CLOTHIER Light Armour=7x9 Medium Armour=7x9 -->
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Headings" relativePoint="BOTTOMLEFT" offsetX="20"/>
+							<Controls>
+								<Control name="$(parent)Light" hidden="true">
+									<Anchor point="TOPLEFT"/>
+								</Control>
+								<Control name="$(parent)Medium" hidden="true">
+									<Anchor point="TOPLEFT"/>
+								</Control>
+							</Controls>
+						</Control>
+						
+						<Control name="$(parent)6" hidden="true">
+							<!-- CRAFTING_TYPE_WOODWORKING Weapons=5x9 Armour=1x9 -->
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Headings" relativePoint="BOTTOMLEFT" offsetX="20"/>
+							<Controls>
+								<Control name="$(parent)Weapons" hidden="true">
+									<Anchor point="TOPLEFT"/>
+								</Control>
+								<Control name="$(parent)Shields" hidden="true">
+									<Anchor point="TOPLEFT"/>
+								</Control>
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

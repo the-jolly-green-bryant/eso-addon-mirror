@@ -1,0 +1,19 @@
+;This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+;The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+;All rights reserved.
+
+## Title: Added Info - Group Window
+## Description: Adds various little quality of life changes to the group window
+## Author: MrPikPik
+## APIVersion: 101034
+## AddOnVersion: 210
+## Version: 2.1
+## DependsOn: LibAddonMenu-2.0>=31
+## SavedVariables: AIGWSavedVariables
+
+lang/en.lua
+lang/$(language).lua
+
+SettingsPanel.lua
+;AddedInfoGroupWindow.xml ;Future update
+AddedInfoGroupWindow.lua

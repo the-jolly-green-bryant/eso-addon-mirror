@@ -1,0 +1,117 @@
+<GuiXml>
+<!-- PvP Kill Animation -->
+    <Animations>
+        <AnimationTimeline name="DSR_KillingBlowScreenFrameAnimation">
+            <Animations>
+                <AlphaAnimation startAlpha="0.0" endAlpha="0.5" delay="200" duration="200">
+                    <EasingFunction>
+                        return ZO_EaseInQuadratic(progress)
+                    </EasingFunction>
+                </AlphaAnimation>
+                <AlphaAnimation startAlpha="0.5" endAlpha="0.0" delay="400" duration="800">
+                    <EasingFunction>
+                        return ZO_EaseOutQuadratic(progress)
+                    </EasingFunction>
+                </AlphaAnimation>
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+    <Controls>
+        <TopLevelControl name="DSR_KillingBlowScreenFrame" alpha="0" tier="HIGH">
+            <AnchorFill/>
+            <Controls>
+                <Backdrop name="$(parent)Overlay" edgeColor="39EE31">
+                    <AnchorFill/>
+                    <Center file="EsoUI/Art/HUD/UITelvarOverlayCenter.dds" />
+                    <Edge file="EsoUI/Art/HUD/UITelvarOverlayEdge.dds" edgeColor="000000" edgeFileWidth="2048" edgeFileHeight="256" />
+                    <Insets left="256" top="256" right="-256" bottom="-256" />
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+
+<!-- PvP-ScoreWindows -->
+    <Controls>
+        <TopLevelControl name="DsRScoreWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+            <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+            <Dimensions x="400" y="200" />
+            <OnInitialized> DsRGuildPvPscore.ScoreWindow_OnInitialized() </OnInitialized>
+            <OnMoveStop> DsRGuildPvPscore.ScoreWindow_OnMoveStop() </OnMoveStop>
+            <ClampedToScreenInsets left="9" top="9" right="-18" bottom="-12" />
+            <Controls>
+                <Label name="$(parent)Background" width="400" font="ZoFontWinT1" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Label>
+                <Label name="$(parent)BackgroundPercent" width="400" font="ZoFontWinT1" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Label>
+                <Label name="$(parent)APTVtxt" width="400" font="ZoFontWinH2" inheritAlpha="true" color="2ADC22"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="170" offsetY="-32" />
+                </Label>
+                <Label name="$(parent)APTVpoints" width="400" font="ZoFontWinH2" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="240" offsetY="-32" />
+                </Label>
+                <Label name="$(parent)Killstxt" width="400" font="ZoFontWinH2" inheritAlpha="true" color="C0FF3E"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="155" offsetY="5" />
+                </Label>
+                <Label name="$(parent)Killspoints" width="400" font="ZoFontWinH2" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="240" offsetY="5" />
+                </Label>
+                <Label name="$(parent)Assisttxt" width="400" font="ZoFontWinH2" inheritAlpha="true" color="97FFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="140" offsetY="35" />
+                </Label>
+                <Label name="$(parent)Assistpoints" width="400" font="ZoFontWinH2" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="240" offsetY="35" />
+                </Label>
+                <Label name="$(parent)Dtxt" width="400" font="ZoFontWinT1" inheritAlpha="true" color="FF0000"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="D">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="32" offsetY="-46" />
+                </Label>
+                <Label name="$(parent)Dpoints" width="400" font="ZoFontWinT1" inheritAlpha="true" color="FF0000"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="LEFT" offsetX="37" offsetY="-30" />
+                </Label>
+                <Label name="$(parent)KDtxt" width="400" font="ZoFontWinT1" inheritAlpha="true" color="FF0000"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="K/D">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="105" offsetY="-46" />
+                </Label>
+                <Label name="$(parent)KDpoints" width="400" font="ZoFontWinT1" inheritAlpha="true" color="FF0000"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="LEFT" offsetX="117" offsetY="-30" />
+                </Label>
+                <Label name="$(parent)Ranksymbol" width="400" font="ZoFontWinT1" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="45" offsetY="-37" />
+                </Label>
+                <Label name="$(parent)RankTxT" width="400" font="ZoFontWinH2" inheritAlpha="true" color="f5ff8f"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="LEFT" offsetX="77" offsetY="-1" />
+                </Label>
+                <Label name="$(parent)PercentTxT" width="400" font="ZoFontWinT1" inheritAlpha="true" color="0096FF"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="LEFT" offsetX="77" offsetY="30" />
+                </Label>
+                <Label name="$(parent)Queue" width="400" font="ZoFontWinT1" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="LEFT" offsetX="200" offsetY="-90" />
+                </Label>
+                <Label name="$(parent)QueuePos" width="400" font="ZoFontWinT1" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="170" offsetY="-65" />
+                </Label>
+                <Label name="$(parent)QueueTime" width="400" font="ZoFontWinT1" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="LEFT" horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="250" offsetY="-65" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

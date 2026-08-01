@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/manavortex/DressUp__879",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "manavortex",
+  "canonical_id": "esoui:879",
+  "category_id": "114",
+  "compatibility": [],
+  "content_id": "esoui:879",
+  "deleted": false,
+  "directories": [
+    "DressUp"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl879/",
+  "fingerprint": "49af26aa8147047ebe79ef5fe88985d3bfe0b9602347851e7a0b87303ebdf5d3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2670.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "879",
+  "source_url": "https://www.esoui.com/downloads/info879-DressUp.html",
+  "stats": {
+    "downloads": 5786,
+    "favorites": 5,
+    "monthly_downloads": 11
+  },
+  "title": "DressUp",
+  "updated_at": 1419982360000,
+  "version": "0.8"
+}

@@ -1,0 +1,10 @@
+## Title: Keep ONE for Research
+## Author: Huah Tu
+## Description: Enhance deconstruct panel, so that you can easily keep only one item of the same type for research
+## APIVersion: 101050
+## Version: 0.0.3
+## AddOnVersion: 0.0.3
+## SavedVariables: KeepOne4ResearchSavedVars
+
+; Main files
+KeepOne4Research.lua

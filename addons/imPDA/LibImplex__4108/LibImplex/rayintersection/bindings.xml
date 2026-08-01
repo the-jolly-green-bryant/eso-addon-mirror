@@ -1,0 +1,16 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="LibImplex">
+            <Action name="LIBIMPLEX_RAYINTERSECTION_TOGGLE">
+                <Down>
+                    LibImplex_RayIntersection_ToggleVisibility()
+                </Down>
+            </Action>
+            <Action name="LIBIMPLEX_RAYINTERSECTION_MEASURE">
+                <Down>
+                    LibImplex_RayIntersection_Measure()
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

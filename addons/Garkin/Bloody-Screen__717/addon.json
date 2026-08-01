@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Garkin/Bloody-Screen__717",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Garkin",
+  "canonical_id": "esoui:717",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:717",
+  "deleted": false,
+  "directories": [
+    "BloodyScreen"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl717/",
+  "fingerprint": "696a960c43d6ebfc788d3418a8f4ff34a8dda245042d6b459656ec2b69e19679",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2212.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2211.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "717",
+  "source_url": "https://www.esoui.com/downloads/info717-BloodyScreen.html",
+  "stats": {
+    "downloads": 10272,
+    "favorites": 16,
+    "monthly_downloads": 30
+  },
+  "title": "Bloody Screen",
+  "updated_at": 1427978166000,
+  "version": "0.3"
+}

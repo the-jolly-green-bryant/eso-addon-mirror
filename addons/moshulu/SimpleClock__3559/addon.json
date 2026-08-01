@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/moshulu/SimpleClock__3559",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "moshulu",
+  "canonical_id": "esoui:3559",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3559",
+  "deleted": false,
+  "directories": [
+    "ESOUI-SimpleClock-main"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3559/",
+  "fingerprint": "4706bd569e285d06fbbb7dcb17a92cdaa4020e416a4117312462d11dabcf446f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12815.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12173.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3559",
+  "source_url": "https://www.esoui.com/downloads/info3559-SimpleClock.html",
+  "stats": {
+    "downloads": 5936,
+    "favorites": 4,
+    "monthly_downloads": 32
+  },
+  "title": "SimpleClock",
+  "updated_at": 1704512899000,
+  "version": "0.0.4"
+}

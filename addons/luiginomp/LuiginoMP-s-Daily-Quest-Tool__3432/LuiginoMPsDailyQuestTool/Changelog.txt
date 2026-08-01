@@ -1,0 +1,10 @@
+1.2
+Optimized code format - no user functionality changes
+
+1.1
+Command added to show all unfinished dailies.
+Command added to show all finished dailies.
+Fixed bug preventing Daily Writ quests from updating completion state properly.
+Command added to share all daily quests in journal
+Fixed quest completion bug that would occur if player completed a non-repeatable quest
+Added dependency on LuiginoMPsDialogueSkipper (separate addon)

@@ -1,0 +1,180 @@
+[LIST]
+[*] Patch by MycroftJr to fix several bugs in the addon.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.1.2[/COLOR]
+[LIST]
+[*] Adjusted the location of the Guild Hall listing on the guild page so that it appears below the new "View Bid" button.
+[*] API bump.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.1.1[/COLOR]
+[LIST]
+[*] Fixed problem with the addon not saving its settings properly (reported by Rhyono).
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.1[/COLOR]
+[LIST]
+[*] Fixed errors that occurred when people were removed from guilds or changed ranks.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]2.0[/COLOR]
+[LIST]
+[*] Rewrite to fix problems from the Zenimax change from guild indexes (1-5) to real guild IDs for certain functions.
+[*] Change localization string tables to work with LibSFUtils.LoadLanguage()
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.6[/COLOR]
+[LIST]
+[*] Fix settings page after library changes with Elsweyr.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.5[/COLOR]
+[LIST]
+[*] Use LibAddonMenu-2.0 directly instead of through LibStub. LibAddonMenu-2.0 and LibSFUtil both still need to be installed separately.
+[*] API Bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.4[/COLOR]
+[LIST]
+[*] API Bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.3[/COLOR]
+[LIST]
+[*]Removed all embedded libraries. You must now install LibSFUtils, and LibAddonMenu separately in order for WheresMyGuildHall to work.
+[*]Added help display when you /wmgh in chat to display the various things you can do in chat for this addon.
+[*]Converted to use the saved variables functions from LibSFUtils.
+[*]Updated to use LibSFUtils version 12.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.2.1[/COLOR]
+[LIST]
+[*]API Bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.2[/COLOR]
+[LIST]
+[*]Updated LibSFUtils to version 10.
+[*]Fix the saved indexes of the guilds when you drop out of one of your guilds.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.15[/COLOR]
+[LIST]
+[*]API Bump
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.14[/COLOR]
+[LIST]
+[*]API Bump
+[*]Upgraded LibSFUtils to version 8.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.13[/COLOR]
+[LIST]
+[*]Russian translations provided courtesy of alexesprit.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.12[/COLOR]
+[LIST]
+[*]Fix the Guild Member Note Change error message. 
+[/LIST]
+I still occasionally see errors when someone else's guild membership changes (I assume), but a /reloadui will fix it - and maybe one day I'll figure out the problem...
+
+[COLOR="DeepSkyBlue"]1.1.11[/COLOR]
+[LIST]
+[*]Correct an error in a debug message.
+[*]Fix usage of debug messages to have them start as turned off.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.10[/COLOR]
+[LIST]
+[*]Modify matching the saved guild settings to active guilds.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.9[/COLOR]
+[LIST]
+[*]Experimenting with guild id representations.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.8[/COLOR]
+[LIST]
+[*]Fixed a new problem with defining a non-existent guild entry in my internal tables.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.7[/COLOR]
+[LIST]
+[*]Changes to Active Guild scan code to determine which guilds you belong to. This time it is based on the assumption that the Zenimax guild table is a sparse array and may have nil entries (whereas before I thought that it was a simple contiguous list). The change should not affect anyone that the addon already works for, and may fix it for those who are having problems.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.6[/COLOR]
+[LIST]
+[*]Changes to Active Guild scan code to determine which guilds you belong to.
+[*]Added a toggle debug messages slash command "/wmgh.debug" to display some debug messages in chat while loading active guilds. Since that is normally done before the chat window is available - you must /wmgh.debug and then /wmgh.init (which explicitly runs the loadActiveGuilds function). To turn off debug messages, /wmgh.debug again.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.5[/COLOR]
+[LIST]
+[*]API bump.
+[*]Upgraded LibSFUtils to version 6.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.4[/COLOR]
+[LIST]
+[*]Rewrote code where Where's My Guildhall would see an "attempt to index nil value" error when a guild note was changed in one of your guilds. If any of you see this error again, please let me know.
+[*]Changes to the WheresMyGuild settings for the current guild will now automatically update in the Guild page instead of requiring to to look at another guild and then come back to the guild that you just changed the settings for.
+[*]Changes that you make to your guild notes (to add or remove a guild hall marker) will now automatically be updated on the Guild Home page.
+[*]Upgraded LibAddonMenu to r25.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.3[/COLOR]
+[LIST]
+[*]Theoretically fixed an error where Where's My Guildhall would see an "attempt to index nil value" error when a guild note was changed in one of your guilds. If any of you see this error again, please let me know.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.2[/COLOR]
+[LIST]
+[*]Modified the settings saves so that it distinguishes which megaserver you are currently on. This change will require everyone to redo their settings to save them for the megaserver(s) that they play on, but it allows people to play on multiple megaservers without getting the savedvariables corrupted.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.1[/COLOR]
+[LIST]
+[*]Revised the settings text so the important part doesn't get cut off.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.1.0[/COLOR]
+[LIST]
+[*]Added a new marker style for guild notes. Now you can choose to have it look for the words "Guild Hall" (with exactly that capitalization) in the guild notes. This is turned off by default.
+[*]Fixed the guild hall list so that people are only listed once on it even if they are the Guild Master and have "<GHL" and "Guild Hall" in their personal notes. Previously, they would have been listed multiple times.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.0.4[/COLOR]
+[LIST]
+[*]Fixed problem with loading the saved variables.
+[*]Fixed problem with displaying guild halls for the very first guild before data was loaded.
+[*]Fixed lua error that was occurring when the guild MOTD was getting changed.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.0.3[/COLOR]
+[LIST]
+[*]Bump up the API version.
+[*]Upgraded LibAddonMenu to 2.0_r24.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.0.2[/COLOR]
+[LIST]
+[*]Reworked how the guild settings were rematched to the player's active guilds.
+[*]Reworked the processing to do only as much as absolutely necessary at a time in order to increase performance.
+[*]Created a library to put my commonly used functions in so they can be available to all of my addons.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.0.1[/COLOR]
+[LIST]
+[*]Fixed some problems where the guild hall lists just went away.
+[*]Fixed problem where sometimes the guild halls listed were for a different guild than the one currently on the Guild Home page.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]1.0[/COLOR]
+[LIST]
+[*]Initial release by Shadowfen
+[/LIST]

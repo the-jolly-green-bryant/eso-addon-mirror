@@ -1,0 +1,13 @@
+;This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+;The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+;All rights reserved.
+
+## Title: Improved Achievement Categories
+## Description: Hides empty categories in the achievement categories
+## Author: MrPikPik
+## APIVersion: 101043
+## AddOnVersion: 104
+## Version: 1.0.4
+## OptionalDependsOn: VotansAchievementFavorites
+
+ImprovedAchievementCategories.lua

@@ -1,0 +1,30 @@
+## Title: UnstuffMyBags
+## APIVersion: 100018
+## Version: 1.8a
+## Author: manavortex
+## Description: Adds one hotkey to search and destroy all the useless items that stuff your bags, such as style items (Player races, Motifs 1-10) and the useless white armour and weaponry that you can pick up, as well as stolen items based on value and quality that you can set.
+## SavedVariables: UnstuffMyBags_SavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+
+Libs/LibStub/LibStub.lua
+Libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+Libs/LibAddonMenu-2.0/controls/panel.lua
+Libs/LibAddonMenu-2.0/controls/submenu.lua
+Libs/LibAddonMenu-2.0/controls/button.lua
+Libs/LibAddonMenu-2.0/controls/checkbox.lua
+Libs/LibAddonMenu-2.0/controls/colorpicker.lua
+Libs/LibAddonMenu-2.0/controls/custom.lua
+Libs/LibAddonMenu-2.0/controls/description.lua
+Libs/LibAddonMenu-2.0/controls/dropdown.lua
+Libs/LibAddonMenu-2.0/controls/editbox.lua
+Libs/LibAddonMenu-2.0/controls/header.lua
+Libs/LibAddonMenu-2.0/controls/slider.lua
+Libs/LibAddonMenu-2.0/controls/texture.lua
+Libs/LibAddonMenu-2.0/controls/iconpicker.lua
+Libs/LibAddonMenu-2.0/controls/divider.lua
+
+bindings.xml
+keystrip.lua
+UnstuffMyBags.lua
+UnstuffMyBagsSettingsAdapter.lua
+UnstuffMyBagsMenu.lua

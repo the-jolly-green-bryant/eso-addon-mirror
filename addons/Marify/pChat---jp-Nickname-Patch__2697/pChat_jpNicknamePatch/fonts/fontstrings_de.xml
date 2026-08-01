@@ -1,0 +1,32 @@
+<GuiXml>
+    <!-- [LibMediaProvider] -->
+    <BackupFont originalFont="$(PROSE_ANTIQUE_FONT)"    backupFont="$(ESO_STD_JP_FONT)"/>
+    <BackupFont originalFont="$(CONSOLAS_FONT)"         backupFont="$(ESO_STD_JP_FONT)"/>
+    <BackupFont originalFont="$(FTN47_FONT)"            backupFont="$(ESO_STD_JP_FONT)"/>
+    <BackupFont originalFont="$(FTN57_FONT)"            backupFont="$(ESO_STD_JP_FONT)"/>
+    <BackupFont originalFont="$(FTN87_FONT)"            backupFont="$(ESO_STD_JP_FONT)"/>
+    <BackupFont originalFont="$(HANDWRITTEN_BOLD_FONT)" backupFont="$(ESO_STD_JP_FONT)"/>
+    <BackupFont originalFont="$(TRAJAN_PRO_R_FONT)"     backupFont="$(ESO_STD_JP_FONT)"/>
+    <BackupFont originalFont="$(UNIVERS55_FONT)"        backupFont="$(ESO_STD_JP_FONT)"/>
+    <BackupFont originalFont="$(UNIVERS57_FONT)"        backupFont="$(ESO_STD_JP_FONT)"/>
+
+
+    <String name="JP_ROUND_MPLUS_FONT" value="pChat_jpNicknamePatch/fonts/Rounded-L-MPlus/rounded-l-mplus-1m-regular.ttf" />
+    <BackupFont originalFont="$(JP_ROUND_MPLUS_FONT)"   backupFont="pChat_jpNicknamePatch/fonts/JapanSans/JapanSans90.otf"/>
+
+    <String name="JP_ROUND_MPLUS_MID_FONT" value="pChat_jpNicknamePatch/fonts/Rounded-L-MPlus/rounded-l-mplus-1m-medium.ttf" />
+    <BackupFont originalFont="$(JP_ROUND_MPLUS_MID_FONT)"   backupFont="pChat_jpNicknamePatch/fonts/JapanSans/JapanSans90.otf"/>
+
+    <String name="JP_ROUND_MPLUS_BOLD_FONT" value="pChat_jpNicknamePatch/fonts/Rounded-L-MPlus/rounded-l-mplus-1m-bold.ttf" />
+    <BackupFont originalFont="$(JP_ROUND_MPLUS_BOLD_FONT)"   backupFont="pChat_jpNicknamePatch/fonts/JapanSans/JapanSans90.otf"/>
+
+    <String name="JP_ROUND_MPLUSPLUS_FONT" value="pChat_jpNicknamePatch/fonts/Rounded-L-MPlusPlus/rounded-mPlusPlus-medium.ttf" />
+    <BackupFont originalFont="$(JP_ROUND_MPLUSPLUS_FONT)"   backupFont="pChat_jpNicknamePatch/fonts/JapanSans/JapanSans90.otf"/>
+
+    <!-- $(BOLD_FONT) 利用している Univers67.otf だけフォントの継承が出来ない -->
+    <String name="ESO_STD_JP_FONT" value="pChat_jpNicknamePatch/fonts/Rounded-L-MPlus/rounded-l-mplus-1m-medium.ttf" />
+    <BackupFont originalFont="$(ESO_STD_JP_FONT)"   backupFont="pChat_jpNicknamePatch/fonts/JapanSans/JapanSans90.otf"/>
+
+    <!-- $(CHAT_FONT) -->
+    <String name="ESO_CHAT_JP_FONT" value="$(JP_ROUND_MPLUSPLUS_FONT)" />
+</GuiXml>

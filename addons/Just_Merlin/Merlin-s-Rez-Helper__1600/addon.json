@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Just_Merlin/Merlin-s-Rez-Helper__1600",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Just_Merlin",
+  "canonical_id": "esoui:1600",
+  "category_id": "45",
+  "compatibility": [],
+  "content_id": "esoui:1600",
+  "deleted": false,
+  "directories": [
+    "MerlinsRezHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1600/",
+  "fingerprint": "71f6305bcc4f84fa8cdc553b3bc39e23e0b0d3bcefb790223188f7833f6e4819",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5238.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5239.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5240.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5241.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5323.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8661.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1600",
+  "source_url": "https://www.esoui.com/downloads/info1600-MerlinsRezHelper.html",
+  "stats": {
+    "downloads": 41831,
+    "favorites": 68,
+    "monthly_downloads": 65
+  },
+  "title": "Merlin's Rez Helper",
+  "updated_at": 1677425055000,
+  "version": "2.1.0"
+}

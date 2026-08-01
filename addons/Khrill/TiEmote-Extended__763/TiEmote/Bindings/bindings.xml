@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Ti|cB70E99Emote|r |cFF6A00Extended|r">
+      <Action name="TE_ACTIVATE">
+        <Down>TiEmoteToggleActivate()</Down>
+      </Action>
+      <Action name="TE_RANDOM">
+        <Down>TiEmoteRandom()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

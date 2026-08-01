@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Kyzeragon/Dead-Man-s-Tally---Session-All-time-Deaths-Tally__4595",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kyzeragon",
+  "canonical_id": "esoui:4595",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4595",
+  "deleted": false,
+  "directories": [
+    "DeadMansTally"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4595/",
+  "fingerprint": "76533ce4761113524836173d2ad123afbb669294fc06418298136f48994700ec",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16114.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16113.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16115.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16119.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4595",
+  "source_url": "https://www.esoui.com/downloads/info4595-DeadMansTally-SessionAll-timeDeathsTally.html",
+  "stats": {
+    "downloads": 117,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "Dead Man's Tally - Session & All-time Deaths Tally",
+  "updated_at": 1779674416000,
+  "version": "1.0.0"
+}

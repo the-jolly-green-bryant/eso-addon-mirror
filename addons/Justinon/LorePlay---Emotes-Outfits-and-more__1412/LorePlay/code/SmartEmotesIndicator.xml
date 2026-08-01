@@ -1,0 +1,17 @@
+<GuiXml> 
+   <Controls>
+      <TopLevelControl name="SmartEmotesIndicator" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">	
+         <Dimensions x="75" y="75" />
+         <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+         <OnMoveStop>
+            LPEventHandler:FireEvent(EVENT_INDICATOR_MOVED, true, SmartEmotesIndicator:GetTop(), SmartEmotesIndicator:GetLeft())
+         </OnMoveStop>
+         <Controls>
+            <Texture name = "EmoteImage" textureFile="esoui\art\tutorial\tutorial_idexicon_emotes_over.dds" alpha = "1">
+               <Dimensions x="75" y="75" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+            </Texture>
+         </Controls>
+      </TopLevelControl>
+   </Controls>
+</GuiXml>

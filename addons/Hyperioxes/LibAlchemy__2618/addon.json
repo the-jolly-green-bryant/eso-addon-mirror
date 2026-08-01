@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Hyperioxes/LibAlchemy__2618",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Hyperioxes",
+  "canonical_id": "esoui:2618",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2618",
+  "deleted": false,
+  "directories": [
+    "LibAlchemy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2618/",
+  "fingerprint": "04cd4418d3179bb9e5dbdafd0c84d69bfa6b6cd345b260ae895a9b3acd7e7183",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2618",
+  "source_url": "https://www.esoui.com/downloads/info2618-LibAlchemy.html",
+  "stats": {
+    "downloads": 717671,
+    "favorites": 260,
+    "monthly_downloads": 4877
+  },
+  "title": "LibAlchemy",
+  "updated_at": 1766238727000,
+  "version": "2.6"
+}

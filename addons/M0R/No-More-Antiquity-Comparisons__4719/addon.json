@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/M0R/No-More-Antiquity-Comparisons__4719",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "M0R",
+  "canonical_id": "esoui:4719",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4719",
+  "deleted": false,
+  "directories": [
+    "NoMoreAntiquityComparisons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4719/",
+  "fingerprint": "5cb47e4543052f52bab01435cb141e813c643361cd99c5c4582a5c36cee44f7d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16761.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16762.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4719",
+  "source_url": "https://www.esoui.com/downloads/info4719-NoMoreAntiquityComparisons.html",
+  "stats": {
+    "downloads": 56,
+    "favorites": 2,
+    "monthly_downloads": 54
+  },
+  "title": "No More Antiquity Comparisons",
+  "updated_at": 1784735422000,
+  "version": "1.0"
+}

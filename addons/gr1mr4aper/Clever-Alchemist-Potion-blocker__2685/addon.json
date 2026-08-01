@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/gr1mr4aper/Clever-Alchemist-Potion-blocker__2685",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "gr1mr4aper",
+  "canonical_id": "esoui:2685",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2685",
+  "deleted": false,
+  "directories": [
+    "PotionBlocker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2685/",
+  "fingerprint": "115cb1d8ecdb497d4ae3e164fd93b0671df411705025b5f540dcdeca13f114ae",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9110.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9111.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2685",
+  "source_url": "https://www.esoui.com/downloads/info2685-CleverAlchemistPotionblocker.html",
+  "stats": {
+    "downloads": 3671,
+    "favorites": 3,
+    "monthly_downloads": 13
+  },
+  "title": "Clever Alchemist Potion blocker",
+  "updated_at": 1593337435000,
+  "version": "1.4"
+}

@@ -1,0 +1,24 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ScroogeMcDuckControl" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false">
+			<Dimensions x="300" y="16" />
+			<Anchor point="BOTTOMLEFT" relativeTo="GuiRoot" relativePoint="BOTTOMLEFT"/>
+
+			<OnMoveStop>
+				ScroogeMcDuck.SaveLoc()
+			</OnMoveStop>
+
+			<Controls>
+				<Texture name="$(parent)Coins" textureFile="/esoui/art/loot/icon_goldcoin_pressed.dds" pixelRoundingEnabled="true">
+					<Dimensions x="22" y="22" />
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				</Texture>
+
+				<Label name="$(parent)MoneyLabel" font="ZoFontChat" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER">
+					<Dimensions x="300" y="22" />
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="27" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

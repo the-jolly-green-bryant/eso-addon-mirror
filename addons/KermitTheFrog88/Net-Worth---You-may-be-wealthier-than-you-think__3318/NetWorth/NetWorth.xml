@@ -1,0 +1,132 @@
+<GuiXml>
+
+    <Controls>
+	
+		<TopLevelControl name="NetWorthMain" mouseEnabled="true" movable="true">
+			<Dimensions x="500" y="550" />
+            <Anchor point="CENTER" />
+					
+			<OnMoveStop>
+				NetWorth.SaveLocWindow()
+			</OnMoveStop>
+			
+			<OnMouseEnter>
+			</OnMouseEnter>
+			<OnMouseExit>
+			</OnMouseExit>
+			
+		 	<Controls>
+			
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"></Backdrop>
+				
+				<Label name="$(parent)WindowTitle" font="ZoFontAnnounceMedium" text="|c32a852NET WORTH|r">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+ 
+				<Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+					<Dimensions x="200" y="4"/>
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="40" />
+				</Texture>
+							
+				<Button name="$(parent)ButtonCloseMain" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						NetWorth.ButtonCloseMainOnClicked()
+					</OnClicked>
+				</Button>
+			
+			</Controls>
+				
+		</TopLevelControl>
+		
+		<TopLevelControl name="NetWorthInfoWindow" mouseEnabled="true" movable="false" font="ZoFontAnnounceMedium">
+			<Dimensions x="420" y="600" />
+            <Anchor point="TOPLEFT" relativeTo="NetWorthMain" relativePoint="TOPRIGHT" offsetX="15" />
+					
+			<OnMoveStop>
+			</OnMoveStop>
+			
+			<OnMouseEnter>
+			</OnMouseEnter>
+			<OnMouseExit>
+			</OnMouseExit>
+			
+		 	<Controls>
+			
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"></Backdrop>
+				
+				<Label name="$(parent)WindowTitle" font="ZoFontAnnounceMedium" text="About">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+ 
+				<Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+					<Dimensions x="200" y="4"/>
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="40" />
+				</Texture>
+
+                <Label name="$(parent)Info" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS">
+                    <OnInitialized>
+                        local text = {
+							"Important Notes:",
+							"* If you want storage items scanned",
+							"you must run this from inside your home.",
+							"",
+							"* Total value is calculated from the current characters",
+							"backpack, your bank, craft bag and all storage chests.", 
+							"Be sure to put valuable items/mats from other characters",
+							"backpacks in the bank, craft bag or a storage chest",
+							"to have them scanned.",
+							"",
+							"* TTC Max values are usually pretty absurd.",
+							"Don't use them if you want anything resembling",
+							"a real net worth.  We recomend TTC Avg.",
+							"",
+							"* House furniture total is calculated from the ",
+							"current house, i.e. the one your standing in ",
+							"(if your standing in one at all).",  							
+                        }
+                        self:SetAnchor(TOP, NetWorthInfoWindowTopDivider, TOP, 0, 0)
+                        self:SetText(table.concat(text, "\n"))
+                    </OnInitialized>
+                </Label>
+				
+				<Label name="$(parent)InfoSub" font="ZoFontGameSmall" color="CFDCBD" wrapMode="ELLIPSIS">
+                    <OnInitialized>
+                        local text = {
+							"",
+                            "Feedback?  Question?",
+                            "-Find us on www.esoui.com -> addons -> Net Worth",
+                            "Like what you see?  We always love donations!",
+                            "-Connect with us in game |c32a852@kermitthefrog88|r or |c5770ff@kTeddy|r",
+							"Don't like what you see?  Complaints?  General angst?",
+							"-Connect with us in game |c5770ff@kTeddy|r",
+                        }
+                        self:SetAnchor(TOPLEFT, NetWorthInfoWindowInfo, BOTTOMLEFT, 0, 0)
+                        self:SetText(table.concat(text, "\n"))
+                    </OnInitialized>
+                </Label>
+				
+				<Button name="$(parent)ButtonCloseMain" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						NetWorth.ButtonCloseInfoWindowOnClicked()
+					</OnClicked>
+				</Button>
+			
+			</Controls>
+				
+		</TopLevelControl>
+		
+    </Controls>
+
+</GuiXml>

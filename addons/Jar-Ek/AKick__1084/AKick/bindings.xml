@@ -1,0 +1,20 @@
+<!----------------------------------------------------------
+	* Test
+	* Version 0.1
+----------------------------------------------------------->
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+   <Category name="Auto Kicker">
+      <Action name="AK_AUTOKICK">
+        <Down>AKicker.AutoKick(false)</Down>
+      </Action>
+      <Action name="AK_AUTOKICK_TEST">
+        <Down>AKicker.AutoKick(true)</Down>
+      </Action>
+      <Action name="AK_RECRUIT">
+        <Down>AKicker.Recruit()</Down>
+      </Action>
+   </Category>
+  </Layer>
+</Bindings>
+

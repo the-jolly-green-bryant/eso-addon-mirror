@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/muh/Lawful-Necromancy__2388",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "muh",
+  "canonical_id": "esoui:2388",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2388",
+  "deleted": false,
+  "directories": [
+    "LawfulNecromancy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2388/",
+  "fingerprint": "2ec9215c1c93b85bf5ebf52271cbc8e0702c96db34503682133c8b3e40d23c4d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2388",
+  "source_url": "https://www.esoui.com/downloads/info2388-LawfulNecromancy.html",
+  "stats": {
+    "downloads": 12995,
+    "favorites": 22,
+    "monthly_downloads": 42
+  },
+  "title": "Lawful Necromancy",
+  "updated_at": 1641902086000,
+  "version": "1.1"
+}

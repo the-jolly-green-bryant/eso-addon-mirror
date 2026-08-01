@@ -1,0 +1,6 @@
+## Title: Pleb Jokes
+## Author: Laurenshua
+## Version 1.5.0
+## APIVersion: 100027
+
+PlebJokes.lua

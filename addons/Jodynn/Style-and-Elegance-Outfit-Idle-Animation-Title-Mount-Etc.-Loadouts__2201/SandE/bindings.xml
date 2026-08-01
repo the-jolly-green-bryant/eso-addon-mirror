@@ -1,0 +1,45 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="STYLE_AND_ELEGANCE">
+            <Action name="SANDE_TOGGLE_UI">
+                <Up>toggleSandEUI()</Up>
+            </Action>
+            <Action name="SANDE_BIND1">
+                <Up>selectSandEKeyBinding(1)</Up>
+            </Action>
+            <Action name="SANDE_BIND2">
+                <Up>selectSandEKeyBinding(2)</Up>
+            </Action>
+            <Action name="SANDE_BIND3">
+                <Up>selectSandEKeyBinding(3)</Up>
+            </Action>
+            <Action name="SANDE_BIND4">
+                <Up>selectSandEKeyBinding(4)</Up>
+            </Action>
+            <Action name="SANDE_BIND5">
+                <Up>selectSandEKeyBinding(5)</Up>
+            </Action>
+            <Action name="SANDE_BIND6">
+                <Up>selectSandEKeyBinding(6)</Up>
+            </Action>
+            <Action name="SANDE_BIND7">
+                <Up>selectSandEKeyBinding(7)</Up>
+            </Action>
+            <Action name="SANDE_BIND8">
+                <Up>selectSandEKeyBinding(8)</Up>
+            </Action>
+            <Action name="SANDE_BIND9">
+                <Up>selectSandEKeyBinding(9)</Up>
+            </Action>
+            <Action name="SANDE_BIND10">
+                <Up>selectSandEKeyBinding(10)</Up>
+            </Action>
+            <Action name="SANDE_BIND11">
+                <Up>selectSandEKeyBinding(11)</Up>
+            </Action>
+            <Action name="SANDE_BIND12">
+                <Up>selectSandEKeyBinding(12)</Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

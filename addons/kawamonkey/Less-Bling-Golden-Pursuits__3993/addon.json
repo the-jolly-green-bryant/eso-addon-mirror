@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/Less-Bling-Golden-Pursuits__3993",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3993",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3993",
+  "deleted": false,
+  "directories": [
+    "LessBlingGoldenPursuits"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3993/",
+  "fingerprint": "f488b85ef38c5471f27355a73f156c068b8178be124ec6a2eb3b389ba8ab5d63",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13532.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3993",
+  "source_url": "https://www.esoui.com/downloads/info3993-LessBlingGoldenPursuits.html",
+  "stats": {
+    "downloads": 551,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "Less Bling Golden Pursuits",
+  "updated_at": 1731961682000,
+  "version": "1.0"
+}

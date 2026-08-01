@@ -1,0 +1,8 @@
+## Title: |cf49b42PinAutoResizer|r
+## Description: Auto resizes pins when you zoom  
+## Version: 2026.07.24
+## Author: |c3CB371@Masteroshi430|r
+## APIVersion: 101050
+## OptionalDependsOn: LibGPS>=73
+
+PinAutoResizer.lua

@@ -1,0 +1,19 @@
+﻿<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Photographer">
+				
+		<Action name="PHOTOGRAPHER_SCREENSHOT_INTERN">
+			<Down>photographer_screenshot_intern()</Down>
+		  </Action>
+		
+		<Action name="PHOTOGRAPHER_SCREENSHOT_EXTERN">
+			<Down>photographer_screenshot_byKey_extern()</Down>
+		  </Action>
+
+		<Action name="PHOTOGRAPHER_UI_TOGGLE">
+			<Down>photographer_UI_Toggle()</Down>
+		  </Action>
+		  
+		</Category>
+	</Layer>
+</Bindings>

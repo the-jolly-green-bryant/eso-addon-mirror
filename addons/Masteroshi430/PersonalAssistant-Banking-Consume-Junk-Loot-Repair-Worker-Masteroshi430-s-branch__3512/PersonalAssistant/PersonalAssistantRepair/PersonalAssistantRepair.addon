@@ -1,0 +1,35 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: |cFFD700P|rersonal|cFFD700A|rssistant |cFFD700R|repair
+## Description: PARepair repairs your worn equipment at vendors or on the field, and recharges the weapons too.
+## Version: 2026.07.31
+## AddOnVersion: 20260731
+## Author: Klingo, |c3CB371@Masteroshi430|r
+## APIVersion: 101050 
+## SavedVariables: PersonalAssistantRepair_SavedVariables
+## DependsOn: PersonalAssistant
+## OptionalDependsOn: PersonalAssistantJunk
+
+# Localization
+localization/en.lua
+localization/$(language).lua
+
+# Profiles
+Profiles/PARepairSavedVarsPatcher.lua
+Profiles/PARepairProfileManager.lua
+
+# Core
+PersonalAssistantRepair.lua
+
+# PARepair
+PARepair/PARepairCharge.lua
+PARepair/PARepairKit.lua
+PARepair/PARepair.lua
+
+# Menu
+Menu/PARepairMenuDefaults.lua
+Menu/PARepairMenuFunctions.lua
+Menu/PARepairMenu.lua

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/MethosFrost/AllCraft__2488",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MethosFrost",
+  "canonical_id": "esoui:2488",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2488",
+  "deleted": false,
+  "directories": [
+    "AllCraft"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2488/",
+  "fingerprint": "a66911c4744fb14771d34bdb75f760a7649b3003d589504f9352fc7eecb87879",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8519.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2488",
+  "source_url": "https://www.esoui.com/downloads/info2488-AllCraft.html",
+  "stats": {
+    "downloads": 5048,
+    "favorites": 3,
+    "monthly_downloads": 19
+  },
+  "title": "AllCraft",
+  "updated_at": 1583204541000,
+  "version": "0.935Alpha"
+}

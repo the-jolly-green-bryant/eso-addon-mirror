@@ -1,0 +1,90 @@
+Hallo! Danke, dass du mein Addon nutzt. Entwickler @IgorSab. Wenn dir mein Addon gefällt und du meine Arbeit unterstützen möchtest, hier sind einige freiwillige Spendenmöglichkeiten:
+
+    PayPal: Leider ist PayPal.Me in meiner Region möglicherweise nicht verfügbar. Du kannst eine Spende an jetixmax13@gmail.com senden. Es ist weniger bequem, aber ich wäre sehr dankbar für deine Unterstützung!
+    Ko-fi: Lade mich auf einen Kaffee ein unter ko-fi.com/igorsab. Es ist eine einfache und schnelle Möglichkeit, mir zu helfen.
+    Kryptowährung:
+        BTC: 1Cehu58Do9izGefUBDLou8WJqgJdqs4CcJ (nur Bitcoin)
+        ETH: 0xbea843c6c0359126b619fca220fc841bcff6c931 (nur Ethereum)
+        USDT: 0xbea843c6c0359126b619fca220fc841bcff6c931 (nur ERC-20-Netzwerk)
+        Alle Spenden sind freiwillig und unterstützen meine Arbeit am Addon. Vielen Dank für deine Großzügigkeit und Hilfe!
+        Ich würde mich auch über Ingame-Gold, wertvolle Gegenstände oder Geschenke aus dem Kronen-Shop an @IgorSab auf dem EU/PC-Server freuen.
+
+InventaryManagerTESO:
+
+InventaryManagerTESO ist ein Addon zur Inventarverwaltung für The Elder Scrolls Online, das ein praktisches Fenster mit erweiterten Funktionen zur Sortierung, Filterung, Kategorisierung und Verwaltung von Gegenständen hinzufügt. Hier ist die vollständige Liste der Funktionen:
+
+    Verbessertes Inventarfenster
+    Zeigt bis zu 200 Gegenstände in einem 10×20-Raster (44×44 Pixel pro Zelle).
+    Zeigt Gegenstandssymbole, Stapelanzahl und visuelle Indikatoren (z. B. Häkchen für Auswahl, Verdunkelung für gesperrte Gegenstände).
+    Zeigt belegte und verfügbare Taschenplätze an (z. B. "125/200").
+    Zeigt das Gold des Charakters formatiert an (z. B. "1.860.657").
+    Gegenstandssortierung
+    Standard: Sortiert nach Kategorien (Waffen, Rüstung, Verbrauchsgüter, Handwerksmaterialien usw.) mit Priorität (z. B. gesperrte Ausrüstung über Lebensmitteln).
+    Sortierrichtung (aufsteigend/absteigend) durch erneutes Klicken auf den Sortierknopf umschaltbar.
+    "All"-Knopf setzt Filter zurück und zeigt alle Gegenstände.
+    Kategoriefilterung
+    Verfügbare Kategorien: "Weapon" (Waffen), "Armor" (Rüstung), "Furnishings" (Möbel), "Consumables" (Verbrauchsgüter), "Crafting" (Handwerksmaterialien).
+    Jede Kategorie hat einen Knopf mit Symbol und Tooltip.
+    Bei Auswahl einer Kategorie werden nur passende Gegenstände angezeigt.
+    Erneutes Klicken auf eine aktive Kategorie setzt den Filter zurück.
+    Gegenstandssuche
+    Eingabefeld zur Suche nach Gegenständen nach Namen.
+    Suche in Echtzeit: Liste wird beim Tippen automatisch gefiltert.
+    Unterstützt Suche in jeder Sprache (je nach Spiel-Lokalisierung).
+    Gegenstandsverwaltung
+
+    Auswahl: Linksklick auf eine Zelle wählt einen Gegenstand aus/ab (grünes Häkchen). Gesperrte Gegenstände sind beim Handeln nicht auswählbar.
+    Kontextmenü: Rechtsklick auf einen Gegenstand öffnet ein Menü mit Aktionen (z. B. "Ausrüsten", "Benutzen"). "Zerstören" ist gesperrt, um versehentliches Löschen zu verhindern.
+    Ausrüsten/Benutzen: Unterstützt das Ausrüsten von Waffen, Rüstung und Schmuck je nach aktiver Waffensleiste (primär oder sekundär). Verbrauchsgüter (z. B. Tränke) über das Kontextmenü nutzbar.
+    Tooltips: Beim Überfahren eines Gegenstands erscheint eine detaillierte Info (wie in der Standardoberfläche).
+
+    Sperrverwaltung
+    Lock-Knopf: Sperrt ausgewählte Gegenstände (nur Waffen, Rüstung, Schmuck und Begleiter-Gegenstände).
+    Unlock-Knopf: Entsperrt ausgewählte Gegenstände.
+    Gesperrte Gegenstände werden verdunkelt (Alpha 0.5) und können beim Handeln nicht verkauft werden.
+    MassenAuswahl
+    Select All-Knopf: Wählt alle Gegenstände in der aktuellen Ansicht aus (außer gesperrte beim Handeln).
+    Erneutes Klicken hebt die Auswahl auf.
+    Gegenstandsverkauf
+    Sell-Knopf: Verkauft alle ausgewählten Gegenstände an einen Händler (bis zu 50 auf einmal).
+    Funktioniert nur, wenn ein Handelsfenster (z. B. NPC-Händler) geöffnet ist.
+    Gesperrte Gegenstände werden nicht verkauft.
+    Abklingzeitanzeige
+    Für Gegenstände mit Abklingzeit (z. B. Tränke) wird ein Overlay und Timer in Sekunden angezeigt.
+    Aktualisiert sich jede Sekunde, wenn das Addon-Fenster offen ist.
+    Interaktivität und Einstellungen
+    Das Addon-Fenster ist auf dem Bildschirm verschiebbar.
+    Inhalt wird regelmäßig aktualisiert (jede Sekunde, wenn offen).
+    Auswahl wird beim Schließen automatisch zurückgesetzt.
+    Tastenkürzel zum Öffnen/Schließen des Fensters ("InventaryManagerTESO").
+    Zusatzfunktionen
+    Unterstützt gesperrte Gegenstände beim Handeln (verhindert Verkauf).
+    Aktualisiert das Inventar automatisch bei Änderungen (z. B. nach Verkauf oder Nutzung).
+    Kompatibel mit verschiedenen Gegenstandstypen, einschließlich Begleiter-Gegenständen, Kronen-Gegenständen und Schatzkarten.
+
+Anleitung:
+
+    Gegenstandsraster (links): Zeigt bis zu 200 Gegenstände als Symbole (10×20).
+    Bedienfeld (rechts):
+        All-Knopf: Zeigt alle Gegenstände.
+        Suchfeld: Filtert Gegenstände nach Namen.
+        Kategorien-Knöpfe: "Weapon", "Armor", "Furnishings", "Consumables", "Crafting".
+        Steuerknöpfe: Lock, Unlock, Select All, Sell.
+        Info: Unten angezeigt: "Belegt/Gesamtplätze" (z. B. "125/200") und "Gold: <Betrag>" (z. B. "1.860.657").
+    Sortierung und Filterung:
+        Klicke auf All, um alle Gegenstände anzuzeigen.
+        Klicke auf eine Kategorie (z. B. "Weapon"), um nur diese Gegenstände anzuzeigen.
+        Erneutes Klicken auf eine aktive Kategorie setzt den Filter zurück.
+        Gib Text ins Suchfeld ein, um Gegenstände nach Namen zu filtern (in Echtzeit).
+    Gegenstandsverwaltung:
+        Auswahl: Linksklick auf einen Gegenstand wählt ihn aus (grünes Häkchen erscheint). Erneutes Klicken hebt die Auswahl auf.
+        MassenAuswahl: Klicke auf Select All, um alle Gegenstände auszuwählen (außer gesperrte beim Handeln). Erneutes Klicken hebt die Auswahl auf.
+        Sperren/Entsperren: Wähle Gegenstände aus, klicke auf Lock, um sie zu sperren (sie verdunkeln sich). Klicke auf Unlock zum Entsperren.
+        Verkauf: Öffne ein Handelsfenster mit einem NPC (z. B. Händler). Wähle Gegenstände aus und klicke auf Sell (bis zu 50 auf einmal). Gesperrte Gegenstände werden nicht verkauft.
+        Ausrüsten/Benutzen: Rechtsklick auf einen Gegenstand öffnet das Kontextmenü. Wähle "Equip" für Waffen/Rüstung oder "Use" für Verbrauchsgüter.
+        Info anzeigen: Fahre über einen Gegenstand, um einen Tooltip mit Beschreibung zu sehen. Gegenstände mit Abklingzeit (z. B. Tränke) zeigen ein Overlay und einen Timer.
+    Fenster schließen: Klicke auf "X" oben rechts oder nutze die zugewiesene Taste. Die Auswahl wird beim Schließen zurückgesetzt.
+    Nützliche Tipps:
+        Nutze das Suchfeld für schnelle Suche.
+        Gesperrte Gegenstände können beim Handeln nicht ausgewählt oder verkauft werden.
+        Das Fenster aktualisiert sich jede Sekunde, wenn es offen ist.

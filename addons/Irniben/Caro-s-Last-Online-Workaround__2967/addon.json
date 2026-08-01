@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Irniben/Caro-s-Last-Online-Workaround__2967",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Irniben",
+  "canonical_id": "esoui:2967",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2967",
+  "deleted": false,
+  "directories": [
+    "CarosLastOnlineWorkaround"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2967/",
+  "fingerprint": "f252930b51225491f0453119eecef3bf937442e6616ea5b7b2f5216faaf3091e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2967",
+  "source_url": "https://www.esoui.com/downloads/info2967-CarosLastOnlineWorkaround.html",
+  "stats": {
+    "downloads": 2969,
+    "favorites": 3,
+    "monthly_downloads": 12
+  },
+  "title": "Caro's Last Online Workaround",
+  "updated_at": 1616232997000,
+  "version": "0.1.1"
+}

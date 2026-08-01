@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Irniben/DISCONTINUED-CSPS---PTS-46-Subclassing__4123",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Irniben",
+  "canonical_id": "esoui:4123",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4123",
+  "deleted": false,
+  "directories": [
+    "CarosSkillPointSaver"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4123/",
+  "fingerprint": "c6e1ff4a11e7b25542462ee9201efe977eb7ec6cee1048a8b2e3b8de58890aed",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4123",
+  "source_url": "https://www.esoui.com/downloads/info4123-DISCONTINUEDCSPS-PTS46Subclassing.html",
+  "stats": {
+    "downloads": 1637,
+    "favorites": 0,
+    "monthly_downloads": 66
+  },
+  "title": "DISCONTINUED: CSPS - PTS 46 Subclassing",
+  "updated_at": 1748539428000,
+  "version": "5.6.0"
+}

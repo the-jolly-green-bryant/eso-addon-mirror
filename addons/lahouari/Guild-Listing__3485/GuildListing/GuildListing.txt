@@ -1,0 +1,11 @@
+## Title: Guild Listing
+## APIVersion: 101035
+## Version: 1.0.1
+## AddOnVersion: 10001
+## Description: Dump guild ranks information to file
+## OptionalDependsOn: LibDebugLogger 
+## Author: |ca0a0F3|DLC
+## SavedVariables: GuildListingData
+
+GuildListing.lua
+bindings.xml

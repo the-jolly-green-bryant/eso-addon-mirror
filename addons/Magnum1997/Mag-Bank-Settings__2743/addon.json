@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Magnum1997/Mag-Bank-Settings__2743",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Magnum1997",
+  "canonical_id": "esoui:2743",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2743",
+  "deleted": false,
+  "directories": [
+    "MagBankSettings"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2743/",
+  "fingerprint": "b84eea76323bc8f2c85c16ee9c5b3ad64473cfc53ea058a5fbb8a969b614e105",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9283.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9282.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2743",
+  "source_url": "https://www.esoui.com/downloads/info2743-MagBankSettings.html",
+  "stats": {
+    "downloads": 3363,
+    "favorites": 5,
+    "monthly_downloads": 25
+  },
+  "title": "Mag Bank Settings",
+  "updated_at": 1618471554000,
+  "version": "1.0.1"
+}

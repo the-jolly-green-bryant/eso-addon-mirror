@@ -1,0 +1,6 @@
+## Title: Shai_hulud_Guild_Hall
+## Author: Tentakil
+## Version: 0.5
+## APIVersion: 100030
+
+Shai_hulud_Guild_Hall.lua

@@ -1,0 +1,26 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Font name="ImperialCartographer_ZoFontWinH2" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick" />
+
+    <Controls>
+        <TopLevelControl name="ImperialCartographer_DistanceLabels">
+            <AnchorFill />
+        </TopLevelControl>
+
+        <Label name="ImperialCartographer_DistanceLabelTemplate" tier="DT_LOW" layer="DL_BACKGROUND" font="ImperialCartographer_ZoFontWinH2" text="-" virtual="true">
+            <Anchor point="TOP" relativePoint="BOTTOM" offsetY="-8" />
+        </Label>
+
+        <Texture name="IMP_CART_WaypointTexture" textureFile="EsoUI/Art/MapPins/UI_Worldmap_pin_customDestination_white.dds" pixelRoundingEnabled="false" hidden="true">
+            <Dimensions x="32" y="32" />
+        </Texture>
+        
+        <TopLevelControl name="ImperialCartographer_POILabel">
+            <Anchor point="CENTER" />
+            <Controls>
+                <Label name="$(parent)POIName" font="ZoFontWinH2" text="-" hidden="true">
+                    <Anchor point="LEFT" relativePoint="CENTER" offsetX="48" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

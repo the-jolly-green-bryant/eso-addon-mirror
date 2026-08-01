@@ -1,0 +1,35 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="AGEditProfileDialog" inherits="ZO_CustomDialogBase">
+			<Dimensions x="500" y="125" />
+			<Anchor point="CENTER" offsetY="-45" />
+			<Controls>
+				<Control name="$(parent)Content" inherits="ZO_DialogContentAnchors">
+					<Controls>
+                        <Label name="$(parent)Label" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT" text="Name:">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                        </Label>
+						
+						
+		                <Backdrop name="$(parent)BG" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Label" offsetX="10" />
+							<Dimensions x="308" />
+							<Controls>
+								<EditBox name="$(grandparent)ProfileName" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+								</EditBox>			
+							</Controls>
+						</Backdrop>
+
+                        <!-- EditBox name="$(parent)ProfileNameXX" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" maxInputCharacters="100" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Label" offsetX="10" />
+							<Dimensions x="368" />
+						</EditBox-->
+						
+					</Controls>
+				</Control>
+				<Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton" />
+				<Control name="$(parent)Accept" inherits="ZO_CustomDialogButton" />
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,8 @@
+## Title: LibCSA
+## APIVersion: 101040 101041
+## Author: andy.s
+## AddOnVersion: 210
+## Version: 2.10
+## IsLibrary: true
+
+LibCSA.lua

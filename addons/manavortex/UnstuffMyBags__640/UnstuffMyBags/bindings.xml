@@ -1,0 +1,24 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">
+    <Category name="UnstuffMyBags">
+	
+      <Action name="UNSTUFF_MY_BAGS_DELETE_IT">
+		<Down>UnstuffMyBags.HandleBagDetritus(true)</Down>
+      </Action>
+	  
+	  <Action name="UNSTUFF_MY_BAGS_JUNK_IT">
+		<Down>UnstuffMyBags.HandleBagDetritus()</Down>
+      </Action>
+	  
+	  <Action name="UNSTUFF_MY_BAGS_JUNK_ITEM">
+		<Down>UnstuffMyBags.JunkItem()</Down>
+      </Action>
+	  
+	  <Action name="UNSTUFF_MY_BAGS_DELETE_ITEM">
+		<Down>UnstuffMyBags.DeleteItem()</Down>
+      </Action>
+	  
+    </Category>
+  </Layer>
+</Bindings>
+

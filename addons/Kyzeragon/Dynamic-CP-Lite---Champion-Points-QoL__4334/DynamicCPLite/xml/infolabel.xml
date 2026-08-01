@@ -1,0 +1,28 @@
+<GuiXml>
+    <Controls>
+<!-- ======================================================================================================================= -->
+        <TopLevelControl name="DynamicCPInfoContainer" mouseEnabled="false" movable="false" hidden="true" tier="MEDIUM">
+            <OnInitialized>
+                CHAMPION_PERKS_SCENE:AddFragment(ZO_HUDFadeSceneFragment:New(self))
+                GAMEPAD_CHAMPION_PERKS_SCENE:AddFragment(ZO_HUDFadeSceneFragment:New(self))
+            </OnInitialized>
+            <Controls>
+                <Label name="DynamicCPInfoLabel" verticalAlignment="TOP" horizontalAlignment="LEFT" tier="MEDIUM">
+                    <Anchor point="TOPLEFT" relativeTo="ZO_ChampionPerksKeyboardStatusPointHeader" relativePoint="BOTTOMLEFT" offsetY="4"/>
+                    <OnInitialized>
+                        self:SetText(string.format(
+                            "|cc4c19eTotal:|r |t32:32:esoui/art/champion/champion_icon_32.dds|t %d"
+                            .. " |t32:32:esoui/art/champion/champion_points_stamina_icon-hud-32.dds|t %d"
+                            .. " |t32:32:esoui/art/champion/champion_points_magicka_icon-hud-32.dds|t %d"
+                            .. " |t32:32:esoui/art/champion/champion_points_health_icon-hud-32.dds|t %d",
+                            GetPlayerChampionPointsEarned(),
+                            GetNumSpentChampionPoints(3) + GetNumUnspentChampionPoints(3),
+                            GetNumSpentChampionPoints(1) + GetNumUnspentChampionPoints(1),
+                            GetNumSpentChampionPoints(2) + GetNumUnspentChampionPoints(2)))
+                    </OnInitialized>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+<!-- ======================================================================================================================= -->
+    </Controls>
+</GuiXml>

@@ -1,0 +1,143 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="DsRGuildcmd_Assistant">
+			<Action name="DSRGUILD_ASSISTANT_1">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 1 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_2">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 2 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_3">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 3 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_4">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 4 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_5">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 5 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_6">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 6 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_7">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 7 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_8">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 8 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_9">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 9 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_10">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 10 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_11">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 11 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_12">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 12 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_13">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 13 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_14">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 14 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_15">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 15 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_16">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 16 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_17">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 17 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_18">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 18 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_19">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 19 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_20">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 20 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_21">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 21 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_22">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 22 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_23">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 23 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_24">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 24 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_25">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 25 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_26">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 26  )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_27">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 27 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_28">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 28 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_29">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 29 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_ASSISTANT_30">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, 30 )) </Down>
+			</Action>
+		</Category>
+		<Category name="DsRGuildcmd_Companion">
+			<Action name="DSRGUILD_COMPANION_1">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 1 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_COMPANION_2">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 2 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_COMPANION_3">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 3 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_COMPANION_4">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 4 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_COMPANION_5">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 5 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_COMPANION_6">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 6 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_COMPANION_7">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 7 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_COMPANION_8">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 8 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_COMPANION_9">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 9 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_COMPANION_10">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 10 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_COMPANION_11">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 11 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_COMPANION_12">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 12 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_COMPANION_13">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 13 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_COMPANION_14">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 14 )) </Down>
+			</Action>
+			<Action name="DSRGUILD_COMPANION_15">
+				<Down> UseCollectible(GetCollectibleIdFromType( COLLECTIBLE_CATEGORY_TYPE_COMPANION, 15 )) </Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

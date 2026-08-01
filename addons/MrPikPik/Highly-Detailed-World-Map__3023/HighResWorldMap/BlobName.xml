@@ -1,0 +1,16 @@
+<GuiXml>
+	<Controls>
+		<Label name="HRWM_MapBlobName" font="$(HANDWRITTEN_FONT)|34" color="544426" pixelRoundingEnabled="false" horizontalAlignment="CENTER" verticalAlignment="CENTER" layer="BACKGROUND" level="4" virtual="true" maxLineCount="1">
+			<Controls>
+				<Texture name="$(parent)BG" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES" textureFile="EsoUI/Art/LoreLibrary/loreLibrary_scroll.dds" textureCoordsRotation="-ZO_HALF_PI">
+					<!--<TextureCoords left="0.3" right="0.7" top="0.0" bottom="1.0" />-->
+					<Anchor point="TOPLEFT" offsetX="-40" offsetY="-10" />
+					<Anchor point="BOTTOMRIGHT" offsetX="40" offsetY="0" />
+				</Texture>
+				<Label name="$(parent)Shadow" font="$(HANDWRITTEN_FONT)|34" color="C9A04D" horizontalAlignment="CENTER" verticalAlignment="CENTER" layer="BACKGROUND" level="3" maxLineCount="1">
+					<Anchor point="CENTER" offsetX="1" offsetY="1" />
+				</Label>
+			</Controls>
+		</Label>		
+	</Controls>
+</GuiXml>

@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/haze068/Discontinued-KayzarUI__4387",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "haze068",
+  "canonical_id": "esoui:4387",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4387",
+  "deleted": false,
+  "directories": [
+    "KayzarUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4387/",
+  "fingerprint": "4ee79e42f659a39a472f5990baaeb079792516982d27880a57415c9329744d64",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15209.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15210.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15211.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15212.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15213.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15214.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4387",
+  "source_url": "https://www.esoui.com/downloads/info4387-DiscontinuedKayzarUI.html",
+  "stats": {
+    "downloads": 332,
+    "favorites": 2,
+    "monthly_downloads": 15
+  },
+  "title": "(Discontinued) KayzarUI",
+  "updated_at": 1771254339000,
+  "version": "1.2"
+}

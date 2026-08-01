@@ -1,0 +1,12 @@
+ZO_CreateStringId("SI_BINDING_NAME_AVT_SWITCH", "Manual Switch")
+local put = AssistVampireTrade.putText
+put("Account wide configuration", "Настройки на аккаунт")
+put("Revert when skill is used", "Уберает после использовании навыка")
+put("Ability slot to Use", "Номер используемого слота")
+put("There is a hot key to switch manually.", "Есть горячая клавиша для переключения вручную.")
+put("Info", "Информация")
+put("You will need to add a keybind for this to work.", "Вам нужно добавить привязку клавиш для корректной работы.")
+put("keybindings", "Привязки клавиш")
+put("The keybind options can be found in: Controls > Keybinds > Assist Vampire Trade.", "Параметры клавиш можно найти в: Управление > Привязки клавиш > Assist Vampire Trade.")
+put("Where can I do this?", "Где это можно сделать?")
+put("You no longer need to worry about having your weapon out before using Mesmerize. I've implemented a fix that ensures a smoother and more intuitive experience.", "Вам больше не нужно беспокоиться о том, чтобы держать оружие перед использованием Mesmerize. Я внёс исправление, которое обеспечивает более гладкое и интуитивное взаимодействие.")

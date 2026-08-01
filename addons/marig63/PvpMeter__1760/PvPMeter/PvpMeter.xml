@@ -1,0 +1,321 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="PvpMeterIndicator" clampedToScreen="true" mouseEnabled="true" movable="true">
+      <Dimensions x="253" y="150" />
+      <Anchor point="BOTTOM"  Point="BOTTOMRIGHT" offsetX="-132" offsetY="-90"/>
+      <Controls>
+		
+      </Controls>
+	  
+    </TopLevelControl>
+	
+	<TopLevelControl name="PvpMeterIndicr" >  
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="-120" offsetY="-112"/>
+      <Controls>
+        
+      </Controls>
+    </TopLevelControl>
+	
+	<TopLevelControl name="myAtor">
+      <Dimensions x="6" y="18" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="-106" offsetY="-103"/>
+      <Controls>
+		
+      </Controls>
+    </TopLevelControl>
+	
+	<TopLevelControl name="PvpMeterInd">
+      <Dimensions x="127" y="127" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="-51" offsetY="-72"/>
+      <Controls name="Bar">
+        
+      </Controls>
+    </TopLevelControl>
+	
+	<TopLevelControl name="frameBG">
+      <Dimensions x="253" y="127" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="-132" offsetY="-90"/>
+      <Controls>
+		
+      </Controls>
+    </TopLevelControl>
+	
+	<TopLevelControl name="medailBG">
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="-120" offsetY="-112"/>
+      <Controls>
+        
+      </Controls>
+    </TopLevelControl>
+	
+	<TopLevelControl name="iconBG">
+      <Dimensions x="12" y="36" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="-106" offsetY="-103"/>
+      <Controls>
+		
+      </Controls>
+    </TopLevelControl>
+	
+	<TopLevelControl name="killBG">
+      <Dimensions x="127" y="127" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="-51" offsetY="-72"/>
+ 
+      <Controls name="test">
+        
+      </Controls>  
+    </TopLevelControl>
+	
+  </Controls>
+  
+  <Animations name="roo">
+        <AnimationTimeline name="HUDTelvarAlertBorderAnimation">
+            <Animations>
+                <AlphaAnimation startAlpha="0.0" endAlpha="0.6" delay="200" duration="200">
+                    <EasingFunction>
+                        return ZO_EaseInQuadratic(progress)
+                    </EasingFunction>
+                </AlphaAnimation>
+                <AlphaAnimation startAlpha="0.6" endAlpha="0.0" delay="400" duration="1200">
+                    <EasingFunction>
+                        return ZO_EaseOutQuadratic(progress)
+                    </EasingFunction>
+                </AlphaAnimation>
+            </Animations>
+        </AnimationTimeline>
+        
+        <AnimationTimeline name="HUDTelvarMeterEasing">
+            <Animations>
+                <CustomAnimation duration="700">
+                    <UpdateFunction>
+                        HUDTelvarMeter_UpdateMeterToAnimationProgress(progress)
+                    </UpdateFunction>
+                    <EasingFunction>
+                        return ZO_EaseOutQuadratic(progress)
+                    </EasingFunction>
+                    <OnStop>
+                    </OnStop>
+                </CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+        
+        <AnimationTimeline name="HUDTelvarMeterMultiplierBounce">
+            <Animations>
+                <AlphaAnimation duration="200" startAlpha="0"   endAlpha="1"/>
+                <ScaleAnimation duration="300" startScale="2.5" endScale="1"/>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="HUDTelvarMeterOverlayFade">
+            <Animations>
+                <AlphaAnimation duration="1500" startAlpha="1"   endAlpha="0"/>
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+
+    <Controls>
+        <Control name="HUDTelvarMeter_KeyboardTemplate" virtual="true" clampedToScreen="true" mouseEnabled="true" movable="true">
+            <!--<Anchor point="BOTTOMRIGHT" offsetY="-90" />-->
+			
+			<OnMoveStop>
+				PvpMeter.OnMeterMoveStop()
+			</OnMoveStop>
+			
+            <Controls>
+                <Texture name="$(parent)Frame" textureFile="EsoUI/Art/HUD/Telvar_Meter_Frame.dds" hidden="true">
+                    <!--<TextureCoords left="0" right="1" />-->
+					<TextureCoords left="1" right="0" top="1" bottom="0" />
+                </Texture>
+				
+				<!-- Cyrodiil Meter -->
+				
+				<Texture name="Glow" textureFile="esoui/art/hud/telvar_meter_frame.dds" level="1">
+					<Dimensions x="256" y="128" />
+					<Anchor point="LEFT" relativeTo="$(parent)MinSlider" relativePoint="LEFT" offsetX="-6" />
+					<Anchor point="RIGHT" relativeTo="$(parent)MaxSlider" relativePoint="RIGHT" offsetX="6" />
+				</Texture>
+				
+				<Label name="LabelAP" width="10" height="25" font="ZoFontWinH4"  color="39EE31"
+					  horizontalAlignment="LEFT" text="1212" >
+				  <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-118" offsetY="42"/>
+				</Label>
+				
+				<Control name="teamiconAP">
+					<Dimensions x="6" y="18" />
+					<Anchor point="BOTTOM" relativePoint="BOTTOMRIGHT" offsetX="-103" offsetY="-14"/>
+					<Controls>
+						<Texture name="APicon" textureFile="esoui/art/currency/alliancepoints_32.dds" movable="true" level="1">
+							<Dimensions x="5" y="16" />
+							<Anchor point="LEFT"  relativePoint="LEFT" offsetX="-6" />
+							<Anchor point="RIGHT" relativePoint="RIGHT" offsetX="6" />
+						</Texture>
+					</Controls>
+				</Control>
+				
+				<Label name="LabelKill" width="12" height="15" font="ZoFontWinH1" inheritAlpha="true" color="39EE31"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="BOTTOMRIGHT" text="12">
+				  <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="58" offsetX="80"/>
+				</Label>
+				
+				<Label name="LabelDeath" width="12" height="15" font="ZoFontWinH5" inheritAlpha="true" color="39EE31"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="BOTTOMRIGHT" text="12">
+				  <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="92"offsetX="80"/>
+				</Label>
+
+				<Label name="LabelAssist" width="12" height="15" font="ZoFontWinH5" inheritAlpha="true" color="39EE31"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="BOTTOMRIGHT" text="0">
+				  <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="50"offsetX="89"/>
+				</Label>
+				
+				<!-- -->
+				
+				<!-- Battlegrounds Meter -->
+				
+				<Texture name="Gl" textureFile="esoui/art/hud/telvar_meter_frame.dds" level="1">
+					<Dimensions x="256" y="128" />
+					<Anchor point="LEFT" relativeTo="$(parent)MinSlider" relativePoint="LEFT" offsetX="-6" />
+					<Anchor point="RIGHT" relativeTo="$(parent)MaxSlider" relativePoint="RIGHT" offsetX="6" />
+				</Texture>
+				
+				
+				<Label name="LabelMedal" width="10" height="25" font="ZoFontWinH4"  color="39EE31"
+					horizontalAlignment="LEFT" text="1212" >
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-118" offsetY="42"/>
+				</Label>
+				
+				<Control name="teamiconBG">
+					<Dimensions x="12" y="36" />
+					<Anchor point="BOTTOM" relativePoint="BOTTOMRIGHT" offsetX="-103" offsetY="-4"/>
+						<Controls>
+							<Texture name="scoreIcon" textureFile="esoui/art/currency/alliancepoints_32.dds" level="1">
+								<Dimensions x="10" y="22" />
+								<Anchor point="LEFT"  relativePoint="LEFT" offsetX="-6" />
+								<Anchor point="RIGHT" relativePoint="RIGHT" offsetX="6" />
+							</Texture>
+					</Controls>
+				</Control>
+				
+				<Label name="LabelKillBG" width="12" height="15" font="ZoFontWinH1" inheritAlpha="true" color="39EE31"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="BOTTOMRIGHT" text="12">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="59" offsetX="80"/>
+				</Label>
+				
+				<Label name="LabelDeathBG" width="12" height="15" font="ZoFontWinH5" inheritAlpha="true" color="39EE31"
+					wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="BOTTOMRIGHT" text="12">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="92" offsetX="80"/>
+				</Label>
+  
+				<!-- -->
+		
+                <Control name="$(parent)Bar">
+                    <Anchor point="RIGHT" offsetX="18" offsetY="18" />
+                    <Controls>
+                        <Cooldown name="$(parent)Fill" textureFile="EsoUI/Art/HUD/Telvar_Meter_Fill.dds" fillColor="538033"/>
+                        <Cooldown name="$(parent)Highlight" hidden="true" textureFile="EsoUI/Art/HUD/Telvar_Meter_Highlight.dds" fillColor="538033" />
+                    </Controls>
+                </Control>
+                <Texture name="$(parent)Overlay" textureFile="EsoUI/Art/HUD/Telvar_Meter_Maximum.dds" >
+					<Dimensions x="142" y="132" />
+                    <Anchor point="RIGHT" offsetX="24" offsetY="TELVAR_METER_KEYBOARD_BAR_OFFSET_Y" />
+                </Texture>
+                <Control name="$(parent)MultiplierContainer">
+                    <Anchor point="CENTER" offsetX="79" offsetY="18"/>
+                    <Dimensions x="51" y="51" />
+                    <Controls>
+
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+
+        <Control  name="HUDTelvarMeter_GamepadTemplate" virtual="true" >
+            <Anchor point="BOTTOMLEFT" offsetX="5" offsetY="-5" />
+            <Controls>
+                <Texture name="$(parent)Frame" hidden="true" textureFile="EsoUI/Art/HUD/Gamepad/gp_Telvar_Meter_Frame.dds">
+                    <TextureCoords left="1" right="0" />
+                </Texture>
+                <Control name="$(parent)Bar">
+                    <Anchor point="LEFT" offsetX="TELVAR_METER_GAMEPAD_BAR_OFFSET_X" offsetY="TELVAR_METER_GAMEPAD_BAR_OFFSET_Y" />
+                    <Controls>
+                        <Cooldown name="$(parent)Fill" textureFile="EsoUI/Art/HUD/Gamepad/gp_Telvar_Meter_Fill.dds" />
+                        <Cooldown name="$(parent)Highlight" textureFile="EsoUI/Art/HUD/Gamepad/gp_Telvar_Meter_Highlight.dds" />
+                    </Controls>
+                </Control>
+                <Texture name="$(parent)Overlay" textureFile="EsoUI/Art/HUD/Gamepad/gp_Telvar_Meter_Fill_Maximum.dds">
+                    <Anchor point="LEFT" offsetX="TELVAR_METER_GAMEPAD_BAR_OFFSET_X" offsetY="TELVAR_METER_GAMEPAD_BAR_OFFSET_Y" />
+                </Texture>
+                <Control name="$(parent)MultiplierContainer">
+                    <Anchor point="CENTER" offsetX="-73" offsetY="13" />
+                    <Dimensions x="54" y="54" />
+                    <Controls>
+                        <Label hidden="true" name="$(parent)MultiplierLabel" font="ZoFontGamepad27NoShadow"/>
+                        <Label hidden="true" name="$(parent)WholePart" font="ZoFontGamepad42NoShadow"/>
+                        <Label hidden="true" name="$(parent)FractionalPart" font="ZoFontGamepad27NoShadow"/>
+                    </Controls>
+                </Control>
+                <Label name="$(parent)TelvarDisplay">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Frame" offsetX="105" offsetY="-4" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="HUDTelvarAlertBorder" alpha="0" tier="HIGH">
+            <AnchorFill/>
+            <Controls>
+                <Backdrop name="$(parent)Overlay" edgeColor="39EE31">
+                    <AnchorFill/>
+                    <Center file="EsoUI/Art/HUD/UITelvarOverlayCenter.dds" />
+                    <Edge file="EsoUI/Art/HUD/UITelvarOverlayEdge.dds" edgeColor="000000" edgeFileWidth="2048" edgeFileHeight="256" />
+                    <Insets left="256" top="256" right="-256" bottom="-256" />
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+		
+        <TopLevelControl name="HUDTelvarMeter" hidden="true">
+            <OnInitialized>
+                HUDTelvarMeter_Initialize(self)
+            </OnInitialized>
+            <Dimensions x="TELVAR_METER_WIDTH" y="TELVAR_METER_HEIGHT" />
+            <Controls>
+                <Texture name="$(parent)Frame" tier="MEDIUM" level="1">
+                    <Anchor point="TOPLEFT" />
+                    <Dimensions x="TELVAR_METER_WIDTH" y="TELVAR_METER_HEIGHT" />
+                </Texture>
+                <Control name="$(parent)Bar" tier="MEDIUM" level="2">
+                    <Dimensions x="TELVAR_METER_HEIGHT" y="TELVAR_METER_HEIGHT" />
+                    <Controls>
+                        <Cooldown name="$(parent)Fill" tier="MEDIUM" level="1">
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="TELVAR_METER_HEIGHT" y="TELVAR_METER_HEIGHT" />
+                        </Cooldown>
+                        <Cooldown name="$(parent)Highlight" tier="MEDIUM" level="2">
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="TELVAR_METER_HEIGHT" y="TELVAR_METER_HEIGHT" />
+                            <RadialCooldownGradient startAlpha="1.0" angularDistance="0.8"/>
+                        </Cooldown>
+                    </Controls>
+                </Control>
+                <Texture name="$(parent)Overlay" tier="MEDIUM" level="3" alpha="0">
+                    <Anchor point="TOPLEFT" />
+                    <Dimensions x="TELVAR_METER_HEIGHT" y="TELVAR_METER_HEIGHT" />
+                </Texture>
+                <Control name="$(parent)MultiplierContainer" tier="MEDIUM" level="4">
+                    <Controls>
+                        <Label name="$(parent)MultiplierLabel" text="SI_TELVAR_HUD_MULTIPLIER_LABEL">
+                            <Anchor point="LEFT" />
+                        </Label>
+                        <Label name="$(parent)WholePart">
+                            <Anchor point="LEFT" relativeTo="$(parent)MultiplierLabel" relativePoint="RIGHT" offsetX="2" />
+                        </Label>
+                        <Label name="$(parent)FractionalPart">
+                            <Anchor point="LEFT" relativeTo="$(parent)WholePart" relativePoint="RIGHT" />
+                        </Label>
+                    </Controls>
+                </Control>
+                <Label name="$(parent)TelvarDisplay" hidden="true" inherits="ZO_CurrencyTemplate" mouseEnabled="true" tier="MEDIUM" level="3"/>
+            </Controls>
+			
+        </TopLevelControl>
+		
+    </Controls>
+	
+</GuiXml>
+

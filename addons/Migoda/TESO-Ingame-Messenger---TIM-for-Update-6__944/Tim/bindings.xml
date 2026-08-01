@@ -1,0 +1,30 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="TIM Ingame Messenger">
+      <Action name="TOGGLE_TIM">
+        <Down>tim.AlerterClick()</Down>
+      </Action>
+      <Action name="TOGGLE_GUILD">
+        <Down>tim.guildToggle()</Down>
+      </Action>
+      <Action name="TOGGLE_CATACOMB">
+        <Down>tim.catacombToggle()</Down>
+      </Action>
+      <Action name="TOGGLE_SCANNER">
+        <Down>tim.scanToggle()</Down>
+      </Action>
+      <Action name="ROTATE_UP">
+        <Down>tim.talkHistoryRotate(true)</Down>
+      </Action>
+      <Action name="ROTATE_DOWN">
+        <Down>tim.talkHistoryRotate(false)</Down>
+      </Action>
+      <Action name="DO_LOGOUT">
+        <Down>tim.logout(false)</Down>
+      </Action>
+      <Action name="DO_QUIT">
+        <Down>tim.logout(true)</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

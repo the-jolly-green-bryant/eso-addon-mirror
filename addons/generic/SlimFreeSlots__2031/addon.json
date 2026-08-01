@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/generic/SlimFreeSlots__2031",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "generic",
+  "canonical_id": "esoui:2031",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2031",
+  "deleted": false,
+  "directories": [
+    "SlimFreeSlots"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2031/",
+  "fingerprint": "bc7a62181b84d16700026b0ebf39df6943f57088db82639392fd3924ebd2cbb6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6842.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6843.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6844.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2031",
+  "source_url": "https://www.esoui.com/downloads/info2031-SlimFreeSlots.html",
+  "stats": {
+    "downloads": 2922,
+    "favorites": 4,
+    "monthly_downloads": 11
+  },
+  "title": "SlimFreeSlots",
+  "updated_at": 1528498732000,
+  "version": "1.0.2"
+}

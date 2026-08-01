@@ -1,0 +1,31 @@
+## Title: |cFF6A00Khrill|r Hero In Disguise
+## Author: |cFF6A00Khrill|r
+## Description: Easy way to use your disguises
+## Version: 1.4.0
+## APIVersion: 100015
+## SavedVariables: KhrillHeroInDisguise_settings
+
+## OptionalDependsOn: LibStub LibAddonMenu-2.0
+
+## Libraries:
+Libs\LibStub\LibStub.lua
+Libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+Libs\LibAddonMenu-2.0\controls\panel.lua
+Libs\LibAddonMenu-2.0\controls\submenu.lua
+Libs\LibAddonMenu-2.0\controls\button.lua
+Libs\LibAddonMenu-2.0\controls\checkbox.lua
+Libs\LibAddonMenu-2.0\controls\colorpicker.lua
+Libs\LibAddonMenu-2.0\controls\custom.lua
+Libs\LibAddonMenu-2.0\controls\description.lua
+Libs\LibAddonMenu-2.0\controls\dropdown.lua
+Libs\LibAddonMenu-2.0\controls\editbox.lua
+Libs\LibAddonMenu-2.0\controls\header.lua
+Libs\LibAddonMenu-2.0\controls\slider.lua
+Libs\LibAddonMenu-2.0\controls\texture.lua
+Libs\LibAddonMenu-2.0\controls\iconpicker.lua
+
+KhrillHeroInDisguise_locale.lua
+KhrillHeroInDisguise.lua
+KhrillHeroInDisguise.xml
+Bindings/bindings.xml
+

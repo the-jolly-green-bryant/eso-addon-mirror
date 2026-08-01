@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/leviatan64/RaidNotifier-Updated---Traducci\u00f3n-al-espa\u00f1ol-para-quienes-usen-el-juego-en-ingle__2766",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "leviatan64",
+  "canonical_id": "esoui:2766",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2766",
+  "deleted": false,
+  "directories": [
+    "RaidNotifier"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2766/",
+  "fingerprint": "e237aa3c7d28da454b9bb0efe80abae5fdcdbf2df4dfec17fb849766de186e48",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2766",
+  "source_url": "https://www.esoui.com/downloads/info2766-RaidNotifierUpdated-Traduccinalespaolparaquienesuseneljuegoeningles.html",
+  "stats": {
+    "downloads": 11457,
+    "favorites": 4,
+    "monthly_downloads": 30
+  },
+  "title": "RaidNotifier Updated - Traducci\u00f3n al espa\u00f1ol para quienes usen el juego en ingles",
+  "updated_at": 1622570758000,
+  "version": "7.0.4"
+}

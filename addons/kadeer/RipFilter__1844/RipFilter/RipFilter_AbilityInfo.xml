@@ -1,0 +1,71 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="RIPAI" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="400" y="600" />
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+        <Label name="$(parent)Mechanic" font="ZoFontGameLarge" text="Stamina">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+
+        <Texture name="$(parent)Icon" textureFile="" tier="HIGH">
+          <Dimensions x="64" y="64"/>
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOP" />
+        </Texture>
+
+        <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="40" y="40" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+          <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+            pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+            mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+            disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+          <OnClicked>
+            RIPAI:SetHidden(true)
+          </OnClicked>
+        </Button>
+
+        <!-- Header and Close button-->
+        <Label name="$(parent)AbilityName" font="ZoFontAnnounceLarge" text="Ability Name">
+          <Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" />
+        </Label>
+
+        <Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="300" y="4"/>
+          <Anchor point="TOP" relativeTo="$(parent)AbilityName" relativePoint="BOTTOM" />
+        </Texture>
+
+
+        <Label name="$(parent)AbilityTargetDescription" font="ZoFontGameLarge" text="Ability Target Description">
+          <Anchor point="TOP" relativeTo="$(parent)TopDivider" relativePoint="BOTTOM" />
+        </Label>
+
+        <Label name="$(parent)DescriptionHeader" font="ZoFontGameLarge" text="Description Header">
+          <Dimensions x="380" />
+          <Anchor point="TOP" relativeTo="$(parent)AbilityTargetDescription" relativePoint="BOTTOM" offsetY="25" />
+        </Label>
+
+        <Label name="$(parent)Description" font="ZoFontGameLarge" text="Description">
+          <Dimensions x="380" />
+          <Anchor point="TOP" relativeTo="$(parent)DescriptionHeader" relativePoint="BOTTOM" />
+        </Label>
+
+
+        <Label name="$(parent)Misc" font="ZoFontGameLarge" text="Misc">
+          <Dimensions x="380" />
+          <Anchor point="TOP" relativeTo="$(parent)Description" relativePoint="BOTTOM" offsetY="25" />
+        </Label>
+
+
+        <Label name="$(parent)Morph" font="ZoFontGameLarge" text="Morph">
+          <Dimensions x="380" />
+          <Anchor point="TOP" relativeTo="$(parent)Misc" relativePoint="BOTTOM" offsetY="25" />
+        </Label>
+
+
+
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

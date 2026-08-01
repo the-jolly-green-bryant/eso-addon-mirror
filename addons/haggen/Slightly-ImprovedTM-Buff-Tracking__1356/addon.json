@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/haggen/Slightly-ImprovedTM-Buff-Tracking__1356",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "haggen",
+  "canonical_id": "esoui:1356",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:1356",
+  "deleted": false,
+  "directories": [
+    "SlightlyImprovedBuffTracking"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1356/",
+  "fingerprint": "c4b518339876f6af6ec4c95ccb028e5f8d43892b6c2d1f7e629efe9e64a10a9b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7689.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1356",
+  "source_url": "https://www.esoui.com/downloads/info1356-SlightlyImprovedBuffTracking.html",
+  "stats": {
+    "downloads": 46717,
+    "favorites": 63,
+    "monthly_downloads": 48
+  },
+  "title": "Slightly Improved\u2122 Buff Tracking",
+  "updated_at": 1551624954000,
+  "version": "2.0.1"
+}

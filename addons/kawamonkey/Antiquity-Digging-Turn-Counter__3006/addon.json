@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/Antiquity-Digging-Turn-Counter__3006",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3006",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3006",
+  "deleted": false,
+  "directories": [
+    "AntiquityDiggingTurnCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3006/",
+  "fingerprint": "525ce2d6b08311afc5f8489b1fdaa883605d057ec7c3b0d3538dce5a84cb1002",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10126.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3006",
+  "source_url": "https://www.esoui.com/downloads/info3006-AntiquityDiggingTurnCounter.html",
+  "stats": {
+    "downloads": 6690,
+    "favorites": 24,
+    "monthly_downloads": 43
+  },
+  "title": "Antiquity Digging Turn Counter",
+  "updated_at": 1617297587000,
+  "version": "1.0"
+}

@@ -1,0 +1,46 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CrutchAlertsExtensionsContainer" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="false">
+            <AnchorFill/>
+        </TopLevelControl>
+<!-- ======================================================================================================================= -->
+        <Control name="CAEWWSynergy_Template" mouseEnabled="false" movable="false" resizeToFitDescendents="true" virtual="true">
+            <!-- mostly copied from esoui/ingame/synergy/synergy.xml -->
+            <Anchor point="CENTER" relativeTo="ZO_SynergyTopLevelContainer" relativePoint="CENTER"/>
+            <ResizeToFitPadding width="10"/>
+            <Controls>
+                <Texture name="$(parent)Icon" textureFile="/esoui/art/icons/ability_werewolf_007.dds">
+                    <Anchor point="LEFT"/>
+                    <Dimensions x="50" y="50"/>
+                    <Controls>
+                        <Texture name="$(parent)Frame" textureFile="EsoUI/Art/ActionBar/abilityFrame64_up.dds" layer="CONTROLS">
+                            <AnchorFill/>
+                        </Texture>
+                    </Controls>
+                </Texture>
+                <Control name="$(parent)ModifierKey" inherits="ZO_KeybindButton">
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="15"/>
+                    <OnInitialized>
+                        ZO_KeybindButtonTemplate_OnInitialized(self)
+                        self:SetKeybind("CAE_SYNERGY_MODIFIER")
+                    </OnInitialized>
+                </Control>
+                <Label name="$(parent)Plus" font="ZoInteractionPrompt" horizontalAlignment="CENTER" text="+">
+                    <Anchor point="LEFT" relativeTo="$(parent)ModifierKey" relativePoint="RIGHT"/>
+                </Label>
+                <Control name="$(parent)Key" inherits="ZO_KeybindButton">
+                    <Anchor point="LEFT" relativeTo="$(parent)Plus" relativePoint="RIGHT" offsetX="15"/>
+                    <OnInitialized>
+                        ZO_KeybindButtonTemplate_OnInitialized(self)
+                        self:SetKeybind("USE_SYNERGY")
+                    </OnInitialized>
+                </Control>
+                <Label name="$(parent)Action" font="ZoInteractionPrompt" horizontalAlignment="CENTER" text="Insatiable Hunger Available">
+                    <Anchor point="LEFT" relativeTo="$(parent)Key" relativePoint="RIGHT"/>
+                </Label>
+                <Backdrop name="$(parent)Backdrop" centerColor="00000000" edgeColor="FFFF0000" hidden="false" tier="MEDIUM"> <Edge edgeSize="2"/> </Backdrop>
+            </Controls>
+        </Control>
+<!-- ======================================================================================================================= -->
+    </Controls>
+</GuiXml>

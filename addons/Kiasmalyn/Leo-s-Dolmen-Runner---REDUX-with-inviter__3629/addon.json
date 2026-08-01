@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/Kiasmalyn/Leo-s-Dolmen-Runner---REDUX-with-inviter__3629",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Kiasmalyn",
+  "canonical_id": "esoui:3629",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3629",
+  "deleted": false,
+  "directories": [
+    "LeoDolmenRunnerRedux"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3629/",
+  "fingerprint": "87dcc9610cf235cd3d8de6201af88aa89a437ca5c46d4d7438bdf42aaecfa380",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12365.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12370.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12371.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3629",
+  "source_url": "https://www.esoui.com/downloads/info3629-LeosDolmenRunner-REDUXwithinviter.html",
+  "stats": {
+    "downloads": 6447,
+    "favorites": 11,
+    "monthly_downloads": 34
+  },
+  "title": "Leo's Dolmen Runner - REDUX (with inviter)",
+  "updated_at": 1689844247000,
+  "version": "2.1.5"
+}

@@ -1,0 +1,18 @@
+## Title: |c215895Insatiable Hunger |cCC922FBlocker|r
+## Author: |c215895L|c3E6284y|c5A6B73k|c777562e|c937F51i|cB08840o|cCC922Fn|r
+## Description: Block Insatiable Hunger during the Dungeon Fights
+## APIVersion: 101050
+## Version: 1.10
+## SavedVariables: InsatiableHungerBlocker_SV
+
+InsatiableHungerBlocker.lua
+
+; DISCLAIMER:
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/Dragon-Namer__3549",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3549",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3549",
+  "deleted": false,
+  "directories": [
+    "DragonNamer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3549/",
+  "fingerprint": "348affce54545ac017f453224bfcb84aafc438961c0ffd6964d43cb7c864f4d0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12048.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3549",
+  "source_url": "https://www.esoui.com/downloads/info3549-DragonNamer.html",
+  "stats": {
+    "downloads": 2155,
+    "favorites": 5,
+    "monthly_downloads": 9
+  },
+  "title": "Dragon Namer",
+  "updated_at": 1674730033000,
+  "version": "1.0"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/kawamonkey/Quiet-Banner__3983",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "kawamonkey",
+  "canonical_id": "esoui:3983",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3983",
+  "deleted": false,
+  "directories": [
+    "QuietBanner"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3983/",
+  "fingerprint": "a67d0c2dd16cb3fae0df15cd1463688875ccb4b0a124de68509dea638273c464",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13504.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3983",
+  "source_url": "https://www.esoui.com/downloads/info3983-QuietBanner.html",
+  "stats": {
+    "downloads": 3027,
+    "favorites": 7,
+    "monthly_downloads": 13
+  },
+  "title": "Quiet Banner",
+  "updated_at": 1731248651000,
+  "version": "1.0"
+}

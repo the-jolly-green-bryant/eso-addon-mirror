@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/masasumedx/BindAll-Sticker-Book-Collector---Update-45-Fallen-Banners__4063",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "masasumedx",
+  "canonical_id": "esoui:4063",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4063",
+  "deleted": false,
+  "directories": [
+    "BindAll"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4063/",
+  "fingerprint": "44b558b374ce582c65f92b971160ebe4bbf33dbaf0a5450586eb81e63e977493",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4063",
+  "source_url": "https://www.esoui.com/downloads/info4063-BindAllStickerBookCollector-Update45FallenBanners.html",
+  "stats": {
+    "downloads": 3081,
+    "favorites": 5,
+    "monthly_downloads": 91
+  },
+  "title": "BindAll (Sticker Book Collector) - Update 45 Fallen Banners",
+  "updated_at": 1741798755000,
+  "version": "1.5.1"
+}

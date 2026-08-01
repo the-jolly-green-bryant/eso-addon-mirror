@@ -1,0 +1,17 @@
+## Title: |cFFAA33AlphaScry|r v0.0.3
+## APIVersion: 101032
+## Version: 1.0.0
+## SavedVariables: AlphaScry_Account
+## SavedVariables: AlphaScry_Character
+## Author: mesota and person345
+## Description: Anything you need to manage your leads
+## IsLibrary: false
+
+
+## UI
+dialogs/ASYChangeFilterDialog.xml
+dialogs/ASYChangeFilterDialog.lua
+
+## Main
+AlphaScry.lua
+

@@ -1,0 +1,85 @@
+{
+  "archive_path": "addons/Lent/Joker---Jokes-Trivia-Rolls-Custom-Ready-Burns-Pickup-Lines-More__2329",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lent",
+  "canonical_id": "esoui:2329",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2329",
+  "deleted": false,
+  "directories": [
+    "Joker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2329/",
+  "fingerprint": "da68a7efbefbbf1c681653c889d236a4dac45c6a7ed12824f2b0597f89423975",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7999.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8000.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8001.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8003.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8002.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2329",
+  "source_url": "https://www.esoui.com/downloads/info2329-Joker-JokesTriviaRollsCustomReadyBurnsPickupLinesMore.html",
+  "stats": {
+    "downloads": 11373,
+    "favorites": 11,
+    "monthly_downloads": 14
+  },
+  "title": "Joker - Jokes, Trivia, Rolls, Custom Ready, Burns, Pickup Lines, & More!",
+  "updated_at": 1763646949000,
+  "version": "8.7.1"
+}

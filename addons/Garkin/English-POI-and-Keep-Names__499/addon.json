@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Garkin/English-POI-and-Keep-Names__499",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Garkin",
+  "canonical_id": "esoui:499",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:499",
+  "deleted": false,
+  "directories": [
+    "EnglishPOINames"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl499/",
+  "fingerprint": "6821ec03e856c8be3ce2a5057e12454b9dcbcc9c7c4a369afe2ec94b050e884d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1582.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1583.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1584.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "499",
+  "source_url": "https://www.esoui.com/downloads/info499-EnglishPOIandKeepNames.html",
+  "stats": {
+    "downloads": 60899,
+    "favorites": 64,
+    "monthly_downloads": 37
+  },
+  "title": "English POI and Keep Names",
+  "updated_at": 1636289302000,
+  "version": "8.0.1b"
+}

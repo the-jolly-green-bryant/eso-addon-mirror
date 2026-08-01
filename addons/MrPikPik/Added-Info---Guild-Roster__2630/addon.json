@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/MrPikPik/Added-Info---Guild-Roster__2630",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "MrPikPik",
+  "canonical_id": "esoui:2630",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:2630",
+  "deleted": false,
+  "directories": [
+    "AddedInfoGuildRoster"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2630/",
+  "fingerprint": "67ef8a4ad56010ab7d0c6b9aee57182a5d263403adea9d465a24cd85f1c58ad1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8957.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2630",
+  "source_url": "https://www.esoui.com/downloads/info2630-AddedInfo-GuildRoster.html",
+  "stats": {
+    "downloads": 10413,
+    "favorites": 24,
+    "monthly_downloads": 93
+  },
+  "title": "Added Info - Guild Roster",
+  "updated_at": 1712613521000,
+  "version": "1.4"
+}

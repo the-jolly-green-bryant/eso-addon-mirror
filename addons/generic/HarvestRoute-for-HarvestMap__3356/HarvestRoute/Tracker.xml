@@ -1,0 +1,73 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="HarvestRouteTracker" mouseEnabled="true" movable="true" hidden="true">
+			<Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+            <OnMoveStop>
+                HarvestRoute.OnMoveStop( self )
+            </OnMoveStop>
+			<Dimensions x="300" y="250"/>
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+				</Backdrop>
+				
+				<Button name="$(parent)Close" text="Close" inherits="ZO_CloseButton" >
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)"  relativePoint="TOPRIGHT" offsetX="-4" offsetY="4" />
+					<OnClicked>
+						HarvestRoute.SetTrackerHidden( true )
+					</OnClicked>
+				</Button>
+				
+				<Label name="$(parent)Active" text="Tracker active" font="ZoFontGameBold" color="FFFFFF" horizontalAlignment="LEFT" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="10" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-16" offsetY="10" />
+				</Label>
+				
+                <Label name="$(parent)PathInfoTitle" font="ZoFontGame" color="FFFFFF" text="XXXX" horizontalAlignment="LEFT" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Active"  relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Active"  relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                </Label>
+        				<Label name="$(parent)PathInfo" font="ZoFontGame" color="FFFFFF" text="<<1>> nodes |CA0A0A0(<<2>> m length)|r" horizontalAlignment="RIGHT" >
+        					<Anchor point="TOPRIGHT" relativeTo="$(parent)PathInfoTitle"  relativePoint="BOTTOMRIGHT" offsetX="-2" offsetY="2" />
+        				</Label>
+        				
+                <Label name="$(parent)NearestNodeTitle" font="ZoFontGame" color="FFFFFF" text="nearest node" horizontalAlignment="LEFT" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)PathInfoTitle"  relativePoint="BOTTOMLEFT" offsetX="0" offsetY="24" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)PathInfoTitle"  relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="24" />
+                </Label>
+        				<Label name="$(parent)NearestNode" font="ZoFontGame" color="FFFFFF" text="Runestone at x.xx / y.yy" horizontalAlignment="RIGHT" >
+        					<Anchor point="TOPRIGHT" relativeTo="$(parent)NearestNodeTitle"  relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="8" />
+        				</Label>
+        				
+                <Texture name="$(parent)NearestArrow" textureFile="HarvestMap/Textures/Arrow/arrow.dds" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)NearestNodeTitle" relativePoint="BOTTOMLEFT" offsetX="-16" offsetY="-8" />
+                    <Dimensions x="50" y="50"/>
+                </Texture>
+        				
+        				
+                <Label name="$(parent)LastPathNodeTitle" font="ZoFontGame" color="A0A0A0" text="last resource from tour:" horizontalAlignment="LEFT" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)NearestNodeTitle"  relativePoint="BOTTOMLEFT" offsetX="0" offsetY="40" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)NearestNodeTitle"  relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="40" />
+                </Label>
+        				<Label name="$(parent)LastPathNode" font="ZoFontGame" color="7F7F7F" text="Flower at x.xx / y.yy" horizontalAlignment="RIGHT" >
+        					<Anchor point="TOPRIGHT" relativeTo="$(parent)LastPathNodeTitle"  relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="8" />
+        				</Label>
+        				
+                <Texture name="$(parent)PathArrow" textureFile="HarvestMap/Textures/Arrow/arrow.dds" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)LastPathNodeTitle" relativePoint="BOTTOMLEFT" offsetX="-16" offsetY="-8" />
+                    <Dimensions x="50" y="50"/>
+                </Texture>
+        				
+				
+				<Button name="$(parent)Button" text="activate" inherits="ZO_DefaultButton" >
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)"  relativePoint="BOTTOMLEFT" offsetX="2" offsetY="-2" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)"  relativePoint="BOTTOMRIGHT" offsetX="-2" offsetY="-2" />
+					<OnClicked>
+						HarvestRoute.OnButton()
+					</OnClicked>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

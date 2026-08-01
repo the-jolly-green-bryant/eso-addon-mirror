@@ -1,0 +1,129 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: CrutchAlerts
+## Description: Combat alerts, boss health bars with mechanic thresholds, time until boss spawn, and more!
+## Author: Kyzeragon
+## Contributors: @M0R_Gaming and @Ooki42 for Bahsei curse lines
+## Version: 2.23.0
+## AddOnVersion: 22300
+## APIVersion: 101050
+
+## PCDependsOn: LibAddonMenu-2.0>=43
+## ConsoleDependsOn: LibHarvensAddonSettings>=20108
+## OptionalDependsOn: OdySupportIcons LibFilteredChatPanel LibGroupBroadcast>=91 LibCustomIcons
+
+## SavedVariables: CrutchAlertsSavedVariables
+
+; Obsolete, but special thanks to Smaxx, oumu, Keldorem, nikepiko,
+; and more for language translations and other data!
+; and of course Lamierina7 for creating OdySupportIcons :D
+
+main/CrutchAlerts.lua
+main/Constants.lua
+main/CrutchAlerts.xml
+main/EventUtils.lua
+main/GlobalEvents.lua
+main/Style.lua
+main/Utils.lua
+main/Commands.lua
+main/AbilityOverlay.lua
+main/Bindings.xml
+
+sharing/BroadcastHandler.lua
+
+infopanel/InfoPanel.xml
+infopanel/InfoPanel.lua
+infopanel/InfoPanelUtils.lua
+
+cc/CCUI.xml
+cc/CrowdControl.lua
+cc/CCUI.lua
+
+PC/Settings.lua
+Console/GeneralSettings.lua
+Console/ContentSettings.lua
+Console/DrawingSettings.lua
+
+lang/default.lua
+lang/$(language).lua
+lang/damageable/default.lua
+lang/damageable/$(language).lua
+
+zones/trials/asylumsanctorium/AsylumSanctorium.lua
+zones/trials/asylumsanctorium/MiniHealthBars.lua
+zones/trials/asylumsanctorium/MiniPanel.lua
+zones/trials/cloudrest/Cloudrest.lua
+zones/trials/cloudrest/Grapes.lua
+zones/trials/dreadsailreef/DreadsailReef.lua
+zones/trials/dreadsailreef/ReefGuardian.lua
+zones/trials/HallsOfFabrication.lua
+zones/trials/HelRaCitadel.lua
+zones/trials/KynesAegis.lua
+zones/trials/LucentCitadel.lua
+zones/trials/MawOfLorkhaj.lua
+zones/trials/OpulentOrdeal.lua
+zones/trials/osseincage/OsseinCage.lua
+zones/trials/osseincage/Carrion.lua
+zones/trials/osseincage/Twins.lua
+zones/trials/rockgrove/Rockgrove.lua
+zones/trials/rockgrove/Oaxiltso.lua
+zones/trials/rockgrove/BahseiPortal.lua
+zones/trials/SanitysEdge.lua
+zones/trials/SanctumOphidia.lua
+zones/trials/sunspire/Sunspire.lua
+zones/trials/sunspire/NahvPortal.lua
+
+zones/trials/cloudrest/Cloudrest.xml
+zones/trials/MawOfLorkhaj.xml
+zones/trials/osseincage/OsseinCage.xml
+
+zones/arenas/DragonstarArena.lua
+zones/arenas/EndlessArchive.lua
+zones/arenas/MaelstromArena.lua
+zones/arenas/VateshranHollows.lua
+
+zones/dungeons/BedlamVeil.lua
+zones/dungeons/BlackGemFoundry.lua
+zones/dungeons/CoralAerie.lua
+zones/dungeons/ShipwrightsRegret.lua
+
+bosshealthbar/BossHealthBar.lua
+bosshealthbar/BossHealthBarAPI.lua
+bosshealthbar/BossHealthBar.xml
+bosshealthbar/AttributeVisualizers.lua
+bosshealthbar/TrialThresholds.lua
+bosshealthbar/DungeonThresholds.lua
+bosshealthbar/ArenaThresholds.lua
+bosshealthbar/EndlessArchiveThresholds.lua
+
+damageable/Damageable.lua
+
+alerts/AbilityData.lua
+alerts/Core.lua
+alerts/DisplayFormat.lua
+alerts/Effects.lua
+alerts/Events.lua
+alerts/Channels.lua
+
+icons/DrawLine.lua
+icons/WorldIcons.lua
+
+prominent/DamageTaken.lua
+prominent/Prominent.lua
+prominent/ProminentV2.lua
+
+drawing/Drawing.xml
+drawing/Drawing.lua
+drawing/Update.lua
+drawing/AttachedIcons.lua
+drawing/AttachedIndividualIcons.lua
+drawing/PlacedTextures.lua
+drawing/RenderSpaceDrawing.lua
+
+drawing/SpaceDrawing.xml
+drawing/SpaceDrawing.lua
+drawing/SpaceAnimations.lua

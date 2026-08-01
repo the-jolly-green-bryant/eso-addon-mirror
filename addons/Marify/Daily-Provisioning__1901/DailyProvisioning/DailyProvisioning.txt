@@ -1,0 +1,20 @@
+
+## Title: |c3CB371Daily Provisioning|r
+## Author: |c3CB371@Marify|r
+## APIVersion: 101038
+## Version: 1.5.3
+## DependsOn: LibAddonMenu-2.0 LibCustomMenu LibMarify
+## OptionalDependsOn: DolgubonsLazyWritCreator RuESO EsoPL
+## SavedVariables: DailyProvisioningVariables
+
+## Thanks for help me... Dolgubon / Baertram / stribog / KiriX / daimon / @Ony-3 / tomkolp / mightyjo
+
+
+DailyProvisioning.lua
+Bank.lua
+FoodAndDrink.lua
+
+
+lang/en.lua
+lang/$(language).lua
+

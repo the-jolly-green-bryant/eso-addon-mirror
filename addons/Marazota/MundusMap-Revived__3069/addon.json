@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/Marazota/MundusMap-Revived__3069",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Marazota",
+  "canonical_id": "esoui:3069",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3069",
+  "deleted": false,
+  "directories": [
+    "MundusMap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3069/",
+  "fingerprint": "cf9220a5d6daaf462fd9f9df397aa5c427e61d6ba9dbbf1186a13bea3de4509c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3069",
+  "source_url": "https://www.esoui.com/downloads/info3069-MundusMapRevived.html",
+  "stats": {
+    "downloads": 23059,
+    "favorites": 17,
+    "monthly_downloads": 101
+  },
+  "title": "MundusMap Revived",
+  "updated_at": 1680256381000,
+  "version": "0.28"
+}

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/M0R/A-More-Alternative-Boss-Bar__3820",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "M0R",
+  "canonical_id": "esoui:3820",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3820",
+  "deleted": false,
+  "directories": [
+    "AltBossBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3820/",
+  "fingerprint": "ab74a9c09702e614700820af1d99587f04562bf33b5627828ce8584b4aafa2db",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12982.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12983.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3820",
+  "source_url": "https://www.esoui.com/downloads/info3820-AMoreAlternativeBossBar.html",
+  "stats": {
+    "downloads": 4595,
+    "favorites": 8,
+    "monthly_downloads": 105
+  },
+  "title": "A More Alternative Boss Bar",
+  "updated_at": 1746222169000,
+  "version": "3.0.1"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/helixanon/Kinras-Tracker__3229",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "helixanon",
+  "canonical_id": "esoui:3229",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3229",
+  "deleted": false,
+  "directories": [
+    "KinrasTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3229/",
+  "fingerprint": "2bd6844d6d14a2df9e1d0ed40bc91655eea1d1ebd5d51e511d37ef178d8a6042",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3229",
+  "source_url": "https://www.esoui.com/downloads/info3229-KinrasTracker.html",
+  "stats": {
+    "downloads": 2923,
+    "favorites": 3,
+    "monthly_downloads": 11
+  },
+  "title": "Kinras Tracker",
+  "updated_at": 1636476748000,
+  "version": "v0"
+}

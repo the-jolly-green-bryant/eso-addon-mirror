@@ -1,0 +1,46 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="CBs_MoveFrame" clampedToScreen="true" movable="true" mouseEnabled="true" virtual="true" level="4">
+      <Controls>
+        <Backdrop name="$(parent)BG" level="2">
+          <AnchorFill />
+        </Backdrop>
+        <Label name="$(parent)LabelTopLeft" wrapMode="ELLIPSIS" tier="HIGH" font="ZoFontWinH5" level="3">
+          <AnchorFill />
+        </Label>
+        <Label name="$(parent)LabelCenter" wrapMode="ELLIPSIS" tier="HIGH" font="ZoFontWinH5" level="3">
+          <AnchorFill />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+    <TopLevelControl name="CBs_CombineFrame" clampedToScreen="true" movable="false" mouseEnabled="true" virtual="true" level="3">
+      <Anchor point="CENTER" relativePoint="CENTER" relativeTo="GuiRoot"/>
+      <Controls>
+        <Control name="$(parent)HideAll" clampedToScreen="true" />
+      </Controls>
+    </TopLevelControl>
+    <TopLevelControl name="CBs_Frame" clampedToScreen="true" movable="false" mouseEnabled="true" virtual="true" level="3">
+      <Anchor point="CENTER" relativePoint="CENTER" relativeTo="GuiRoot"/>
+    </TopLevelControl>
+    <Control name="CBs_HideAll" clampedToScreen="true" virtual="true" level="3">
+      <Controls>
+        <Texture name="$(parent)BG" level="0" textureFile="/EsoUI/Art/ActionBar/abilityInset.dds">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" />
+        </Texture>
+        <Button name="$(parent)ToggleSettings" relativeTo="$(parent)">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-19" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" />
+          <Textures name="$(parent)Textures" normal="/EsoUI/Art/Chatwindow/chat_options_up.dds" pressed="/EsoUI/Art/Chatwindow/chat_options_down.dds" mouseOver="/EsoUI/Art/Chatwindow/chat_options_over.dds" />
+        </Button>
+        <Button name="$(parent)Button" relativeTo="$(parent)">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-19" />
+          <Textures name="$(parent)Textures" mouseOver="/EsoUI/Art/Buttons/decline_over.dds" pressed="/EsoUI/Art/Buttons/decline_down.dds" />
+          <MouseButton button="1" enabled="true" />
+          <MouseButton button="2" enabled="true" />
+        </Button>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

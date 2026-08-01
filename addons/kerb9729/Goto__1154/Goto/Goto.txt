@@ -1,0 +1,11 @@
+## Title: Goto
+## APIVersion: 101041
+## Version: 1.1041
+## Author: @gardhull
+## OptionalDependsOn: LibWorldMapInfoTab
+
+libs\LibStub\LibStub.lua
+libs\LibWorldMapInfoTab\LibWorldMapInfoTab.lua
+
+Goto.lua
+Goto.xml

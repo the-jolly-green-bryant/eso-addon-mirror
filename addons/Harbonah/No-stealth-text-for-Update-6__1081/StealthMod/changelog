@@ -1,0 +1,13 @@
+version 1.0.3
+    Updated for latest API version.
+	Changed ZO_ReticleContainerStealthText to ZO_ReticleContainerStealthIconStealthText.
+
+version 1.0.2
+    Updated for latest API version. No changes.
+
+version 1.0.1
+    Updated for latest API version. No changes.
+
+version 1.0.0
+    features:
+        Hides the reticle text that is normally there when stealthed.

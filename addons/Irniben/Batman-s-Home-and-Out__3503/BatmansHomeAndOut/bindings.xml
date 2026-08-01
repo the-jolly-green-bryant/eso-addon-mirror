@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|ce0d614Batman's|r Home and Out">
+			<Action name="BHAO">
+				<Down>BatmansHomeAndOut.BHAO_Post()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

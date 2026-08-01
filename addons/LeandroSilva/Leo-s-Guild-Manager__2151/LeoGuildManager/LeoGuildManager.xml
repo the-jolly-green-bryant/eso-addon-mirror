@@ -1,0 +1,286 @@
+<GuiXml>
+    <Font name="LeoGuildManagerLargeFont" font="$(MEDIUM_FONT)|18|soft-shadow-thin"/>
+    <Font name="LeoGuildManagerNormalFont" font="$(MEDIUM_FONT)|16|soft-shadow-thin"/>
+    <Font name="LeoGuildManagerSmallFont" font="$(MEDIUM_FONT)|14|soft-shadow-thin"/>
+    <Controls>
+
+        <TopLevelControl name="LeoGuildManagerWindow" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true" allowBringToTop="true" layer="1">
+            <Dimensions x="1000" y="700" />
+            <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="100" />
+
+            <OnMoveStop> LeoGuildManagerUI:OnWindowMoveStop() </OnMoveStop>
+            <OnHide> LeoGuildManagerUI:OnHide(self, hidden) </OnHide>
+            <OnShow> LeoGuildManagerUI:OnShow(self, hidden) </OnShow>
+
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="000000" edgeColor="222222">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                    <Dimensions x="1000" y="50"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+                <Label name="$(parent)Title" color="39B027" font="ZoFontWinH3" wrapMode="ELLIPSIS"
+                       verticalAlignment="CENTER" mouseEnabled="false">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="10"/>
+                </Label>
+
+                <Button name="$(parent)Close" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-5" offsetY="4"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnClicked>LeoGuildManagerUI:CloseUI()</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/buttons/decline_up.dds">
+                            <Dimensions y="25" x="25"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)FeedbackButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)Close" offsetX="-5"/>
+                    <Dimensions x="40" y="40"/>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)SettingsButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)FeedbackButton" offsetX="-5"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Settings')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>
+                        SCENE_MANAGER:HideTopLevel(LeoGuildManagerWindow)
+                        DoCommand("/leogmoptions")
+                    </OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/chatwindow/chat_options_up.dds">
+                            <Dimensions y="35" x="35"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)PurgeButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)SettingsButton" offsetX="-5"/>
+                    <Dimensions x="40" y="40"/>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, 'Purge')</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>LeoGuildManager.ShowTab("Purge")</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020">
+                            <AnchorFill/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Texture" textureFile="esoui/art/deathrecap/deathrecap_killingblow_icon.dds">
+                            <Dimensions y="35" x="35"/>
+                            <Anchor point="128"/>
+                        </Texture>
+                    </Controls>
+                </Button>
+                <Backdrop name="$(parent)HeaderBG" centerColor="111111" edgeColor="222222">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="5" offsetY="2"/>
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)PurgeButton" offsetX="-5" offsetY="0"/>
+                    <Dimensions x="390" y="40"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+
+                <Backdrop name="LeoGuildManagerWindowPurgePanel" tier="1" centerColor="000000" edgeColor="202020" hidden="true" clampedToScreen="true" movable="false" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="LeoGuildManagerWindow" offsetX="0" offsetY="52"/>
+                    <Dimensions x="1000" y="648"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+
+                        <Label name="$(parent)PurgeDesc" text="" font="ZoFontGame" wrapMode="ELLIPSIS"
+                               verticalAlignment="CENTER" horizontalAlignment="LEFT" mouseEnabled="false">
+                            <Dimensions x="700" y="100"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="20" />
+                        </Label>
+
+                        <!-- <Button name="$(parent)ScanButton" text="Scan Guild" inherits="ZO_DefaultButton" clickSound="Click">
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="20"/>
+                            <Dimensions x="180" />
+                            <OnClicked> LeoGuildManager.StartScanGuilds(true) </OnClicked>
+                        </Button> -->
+                        <Button name="$(parent)ListButton" text="List Members" inherits="ZO_DefaultButton" clickSound="Click">
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="20"/>
+                            <Dimensions x="180" />
+                            <OnClicked> LeoGuildManager:ListPurge() </OnClicked>
+                        </Button>
+                        <Button name="$(parent)ClearListButton" text="Clear List" inherits="ZO_DefaultButton" clickSound="Click">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)ListButton" relativePoint="TOPLEFT" offsetX="0" offsetY="40"/>
+                            <Dimensions x="180" />
+                            <OnClicked> LeoGuildManager:ClearList() </OnClicked>
+                        </Button>
+
+                        <Texture name="$(parent)LoadingIcon" textureFile="EsoUI/Art/Miscellaneous/wait_icon.dds" hidden="true">
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)ScanButton" relativePoint="TOPLEFT" offsetX="20" offsetY="-4" />
+                            <Dimensions x="32" y="32" />
+                        </Texture>
+
+                        <Control name="$(parent)MemberScroll" inheritAlpha="true">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)PurgeDesc" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="20"/>
+                            <Dimensions x="960" y="230" />
+                            <Controls>
+                                <Control name="$(parent)Headers">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                                    <Controls>
+                                        <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="24" />
+                                            <Dimensions x="200" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, "Name", "name", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Control name="$(parent)Deposits" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="100" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, "Deposits", "deposits", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Control name="$(parent)Sales" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Deposits" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="100" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, "Sales", "sales", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Control name="$(parent)Purchases" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Sales" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="100" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, "Purchases", "purchases", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Control name="$(parent)Online" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Purchases" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="100" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, "Online", "online", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Control name="$(parent)Joined" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Online" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="100" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, "Joined", "joined", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                        <Control name="$(parent)Rank" inherits="ZO_SortHeader">
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Joined" relativePoint="TOPRIGHT" offsetX="10" />
+                                            <Dimensions x="100" y="20" />
+                                            <OnInitialized>
+                                                ZO_SortHeader_Initialize(self, "Rank", "rankIndex", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                                            </OnInitialized>
+                                        </Control>
+                                    </Controls>
+                                </Control>
+                                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                                    <Dimensions x="960" y="400" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="TOPLEFT" offsetY="30" />
+                                </Control>
+
+                            </Controls>
+                        </Control>
+
+                        <Label name="$(parent)ListResult" text="Total: 0" font="ZoFontGame" wrapMode="ELLIPSIS"
+                               verticalAlignment="CENTER" horizontalAlignment="LEFT" mouseEnabled="false">
+                            <Dimensions x="150" y="60"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)MemberScrollList" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="20" />
+                        </Label>
+
+                        <Button name="$(parent)ClearSelected" text="Clear Selected" inherits="ZO_DefaultButton" clickSound="Click">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)ListResult" relativePoint="TOPRIGHT" offsetX="10" offsetY="16"/>
+                            <Dimensions x="180" />
+                            <OnClicked> LeoGuildManager.ClearSelected() </OnClicked>
+                        </Button>
+                        <Button name="$(parent)DemoteButton" text="Demote Selected" inherits="ZO_DefaultButton" clickSound="Click">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)ClearSelected" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                            <Dimensions x="180" />
+                            <OnInitialized> self:SetEnabled(false) </OnInitialized>
+                            <OnClicked> LeoGuildManager.DemoteAllClick() </OnClicked>
+                        </Button>
+                        <Button name="$(parent)PromoteButton" text="Promote Selected" inherits="ZO_DefaultButton" clickSound="Click">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)DemoteButton" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                            <Dimensions x="180" />
+                            <OnInitialized> self:SetEnabled(false) </OnInitialized>
+                            <OnClicked> LeoGuildManager.PromoteAllClick() </OnClicked>
+                        </Button>
+                        <Button name="$(parent)KickButton" text="Remove Selected" inherits="ZO_DefaultButton" clickSound="Click">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)PromoteButton" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                            <Dimensions x="180" />
+                            <OnInitialized> self:SetEnabled(false) </OnInitialized>
+                            <OnClicked> LeoGuildManager.KickAllClick() </OnClicked>
+                        </Button>
+
+                    </Controls>
+                </Backdrop>
+
+            </Controls>
+        </TopLevelControl>
+
+        <Control name="LeoGuildManagerMemberListTemplate" virtual="true" mouseEnabled="true">
+            <Dimensions x="960" y="30" />
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+
+                <Texture name="$(parent)Checkbox" textureFile="/esoui/art/buttons/checkbox_unchecked.dds" mouseEnabled="true">
+                    <Dimensions x="18" y="18" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="TOPLEFT" offsetY="4"/>
+                    <OnMouseUp> LeoGuildManager.CheckboxClick(self, button, upInside) </OnMouseUp>
+                </Texture>
+
+                <Label name="$(parent)Name" font="LeoGuildManagerNormalFont" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="200" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="24"/>
+                    <OnMouseUp> LeoGuildManager.UserClick(self, button, upInside) </OnMouseUp>
+                </Label>
+                <Label name="$(parent)Deposits" font="LeoGuildManagerNormalFont" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoGuildManagerUI.TooltipDeposits(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoGuildManagerUI.TooltipDeposits(self, false) </OnMouseExit>
+                </Label>
+                <Label name="$(parent)Sales" font="LeoGuildManagerNormalFont" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Deposits" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <OnMouseEnter> LeoGuildManagerUI.TooltipSales(self, true) </OnMouseEnter>
+                    <OnMouseExit> LeoGuildManagerUI.TooltipSales(self, false) </OnMouseExit>
+                </Label>
+                <Label name="$(parent)Purchases" font="LeoGuildManagerNormalFont" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Sales" relativePoint="TOPRIGHT" offsetX="10"/>
+                    <!--<OnMouseEnter> LeoGuildManagerUI.TooltipSales(self, true) </OnMouseEnter>-->
+                    <!--<OnMouseExit> LeoGuildManagerUI.TooltipSales(self, false) </OnMouseExit>-->
+                </Label>
+                <Label name="$(parent)Online" font="LeoGuildManagerNormalFont" verticalAlignment="CENTER">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Purchases" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Label name="$(parent)Joined" font="LeoGuildManagerNormalFont" verticalAlignment="CENTER">
+                    <Dimensions x="100" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Online" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Label name="$(parent)Rank" font="LeoGuildManagerNormalFont" verticalAlignment="CENTER">
+                    <Dimensions x="200" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Joined" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="LeoGuildManagerWindowDropdown" inherits="ZO_ComboBox" virtual="true">
+            <OnInitialized>
+                ZO_ComboBox:New(self)
+            </OnInitialized>
+        </Control>
+
+    </Controls>
+</GuiXml>

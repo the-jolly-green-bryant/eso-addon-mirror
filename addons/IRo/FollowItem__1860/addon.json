@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/IRo/FollowItem__1860",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "IRo",
+  "canonical_id": "esoui:1860",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:1860",
+  "deleted": false,
+  "directories": [
+    "FollowItem"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1860/",
+  "fingerprint": "4b4201cbd526d082d39d5fe57f6da74e19a386dcfe4c77f0e8d63d02ebb66af5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6337.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1860",
+  "source_url": "https://www.esoui.com/downloads/info1860-FollowItem.html",
+  "stats": {
+    "downloads": 3452,
+    "favorites": 7,
+    "monthly_downloads": 11
+  },
+  "title": "FollowItem",
+  "updated_at": 1512577901000,
+  "version": "2.2"
+}

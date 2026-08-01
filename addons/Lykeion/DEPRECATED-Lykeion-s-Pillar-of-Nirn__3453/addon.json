@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Lykeion/DEPRECATED-Lykeion-s-Pillar-of-Nirn__3453",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Lykeion",
+  "canonical_id": "esoui:3453",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3453",
+  "deleted": false,
+  "directories": [
+    "PillarOfNirn"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3453/",
+  "fingerprint": "6c9bf5780f7165ff4dd5f462fa6e562a6c20810c5d0cc0ac824bf5d3d1b538f8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11801.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3453",
+  "source_url": "https://www.esoui.com/downloads/info3453-DEPRECATEDLykeionsPillarofNirn.html",
+  "stats": {
+    "downloads": 4518,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "DEPRECATED: Lykeion's Pillar of Nirn",
+  "updated_at": 1661638975000,
+  "version": "1.1.0"
+}

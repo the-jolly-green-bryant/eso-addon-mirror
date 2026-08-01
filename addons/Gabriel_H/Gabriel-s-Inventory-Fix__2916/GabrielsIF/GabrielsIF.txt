@@ -1,0 +1,14 @@
+﻿## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.
+
+## Title: Gabriel's |c960000IF|r
+## Description: Saves the last Inventory/Craft Bag Tab and Sub-Tab used when re-opening the inventory and when moving between tabs
+## Author: |c960000Gabriel_H|r
+## Version: 1.0.0
+## APIVersion: 100034
+## SavedVariables: GIFInGame
+## DependsOn: 
+
+# Main Files
+Initialize.lua

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/haggen/Slightly-ImprovedTM-Dialogues__1264",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "haggen",
+  "canonical_id": "esoui:1264",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:1264",
+  "deleted": false,
+  "directories": [
+    "SlightlyImprovedDialogues"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1264/",
+  "fingerprint": "ec7eb10b7fd5f289634a0eec9d0b64500b4187d744907768836831877ac55c97",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4455.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4456.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1264",
+  "source_url": "https://www.esoui.com/downloads/info1264-SlightlyImprovedDialogues.html",
+  "stats": {
+    "downloads": 37451,
+    "favorites": 111,
+    "monthly_downloads": 78
+  },
+  "title": "Slightly Improved\u2122 Dialogues",
+  "updated_at": 1551624906000,
+  "version": "1.4.1"
+}
